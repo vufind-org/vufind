@@ -454,13 +454,14 @@ class InstallController extends AbstractBase
             return [$create, $escape, $cuser, $grant];
         }
         // Default: MySQL:
-        $user = "CREATE USER '{$view->dbuser}'@'{$view->vufindhost}'"
+        $user = "CREATE USER '{$view->dbuser}'@'{$view->vufindhost}' "
             . "IDENTIFIED BY {$escapedPass}";
         $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
             . $view->dbname
             . ".* TO '{$view->dbuser}'@'{$view->vufindhost}' "
             . "WITH GRANT OPTION";
-        return [$create, $user, $grant, 'FLUSH PRIVILEGES'];
+        $use = "USE {$view->dbname}";
+        return [$create, $user, $grant, 'FLUSH PRIVILEGES', $use];
     }
 
     /**
