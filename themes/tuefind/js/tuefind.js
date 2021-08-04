@@ -280,7 +280,6 @@ var TueFind = {
     },
 
     CheckWildcards : function(event) {
-        
         // Case 1: ItemFulltextSearch
         if (event.type == 'submit' && event.target.id == 'ItemFulltextSearchForm')
             return this.WildcardHandler($("#searchForm_fulltext").val());
@@ -314,11 +313,11 @@ $(document).ready(function () {
     $(".tuefind-event-resetsearchhandlers").click(function(){
         TueFind.ResetSearchHandlers(); 
         return TueFind.CheckWildcards(event);
-    })
+    });
     
     $('.tuefind-event-searchForm-on-submit').submit(function(){
         return TueFind.CheckWildcards(event);
-    })
+    });
 
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
