@@ -318,7 +318,7 @@ $(document).ready(function () {
     $('.tuefind-event-searchForm-on-submit').submit(function(){
         return TueFind.CheckWildcards(event);
     });
-
+    
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
 });

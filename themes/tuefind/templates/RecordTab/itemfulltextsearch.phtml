@@ -34,23 +34,13 @@
   </select>
 </span>
 
-<span>
+<span style="display: none;">
     <input id="homeUrl" type="hidden" value="<?=$this->url('home')?>"/>
     <input id="uniqueID" type="hidden" value="<?=$this->driver->getUniqueID()?>"/>
     <input id="fulltextTypes" type="hidden" value="<?="'" . implode(',', $this->driver->getFulltextTypes()) ."'"?>"/>
 </span>
 
-<form class="searchForm form-horizontal" name="ItemFulltextSearchForm" id="ItemFulltextSearchForm" autocomplete="off"
-  onSubmit="javascript:TueFind.GetFulltextSnippets(document.getElementById('homeUrl').value,
-                                                   document.getElementById('uniqueID').value,
-                                                   this.searchForm_fulltext.value,
-                                                   true /* be verbose, i.e. return all results*/,
-                                                   document.getElementById('itemFTSearchScope').value,
-                                                   (document.getElementById('itemFTTextTypeScope').value == 'All Types'
-                                                   ? document.getElementById('fulltextTypes').value
-                                                   : document.getElementById('itemFTTextTypeScope').value));
-                                                   TueFind.CheckWildcards(event);
-  return false; /*Prevent refresh of entire page even on first load*/">
+<form class="searchForm form-horizontal" name="ItemFulltextSearchForm" id="ItemFulltextSearchForm" autocomplete="off">
   <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
     <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
      <div class="input-group-btn">
@@ -61,3 +51,23 @@
 <span id="fulltext_snippets">
   <div id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"></div>
 </span>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#ItemFulltextSearchForm').submit(function(){        
+        TueFind.GetFulltextSnippets(
+            document.getElementById('homeUrl').value,
+            document.getElementById('uniqueID').value,
+            this.searchForm_fulltext.value,
+            true /* be verbose, i.e. return all results*/,
+            document.getElementById('itemFTSearchScope').value,
+            (document.getElementById('itemFTTextTypeScope').value == 'All Types'
+                ? document.getElementById('fulltextTypes').value
+                : document.getElementById('itemFTTextTypeScope').value
+            )
+        );
+        TueFind.CheckWildcards(event);
+        return false; /*Prevent refresh of entire page even on first load*/
+    });
+})
+</script>
