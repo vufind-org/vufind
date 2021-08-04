@@ -34,14 +34,20 @@
   </select>
 </span>
 
+<span>
+    <input id="homeUrl" type="hidden" value="<?=$this->url('home')?>"/>
+    <input id="uniqueID" type="hidden" value="<?=$this->driver->getUniqueID()?>"/>
+    <input id="fulltextTypes" type="hidden" value="<?="'" . implode(',', $this->driver->getFulltextTypes()) ."'"?>"/>
+</span>
+
 <form class="searchForm form-horizontal" name="ItemFulltextSearchForm" id="ItemFulltextSearchForm" autocomplete="off"
-  onSubmit="javascript:TueFind.GetFulltextSnippets(&quot;<?=$this->url('home')?>&quot;,
-                                                   &quot;<?=$this->driver->getUniqueID()?>&quot;,
+  onSubmit="javascript:TueFind.GetFulltextSnippets(document.getElementById('homeUrl').value,
+                                                   document.getElementById('uniqueID').value,
                                                    this.searchForm_fulltext.value,
                                                    true /* be verbose, i.e. return all results*/,
                                                    document.getElementById('itemFTSearchScope').value,
                                                    (document.getElementById('itemFTTextTypeScope').value == 'All Types'
-                                                   ? <?="'" . implode(',', $this->driver->getFulltextTypes()) ."'"?>
+                                                   ? document.getElementById('fulltextTypes').value
                                                    : document.getElementById('itemFTTextTypeScope').value));
                                                    TueFind.CheckWildcards(event);
   return false; /*Prevent refresh of entire page even on first load*/">
