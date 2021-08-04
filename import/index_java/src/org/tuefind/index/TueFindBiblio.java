@@ -69,6 +69,7 @@ public class TueFindBiblio extends TueFind {
     protected final static Pattern PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN = Pattern.compile("\\(" + ISIL_K10PLUS + "\\)(.*)");
     protected final static Pattern SUPERIOR_PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN = PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN;
     protected final static Pattern DIFFERENT_CALCULATION_OF_TIME_PATTERN =  Pattern.compile(".*?\\[(.*?)\\=\\s*(\\d+)\\s*\\].*", Pattern.UNICODE_CHARACTER_CLASS);
+    protected final static Pattern REMAINS_OR_PARTIAL_REMAINS = Pattern.compile("^(?=Nachlass|Teilnachlass).*");
 
     // use static instance for better performance
     protected static CreatorTools creatorTools = new CreatorTools();
@@ -2499,15 +2500,17 @@ public class TueFindBiblio extends TueFind {
             }
         }
 
-        // Literary remains
-        final List<VariableField> _856Fields = record.getVariableFields("856");
-        for (final VariableField variableField : _856Fields) {
-            final DataField _856Field = (DataField) variableField;
-            for (final Subfield subfield3 : _856Field.getSubfields('3')) {
-                if (subfield3.getData().startsWith("Nachlassdatenbank")) {
-                    formats.remove("Kit");
-                    formats.add("LiteraryRemains");
-                    return formats;
+        // Literary remains and archived material
+        if (record.getControlNumber().startsWith("LR")) {
+            formats.remove("Kit");
+            final VariableField _245Field = record.getVariableField("245");
+            if (_245Field != null) {
+                for (final Subfield aSubfield : ((DataField) _245Field).getSubfields()) {
+                    final Matcher matcher = REMAINS_OR_PARTIAL_REMAINS.matcher(aSubfield.getData());
+                    if (matcher.matches())
+                        formats.add("LiteraryRemains");
+                    else
+                        formats.add("ArchivedMaterial");
                 }
             }
         }
