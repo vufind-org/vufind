@@ -5,7 +5,7 @@
   <?php endif; ?>
   <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
     <span property="name">
-      <a href="<?=$this->url('search-results', [], ['query' => ['type' => 'Publisher', 'lookfor' => $pubName]])?>">
+      <a href="<?=$this->record($this->driver)->getLink('publisher', $pubName)?>">
         <?=$this->escapeHtml($pubName)?>
       </a>
     </span>
