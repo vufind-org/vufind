@@ -52,7 +52,8 @@
   <div id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"></div>
 </span>
 
-<script type="text/javascript">
+<?php
+$jsSnippet = <<< 'EOD'
 $(document).ready(function () {
     $('#ItemFulltextSearchForm').submit(function(){        
         TueFind.GetFulltextSnippets(
@@ -70,4 +71,6 @@ $(document).ready(function () {
         return false; /*Prevent refresh of entire page even on first load*/
     });
 })
-</script>
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>

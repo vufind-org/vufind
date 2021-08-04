@@ -310,7 +310,7 @@ $(document).ready(function () {
         TueFind.SetFocus('#alphaBrowseForm_from');
     }
     
-    $(".tuefind-event-resetsearchhandlers").click(function(){
+    $('.tuefind-event-resetsearchhandlers').click(function(){
         TueFind.ResetSearchHandlers(); 
         return TueFind.CheckWildcards(event);
     });
@@ -318,7 +318,7 @@ $(document).ready(function () {
     $('.tuefind-event-searchForm-on-submit').submit(function(){
         return TueFind.CheckWildcards(event);
     });
-    
+
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
 });
