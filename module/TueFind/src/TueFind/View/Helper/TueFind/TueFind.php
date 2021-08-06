@@ -128,14 +128,7 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
      * @return double
      */
     public function getOverallPercentage($count, \VuFind\Search\Solr\Results $results) {
-        $dividend = $results->getResultTotal();
-        $divider = $count;
-        if($dividend>$divider){
-            $percentage = $divider/$dividend*100;
-        }else{
-            $percentage = $dividend/$divider*100;
-        }
-        return $percentage;
+        return ($count * 100) / $results->getResultTotal();
     }
 
     /**
