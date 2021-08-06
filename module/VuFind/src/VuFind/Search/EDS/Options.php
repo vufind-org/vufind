@@ -81,6 +81,13 @@ class Options extends \VuFind\Search\Base\Options
     protected $limiterOptions = [];
 
     /**
+     * Enabled limiters
+     *
+     * @var array
+     */
+    protected $enabledLimiters = [];
+
+    /**
      * Whether or not to return available facets with the search response
      *
      * @var unknown
@@ -395,6 +402,10 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load autocomplete preferences:
         $this->configureAutocomplete($searchSettings);
+
+        if (isset($searchSettings->Advanced_Facets)) {
+            $this->enabledLimiters = $searchSettings->Advanced_Facets->toArray();
+        }
     }
 
     /**
@@ -529,13 +540,32 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Returns the available limters
+     * Returns the available limiters
      *
      * @return array
      */
     public function getAvailableLimiters()
     {
         return $this->limiterOptions;
+    }
+
+    /**
+     * Returns the enabled limiters
+     *
+     * @return array
+     */
+    public function getEnabledLimiters()
+    {
+        $enabled = array_keys($this->enabledLimiters);
+        if (empty($enabled)) {
+            return $this->limiterOptions;
+        }
+        return array_filter(
+            $this->limiterOptions,
+            function ($limiter) use ($enabled) {
+                return in_array($limiter['Id'], $enabled);
+            }
+        );
     }
 
     /**
