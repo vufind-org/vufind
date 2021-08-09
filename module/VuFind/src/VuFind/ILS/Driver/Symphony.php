@@ -307,9 +307,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             )
         ) {
             $login    = $this->config['WebServices']['login'];
-            $password = isset($this->config['WebServices']['password'])
-                ? $this->config['WebServices']['password']
-                : null;
+            $password = $this->config['WebServices']['password'] ?? null;
         } else {
             $login    = null;
             $password = null;
@@ -615,8 +613,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         date('F j, Y', strtotime($itemInfo->recallDueDate)) :
                         $duedate;
 
-                $requests_placed = isset($itemInfo->numberOfHolds) ?
-                            $itemInfo->numberOfHolds : 0;
+                $requests_placed = $itemInfo->numberOfHolds ?? 0;
 
                 // Handle item notes
                 $notes = [];
@@ -645,8 +642,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         )
                         : null;
 
-                $transitReason = isset($itemInfo->transitReason) ?
-                    $itemInfo->transitReason : null;
+                $transitReason = $itemInfo->transitReason ?? null;
 
                 $transitDate = isset($itemInfo->transitDate) ?
                      date('F j, Y', strtotime($itemInfo->transitDate)) : null;

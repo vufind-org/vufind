@@ -89,7 +89,7 @@ CREATE TABLE `resource` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resource_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `resource_id` int(11) NOT NULL DEFAULT '0',
+  `resource_id` int(11) DEFAULT NULL,
   `tag_id` int(11) NOT NULL DEFAULT '0',
   `list_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,

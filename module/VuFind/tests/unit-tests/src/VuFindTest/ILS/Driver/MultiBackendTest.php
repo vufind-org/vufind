@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2014-2016.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,7 +29,6 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use Laminas\Log\Writer\Mock;
 use VuFind\ILS\Driver\MultiBackend;
 
 /**
@@ -281,6 +280,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $driver, 'addIdPrefixes', [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
+
+        // Numeric keys are not considered
+        $data = [
+            'id' => 'record1',
+            'cat_username' => ['foo', 'bar']
+        ];
+        $expected = [
+            'id' => "$source.record1",
+            'cat_username' => ['foo', 'bar']
+        ];
+        $result = $this->callMethod(
+            $driver, 'addIdPrefixes', [$data, $source, $modify]
+        );
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -344,6 +357,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $modify = ['id', 'cat_username', 'cat_info'];
         $result = $this->callMethod(
             $driver, 'stripIdPrefixes', [$data, $source, $modify]
+        );
+        $this->assertEquals($expected, $result);
+
+        // Numeric keys are not considered
+        $data = [
+            'id' => "$source.record1",
+            'test' => ["$source.foo", "$source.bar"]
+        ];
+        $expected = [
+            'id' => "record1",
+            'test' => ["$source.foo", "$source.bar"]
+        ];
+        $result = $this->callMethod(
+            $driver, 'stripIdPrefixes', [$data, $source]
         );
         $this->assertEquals($expected, $result);
     }

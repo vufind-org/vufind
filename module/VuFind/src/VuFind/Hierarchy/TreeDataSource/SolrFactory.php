@@ -28,6 +28,9 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Solr Hierarchy tree data source plugin factory.
@@ -76,8 +79,7 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
           : [];
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $batchSize = isset($config->Index->cursor_batch_size)
-            ? $config->Index->cursor_batch_size : 1000;
+        $batchSize = $config->Index->cursor_batch_size ?? 1000;
         $solr = $container->get(\VuFind\Search\BackendManager::class)
             ->get($this->backendId)->getConnector();
         $formatterManager = $container

@@ -51,6 +51,10 @@ class Folio extends AbstractAPI implements
         logError as error;
     }
 
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
+
     /**
      * Authentication tenant (X-Okapi-Tenant)
      *
@@ -83,7 +87,7 @@ class Folio extends AbstractAPI implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param Callable               $sessionFactory Factory function returning
+     * @param callable               $sessionFactory Factory function returning
      * SessionContainer object
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
@@ -155,6 +159,22 @@ class Folio extends AbstractAPI implements
             ' Params: ' . print_r($logParams, true) . '.' .
             ' Headers: ' . print_r($logHeaders, true)
         );
+    }
+
+    /**
+     * Add instance-specific context to a cache key suffix (to ensure that
+     * multiple drivers don't accidentally share values in the cache.
+     *
+     * @param string $key Cache key suffix
+     *
+     * @return string
+     */
+    protected function getCacheKey($key = null)
+    {
+        // Override the base class formatting with FOLIO-specific details
+        // to ensure proper caching in a MultiBackend environment.
+        return 'FOLIO-'
+            . md5("{$this->tenant}|$key");
     }
 
     /**
@@ -335,7 +355,6 @@ class Folio extends AbstractAPI implements
      *
      * @param string $bibId Bib-level id
      *
-     * @throw
      * @return array
      */
     protected function getInstanceByBibId($bibId)
@@ -417,6 +436,59 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Gets locations from the /locations endpoint and sets
+     * an array of location IDs to display names.
+     * Display names are set from discoveryDisplayName, or name
+     * if discoveryDisplayName is not available.
+     *
+     * @return array
+     */
+    protected function getLocations()
+    {
+        $cacheKey = 'locationMap';
+        $locationMap = $this->getCachedData($cacheKey);
+        if (null === $locationMap) {
+            $locationMap = [];
+            foreach ($this->getPagedResults(
+                'locations', '/locations'
+            ) as $location) {
+                $locationMap[$location->id]
+                    = $location->discoveryDisplayName ?? $location->name;
+            }
+        }
+        $this->putCachedData($cacheKey, $locationMap);
+        return $locationMap;
+    }
+
+    /**
+     * Get Inventory Location Name
+     *
+     * @param string $locationId UUID of item location
+     *
+     * @return string $locationName display name of location
+     */
+    protected function getLocationName($locationId)
+    {
+        $locationMap = $this->getLocations();
+        $locationName = '';
+        if (array_key_exists($locationId, $locationMap)) {
+            $locationName = $locationMap[$locationId];
+        } else {
+            // if key is not found in cache, the location could have
+            // been added before the cache expired so check again
+            $locationResponse = $this->makeRequest(
+                'GET', '/locations/' . $locationId
+            );
+            if ($locationResponse->isSuccess()) {
+                $location = json_decode($locationResponse->getBody());
+                $locationName = $location->discoveryDisplayName ?? $location->name;
+            }
+        }
+
+        return $locationName;
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -442,16 +514,6 @@ class Folio extends AbstractAPI implements
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         foreach ($holdingBody->holdingsRecords as $holding) {
-            $locationName = '';
-            if (!empty($holding->permanentLocationId)) {
-                $locationResponse = $this->makeRequest(
-                    'GET',
-                    '/locations/' . $holding->permanentLocationId
-                );
-                $location = json_decode($locationResponse->getBody());
-                $locationName = $location->name;
-            }
-
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
                     . '" NOT discoverySuppress==true)'
@@ -459,9 +521,38 @@ class Folio extends AbstractAPI implements
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
-                return $note->note ?? '';
+                return !($note->staffOnly ?? false)
+                    && !empty($note->note) ? $note->note : '';
             };
+            $textFormatter = function ($supplement) {
+                $format = '%s %s';
+                $supStat = $supplement->statement;
+                $supNote = $supplement->note;
+                $statement = trim(sprintf($format, $supStat, $supNote));
+                return $statement ?? '';
+            };
+            $holdingNotes = array_filter(
+                array_map($notesFormatter, $holding->notes ?? [])
+            );
+            $hasHoldingNotes = !empty(implode($holdingNotes));
+            $holdingsStatements = array_map(
+                $textFormatter,
+                $holding->holdingsStatements ?? []
+            );
+            $holdingsSupplements = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForSupplements ?? []
+            );
+            $holdingsIndexes = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForIndexes ?? []
+            );
             foreach ($itemBody->items as $item) {
+                $itemNotes = array_filter(
+                    array_map($notesFormatter, $item->notes ?? [])
+                );
+                $locationId = $item->effectiveLocationId;
+                $locationName = $this->getLocationName($locationId);
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -471,7 +562,11 @@ class Folio extends AbstractAPI implements
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
                     'is_holdable' => $this->isHoldable($locationName),
-                    'notes' => array_map($notesFormatter, $item->notes ?? []),
+                    'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
+                    'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
+                    'issues' => $holdingsStatements,
+                    'supplements' => $holdingsSupplements,
+                    'indexes' => $holdingsIndexes,
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
@@ -832,14 +927,19 @@ class Folio extends AbstractAPI implements
      * This is responsible get a list of valid locations for holds / recall
      * retrieval
      *
-     * @param array $patron Patron information returned by $this->patronLogin
+     * @param array $patron   Patron information returned by $this->patronLogin
+     * @param array $holdInfo Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the pickup options
+     * or may be ignored. The driver must not add new options to the return array
+     * based on this data or other areas of VuFind may behave incorrectly.
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getPickupLocations($patron)
+    public function getPickupLocations($patron, $holdInfo = null)
     {
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
@@ -1271,13 +1371,13 @@ class Folio extends AbstractAPI implements
      */
     public function getMyFines($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Closed'];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $fines = [];
         foreach ($this->getPagedResults(
             'accounts', '/accounts', $query
         ) as $fine) {
             $date = date_create($fine->metadata->createdDate);
-            $title = (isset($fine->title) ? $fine->title : null);
+            $title = $fine->title ?? null;
             $fines[] = [
                 'id' => $fine->id,
                 'amount' => $fine->amount * 100,
@@ -1380,7 +1480,7 @@ class Folio extends AbstractAPI implements
      * in more recent code, it receives one of the KEYS from getFunds(). See getFunds
      * for additional notes.
      */
-    public function getNewItems($page = 1, $limit, $daysOld = 30, $fundID = null)
+    public function getNewItems($page, $limit, $daysOld, $fundID = null)
     {
         return [];
     }

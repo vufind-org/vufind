@@ -60,11 +60,18 @@ class AbstractExpireCommand extends Command
     protected $rowLabel = 'rows';
 
     /**
-     * Minimum (and default) legal age of rows to delete.
+     * Minimum legal age of rows to delete.
      *
      * @var int
      */
     protected $minAge = 2;
+
+    /**
+     * Default age of rows to delete. $minAge is used if $defaultAge is null.
+     *
+     * @var int|null
+     */
+    protected $defaultAge = null;
 
     /**
      * Table on which to expire rows
@@ -118,7 +125,7 @@ class AbstractExpireCommand extends Command
                 'age',
                 InputArgument::OPTIONAL,
                 "the age (in days) of {$this->rowLabel} to expire",
-                $this->minAge
+                $this->defaultAge ?? $this->minAge
             );
     }
 
@@ -153,7 +160,7 @@ class AbstractExpireCommand extends Command
         if ($daysOld < $this->minAge) {
             $output->writeln(
                 str_replace(
-                    '%%age%%', $this->minAge,
+                    '%%age%%', number_format($this->minAge, 1, '.', ''),
                     'Expiration age must be at least %%age%% days.'
                 )
             );

@@ -166,8 +166,7 @@ class Memory
      */
     public function retrieveLastSetting($context, $setting, $default = null)
     {
-        return isset($this->session->{"params|$context|$setting"})
-            ? $this->session->{"params|$context|$setting"} : $default;
+        return $this->session->{"params|$context|$setting"} ?? $default;
     }
 
     /**
@@ -178,6 +177,6 @@ class Memory
      */
     public function retrieveSearch()
     {
-        return isset($this->session->last) ? $this->session->last : null;
+        return $this->session->last ?? null;
     }
 }

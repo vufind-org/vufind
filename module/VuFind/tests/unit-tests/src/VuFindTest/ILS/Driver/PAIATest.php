@@ -46,6 +46,8 @@ use VuFind\ILS\Driver\PAIA;
  */
 class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     protected $validConfig = [
         'DAIA' =>
             [
@@ -562,17 +564,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/paia/response/' . $fixture
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("paia/response/$fixture")
             );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
         $service = new \VuFindHttp\HttpService();

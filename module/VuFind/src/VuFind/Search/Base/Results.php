@@ -579,7 +579,7 @@ abstract class Results
         if (null === $location) {
             return $this->recommend;
         }
-        return isset($this->recommend[$location]) ? $this->recommend[$location] : [];
+        return $this->recommend[$location] ?? [];
     }
 
     /**

@@ -14,6 +14,7 @@
 namespace VuFind\Controller;
 
 use Laminas\Mail\Address;
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
 
@@ -30,9 +31,16 @@ use VuFind\Form\Form;
 class FeedbackController extends AbstractBase
 {
     /**
+     * Feedback form class
+     *
+     * @var string
+     */
+    protected $formClass = \VuFind\Form\Form::class;
+
+    /**
      * Display Feedback home form.
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ViewModel
      */
     public function homeAction()
     {
@@ -54,7 +62,7 @@ class FeedbackController extends AbstractBase
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
+        $form = $this->serviceLocator->get($this->formClass);
         $params = [];
         if ($refererHeader = $this->getRequest()->getHeader('Referer')
         ) {
@@ -188,10 +196,10 @@ class FeedbackController extends AbstractBase
     /**
      * Show response after form submit.
      *
-     * @param View    $view     View
-     * @param Form    $form     Form
-     * @param boolean $success  Was email sent successfully?
-     * @param string  $errorMsg Error message (optional)
+     * @param ViewModel $view     View
+     * @param Form      $form     Form
+     * @param boolean   $success  Was email sent successfully?
+     * @param string    $errorMsg Error message (optional)
      *
      * @return array with name, email
      */

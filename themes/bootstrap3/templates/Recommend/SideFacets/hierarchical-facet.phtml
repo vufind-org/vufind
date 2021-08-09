@@ -38,8 +38,8 @@ JS;
     data-path="<?=$this->currentPath()?>"
     data-exclude="<?=$this->allowExclude?>"
     data-operator="<?=$this->recommend->getFacetOperator($this->title)?>"
-    data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-    data-sort="<?=isset($this->sortOptions) ? $this->sortOptions : ''?>"
+    data-exclude-title="<?=$this->transEscAttr('exclude_facet')?>"
+    data-sort="<?=$this->sortOptions ?? ''?>"
     data-query="<?=$this->escapeHtmlAttr($urlQuery)?>"
     data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>"
     data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
