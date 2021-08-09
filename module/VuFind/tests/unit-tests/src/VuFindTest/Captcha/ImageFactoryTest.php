@@ -31,6 +31,10 @@ namespace VuFindTest\Captcha;
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *
+ * @requires extension gd
+ * @requires function imagepng
+ * @requires function imageftbbox
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>

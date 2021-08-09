@@ -29,8 +29,12 @@
 namespace VuFind\Db;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
+
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Database utility class. May be used as a service or as a standard
@@ -141,8 +145,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $driver = strtolower($options['driver']);
         switch ($driver) {
         case 'mysqli':
-            $options['charset'] = isset($this->config->Database->charset)
-                ? $this->config->Database->charset : 'utf8';
+            $options['charset'] = $this->config->Database->charset ?? 'utf8';
             $options['options'] = ['buffer_results' => true];
             break;
         }

@@ -63,6 +63,20 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $rowLabel = 'rows';
 
     /**
+     * Age parameter to use when testing illegal age input.
+     *
+     * @var int
+     */
+    protected $illegalAge = 1;
+
+    /**
+     * Expected minimum age in error message.
+     *
+     * @var int
+     */
+    protected $expectedMinAge = 2;
+
+    /**
      * Test an unsupported table class.
      *
      * @return void
@@ -91,9 +105,10 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $command = new $this->targetClass($table, 'foo');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['age' => 1]);
+        $commandTester->execute(['age' => $this->illegalAge]);
+        $expectedMinAge = number_format($this->expectedMinAge, 1, '.', '');
         $this->assertEquals(
-            "Expiration age must be at least 2 days.\n",
+            "Expiration age must be at least $expectedMinAge days.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(1, $commandTester->getStatusCode());

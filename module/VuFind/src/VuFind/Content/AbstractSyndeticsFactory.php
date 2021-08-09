@@ -28,6 +28,9 @@
 namespace VuFind\Content;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -74,7 +77,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
         return new $className(
             isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,
             $plus,
-            isset($config->Syndetics->timeout) ? $config->Syndetics->timeout : 10
+            $config->Syndetics->timeout ?? 10
         );
     }
 }

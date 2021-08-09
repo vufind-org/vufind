@@ -182,8 +182,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
 
         $embed = (isset($this->config->embed) && !empty($this->config->embed));
 
-        $embedAutoLoad = isset($this->config->embed_auto_load)
-            ? $this->config->embed_auto_load : false;
+        $embedAutoLoad = $this->config->embed_auto_load ?? false;
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
         if (!($embedAutoLoad === "1" || $embedAutoLoad === "0")
@@ -204,8 +203,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         }
 
         // instantiate the resolver plugin to get a proper resolver link
-        $resolver = isset($this->config->resolver)
-            ? $this->config->resolver : 'other';
+        $resolver = $this->config->resolver ?? 'other';
         $openurl = $this->recordDriver->getOpenUrl();
         if ($this->resolverPluginManager->has($resolver)) {
             $resolverObj = new \VuFind\Resolver\Connection(

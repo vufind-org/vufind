@@ -6,6 +6,10 @@
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
+  // Add any extra scripts the tabs require:
+  foreach ($this->tabsExtraScripts as $script) {
+    $this->headScript()->appendFile($script);
+  }
 
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
@@ -13,7 +17,7 @@
   }
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ') .
     '<li class="active" aria-current="page">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
   $this->layout()->title = $this->driver->getShortTitle();
 ?>
@@ -28,7 +32,7 @@
   <?php $sidebarList = $this->related()->getList($this->driver); ?>
   <div class="<?=$this->layoutClass('mainbody')?><?=count($sidebarList) < 1 ? ' solo' : '' ?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCoreMetadata()?>
 
@@ -53,7 +57,9 @@
               if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
             ?>
             <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-              <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+              <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-lightbox-ignore>
+                <?=$this->transEsc($desc)?>
+              </a>
             </li>
           <?php endforeach; ?>
         </ul>

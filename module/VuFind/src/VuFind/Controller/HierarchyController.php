@@ -82,8 +82,7 @@ class HierarchyController extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $config = $this->getConfig();
-        $limit = isset($config->Hierarchy->treeSearchLimit)
-            ? $config->Hierarchy->treeSearchLimit : -1;
+        $limit = $config->Hierarchy->treeSearchLimit ?? -1;
         $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
         $source = $this->params()

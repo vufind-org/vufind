@@ -64,7 +64,6 @@ class PluginManager extends Base
      *
      * @param mixed $plugin Plugin to validate
      *
-     * @throws ServiceManagerRuntimeException if invalid
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -85,7 +84,7 @@ class PluginManager extends Base
     {
         $oldOverrideSetting = $this->getAllowOverride();
         $this->setAllowOverride(true);
-        $this->setService($id, $this->create($id));
+        $this->setService($id, $this->build($id));
         $this->setAllowOverride($oldOverrideSetting);
         return $this->get($id);
     }

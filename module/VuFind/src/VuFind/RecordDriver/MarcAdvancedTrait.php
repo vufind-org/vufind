@@ -291,12 +291,13 @@ trait MarcAdvancedTrait
         $times = $this->getFieldArray('306', ['a'], false);
 
         // Format the times to include colons ("HH:MM:SS" format).
-        for ($x = 0; $x < count($times); $x++) {
-            $times[$x] = substr($times[$x], 0, 2) . ':' .
-                substr($times[$x], 2, 2) . ':' .
-                substr($times[$x], 4, 2);
+        foreach ($times as $x => $time) {
+            if (!preg_match('/\d\d:\d\d:\d\d/', $time)) {
+                $times[$x] = substr($time, 0, 2) . ':' .
+                    substr($time, 2, 2) . ':' .
+                    substr($time, 4, 2);
+            }
         }
-
         return $times;
     }
 
@@ -479,21 +480,20 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         // Return empty array if we have no table of contents:
-        $fields = $this->getMarcRecord()->getFields('505');
-        if (!$fields) {
-            return [];
-        }
-
-        // If we got this far, we have a table -- collect it as a string:
         $toc = [];
-        foreach ($fields as $field) {
-            $subfields = $field->getSubfields();
-            foreach ($subfields as $subfield) {
-                // Break the string into appropriate chunks, filtering empty strings,
-                // and merge them into return array:
+        if ($fields = $this->getMarcRecord()->getFields('505')) {
+            foreach ($fields as $field) {
+                // Implode all the subfields into a single string, then explode
+                // on the -- separators (filtering out empty chunks). Due to
+                // inconsistent application of subfield codes, this is the most
+                // reliable way to split up a table of contents.
+                $str = '';
+                foreach ($field->getSubfields() as $subfield) {
+                    $str .= trim($subfield->getData()) . ' ';
+                }
                 $toc = array_merge(
                     $toc,
-                    array_filter(explode('--', $subfield->getData()), 'trim')
+                    array_filter(array_map('trim', preg_split('/[.\s]--/', $str)))
                 );
             }
         }
@@ -602,8 +602,7 @@ trait MarcAdvancedTrait
         $fieldsNames = isset($this->mainConfig->Record->marc_links)
             ? explode(',', $this->mainConfig->Record->marc_links) : [];
         $useVisibilityIndicator
-            = isset($this->mainConfig->Record->marc_links_use_visibility_indicator)
-            ? $this->mainConfig->Record->marc_links_use_visibility_indicator : true;
+            = $this->mainConfig->Record->marc_links_use_visibility_indicator ?? true;
 
         $retVal = [];
         foreach ($fieldsNames as $value) {
@@ -643,7 +642,8 @@ trait MarcAdvancedTrait
     {
         // If set, use relationship information from subfield i
         if ($subfieldI = $field->getSubfield('i')) {
-            $data = trim($subfieldI->getData());
+            // VuFind will add a colon to the label, so prevent double colons:
+            $data = rtrim(trim($subfieldI->getData(), ':'));
             if (!empty($data)) {
                 return $data;
             }
@@ -690,9 +690,8 @@ trait MarcAdvancedTrait
             return false;
         }
 
-        $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
-            ? $this->mainConfig->Record->marc_links_link_types
-            : 'id,oclc,dlc,isbn,issn,title';
+        $linkTypeSetting = $this->mainConfig->Record->marc_links_link_types
+            ?? 'id,oclc,dlc,isbn,issn,title';
         $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $field->getSubfields('w');
 
@@ -930,7 +929,7 @@ trait MarcAdvancedTrait
      */
     public function getConsortialIDs()
     {
-        return $this->getFieldArray('035', 'a', true);
+        return $this->getFieldArray('035');
     }
 
     /**

@@ -157,8 +157,7 @@ class Generator
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
         // Process backend configuration:
-        $backendConfig = isset($this->config->Sitemap->index)
-            ? $this->config->Sitemap->index : ['Solr,/Record/'];
+        $backendConfig = $this->config->Sitemap->index ?? ['Solr,/Record/'];
         $backendConfig = is_callable([$backendConfig, 'toArray'])
             ? $backendConfig->toArray() : (array)$backendConfig;
         $callback = function ($n) {
@@ -460,8 +459,6 @@ class Generator
             $this->countPerPage,
             $params
         );
-        // TueFind: This undefined variable problem will be fixed in 7.1.1,
-        // see https://github.com/vufind-org/vufind/commit/d0ff922bcf7e2832c7dd8fb4181cc027c539a100
         $ids = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);

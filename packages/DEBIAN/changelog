@@ -1,3 +1,15 @@
+vufind 7.1.1 distribution; urgency=low
+
+  * VuFind 7.1.1 release (see http://vufind.org/wiki/changelog for details)
+
+ -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 5 Jul 2021 10:00:00 UTC
+
+vufind 7.1 distribution; urgency=low
+
+  * VuFind 7.1 release (see http://vufind.org/wiki/changelog for details)
+
+ -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 22 Feb 2021 10:00:00 UTC
+
 vufind 7.0.2 distribution; urgency=low
 
   * VuFind 7.0.2 release (see http://vufind.org/wiki/changelog for details)

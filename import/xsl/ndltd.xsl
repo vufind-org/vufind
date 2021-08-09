@@ -9,6 +9,9 @@
     <xsl:param name="collection">Digital Library</xsl:param>
     <xsl:param name="building"></xsl:param>
     <xsl:param name="urnresolver">http://nbn-resolving.de/</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:variable name="URLs" />
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:template match="oai_dc:dc">
@@ -221,6 +224,13 @@
                     </xsl:choose>
                 </xsl:for-each>
 
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //dc:title[normalize-space()], php:function('VuFind::stripArticles', string(//dc:title[normalize-space()])), //dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
+                </xsl:for-each>
             </doc>
         </add>
         </xsl:if>

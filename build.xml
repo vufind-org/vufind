@@ -21,17 +21,18 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="1.10.8" />
+  <property name="composer_version" value="2.0.13" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
+  <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="7.4.0" />
+  <property name="solr_version" value="7.7.3" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0-alpha.4" />
 
-  <property name="version" value="7.0.2" />
+  <property name="version" value="7.1.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -176,17 +177,17 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -201,8 +202,9 @@
     <if>
       <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
       <then>
-        <!-- make sure we don't run out of memory during installation: -->
+        <!-- make sure we don't run out of memory or time during installation: -->
         <php expression="ini_set('memory_limit', '1G');" />
+
         <!-- TueFind: Increase default_socket_timeout -->
         <php expression="ini_set('default_socket_timeout', '600');" />
 
@@ -511,4 +513,28 @@
     </if>
   </target>
 
+  <target name="patch-dependencies" description="apply fixes to dependencies">
+    <!-- Fix for PHP 8 incompatibility in laminas-db 2.11.3: -->
+    <reflexive>
+      <fileset dir="${srcdir}/vendor/laminas/laminas-db/src/Sql">
+        <include pattern="AbstractSql.php" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="\$multiParamValues\[\] = vsprintf\(\$paramSpecs\[\$position\]\[\$ppCount\], \$multiParamsForPosition\);" replace="\$multiParamValues[] = vsprintf(\$paramSpecs[\$position][\$ppCount], (array)\$multiParamsForPosition);" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+    <!-- Fix for PHP 8 incompatibility in phing 2.16.4: -->
+    <reflexive>
+      <fileset dir="vendor/phing/phing/classes/phing/tasks/system">
+        <include pattern="ChmodTask.php" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="vsprintf\([&quot;']%o[&quot;'], \$mode\)" replace="vsprintf('%o', [\$mode])" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
 </project>

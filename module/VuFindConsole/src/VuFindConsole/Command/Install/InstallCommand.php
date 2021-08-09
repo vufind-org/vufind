@@ -928,5 +928,6 @@ class InstallCommand extends Command
 
         // Report success:
         $this->displaySuccessMessage($output);
+        return 0;
     }
 }

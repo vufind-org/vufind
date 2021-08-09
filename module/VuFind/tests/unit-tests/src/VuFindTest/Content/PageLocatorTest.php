@@ -42,32 +42,25 @@ use VuFindTheme\ThemeInfo;
  */
 class PageLocatorTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
-     * Path to theme fixtures
+     * Test determining a template and renderer.
      *
-     * @var string
+     * @return void
      */
-    protected $fixturePath;
-
-    /**
-     * Constructor
-     */
-    public function setUp(): void
-    {
-        $this->fixturePath = realpath(__DIR__ . '/../../../../../../VuFindTheme/tests/unit-tests/fixtures/themes');
-    }
-
     public function testDetermineTemplateAndRenderer()
     {
         $language  = 'aa';
         $defaultLanguage = 'bb';
         $pathPrefix = 'templates/page-locator-test/';
+        $fixturePath = $this->getFixtureDir('VuFindTheme') . 'themes/';
         $testCases = [
             [
                 'pageName' => 'page1',
                 'result' => [
                     'renderer' => 'phtml',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page1.phtml',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page1.phtml',
                     'page' => 'page1',
                 ],
             ],
@@ -75,7 +68,7 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'pageName' => 'page2',
                 'result' => [
                     'renderer' => 'phtml',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page2_aa.phtml',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page2_aa.phtml',
                     'page' => 'page2_aa',
                 ],
             ],
@@ -83,7 +76,7 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'pageName' => 'page3',
                 'result' => [
                     'renderer' => 'phtml',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page3_bb.phtml',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page3_bb.phtml',
                     'page' => 'page3_bb',
                 ],
             ],
@@ -91,7 +84,7 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'pageName' => 'page4',
                 'result' => [
                     'renderer' => 'md',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page4.md',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page4.md',
                     'page' => 'page4',
                 ],
             ],
@@ -99,7 +92,7 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'pageName' => 'page5',
                 'result' => [
                     'renderer' => 'md',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page5_aa.md',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page5_aa.md',
                     'page' => 'page5_aa',
                 ],
             ],
@@ -107,7 +100,7 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'pageName' => 'page6',
                 'result' => [
                     'renderer' => 'md',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page6_bb.md',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page6_bb.md',
                     'page' => 'page6_bb',
                 ],
             ],
@@ -116,20 +109,10 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'result' => null,
             ],
         ];
-        $themeInfo = $this->getThemeInfo();
+        $themeInfo = new ThemeInfo(rtrim($fixturePath, '/'), 'parent');
         $pageLocator = new PageLocator($themeInfo, $language, $defaultLanguage);
         foreach ($testCases as $case) {
             $this->assertEquals($case['result'], $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName']));
         }
-    }
-
-    /**
-     * Get a test object
-     *
-     * @return ThemeInfo
-     */
-    protected function getThemeInfo()
-    {
-        return new ThemeInfo($this->fixturePath, 'parent');
     }
 }

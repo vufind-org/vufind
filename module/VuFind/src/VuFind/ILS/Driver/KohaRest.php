@@ -77,7 +77,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Factory function for constructing the SessionContainer.
      *
-     * @var Callable
+     * @var callable
      */
     protected $sessionFactory;
 
@@ -152,6 +152,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
     /**
      * Permanent renewal blocks
+     *
+     * @var array
      */
     protected $permanentRenewalBlocks = [
         'onsite_checkout',
@@ -161,6 +163,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
     /**
      * Patron status mappings
+     *
+     * @var array
      */
     protected $patronStatusMappings = [
         'Hold::MaximumHoldsReached' => 'patron_status_maximum_requests',
@@ -169,6 +173,31 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'Patron::Debt' => 'patron_status_debt_limit_reached',
         'Patron::DebtGuarantees' => 'patron_status_guarantees_debt_limit_reached',
         'Patron::GoneNoAddress' => 'patron_status_address_missing',
+    ];
+
+    /**
+     * Item status mappings
+     *
+     * @var array
+     */
+    protected $itemStatusMappings = [
+        'Item::Held' => 'On Hold',
+        'Item::Waiting' => 'On Holdshelf',
+    ];
+
+    /**
+     * Item status mapping methods used when the item status mappings above
+     * (or in the configuration file) don't contain a direct mapping.
+     *
+     * @var array
+     */
+    protected $itemStatusMappingMethods = [
+        'Item::CheckedOut' => 'getStatusCodeItemCheckedOut',
+        'Item::Lost' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::NotForLoan' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::NotForLoanForcing' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::Transfer' => 'getStatusCodeItemTransfer',
+        'ItemType::NotForLoan' => 'getStatusCodeItemNotForLoanOrLost',
     ];
 
     /**
@@ -189,12 +218,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter   Date converter object
-     * @param Callable               $sessionFactory  Factory function returning
+     * @param callable               $sessionFactory  Factory function returning
      * SessionContainer object
-     * @param SafeMoneyFormat        $safeMoneyFormat Money formatting view helper
+     * @param ?SafeMoneyFormat       $safeMoneyFormat Money formatting view helper
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory, SafeMoneyFormat $safeMoneyFormat
+        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -221,9 +250,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation']
-            : '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
@@ -243,6 +270,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (!empty($this->config['PatronStatusMappings'])) {
             $this->patronStatusMappings = array_merge(
                 $this->patronStatusMappings, $this->config['PatronStatusMappings']
+            );
+        }
+
+        if (!empty($this->config['ItemStatusMappings'])) {
+            $this->itemStatusMappings = array_merge(
+                $this->itemStatusMappings, $this->config['ItemStatusMappings']
             );
         }
 
@@ -369,6 +402,67 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get Departments
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = dept. name.
+     */
+    public function getDepartments()
+    {
+        $result = $this->makeRequest('v1/contrib/kohasuomi/departments');
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        $departments = [];
+        foreach ($result['data'] as $department) {
+            $departments[$department['authorised_value']] = $department['lib_opac'];
+        }
+        return $departments;
+    }
+
+    /**
+     * Get Instructors
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getInstructors()
+    {
+        $result = $this->makeRequest('v1/contrib/kohasuomi/instructors');
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        $instructors = [];
+        foreach ($result['data'] as $instructor) {
+            $name = trim(
+                ($instructor['firstname'] ?? '') . ' '
+                . ($instructor['surname'] ?? '')
+            );
+            $instructors[$instructor['patron_id']] = $name;
+        }
+        return $instructors;
+    }
+
+    /**
+     * Get Courses
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getCourses()
+    {
+        $result = $this->makeRequest('v1/contrib/kohasuomi/courses');
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        $courses = [];
+        foreach ($result['data'] as $course) {
+            $courses[$course['course_id']] = $course['course_name'];
+        }
+        return $courses;
+    }
+
+    /**
      * Find Reserves
      *
      * Obtain information on course reserves.
@@ -377,13 +471,42 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $inst   ID from getInstructors (empty string to match all)
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
-     * @return mixed An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ILSException
+     * @return array An array of associative arrays representing reserve items.
      */
     public function findReserves($course, $inst, $dept)
     {
-        return [];
+        $params = [];
+        if ('' !== $course) {
+            $params['course_id'] = $course;
+        }
+        if ('' !== $inst) {
+            $params['patron_id'] = $inst;
+        }
+        if ('' !== $dept) {
+            $params['department'] = $dept;
+        }
+
+        $result = $this->makeRequest(
+            [
+                'path' => 'v1/contrib/kohasuomi/coursereserves',
+                'query' => $params
+            ]
+        );
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+
+        $reserves = [];
+        foreach ($result['data'] as $reserve) {
+            $reserves[] = [
+                'BIB_ID' => $reserve['biblio_id'],
+                'COURSE_ID' => $reserve['course_id'],
+                'DEPARTMENT_ID' => $reserve['course_department'],
+                'INSTRUCTOR_ID' => $reserve['patron_id'],
+            ];
+        }
+        return $reserves;
     }
 
     /**
@@ -799,8 +922,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
-            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
         if (count($locations) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -885,6 +1007,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'valid' => false,
                 'status' => $this->getHoldBlockReason($result['data'])
             ];
+        }
+
+        // Check if we have an item id:
+        if (empty($data['item_id'])) {
+            return false;
         }
 
         $result = $this->makeRequest(
@@ -1356,8 +1483,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
-        return isset($this->config[$function])
-            ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -1410,8 +1536,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(
             ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => true]
         );
@@ -1727,72 +1852,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($item['availability']['available']) {
             $statuses[] = 'On Shelf';
         } elseif (isset($item['availability']['unavailabilities'])) {
-            foreach ($item['availability']['unavailabilities'] as $key => $reason) {
-                if (isset($this->config['ItemStatusMappings'][$key])) {
-                    $statuses[] = $this->config['ItemStatusMappings'][$key];
-                } elseif (strncmp($key, 'Item::', 6) == 0) {
-                    $status = substr($key, 6);
-                    switch ($status) {
-                    case 'CheckedOut':
-                        $overdue = false;
-                        if (!empty($reason['due_date'])) {
-                            $duedate = $this->dateConverter->convert(
-                                'Y-m-d',
-                                'U',
-                                $reason['due_date']
-                            );
-                            $overdue = $duedate < time();
+            foreach ($item['availability']['unavailabilities'] as $code => $data) {
+                // If we have a direct mapping, use it:
+                if (isset($this->itemStatusMappings[$code])) {
+                    $statuses[] = $this->itemStatusMappings[$code];
+                    continue;
+                }
+
+                // Check for a mapping method for the unavailability reason:
+                if ($methodName = ($this->itemStatusMappingMethods[$code] ?? '')) {
+                    $statuses[]
+                        = call_user_func([$this, $methodName], $code, $data, $item);
+                } else {
+                    if (!empty($data['code'])) {
+                        $statuses[] = $data['code'];
+                    } else {
+                        $parts = explode('::', $code, 2);
+                        if (isset($parts[1])) {
+                            $statuses[] = $parts[1];
                         }
-                        $statuses[] = $overdue ? 'Overdue' : 'Charged';
-                        break;
-                    case 'Lost':
-                        $statuses[] = 'Lost--Library Applied';
-                        break;
-                    case 'NotForLoan':
-                    case 'NotForLoanForcing':
-                        if (isset($reason['code'])) {
-                            switch ($reason['code']) {
-                            case 'Not For Loan':
-                                $statuses[] = 'On Reference Desk';
-                                break;
-                            default:
-                                $statuses[] = $reason['code'];
-                                break;
-                            }
-                        } else {
-                            $statuses[] = 'On Reference Desk';
-                        }
-                        break;
-                    case 'Transfer':
-                        $onHold = false;
-                        if (!empty($item['availability']['notes'])) {
-                            foreach (array_keys($item['availability']['notes'])
-                                as $noteKey
-                            ) {
-                                if ('Item::Held' === $noteKey) {
-                                    $onHold = true;
-                                    break;
-                                }
-                            }
-                        }
-                        $statuses[] = $onHold ? 'In Transit On Hold' : 'In Transit';
-                        break;
-                    case 'Held':
-                        $statuses[] = 'On Hold';
-                        break;
-                    case 'Waiting':
-                        $statuses[] = 'On Holdshelf';
-                        break;
-                    default:
-                        $statuses[] = !empty($reason['code'])
-                            ? $reason['code'] : $status;
-                    }
-                } elseif (strncmp($key, 'ItemType::', 10) == 0) {
-                    $status = substr($key, 10);
-                    switch ($status) {
-                    case 'NotForLoan':
-                        $statuses[] = 'On Reference Desk';
-                        break;
                     }
                 }
             }
@@ -1809,6 +1887,75 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $statuses[] = 'No information available';
         }
         return array_unique($statuses);
+    }
+
+    /**
+     * Get item status code for CheckedOut status
+     *
+     * @param string $code Status code
+     * @param array  $data Status data
+     * @param array  $item Item
+     *
+     * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getStatusCodeItemCheckedOut($code, $data, $item)
+    {
+        $overdue = false;
+        if (!empty($data['due_date'])) {
+            $duedate = $this->dateConverter->convert(
+                'Y-m-d',
+                'U',
+                $data['due_date']
+            );
+            $overdue = $duedate < time();
+        }
+        return $overdue ? 'Overdue' : 'Charged';
+    }
+
+    /**
+     * Get item status code for NotForLoan or Lost status
+     *
+     * @param string $code Status code
+     * @param array  $data Status data
+     * @param array  $item Item
+     *
+     * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getStatusCodeItemNotForLoanOrLost($code, $data, $item)
+    {
+        // NotForLoan and Lost are special: status has a library-specific
+        // status number. Allow mapping of different status numbers
+        // separately (e.g. Item::NotForLoan with status number 4
+        // is mapped with key Item::NotForLoan4):
+        $statusKey = $code . ($data['status'] ?? '-');
+        // Replace ':' in status key if used as status since ':' is
+        // the namespace separator in translatable strings:
+        return $this->itemStatusMappings[$statusKey]
+            ?? $data['code'] ?? str_replace(':', '_', $statusKey);
+    }
+
+    /**
+     * Get item status code for Transfer status
+     *
+     * @param string $code Status code
+     * @param array  $data Status data
+     * @param array  $item Item
+     *
+     * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getStatusCodeItemTransfer($code, $data, $item)
+    {
+        $onHold = array_key_exists(
+            'Item::Held',
+            $item['availability']['notes'] ?? []
+        );
+        return $onHold ? 'In Transit On Hold' : 'In Transit';
     }
 
     /**
@@ -1903,8 +2050,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getStatusRanking($status)
     {
-        return isset($this->statusRankings[$status])
-            ? $this->statusRankings[$status] : 32000;
+        return $this->statusRankings[$status] ?? 32000;
     }
 
     /**
@@ -2077,8 +2223,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function mapRenewalBlockReason($reason)
     {
-        return isset($this->renewalBlockMappings[$reason])
-            ? $this->renewalBlockMappings[$reason] : 'renew_item_no';
+        return $this->renewalBlockMappings[$reason] ?? 'renew_item_no';
     }
 
     /**
@@ -2360,11 +2505,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         case 'Patron::Debt':
         case 'Patron::DebtGuarantees':
             $count = isset($details['current_outstanding'])
-                ? $this->safeMoneyFormat->__invoke($details['current_outstanding'])
-                : '-';
+                ? $this->formatMoney($details['current_outstanding']) : '-';
             $limit = isset($details['max_outstanding'])
-                ? $this->safeMoneyFormat->__invoke($details['max_outstanding'])
-                : '-';
+                ? $this->formatMoney($details['max_outstanding']) : '-';
             $params = [
                 '%%blockCount%%' => $count,
                 '%%blockLimit%%' => $limit,
@@ -2372,5 +2515,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             break;
         }
         return $this->translate($this->patronStatusMappings[$reason] ?? '', $params);
+    }
+
+    /**
+     * Helper function for formatting currency
+     *
+     * @param $amount Number to format
+     *
+     * @return string
+     */
+    protected function formatMoney($amount)
+    {
+        if (null === $this->safeMoneyFormat) {
+            throw new \Exception('SafeMoneyFormat helper not available');
+        }
+        return ($this->safeMoneyFormat)($amount);
     }
 }
