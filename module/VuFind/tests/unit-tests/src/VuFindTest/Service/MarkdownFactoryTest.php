@@ -107,10 +107,14 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         ];
 
         $result = $this->getMarkdownEnvironmentConfig($defaultConfig);
-        $this->assertEquals($defaultEnvironment, $result);
+        foreach ($defaultEnvironment as $option => $value) {
+            $this->assertEquals($value, $result->get($option), 'Test default option: ' . $option);
+        }
 
         $result = $this->getMarkdownEnvironmentConfig($customConfig);
-        $this->assertEquals($customEnvironment, $result);
+        foreach ($customEnvironment as $option => $value) {
+            $this->assertEquals($value, $result->get($option), 'Test custom option: ' . $option);
+        }
     }
 
     /**
@@ -128,7 +132,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
                     'League\CommonMark\Extension\Attributes\AttributesExtension',
                     'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
                     'League\CommonMark\Extension\Table\TableExtension',
@@ -137,7 +141,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             [ // Test default extension set
                 'config' => [],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
                     'League\CommonMark\Extension\Autolink\AutolinkExtension',
                     'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
                     'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
@@ -152,7 +156,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
                 ],
             ],
             [ // Test not valid extensions set
@@ -181,12 +185,12 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config Configuration settings
      *
-     * @return array
+     * @return \League\Config\ReadOnlyConfiguration
      */
-    protected function getMarkdownEnvironmentConfig(array $config): array
+    protected function getMarkdownEnvironmentConfig(array $config): \League\Config\ReadOnlyConfiguration
     {
         $markdown = $this->getMarkdownConverter($config);
-        return $markdown->getEnvironment()->getConfig();
+        return $markdown->getEnvironment()->getConfiguration();
     }
 
     /**
