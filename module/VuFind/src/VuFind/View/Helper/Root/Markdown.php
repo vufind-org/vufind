@@ -30,6 +30,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use League\CommonMark\MarkdownConverterInterface;
+use League\CommonMark\Output\RenderedContentInterface;
 
 /**
  * Helper for transforming markdown to html
@@ -64,10 +65,10 @@ class Markdown extends AbstractHelper
      *
      * @param string $markdown Markdown formatted text
      *
-     * @return string
+     * @return RenderedContentInterface
      */
     public function __invoke(string $markdown)
     {
-        return (string)$this->converter->convertToHtml($markdown);
+        return $this->converter->convertToHtml($markdown);
     }
 }
