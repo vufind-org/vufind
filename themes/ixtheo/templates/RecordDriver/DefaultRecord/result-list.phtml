@@ -187,7 +187,7 @@
 
       <?php $canonLawRangesStrings = $this->driver->tryMethod('getCanonLawRangesStrings');
         if (!empty($canonLawRangesStrings) && count($canonLawRangesStrings) > 0) {
-          echo '<div>' . implode($canonLawRangesStrings, ', ') . '</div>';
+          echo '<div>' . implode(array_unique($canonLawRangesStrings), '; ') . '</div>';
         }
       ?>
 

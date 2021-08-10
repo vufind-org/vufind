@@ -37,6 +37,7 @@
 <?php $this->headScript()->appendFile('vendor/cw/smooth-scroll.js');?>
 <?php $this->headScript()->appendFile('vendor/cw/swiper.js');?>
 <?php $this->headScript()->appendFile('vendor/cw/theme.js');?>
+
 <section class="cw-py-5">
     <div class="container">
         <div class="row">
@@ -62,7 +63,9 @@
                     width: 100%;
                     background-color: #707070;
                 }
-
+                .slick-arrow {
+                    display: none !important;
+                }  
                 </style>
 
                 <div class="slick-slider-single-item" align="center">
@@ -214,58 +217,63 @@ EOD;
                 <h2 class="cw-h2">Ressourcen</h2>
             </div>
         </div>
-        <div class="swiper-container cw-guides-slider mx-n2 pt-3 swiper-container-horizontal">
+        <div class="swiper-container cw-guides-slider mx-n2 cw-pt-3 swiper-container-horizontal">
             <!-- Additional required wrapper-->
-            <div class="swiper-wrapper pb-5" style="transform: translate3d(-912px, 0px, 0px); transition-duration: 0ms;">
-                <!-- Slides-->
-                <div class="swiper-slide cw-h-auto cw-px-2">
-                    <a href="<?=$this->url('content-page', ['page' => 'ixtheo_content']) ?>">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><img src="<?=$this->imageLink('cw/new-york.jpg')?>" alt="Card image" class="bg-image">
-                            <div class="cw-card-body overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow cw-h5">IxTheo Content</h6>
+                <div class="swiper-wrapper">
+                    <!-- Slides-->
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
+                            <a href="<?=$this->url('content-page', ['page' => 'ixtheo_content']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/new-york.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">New York</h6>
+                                <p class="card-text text-sm">The big apple</p>
                             </div>
                         </div>
-                    </a>
-                </div>
-                <div class="swiper-slide cw-h-auto cw-px-2">
-                    <a href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="bg-image">
-                            <div class="cw-card-body overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow cw-h5">Index Biblicus</h6>
+                    </div>                
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
+                            <a href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Index Biblicus</h6>
+                                <p class="card-text text-sm">The big apple</p>
                             </div>
                         </div>
-                    </a>
-                </div>
-                <div class="swiper-slide cw-h-auto cw-px-2">
-                    <a href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><img src="<?=$this->imageLink('cw/barcelona.jpg')?>" alt="Card image" class="bg-image">
-                            <div class="cw-card-body overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow cw-h5">Kirchenrecht</h6>
+                    </div>                
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
+                            <a href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Kirchenrecht</h6>
+                                <p class="card-text text-sm">The big apple</p>
                             </div>
                         </div>
-                    </a>
-                </div>
-                <div class="swiper-slide cw-h-auto cw-px-2">
-                    <a href="<?=$this->url('content-page', ['page' => 'collections_internal']) ?>">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="bg-image">
-                            <div class="cw-card-body overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow cw-h5">RelBib</h6>
+                    </div>
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
+                            <a href="<?=$this->url('content-page', ['page' => 'collections_internal']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">RelBib</h6>
+                                <p class="card-text text-sm">The big apple</p>
                             </div>
                         </div>
-                    </a>
-                </div>
-                <div class="swiper-slide cw-h-auto cw-px-2">
-                    <a href="<?=$this->url('content-page', ['page' => 'theology_digital']) ?>">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="bg-image">
-                            <div class="cw-card-body overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow cw-h5">Theologie Digital</h6>
+                    </div>
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
+                            <a href="<?=$this->url('content-page', ['page' => 'theology_digital']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Theologie Digital</h6>
+                                <p class="card-text text-sm">The big apple</p>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
-               </div>
+                <div class="swiper-pagination cw-mt-3"></div>
             </div>
-            <div class="swiper-pagination"></div>
         </div>
     </div>
 

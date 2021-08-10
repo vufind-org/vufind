@@ -148,8 +148,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         85 => "",
     );
 
-    private static $CodesToCodexTitles = [  1 => 'CIC1917',
-                                            2 => 'CIC1983',
+    private static $CodesToCodexTitles = [  1 => 'CIC17',
+                                            2 => 'CIC83',
                                             3 => 'CCEO',
     ];
 
@@ -238,17 +238,25 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 
         if ($canonLawRangeStart['canon'] == 0 && $canonLawRangeEnd['canon'] == 9999)
             return $displayString;
-        $displayString .= ' ' . $canonLawRangeStart['canon'];
+        $displayString .= ' can. ' . $canonLawRangeStart['canon'];
 
-        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0)
-            $displayString .= $canonLawRangeStart['pars1'] . ',' . $canonLawRangeStart['pars2'];
+        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0) {
+            $displayString .= ', §' . $canonLawRangeStart['pars1'];
+            if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2'])
+                $displayString .=  ' n. ' . $canonLawRangeStart['pars2'];
+            else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2'])
+                $displayString .= '-' . $canonLawRangeStart['pars2'];
+        }
 
-        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'] || $canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
-            $displayString .= '-';
-            if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'])
-                $displayString .= $canonLawRangeEnd['canon'];
-            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999)
-                $displayString .= $canonLawRangeEnd['pars1'] . ',' . $canonLawRangeEnd['pars2'];
+        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon']) {
+            $displayString .= '-' . $canonLawRangeEnd['canon'];
+            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
+                $displayString .= ', §' . $canonLawRangeEnd['pars1'];
+                if ($canonLawRangeEnd['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2'])
+                    $displayString .= ' n. ' . $canonLawRangeEnd['pars2'];
+                else if ($canonLawRangeEnd['pars1'] != $canonLawRangeEnd['pars2'])
+                    $displayString .= '-' . $canonLawRangeEnd['pars2'];
+            }
         }
 
         return $displayString;
