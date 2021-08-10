@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.YearMonth;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +57,7 @@ public class TueFindBiblio extends TueFind {
     protected final static String ISIL_PREFIX_BSZ = "(" + ISIL_BSZ + ")";
     protected final static String ISIL_PREFIX_GND = "(" + ISIL_GND + ")";
     protected final static String ISIL_PREFIX_K10PLUS = "(" + ISIL_K10PLUS + ")";
+    protected final static String ISIL_PREFIX_K10PLUS_ESCAPED = "\\(" + ISIL_K10PLUS + "\\)";
     protected final static String ES_FULLTEXT_PROPERTIES_FILE = "es_fulltext.properties";
 
     protected final static Pattern PAGE_RANGE_PATTERN1 = Pattern.compile("\\s*(\\d+)\\s*-\\s*(\\d+)$", Pattern.UNICODE_CHARACTER_CLASS);
@@ -3133,6 +3135,50 @@ public class TueFindBiblio extends TueFind {
 
         return null;
     }
+
+
+    public Set<String> getAuthorsAndIds(final Record record, String tagList) {
+        final String separator = ":";
+        Set<String> result = new HashSet<>();
+
+        Map<String, String> authorToId = new HashMap<>();
+
+        if (tagList.contains(":") == false && tagList.trim().length() > 2) {
+            tagList = tagList + ":";
+        }
+
+        for (String tag : tagList.split(":")) {
+            if (tag == null || tag.isEmpty()) {
+                continue;
+            }
+
+            for (final VariableField variableField : record.getVariableFields(tag)) {
+                final DataField dataField = (DataField) variableField;
+                final Subfield subfield_a = dataField.getSubfield('a');
+                if (subfield_a == null || subfield_a.getData().isEmpty()) {
+                    continue;
+                }
+                final List<Subfield> subfields_0 = dataField.getSubfields('0');
+                String authorName = subfield_a.getData();
+                for (Subfield subfield_0 : subfields_0) {
+                    String author_id = subfield_0.getData();
+                    if (author_id.contains(ISIL_PREFIX_K10PLUS)) {
+                        authorToId.put(authorName, author_id.replaceAll(ISIL_PREFIX_K10PLUS_ESCAPED, "").trim());
+                    }
+                    else if (authorToId.containsKey(authorName) == false){
+                        authorToId.put(authorName, "");
+                    }
+                }
+            }
+        }
+
+        for (Entry<String,String> pair : authorToId.entrySet()){
+            result.add(pair.getValue() + separator + pair.getKey());
+        }
+
+        return result;
+    }
+
 
     public static List<String> getDateRanges(final Record record, final String rangeFieldTag) {
         final DataField rangeField = (DataField) record.getVariableField(rangeFieldTag);
