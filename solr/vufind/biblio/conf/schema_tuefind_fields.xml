@@ -8,6 +8,7 @@
     <field name="author2_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="author_corporate_gnd" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="author_corporate_id" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="author_and_id_facet" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="container_ids_and_titles" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="end_page" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="following_ppn_and_title" type="string" indexed="true" stored="true" multiValued="false"/>
