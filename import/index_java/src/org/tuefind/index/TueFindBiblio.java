@@ -194,6 +194,7 @@ public class TueFindBiblio extends TueFind {
             this.put("2", "Table of Contents");
             this.put("4", "Abstract");
             this.put("8", "Summary");
+            this.put("16", "List of References");
             this.put("0", "Unknown");
         }
     };
