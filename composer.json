@@ -62,7 +62,7 @@
         "pear/archive_tar": "^1.4",
         "pear/file_marc": "1.4.1",
         "pear/http_request2": "2.4.2",
-        "pear/validate_ispn": "dev-master",
+        "pear/validate_ispn": "0.8.0",
         "phing/phing": "2.16.4",
         "ppito/laminas-whoops": "2.2.0",
         "scssphp/scssphp": "1.4.1",
