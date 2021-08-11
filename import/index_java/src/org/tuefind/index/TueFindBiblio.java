@@ -844,15 +844,15 @@ public class TueFindBiblio extends TueFind {
     /*
      * translation map cache
      */
-    static protected Map<String, String> translation_map_en = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_fr = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_it = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_es = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_hant = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_hans = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_pt = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_ru = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_el = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_en = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_fr = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_it = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_es = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_hant = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_hans = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_pt = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_ru = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_el = new HashMap<String, String>();
 
     /**
      * get translation map for normdata translations
@@ -864,7 +864,7 @@ public class TueFindBiblio extends TueFind {
      * @return Map<String, String>
      * @throws IllegalArgumentException
      */
-    static public Map<String, String> getTranslationMap(final String langAbbrev) throws IllegalArgumentException {
+    public static Map<String, String> getTranslationMap(final String langAbbrev) throws IllegalArgumentException {
         Map<String, String> translation_map;
 
         switch (langAbbrev) {
@@ -936,7 +936,7 @@ public class TueFindBiblio extends TueFind {
      *
      * @return              translated string if available in a foreign language, null else
      */
-    static public String getTranslationOrNull(final String string, final String langAbbrev) {
+    public static String getTranslationOrNull(final String string, final String langAbbrev) {
        if (langAbbrev.equals("de"))
            return null;
        final Map<String, String> translationMap = getTranslationMap(langAbbrev);
@@ -952,7 +952,7 @@ public class TueFindBiblio extends TueFind {
      *
      * @return              translated string if available, else input string
      */
-    static public String getTranslation(final String string, final String langAbbrev) {
+    public static String getTranslation(final String string, final String langAbbrev) {
         if (langAbbrev.equals("de")) {
             return string;
         }
@@ -2971,7 +2971,7 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    static protected Properties getPropertiesFromFile(final String configProps) {
+    protected static Properties getPropertiesFromFile(final String configProps) {
         String homeDir = Boot.getDefaultHomeDir();
         File configFile = new File(configProps);
         if (!configFile.isAbsolute())
@@ -2982,11 +2982,11 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    static protected Properties esFulltextProperties = null;
-    static protected String esFulltextUrl = null;
+    protected static Properties esFulltextProperties = null;
+    protected static String esFulltextUrl = null;
 
 
-    static public Properties getESFulltextProperties() {
+    public static Properties getESFulltextProperties() {
         if (esFulltextProperties != null)
             return esFulltextProperties;
         esFulltextProperties = getPropertiesFromFile(ES_FULLTEXT_PROPERTIES_FILE);
@@ -2994,26 +2994,26 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    static public String getMyHostnameShort() throws java.net.UnknownHostException {
+    public static String getMyHostnameShort() throws java.net.UnknownHostException {
        return fullHostName.replaceAll("\\..*", "");
     }
 
 
-    static public String getElasticsearchHost() throws java.net.UnknownHostException {
+    public static String getElasticsearchHost() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         return PropertyUtils.getProperty(esFullTextProperties, myhostname + ".host", "localhost");
     }
 
 
-    static public String getElasticsearchPort() throws java.net.UnknownHostException {
+    public static String getElasticsearchPort() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         return PropertyUtils.getProperty(esFullTextProperties, myhostname + ".port", "9200");
     }
 
 
-    static public String getElasticsearchUrl() throws java.net.UnknownHostException {
+    public static String getElasticsearchUrl() throws java.net.UnknownHostException {
         if (esFulltextUrl == null) {
             final String esHost = getElasticsearchHost();
             final String esPort = getElasticsearchPort();
@@ -3023,7 +3023,7 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    static public boolean isFullTextDisabled() throws java.net.UnknownHostException {
+    public static boolean isFullTextDisabled() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         final String isDisabled = PropertyUtils.getProperty(esFullTextProperties, myhostname + ".disabled", "false");
