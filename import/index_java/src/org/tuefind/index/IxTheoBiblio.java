@@ -98,7 +98,7 @@ public class IxTheoBiblio extends TueFindBiblio {
         return ixtheoNotationsToDescriptionsMap;
     }
 
-    private HashMap<String, TreeSet<String>> ixtheoNotationsToDescriptionsMap = processLanguageIniFiles();
+    static protected HashMap<String, TreeSet<String>> ixtheoNotationsToDescriptionsMap = processLanguageIniFiles();
 
     /**
      * Split the colon-separated ixTheo notation codes into individual codes and
