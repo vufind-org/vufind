@@ -2971,7 +2971,7 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    protected Properties getPropertiesFromFile(final String configProps) {
+    static protected Properties getPropertiesFromFile(final String configProps) {
         String homeDir = Boot.getDefaultHomeDir();
         File configFile = new File(configProps);
         if (!configFile.isAbsolute())
@@ -2982,10 +2982,11 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    protected static Properties esFulltextProperties = null;
+    static protected Properties esFulltextProperties = null;
+    static protected String esFulltextUrl = null;
 
 
-    public Properties getESFulltextProperties() {
+    static public Properties getESFulltextProperties() {
         if (esFulltextProperties != null)
             return esFulltextProperties;
         esFulltextProperties = getPropertiesFromFile(ES_FULLTEXT_PROPERTIES_FILE);
@@ -2993,26 +2994,36 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    public String getMyHostnameShort() throws java.net.UnknownHostException {
+    static public String getMyHostnameShort() throws java.net.UnknownHostException {
        return fullHostName.replaceAll("\\..*", "");
     }
 
 
-    public String getElasticsearchHost() throws java.net.UnknownHostException {
+    static public String getElasticsearchHost() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         return PropertyUtils.getProperty(esFullTextProperties, myhostname + ".host", "localhost");
     }
 
 
-    public String getElasticsearchPort() throws java.net.UnknownHostException {
+    static public String getElasticsearchPort() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         return PropertyUtils.getProperty(esFullTextProperties, myhostname + ".port", "9200");
     }
 
 
-    public boolean isFullTextDisabled() throws java.net.UnknownHostException {
+    static public String getElasticsearchUrl() throws java.net.UnknownHostException {
+        if (esFulltextUrl == null) {
+            final String esHost = getElasticsearchHost();
+            final String esPort = getElasticsearchPort();
+            esFulltextUrl = "http://" + esHost + ":" + esPort + "/full_text_cache/_search";
+        }
+        return esFulltextUrl;
+    }
+
+
+    static public boolean isFullTextDisabled() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         final String isDisabled = PropertyUtils.getProperty(esFullTextProperties, myhostname + ".disabled", "false");
@@ -3020,22 +3031,26 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    protected static Set<String> fulltextIDList = new HashSet<String>();
-
-
-    static public boolean IsInFulltextPPNList(final String ppn) {
-        final String fulltextIDListFile = "/usr/local/ub_tools/bsz_daten/fulltext_ids.txt";
-        if (fulltextIDList.isEmpty() && (new File(fulltextIDListFile).length() != 0)) {
-            try {
-                BufferedReader in = new BufferedReader(new FileReader(fulltextIDListFile));
-                String ppnLine;
-                while ((ppnLine = in.readLine()) != null)
-                    fulltextIDList.add(ppnLine);
-             } catch (IOException e) {
-                logger.severe("Could not read file: " + e.toString());
-             }
+    protected static Set<String> fulltextPPNList;
+    static {
+        fulltextPPNList = new HashSet<>();
+        try {
+            if (!isFullTextDisabled()) {
+                final String fulltextPPNListFile = "/usr/local/ub_tools/bsz_daten/fulltext_ids.txt";
+                if (new File(fulltextPPNListFile).length() != 0) {
+                    try {
+                        BufferedReader in = new BufferedReader(new FileReader(fulltextPPNListFile));
+                        String ppnLine;
+                        while ((ppnLine = in.readLine()) != null)
+                            fulltextPPNList.add(ppnLine);
+                     } catch (IOException e) {
+                        logger.severe("Could not read file: " + e.toString());
+                     }
+                }
+            }
+        } catch (java.net.UnknownHostException e) {
+            throw new RuntimeException ("Could not determine Hostname", e);
         }
-        return fulltextIDList.contains(ppn);
     }
 
     protected static CloseableHttpClient elasticsearchClient;
@@ -3055,14 +3070,10 @@ public class TueFindBiblio extends TueFind {
     }
 
     protected String getElasticsearchSearchResponse(final Record record) throws IOException {
-        if (isFullTextDisabled())
-            return "";
-        if (!IsInFulltextPPNList(record.getControlNumber()))
+        if (!fulltextPPNList.contains(record.getControlNumber()))
             return "";
 
-        final String esHost = getElasticsearchHost();
-        final String esPort = getElasticsearchPort();
-        HttpPost httpPost = new HttpPost("http://" + esHost + ":" + esPort + "/full_text_cache/_search");
+        HttpPost httpPost = new HttpPost(getElasticsearchUrl());
         final String fulltextById = "{ \"query\" : { \"match\" : { \"id\" : \"" + record.getControlNumber() + "\" } } }";
         final StringEntity stringEntity = new StringEntity(fulltextById);
         httpPost.setEntity(stringEntity);
