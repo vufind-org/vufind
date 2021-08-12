@@ -336,6 +336,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
+    const RECORD_ID_BASE_SEPARATOR = '-';
+
     /**
      * Translator object
      *
@@ -736,7 +738,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     }
 
     /**
-     * Convert an ID string into an array of library and ID within the library.
+     * Convert an ID string into an array of bibliographic base and ID within
+     * the base.
      *
      * @param string $id ID to parse.
      *
@@ -744,18 +747,22 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     protected function parseId($id)
     {
-        if (count($this->bib) == 1) {
-            $retval = [$this->bib[0], $id];
+        $result = null;
+        if (strpos($id, self::RECORD_ID_BASE_SEPARATOR) !== false) {
+            $result = explode(self::RECORD_ID_BASE_SEPARATOR, $id);
+            $base = $result[0];
+            if (!in_array($base, $this->bib)) {
+                throw new \Exception("Unknown library base '$base'");
+            }
+        } elseif (count($this->bib) == 1) {
+            $result = [$this->bib[0], $id];
         } else {
-            $retval = explode('-', $id);
+            throw new \Exception(
+                "Invalid record identifier '$id' "
+                . "without library base"
+            );
         }
-        if (count($retval) != 2) {
-            throw new \Exception("The resulting array has incorrect size");
-        }
-        if (!in_array($retval[0], $this->bib)) {
-            throw new \Exception("The resulting array contains unknown library ID");
-        }
-        return $retval;
+        return $result;
     }
 
     /**
