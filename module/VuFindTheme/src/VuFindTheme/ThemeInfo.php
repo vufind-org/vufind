@@ -197,7 +197,8 @@ class ThemeInfo
      * search within themes
      * @param string|bool  $returnType   If boolean true, return full file path;
      * if boolean false, return containing theme name; if self::RETURN_ALL_DETAILS,
-     * return an array containing both values (keyed with 'path' and 'theme').
+     * return an array containing both values (keyed with 'path', 'theme' and
+     * 'relativePath').
      *
      * @return string|array|null
      */
@@ -221,7 +222,8 @@ class ThemeInfo
                     if (file_exists($path)) {
                         // Depending on return type, send back the requested data:
                         if (self::RETURN_ALL_DETAILS === $returnType) {
-                            return compact('path', 'theme');
+                            $relativePath = $currentPath;
+                            return compact('path', 'theme', 'relativePath');
                         }
                         return $returnType ? $path : $theme;
                     }

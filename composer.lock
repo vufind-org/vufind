@@ -6309,17 +6309,20 @@
         },
         {
             "name": "pear/validate",
-            "version": "v0.8.5",
+            "version": "v0.8.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Validate.git",
-                "reference": "d055541ee2d7165329d5e5b8e91907d7fae1cff2"
+                "reference": "d317d213b1a6bf06e5616bee24d4fcc26449c1e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Validate/zipball/d055541ee2d7165329d5e5b8e91907d7fae1cff2",
-                "reference": "d055541ee2d7165329d5e5b8e91907d7fae1cff2",
+                "url": "https://api.github.com/repos/pear/Validate/zipball/d317d213b1a6bf06e5616bee24d4fcc26449c1e9",
+                "reference": "d317d213b1a6bf06e5616bee24d4fcc26449c1e9",
                 "shasum": ""
+            },
+            "require": {
+                "php": "7.3.0"
             },
             "suggest": {
                 "pear/date": "Install optionally via your project's composer.json"
@@ -6335,7 +6338,7 @@
                 "./"
             ],
             "license": [
-                "New BSD"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
@@ -6380,7 +6383,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Validate",
                 "source": "https://github.com/pear/Validate"
             },
-            "time": "2015-02-20T09:16:13+00:00"
+            "time": "2021-07-03T20:34:24+00:00"
         },
         {
             "name": "pear/validate_ispn",
@@ -6388,12 +6391,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Validate_ISPN.git",
-                "reference": "9b06777cc7b6fea4d6d5c9469f21c4b029d58ab5"
+                "reference": "e0a5ff6edfad9efc2475c55f3dbaf2d17cdc11d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Validate_ISPN/zipball/9b06777cc7b6fea4d6d5c9469f21c4b029d58ab5",
-                "reference": "9b06777cc7b6fea4d6d5c9469f21c4b029d58ab5",
+                "url": "https://api.github.com/repos/pear/Validate_ISPN/zipball/e0a5ff6edfad9efc2475c55f3dbaf2d17cdc11d8",
+                "reference": "e0a5ff6edfad9efc2475c55f3dbaf2d17cdc11d8",
                 "shasum": ""
             },
             "require": {
@@ -6433,7 +6436,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Validate_ISPN",
                 "source": "https://github.com/pear/Validate_ISPN"
             },
-            "time": "2020-04-19T19:25:23+00:00"
+            "time": "2021-08-09T13:01:14+00:00"
         },
         {
             "name": "phing/phing",
@@ -12432,5 +12435,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
