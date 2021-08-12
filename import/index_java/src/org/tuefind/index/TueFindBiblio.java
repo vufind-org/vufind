@@ -3169,12 +3169,25 @@ public class TueFindBiblio extends TueFind {
 
             for (final VariableField variableField : record.getVariableFields(tag)) {
                 final DataField dataField = (DataField) variableField;
+
                 final Subfield subfield_a = dataField.getSubfield('a');
                 if (subfield_a == null || subfield_a.getData().isEmpty()) {
                     continue;
                 }
+
+                final Subfield subfield_b = dataField.getSubfield('b');
+                final Subfield subfield_c = dataField.getSubfield('c');
+                final Subfield subfield_d = dataField.getSubfield('d');
                 final List<Subfield> subfields_0 = dataField.getSubfields('0');
+
                 String authorName = subfield_a.getData();
+                if (subfield_b != null && subfield_a.getData().isEmpty() == false)
+                    authorName += ", " + subfield_b.getData();
+                if (subfield_c != null && subfield_c.getData().isEmpty() == false)
+                    authorName += ", " + subfield_c.getData();
+                if (subfield_d != null && subfield_d.getData().isEmpty() == false)
+                    authorName += " " + subfield_d.getData();
+
                 for (Subfield subfield_0 : subfields_0) {
                     String author_id = subfield_0.getData();
                     if (author_id.contains(ISIL_PREFIX_K10PLUS)) {
