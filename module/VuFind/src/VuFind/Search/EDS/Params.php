@@ -61,7 +61,7 @@ class Params extends \VuFind\Search\Base\Params
      * @var array
      */
     protected $defaultFacetLabelSections
-        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+        = ['FacetsTop', 'Facets'];
 
     /**
      * Config sections to search for checkbox facet labels if no override

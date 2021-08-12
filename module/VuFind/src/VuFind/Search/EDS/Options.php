@@ -403,8 +403,8 @@ class Options extends \VuFind\Search\Base\Options
         // Load autocomplete preferences:
         $this->configureAutocomplete($searchSettings);
 
-        if (isset($searchSettings->Advanced_Facets)) {
-            $this->enabledLimiters = $searchSettings->Advanced_Facets->toArray();
+        if (isset($searchSettings->Advanced_Limiters)) {
+            $this->enabledLimiters = $searchSettings->Advanced_Limiters->toArray();
         }
     }
 
@@ -560,12 +560,18 @@ class Options extends \VuFind\Search\Base\Options
         if (empty($enabled)) {
             return $this->limiterOptions;
         }
-        return array_filter(
+        $enabledLimiters = array_filter(
             $this->limiterOptions,
             function ($limiter) use ($enabled) {
                 return in_array($limiter['Id'], $enabled);
             }
         );
+        foreach ($this->enabledLimiters as $limiter => $label) {
+            if (array_key_exists($limiter, $enabledLimiters)) {
+                $enabledLimiters[$limiter]['Label'] = $label;
+            }
+        }
+        return $enabledLimiters;
     }
 
     /**
