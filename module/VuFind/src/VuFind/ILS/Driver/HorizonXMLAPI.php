@@ -324,14 +324,14 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                     $defaultPickUpLocation = $row['LOCATION'];
                     return $defaultPickUpLocation;
                 }
-                // If we didn't return above, there were no values.
-                return null;
             } catch (\Exception $e) {
                 $this->throwAsIlsException($e);
             }
         } elseif (isset($this->wsDefaultPickUpLocation)) {
             return $this->wsDefaultPickUpLocation;
         }
+        // If we didn't return above, there were no values.
+        return null;
     }
 
     /**

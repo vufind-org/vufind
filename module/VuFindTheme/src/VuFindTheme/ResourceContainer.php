@@ -396,7 +396,7 @@ class ResourceContainer
      *
      * @param string $file Filename to remove
      *
-     * @return bool
+     * @return void
      */
     protected function removeCSS($file)
     {

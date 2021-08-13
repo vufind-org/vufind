@@ -215,12 +215,11 @@ class Map extends AbstractBase
      */
     public function getMapLabels()
     {
-        $labels = [];
         $mapLabelData = explode(':', $this->mapLabels);
         if ($mapLabelData[0] == 'driver') {
-            $labels = $this->getRecordDriver()->tryMethod('getCoordinateLabels');
-            return $labels;
+            return $this->getRecordDriver()->tryMethod('getCoordinateLabels') ?? [];
         }
+        $labels = [];
         if ($mapLabelData[0] == 'file') {
             $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
             /* read lookup file into array */
@@ -247,8 +246,8 @@ class Map extends AbstractBase
                     array_push($labels, $labelname);
                 }
             }
-            return $labels;
         }
+        return $labels;
     }
 
     /**
