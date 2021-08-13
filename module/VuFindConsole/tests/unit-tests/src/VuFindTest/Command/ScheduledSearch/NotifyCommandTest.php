@@ -578,8 +578,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $optionsCallback = null,
         $paramsCallback = null,
         $resultsCallback = null
-    )
-    {
+    ) {
         $searchTable = $this->container->createMock(\VuFind\Db\Table\Search::class);
         $searchTable->expects($this->once())->method('getScheduledSearches')
             ->will(
