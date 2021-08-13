@@ -202,9 +202,9 @@ public class TueFindBiblio extends TueFind {
     };
 
 
-    protected ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap<>(100);
-    protected ConcurrentLimitedHashMap<String, Collection<Collection<Topic>>> collectedTopicsCache = new ConcurrentLimitedHashMap<>(100);
-    protected ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap<>(100);
+    protected static ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap<>(100);
+    protected static ConcurrentLimitedHashMap<String, Collection<Collection<Topic>>> collectedTopicsCache = new ConcurrentLimitedHashMap<>(100);
+    protected static ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap<>(100);
     protected static final String fullHostName;
     static {
         String tmp = ""; // Needed for syntactical reasons
@@ -3188,13 +3188,17 @@ public class TueFindBiblio extends TueFind {
                 if (subfield_d != null && subfield_d.getData().isEmpty() == false)
                     authorName += " " + subfield_d.getData();
 
-                for (Subfield subfield_0 : subfields_0) {
-                    String author_id = subfield_0.getData();
-                    if (author_id.contains(ISIL_PREFIX_K10PLUS)) {
-                        authorToId.put(authorName, author_id.replaceAll(ISIL_PREFIX_K10PLUS_ESCAPED, "").trim());
-                    }
-                    else if (authorToId.containsKey(authorName) == false){
+                if (subfields_0 == null || subfields_0.size() < 1) {
+                    if (authorToId.containsKey(authorName) == false)
                         authorToId.put(authorName, "");
+                } else {
+                    for (Subfield subfield_0 : subfields_0) {
+                        String author_id = subfield_0.getData();
+                        if (author_id.contains(ISIL_PREFIX_K10PLUS)) {
+                            authorToId.put(authorName, author_id.replaceAll(ISIL_PREFIX_K10PLUS_ESCAPED, "").trim());
+                        } else if (authorToId.containsKey(authorName) == false) {
+                            authorToId.put(authorName, "");
+                        }
                     }
                 }
             }
