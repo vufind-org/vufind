@@ -155,5 +155,6 @@ class InjectHighlightingListener
                 }
             }
         }
+        return $event;
     }
 }

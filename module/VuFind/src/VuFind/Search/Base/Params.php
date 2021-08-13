@@ -522,7 +522,7 @@ class Params
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return string
+     * @return void
      */
     protected function initSort($request)
     {
@@ -551,7 +551,7 @@ class Params
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return string
+     * @return void
      */
     protected function initView($request)
     {

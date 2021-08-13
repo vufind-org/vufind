@@ -1207,11 +1207,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 'phone' => $phone,
                 'group' => $group
             ];
-
-            return $profile;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $profile;
     }
 
     /**
@@ -1269,10 +1268,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     ];
                 }
             }
-            return $transList;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $transList;
     }
 
     /**
@@ -1324,12 +1323,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     'title' => $hold->title
                 ];
             }
-            return $holdList;
         } catch (SoapFault $e) {
             return null;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**

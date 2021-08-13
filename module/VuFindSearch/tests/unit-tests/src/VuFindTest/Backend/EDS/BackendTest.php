@@ -258,7 +258,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             return new Backend($connector, $factory, $cache, $container, new \Laminas\Config\Config($settings));
         } else {
             $params = [$connector, $factory, $cache, $container, new \Laminas\Config\Config($settings)];
-            return $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+            return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
                 ->onlyMethods($mock)
                 ->setConstructorArgs($params)
                 ->getMock();
@@ -278,12 +278,5 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             return $driver;
         };
         return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
-    }
-}
-
-class BackendMock extends \VuFindSearch\Backend\EDS\Backend
-{
-    public function getAuthenticationToken($isInvalid = false)
-    {
     }
 }

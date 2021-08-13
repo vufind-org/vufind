@@ -88,7 +88,7 @@ class Mobile
      *
      * @param bool $enabled Are mobile themes enabled?
      *
-     * @return bool
+     * @return void
      */
     public function enable($enabled = true)
     {
