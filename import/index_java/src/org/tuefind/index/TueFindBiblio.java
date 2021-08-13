@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.YearMonth;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +57,7 @@ public class TueFindBiblio extends TueFind {
     protected final static String ISIL_PREFIX_BSZ = "(" + ISIL_BSZ + ")";
     protected final static String ISIL_PREFIX_GND = "(" + ISIL_GND + ")";
     protected final static String ISIL_PREFIX_K10PLUS = "(" + ISIL_K10PLUS + ")";
+    protected final static String ISIL_PREFIX_K10PLUS_ESCAPED = "\\(" + ISIL_K10PLUS + "\\)";
     protected final static String ES_FULLTEXT_PROPERTIES_FILE = "es_fulltext.properties";
 
     protected final static Pattern PAGE_RANGE_PATTERN1 = Pattern.compile("\\s*(\\d+)\\s*-\\s*(\\d+)$", Pattern.UNICODE_CHARACTER_CLASS);
@@ -194,6 +196,7 @@ public class TueFindBiblio extends TueFind {
             this.put("2", "Table of Contents");
             this.put("4", "Abstract");
             this.put("8", "Summary");
+            this.put("16", "List of References");
             this.put("0", "Unknown");
         }
     };
@@ -841,15 +844,15 @@ public class TueFindBiblio extends TueFind {
     /*
      * translation map cache
      */
-    static protected Map<String, String> translation_map_en = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_fr = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_it = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_es = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_hant = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_hans = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_pt = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_ru = new HashMap<String, String>();
-    static protected Map<String, String> translation_map_el = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_en = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_fr = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_it = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_es = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_hant = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_hans = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_pt = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_ru = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_el = new HashMap<String, String>();
 
     /**
      * get translation map for normdata translations
@@ -861,7 +864,7 @@ public class TueFindBiblio extends TueFind {
      * @return Map<String, String>
      * @throws IllegalArgumentException
      */
-    static public Map<String, String> getTranslationMap(final String langAbbrev) throws IllegalArgumentException {
+    public static Map<String, String> getTranslationMap(final String langAbbrev) throws IllegalArgumentException {
         Map<String, String> translation_map;
 
         switch (langAbbrev) {
@@ -933,7 +936,7 @@ public class TueFindBiblio extends TueFind {
      *
      * @return              translated string if available in a foreign language, null else
      */
-    static public String getTranslationOrNull(final String string, final String langAbbrev) {
+    public static String getTranslationOrNull(final String string, final String langAbbrev) {
        if (langAbbrev.equals("de"))
            return null;
        final Map<String, String> translationMap = getTranslationMap(langAbbrev);
@@ -949,7 +952,7 @@ public class TueFindBiblio extends TueFind {
      *
      * @return              translated string if available, else input string
      */
-    static public String getTranslation(final String string, final String langAbbrev) {
+    public static String getTranslation(final String string, final String langAbbrev) {
         if (langAbbrev.equals("de")) {
             return string;
         }
@@ -2968,7 +2971,7 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    protected Properties getPropertiesFromFile(final String configProps) {
+    protected static Properties getPropertiesFromFile(final String configProps) {
         String homeDir = Boot.getDefaultHomeDir();
         File configFile = new File(configProps);
         if (!configFile.isAbsolute())
@@ -2980,9 +2983,10 @@ public class TueFindBiblio extends TueFind {
 
 
     protected static Properties esFulltextProperties = null;
+    protected static String esFulltextUrl = null;
 
 
-    public Properties getESFulltextProperties() {
+    public static Properties getESFulltextProperties() {
         if (esFulltextProperties != null)
             return esFulltextProperties;
         esFulltextProperties = getPropertiesFromFile(ES_FULLTEXT_PROPERTIES_FILE);
@@ -2990,26 +2994,36 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    public String getMyHostnameShort() throws java.net.UnknownHostException {
+    public static String getMyHostnameShort() throws java.net.UnknownHostException {
        return fullHostName.replaceAll("\\..*", "");
     }
 
 
-    public String getElasticsearchHost() throws java.net.UnknownHostException {
+    public static String getElasticsearchHost() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         return PropertyUtils.getProperty(esFullTextProperties, myhostname + ".host", "localhost");
     }
 
 
-    public String getElasticsearchPort() throws java.net.UnknownHostException {
+    public static String getElasticsearchPort() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         return PropertyUtils.getProperty(esFullTextProperties, myhostname + ".port", "9200");
     }
 
 
-    public boolean isFullTextDisabled() throws java.net.UnknownHostException {
+    public static String getElasticsearchUrl() throws java.net.UnknownHostException {
+        if (esFulltextUrl == null) {
+            final String esHost = getElasticsearchHost();
+            final String esPort = getElasticsearchPort();
+            esFulltextUrl = "http://" + esHost + ":" + esPort + "/full_text_cache/_search";
+        }
+        return esFulltextUrl;
+    }
+
+
+    public static boolean isFullTextDisabled() throws java.net.UnknownHostException {
         final Properties esFullTextProperties = getESFulltextProperties();
         final String myhostname = getMyHostnameShort();
         final String isDisabled = PropertyUtils.getProperty(esFullTextProperties, myhostname + ".disabled", "false");
@@ -3017,22 +3031,26 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    protected static Set<String> fulltextIDList = new HashSet<String>();
-
-
-    static public boolean IsInFulltextPPNList(final String ppn) {
-        final String fulltextIDListFile = "/usr/local/ub_tools/bsz_daten/fulltext_ids.txt";
-        if (fulltextIDList.isEmpty() && (new File(fulltextIDListFile).length() != 0)) {
-            try {
-                BufferedReader in = new BufferedReader(new FileReader(fulltextIDListFile));
-                String ppnLine;
-                while ((ppnLine = in.readLine()) != null)
-                    fulltextIDList.add(ppnLine);
-             } catch (IOException e) {
-                logger.severe("Could not read file: " + e.toString());
-             }
+    protected static Set<String> fulltextPPNList;
+    static {
+        fulltextPPNList = new HashSet<>();
+        try {
+            if (!isFullTextDisabled()) {
+                final String fulltextPPNListFile = "/usr/local/ub_tools/bsz_daten/fulltext_ids.txt";
+                if (new File(fulltextPPNListFile).length() != 0) {
+                    try {
+                        BufferedReader in = new BufferedReader(new FileReader(fulltextPPNListFile));
+                        String ppnLine;
+                        while ((ppnLine = in.readLine()) != null)
+                            fulltextPPNList.add(ppnLine);
+                     } catch (IOException e) {
+                        logger.severe("Could not read file: " + e.toString());
+                     }
+                }
+            }
+        } catch (java.net.UnknownHostException e) {
+            throw new RuntimeException ("Could not determine Hostname", e);
         }
-        return fulltextIDList.contains(ppn);
     }
 
     protected static CloseableHttpClient elasticsearchClient;
@@ -3052,14 +3070,10 @@ public class TueFindBiblio extends TueFind {
     }
 
     protected String getElasticsearchSearchResponse(final Record record) throws IOException {
-        if (isFullTextDisabled())
-            return "";
-        if (!IsInFulltextPPNList(record.getControlNumber()))
+        if (!fulltextPPNList.contains(record.getControlNumber()))
             return "";
 
-        final String esHost = getElasticsearchHost();
-        final String esPort = getElasticsearchPort();
-        HttpPost httpPost = new HttpPost("http://" + esHost + ":" + esPort + "/full_text_cache/_search");
+        HttpPost httpPost = new HttpPost(getElasticsearchUrl());
         final String fulltextById = "{ \"query\" : { \"match\" : { \"id\" : \"" + record.getControlNumber() + "\" } } }";
         final StringEntity stringEntity = new StringEntity(fulltextById);
         httpPost.setEntity(stringEntity);
@@ -3136,6 +3150,63 @@ public class TueFindBiblio extends TueFind {
 
         return null;
     }
+
+
+    public Set<String> getAuthorsAndIds(final Record record, String tagList) {
+        final String separator = ":";
+        Set<String> result = new HashSet<>();
+
+        Map<String, String> authorToId = new HashMap<>();
+
+        if (tagList.contains(":") == false && tagList.trim().length() > 2) {
+            tagList = tagList + ":";
+        }
+
+        for (String tag : tagList.split(":")) {
+            if (tag == null || tag.isEmpty()) {
+                continue;
+            }
+
+            for (final VariableField variableField : record.getVariableFields(tag)) {
+                final DataField dataField = (DataField) variableField;
+
+                final Subfield subfield_a = dataField.getSubfield('a');
+                if (subfield_a == null || subfield_a.getData().isEmpty()) {
+                    continue;
+                }
+
+                final Subfield subfield_b = dataField.getSubfield('b');
+                final Subfield subfield_c = dataField.getSubfield('c');
+                final Subfield subfield_d = dataField.getSubfield('d');
+                final List<Subfield> subfields_0 = dataField.getSubfields('0');
+
+                String authorName = subfield_a.getData();
+                if (subfield_b != null && subfield_a.getData().isEmpty() == false)
+                    authorName += ", " + subfield_b.getData();
+                if (subfield_c != null && subfield_c.getData().isEmpty() == false)
+                    authorName += ", " + subfield_c.getData();
+                if (subfield_d != null && subfield_d.getData().isEmpty() == false)
+                    authorName += " " + subfield_d.getData();
+
+                for (Subfield subfield_0 : subfields_0) {
+                    String author_id = subfield_0.getData();
+                    if (author_id.contains(ISIL_PREFIX_K10PLUS)) {
+                        authorToId.put(authorName, author_id.replaceAll(ISIL_PREFIX_K10PLUS_ESCAPED, "").trim());
+                    }
+                    else if (authorToId.containsKey(authorName) == false){
+                        authorToId.put(authorName, "");
+                    }
+                }
+            }
+        }
+
+        for (Entry<String,String> pair : authorToId.entrySet()){
+            result.add(pair.getValue() + separator + pair.getKey());
+        }
+
+        return result;
+    }
+
 
     public static List<String> getDateRanges(final Record record, final String rangeFieldTag) {
         final DataField rangeField = (DataField) record.getVariableField(rangeFieldTag);

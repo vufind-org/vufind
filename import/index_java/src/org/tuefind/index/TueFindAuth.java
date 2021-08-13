@@ -101,33 +101,53 @@ public class TueFindAuth extends TueFind {
         }
         return results;
     }
+    
+    private String getYearRangeOfSubfield(String subfieldData) {
+        final Matcher matcher = YEAR_RANGE_PATTERN.matcher(subfieldData);
+        if (matcher.matches()) {
+            String year1 = matcher.group(2);
+            String year2 = matcher.group(4);
+            Integer year1Int = Integer.parseInt(year1);
+            Integer year2Int = Integer.parseInt(year2);
+
+            boolean year1IsBC = matcher.group(1).equals("v");
+            boolean year2IsBC = matcher.group(3).equals("v");
+            if (!year1IsBC && !year2IsBC && year2Int < year1Int) {
+                year1IsBC = true;
+                year2IsBC = true;
+            }
+            if (year1IsBC == year2IsBC && (Math.abs(year1Int - year2Int) > 110))
+                return null;
+            if (year1IsBC != year2IsBC && (year1Int > 110 || year2Int > 110))
+                return null;
+
+            if (year1IsBC)
+                year1 = "-" + year1;
+            if (year2IsBC)
+                year2 = "-" + year2;
+
+            return "[" + year1 + " TO " + year2 + "]";
+        }
+        return null;
+    }
 
     public String getYearRange(final Record record) {
         final List<VariableField> yearFields = record.getVariableFields("400");
+        final List<VariableField> yearFieldsAlternative = record.getVariableFields("548");
         for (final VariableField yearField : yearFields) {
             final DataField field = (DataField) yearField;
-            for (final Subfield subfield_d : field.getSubfields('d')) {
-                final Matcher matcher = YEAR_RANGE_PATTERN.matcher(subfield_d.getData());
-                if (matcher.matches()) {
-                    String year1 = matcher.group(2);
-                    String year2 = matcher.group(4);
-                    Integer year1Int = Integer.parseInt(year1);
-                    Integer year2Int = Integer.parseInt(year2);
-
-                    boolean year1IsBC = matcher.group(1).equals("v");
-                    boolean year2IsBC = matcher.group(3).equals("v");
-                    if (!year1IsBC && !year2IsBC && year2Int < year1Int) {
-                        year1IsBC = true;
-                        year2IsBC = true;
-                    }
-
-                    if (year1IsBC)
-                        year1 = "-" + year1;
-                    if (year2IsBC)
-                        year2 = "-" + year2;
-
-                    return "[" + year1 + " TO " + year2 + "]";
-                }
+            for (final Subfield subfield_400d : field.getSubfields('d')) {
+                String yearResult = getYearRangeOfSubfield(subfield_400d.getData());
+                if (yearResult != null)
+                    return yearResult;
+            }
+        }
+        for (final VariableField yearFieldAlternative : yearFieldsAlternative) {
+            final DataField field = (DataField) yearFieldAlternative;
+            for (final Subfield subfield_548a : field.getSubfields('a')) {
+                String yearResult = getYearRangeOfSubfield(subfield_548a.getData());
+                if (yearResult != null)
+                    return yearResult;
             }
         }
         return null;

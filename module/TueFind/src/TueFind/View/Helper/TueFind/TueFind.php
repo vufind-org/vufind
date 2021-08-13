@@ -180,19 +180,6 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Analyze a list of facets if at least one of them is chosen
-     * @param facet list array
-     *
-     * @return bool
-     */
-    public function atLeastOneFacetChosen($list) {
-        foreach($list as $i => $thisFacet)
-            if ($thisFacet['isApplied'])
-                return true;
-        return false;
-    }
-
-    /**
      * Search for specific RSS feed icon, return generic RSS icon if not found
      *
      * @param string $rssFeedId
