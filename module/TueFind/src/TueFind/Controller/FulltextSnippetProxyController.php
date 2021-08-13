@@ -44,7 +44,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     const esHighlightTag = 'em';
     // must match definitions in TuelibMixin.java
     const description_to_text_type_map = [ 'Fulltext' => '1', 'Table of Contents' => '2',
-                                           'Abstract' => '4', 'Summary' => '8',
+                                           'Abstract' => '4', 'Summary' => '8', 'List of References' => '16',
                                            'Unknown' => '0' ];
     const CONTENT_LENGTH_TARGET_UPPER_LIMIT = 100;
     const CONTENT_LENGTH_TARGET_LOWER_LIMIT = 20;

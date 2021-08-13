@@ -19,7 +19,7 @@
     $fulltext_type_filters = $this->driver->getFulltextTypeFilters();
     $fulltext_types = $this->driver->getFulltextTypes();
 
-    $jsSnippet = "TueFind.GetFulltextSnippets('" . $this->url('home') . "','" . $this->driver->getUniqueID() . "','" . addslashes($query_terms) . "', false, '" . $synonym_type . "'";
+    $jsSnippet = "TueFind.GetFulltextSnippets('" . $this->url('home') . "','" . $this->driver->getUniqueID() . "','" . addslashes($query_terms) . "', false, '" . $synonym_type . "', ";
     if (isset($fulltext_type_filters) && $fulltext_type_filters != '') {
       $jsSnippet .= "'" . implode("','", $fulltext_type_filters) . "'";
     } else {

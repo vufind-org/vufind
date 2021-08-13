@@ -83,7 +83,10 @@ public class IxTheoBiblio extends TueFindBiblio {
         final File[] dir_entries = new File(LANGUAGES_DIRECTORY).listFiles();
         boolean foundAtLeastOne = false;
         for (final File dir_entry : dir_entries) {
-            if (dir_entry.getName().length() != 6 || !dir_entry.getName().endsWith(".ini")) {
+            if (dir_entry.getName().endsWith(".ini") == false) {
+                continue;
+            }
+            else if (dir_entry.getName().length() != 6) {
                 logger.warning("Unexpected language file: " + dir_entry.getName());
                 continue;
             }
@@ -98,7 +101,7 @@ public class IxTheoBiblio extends TueFindBiblio {
         return ixtheoNotationsToDescriptionsMap;
     }
 
-    private HashMap<String, TreeSet<String>> ixtheoNotationsToDescriptionsMap = processLanguageIniFiles();
+    static protected HashMap<String, TreeSet<String>> ixtheoNotationsToDescriptionsMap = processLanguageIniFiles();
 
     /**
      * Split the colon-separated ixTheo notation codes into individual codes and
