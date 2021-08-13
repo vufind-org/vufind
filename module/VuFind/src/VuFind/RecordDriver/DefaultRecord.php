@@ -60,7 +60,9 @@ class DefaultRecord extends AbstractBase
      * @param \Laminas\Config\Config $searchSettings Search-specific configuration
      * file
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
@@ -490,7 +492,9 @@ class DefaultRecord extends AbstractBase
         // Create a map of de-highlighted valeus => highlighted values.
         foreach ($this->getRawAuthorHighlights() as $current) {
             $dehighlighted = str_replace(
-                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $current
+                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+                '',
+                $current
             );
             $highlights[$dehighlighted] = $current;
         }
@@ -1462,7 +1466,9 @@ class DefaultRecord extends AbstractBase
             }
             foreach ($this->getAllSubjectHeadings() as $subj) {
                 $xml->addChild(
-                    'subject', htmlspecialchars(implode(' -- ', $subj)), $dc
+                    'subject',
+                    htmlspecialchars(implode(' -- ', $subj)),
+                    $dc
                 );
             }
             if (null !== $baseUrl && null !== $recordLink) {

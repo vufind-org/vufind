@@ -118,7 +118,8 @@ class RandomRecommend implements RecommendInterface
      * @param \VuFindSearch\Service               $searchService VuFind Search Serive
      * @param \VuFind\Search\Params\PluginManager $paramManager  Params manager
      */
-    public function __construct(\VuFindSearch\Service $searchService,
+    public function __construct(
+        \VuFindSearch\Service $searchService,
         \VuFind\Search\Params\PluginManager $paramManager
     ) {
         $this->searchService = $searchService;
@@ -180,7 +181,10 @@ class RandomRecommend implements RecommendInterface
         $query = $randomParams->getQuery();
         $paramBag = $randomParams->getBackendParameters();
         $this->results = $this->searchService->random(
-            $this->backend, $query, $this->limit, $paramBag
+            $this->backend,
+            $query,
+            $this->limit,
+            $paramBag
         )->getRecords();
     }
 

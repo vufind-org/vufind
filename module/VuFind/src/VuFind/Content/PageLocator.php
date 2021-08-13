@@ -97,7 +97,10 @@ class PageLocator
      * @return string
      */
     protected function generateTemplateFromPattern(
-        string $pathPrefix, string $pageName, string $pattern, string $language = ''
+        string $pathPrefix,
+        string $pageName,
+        string $pattern,
+        string $language = ''
     ): string {
         $standardReplacements = [
             '%pathPrefix%' => $pathPrefix,
@@ -132,18 +135,28 @@ class PageLocator
      *                    (key equals matchType)
      */
     protected function getTemplateOptionsFromPattern(
-        string $pathPrefix, string $pageName, string $pattern
+        string $pathPrefix,
+        string $pageName,
+        string $pattern
     ): \Generator {
         yield 'language' => $this->generateTemplateFromPattern(
-            $pathPrefix, $pageName, $pattern, $this->language
+            $pathPrefix,
+            $pageName,
+            $pattern,
+            $this->language
         );
         if ($this->language != $this->defaultLanguage) {
             yield 'defaultLanguage' => $this->generateTemplateFromPattern(
-                $pathPrefix, $pageName, $pattern, $this->defaultLanguage
+                $pathPrefix,
+                $pageName,
+                $pattern,
+                $this->defaultLanguage
             );
         }
         yield 'pageName' => $this->generateTemplateFromPattern(
-            $pathPrefix, $pageName, $pattern
+            $pathPrefix,
+            $pageName,
+            $pattern
         );
     }
 
@@ -160,25 +173,32 @@ class PageLocator
      * matchType (see getTemplateOptionsFromPattern)
      */
     public function determineTemplateAndRenderer(
-        $pathPrefix, $pageName, $pattern = null
+        $pathPrefix,
+        $pageName,
+        $pattern = null
     ) {
         if ($pattern === null) {
             $pattern = '%pathPrefix%/%pageName%{_%language%}';
         }
 
         $templates = $this->getTemplateOptionsFromPattern(
-            $pathPrefix, $pageName, $pattern
+            $pathPrefix,
+            $pageName,
+            $pattern
         );
 
         foreach ($templates as $matchType => $template) {
             foreach ($this->types as $type) {
                 $filename = "$template.$type";
                 $pathDetails = $this->themeInfo->findContainingTheme(
-                    $filename, $this->themeInfo::RETURN_ALL_DETAILS
+                    $filename,
+                    $this->themeInfo::RETURN_ALL_DETAILS
                 );
                 if (null != $pathDetails) {
                     $relativeTemplatePath = preg_replace(
-                        '"^templates/"', '', $pathDetails['relativePath']
+                        '"^templates/"',
+                        '',
+                        $pathDetails['relativePath']
                     );
                     return [
                         'renderer' => $type,

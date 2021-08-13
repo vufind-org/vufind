@@ -19,13 +19,14 @@
 
   <table class="table table-striped">
     <?=$this->renderArray(
-      $arrTemplate, $this->user,
-      [
+    $arrTemplate,
+    $this->user,
+    [
         $this->transEsc('First Name') => 'firstname',
         $this->transEsc('Last Name') => 'lastname',
         $this->transEsc('Email') => 'email',
       ]
-    )?>
+)?>
     <?php /* this section renders under two distinct circumstances; see if/else below: */ ?>
     <?php if (count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
       <tr>
@@ -79,8 +80,9 @@
     </p>
     <table class="table table-striped">
       <?=$this->renderArray(
-        $arrTemplate, $this->profile,
-        [
+                $arrTemplate,
+                $this->profile,
+                [
           $this->transEsc('First Name') => 'firstname',
           $this->transEsc('Last Name') => 'lastname',
           $this->transEsc('Address') . ' 1' => 'address1',
@@ -93,7 +95,7 @@
           $this->transEsc('Group') => 'group',
           $this->transEsc('patron_account_expires') => 'expiration_date'
         ]
-      )?>
+            )?>
     </table>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>

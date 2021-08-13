@@ -111,7 +111,8 @@ class UpdateDocument implements DocumentInterface
      *
      * @return void
      */
-    public function addRecord(SerializableRecordInterface $record,
+    public function addRecord(
+        SerializableRecordInterface $record,
         array $indexAttr = []
     ): void {
         $this->records->attach($record, $indexAttr);

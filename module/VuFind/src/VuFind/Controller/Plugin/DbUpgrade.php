@@ -82,7 +82,8 @@ class DbUpgrade extends AbstractPlugin
         foreach ($statements as $statement) {
             preg_match(
                 '/(create\s+table|alter\s+table)\s+([^\s(]+).*/mi',
-                $statement, $matches
+                $statement,
+                $matches
             );
             if (isset($matches[2])) {
                 $table = str_replace('`', '', $matches[2]);
@@ -228,7 +229,8 @@ class DbUpgrade extends AbstractPlugin
         // user has a Latin1 database, they probably have more complex issues to
         // work through anyway.
         preg_match_all(
-            '/CHARSET=utf8 COLLATE (\w+)/', $this->dbCommands[$table['Name']][0],
+            '/CHARSET=utf8 COLLATE (\w+)/',
+            $this->dbCommands[$table['Name']][0],
             $matches
         );
         if (isset($matches[1][0])
@@ -584,14 +586,18 @@ class DbUpgrade extends AbstractPlugin
             // the first entry in the array; we assume the standard mysqldump
             // formatting is used here.
             preg_match_all(
-                '/^  PRIMARY KEY \(`([^)]*)`\).*$/m', $sql[0], $primaryMatches
+                '/^  PRIMARY KEY \(`([^)]*)`\).*$/m',
+                $sql[0],
+                $primaryMatches
             );
             preg_match_all(
                 '/^  CONSTRAINT `([^`]+)` FOREIGN KEY \(`([^)]*)`\).*$/m',
-                $sql[0], $foreignKeyMatches
+                $sql[0],
+                $foreignKeyMatches
             );
             preg_match_all(
-                '/^  UNIQUE KEY `([^`]+)`.*\(`([^)]*)`\).*$/m', $sql[0],
+                '/^  UNIQUE KEY `([^`]+)`.*\(`([^)]*)`\).*$/m',
+                $sql[0],
                 $uniqueMatches
             );
             $expectedConstraints = [
@@ -708,7 +714,8 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return array
      */
-    public function getModifiedConstraints($missingTables = [],
+    public function getModifiedConstraints(
+        $missingTables = [],
         $missingConstraints = []
     ) {
         $modified = [];
@@ -725,14 +732,16 @@ class DbUpgrade extends AbstractPlugin
             // formatting is used here.
             preg_match_all(
                 '/^\s*CONSTRAINT `([^`]+)` FOREIGN KEY \(`([^)]*)`\)(.*)$/m',
-                $sql[0], $foreignKeyMatches
+                $sql[0],
+                $foreignKeyMatches
             );
             foreach ($foreignKeyMatches[0] as $i => $sql) {
                 $fkName = $foreignKeyMatches[1][$i];
                 // Skip constraint if we're logging and it's missing
                 if (isset($missingConstraints[$table])
                     && $this->constraintIsMissing(
-                        $fkName, $missingConstraints[$table]
+                        $fkName,
+                        $missingConstraints[$table]
                     )
                 ) {
                     continue;
@@ -864,7 +873,8 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return array
      */
-    public function getModifiedColumns($missingTables = [],
+    public function getModifiedColumns(
+        $missingTables = [],
         $missingColumns = []
     ) {
         $modified = [];
@@ -879,7 +889,8 @@ class DbUpgrade extends AbstractPlugin
             // the first entry in the array; we assume the standard mysqldump
             // formatting is used here.
             preg_match_all(
-                '/^  `([^`]*)`\s+([^\s,]+)[\t ,]+.*$/m', $sql[0],
+                '/^  `([^`]*)`\s+([^\s,]+)[\t ,]+.*$/m',
+                $sql[0],
                 $matches
             );
             $expectedColumns = array_map('strtolower', $matches[1]);
@@ -937,7 +948,8 @@ class DbUpgrade extends AbstractPlugin
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
                 $sqlcommands .= $this->query(
-                    "ALTER TABLE `{$table}` ADD COLUMN {$column}", $logsql
+                    "ALTER TABLE `{$table}` ADD COLUMN {$column}",
+                    $logsql
                 );
             }
         }
@@ -960,7 +972,8 @@ class DbUpgrade extends AbstractPlugin
         foreach ($constraints as $table => $sql) {
             foreach ($sql as $constraint) {
                 $sqlcommands .= $this->query(
-                    "ALTER TABLE $table ADD {$constraint};", $logsql
+                    "ALTER TABLE $table ADD {$constraint};",
+                    $logsql
                 );
             }
         }
@@ -983,7 +996,8 @@ class DbUpgrade extends AbstractPlugin
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
                 $sqlcommands .= $this->query(
-                    "ALTER TABLE `{$table}` MODIFY COLUMN {$column}", $logsql
+                    "ALTER TABLE `{$table}` MODIFY COLUMN {$column}",
+                    $logsql
                 );
             }
         }
@@ -1012,10 +1026,12 @@ class DbUpgrade extends AbstractPlugin
                 }
                 foreach ($constraintList as $name => $constraint) {
                     $sqlcommands .= $this->query(
-                        "ALTER TABLE `{$table}` DROP FOREIGN KEY `{$name}`", $logsql
+                        "ALTER TABLE `{$table}` DROP FOREIGN KEY `{$name}`",
+                        $logsql
                     );
                     $sqlcommands .= $this->query(
-                        "ALTER TABLE $table ADD {$constraint['sql']}", $logsql
+                        "ALTER TABLE $table ADD {$constraint['sql']}",
+                        $logsql
                     );
                 }
             }

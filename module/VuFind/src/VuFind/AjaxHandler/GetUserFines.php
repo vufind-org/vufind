@@ -61,8 +61,12 @@ class GetUserFines extends AbstractIlsAndUserAction
      * @param User|bool        $user             Logged in user (or false)
      * @param SafeMoneyFormat  $safeMoneyFormat  Money formatting view helper
      */
-    public function __construct(SessionSettings $ss, Connection $ils,
-        ILSAuthenticator $ilsAuthenticator, $user, SafeMoneyFormat $safeMoneyFormat
+    public function __construct(
+        SessionSettings $ss,
+        Connection $ils,
+        ILSAuthenticator $ilsAuthenticator,
+        $user,
+        SafeMoneyFormat $safeMoneyFormat
     ) {
         parent::__construct($ss, $ils, $ilsAuthenticator, $user);
         $this->safeMoneyFormat = $safeMoneyFormat;

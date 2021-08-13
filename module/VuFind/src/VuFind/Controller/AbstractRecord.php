@@ -130,7 +130,8 @@ class AbstractRecord extends AbstractBase
 
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
-                null, ['comment' => $this->params()->fromPost('comment')]
+                null,
+                ['comment' => $this->params()->fromPost('comment')]
             );
         }
 
@@ -154,7 +155,10 @@ class AbstractRecord extends AbstractBase
         if (!empty($comment)) {
             $table = $this->getTable('Resource');
             $resource = $table->findResource(
-                $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
+                $driver->getUniqueId(),
+                $driver->getSourceIdentifier(),
+                true,
+                $driver
             );
             $resource->addComment($comment, $user);
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -253,7 +257,8 @@ class AbstractRecord extends AbstractBase
                 [
                     'msg' => 'tags_deleted',
                     'tokens' => ['%count%' => 1]
-                ], 'success'
+                ],
+                'success'
             );
         }
 
@@ -308,7 +313,8 @@ class AbstractRecord extends AbstractBase
         $this->layout()->setTemplate('layout/lightbox');
         $this->layout()->setVariable('layoutContext', 'tabs');
         return $this->showTab(
-            $this->params()->fromPost('tab', $this->getDefaultTab()), true
+            $this->params()->fromPost('tab', $this->getDefaultTab()),
+            true
         );
     }
 
@@ -404,7 +410,9 @@ class AbstractRecord extends AbstractBase
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $user->getSavedData(
-            $driver->getUniqueId(), null, $driver->getSourceIdentifier()
+            $driver->getUniqueId(),
+            null,
+            $driver->getSourceIdentifier()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
@@ -453,7 +461,8 @@ class AbstractRecord extends AbstractBase
         // Create view
         $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(
-            null, $mailer->getDefaultRecordSubject($driver)
+            null,
+            $mailer->getDefaultRecordSubject($driver)
         );
         $mailer->setMaxRecipients($view->maxRecipients);
 
@@ -466,8 +475,13 @@ class AbstractRecord extends AbstractBase
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
                 $mailer->sendRecord(
-                    $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer(), $view->subject, $cc
+                    $view->to,
+                    $view->from,
+                    $view->message,
+                    $driver,
+                    $this->getViewRenderer(),
+                    $view->subject,
+                    $cc
                 );
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
@@ -620,7 +634,8 @@ class AbstractRecord extends AbstractBase
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', $params
+                    'cart/export-success.phtml',
+                    $params
                 )
             ];
             $this->flashMessenger()->addSuccessMessage($msg);

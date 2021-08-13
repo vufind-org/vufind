@@ -58,14 +58,17 @@ class ThemeInfoFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            realpath(APPLICATION_PATH . '/themes'), 'bootprint3'
+            realpath(APPLICATION_PATH . '/themes'),
+            'bootprint3'
         );
     }
 }

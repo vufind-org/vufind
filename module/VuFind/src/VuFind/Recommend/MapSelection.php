@@ -222,19 +222,24 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
                 $match = [];
                 if (preg_match(
                     '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
-                    $value[0], $match
+                    $value[0],
+                    $match
                 )
                 ) {
                     array_push(
                         $this->bboxSearchCoords,
-                        (float)$match[1], (float)$match[2],
-                        (float)$match[3], (float)$match[4]
+                        (float)$match[1],
+                        (float)$match[2],
+                        (float)$match[3],
+                        (float)$match[4]
                     );
                     // Need to reorder coords from WENS to WSEN
                     array_push(
                         $reorder_coords,
-                        (float)$match[1], (float)$match[4],
-                        (float)$match[2], (float)$match[3]
+                        (float)$match[1],
+                        (float)$match[4],
+                        (float)$match[2],
+                        (float)$match[3]
                     );
                     $this->selectedCoordinates = $reorder_coords;
                 }

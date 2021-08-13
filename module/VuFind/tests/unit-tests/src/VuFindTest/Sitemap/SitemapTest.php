@@ -80,7 +80,7 @@ XML;
     {
         $sm = new Sitemap();
         $sm->addUrl(
-          [
+            [
             'url' => 'http://foo',
             'languages' => [
               'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
@@ -88,7 +88,7 @@ XML;
           ]
         );
         $sm->addUrl(
-          [
+            [
             'url' => 'http://bar?t=1',
             'languages' => [
               'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null

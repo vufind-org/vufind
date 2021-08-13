@@ -73,7 +73,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        Config $mainConfig = null, $recordConfig = null,
+        Config $mainConfig = null,
+        $recordConfig = null,
         OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;

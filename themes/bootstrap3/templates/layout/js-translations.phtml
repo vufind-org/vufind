@@ -2,7 +2,7 @@
 
 // Add translation strings
 $this->jsTranslations()->addStrings(
-  [
+    [
     'add_tag_success' => 'add_tag_success',
     'bulk_email_success' => 'bulk_email_success',
     'bulk_noitems_advice' => 'bulk_noitems_advice',
@@ -31,7 +31,7 @@ $this->jsTranslations()->addStrings(
 
 // Add libphonenumber.js strings
 $this->jsTranslations()->addStrings(
-  [
+    [
     "Phone number invalid" => 'libphonenumber_invalid',
     "Invalid country calling code" => 'libphonenumber_invalidcountry',
     "Invalid region code" => 'libphonenumber_invalidregion',
@@ -46,7 +46,7 @@ $cart = $this->cart();
 if ($cart->isActive()) {
   // Add cart strings
   $this->jsTranslations()->addStrings(
-    [
+      [
       'addBookBag' => 'Add to Book Bag',
       'bookbagFull' => 'bookbag_full_msg',
       'bookbagMax' => $cart->getMaxSize(),
@@ -64,7 +64,7 @@ if ($cart->isActive()) {
 $account = $this->auth()->getManager();
 if ($account->ajaxEnabled()) {
   $this->jsTranslations()->addStrings(
-    [
+      [
       'account_checkouts_due' => 'account_checkouts_due',
       'account_checkouts_overdue' => 'account_checkouts_overdue',
       'account_has_alerts' => 'account_has_alerts',
@@ -77,7 +77,7 @@ if ($account->ajaxEnabled()) {
 
 if ($this->config()->ajaxCoversEnabled()) {
   $this->jsTranslations()->addStrings(
-    [
+      [
       'cover_source_label' => 'cover_source_label'
     ]
   );

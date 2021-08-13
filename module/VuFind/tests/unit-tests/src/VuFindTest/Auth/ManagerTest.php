@@ -545,7 +545,12 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             ]
         );
         return new Manager(
-            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
+            $config,
+            $userTable,
+            $sessionManager,
+            $pm,
+            $cookies,
+            $csrf
         );
     }
 

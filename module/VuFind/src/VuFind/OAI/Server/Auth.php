@@ -50,8 +50,10 @@ class Auth extends Base
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables
+    public function __construct(
+        \VuFind\Search\Results\PluginManager $results,
+        \VuFind\Record\Loader $loader,
+        \VuFind\Db\Table\PluginManager $tables
     ) {
         parent::__construct($results, $loader, $tables);
         $this->core = 'authority';

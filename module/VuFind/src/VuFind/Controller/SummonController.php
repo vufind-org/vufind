@@ -90,7 +90,9 @@ class SummonController extends AbstractSearch
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
         $events->attach(
-            MvcEvent::EVENT_DISPATCH, [$this, 'injectSummonMessage'], 1000
+            MvcEvent::EVENT_DISPATCH,
+            [$this, 'injectSummonMessage'],
+            1000
         );
     }
 
@@ -114,7 +116,8 @@ class SummonController extends AbstractSearch
         );
         if (isset($specialFacets['checkboxes'])) {
             $view->checkboxFacets = $this->processAdvancedCheckboxes(
-                $specialFacets['checkboxes'], $view->saved
+                $specialFacets['checkboxes'],
+                $view->saved
             );
         }
         $view->ranges = $this

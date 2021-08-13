@@ -83,11 +83,17 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      *
      * @return string|false|null
      */
-    public function getUrl(RecordDriver $driver, $size = 'small',
-        $resolveDynamic = true, $testLoadImage = false
+    public function getUrl(
+        RecordDriver $driver,
+        $size = 'small',
+        $resolveDynamic = true,
+        $testLoadImage = false
     ) {
         $metadata = $this->getMetadata(
-            $driver, $size, $resolveDynamic, $testLoadImage
+            $driver,
+            $size,
+            $resolveDynamic,
+            $testLoadImage
         );
         // getMetadata could return null or false, that is the reason we are
         // respecting the returned value - in case it is not empty array to be on
@@ -111,8 +117,12 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      *
      * @return false|array|null
      */
-    public function getMetadata(RecordDriver $driver, $size = 'small',
-        $resolveDynamic = true, $testLoadImage = false, $ajax = false
+    public function getMetadata(
+        RecordDriver $driver,
+        $size = 'small',
+        $resolveDynamic = true,
+        $testLoadImage = false,
+        $ajax = false
     ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);

@@ -55,11 +55,18 @@ class RandomCommand extends CallMethodCommand
      * @param int            $limit   Search limit
      * @param ?ParamBag      $params  Search backend parameters
      */
-    public function __construct(string $backend, QueryInterface $query, int $limit,
+    public function __construct(
+        string $backend,
+        QueryInterface $query,
+        int $limit,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend, RandomInterface::class, 'random', [$query, $limit], $params
+            $backend,
+            RandomInterface::class,
+            'random',
+            [$query, $limit],
+            $params
         );
     }
 
@@ -106,7 +113,10 @@ class RandomCommand extends CallMethodCommand
                 }
                 $retrievedIndexes[] = $nextIndex;
                 $currentBatch = $backendInstance->search(
-                    $query, $nextIndex, 1, $this->params
+                    $query,
+                    $nextIndex,
+                    1,
+                    $this->params
                 );
                 if (!$response) {
                     $response = $currentBatch;

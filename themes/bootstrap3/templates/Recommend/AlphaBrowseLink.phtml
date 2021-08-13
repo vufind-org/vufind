@@ -2,8 +2,8 @@
   $index = $this->recommend->getIndex();
   $from = $this->recommend->getQuery();
   $link = $this->translate(
-    'alphabrowselink_html',
-    [
+      'alphabrowselink_html',
+      [
       '%%index%%' => $this->transEsc('browse_' . $index),
       '%%from%%' => $this->escapeHtml($from),
       '%%url%%' => $this->url('alphabrowse-home')

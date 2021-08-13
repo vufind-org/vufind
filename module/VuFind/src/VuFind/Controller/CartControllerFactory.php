@@ -57,14 +57,17 @@ class CartControllerFactory extends AbstractBaseFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         $session = new \Laminas\Session\Container(
-            'cart_followup', $container->get(\Laminas\Session\SessionManager::class)
+            'cart_followup',
+            $container->get(\Laminas\Session\SessionManager::class)
         );
         return $this->applyPermissions(
             $container,

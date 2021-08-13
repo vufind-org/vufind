@@ -96,7 +96,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     {
         $url = 'http://foo/bar';
         $this->assertEquals(
-            $url, $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
+            $url,
+            $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
         );
     }
 

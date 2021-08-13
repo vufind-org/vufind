@@ -67,7 +67,9 @@ class RawDocument implements DocumentInterface
      * @param string  $mime     MIME type
      * @param ?string $encoding Text encoding (null for unspecified)
      */
-    public function __construct(string $content, string $mime,
+    public function __construct(
+        string $content,
+        string $mime,
         ?string $encoding = 'UTF-8'
     ) {
         $this->content = $content;

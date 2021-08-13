@@ -76,8 +76,8 @@
     <p>
       <?php
         $emptyMessage = $this->slot('empty-message')->get(
-          $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])
-        );
+    $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])
+);
         $this->layout()->srmessage = $emptyMessage;
         echo $emptyMessage;
       ?>

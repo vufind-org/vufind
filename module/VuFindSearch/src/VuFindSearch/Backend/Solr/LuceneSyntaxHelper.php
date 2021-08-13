@@ -491,17 +491,20 @@ class LuceneSyntaxHelper
         // remove freestanding hyphens and pluses
         $input = preg_replace(
             '/(\s+[+-]+$|\s+[+-]+\s+|^[+-]+\s+)' . $lookahead . '/',
-            ' ', $input
+            ' ',
+            $input
         );
         // wrap quotes on standalone slashes
         $input = preg_replace(
             '/(\s+[\/]+\s+)' . $lookahead . '/',
-            ' "/" ', $input
+            ' "/" ',
+            $input
         );
         // remove trailing and leading slashes
         $input = preg_replace(
             '/(\s+[\/]+$|^[\/]+\s+)' . $lookahead . '/',
-            ' ', $input
+            ' ',
+            $input
         );
         // A proximity of 1 is illegal and meaningless -- remove it:
         $input = preg_replace('/~1(\.0*)?$/', '', $input);

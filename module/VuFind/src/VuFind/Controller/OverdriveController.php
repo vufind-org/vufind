@@ -91,7 +91,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $checkoutResults = $this->connector->getCheckouts(true);
             if (!$checkoutResults->status) {
                 $this->flashMessenger()->addMessage(
-                    $checkoutResults->code, 'error'
+                    $checkoutResults->code,
+                    'error'
                 );
                 $checkoutsUnavailable = true;
             } else {
@@ -109,7 +110,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             if (!$holdsResults->status) {
                 if ($checkoutResults->status) {
                     $this->flashMessenger()->addMessage(
-                        $holdsResults->code, 'error'
+                        $holdsResults->code,
+                        'error'
                     );
                 }
                 $holdsUnavailable = true;
@@ -128,8 +130,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $view = $this->createViewModel(
             compact(
-                'checkoutsUnavailable', 'holdsUnavailable',
-                'checkouts', 'holds'
+                'checkoutsUnavailable',
+                'holdsUnavailable',
+                'checkouts',
+                'holds'
             )
         );
 
@@ -147,7 +151,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $this->debug("ODC getStatus action");
         $ids = $this->params()->fromPost(
-            'id', $this->params()->fromQuery('id', [])
+            'id',
+            $this->params()->fromQuery('id', [])
         );
         $this->debug("ODRC availability for :" . print_r($ids, true));
         $result = $this->connector->getAvailabilityBulk($ids);
@@ -278,7 +283,9 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $this->getServerUrl('overdrive-hold')
             );
             $result = $this->connector->getDownloadLink(
-                $od_id, $format, $this->getServerUrl('overdrive-hold')
+                $od_id,
+                $format,
+                $this->getServerUrl('overdrive-hold')
             );
             if ($result->status) {
                 //Redirect to resource
@@ -292,8 +299,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $view = $this->createViewModel(
             compact(
-                'od_id', 'rec_id', 'action',
-                'result', 'formats', 'cover', 'title', 'actionTitleCode',
+                'od_id',
+                'rec_id',
+                'action',
+                'result',
+                'formats',
+                'cover',
+                'title',
+                'actionTitleCode',
                 'listAuthors'
             )
         );

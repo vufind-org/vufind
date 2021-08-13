@@ -117,7 +117,8 @@ class QueryBuilderTest extends TestCase
             $q = unserialize($this->getFixture("eds/query/$input", 'VuFindSearch'));
             $response = $qb->build($q);
             $this->assertEquals(
-                $output, $this->decodeResponse($response->get('query'))
+                $output,
+                $this->decodeResponse($response->get('query'))
             );
         }
     }

@@ -62,7 +62,8 @@ class OverdriveFactory implements FactoryInterface
      * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
-        ContainerInterface $container, $requestedName,
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

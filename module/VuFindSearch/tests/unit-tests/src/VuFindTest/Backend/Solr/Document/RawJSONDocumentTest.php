@@ -52,7 +52,8 @@ class RawJSONDocumentTest extends TestCase
     {
         $document = new RawJSONDocument('{}');
         $this->assertEquals(
-            'application/json', $document->getContentType()
+            'application/json',
+            $document->getContentType()
         );
         $this->assertEquals('{}', $document->getContent());
     }

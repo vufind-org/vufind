@@ -197,10 +197,17 @@ class Oracle
      * @return bool
      */
     public function bindParam(
-        $parsed, $place_holder, $data, $data_type = 'string', $length = -1
+        $parsed,
+        $place_holder,
+        $data,
+        $data_type = 'string',
+        $length = -1
     ) {
         $success = @oci_bind_by_name(
-            $parsed, $place_holder, $data, $length,
+            $parsed,
+            $place_holder,
+            $data,
+            $length,
             $this->getDataTypeConstant($data_type)
         );
         if ($success) {
@@ -231,10 +238,17 @@ class Oracle
      * @return bool
      */
     public function returnParam(
-        $parsed, $place_holder, &$data, $data_type = 'string', $length = -1
+        $parsed,
+        $place_holder,
+        &$data,
+        $data_type = 'string',
+        $length = -1
     ) {
         $success = @oci_bind_by_name(
-            $parsed, $place_holder, $data, $length,
+            $parsed,
+            $place_holder,
+            $data,
+            $length,
             $this->getDataTypeConstant($data_type)
         );
         if ($success) {
@@ -367,7 +381,10 @@ class Oracle
         // Bind Variables
         foreach (array_keys($data) as $column) {
             $this->bindParam(
-                $delete, ":" . $column, $data[$column], $types[$column]
+                $delete,
+                ":" . $column,
+                $data[$column],
+                $types[$column]
             );
         }
 
@@ -424,7 +441,10 @@ class Oracle
         // Bind Variables
         foreach (array_keys($data) as $column) {
             $this->bindParam(
-                $insert, ":" . $column, $data[$column], $types[$column]
+                $insert,
+                ":" . $column,
+                $data[$column],
+                $types[$column]
             );
         }
 

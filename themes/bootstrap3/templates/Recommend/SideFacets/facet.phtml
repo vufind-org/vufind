@@ -10,7 +10,7 @@
   <?=$this->context($this)->renderInContext(
     'Recommend/SideFacets/range-slider.phtml',
     ['title' => $facet, 'facet' => $rangeFacets[$facet]]
-  ); ?>
+); ?>
 <?php else: ?>
   <?php
     // Set some variables so we can figure out which sub-template(s) to
@@ -32,7 +32,7 @@
         'collapsedFacets' => $this->collapsedFacets,
         'results' => $this->results
       ]
-    ); ?>
+  ); ?>
     <noscript>
     <?php if (!$noJsSupport): ?>
       <span class="facet"><?=$this->transEsc('Please enable JavaScript.')?></span>
@@ -40,8 +40,8 @@
   <?php endif; ?>
   <?php if (!$isHierarchical || $noJsSupport): // do we need regular display? ?>
     <?=$this->context($this)->renderInContext(
-      'Recommend/SideFacets/cluster-list.phtml',
-      [
+        'Recommend/SideFacets/cluster-list.phtml',
+        [
         'options' => $options, 'title' => $facet, 'cluster' => $cluster,
         'allowExclude' => $this->recommend->excludeAllowed($facet),
         'facets_before_more' => $this->recommend->getShowMoreSetting($facet),

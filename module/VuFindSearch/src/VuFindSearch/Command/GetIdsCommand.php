@@ -56,12 +56,21 @@ class GetIdsCommand extends CallMethodCommand
      * @param int            $limit   Search limit
      * @param ?ParamBag      $params  Search backend parameters
      */
-    public function __construct(string $backend, QueryInterface $query,
-        int $offset = 0, int $limit = 20, ?ParamBag $params = null
+    public function __construct(
+        string $backend,
+        QueryInterface $query,
+        int $offset = 0,
+        int $limit = 20,
+        ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend, GetIdsInterface::class, 'getIds', [$query, $offset, $limit],
-            $params, true, 'getids'
+            $backend,
+            GetIdsInterface::class,
+            'getIds',
+            [$query, $offset, $limit],
+            $params,
+            true,
+            'getids'
         );
     }
 
