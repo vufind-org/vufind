@@ -91,9 +91,9 @@ elseif ($avail->data):
                 $message .= $this->transEsc(
                     "od_hold_queue",
                     [
-                    "%%holdPosition%%" => $hold->holdListPosition,
-                    "%%numberOfHolds%%" => $hold->numberOfHolds
-                ]
+                        "%%holdPosition%%" => $hold->holdListPosition,
+                        "%%numberOfHolds%%" => $hold->numberOfHolds
+                    ]
                 );
             endif;
 

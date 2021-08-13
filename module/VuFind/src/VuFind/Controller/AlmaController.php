@@ -372,12 +372,12 @@ class AlmaController extends AbstractBase
                 $message = $renderer->render(
                     'Email/new-user-welcome.phtml',
                     [
-                    'library' => $config->Site->title,
-                    'firstname' => $user->firstname,
-                    'lastname' => $user->lastname,
-                    'username' => $user->username,
-                    'url' => $this->getServerUrl('myresearch-verify') . '?hash=' .
-                        $user->verify_hash . '&auth_method=' . $method
+                        'library' => $config->Site->title,
+                        'firstname' => $user->firstname,
+                        'lastname' => $user->lastname,
+                        'username' => $user->username,
+                        'url' => $this->getServerUrl('myresearch-verify') . '?hash='
+                            . $user->verify_hash . '&auth_method=' . $method
                     ]
                 );
                 // Send the email

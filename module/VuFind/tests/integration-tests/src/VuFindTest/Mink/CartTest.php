@@ -772,57 +772,57 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $elements = $this->runConfigCombo(
             $page,
             [
-            'showBookBag' => true,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => false,
+                'showBookBag' => true,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
             $page,
             [
-            'showBookBag' => false,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => true,
+                'showBookBag' => false,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
             $page,
             [
-            'showBookBag' => false,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => false,
+                'showBookBag' => false,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
             $page,
             [
-            'showBookBag' => true,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => true,
+                'showBookBag' => true,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
             $page,
             [
-            'showBookBag' => true,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => false,
+                'showBookBag' => true,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
             $page,
             [
-            'showBookBag' => false,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => true,
+                'showBookBag' => false,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
             $page,
             [
-            'showBookBag' => true,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => true,
+                'showBookBag' => true,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => true,
             ]
         );
     }

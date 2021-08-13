@@ -50,17 +50,19 @@
         <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
         <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Basic Search")?></a>
       </p>
-      <?=$this->context($this)->renderInContext(
-    'search/filters.phtml',
-    [
-          'params' => $params ?? null,
-          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
-          'filterList' => $showFilters ? $filterList : [],
-          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-          'searchClassId' => $this->searchClassId,
-          'searchType' => $this->searchType,
-        ]
-);?>
+      <?=
+        $this->context($this)->renderInContext(
+            'search/filters.phtml',
+            [
+              'params' => $params ?? null,
+              'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+              'filterList' => $showFilters ? $filterList : [],
+              'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+              'searchClassId' => $this->searchClassId,
+              'searchType' => $this->searchType,
+            ]
+        );
+      ?>
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
   </div>
 <?php else: ?>
@@ -144,13 +146,13 @@
     <?=$this->context($this)->renderInContext(
         'search/filters.phtml',
         [
-        'params' => $params ?? null,
-        'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
-        'filterList' => $showFilters ? $filterList : [],
-        'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-        'searchClassId' => $this->searchClassId,
-        'searchType' => $this->searchType,
-      ]
+          'params' => $params ?? null,
+          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+          'filterList' => $showFilters ? $filterList : [],
+          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+          'searchClassId' => $this->searchClassId,
+          'searchType' => $this->searchType,
+        ]
     );?>
   </form>
 <?php endif; ?>

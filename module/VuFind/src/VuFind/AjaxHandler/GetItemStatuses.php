@@ -540,7 +540,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                         [
                             'statusItems' => $record,
                             'callnumberHandler' => $this->getCallnumberHandler()
-                         ]
+                        ]
                     );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);

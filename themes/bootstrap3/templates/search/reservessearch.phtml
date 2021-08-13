@@ -60,10 +60,10 @@
     </tr>
     <?php foreach ($this->results->getResults() as $record): ?>
       <?php
-          $url = $this->currentPath() . $this->escapeHtmlAttr(
+        $url = $this->currentPath() . $this->escapeHtmlAttr(
             '?inst=' . urlencode($record->getInstructorId())
-              . '&course=' . urlencode($record->getCourseId())
-              . '&dept=' . urlencode($record->getDepartmentId())
+            . '&course=' . urlencode($record->getCourseId())
+            . '&dept=' . urlencode($record->getDepartmentId())
         );
       ?>
       <tr>

@@ -25,13 +25,13 @@
   ) . $this->context($this)->renderInContext(
       'search/filters.phtml',
       [
-      'params' => $this->params,
-      'urlQuery' => $this->results->getUrlQuery(),
-      'filterList' => $this->params->getFilterList(true),
-      'checkboxFilters' => $this->params->getCheckboxFacets(),
-      'searchClassId' => $this->params->getSearchClassId(),
-      'searchType' => $this->params->getSearchType(),
-    ]
+        'params' => $this->params,
+        'urlQuery' => $this->results->getUrlQuery(),
+        'filterList' => $this->params->getFilterList(true),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'searchType' => $this->params->getSearchType(),
+      ]
   );
 
   // Override breadcrumbs:

@@ -34,9 +34,9 @@
   // Step 2: Build the page
   $this->headScript()->appendScript(
       $this->partial(
-        $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
-        ['options' => $this->options, 'searchDetails' => $searchDetails]
-    )
+          $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
+          ['options' => $this->options, 'searchDetails' => $searchDetails]
+      )
   );
 
   // Collect previous search queries

@@ -36,12 +36,12 @@
     $pivotData = json_encode($visualFacetSet);
     $translations = $this->jsTranslations()->getJSONFromArray(
         [
-        'More Topics' => 'More Topics',
-        'visual_facet_parent' => 'visual_facet_parent',
-        'items' => 'items',
-        'more_topics_unescaped' => 'more_topics',
-        'on_topic_unescaped' => 'on_topic'
-      ]
+          'More Topics' => 'More Topics',
+          'visual_facet_parent' => 'visual_facet_parent',
+          'items' => 'items',
+          'more_topics_unescaped' => 'more_topics',
+          'on_topic_unescaped' => 'on_topic'
+        ]
     );
 
     $script = <<<JS
