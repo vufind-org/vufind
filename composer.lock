@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8e3bccedcabeaf245dd2ec18d86f964",
+    "content-hash": "0888de8ce77e84844478c854c368a1d3",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -946,16 +946,16 @@
         },
         {
             "name": "endroid/qr-code",
-            "version": "4.1.4",
+            "version": "4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/endroid/qr-code.git",
-                "reference": "f38ff0d968788aef0ddefb957062024b4ea521e1"
+                "reference": "4ef4c7815cf928392eecdb8cf7fd3ae45e6e3f59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/endroid/qr-code/zipball/f38ff0d968788aef0ddefb957062024b4ea521e1",
-                "reference": "f38ff0d968788aef0ddefb957062024b4ea521e1",
+                "url": "https://api.github.com/repos/endroid/qr-code/zipball/4ef4c7815cf928392eecdb8cf7fd3ae45e6e3f59",
+                "reference": "4ef4c7815cf928392eecdb8cf7fd3ae45e6e3f59",
                 "shasum": ""
             },
             "require": {
@@ -1006,7 +1006,7 @@
             ],
             "support": {
                 "issues": "https://github.com/endroid/qr-code/issues",
-                "source": "https://github.com/endroid/qr-code/tree/4.1.4"
+                "source": "https://github.com/endroid/qr-code/tree/4.2.1"
             },
             "funding": [
                 {
@@ -1014,7 +1014,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-05-08T14:30:54+00:00"
+            "time": "2021-07-03T10:50:07+00:00"
         },
         {
             "name": "filp/whoops",
