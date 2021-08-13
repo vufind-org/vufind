@@ -251,8 +251,8 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $pm = new PluginManager($container);
         $mockDb = $container->get(\VuFind\Auth\Database::class);
         $mockShib = $container->get(\VuFind\Auth\Shibboleth::class);
-        $pm->setService('VuFind\Auth\Database', $mockDb);
-        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
+        $pm->setService(\VuFind\Auth\Database::class, $mockDb);
+        $pm->setService(\VuFind\Auth\Shibboleth::class, $mockShib);
         return $pm;
     }
 
