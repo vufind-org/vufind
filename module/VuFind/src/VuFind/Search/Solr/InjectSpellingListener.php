@@ -168,6 +168,7 @@ class InjectSpellingListener
                 );
             }
         }
+        return $event;
     }
 
     /**

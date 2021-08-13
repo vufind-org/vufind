@@ -114,7 +114,7 @@ class Query extends AbstractQuery
      *
      * @param string $handler Name of handler
      *
-     * @return string
+     * @return void
      */
     public function setHandler($handler)
     {
@@ -136,7 +136,7 @@ class Query extends AbstractQuery
      *
      * @param string $operator Operator
      *
-     * @return string
+     * @return void
      */
     public function setOperator($operator)
     {

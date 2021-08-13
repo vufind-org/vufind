@@ -587,7 +587,7 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Sets the view settings from EDS API info method call data
      *
-     * @return number
+     * @return void
      */
     protected function populateViewSettings()
     {

@@ -599,6 +599,7 @@ class BrowseController extends AbstractBase
                     )
                 ];
         }
+        throw new \Exception('Unexpected value: ' . $facet);
     }
 
     /**

@@ -201,7 +201,7 @@ class FeedbackController extends AbstractBase
      * @param boolean   $success  Was email sent successfully?
      * @param string    $errorMsg Error message (optional)
      *
-     * @return array with name, email
+     * @return void
      */
     protected function showResponse($view, $form, $success, $errorMsg = null)
     {
