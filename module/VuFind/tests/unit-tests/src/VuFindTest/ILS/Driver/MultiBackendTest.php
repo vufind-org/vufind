@@ -2688,14 +2688,17 @@ trait ILSMockTrait
 {
     public function cancelHolds($cancelDetails)
     {
+        return [];
     }
 
     public function cancelILLRequests($cancelDetails)
     {
+        return [];
     }
 
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
+        return [];
     }
 
     public function checkRequestIsValid($id, $data, $patron)
@@ -2712,26 +2715,32 @@ trait ILSMockTrait
 
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
+        return '';
     }
 
     public function getCancelILLRequestDetails($holdDetails, $patron)
     {
+        return '';
     }
 
     public function getCancelStorageRetrievalRequestDetails($holdDetails, $patron)
     {
+        return '';
     }
 
     public function getConfig($function, $params = null)
     {
+        return [];
     }
 
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
+        return '';
     }
 
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
+        return false;
     }
 
     public function getMyILLRequests($patron)
@@ -2748,14 +2757,17 @@ trait ILSMockTrait
 
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        return [];
     }
 
     public function getRenewDetails($checkoutDetails)
     {
+        return '';
     }
 
     public function getRequestGroups($bibId = null, $patron = null, $holdDetails = null)
     {
+        return [];
     }
 
     public function placeHold($holdDetails)
@@ -2772,6 +2784,7 @@ trait ILSMockTrait
 
     public function renewMyItems($renewDetails)
     {
+        return [];
     }
 }
 class DemoMock extends \VuFind\ILS\Driver\Demo

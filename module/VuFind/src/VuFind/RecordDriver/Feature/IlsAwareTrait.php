@@ -156,7 +156,7 @@ trait IlsAwareTrait
      *
      * @param array $backends List of backends that support ILS integration
      *
-     * @return string[]
+     * @return void
      */
     public function setIlsBackends($backends)
     {

@@ -57,7 +57,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     /**
      * Database connection
      *
-     * @var resource
+     * @var PDO
      */
     protected $db;
 
@@ -349,20 +349,19 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         $sqlArray = $this->getHoldingSql($id);
         $sql = $this->buildSqlFromArray($sqlArray);
 
+        $holding = [];
         try {
-            $holding = [];
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
                 $holding[] = $this->processHoldingRow($id, $row, $patron);
             }
 
             $this->debug(json_encode($holding));
-
-            return $holding;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             $this->throwAsIlsException($e);
         }
+        return $holding;
     }
 
     /**
@@ -477,18 +476,18 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         $sqlArray = $this->getStatusesSQL($idList);
         $sql      = $this->buildSqlFromArray($sqlArray);
 
+        $status  = [];
         try {
-            $status  = [];
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
                 $id            = $row['ID'];
                 $status[$id][] = $this->processStatusRow($id, $row);
             }
-            return $status;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             $this->throwAsIlsException($e);
         }
+        return $status;
     }
 
     /**
@@ -713,12 +712,11 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
 
             $this->debug(json_encode($holdList));
-
-            return $holdList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**
@@ -832,6 +830,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function getMyProfile($patron)
     {
+        $profile = [];
         $sql = "select name_reconstructed as FULLNAME, address1 as ADDRESS1, " .
             "city_st.descr as ADDRESS2, postal_code as ZIP, phone_no as PHONE " .
             "from borrower " .
@@ -870,6 +869,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             $this->logError($e->getMessage());
             $this->throwAsIlsException($e);
         }
+        return $profile;
     }
 
     /**
@@ -1002,12 +1002,11 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
 
             $this->debug(json_encode($transList));
-
-            return $transList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             $this->throwAsIlsException($e);
         }
+        return $transList;
     }
 
     /**
@@ -1088,9 +1087,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 $this->logError($e->getMessage());
                 $this->throwAsIlsException($e);
             }
-        } else {
-            return ['count' => 0, 'results' => []];
         }
+        return ['count' => 0, 'results' => []];
     }
 
     /**

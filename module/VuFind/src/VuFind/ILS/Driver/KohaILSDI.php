@@ -1511,13 +1511,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     'returnDate' => $this->displayDateTime($row['RETURNED']),
                 ];
             }
-            return [
-                'count' => $totalCount,
-                'transactions' => $historicLoans
-            ];
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return [
+            'count' => $totalCount,
+            'transactions' => $historicLoans
+        ];
     }
 
     /**

@@ -1660,10 +1660,10 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $sqlRow['CNT'] > 0;
     }
 
     /**
@@ -1722,10 +1722,10 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $sqlRow['CNT'] > 0;
     }
 
     /**
@@ -1796,10 +1796,10 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($outersql, $sql['bind']);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $sqlRow['CNT'] > 0;
     }
 
     /**
