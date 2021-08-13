@@ -1518,7 +1518,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             'count' => $totalCount,
             'transactions' => $historicLoans
         ];
-}
+    }
 
     /**
      * Get Patron Transactions
