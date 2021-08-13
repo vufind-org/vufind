@@ -28,6 +28,7 @@
 namespace VuFind\Form;
 
 use Laminas\InputFilter\InputFilter;
+use Laminas\InputFilter\InputFilterInterface;
 use Laminas\Validator\Callback;
 use Laminas\Validator\EmailAddress;
 use Laminas\Validator\Identical;
@@ -589,7 +590,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array
      */
-    public function getElements()
+    public function getElements(): array
     {
         return $this->formElementConfig;
     }
@@ -733,9 +734,9 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Retrieve input filter used by this form
      *
-     * @return \Laminas\InputFilter\InputFilterInterface
+     * @return InputFilterInterface
      */
-    public function getInputFilter()
+    public function getInputFilter(): InputFilterInterface
     {
         if ($this->inputFilter) {
             return $this->inputFilter;
