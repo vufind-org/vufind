@@ -139,7 +139,7 @@ class Manager
             // Special case for "no-cache" caches:
             if ($this->cacheSettings[$name] === false) {
                 $this->caches[$key]
-                    = new \VuFind\Cache\Storage\Adapter\NoCacheAdapter();
+                    = new \Laminas\Cache\Storage\Adapter\BlackHole();
             } else {
                 $settings = $this->cacheSettings[$name];
                 $settings['adapter']['options']['namespace'] = $namespace;
