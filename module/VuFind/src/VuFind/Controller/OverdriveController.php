@@ -98,7 +98,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 foreach ($checkoutResults->data as $checkout) {
                     $mycheckout['checkout'] = $checkout;
                     $mycheckout['record']
-                        = $this->serviceLocator->get('VuFind\Record\Loader')
+                        = $this->serviceLocator->get(\VuFind\Record\Loader::class)
                         ->load(strtolower($checkout->reserveId));
                     $checkouts[] = $mycheckout;
                 }
@@ -117,7 +117,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 foreach ($holdsResults->data as $hold) {
                     $myhold['hold'] = $hold;
                     $myhold['record']
-                        = $this->serviceLocator->get('VuFind\Record\Loader')
+                        = $this->serviceLocator->get(\VuFind\Record\Loader::class)
                         ->load(strtolower($hold->reserveId));
                     $holds[] = $myhold;
                 }
@@ -195,7 +195,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
         //load the Record Driver.  Should be a SolrOverdrive  driver.
-        $driver = $this->serviceLocator->get('VuFind\Record\Loader')->load(
+        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
 
