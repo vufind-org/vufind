@@ -71,17 +71,16 @@ class OverdriveConnectorFactory implements
             throw new \Exception('Unexpected options sent to factory!');
         }
 
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $odConfig = $container->get('VuFind\Config\PluginManager')->get(
-            'Overdrive'
-        );
-        $auth = $container->get('VuFind\Auth\ILSAuthenticator');
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $configManager->get('config');
+        $odConfig = $configManager->get('Overdrive');
+        $auth = $container->get(\VuFind\Auth\ILSAuthenticator::class);
         $sessionContainer = null;
 
         if (PHP_SAPI !== 'cli') {
             $sessionContainer = new \Laminas\Session\Container(
                 'DigitalContent\OverdriveController',
-                $container->get('Laminas\Session\SessionManager')
+                $container->get(\Laminas\Session\SessionManager::class)
             );
         }
         $connector = new $requestedName(
@@ -90,7 +89,7 @@ class OverdriveConnectorFactory implements
 
         // Populate cache storage
         $connector->setCacheStorage(
-            $container->get('VuFind\Cache\Manager')->getCache(
+            $container->get(\VuFind\Cache\Manager::class)->getCache(
                 'object', "Overdrive"
             )
         );

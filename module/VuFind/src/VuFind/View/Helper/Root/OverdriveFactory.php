@@ -69,7 +69,7 @@ class OverdriveFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         // Only load the connector if we need to show
-        $config = $container->get('VuFind\Config\PluginManager')->get(
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get(
             'Overdrive'
         );
         $connector = null;
@@ -77,7 +77,7 @@ class OverdriveFactory implements FactoryInterface
         $showAdmin = $config->Overdrive->showOverdriveAdminMenu;
         if ($showAdmin || $showMyContent != "never") {
             $connector = $container->get(
-                'VuFind\DigitalContent\OverdriveConnector'
+                \VuFind\DigitalContent\OverdriveConnector::class
             );
         }
         return new $requestedName($connector);
