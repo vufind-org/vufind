@@ -36,7 +36,7 @@ use Laminas\Config\Config;
 /**
  * VuFind Cache Manager
  *
- * Creates file and APC caches
+ * Creates caches based on configuration
  *
  * @category VuFind
  * @package  Cache
@@ -103,9 +103,6 @@ class Manager
         // Set up search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
-        case 'APC':
-            $this->createAPCCache('searchspecs');
-            break;
         case 'File':
             $this->createFileCache(
                 'searchspecs',
@@ -115,6 +112,8 @@ class Manager
         case false:
             $this->createNoCache('searchspecs');
             break;
+        default:
+            throw new \Exception("Unsupported cache setting: $searchCacheType");
         }
     }
 
@@ -287,21 +286,6 @@ class Manager
         }
         $this->cacheSettings[$cacheName] = [
             'adapter' => ['name' => 'filesystem', 'options' => $opts],
-            'plugins' => ['serializer']
-        ];
-    }
-
-    /**
-     * Add an APC cache to the manager.
-     *
-     * @param string $cacheName Name of new cache to create
-     *
-     * @return void
-     */
-    protected function createAPCCache($cacheName)
-    {
-        $this->cacheSettings[$cacheName] = [
-            'adapter' => 'APC',
             'plugins' => ['serializer']
         ];
     }
