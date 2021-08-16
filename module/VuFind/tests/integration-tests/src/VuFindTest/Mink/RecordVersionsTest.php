@@ -177,7 +177,8 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click on the "other versions" link:
         $this->assertEquals(
-            0, count($page->findAll('css', 'div.record-versions a'))
+            0,
+            count($page->findAll('css', 'div.record-versions a'))
         );
     }
 }

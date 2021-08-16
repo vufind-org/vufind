@@ -248,8 +248,10 @@ class VuFindGeo
         return static::validateCoverageCoordinates($coords)
             ? sprintf(
                 'ENVELOPE(%s,%s,%s,%s)',
-                $coords['westlimit'], $coords['eastlimit'],
-                $coords['northlimit'], $coords['southlimit']
+                $coords['westlimit'],
+                $coords['eastlimit'],
+                $coords['northlimit'],
+                $coords['southlimit']
             ) : null;
     }
 
@@ -267,8 +269,10 @@ class VuFindGeo
         return static::validateCoverageCoordinates($coords)
             ? sprintf(
                 '%s %s %s %s',
-                $coords['westlimit'], $coords['eastlimit'],
-                $coords['northlimit'], $coords['southlimit']
+                $coords['westlimit'],
+                $coords['eastlimit'],
+                $coords['northlimit'],
+                $coords['southlimit']
             ) : null;
     }
 

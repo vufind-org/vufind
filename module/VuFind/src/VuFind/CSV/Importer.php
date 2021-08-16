@@ -79,8 +79,11 @@ class Importer
      * @throws \Exception
      * @return string          Output for test mode
      */
-    public function save(string $csvFile, string $iniFile,
-        string $index = 'Solr', bool $testMode = false
+    public function save(
+        string $csvFile,
+        string $iniFile,
+        string $index = 'Solr',
+        bool $testMode = false
     ): string {
         $in = fopen($csvFile, 'r');
         if (!$in) {
@@ -93,7 +96,8 @@ class Importer
         $output = '';
         while ($line = fgetcsv($in)) {
             $data[] = $this->collectValuesFromLine(
-                $this->adjustEncoding($line, $encoding), $config
+                $this->adjustEncoding($line, $encoding),
+                $config
             );
             // If we have finished a batch, write it now and start the next one:
             if (count($data) === $batchSize) {
@@ -127,7 +131,8 @@ class Importer
         return array_map(
             function (string $str) use ($encoding): string {
                 return iconv($encoding, 'UTF-8', $str);
-            }, $line
+            },
+            $line
         );
     }
 
@@ -249,7 +254,9 @@ class Importer
      *
      * @return string[]
      */
-    protected function processCallback(string $callback, string $value,
+    protected function processCallback(
+        string $callback,
+        string $value,
         array $fieldValues
     ): array {
         preg_match('/([^(]+)(\(.*\))?/', $callback, $matches);
@@ -292,7 +299,9 @@ class Importer
      *
      * @return string[]
      */
-    protected function applyCallbacks(string $value, array $callbacks,
+    protected function applyCallbacks(
+        string $value,
+        array $callbacks,
         array $fieldValues
     ): array {
         // No callbacks, no work:
@@ -303,7 +312,9 @@ class Importer
         // Get the next callback, apply it, and then recurse over its
         // return values.
         $nextCallback = array_shift($callbacks);
-        $recurseFunction = function (string $val) use ($callbacks, $fieldValues
+        $recurseFunction = function (string $val) use (
+            $callbacks,
+            $fieldValues
         ): array {
             return $this->applyCallbacks($val, $callbacks, $fieldValues);
         };
@@ -321,13 +332,17 @@ class Importer
      *
      * @return string[]
      */
-    protected function processValues(array $values, array $fieldConfig,
+    protected function processValues(
+        array $values,
+        array $fieldConfig,
         array $fieldValues
     ): array {
         $processed = [];
         foreach ($values as $value) {
             $newValues = $this->applyCallbacks(
-                $value, (array)($fieldConfig['callback'] ?? []), $fieldValues
+                $value,
+                (array)($fieldConfig['callback'] ?? []),
+                $fieldValues
             );
             $processed = array_merge($processed, $newValues);
         }
@@ -343,7 +358,9 @@ class Importer
      *
      * @return array
      */
-    protected function collectValuesFromLine(array $line, ImporterConfig $config
+    protected function collectValuesFromLine(
+        array $line,
+        ImporterConfig $config
     ): array {
         // First get all hard-coded values...
         $fieldValues = $config->getFixedFieldValues();
@@ -361,10 +378,13 @@ class Importer
                 foreach ($fieldList as $field) {
                     $fieldConfig = $config->getField($field);
                     $processed = $this->processValues(
-                        $values, $fieldConfig, $fieldValues
+                        $values,
+                        $fieldConfig,
+                        $fieldValues
                     );
                     $fieldValues[$field] = array_merge(
-                        $fieldValues[$field], $processed
+                        $fieldValues[$field],
+                        $processed
                     );
                 }
             }

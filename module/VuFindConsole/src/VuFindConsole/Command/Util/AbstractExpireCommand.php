@@ -161,7 +161,8 @@ class AbstractExpireCommand extends Command
         if ($daysOld < $this->minAge) {
             $output->writeln(
                 str_replace(
-                    '%%age%%', number_format($this->minAge, 1, '.', ''),
+                    '%%age%%',
+                    number_format($this->minAge, 1, '.', ''),
                     'Expiration age must be at least %%age%% days.'
                 )
             );

@@ -63,7 +63,8 @@ trait LiveSolrTrait
         $config = include APPLICATION_PATH
             . '/module/VuFind/config/module.config.php';
         $configManager = new \VuFind\Config\PluginManager(
-            $container, $config['vufind']['config_reader']
+            $container,
+            $config['vufind']['config_reader']
         );
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();

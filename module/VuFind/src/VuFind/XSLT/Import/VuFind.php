@@ -199,7 +199,9 @@ class VuFind
      *
      * @return string        command to be executed
      */
-    public static function getApertureCommand($input, $output,
+    public static function getApertureCommand(
+        $input,
+        $output,
         $method = "webcrawler"
     ) {
         // get the path to our sh/bat from the config
@@ -507,7 +509,9 @@ class VuFind
             // Next best match -- any string of four or fewer digits.
             for ($length = 4; $length > 0; $length--) {
                 preg_match_all(
-                    '/\d{' . $length . '}/', $current->textContent, $matches
+                    '/\d{' . $length . '}/',
+                    $current->textContent,
+                    $matches
                 );
                 foreach ($matches[0] as $match) {
                     if (strlen($match) > strlen($adequateMatch)) {

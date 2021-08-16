@@ -121,8 +121,12 @@ class AlphaBrowse extends AbstractChannelProvider
      * @param RecordRouter          $router  Record router
      * @param array                 $options Settings (optional)
      */
-    public function __construct(\VuFindSearch\Service $search, Backend $solr,
-        Url $url, RecordRouter $router, array $options = []
+    public function __construct(
+        \VuFindSearch\Service $search,
+        Backend $solr,
+        Url $url,
+        RecordRouter $router,
+        array $options = []
     ) {
         $this->searchService = $search;
         $this->solr = $solr;
@@ -197,7 +201,8 @@ class AlphaBrowse extends AbstractChannelProvider
         // we need to fetch it from the search service:
         if (empty($channels) && is_object($driver) && $channelToken !== null) {
             $driver = $this->searchService->retrieve(
-                $driver->getSourceIdentifier(), $channelToken
+                $driver->getSourceIdentifier(),
+                $channelToken
             )->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
@@ -260,12 +265,14 @@ class AlphaBrowse extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildChannelFromRecord(RecordDriver $driver,
+    protected function buildChannelFromRecord(
+        RecordDriver $driver,
         $tokenOnly = false
     ) {
         $retVal = [
             'title' => $this->translate(
-                'nearby_items', ['%%title%%' => $driver->getBreadcrumb()]
+                'nearby_items',
+                ['%%title%%' => $driver->getBreadcrumb()]
             ),
             'providerId' => $this->providerId,
             'links' => []
@@ -281,7 +288,10 @@ class AlphaBrowse extends AbstractChannelProvider
         } else {
             // If we got this far, we can safely assume that $from[0] is set
             $details = $this->solr->alphabeticBrowse(
-                $this->browseIndex, $from[0], 0, $this->channelSize,
+                $this->browseIndex,
+                $from[0],
+                0,
+                $this->channelSize,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );
