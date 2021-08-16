@@ -29,8 +29,8 @@
  */
 namespace VuFind\Cache;
 
+use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Cache\StorageFactory;
 use Laminas\Config\Config;
 
 /**
@@ -76,13 +76,26 @@ class Manager
     protected $caches = [];
 
     /**
+     * Factory for creating storage adapters.
+     *
+     * @var StorageAdapterFactory
+     */
+    protected $factory;
+
+    /**
      * Constructor
      *
-     * @param Config $config       Main VuFind configuration
-     * @param Config $searchConfig Search configuration
+     * @param Config                $config       Main VuFind configuration
+     * @param Config                $searchConfig Search configuration
+     * @param StorageAdapterFactory $factory      Cache storage adapter factory
      */
-    public function __construct(Config $config, Config $searchConfig)
-    {
+    public function __construct(
+        Config $config,
+        Config $searchConfig,
+        StorageAdapterFactory $factory
+    ) {
+        $this->factory = $factory;
+
         // $config and $config->Cache are Laminas\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
@@ -142,8 +155,9 @@ class Manager
                     = new \Laminas\Cache\Storage\Adapter\BlackHole();
             } else {
                 $settings = $this->cacheSettings[$name];
-                $settings['adapter']['options']['namespace'] = $namespace;
-                $this->caches[$key] = StorageFactory::factory($settings);
+                $settings['options']['namespace'] = $namespace;
+                $this->caches[$key]
+                    = $this->factory->createFromArrayConfiguration($settings);
             }
         }
 
@@ -277,16 +291,19 @@ class Manager
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];
         } elseif (is_array($opts)) {
-            // If cache_dir was set in config.ini, the cache-specific name should
-            // have been appended to the path to create the value $dirName.
+            // If VUFIND_CACHE_DIR was set in the environment, the cache-specific
+            // name should have been appended to it to create the value $dirName.
             $opts['cache_dir'] = $dirName;
         } else {
             // Dryrot
             throw new \Exception('$opts is neither array nor false');
         }
         $this->cacheSettings[$cacheName] = [
-            'adapter' => ['name' => 'filesystem', 'options' => $opts],
-            'plugins' => ['serializer']
+            'name' => 'filesystem',
+            'options' => $opts,
+            'plugins' => [
+                ['name' => 'serializer'],
+            ],
         ];
     }
 }
