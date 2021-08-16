@@ -65,7 +65,8 @@ trait KeyGeneratorTrait
             // transformed key should match the custom pattern.
             $key = preg_replace(
                 "/([^a-z0-9_\+\-])+/Di",
-                "", $key
+                "",
+                $key
             );
         }
 

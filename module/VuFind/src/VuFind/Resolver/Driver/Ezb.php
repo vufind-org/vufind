@@ -73,7 +73,9 @@ class Ezb extends AbstractBase
      * @param \Laminas\Http\Client $httpClient   HTTP client
      * @param UserIpReader         $userIpReader User IP address reader
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient,
+    public function __construct(
+        $baseUrl,
+        \Laminas\Http\Client $httpClient,
         UserIpReader $userIpReader
     ) {
         parent::__construct($baseUrl);

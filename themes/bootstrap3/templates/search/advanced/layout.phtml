@@ -29,14 +29,14 @@
 
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
-    $this->advancedSearchJsOverride ?? 'advanced_search.js'
+      $this->advancedSearchJsOverride ?? 'advanced_search.js'
   );
   // Step 2: Build the page
   $this->headScript()->appendScript(
-    $this->partial(
-      $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
-      ['options' => $this->options, 'searchDetails' => $searchDetails]
-    )
+      $this->partial(
+          $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
+          ['options' => $this->options, 'searchDetails' => $searchDetails]
+      )
   );
 
   // Collect previous search queries

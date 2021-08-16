@@ -72,7 +72,8 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
             [
                 'host' => 'my.fake.host',
                 'port' => '6002'
-            ], true
+            ],
+            true
         );
         return new Config(['MultiAuth' => $config], true);
     }

@@ -137,7 +137,10 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getFieldArray($field, $subfields = null, $concat = true,
+    protected function getFieldArray(
+        $field,
+        $subfields = null,
+        $concat = true,
         $separator = ' '
     ) {
         // Default to subfield a if nothing is specified.
@@ -252,7 +255,10 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getSubfieldArray($currentField, $subfields, $concat = true,
+    protected function getSubfieldArray(
+        $currentField,
+        $subfields,
+        $concat = true,
         $separator = ' '
     ) {
         // Start building a line of text for the current field

@@ -177,7 +177,9 @@ class HierarchyTree extends AbstractBase
         if (is_object($hierarchyDriver)) {
             $tree = $hierarchyDriver->render($recordDriver, $context, 'List', $id);
             return str_replace(
-                '%%%%VUFIND-BASE-URL%%%%', rtrim($baseUrl, '/'), $tree
+                '%%%%VUFIND-BASE-URL%%%%',
+                rtrim($baseUrl, '/'),
+                $tree
             );
         }
         return '';

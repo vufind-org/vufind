@@ -131,7 +131,8 @@ class Bootstrapper
         if (PHP_SAPI !== 'cli' && !($this->config->System->available ?? true)) {
             $callback = function ($e) {
                 $routeMatch = new RouteMatch(
-                    ['controller' => 'Error', 'action' => 'Unavailable'], 1
+                    ['controller' => 'Error', 'action' => 'Unavailable'],
+                    1
                 );
                 $routeMatch->setMatchedRouteName('error-unavailable');
                 $e->setRouteMatch($routeMatch);
@@ -275,7 +276,9 @@ class Bootstrapper
         $bm = $this->container->get(\VuFind\Search\BackendManager::class);
         $events = $this->container->get('SharedEventManager');
         $events->attach(
-            'VuFindSearch', \VuFindSearch\Service::EVENT_RESOLVE, [$bm, 'onResolve']
+            'VuFindSearch',
+            \VuFindSearch\Service::EVENT_RESOLVE,
+            [$bm, 'onResolve']
         );
     }
 

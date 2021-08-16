@@ -101,7 +101,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             $this->throwAsIlsException(
-                $e, 'ILS Configuration problem : ' . $e->getMessage()
+                $e,
+                'ILS Configuration problem : ' . $e->getMessage()
             );
         }
     }
@@ -647,13 +648,15 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             // Convert Horizon Format to display format
             if (!empty($row['HOLD_EXPIRE'])) {
                 $expire = $this->dateFormat->convertToDisplayDate(
-                    "M d Y", trim($row['HOLD_EXPIRE'])
+                    "M d Y",
+                    trim($row['HOLD_EXPIRE'])
                 );
             } elseif (!empty($row['REQUEST_EXPIRE'])) {
                 // If there is no Hold Expiration date fall back to the
                 // Request Expiration date.
                 $expire = $this->dateFormat->convertToDisplayDate(
-                    "M d Y", trim($row['REQUEST_EXPIRE'])
+                    "M d Y",
+                    trim($row['REQUEST_EXPIRE'])
                 );
             } elseif ($row['STATUS'] == 2) {
                 // Items that are 'In Transit' have no expiration date.
@@ -664,7 +667,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
             if (!empty($row['CREATED'])) {
                 $create = $this->dateFormat->convertToDisplayDate(
-                    "M d Y", trim($row['CREATED'])
+                    "M d Y",
+                    trim($row['CREATED'])
                 );
             }
 
@@ -948,11 +952,13 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Convert Horizon Format to display format
         if (!empty($row['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "M d Y", trim($row['DUEDATE'])
+                "M d Y",
+                trim($row['DUEDATE'])
             );
             $now          = time();
             $dueTimeStamp = $this->dateFormat->convertFromDisplayDate(
-                "U", $dueDate
+                "U",
+                $dueDate
             );
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {

@@ -52,7 +52,7 @@ class SummonResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCa
         $options->expects($this->once())->method('getLabelForBasicHandler')->with($this->equalTo('bar'))->will($this->returnValue('baz'));
         $params->expects($this->once())->method('getOptions')->will($this->returnValue($options));
         $params->expects($this->once())->method('getSearchHandler')->will($this->returnValue('bar'));
-        $mod = $this->getRecommend('VuFind\Recommend\SummonResultsDeferred', '', null, $results);
+        $mod = $this->getRecommend(\VuFind\Recommend\SummonResultsDeferred::class, '', null, $results);
         $this->assertEquals(
             'mod=SummonResults&params=lookfor%3A&lookfor=foo&typeLabel=baz',
             $mod->getUrlParams()

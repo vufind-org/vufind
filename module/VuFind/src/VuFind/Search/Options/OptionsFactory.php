@@ -58,11 +58,14 @@ class OptionsFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class), ...($options ?: [])
+            $container->get(\VuFind\Config\PluginManager::class),
+            ...($options ?: [])
         );
     }
 }

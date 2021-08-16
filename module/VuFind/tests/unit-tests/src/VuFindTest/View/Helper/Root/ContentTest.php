@@ -82,7 +82,11 @@ class ContentTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'rendered-content',
             $content->renderTranslated(
-                $pageName, $pathPrefix, $context, $pageDetails, $pattern
+                $pageName,
+                $pathPrefix,
+                $context,
+                $pageDetails,
+                $pattern
             )
         );
         // Confirm pass-by-reference array was updated:

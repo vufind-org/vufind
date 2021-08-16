@@ -114,7 +114,8 @@ class Options extends \VuFind\Search\Base\Options
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      * @param array                        $apiInfo      API information
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader,
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
         $apiInfo = null
     ) {
         $this->searchIni = $this->facetsIni = 'EDS';
@@ -348,10 +349,14 @@ class Options extends \VuFind\Search\Base\Options
 
         // Search handler setup. Only valid values set in the config files are used.
         $this->filterAndReorderProperty(
-            $searchSettings, 'Basic_Searches', 'basicHandlers'
+            $searchSettings,
+            'Basic_Searches',
+            'basicHandlers'
         );
         $this->filterAndReorderProperty(
-            $searchSettings, 'Advanced_Searches', 'advancedHandlers'
+            $searchSettings,
+            'Advanced_Searches',
+            'advancedHandlers'
         );
 
         // Sort preferences:
@@ -387,10 +392,16 @@ class Options extends \VuFind\Search\Base\Options
         // Set common limiters and expanders.
         // Only the values that are valid for this profile will be used.
         $this->setCommonSettings(
-            $searchSettings, 'common_limiters', 'limiterOptions', 'commonLimiters'
+            $searchSettings,
+            'common_limiters',
+            'limiterOptions',
+            'commonLimiters'
         );
         $this->setCommonSettings(
-            $searchSettings, 'common_expanders', 'expanderOptions', 'commonExpanders'
+            $searchSettings,
+            'common_expanders',
+            'expanderOptions',
+            'commonExpanders'
         );
 
         // Load autocomplete preferences:
@@ -607,7 +618,8 @@ class Options extends \VuFind\Search\Base\Options
                 $ssLimiterOptions[$key] = [
                     'selectedvalue' => 'LIMIT|' . $key . ':y',
                     'description' => $this->getLabelForCheckboxFilter(
-                        'eds_limiter_' . $key, $limiter['Label']
+                        'eds_limiter_' . $key,
+                        $limiter['Label']
                     ),
                     'selected' => ('y' == $limiter['DefaultOn']) ? true : false
                 ];
@@ -630,7 +642,8 @@ class Options extends \VuFind\Search\Base\Options
                 $ssExpanderOptions[$key] = [
                     'selectedvalue' => 'EXPAND:' . $key,
                     'description' => $this->getLabelForCheckboxFilter(
-                        'eds_expander_' . $key, $expander['Label']
+                        'eds_expander_' . $key,
+                        $expander['Label']
                     ),
                 ];
             }
