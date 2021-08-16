@@ -75,7 +75,9 @@ trait LanguageInitializerTrait
      * @return void
      */
     protected function addLanguageToTranslator(
-        TranslatorInterface $translator, LocaleSettings $settings, string $language
+        TranslatorInterface $translator,
+        LocaleSettings $settings,
+        string $language
     ): void {
         // Don't double-initialize languages:
         if ($settings->isLocaleInitialized($language)) {
@@ -90,7 +92,10 @@ trait LanguageInitializerTrait
             // this will help the ExtendedIni loader dynamically locate
             // the appropriate files.
             $translator->addTranslationFile(
-                'ExtendedIni', $domain, $domain, $language
+                'ExtendedIni',
+                $domain,
+                $domain,
+                $language
             );
         }
     }

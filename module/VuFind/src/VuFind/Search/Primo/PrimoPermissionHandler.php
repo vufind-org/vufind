@@ -191,7 +191,8 @@ class PrimoPermissionHandler
                 && is_array($this->primoConfig[$section])
             ) {
                 $codes = array_merge(
-                    $codes, array_keys($this->primoConfig[$section])
+                    $codes,
+                    array_keys($this->primoConfig[$section])
                 );
             }
         }

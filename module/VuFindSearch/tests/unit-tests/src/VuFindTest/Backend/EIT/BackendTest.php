@@ -163,7 +163,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
-        return $this->getMockBuilder(__NAMESPACE__ . '\ConnectorMock')
+        return $this->getMockBuilder(\VuFindSearch\Backend\EIT\Connector::class)
             ->onlyMethods($mock)
             ->setConstructorArgs(['http://fake', $client, 'profile', 'pwd', 'dbs'])
             ->getMock();
@@ -182,12 +182,5 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             return $driver;
         };
         return new \VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory($callback);
-    }
-}
-
-class ConnectorMock extends \VuFindSearch\Backend\EIT\Connector
-{
-    public function call($method = 'GET', $params = null)
-    {
     }
 }

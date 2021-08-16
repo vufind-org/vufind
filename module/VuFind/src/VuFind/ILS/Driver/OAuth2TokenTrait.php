@@ -61,14 +61,17 @@ trait OAuth2TokenTrait
      * @throws AuthTokenException
      */
     public function getNewOAuth2Token(
-        string $tokenEndpoint, string $clientId,
-        string $clientSecret, string $grantType = 'client_credentials',
+        string $tokenEndpoint,
+        string $clientId,
+        string $clientSecret,
+        string $grantType = 'client_credentials',
         bool $useHttpBasic = false
     ): \VuFind\Auth\AuthToken {
         $client = $this->httpService->createClient($tokenEndpoint);
         $client->setMethod('POST');
         $client->getRequest()->getHeaders()->addHeaderLine(
-            'Content-Type', 'application/x-www-form-urlencoded'
+            'Content-Type',
+            'application/x-www-form-urlencoded'
         );
 
         $postFields = ['grant_type' => $grantType];
@@ -94,27 +97,28 @@ trait OAuth2TokenTrait
 
         if ($response->getStatusCode() != 200) {
             $errorMessage = 'Error while getting OAuth2 access token (status code '
-                . $response->getStatusCode() . '): ' . $response->getContent();
+                . $response->getStatusCode() . '): ' . $response->getBody();
             $this->logError($errorMessage);
             throw new AuthTokenException(
                 'Problem getting authorization token: Bad status code returned'
             );
         }
-        $tokenData = json_decode($response->getContent(), true);
+        $tokenData = json_decode($response->getBody(), true);
 
         if (empty($tokenData['token_type'])
             || empty($tokenData['access_token'])
         ) {
             $this->logError(
                 'Did not receive OAuth2 token, response: '
-                . $response->getContent()
+                . $response->getBody()
             );
             throw new AuthTokenException(
                 'Problem getting authorization token: Empty data'
             );
         }
         return new AuthToken(
-            $tokenData['access_token'], $tokenData['expires_in'] ?? null,
+            $tokenData['access_token'],
+            $tokenData['expires_in'] ?? null,
             $tokenData['token_type']
         );
     }

@@ -168,7 +168,9 @@ class MarcXml implements SerializationInterface
         try {
             libxml_clear_errors();
             $doc = \simplexml_load_string(
-                $xml, \SimpleXMLElement::class, LIBXML_COMPACT
+                $xml,
+                \SimpleXMLElement::class,
+                LIBXML_COMPACT
             );
             if (false === $doc) {
                 $errors = libxml_get_errors();

@@ -795,7 +795,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $date_recalled = $this->parseDateTime($date_recalled);
             if ($date_recalled) {
                 $duedate = $recall_duedate = $this->calculateRecallDueDate(
-                    $date_recalled, $recall_period, $original_duedate
+                    $date_recalled,
+                    $recall_period,
+                    $original_duedate
                 );
             }
             $charge_key = "$charge_key1|$charge_key2|$charge_key3|$charge_key4";
@@ -1069,7 +1071,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // a recalled item has a new due date, we have to calculate that new due date
         if ($date_recalled !== false) {
             $duedate = $this->calculateRecallDueDate(
-                $date_recalled, $recall_period, $duedate
+                $date_recalled,
+                $recall_period,
+                $duedate
             );
         }
 
@@ -1262,7 +1266,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if ($time) {
             $dateTimeString = strftime('%m/%d/%Y %H:%M', $time);
             $dateTimeString = $this->dateConverter->convertToDisplayDate(
-                'm/d/Y H:i', $dateTimeString
+                'm/d/Y H:i',
+                $dateTimeString
             );
         }
         return $dateTimeString;

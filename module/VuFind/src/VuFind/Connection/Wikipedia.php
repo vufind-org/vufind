@@ -143,7 +143,8 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Get rid of the last pair of braces and split
         $infobox = explode(
-            "\n|", preg_replace('/^\s+|/m', '', substr($infoboxStr, 2, -2))
+            "\n|",
+            preg_replace('/^\s+|/m', '', substr($infoboxStr, 2, -2))
         );
 
         // Look through every row of the infobox

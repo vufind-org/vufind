@@ -190,7 +190,9 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
         $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getTabRouteDetails($driver, $tab, $query);
         return $urlHelper(
-            $details['route'], $details['params'], $details['options'] ?? []
+            $details['route'],
+            $details['params'],
+            $details['options'] ?? []
         );
     }
 
@@ -280,7 +282,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     protected function getSearchActionForSource($source)
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
-        return $optionsHelper->__invoke($source)->getSearchAction();
+        return $optionsHelper($source)->getSearchAction();
     }
 
     /**
@@ -294,6 +296,6 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     protected function getVersionsActionForSource($source)
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
-        return $optionsHelper->__invoke($source)->getVersionsAction();
+        return $optionsHelper($source)->getVersionsAction();
     }
 }

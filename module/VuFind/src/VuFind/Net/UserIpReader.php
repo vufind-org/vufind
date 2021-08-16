@@ -71,7 +71,9 @@ class UserIpReader
      * @param array       $ipFilter          IP addresses to exclude from
      * consideration
      */
-    public function __construct(Parameters $server, $allowForwardedIps = false,
+    public function __construct(
+        Parameters $server,
+        $allowForwardedIps = false,
         array $ipFilter = []
     ) {
         $this->server = $server;

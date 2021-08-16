@@ -270,7 +270,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'blargasaurus']
+            $page,
+            ['username' => 'username2', 'email' => 'blargasaurus']
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCssAndSetValue($page, '#account_email', 'username2@ignore.com');
@@ -281,7 +282,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#account_firstname');
         // Correct
         $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'username2@ignore.com']
+            $page,
+            ['username' => 'username2', 'email' => 'username2@ignore.com']
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -737,7 +739,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         // Check for confirmation message
         $this->assertEquals(
-            'Your favorite(s) were deleted.',
+            'Your saved item(s) were deleted.',
             $this->findCss($page, '.modal .alert-success')->getText()
         );
         $this->clickCss($page, '.modal .close');

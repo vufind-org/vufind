@@ -134,9 +134,8 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfig($name)
     {
-        return $this->factory->__invoke(
-            new \VuFindTest\Container\MockContainer($this), $name
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        return ($this->factory)($container, $name);
     }
 
     /**
@@ -228,7 +227,8 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
         // Make sure Section 4 arrays were overwritten.
         $this->assertEquals([1, 2, 3], $config->Section4->j->toArray());
         $this->assertEquals(
-            ['a' => 1, 'b' => 2, 'c' => 3], $config->Section4->k->toArray()
+            ['a' => 1, 'b' => 2, 'c' => 3],
+            $config->Section4->k->toArray()
         );
     }
 

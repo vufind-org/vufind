@@ -67,7 +67,8 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
         // Normalize href to account for themes:
         $relPath = 'images/' . $image;
         $details = $this->themeInfo->findContainingTheme(
-            $relPath, \VuFindTheme\ThemeInfo::RETURN_ALL_DETAILS
+            $relPath,
+            \VuFindTheme\ThemeInfo::RETURN_ALL_DETAILS
         );
 
         if (null === $details) {

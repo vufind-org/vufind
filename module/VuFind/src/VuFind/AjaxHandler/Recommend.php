@@ -74,8 +74,11 @@ class Recommend extends AbstractBase
      * @param Results           $results  Solr results object
      * @param RendererInterface $renderer View renderer
      */
-    public function __construct(SessionSettings $ss, RecommendManager $pm,
-        Results $results, RendererInterface $renderer
+    public function __construct(
+        SessionSettings $ss,
+        RecommendManager $pm,
+        Results $results,
+        RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
         $this->pluginManager = $pm;

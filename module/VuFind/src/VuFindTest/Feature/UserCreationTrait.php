@@ -79,7 +79,8 @@ trait UserCreationTrait
 
         foreach ($defaults as $field => $default) {
             $this->findCssAndSetValue(
-                $page, '#account_' . $field,
+                $page,
+                '#account_' . $field,
                 $overrides[$field] ?? $default
             );
         }
@@ -96,18 +97,26 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function fillInLoginForm(Element $page, $username, $password,
-        $inModal = true, $prefix = ''
+    protected function fillInLoginForm(
+        Element $page,
+        $username,
+        $password,
+        $inModal = true,
+        $prefix = ''
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         if (null !== $username) {
             $this->findCssAndSetValue(
-                $page, $prefix . '[name="username"]', $username
+                $page,
+                $prefix . '[name="username"]',
+                $username
             );
         }
         if (null !== $password) {
             $this->findCssAndSetValue(
-                $page, $prefix . '[name="password"]', $password
+                $page,
+                $prefix . '[name="password"]',
+                $password
             );
         }
     }
@@ -123,8 +132,12 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function fillInChangePasswordForm(Element $page, $old, $new,
-        $inModal = false, $prefix = '#newpassword '
+    protected function fillInChangePasswordForm(
+        Element $page,
+        $old,
+        $new,
+        $inModal = false,
+        $prefix = '#newpassword '
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $this->findCssAndSetValue($page, $prefix . '[name="oldpwd"]', $old);

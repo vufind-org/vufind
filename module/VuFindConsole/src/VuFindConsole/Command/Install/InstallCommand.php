@@ -106,7 +106,9 @@ class InstallCommand extends Command
     public function __construct($name = null)
     {
         $this->baseDir = str_replace(
-            '\\', '/', realpath(__DIR__ . '/../../../../../../')
+            '\\',
+            '/',
+            realpath(__DIR__ . '/../../../../../../')
         );
         $this->overrideDir = $this->baseDir . '/local';
         parent::__construct($name);
@@ -290,7 +292,8 @@ class InstallCommand extends Command
         // Get VuFind base path:
         while (true) {
             $basePathInput = $this->getInput(
-                $input, $output,
+                $input,
+                $output,
                 "What base path should be used in VuFind's URL? [{$this->basePath}] "
             );
             if (empty($basePathInput)) {
@@ -335,7 +338,8 @@ class InstallCommand extends Command
         // Get override directory path:
         while (true) {
             $overrideDirInput = $this->getInput(
-                $input, $output,
+                $input,
+                $output,
                 'Where would you like to store your local settings? '
                 . "[{$this->overrideDir}] "
             );
@@ -412,7 +416,8 @@ class InstallCommand extends Command
         while (true) {
             $moduleInput = trim(
                 $this->getInput(
-                    $input, $output,
+                    $input,
+                    $output,
                     "\nWhat module name would you like to use? [blank for none] "
                 )
             );
@@ -431,7 +436,8 @@ class InstallCommand extends Command
      *
      * @return int
      */
-    protected function getMultisiteMode(InputInterface $input,
+    protected function getMultisiteMode(
+        InputInterface $input,
         OutputInterface $output
     ) {
         $output->writeln(
@@ -450,7 +456,9 @@ class InstallCommand extends Command
         ];
         while (true) {
             $response = $this->getInput(
-                $input, $output, "\nWhich option do you want? "
+                $input,
+                $output,
+                "\nWhich option do you want? "
             );
             if (is_numeric($response) && in_array(intval($response), $legal)) {
                 return intval($response);
@@ -490,7 +498,9 @@ class InstallCommand extends Command
     {
         while (true) {
             $response = $this->getInput(
-                $input, $output, "\nPlease enter the hostname for your site: "
+                $input,
+                $output,
+                "\nPlease enter the hostname for your site: "
             );
             if (($result = $this->validateHost($response)) === true) {
                 return $response;
@@ -508,7 +518,9 @@ class InstallCommand extends Command
      *
      * @return string        User-entered response.
      */
-    protected function getInput(InputInterface $input, OutputInterface $output,
+    protected function getInput(
+        InputInterface $input,
+        OutputInterface $output,
         string $prompt
     ): string {
         $question = new Question($prompt, '');
@@ -544,7 +556,8 @@ class InstallCommand extends Command
         if (!empty($this->module)) {
             $config = str_replace(
                 "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",
-                "SetEnv VUFIND_LOCAL_MODULES {$this->module}", $config
+                "SetEnv VUFIND_LOCAL_MODULES {$this->module}",
+                $config
             );
         }
 
@@ -727,7 +740,9 @@ class InstallCommand extends Command
      *
      * @return int
      */
-    protected function failWithError(OutputInterface $output, string $msg,
+    protected function failWithError(
+        OutputInterface $output,
+        string $msg,
         int $status = 1
     ): int {
         $output->writeln($msg);
@@ -784,7 +799,8 @@ class InstallCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function collectParameters(InputInterface $input,
+    protected function collectParameters(
+        InputInterface $input,
         OutputInterface $output
     ) {
         // Are we allowing user interaction?
@@ -829,7 +845,8 @@ class InstallCommand extends Command
                 $this->multisiteMode = self::MULTISITE_HOST_BASED;
             } elseif ($mode !== true && $mode !== null && $mode !== false) {
                 return $this->failWithError(
-                    $output, 'Unexpected multisite mode: ' . $mode
+                    $output,
+                    'Unexpected multisite mode: ' . $mode
                 );
             } elseif ($interactive && $mode !== false) {
                 $userInputNeeded['multisiteMode'] = true;

@@ -93,7 +93,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 $this->throwException(new \Laminas\Config\Exception\RuntimeException())
             );
         $driver = new MultiBackend(
-            $mockPM, $this->getMockILSAuthenticator(), $this->getMockSM()
+            $mockPM,
+            $this->getMockILSAuthenticator(),
+            $this->getMockSM()
         );
         $driver->setConfig(['Drivers' => []]);
         $driver->setLogger($logger);
@@ -210,7 +212,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 $this->throwException(new \Laminas\Config\Exception\RuntimeException())
             );
         $driver = new MultiBackend(
-            $mockPM, $this->getMockILSAuthenticator(), $this->getMockSM()
+            $mockPM,
+            $this->getMockILSAuthenticator(),
+            $this->getMockSM()
         );
         $driver->setConfig(['Drivers' => []]);
         $driver->init();
@@ -279,7 +283,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         ];
         $modify = ['id', 'cat_username', 'cat_info'];
         $result = $this->callMethod(
-            $driver, 'addIdPrefixes', [$data, $source, $modify]
+            $driver,
+            'addIdPrefixes',
+            [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
 
@@ -293,7 +299,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             'cat_username' => ['foo', 'bar']
         ];
         $result = $this->callMethod(
-            $driver, 'addIdPrefixes', [$data, $source, $modify]
+            $driver,
+            'addIdPrefixes',
+            [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
     }
@@ -358,7 +366,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         ];
         $modify = ['id', 'cat_username', 'cat_info'];
         $result = $this->callMethod(
-            $driver, 'stripIdPrefixes', [$data, $source, $modify]
+            $driver,
+            'stripIdPrefixes',
+            [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
 
@@ -372,7 +382,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             'test' => ["$source.foo", "$source.bar"]
         ];
         $result = $this->callMethod(
-            $driver, 'stripIdPrefixes', [$data, $source]
+            $driver,
+            'stripIdPrefixes',
+            [$data, $source]
         );
         $this->assertEquals($expected, $result);
     }
@@ -388,12 +400,16 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $voyager = $this->getMockILS('Voyager', ['init']);
 
         $result = $this->callMethod(
-            $driver, 'methodSupported', [$voyager, 'getHolding']
+            $driver,
+            'methodSupported',
+            [$voyager, 'getHolding']
         );
         $this->assertTrue($result);
 
         $result = $this->callMethod(
-            $driver, 'methodSupported', [$voyager, 'INVALIDMETHOD']
+            $driver,
+            'methodSupported',
+            [$voyager, 'INVALIDMETHOD']
         );
         $this->assertFalse($result);
 
@@ -404,7 +420,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(false));
 
         $result = $this->callMethod(
-            $driver, 'methodSupported', [$dummy, 'getHolding']
+            $driver,
+            'methodSupported',
+            [$dummy, 'getHolding']
         );
         $this->assertFalse($result);
     }
@@ -619,7 +637,6 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                             'status' => 'out'
                         ],
                     ]
-
                 )
             );
 
@@ -641,7 +658,6 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                             'status' => 'in'
                         ],
                     ]
-
                 )
             );
 
@@ -718,7 +734,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $this->setProperty($driver, 'drivers', $drivers);
 
         $patronPrefixless = $this->callMethod(
-            $driver, 'stripIdPrefixes', [$patron, 'institution']
+            $driver,
+            'stripIdPrefixes',
+            [$patron, 'institution']
         );
         $ILS->expects($this->atLeastOnce())
             ->method('getMyTransactions')
@@ -972,7 +990,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $patron['cat_username']
         );
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $driver->patronLogin("bad", "info");
     }
 
@@ -1000,7 +1018,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $result = $driver->getMyTransactions($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyTransactions(
             $this->getPatron('username', 'invalid')
@@ -1039,7 +1057,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getRenewDetails(
             [
@@ -1082,7 +1100,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->renewMyItems(
             ['patron' => $this->getPatron('username', 'invalid')]
@@ -1113,7 +1131,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $result = $driver->getMyFines($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyFines($this->getPatron('username', 'invalid'));
     }
@@ -1142,7 +1160,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $result2 = $driver->getHoldLink('d2.1', []);
         $this->assertEquals($expected2, $result2);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $driver->getHoldLink('invalid.1', []);
     }
@@ -1171,7 +1189,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $result = $driver->getMyHolds($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyHolds($this->getPatron('username', 'invalid'));
     }
@@ -1210,7 +1228,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals([], $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyStorageRetrievalRequests(
             $this->getPatron('username', 'invalid')
@@ -1409,7 +1427,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals([], $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getPickUpLocations(
             $this->getPatron('username', 'invalid'),
@@ -1457,7 +1475,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertFalse($result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getDefaultPickUpLocation(
             $this->getPatron('username', 'invalid'),
@@ -1505,7 +1523,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals([], $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getRequestGroups(
             '1',
@@ -1553,7 +1571,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertFalse($result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getDefaultRequestGroup(
             $this->getPatron('username', 'invalid'),
@@ -1613,7 +1631,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $result
         );
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->placeHold(
             [
@@ -1671,7 +1689,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->cancelHolds(
             [
@@ -1707,17 +1725,15 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $result = $driver->getCancelHoldDetails(
             ['id' => 'd2.1', 'item_id' => 2],
             $this->getPatron('user', 'd2')
-
         );
         $this->assertEquals($expected, $result);
 
         $result = $driver->getCancelHoldDetails(
             ['id' => 'd2.1', 'item_id' => 2]
-
         );
         $this->assertEquals($expected, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelHoldDetails(
             ['id' => 'd1.1', 'item_id' => 2],
@@ -1777,7 +1793,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $result
         );
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->placeStorageRetrievalRequest(
             [
@@ -1835,7 +1851,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->cancelStorageRetrievalRequests(
             [
@@ -1874,7 +1890,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelStorageRetrievalRequestDetails(
             ['id' => 'd1.1', 'item_id' => 2],
@@ -1929,7 +1945,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(true, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->checkILLRequestIsValid(
             'invalid.bibid',
@@ -1975,7 +1991,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getILLPickupLibraries(
             '1',
@@ -2022,7 +2038,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getILLPickupLocations(
             '1',
@@ -2082,7 +2098,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->placeILLRequest(
             [
@@ -2120,7 +2136,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $result = $driver->getMyILLRequests($this->getPatron('username', 'd3'));
         $this->assertEquals([], $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyILLRequests(
             $this->getPatron('username', 'invalid')
@@ -2175,7 +2191,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->cancelILLRequests(
             [
@@ -2214,7 +2230,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->expectException('VuFind\Exception\ILS');
+        $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelILLRequestDetails(
             ['id' => 'd1.1', 'item_id' => 2],
@@ -2344,16 +2360,23 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      * @return object MultiBackend driver
      */
     protected function initSimpleMethodTest(
-        $times1, $times2, $function, $params, $return1, $return2
+        $times1,
+        $times2,
+        $function,
+        $params,
+        $return1,
+        $return2
     ) {
         $voyager = $this->getMockILS('Voyager', ['init', $function]);
         call_user_func_array(
-            [$voyager->expects($times1)->method($function), 'with'], $params
+            [$voyager->expects($times1)->method($function), 'with'],
+            $params
         )->will($this->returnValue($return1));
 
         $voyager2 = $this->getMockILS('Voyager2', ['init', $function]);
         call_user_func_array(
-            [$voyager2->expects($times2)->method($function), 'with'], $params
+            [$voyager2->expects($times2)->method($function), 'with'],
+            $params
         )->will($this->returnValue($return2));
 
         $dummyILS = new DummyILS();
@@ -2378,7 +2401,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($sm = null)
     {
         $driver = new MultiBackend(
-            $this->getPluginManager(), $this->getMockILSAuthenticator(),
+            $this->getPluginManager(),
+            $this->getMockILSAuthenticator(),
             $sm ?? $this->getMockSM()
         );
         $driver->setConfig(
@@ -2404,7 +2428,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return MultiBackend
      */
-    protected function getMultibackendForDrivers(array $drivers, $count = null
+    protected function getMultibackendForDrivers(
+        array $drivers,
+        $count = null
     ): MultiBackend {
         $driverMap = [];
         $driverPrefixMap = [];
@@ -2688,14 +2714,17 @@ trait ILSMockTrait
 {
     public function cancelHolds($cancelDetails)
     {
+        return [];
     }
 
     public function cancelILLRequests($cancelDetails)
     {
+        return [];
     }
 
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
+        return [];
     }
 
     public function checkRequestIsValid($id, $data, $patron)
@@ -2712,26 +2741,32 @@ trait ILSMockTrait
 
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
+        return '';
     }
 
     public function getCancelILLRequestDetails($holdDetails, $patron)
     {
+        return '';
     }
 
     public function getCancelStorageRetrievalRequestDetails($holdDetails, $patron)
     {
+        return '';
     }
 
     public function getConfig($function, $params = null)
     {
+        return [];
     }
 
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
+        return '';
     }
 
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
+        return false;
     }
 
     public function getMyILLRequests($patron)
@@ -2748,14 +2783,17 @@ trait ILSMockTrait
 
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        return [];
     }
 
     public function getRenewDetails($checkoutDetails)
     {
+        return '';
     }
 
     public function getRequestGroups($bibId = null, $patron = null, $holdDetails = null)
     {
+        return [];
     }
 
     public function placeHold($holdDetails)
@@ -2772,6 +2810,7 @@ trait ILSMockTrait
 
     public function renewMyItems($renewDetails)
     {
+        return [];
     }
 }
 class DemoMock extends \VuFind\ILS\Driver\Demo

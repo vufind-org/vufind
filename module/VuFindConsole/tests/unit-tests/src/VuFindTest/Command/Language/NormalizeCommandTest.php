@@ -128,7 +128,8 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
         $this->assertEquals(
-            "{$target} does not exist.\n", $commandTester->getDisplay()
+            "{$target} does not exist.\n",
+            $commandTester->getDisplay()
         );
         $this->assertEquals(1, $commandTester->getStatusCode());
     }

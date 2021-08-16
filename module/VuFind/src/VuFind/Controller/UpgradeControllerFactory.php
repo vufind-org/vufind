@@ -57,7 +57,9 @@ class UpgradeControllerFactory extends AbstractBaseFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -65,7 +67,8 @@ class UpgradeControllerFactory extends AbstractBaseFactory
         }
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
         $session = new \Laminas\Session\Container(
-            'upgrade', $container->get(\Laminas\Session\SessionManager::class)
+            'upgrade',
+            $container->get(\Laminas\Session\SessionManager::class)
         );
         return $this->applyPermissions(
             $container,

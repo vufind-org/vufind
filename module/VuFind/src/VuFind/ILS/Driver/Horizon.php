@@ -57,7 +57,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     /**
      * Database connection
      *
-     * @var resource
+     * @var PDO
      */
     protected $db;
 
@@ -100,7 +100,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException(
+            $this->throwAsIlsException(
+                $e,
                 'ILS Configuration problem : ' . $e->getMessage()
             );
         }
@@ -349,20 +350,19 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         $sqlArray = $this->getHoldingSql($id);
         $sql = $this->buildSqlFromArray($sqlArray);
 
+        $holding = [];
         try {
-            $holding = [];
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
                 $holding[] = $this->processHoldingRow($id, $row, $patron);
             }
 
             $this->debug(json_encode($holding));
-
-            return $holding;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holding;
     }
 
     /**
@@ -477,18 +477,18 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         $sqlArray = $this->getStatusesSQL($idList);
         $sql      = $this->buildSqlFromArray($sqlArray);
 
+        $status  = [];
         try {
-            $status  = [];
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
                 $id            = $row['ID'];
                 $status[$id][] = $this->processStatusRow($id, $row);
             }
-            return $status;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $status;
     }
 
     /**
@@ -557,7 +557,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             throw new ILSException('Unable to login patron ' . $username);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -648,13 +648,15 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             // Convert Horizon Format to display format
             if (!empty($row['HOLD_EXPIRE'])) {
                 $expire = $this->dateFormat->convertToDisplayDate(
-                    "M d Y", trim($row['HOLD_EXPIRE'])
+                    "M d Y",
+                    trim($row['HOLD_EXPIRE'])
                 );
             } elseif (!empty($row['REQUEST_EXPIRE'])) {
                 // If there is no Hold Expiration date fall back to the
                 // Request Expiration date.
                 $expire = $this->dateFormat->convertToDisplayDate(
-                    "M d Y", trim($row['REQUEST_EXPIRE'])
+                    "M d Y",
+                    trim($row['REQUEST_EXPIRE'])
                 );
             } elseif ($row['STATUS'] == 2) {
                 // Items that are 'In Transit' have no expiration date.
@@ -665,7 +667,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
             if (!empty($row['CREATED'])) {
                 $create = $this->dateFormat->convertToDisplayDate(
-                    "M d Y", trim($row['CREATED'])
+                    "M d Y",
+                    trim($row['CREATED'])
                 );
             }
 
@@ -713,12 +716,11 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
 
             $this->debug(json_encode($holdList));
-
-            return $holdList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**
@@ -815,7 +817,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             return $fineList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -832,6 +834,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function getMyProfile($patron)
     {
+        $profile = [];
         $sql = "select name_reconstructed as FULLNAME, address1 as ADDRESS1, " .
             "city_st.descr as ADDRESS2, postal_code as ZIP, phone_no as PHONE " .
             "from borrower " .
@@ -868,8 +871,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             );
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $profile;
     }
 
     /**
@@ -948,11 +952,13 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Convert Horizon Format to display format
         if (!empty($row['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "M d Y", trim($row['DUEDATE'])
+                "M d Y",
+                trim($row['DUEDATE'])
             );
             $now          = time();
             $dueTimeStamp = $this->dateFormat->convertFromDisplayDate(
-                "U", $dueDate
+                "U",
+                $dueDate
             );
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
@@ -1002,12 +1008,11 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
 
             $this->debug(json_encode($transList));
-
-            return $transList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $transList;
     }
 
     /**
@@ -1086,11 +1091,10 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 return $retVal;
             } catch (\Exception $e) {
                 $this->logError($e->getMessage());
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
-        } else {
-            return ['count' => 0, 'results' => []];
         }
+        return ['count' => 0, 'results' => []];
     }
 
     /**
@@ -1114,7 +1118,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         /* The Horizon database version is made up of 4 numbers separated by periods.
@@ -1165,7 +1169,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;

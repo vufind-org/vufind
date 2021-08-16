@@ -413,7 +413,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 }
             } else {
                 $result = preg_match(
-                    "/({$policy['pattern']})/", $password, $matches
+                    "/({$policy['pattern']})/",
+                    $password,
+                    $matches
                 );
                 if ($result === false) {
                     throw new \Exception(

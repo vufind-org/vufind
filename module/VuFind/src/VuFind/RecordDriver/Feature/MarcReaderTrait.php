@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFind\RecordDriver\Feature;
 
 /**
  * Functions for reading MARC records.
@@ -137,7 +137,10 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getFieldArray($field, $subfields = null, $concat = true,
+    protected function getFieldArray(
+        $field,
+        $subfields = null,
+        $concat = true,
         $separator = ' '
     ) {
         // Default to subfield a if nothing is specified.
@@ -252,7 +255,10 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getSubfieldArray($currentField, $subfields, $concat = true,
+    protected function getSubfieldArray(
+        $currentField,
+        $subfields,
+        $concat = true,
         $separator = ' '
     ) {
         // Start building a line of text for the current field

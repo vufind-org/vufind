@@ -186,7 +186,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $result = $client->send();
         } catch (\Exception $e) {
             $this->logError("$method request '$url' failed: " . $e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Get the HTTP status code and response
@@ -219,7 +219,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 . $result->getHeaders()->toString()
                 . "\n\n$answer"
             );
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         if ($result->isSuccess() || in_array($statusCode, $allowedErrors)) {
             if (!$xml && $result->isServerError()) {
@@ -593,7 +593,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $xml->addChild('last_name', $formParams['lastname']);
         $xml->addChild('user_group', $newUserConfig['userGroup']);
         $xml->addChild(
-            'preferred_language', $newUserConfig['preferredLanguage']
+            'preferred_language',
+            $newUserConfig['preferredLanguage']
         );
         $xml->addChild('account_type', $newUserConfig['accountType']);
         $xml->addChild('status', $newUserConfig['status']);
@@ -1002,7 +1003,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return array Associative array of the results
      */
-    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    public function updateHolds(
+        array $holdsDetails,
+        array $fields,
+        array $patron
     ): array {
         $results = [];
         $patronId = $patron['id'];
@@ -1143,7 +1147,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $nowTS = time();
 
         $sort = explode(
-            ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
+            ' ',
+            !empty($params['sort']) ? $params['sort'] : 'checkout desc',
+            2
         );
         if ($sort[0] == 'checkout') {
             $sortKey = 'loan_date';

@@ -104,18 +104,6 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Get an array of resource tags associated with this list.
-     *
-     * @deprecated Deprecated, use getResourceTags.
-     *
-     * @return array
-     */
-    public function getTags()
-    {
-        return $this->getResourceTags();
-    }
-
-    /**
      * Get an array of tags assigned to this list.
      *
      * @return array
@@ -175,7 +163,10 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $tag = $tags->getByText($tagText);
             $linker = $this->getDbTable('resourcetags');
             $linker->createLink(
-                null, $tag->id, $user->id, $this->id
+                null,
+                $tag->id,
+                $user->id,
+                $this->id
             );
         }
     }
@@ -241,7 +232,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return void
      */
-    public function removeResourcesById($user, $ids,
+    public function removeResourcesById(
+        $user,
+        $ids,
         $source = DEFAULT_SEARCH_BACKEND
     ) {
         if (!$this->editAllowed($user)) {
@@ -260,7 +253,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         // Remove Resource (related tags are also removed implicitly)
         $userResourceTable = $this->getDbTable('UserResource');
         $userResourceTable->destroyLinks(
-            $resourceIDs, $this->user_id, $this->id
+            $resourceIDs,
+            $this->user_id,
+            $this->id
         );
     }
 

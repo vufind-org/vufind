@@ -58,7 +58,10 @@ function enableVuFindProfiling($profilerBaseUrl)
         header("X-VuFind-Profiler-Results: $profileUrl");
 
         // Handle final profiling details:
-        $shutdownFunc = function () use ($profileUrl, $xhprofRunId, $suffix,
+        $shutdownFunc = function () use (
+            $profileUrl,
+            $xhprofRunId,
+            $suffix,
             $profilerDisableFunc
         ) {
             $xhprofData = $profilerDisableFunc();

@@ -78,7 +78,7 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
         }
-        return $this->url->__invoke('search-results', [], ['query' => $query]);
+        return ($this->url)('search-results', [], ['query' => $query]);
     }
 
     /**

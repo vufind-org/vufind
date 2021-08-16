@@ -86,7 +86,10 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ['*bad', 'bad'],                     // leading wildcard
             ['?bad', 'bad'],                     // leading wildcard
             ["\xE2\x80\x9Ca\xE2\x80\x9D", '"a"'],// fancy quotes
-            ['a:{a TO b} [ }', 'a:{a TO b}'],    // floating braces/brackets
+            // improperly escaped floating braces/brackets:
+            ['a:{a TO b} [ }', 'a:{a TO b} \[ \}'],
+            // properly escaped floating braces/brackets:
+            ['a:{a TO b} \[ \}', 'a:{a TO b} \[ \}'],
         ];
         // @codingStandardsIgnoreEnd
 
@@ -225,7 +228,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->runQuestionTests(
             [
                 'test' => []
-            ], 'standard'
+            ],
+            'standard'
         );
     }
 
@@ -239,7 +243,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->runQuestionTests(
             [
                 'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']]
-            ], 'dismax'
+            ],
+            'dismax'
         );
     }
 
@@ -253,7 +258,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->runQuestionTests(
             [
                 'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
-            ], 'edismax'
+            ],
+            'edismax'
         );
     }
 

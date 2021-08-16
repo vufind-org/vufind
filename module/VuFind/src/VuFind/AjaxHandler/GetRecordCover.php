@@ -88,7 +88,9 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      * @param bool            $useCoverFallbacksOnFail If true we will render a
      * fallback html template in case no image could be loaded
      */
-    public function __construct(SessionSettings $ss, RecordLoader $recordLoader,
+    public function __construct(
+        SessionSettings $ss,
+        RecordLoader $recordLoader,
         CoverRouter $coverRouter,
         ?PhpRenderer $renderer = null,
         $useCoverFallbacksOnFail = false
@@ -132,7 +134,11 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
         }
 
         $metadata = $this->coverRouter->getMetadata(
-            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail, true
+            $record,
+            $size ?? 'small',
+            true,
+            $this->useCoverFallbacksOnFail,
+            true
         );
 
         return ($metadata || !$this->renderer || !$this->useCoverFallbacksOnFail)

@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\RecordDriver;
+namespace VuFindTest\RecordDriver\Feature;
 
 /**
  * Record Driver Marc Traits Test Class
@@ -85,7 +85,8 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['Old Journal'], $obj->getPreviousTitles());
         $this->assertEquals('2nd ed.', $obj->getEdition());
         $this->assertEquals(
-            ['1 book : colored, 28 cm 1 cd'], $obj->getPhysicalDescriptions()
+            ['1 book : colored, 28 cm 1 cd'],
+            $obj->getPhysicalDescriptions()
         );
     }
 }
