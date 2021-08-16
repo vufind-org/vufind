@@ -584,7 +584,7 @@ class Options extends \VuFind\Search\Base\Options
             return $labeledLimiters;
         }
         $enabledLimiters = [];
-        foreach ($this->enabledLimiters as $limiter ) {
+        foreach ($this->enabledLimiters as $limiter) {
             if (isset($labeledLimiters[$limiter])) {
                 $enabledLimiters[$limiter] = $labeledLimiters[$limiter];
             }
