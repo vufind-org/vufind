@@ -76,7 +76,8 @@ class EdsController extends AbstractSearch
         $view = parent::advancedAction();
         // Set up facet information:
         $view->limiterList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets(), $view->saved
+            $this->getAdvancedFacets(),
+            $view->saved
         );
         $view->expanderList = $this->processAdvancedExpanders($view->saved);
         $view->searchModes = $this->processAdvancedSearchModes($view->saved);

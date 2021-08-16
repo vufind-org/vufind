@@ -61,7 +61,8 @@ class ManagerFactory implements FactoryInterface
         $options = 'cli' !== PHP_SAPI ? [
             'cookie_httponly' => $cookieManager->isHttpOnly(),
             'cookie_path' => $cookieManager->getPath(),
-            'cookie_secure' => $cookieManager->isSecure()
+            'cookie_secure' => $cookieManager->isSecure(),
+            'cookie_samesite' => $cookieManager->getSameSite(),
         ] : [];
 
         $domain = $cookieManager->getDomain();
@@ -135,7 +136,9 @@ class ManagerFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

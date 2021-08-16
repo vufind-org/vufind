@@ -261,7 +261,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send(
-            'good@good.com', 'from@example.com', 'subject', 'body', null, 'bad@bad'
+            'good@good.com',
+            'from@example.com',
+            'subject',
+            'body',
+            null,
+            'bad@bad'
         );
     }
 
@@ -355,7 +360,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['message'] == 'message';
         };
         $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+            ->onlyMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -375,7 +380,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $mailer = new Mailer($transport);
         $mailer->setMaxRecipients(2);
         $mailer->sendLink(
-            'to@example.com;to2@example.com', 'from@example.com', 'message', 'http://foo', $view, null,
+            'to@example.com;to2@example.com',
+            'from@example.com',
+            'message',
+            'http://foo',
+            $view,
+            null,
             'cc@example.com'
         );
     }
@@ -397,7 +407,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['message'] == 'message';
         };
         $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+            ->onlyMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));

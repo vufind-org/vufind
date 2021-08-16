@@ -54,7 +54,9 @@ class MarkdownFactory implements FactoryInterface
      * @throws \Exception (options not allowed in this implementation)
      */
     public function __invoke(
-        ContainerInterface $container, $requestedName, array $options = null
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
     ) {
         $markdownService = $container
             ->get(\League\CommonMark\MarkdownConverterInterface::class);

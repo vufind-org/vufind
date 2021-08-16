@@ -27,7 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFind\RecordDriver\Feature;
 
 /**
  * Functions to add basic MARC-driven functionality to a record driver not already
@@ -67,10 +67,14 @@ trait MarcBasicTrait
     public function getISSNs()
     {
         $issn = array_merge(
-            $this->getFieldArray('022', ['a']), $this->getFieldArray('440', ['x']),
-            $this->getFieldArray('490', ['x']), $this->getFieldArray('730', ['x']),
-            $this->getFieldArray('773', ['x']), $this->getFieldArray('776', ['x']),
-            $this->getFieldArray('780', ['x']), $this->getFieldArray('785', ['x'])
+            $this->getFieldArray('022', ['a']),
+            $this->getFieldArray('440', ['x']),
+            $this->getFieldArray('490', ['x']),
+            $this->getFieldArray('730', ['x']),
+            $this->getFieldArray('773', ['x']),
+            $this->getFieldArray('776', ['x']),
+            $this->getFieldArray('780', ['x']),
+            $this->getFieldArray('785', ['x'])
         );
         $issn = array_unique($issn);
         return $issn;

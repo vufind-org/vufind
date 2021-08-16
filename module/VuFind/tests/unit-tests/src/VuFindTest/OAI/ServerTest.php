@@ -61,7 +61,9 @@ class ServerTest extends \PHPUnit\Framework\TestCase
      *
      * @return Server
      */
-    protected function getServer($config = [], $baseURL = 'http://foo',
+    protected function getServer(
+        $config = [],
+        $baseURL = 'http://foo',
         $params = []
     ) {
         // Force an email into the configuration if missing; this is required by the

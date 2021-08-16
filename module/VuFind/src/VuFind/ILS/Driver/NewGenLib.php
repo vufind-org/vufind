@@ -107,7 +107,7 @@ class NewGenLib extends AbstractBase
                 $sqlStmt2 = $this->db->prepare($duedateql);
                 $sqlStmt2->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $duedate = "";
             while ($rowDD = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
@@ -158,7 +158,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($mainsql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $id = "";
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -173,7 +173,7 @@ class NewGenLib extends AbstractBase
                 $sqlStmt1 = $this->db->prepare($paidamtsql);
                 $sqlStmt1->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $paidamt = "";
             $balance = "";
@@ -223,7 +223,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($mainsql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $type = "RECALLED ITEM - Return the item to the library";
@@ -233,7 +233,7 @@ class NewGenLib extends AbstractBase
                 $sqlStmt2 = $this->db->prepare($rIdql);
                 $sqlStmt2->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $RecordId = $row['cataloguerecordid'] . "_" . $row['owner_library_id'];
             $duedate = "";
@@ -261,7 +261,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt2 = $this->db->prepare($mainsql2);
             $sqlStmt2->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row2 = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
             $location = "";
@@ -312,7 +312,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             if ($catusr != $row['patron_id'] || $catpswd != $row['user_password']) {
@@ -359,7 +359,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($mainsql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $countql = "select count(*) as total from cir_transaction c, " .
@@ -370,7 +370,7 @@ class NewGenLib extends AbstractBase
                 $sql = $this->db->prepare($countql);
                 $sql->execute();
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
             $RecordId = $row['cataloguerecordid'] . "_" . $row['owner_library_id'];
             $count = "";
@@ -460,7 +460,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':patronId' => $username, ':password' => $password]);
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) {
@@ -512,7 +512,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $results = [];
@@ -570,7 +570,7 @@ class NewGenLib extends AbstractBase
             $sqlSmt = $this->db->prepare($mainsql);
             $sqlSmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $reserve = 'N';
         while ($row = $sqlSmt->fetch(PDO::FETCH_ASSOC)) {
@@ -602,7 +602,7 @@ class NewGenLib extends AbstractBase
                 $sqlSmt1 = $this->db->prepare($locationsql);
                 $sqlSmt1->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $location = "";
             while ($rowLoc = $sqlSmt1->fetch(PDO::FETCH_ASSOC)) {

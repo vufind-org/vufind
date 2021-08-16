@@ -179,7 +179,8 @@ class TagsController extends AbstractAdmin
             [
                 'msg' => 'tags_deleted',
                 'tokens' => ['%count%' => $delete]
-            ], 'success'
+            ],
+            'success'
         );
         return $this->redirect()->toUrl($originUrl);
     }

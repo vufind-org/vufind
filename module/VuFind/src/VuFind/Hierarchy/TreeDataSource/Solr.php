@@ -96,8 +96,12 @@ class Solr extends AbstractBase
      * @param array            $filters   Filters to apply to Solr tree queries
      * @param int              $batchSize Number of records retrieved in a batch
      */
-    public function __construct(Connector $connector, FormatterManager $fm,
-        $cacheDir = null, $filters = [], $batchSize = 1000
+    public function __construct(
+        Connector $connector,
+        FormatterManager $fm,
+        $cacheDir = null,
+        $filters = [],
+        $batchSize = 1000
     ) {
         $this->solrConnector = $connector;
         $this->formatterManager = $fm;
@@ -308,7 +312,10 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getFormattedData($id, $format, $options = [],
+    public function getFormattedData(
+        $id,
+        $format,
+        $options = [],
         $cacheTemplate = 'tree_%s'
     ) {
         $cacheFile = (null !== $this->cacheDir)
@@ -335,7 +342,8 @@ class Solr extends AbstractBase
             // Get top record's info
             $formatter = $this->formatterManager->get($format);
             $formatter->setRawData(
-                $this->getRecord($id), $map,
+                $this->getRecord($id),
+                $map,
                 $this->getHierarchyDriver()->treeSorting(),
                 $this->getHierarchyDriver()->getCollectionLinkType()
             );

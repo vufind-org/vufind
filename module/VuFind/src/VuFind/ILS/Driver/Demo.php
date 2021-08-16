@@ -124,6 +124,27 @@ class Demo extends AbstractBase
     protected $failureProbabilities = [];
 
     /**
+     * Courses for use in course reserves.
+     *
+     * @var array
+     */
+    protected $courses = ["Course A", "Course B", "Course C"];
+
+    /**
+     * Departments for use in course reserves.
+     *
+     * @var array
+     */
+    protected $departments = ["Dept. A", "Dept. B", "Dept. C"];
+
+    /**
+     * Instructors for use in course reserves.
+     *
+     * @var array
+     */
+    protected $instructors = ["Instructor A", "Instructor B", "Instructor C"];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -133,8 +154,11 @@ class Demo extends AbstractBase
      * hits
      * @param HttpRequest            $request        HTTP request object (optional)
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        SearchService $ss, $sessionFactory, HttpRequest $request = null
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
+        SearchService $ss,
+        $sessionFactory,
+        HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
@@ -277,6 +301,21 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Generate a fake call number prefix sometimes.
+     *
+     * @return string
+     */
+    protected function getFakeCallNumPrefix()
+    {
+        $codes = "0123456789";
+        $prefix = substr(str_shuffle($codes), 1, rand(0, 1));
+        if (!empty($prefix)) {
+            return 'Prefix: ' . $prefix;
+        }
+        return '';
+    }
+
+    /**
      * Get a random ID from the Solr index.
      *
      * @return string
@@ -395,6 +434,7 @@ class Demo extends AbstractBase
             'locationhref' => $locationhref,
             'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
             'callnumber'   => $this->getFakeCallNum(),
+            'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
             'is_holdable'  => true,
             'addLink'      => $patron ? true : false,
@@ -467,10 +507,12 @@ class Demo extends AbstractBase
             $currentItem = [
                 "location" => $location,
                 "create"   => $this->dateConverter->convertToDisplayDate(
-                    'U', strtotime("now - {$randDays} days")
+                    'U',
+                    strtotime("now - {$randDays} days")
                 ),
                 "expire"   => $this->dateConverter->convertToDisplayDate(
-                    'U', strtotime("now + 30 days")
+                    'U',
+                    strtotime("now + 30 days")
                 ),
                 "item_id" => $i,
                 "reqnum" => $i
@@ -498,8 +540,11 @@ class Demo extends AbstractBase
                 $pos = rand() % 5;
                 if ($pos > 1) {
                     $currentItem['position'] = $pos;
+                    $currentItem['available'] = false;
+                    $currentItem['in_transit'] = (rand() % 2) === 1;
                 } else {
                     $currentItem['available'] = true;
+                    $currentItem['in_transit'] = false;
                     if (rand() % 3 != 1) {
                         $lastDate = strtotime('now + 3 days');
                         $currentItem['last_pickup_date'] = $this->dateConverter
@@ -508,6 +553,9 @@ class Demo extends AbstractBase
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
+                if (!$currentItem['available'] && !$currentItem['in_transit']) {
+                    $currentItem['updateDetails'] = $currentItem['reqnum'];
+                }
             } else {
                 $status = rand() % 5;
                 $currentItem['available'] = $status == 1;
@@ -892,7 +940,8 @@ class Demo extends AbstractBase
                     // 50% chance they've paid half of it
                     "balance"  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
                     "duedate"  => $this->dateConverter->convertToDisplayDate(
-                        'U', strtotime("now - $day_overdue days")
+                        'U',
+                        strtotime("now - $day_overdue days")
                     )
                 ];
                 // Some fines will have no id or title:
@@ -1050,7 +1099,8 @@ class Demo extends AbstractBase
                 // one is used for renewals, in case the user display
                 // format is incompatible with date math).
                 'duedate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $rawDueDate
+                    'U',
+                    $rawDueDate
                 ),
                 'rawduedate' => $rawDueDate,
                 'dueStatus' => $this->calculateDueStatus($rawDueDate),
@@ -1109,7 +1159,9 @@ class Demo extends AbstractBase
         $transactions = $session->transactions;
         if (!empty($params['sort'])) {
             $sort = explode(
-                ' ', !empty($params['sort']) ? $params['sort'] : 'date_due desc', 2
+                ' ',
+                !empty($params['sort']) ? $params['sort'] : 'date_due desc',
+                2
             );
 
             $descending = isset($sort[1]) && 'desc' === $sort[1];
@@ -1181,13 +1233,16 @@ class Demo extends AbstractBase
             // Create a generic transaction:
             $transList[] = $this->getRandomItemIdentifier() + [
                 'checkoutDate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $checkoutDate
+                    'U',
+                    $checkoutDate
                 ),
                 'dueDate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $dueDate
+                    'U',
+                    $dueDate
                 ),
                 'returnDate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $returnDate
+                    'U',
+                    $returnDate
                 ),
                 // Raw dates for sorting
                 '_checkoutDate' => $checkoutDate,
@@ -1288,10 +1343,12 @@ class Demo extends AbstractBase
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
@@ -1301,7 +1358,7 @@ class Demo extends AbstractBase
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
-        return [
+        $result = [
             [
                 'locationID' => 'A',
                 'locationDisplay' => 'Campus A'
@@ -1315,6 +1372,13 @@ class Demo extends AbstractBase
                 'locationDisplay' => 'Campus C'
             ]
         ];
+        if (($holdDetails['reqnum'] ?? '') == 1) {
+            $result[] = [
+                'locationID' => 'D',
+                'locationDisplay' => 'Campus D'
+            ];
+        }
+        return $result;
     }
 
     /**
@@ -1401,7 +1465,9 @@ class Demo extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRequestGroups($bibId = null, $patron = null,
+    public function getRequestGroups(
+        $bibId = null,
+        $patron = null,
         $holdDetails = null
     ) {
         $this->checkIntermittentFailure();
@@ -1440,7 +1506,7 @@ class Demo extends AbstractBase
     public function getDepartments()
     {
         $this->checkIntermittentFailure();
-        return ["Dept. A", "Dept. B", "Dept. C"];
+        return $this->departments;
     }
 
     /**
@@ -1453,7 +1519,7 @@ class Demo extends AbstractBase
     public function getInstructors()
     {
         $this->checkIntermittentFailure();
-        return ["Instructor A", "Instructor B", "Instructor C"];
+        return $this->instructors;
     }
 
     /**
@@ -1466,7 +1532,7 @@ class Demo extends AbstractBase
     public function getCourses()
     {
         $this->checkIntermittentFailure();
-        return ["Course A", "Course B", "Course C"];
+        return $this->courses;
     }
 
     /**
@@ -1511,6 +1577,42 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Determine a course ID for findReserves.
+     *
+     * @param string $course Course ID (or empty for a random choice)
+     *
+     * @return string
+     */
+    protected function getCourseId(string $course = ''): string
+    {
+        return empty($course) ? (string)rand(0, count($this->courses) - 1) : $course;
+    }
+
+    /**
+     * Determine a department ID for findReserves.
+     *
+     * @param string $dept Department ID (or empty for a random choice)
+     *
+     * @return string
+     */
+    protected function getDepartmentId(string $dept = ''): string
+    {
+        return empty($dept) ? (string)rand(0, count($this->departments) - 1) : $dept;
+    }
+
+    /**
+     * Determine an instructor ID for findReserves.
+     *
+     * @param string $inst Instructor ID (or empty for a random choice)
+     *
+     * @return string
+     */
+    protected function getInstructorId(string $inst = ''): string
+    {
+        return empty($inst) ? (string)rand(0, count($this->instructors) - 1) : $inst;
+    }
+
+    /**
      * Find Reserves
      *
      * Obtain information on course reserves.
@@ -1540,7 +1642,12 @@ class Demo extends AbstractBase
 
         $retVal = [];
         foreach ($results as $current) {
-            $retVal[] = ['BIB_ID' => $current];
+            $retVal[] = [
+                'BIB_ID' => $current,
+                'INSTRUCTOR_ID' => $this->getInstructorId($inst),
+                'COURSE_ID' => $this->getCourseId($course),
+                'DEPARTMENT_ID' => $this->getDepartmentId($dept),
+            ];
         }
         return $retVal;
     }
@@ -1594,18 +1701,78 @@ class Demo extends AbstractBase
     /**
      * Get Cancel Hold Details
      *
-     * In order to cancel a hold, Voyager requires the patron details an item ID
-     * and a recall ID. This function returns the item id and recall id as a string
-     * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function.
+     * Get required data for canceling a hold. This value is relayed to the
+     * cancelHolds function when the user attempts to cancel holds. Returning an
+     * empty string means that the hold is not cancelable.
      *
-     * @param array $holdDetails An array of item data
+     * N.B. This must return same information as the updateDetails field of each
+     * hold returned by getMyHolds since it is used as the identifier also for
+     * updates when both functions are available.
+     *
+     * @param array $hold   An array of hold data
+     * @param array $patron Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
-        return $holdDetails['reqnum'];
+        return empty($hold['available']) && empty($hold['in_transit'])
+            ? $hold['reqnum'] : '';
+    }
+
+    /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $holdsDetails The details identifying the holds
+     * @param array $fields       An associative array of fields to be updated
+     * @param array $patron       Patron array
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(
+        array $holdsDetails,
+        array $fields,
+        array $patron
+    ): array {
+        $results = [];
+        $session = $this->getSession($patron['id']);
+        foreach ($session->holds as &$currentHold) {
+            if (!isset($currentHold['updateDetails'])
+                || !in_array($currentHold['updateDetails'], $holdsDetails)
+            ) {
+                continue;
+            }
+            if ($this->isFailing(__METHOD__, 25)) {
+                $results[$currentHold['reqnum']]['success'] = false;
+                $results[$currentHold['reqnum']]['status']
+                    = 'Simulated error; try again and it will work eventually.';
+                continue;
+            }
+            if (array_key_exists('frozen', $fields)) {
+                if ($fields['frozen']) {
+                    $currentHold['frozen'] = true;
+                    if (isset($fields['frozenThrough'])) {
+                        $currentHold['frozenThrough'] = $this->dateConverter
+                            ->convertToDisplayDate('U', $fields['frozenThroughTS']);
+                    } else {
+                        $currentHold['frozenThrough'] = '';
+                    }
+                } else {
+                    $currentHold['frozen'] = false;
+                    $currentHold['frozenThrough'] = '';
+                }
+            }
+            if (isset($fields['pickUpLocation'])) {
+                $currentHold['location'] = $fields['pickUpLocation'];
+            }
+            $results[$currentHold['reqnum']]['success'] = true;
+        }
+
+        return $results;
     }
 
     /**
@@ -1663,13 +1830,16 @@ class Demo extends AbstractBase
      * separated by a pipe, which is then submitted as form data in Hold.php. This
      * value is then extracted by the CancelHolds function.
      *
-     * @param array $details An array of item data
+     * @param array $request An array of request data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($request, $patron)
     {
-        return $details['reqnum'];
+        return $request['reqnum'];
     }
 
     /**
@@ -1711,7 +1881,8 @@ class Demo extends AbstractBase
                         = $this->calculateDueStatus($transactions[$i]['rawduedate']);
                     $transactions[$i]['duedate']
                         = $this->dateConverter->convertToDisplayDate(
-                            'U', $transactions[$i]['rawduedate']
+                            'U',
+                            $transactions[$i]['rawduedate']
                         );
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
                     $transactions[$i]['renewable']
@@ -1825,27 +1996,7 @@ class Demo extends AbstractBase
             ? $session->holds[$lastHold]['item_id'] + 1 : 0;
 
         // Figure out appropriate expiration date:
-        if (!isset($holdDetails['requiredBy'])
-            || empty($holdDetails['requiredBy'])
-        ) {
-            $expire = strtotime("now + 30 days");
-        } else {
-            try {
-                $expire = $this->dateConverter->convertFromDisplayDate(
-                    "U", $holdDetails['requiredBy']
-                );
-            } catch (DateException $e) {
-                // Expiration date is invalid
-                return [
-                    'success' => false, 'sysMessage' => 'hold_date_invalid'
-                ];
-            }
-        }
-        if ($expire <= time()) {
-            return [
-                'success' => false, 'sysMessage' => 'hold_date_past'
-            ];
-        }
+        $expire = $holdDetails['requiredByTS'] ?: strtotime('now + 30 days');
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
@@ -1855,6 +2006,20 @@ class Demo extends AbstractBase
                 $requestGroup = $group['name'];
                 break;
             }
+        }
+        if ($holdDetails['startDateTS']) {
+            // Suspend until the previous day:
+            $frozen = true;
+            $frozenThrough = $this->dateConverter->convertToDisplayDate(
+                'U',
+                \DateTime::createFromFormat(
+                    'U',
+                    $holdDetails['startDateTS']
+                )->modify('-1 DAY')->getTimestamp()
+            );
+        } else {
+            $frozen = false;
+            $frozenThrough = '';
         }
         $session->holds->append(
             [
@@ -1866,10 +2031,13 @@ class Demo extends AbstractBase
                 'create'   =>
                     $this->dateConverter->convertToDisplayDate('U', time()),
                 'reqnum'   => sprintf('%06d', $nextId),
-                'item_id' => $nextId,
-                'volume' => '',
+                'item_id'  => $nextId,
+                'volume'   => '',
                 'processed' => '',
-                'requestGroup' => $requestGroup
+                'requestGroup' => $requestGroup,
+                'frozen'   => $frozen,
+                'frozenThrough' => $frozenThrough,
+                'updateDetails' => sprintf('%06d', $nextId)
             ]
         );
 
@@ -1955,7 +2123,8 @@ class Demo extends AbstractBase
         } else {
             try {
                 $expire = $this->dateConverter->convertFromDisplayDate(
-                    "U", $details['requiredBy']
+                    "U",
+                    $details['requiredBy']
                 );
             } catch (DateException $e) {
                 // Expiration date is invalid
@@ -2069,7 +2238,8 @@ class Demo extends AbstractBase
         } else {
             try {
                 $expire = $this->dateConverter->convertFromDisplayDate(
-                    'U', $details['requiredBy']
+                    'U',
+                    $details['requiredBy']
                 );
             } catch (DateException $e) {
                 // Expiration Date is invalid
@@ -2259,13 +2429,16 @@ class Demo extends AbstractBase
     /**
      * Get Cancel ILL Request Details
      *
-     * @param array $details An array of item data
+     * @param array $request An array of request data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($request, $patron)
     {
-        return $details['reqnum'];
+        return $request['reqnum'];
     }
 
     /**
@@ -2312,12 +2485,13 @@ class Demo extends AbstractBase
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {
-            return [
-                'HMACKeys' => 'id:item_id:level',
-                'extraHoldFields' =>
-                    'comments:requestGroup:pickUpLocation:requiredByDate',
-                'defaultRequiredDate' => 'driver:0:2:0',
-            ];
+            return $this->config['Holds']
+                ?? [
+                    'HMACKeys' => 'id:item_id:level',
+                    'extraHoldFields' =>
+                        'comments:requestGroup:pickUpLocation:requiredByDate',
+                    'defaultRequiredDate' => 'driver:0:2:0',
+                ];
         }
         if ($function == 'Holdings') {
             return [
@@ -2406,7 +2580,9 @@ class Demo extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+    public function getRecentlyReturnedBibs(
+        $limit = 30,
+        $maxage = 30,
         $patron = null
     ) {
         // This is similar to getNewItems for demo purposes.

@@ -97,7 +97,9 @@ class ContentPages extends AbstractGeneratorPlugin
      * @param RouteStackInterface $router    Router
      * @param Config              $config    Main VuFind configuration
      */
-    public function __construct(ThemeInfo $themeInfo, RouteStackInterface $router,
+    public function __construct(
+        ThemeInfo $themeInfo,
+        RouteStackInterface $router,
         Config $config
     ) {
         $this->themeInfo = $themeInfo;

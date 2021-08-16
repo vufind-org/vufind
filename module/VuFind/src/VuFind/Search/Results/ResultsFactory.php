@@ -59,17 +59,28 @@ class ResultsFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         // Replace trailing "Results" with "Params" to get the params service:
         $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
+        // Replace leading namespace with "VuFind" if service is not available:
+        $paramsServiceAvailable = $container
+            ->get(\VuFind\Search\Params\PluginManager::class)->has($paramsService);
+        if (!$paramsServiceAvailable) {
+            $paramsService = preg_replace('/^[^\\\]+/', 'VuFind', $paramsService);
+        }
         $params = $container->get(\VuFind\Search\Params\PluginManager::class)
             ->get($paramsService);
         $searchService = $container->get(\VuFindSearch\Service::class);
         $recordLoader = $container->get(\VuFind\Record\Loader::class);
         $results = new $requestedName(
-            $params, $searchService, $recordLoader, ...($options ?: [])
+            $params,
+            $searchService,
+            $recordLoader,
+            ...($options ?: [])
         );
         $results->setUrlQueryHelperFactory(
             $container->get(UrlQueryHelperFactory::class)

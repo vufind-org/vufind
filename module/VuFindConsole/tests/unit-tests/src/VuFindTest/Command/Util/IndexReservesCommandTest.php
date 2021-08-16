@@ -164,7 +164,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')
@@ -229,10 +229,15 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $ils->expects($this->exactly(4))->method('__call')
             ->withConsecutive(
-                ['getInstructors'], ['getCourses'], ['getDepartments'],
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
                 ['findReserves']
             )->willReturnOnConsecutiveCalls(
-                $instructors, $courses, $departments, $reserves
+                $instructors,
+                $courses,
+                $departments,
+                $reserves
             );
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')
@@ -272,7 +277,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')

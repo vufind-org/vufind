@@ -98,12 +98,14 @@ class AbstractBaseFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        return $this->applyPermissions($container, new $requestedName($container));
+        return $this->applyPermissions(
+            $container,
+            new $requestedName($container, ...($options ?: []))
+        );
     }
 }

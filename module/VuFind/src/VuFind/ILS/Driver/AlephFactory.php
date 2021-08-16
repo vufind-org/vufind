@@ -57,7 +57,9 @@ class AlephFactory extends DriverWithDateConverterFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -66,7 +68,10 @@ class AlephFactory extends DriverWithDateConverterFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$container->get(\VuFind\Cache\Manager::class)]
+            [
+                $container->get(\VuFind\Cache\Manager::class),
+                $container->get(\Laminas\Mvc\I18n\Translator::class)
+            ]
         );
     }
 }

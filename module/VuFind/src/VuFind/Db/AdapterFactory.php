@@ -80,7 +80,9 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -108,7 +110,9 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             throw new \Exception('"database" setting missing');
         }
         return $this->getAdapterFromConnectionString(
-            $this->config->Database->database, $overrideUser, $overridePass
+            $this->config->Database->database,
+            $overrideUser,
+            $overridePass
         );
     }
 
@@ -194,8 +198,10 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      *
      * @return Adapter
      */
-    public function getAdapterFromConnectionString($connectionString,
-        $overrideUser = null, $overridePass = null
+    public function getAdapterFromConnectionString(
+        $connectionString,
+        $overrideUser = null,
+        $overridePass = null
     ) {
         [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);

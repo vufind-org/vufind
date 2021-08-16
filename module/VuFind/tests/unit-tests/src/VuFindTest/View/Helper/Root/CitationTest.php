@@ -371,7 +371,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
             $driver->setRawData($current['raw']);
-            $cb = $citation->__invoke($driver);
+            $cb = $citation($driver);
 
             // Normalize whitespace:
             $apa = trim(preg_replace("/\s+/", " ", $cb->getCitation('APA')));

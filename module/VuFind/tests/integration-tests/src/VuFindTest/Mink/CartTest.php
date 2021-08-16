@@ -150,7 +150,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function addCurrentPageToCart(Element $page, Element $updateCart,
+    protected function addCurrentPageToCart(
+        Element $page,
+        Element $updateCart,
         $selectAllId = '#addFormCheckboxSelectAll'
     ) {
         $selectAll = $page->find('css', $selectAllId);
@@ -412,7 +414,8 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             $page = $this->getRecordPage('testsample' . $x);
             $this->clickCss($page, '.cart-add');
             $this->assertEquals(
-                $x . ' items', $this->findCss($page, '#cartItems')->getText()
+                $x . ' items',
+                $this->findCss($page, '#cartItems')->getText()
             );
         }
     }
@@ -567,7 +570,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
         $this->findCssAndSetValue(
-            $page, '.modal #email_to', 'demian.katz@villanova.edu'
+            $page,
+            '.modal #email_to',
+            'demian.katz@villanova.edu'
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -611,7 +616,8 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
-            'Your item(s) were saved successfully. Go to List.', $result->getText()
+            'Your item(s) were saved successfully. Go to List.',
+            $result->getText()
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
@@ -764,52 +770,59 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getSearchResultsPage();
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => false,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => false,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => false,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => false,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => false,
+            $page,
+            [
+                'showBookBag' => false,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => false,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => false,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => false,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => true,
             ]
         );
     }

@@ -28,7 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFind\RecordDriver\Feature;
 
 use VuFind\View\Helper\Root\RecordLink;
 use VuFind\XSLT\Processor as XSLTProcessor;
@@ -144,7 +144,8 @@ trait MarcAdvancedTrait
                         $retval[] = [
                             'heading' => $current,
                             'type' => $fieldType,
-                            'source' => $source
+                            'source' => $source,
+                            'id' => $this->getSubfield($result, '0')
                         ];
                     } else {
                         $retval[] = $current;
@@ -155,7 +156,8 @@ trait MarcAdvancedTrait
 
         // Remove duplicates and then send back everything we collected:
         return array_map(
-            'unserialize', array_unique(array_map('serialize', $retval))
+            'unserialize',
+            array_unique(array_map('serialize', $retval))
         );
     }
 
@@ -839,7 +841,8 @@ trait MarcAdvancedTrait
                     $matches[$i] = ['id' => $this->getUniqueId()];
                 }
                 $matches[$i][$key] = $this->extractSingleMarcDetail(
-                    $currentField, $details
+                    $currentField,
+                    $details
                 );
             }
         }
@@ -902,7 +905,8 @@ trait MarcAdvancedTrait
     public function getRDFXML()
     {
         return XSLTProcessor::process(
-            'record-rdf-mods.xsl', trim($this->getMarcReader()->toFormat('MARCXML'))
+            'record-rdf-mods.xsl',
+            trim($this->getMarcReader()->toFormat('MARCXML'))
         );
     }
 

@@ -58,13 +58,18 @@ class JsTranslationsFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         $helpers = $container->get('ViewHelperManager');
-        return new $requestedName($helpers->get('transEsc'));
+        return new $requestedName(
+            $helpers->get('translate'),
+            $helpers->get('transEsc')
+        );
     }
 }

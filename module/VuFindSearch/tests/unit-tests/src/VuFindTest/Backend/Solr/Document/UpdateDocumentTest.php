@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -38,6 +39,7 @@ use VuFindSearch\Backend\Solr\Document\UpdateDocument;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -50,13 +52,17 @@ class UpdateDocumentTest extends TestCase
      */
     public function testAsXML()
     {
-        $record = $this->getMockForAbstractClass('VuFindSearch\Backend\Solr\Record\SerializableRecordInterface');
+        $record = $this->getMockForAbstractClass(\VuFindSearch\Backend\Solr\Record\SerializableRecordInterface::class);
         $record->expects($this->once())
             ->method('getFields')
             ->will($this->returnValue(['id' => 'ID', 'field' => 'FIELD']));
         $document = new UpdateDocument();
         $document->addRecord($record, ['boost' => '2.0']);
-        $xml = $document->asXML();
+        $this->assertEquals(
+            'text/xml; charset=UTF-8',
+            $document->getContentType()
+        );
+        $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(
             '<add><doc boost="2.0"><field name="id">ID</field><field name="field">FIELD</field></doc></add>',
             $xml

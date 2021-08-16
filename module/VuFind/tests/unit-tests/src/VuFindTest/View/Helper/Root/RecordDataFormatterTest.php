@@ -54,7 +54,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Record\Router::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getActionRouteDetails'])
+            ->onlyMethods(['getActionRouteDetails'])
             ->getMock();
         $mock->expects($this->any())->method('getActionRouteDetails')
             ->will($this->returnValue(['route' => 'home', 'params' => []]));
@@ -104,7 +104,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
             ->will($this->returnValue([]));
@@ -141,9 +141,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $factory = new RecordDataFormatterFactory();
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(
-            \VuFind\Config\PluginManager::class, new \VuFind\Config\PluginManager($container)
+            \VuFind\Config\PluginManager::class,
+            new \VuFind\Config\PluginManager($container)
         );
-        $formatter = $factory->__invoke($container, RecordDataFormatter::class);
+        $formatter = $factory($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers($container);
@@ -337,7 +338,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 $value,
                 trim(
                     preg_replace(
-                        '/\s+/', ' ',
+                        '/\s+/',
+                        ' ',
                         strip_tags($this->findResult($key, $results)['value'])
                     )
                 )
@@ -346,12 +348,14 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         // Check for exact markup in representative example:
         $this->assertEquals(
-            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>', $this->findResult('Language', $results)['value']
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
+            $this->findResult('Language', $results)['value']
         );
 
         // Check for context in Building:
         $this->assertEquals(
-            ['foo' => 1], $this->findResult('Building', $results)['context']
+            ['foo' => 1],
+            $this->findResult('Building', $results)['context']
         );
     }
 }

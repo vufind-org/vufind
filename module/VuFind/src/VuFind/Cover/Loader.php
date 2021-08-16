@@ -181,8 +181,11 @@ class Loader extends \VuFind\ImageLoader
      * @param string                  $baseDir     Directory to store downloaded
      * images (set to system temp dir if not otherwise specified)
      */
-    public function __construct($config, ApiManager $manager,
-        \VuFindTheme\ThemeInfo $theme, \VuFindHttp\HttpService $httpService,
+    public function __construct(
+        $config,
+        ApiManager $manager,
+        \VuFindTheme\ThemeInfo $theme,
+        \VuFindHttp\HttpService $httpService,
         $baseDir = null
     ) {
         $this->setThemeInfo($theme);
@@ -342,7 +345,9 @@ class Loader extends \VuFind\ImageLoader
             if ($this->generator) {
                 $this->generator->setOptions($this->getCoverGeneratorSettings());
                 $this->image = $this->generator->generate(
-                    $settings['title'], $settings['author'], $settings['callnumber']
+                    $settings['title'],
+                    $settings['author'],
+                    $settings['callnumber']
                 );
                 $this->contentType = 'image/png';
             } else {
@@ -469,7 +474,9 @@ class Loader extends \VuFind\ImageLoader
             $urls = $this->getCoverUrls();
             foreach ($urls as $url) {
                 $success = $this->processImageURLForSource(
-                    $url['url'], $url['handler']->isCacheAllowed(), $url['apiName']
+                    $url['url'],
+                    $url['handler']->isCacheAllowed(),
+                    $url['apiName']
                 );
                 if ($success) {
                     return true;

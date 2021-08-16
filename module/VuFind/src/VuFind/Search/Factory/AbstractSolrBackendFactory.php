@@ -261,7 +261,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Apply deduplication if applicable:
         if (isset($search->Records->deduplication)) {
             $this->getDeduplicationListener(
-                $backend, $search->Records->deduplication
+                $backend,
+                $search->Records->deduplication
             )->attach($events);
         }
 
@@ -375,20 +376,19 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
+        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
+        $client = $httpService->createClient();
+
         $connector = new $this->connectorClass(
-            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
+            $this->getSolrUrl(),
+            new HandlerMap($handlers),
+            $this->uniqueKey,
+            $client
         );
-        $connector->setTimeout(
-            $config->Index->timeout ?? 30
-        );
+        $connector->setTimeout($config->Index->timeout ?? 30);
 
         if ($this->logger) {
             $connector->setLogger($this->logger);
-        }
-        if ($this->serviceLocator->has(\VuFindHttp\HttpService::class)) {
-            $connector->setProxy(
-                $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            );
         }
 
         if (!empty($searchConfig->SearchCache->adapter)) {
@@ -431,7 +431,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $caseSensitiveRanges
             = $search->General->case_sensitive_ranges ?? true;
         $helper = new LuceneSyntaxHelper(
-            $caseSensitiveBooleans, $caseSensitiveRanges
+            $caseSensitiveBooleans,
+            $caseSensitiveRanges
         );
         $builder->setLuceneHelper($helper);
 
@@ -446,7 +447,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createSimilarBuilder()
     {
         return new SimilarBuilder(
-            $this->config->get($this->searchConfig), $this->uniqueKey
+            $this->config->get($this->searchConfig),
+            $this->uniqueKey
         );
     }
 
@@ -492,14 +494,17 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         BackendInterface $backend,
         Config $facet
     ) {
-        if (!isset($facet->HideFacetValue)
-            || ($facet->HideFacetValue->count()) == 0
-        ) {
+        $hideFacetValue = isset($facet->HideFacetValue)
+            ? $facet->HideFacetValue->toArray() : [];
+        $showFacetValue = isset($facet->ShowFacetValue)
+            ? $facet->ShowFacetValue->toArray() : [];
+        if (empty($hideFacetValue) && empty($showFacetValue)) {
             return null;
         }
         return new HideFacetValueListener(
             $backend,
-            $facet->HideFacetValue->toArray()
+            $hideFacetValue,
+            $showFacetValue
         );
     }
 
@@ -527,7 +532,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @return InjectHighlightingListener
      */
-    protected function getInjectHighlightingListener(BackendInterface $backend,
+    protected function getInjectHighlightingListener(
+        BackendInterface $backend,
         Config $search
     ) {
         $fl = $search->General->highlighting_fields ?? '*';

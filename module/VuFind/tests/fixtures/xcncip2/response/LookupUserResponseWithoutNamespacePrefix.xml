@@ -349,11 +349,6 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
             <UserAddressInformation>
                 <UserAddressRoleType Scheme="http://www.niso.org/ncip/v2_0/imp1/schemes/useraddressroletype/useraddressroletype.scm">Ship To</UserAddressRoleType>
                 <PhysicalAddress>
-                    <StructuredAddress>
-                        <Street>Trvalá ulice 123</Street>
-                        <Locality>Trvalé</Locality>
-                        <PostalCode>12345 </PostalCode>
-                    </StructuredAddress>
                     <UnstructuredAddress>
                         <UnstructuredAddressData>Trvalá ulice 123, Big City, 12345</UnstructuredAddressData>
                     </UnstructuredAddress>

@@ -79,11 +79,11 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver($type = 'Sample', $methods = [])
+    protected function getMockDriver($type = 'Sample', $methods = ['patronLogin'])
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -112,7 +112,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
                 new \Laminas\Config\Config(['driver' => 'Sample']),
-                $driverManager, $mockConfigReader
+                $driverManager,
+                $mockConfigReader
             ),
             $authenticator
         );
@@ -372,7 +373,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
-            ->setMethods(['storedCatalogLogin'])
+            ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
         $mock->expects($this->any())->method('storedCatalogLogin')
             ->will($this->returnValue($patron));

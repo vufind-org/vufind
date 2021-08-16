@@ -70,8 +70,10 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
 
         $expected = 'Showing 1 - 1 results of 1 for search \'id:testbug2\'';
         $this->assertEquals(
-            $expected, substr(
-                $this->findCss($page, '.search-stats')->getText(), 0,
+            $expected,
+            substr(
+                $this->findCss($page, '.search-stats')->getText(),
+                0,
                 strlen($expected)
             )
         );

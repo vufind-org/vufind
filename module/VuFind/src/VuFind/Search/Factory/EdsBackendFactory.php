@@ -116,10 +116,13 @@ class EdsBackendFactory implements FactoryInterface
             $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
         $backend = new Backend(
-            $connector, $this->createRecordCollectionFactory(),
+            $connector,
+            $this->createRecordCollectionFactory(),
             $this->serviceLocator->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
-            $session, $this->edsConfig, $isGuest
+            $session,
+            $this->edsConfig,
+            $isGuest
         );
         $backend->setAuthManager(
             $this->serviceLocator->get(\VuFind\Auth\Manager::class)
@@ -141,6 +144,12 @@ class EdsBackendFactory implements FactoryInterface
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST'
         ];
+        if (isset($this->edsConfig->General->api_url)) {
+            $options['api_url'] = $this->edsConfig->General->api_url;
+        }
+        if (isset($this->edsConfig->General->auth_url)) {
+            $options['auth_url'] = $this->edsConfig->General->auth_url;
+        }
         // Build HTTP client:
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
