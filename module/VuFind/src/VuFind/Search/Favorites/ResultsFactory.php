@@ -57,7 +57,9 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -65,7 +67,8 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         }
         $tm = $container->get(\VuFind\Db\Table\PluginManager::class);
         $obj = parent::__invoke(
-            $container, $requestedName,
+            $container,
+            $requestedName,
             [$tm->get('Resource'), $tm->get('UserList')]
         );
         $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();

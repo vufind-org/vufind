@@ -85,7 +85,9 @@ class MarkdownFactory implements FactoryInterface
      * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
-        ContainerInterface $container, $requestedName, array $options = null
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
     ) {
         $markdownConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('markdown');
@@ -124,7 +126,9 @@ class MarkdownFactory implements FactoryInterface
                 continue;
             }
             $extClass = sprintf(
-                'League\CommonMark\Extension\%s\%sExtension', $ext, $ext
+                'League\CommonMark\Extension\%s\%sExtension',
+                $ext,
+                $ext
             );
             if (!class_exists($extClass)) {
                 throw new ServiceNotCreatedException(

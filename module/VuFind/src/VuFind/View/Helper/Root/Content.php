@@ -63,7 +63,8 @@ class Content extends AbstractHelper
      * @param TemplateBased $block         TemplateBased ContentBlock
      * @param Context       $contextHelper Context view helper
      */
-    public function __construct(TemplateBased $block,
+    public function __construct(
+        TemplateBased $block,
         Context $contextHelper
     ) {
         $this->templateBasedBlock = $block;
@@ -81,19 +82,25 @@ class Content extends AbstractHelper
      *
      * @return string            Rendered template output
      */
-    public function renderTranslated(string $pageName,
-        string $pathPrefix = 'content', array $context = [],
-        ?array &$pageDetails = [], ?string $pattern = null
+    public function renderTranslated(
+        string $pageName,
+        string $pathPrefix = 'content',
+        array $context = [],
+        ?array &$pageDetails = [],
+        ?string $pattern = null
     ) {
         if (!str_ends_with($pathPrefix, '/')) {
             $pathPrefix .= '/';
         }
         $pathPrefix = 'templates/' . $pathPrefix;
         $pageDetails = $this->templateBasedBlock->getContext(
-            $pathPrefix, $pageName, $pattern
+            $pathPrefix,
+            $pageName,
+            $pattern
         );
         return $this->contextHelper->renderInContext(
-            'ContentBlock/TemplateBased.phtml', $context + $pageDetails
+            'ContentBlock/TemplateBased.phtml',
+            $context + $pageDetails
         );
     }
 }

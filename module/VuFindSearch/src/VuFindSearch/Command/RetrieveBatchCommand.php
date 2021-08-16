@@ -53,10 +53,17 @@ class RetrieveBatchCommand extends CallMethodCommand
      * @param array     $ids     Record identifiers
      * @param ?ParamBag $params  Search backend parameters
      */
-    public function __construct(string $backend, array $ids, ?ParamBag $params = null
+    public function __construct(
+        string $backend,
+        array $ids,
+        ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend, RetrieveBatchInterface::class, 'retrieveBatch', [$ids], $params
+            $backend,
+            RetrieveBatchInterface::class,
+            'retrieveBatch',
+            [$ids],
+            $params
         );
     }
 

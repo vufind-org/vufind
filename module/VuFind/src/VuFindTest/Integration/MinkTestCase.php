@@ -246,7 +246,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $session = $this->getMinkSession();
         $session->wait(
-            $timeout, "typeof $ !== 'undefined' && $('$selector').length > 0"
+            $timeout,
+            "typeof $ !== 'undefined' && $('$selector').length > 0"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -268,7 +269,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function clickCss(Element $page, $selector, $timeout = 1000,
+    protected function clickCss(
+        Element $page,
+        $selector,
+        $timeout = 1000,
         $index = 0
     ) {
         $e = null;
@@ -297,8 +301,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findCssAndSetValue(Element $page, $selector, $value,
-        $timeout = 1000, $retries = 6
+    protected function findCssAndSetValue(
+        Element $page,
+        $selector,
+        $value,
+        $timeout = 1000,
+        $retries = 6
     ) {
         $field = $this->findCss($page, $selector, $timeout);
 

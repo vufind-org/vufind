@@ -87,7 +87,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(['filename' => '/does/not/exist']);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
-            "Cannot find file: /does/not/exist\n", $commandTester->getDisplay()
+            "Cannot find file: /does/not/exist\n",
+            $commandTester->getDisplay()
         );
     }
 

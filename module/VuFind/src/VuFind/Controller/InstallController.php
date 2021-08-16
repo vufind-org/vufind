@@ -73,7 +73,9 @@ class InstallController extends AbstractBase
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
         $events->attach(
-            MvcEvent::EVENT_DISPATCH, [$this, 'validateAutoConfigureConfig'], 1000
+            MvcEvent::EVENT_DISPATCH,
+            [$this, 'validateAutoConfigureConfig'],
+            1000
         );
     }
 
@@ -363,7 +365,8 @@ class InstallController extends AbstractBase
                         ->addMessage(
                             'Problem initializing database adapter; '
                             . 'check for missing ' . $view->driver
-                            . ' library .  Details: ' . $e->getMessage(), 'error'
+                            . ' library .  Details: ' . $e->getMessage(),
+                            'error'
                         );
                     return $view;
                 }
@@ -413,7 +416,9 @@ class InstallController extends AbstractBase
                         $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
                         $config = ConfigLocator::getLocalConfigPath(
-                            'config.ini', null, true
+                            'config.ini',
+                            null,
+                            true
                         );
                         $writer = new ConfigWriter($config);
                         $writer->set('Database', 'database', $string);
@@ -575,7 +580,9 @@ class InstallController extends AbstractBase
             $view->drivers = $drivers;
         } else {
             $view->configPath = ConfigLocator::getLocalConfigPath(
-                "{$config->Catalog->driver}.ini", null, true
+                "{$config->Catalog->driver}.ini",
+                null,
+                true
             );
         }
         return $view;
@@ -876,7 +883,9 @@ class InstallController extends AbstractBase
         // Jump back to fix action so we can check if it worked (and attempt
         // the next config by incrementing the $try variable, if necessary):
         return $this->redirect()->toRoute(
-            'install-fixsslcerts', [], ['query' => ['try' => $try + 1]]
+            'install-fixsslcerts',
+            [],
+            ['query' => ['try' => $try + 1]]
         );
     }
 

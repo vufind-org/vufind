@@ -137,12 +137,17 @@ class Service
      *
      * @deprecated Use Service::invoke(SearchCommand $command) instead
      */
-    public function search($backend, Query\AbstractQuery $query, $offset = 0,
-        $limit = 20, ParamBag $params = null
+    public function search(
+        $backend,
+        Query\AbstractQuery $query,
+        $offset = 0,
+        $limit = 20,
+        ParamBag $params = null
     ) {
         $command = new SearchCommand($backend, $query, $offset, $limit, $params);
         return $this->legacyInvoke(
-            $command, ['query' => $query, 'offset' => $offset, 'limit' => $limit]
+            $command,
+            ['query' => $query, 'offset' => $offset, 'limit' => $limit]
         );
     }
 
@@ -159,12 +164,17 @@ class Service
      *
      * @deprecated Use Service::invoke(GetIdsCommand $command) instead
      */
-    public function getIds($backend, Query\AbstractQuery $query, $offset = 0,
-        $limit = 20, ParamBag $params = null
+    public function getIds(
+        $backend,
+        Query\AbstractQuery $query,
+        $offset = 0,
+        $limit = 20,
+        ParamBag $params = null
     ) {
         $command = new GetIdsCommand($backend, $query, $offset, $limit, $params);
         return $this->legacyInvoke(
-            $command, ['query' => $query, 'offset' => $offset, 'limit' => $limit]
+            $command,
+            ['query' => $query, 'offset' => $offset, 'limit' => $limit]
         );
     }
 
@@ -250,7 +260,10 @@ class Service
      *
      * @deprecated Use Service::invoke(WorkExpressionsCommand $command) instead
      */
-    public function workExpressions($backend, $id, $workKeys = null,
+    public function workExpressions(
+        $backend,
+        $id,
+        $workKeys = null,
         ParamBag $params = null
     ) {
         $command = new WorkExpressionsCommand($backend, $id, $workKeys, $params);
@@ -302,7 +315,8 @@ class Service
         $params = $command->getSearchParameters();
         $context = $command->getContext();
         $args = array_merge(
-            compact('backend', 'params', 'context', 'command'), $args
+            compact('backend', 'params', 'context', 'command'),
+            $args
         );
 
         $backendInstance = $this->resolve($backend, $args);
@@ -344,7 +358,8 @@ class Service
             if (!$response->stopped()) {
                 throw new Exception\RuntimeException(
                     sprintf(
-                        'Unable to resolve backend: %s, %s', $args['context'],
+                        'Unable to resolve backend: %s, %s',
+                        $args['context'],
                         $args['backend']
                     )
                 );

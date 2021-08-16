@@ -52,7 +52,8 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         $test = new Writer($this->getFixtureDir() . 'configs/1.1/sms.ini');
         $this->assertEquals(
-            $this->getFixture('configs/1.1/sms.ini'), $test->getContent()
+            $this->getFixture('configs/1.1/sms.ini'),
+            $test->getContent()
         );
     }
 
@@ -201,7 +202,8 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test = new Writer('fake.ini', $cfg);
         $test->set('test', 'key1', 'val2');
         $this->assertEquals(
-            "[test]\nkey1 = \"val2\" ; comment", trim($test->getContent())
+            "[test]\nkey1 = \"val2\" ; comment",
+            trim($test->getContent())
         );
     }
 

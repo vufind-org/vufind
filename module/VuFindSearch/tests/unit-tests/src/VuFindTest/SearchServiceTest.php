@@ -635,7 +635,8 @@ class SearchServiceTest extends TestCase
         $service = new Service();
         $em->expects($this->any())->method('triggerUntil')
             ->with(
-                $this->anything(), $this->equalTo('resolve'),
+                $this->anything(),
+                $this->equalTo('resolve'),
                 $this->equalTo($service)
             )->will($this->returnValue($mockResponse));
         $service->setEventManager($em);
@@ -648,7 +649,8 @@ class SearchServiceTest extends TestCase
      * Create a mock backend.
      */
     protected function createMockBackend(
-        $class = \VuFindSearch\Backend\BackendInterface::class, $identifier = 'foo'
+        $class = \VuFindSearch\Backend\BackendInterface::class,
+        $identifier = 'foo'
     ) {
         $backend = $this->createMock($class);
         $backend->method('getIdentifier')->will($this->returnValue($identifier));

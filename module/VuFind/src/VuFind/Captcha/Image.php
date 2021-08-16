@@ -51,7 +51,8 @@ class Image extends LaminasBase
      * @param \Laminas\Captcha\AbstractWord $captcha       Laminas CAPTCHA object
      * @param string                        $cacheBasePath e.g. /vufind/cache/
      */
-    public function __construct(\Laminas\Captcha\AbstractWord $captcha,
+    public function __construct(
+        \Laminas\Captcha\AbstractWord $captcha,
         string $cacheBasePath
     ) {
         $this->cacheBasePath = $cacheBasePath;

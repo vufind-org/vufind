@@ -54,7 +54,9 @@ class AddEllipsis extends AbstractHelper
         // Remove highlighting markers from the string so we can perform a clean
         // comparison:
         $dehighlighted = str_replace(
-            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $highlighted
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+            '',
+            $highlighted
         );
 
         // If the dehighlighted string is shorter than the full string, we need

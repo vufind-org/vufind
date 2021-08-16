@@ -74,7 +74,8 @@ abstract class AbstractBase implements DriverInterface
      * @return void
      */
     protected function throwAsIlsException(
-        \Throwable $exception, string $msg = null
+        \Throwable $exception,
+        string $msg = null
     ): void {
         throw new ILSException($msg ?? $exception->getMessage(), 0, $exception);
     }

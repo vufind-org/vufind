@@ -57,13 +57,15 @@ class LibraryCardsController extends AbstractBase
         // Check for "delete card" request; parameter may be in GET or POST depending
         // on calling context.
         $deleteId = $this->params()->fromPost(
-            'delete', $this->params()->fromQuery('delete')
+            'delete',
+            $this->params()->fromQuery('delete')
         );
         if ($deleteId) {
             // If the user already confirmed the operation, perform the delete now;
             // otherwise prompt for confirmation:
             $confirm = $this->params()->fromPost(
-                'confirm', $this->params()->fromQuery('confirm')
+                'confirm',
+                $this->params()->fromQuery('confirm')
             );
             if ($confirm) {
                 $success = $this->performDeleteLibraryCard($deleteId);
@@ -165,7 +167,8 @@ class LibraryCardsController extends AbstractBase
 
         // Have we confirmed this?
         $confirm = $this->params()->fromPost(
-            'confirm', $this->params()->fromQuery('confirm')
+            'confirm',
+            $this->params()->fromQuery('confirm')
         );
         if ($confirm) {
             $user->deleteLibraryCard($cardID);
@@ -181,7 +184,8 @@ class LibraryCardsController extends AbstractBase
             'confirm_delete_library_card_brief',
             $this->url()->fromRoute('librarycards-deletecard'),
             $this->url()->fromRoute('librarycards-home'),
-            'confirm_delete_library_card_text', ['cardID' => $cardID]
+            'confirm_delete_library_card_text',
+            ['cardID' => $cardID]
         );
     }
 
@@ -347,7 +351,10 @@ class LibraryCardsController extends AbstractBase
 
         try {
             $user->saveLibraryCard(
-                $id == 'NEW' ? null : $id, $cardName, $username, $password
+                $id == 'NEW' ? null : $id,
+                $cardName,
+                $username,
+                $password
             );
         } catch (\VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addMessage($e->getMessage(), 'error');

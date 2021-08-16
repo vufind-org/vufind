@@ -612,7 +612,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 }
             }
             $branchcodes = "'" . implode(
-                "','", $this->pickupEnableBranchcodes
+                "','",
+                $this->pickupEnableBranchcodes
             ) . "'";
             $sql = "SELECT branchcode as locationID,
                        branchname as locationDisplay
@@ -1548,7 +1549,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($rsp->{'loans'}->{'loan'} ?? [] as $loan) {
             $start = microtime(true);
             $rsp2 = $this->makeIlsdiRequest(
-                "GetServices", [
+                "GetServices",
+                [
                     "patron_id" => $id,
                     "item_id" => $this->getField($loan->{'itemnumber'})
                 ]
@@ -2044,13 +2046,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             // YYYY-MM-DD HH:MM:SS
             return
                 $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d H:i:s', $date
+                    'Y-m-d H:i:s',
+                    $date
                 );
         } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d$/", $date) === 1) {
             // YYYY-MM-DD HH:MM
             return
                 $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d H:i', $date
+                    'Y-m-d H:i',
+                    $date
                 );
         } else {
             error_log("Unexpected date format: $date");

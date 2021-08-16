@@ -71,7 +71,9 @@ class HoldingsILS extends AbstractBase
      * @param bool                        $hideWhenEmpty Whether the
      * holdings tab should be hidden when empty or not
      */
-    public function __construct(Connection $catalog = null, $template = null,
+    public function __construct(
+        Connection $catalog = null,
+        $template = null,
         $hideWhenEmpty = false
     ) {
         $this->catalog = $catalog;
