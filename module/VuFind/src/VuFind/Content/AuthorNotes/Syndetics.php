@@ -118,7 +118,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     }
                     // Decode the content and strip unwanted <a> tags:
                     $anotes[$i]['Content'] = preg_replace(
-                        '/<a>|<a [^>]*>|<\/a>/', '',
+                        '/<a>|<a [^>]*>|<\/a>/',
+                        '',
                         html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
                     );
                 }

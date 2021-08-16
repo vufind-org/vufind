@@ -79,7 +79,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                ')';
         $this->db = new \VuFind\Connection\Oracle(
             $this->config['Catalog']['user'],
-            $this->config['Catalog']['password'], $tns
+            $this->config['Catalog']['password'],
+            $tns
         );
     }
 
@@ -592,7 +593,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             // ... can this user borrow on loan items at this
                             // location?
                             $can_req = in_array(
-                                $location, $unavailable_locs[$item_loc_code]
+                                $location,
+                                $unavailable_locs[$item_loc_code]
                             );
                         }
                     } else {
@@ -611,7 +613,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                                 // ... can the user borrow available items at this
                                 // location?
                                 $can_req = in_array(
-                                    $location, $available_locs[$item_loc_code]
+                                    $location,
+                                    $available_locs[$item_loc_code]
                                 );
                             }
                         }

@@ -155,7 +155,8 @@ class Voyager extends AbstractBase
         $this->displayDueTimeIntervals
             = isset($this->config['Loans']['display_due_time_only_for_intervals'])
             ? explode(
-                ':', $this->config['Loans']['display_due_time_only_for_intervals']
+                ':',
+                $this->config['Loans']['display_due_time_only_for_intervals']
             ) : [];
     }
 
@@ -305,7 +306,8 @@ EOT
 
             if (!empty($this->config['StatusRankings'])) {
                 $this->statusRankings = array_merge(
-                    $this->statusRankings, $this->config['StatusRankings']
+                    $this->statusRankings,
+                    $this->config['StatusRankings']
                 );
             }
         }
@@ -512,7 +514,8 @@ EOT
                 ];
             } else {
                 $statusFound = in_array(
-                    $row['STATUS'], $data[$rowId]['status_array']
+                    $row['STATUS'],
+                    $data[$rowId]['status_array']
                 );
                 if (!$statusFound) {
                     $data[$rowId]['status_array'][] = $row['STATUS'];
@@ -975,7 +978,8 @@ EOT;
             }
         } catch (\Exception $e) {
             trigger_error(
-                'Poorly Formatted MFHD Record', E_USER_NOTICE
+                'Poorly Formatted MFHD Record',
+                E_USER_NOTICE
             );
         }
         return $marcDetails;
@@ -1073,13 +1077,15 @@ EOT;
                 $dueDate = false;
                 if (!empty($row['DUEDATE'])) {
                     $dueDate = $this->dateFormat->convertToDisplayDate(
-                        "m-d-y", $row['DUEDATE']
+                        "m-d-y",
+                        $row['DUEDATE']
                     );
                 }
                 $returnDate = false;
                 if (!empty($row['RETURNDATE'])) {
                     $returnDate = $this->dateFormat->convertToDisplayDateAndTime(
-                        'm-d-y H:i', $row['RETURNDATE']
+                        'm-d-y H:i',
+                        $row['RETURNDATE']
                     );
                 }
 
@@ -1237,13 +1243,16 @@ EOT;
         // Load the field used for verifying the login from the config file, and
         // make sure there's nothing crazy in there:
         $usernameField = preg_replace(
-            '/[^\w]/', '',
+            '/[^\w]/',
+            '',
             $this->config['Catalog']['username_field'] ?? 'PATRON_BARCODE'
         );
         $loginField = $this->config['Catalog']['login_field'] ?? 'LAST_NAME';
         $loginField = preg_replace('/[^\w]/', '', $loginField);
         $fallbackLoginField = preg_replace(
-            '/[^\w]/', '', $this->config['Catalog']['fallback_login_field'] ?? ''
+            '/[^\w]/',
+            '',
+            $this->config['Catalog']['fallback_login_field'] ?? ''
         );
 
         // Turns out it's difficult and inefficient to handle the mismatching
@@ -1433,10 +1442,12 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y H:i", $sqlRow['DUEDATE']
+                "m-d-y H:i",
+                $sqlRow['DUEDATE']
             );
             $dueTime = $this->dateFormat->convertToDisplayTime(
-                "m-d-y H:i", $sqlRow['DUEDATE']
+                "m-d-y H:i",
+                $sqlRow['DUEDATE']
             );
         }
 
@@ -1576,7 +1587,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['DUEDATE']
+                "m-d-y",
+                $sqlRow['DUEDATE']
             );
         }
 
@@ -1584,7 +1596,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATEDATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CREATEDATE']
+                "m-d-y",
+                $sqlRow['CREATEDATE']
             );
         }
 
@@ -1592,7 +1605,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CHARGEDATE'])) {
             $chargeDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CHARGEDATE']
+                "m-d-y",
+                $sqlRow['CHARGEDATE']
             );
         }
 
@@ -1718,7 +1732,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
             $expireDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['EXPIRE_DATE']
+                "m-d-y",
+                $sqlRow['EXPIRE_DATE']
             );
         }
 
@@ -1726,7 +1741,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CREATE_DATE']
+                "m-d-y",
+                $sqlRow['CREATE_DATE']
             );
         }
 
@@ -1911,12 +1927,14 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['PROCESSED_DATE'])) {
             $processedDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['PROCESSED_DATE']
+                "m-d-y",
+                $sqlRow['PROCESSED_DATE']
             );
         }
         if (!empty($sqlRow['STATUS_DATE'])) {
             $statusDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['STATUS_DATE']
+                "m-d-y",
+                $sqlRow['STATUS_DATE']
             );
         }
 
@@ -1924,7 +1942,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CREATE_DATE']
+                "m-d-y",
+                $sqlRow['CREATE_DATE']
             );
         }
 
@@ -1942,7 +1961,9 @@ EOT;
             'reqnum' => $sqlRow['CALL_SLIP_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
             'volume' => str_replace(
-                "v.", "", utf8_encode($sqlRow['ITEM_ENUM'])
+                "v.",
+                "",
+                utf8_encode($sqlRow['ITEM_ENUM'])
             ),
             'issue' => utf8_encode($sqlRow['ITEM_CHRON']),
             'year' => utf8_encode($sqlRow['ITEM_YEAR']),
@@ -2466,7 +2487,9 @@ EOT;
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+    public function getRecentlyReturnedBibs(
+        $limit = 30,
+        $maxage = 30,
         $patron = null
     ) {
         $recordList = [];

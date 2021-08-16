@@ -71,7 +71,8 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
         $config = new Config(
             [
                 'method_order' => 'Database,ILS'
-            ], true
+            ],
+            true
         );
         return new Config(['MultiAuth' => $config], true);
     }

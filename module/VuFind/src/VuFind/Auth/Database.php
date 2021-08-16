@@ -269,7 +269,8 @@ class Database extends AbstractBase
 
         // Normalize the allowed list:
         $includeList = array_map(
-            'trim', array_map('strtolower', $rawIncludeList)
+            'trim',
+            array_map('strtolower', $rawIncludeList)
         );
 
         // Extract the domain from the email address:

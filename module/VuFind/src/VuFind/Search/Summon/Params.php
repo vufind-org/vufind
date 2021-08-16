@@ -283,13 +283,15 @@ class Params extends \VuFind\Search\Base\Params
                     // other facets.
                     if ($filt['field'] == 'holdingsOnly') {
                         $params->set(
-                            'holdings', strtolower(trim($safeValue)) == 'true'
+                            'holdings',
+                            strtolower(trim($safeValue)) == 'true'
                         );
                     } elseif ($filt['field'] == 'queryExpansion') {
                         // Special case -- "query expansion" is a separate parameter
                         // from other facets.
                         $params->set(
-                            'expand', strtolower(trim($safeValue)) == 'true'
+                            'expand',
+                            strtolower(trim($safeValue)) == 'true'
                         );
                     } elseif ($filt['field'] == 'openAccessFilter') {
                         // Special case -- "open access filter" is a separate
@@ -326,7 +328,8 @@ class Params extends \VuFind\Search\Base\Params
                 // Deal with OR facets:
                 foreach ($orFacets as $field => $values) {
                     $params->add(
-                        'groupFilters', $field . ',or,' . implode(',', $values)
+                        'groupFilters',
+                        $field . ',or,' . implode(',', $values)
                     );
                 }
             }
@@ -346,7 +349,10 @@ class Params extends \VuFind\Search\Base\Params
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
         $filter = parent::formatFilterListEntry(
-            $field, $value, $operator, $translate
+            $field,
+            $value,
+            $operator,
+            $translate
         );
 
         // Convert range queries to a language-non-specific format:

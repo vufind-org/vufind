@@ -122,7 +122,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(false));
         $db = $this->getDatabase($table);
         $this->assertEquals(
-            false, $db->create($this->getRequest($this->getCreateParams()))
+            false,
+            $db->create($this->getRequest($this->getCreateParams()))
         );
     }
 
@@ -143,7 +144,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
         $db = $this->getDatabase($table);
         $this->assertEquals(
-            false, $db->create($this->getRequest($this->getCreateParams()))
+            false,
+            $db->create($this->getRequest($this->getCreateParams()))
         );
     }
 
@@ -218,7 +220,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             ->will(
                 $this->returnValue(
                     new ResultSet(
-                        ResultSet::TYPE_ARRAYOBJECT, $this->getMockRow()
+                        ResultSet::TYPE_ARRAYOBJECT,
+                        $this->getMockRow()
                     )
                 )
             );

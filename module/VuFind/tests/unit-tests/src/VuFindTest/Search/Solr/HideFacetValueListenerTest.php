@@ -105,11 +105,14 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return HideFacetValueListener
      */
-    protected function getListener(array $hideFacetValues = [],
+    protected function getListener(
+        array $hideFacetValues = [],
         array $showFacetValues = []
     ): HideFacetValueListener {
         return new HideFacetValueListener(
-            $this->getMockBackend(), $hideFacetValues, $showFacetValues
+            $this->getMockBackend(),
+            $hideFacetValues,
+            $showFacetValues
         );
     }
 
@@ -149,7 +152,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPost($event);
         $this->assertEquals(
-            ['Book' => 124, 'Fake' => 3], $facets['format']->toArray()
+            ['Book' => 124, 'Fake' => 3],
+            $facets['format']->toArray()
         );
     }
 
@@ -172,7 +176,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPost($event);
         $this->assertEquals(
-            ['Book' => 124], $facets['format']->toArray()
+            ['Book' => 124],
+            $facets['format']->toArray()
         );
     }
 
@@ -186,7 +191,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     public function testHideFacetsAndShowFacets(): void
     {
         $listener = $this->getListener(
-            ['format' => ['Fake']], ['format' => ['Book', 'Fake']]
+            ['format' => ['Fake']],
+            ['format' => ['Book', 'Fake']]
         );
         $result = $this->getMockResult();
         $facets = $result->getFacets()->getFieldFacets();
@@ -199,7 +205,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPost($event);
         $this->assertEquals(
-            ['Book' => 124], $facets['format']->toArray()
+            ['Book' => 124],
+            $facets['format']->toArray()
         );
     }
 }

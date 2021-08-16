@@ -147,7 +147,8 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
         );
         $command  = new MockCommandForMultiIndexListenerTest($params);
         $event    = new Event(
-            Service::EVENT_PRE, $this->backend,
+            Service::EVENT_PRE,
+            $this->backend,
             ['params' => $params, 'command' => $command]
         );
         $this->listener->onSearchPre($event);
@@ -171,7 +172,8 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
         );
         $command  = new MockCommandForMultiIndexListenerTest($params, 'retrieve');
         $event    = new Event(
-            Service::EVENT_PRE, $this->backend,
+            Service::EVENT_PRE,
+            $this->backend,
             ['params' => $params, 'context' => 'retrieve', 'command' => $command]
         );
         $this->listener->onSearchPre($event);

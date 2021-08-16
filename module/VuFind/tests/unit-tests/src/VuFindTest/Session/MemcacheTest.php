@@ -169,7 +169,8 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT), $this->equalTo(1)
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(1)
             );
         $memcache->expects($this->once())->method('addServer')
             ->will($this->returnValue(true));
@@ -200,7 +201,8 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT), $this->equalTo(1)
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(1)
             );
         $memcache->expects($this->once())->method('addServer')
             ->with(
@@ -237,7 +239,8 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT), $this->equalTo(2)
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(2)
             );
         $memcache->expects($this->once())->method('addServer')
             ->with(
@@ -278,7 +281,8 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT), $this->equalTo(1)
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(1)
             );
         $memcache->expects($this->once())->method('addServer')
             ->will($this->returnValue(true));

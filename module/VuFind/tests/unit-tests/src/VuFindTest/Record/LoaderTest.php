@@ -192,7 +192,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [$driver1, $driver2, $driver3, $missing],
             $loader->loadBatch(
-                $input, false, ['Solr' => $solrParams, 'WorldCat' => $worldCatParams]
+                $input,
+                false,
+                ['Solr' => $solrParams, 'WorldCat' => $worldCatParams]
             )
         );
     }
@@ -230,7 +232,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [$driver1, $driver2, $driver3],
             $loader->loadBatch(
-                $input, false, ['Solr' => $solrParams]
+                $input,
+                false,
+                ['Solr' => $solrParams]
             )
         );
     }
@@ -263,8 +267,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return Loader
      */
-    protected function getLoader(SearchService $service,
-        RecordFactory $factory = null, Cache $recordCache = null,
+    protected function getLoader(
+        SearchService $service,
+        RecordFactory $factory = null,
+        Cache $recordCache = null,
         FallbackLoader $fallbackLoader = null
     ) {
         if (null === $factory) {

@@ -97,7 +97,8 @@ class FeedbackController extends AbstractBase
         [$messageParams, $template]
             = $form->formatEmailMessage($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
-            $template, ['fields' => $messageParams]
+            $template,
+            ['fields' => $messageParams]
         );
 
         [$senderName, $senderEmail] = $this->getSender();
@@ -118,14 +119,23 @@ class FeedbackController extends AbstractBase
         $sendSuccess = true;
         foreach ($recipients as $recipient) {
             [$success, $errorMsg] = $this->sendEmail(
-                $recipient['name'], $recipient['email'], $senderName, $senderEmail,
-                $replyToName, $replyToEmail, $emailSubject, $emailMessage
+                $recipient['name'],
+                $recipient['email'],
+                $senderName,
+                $senderEmail,
+                $replyToName,
+                $replyToEmail,
+                $emailSubject,
+                $emailMessage
             );
 
             $sendSuccess = $sendSuccess && $success;
             if (!$success) {
                 $this->showResponse(
-                    $view, $form, false, $errorMsg
+                    $view,
+                    $form,
+                    false,
+                    $errorMsg
                 );
             }
         }
@@ -173,8 +183,14 @@ class FeedbackController extends AbstractBase
      * @return array with elements success:boolean, errorMessage:string (optional)
      */
     protected function sendEmail(
-        $recipientName, $recipientEmail, $senderName, $senderEmail,
-        $replyToName, $replyToEmail, $emailSubject, $emailMessage
+        $recipientName,
+        $recipientEmail,
+        $senderName,
+        $senderEmail,
+        $replyToName,
+        $replyToEmail,
+        $emailSubject,
+        $emailMessage
     ) {
         try {
             $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
@@ -207,7 +223,8 @@ class FeedbackController extends AbstractBase
     {
         if ($success) {
             $this->flashMessenger()->addMessage(
-                $form->getSubmitResponse(), 'success'
+                $form->getSubmitResponse(),
+                'success'
             );
         } else {
             $this->flashMessenger()->addMessage($errorMsg, 'error');

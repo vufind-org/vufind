@@ -66,21 +66,26 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(['Finding aid available'], $obj->getFindingAids());
         $this->assertEquals(
-            ['General notes here.', 'Translation.'], $obj->getGeneralNotes()
+            ['General notes here.', 'Translation.'],
+            $obj->getGeneralNotes()
         );
         $this->assertEquals(
-            ['2020', '2020'], $obj->getHumanReadablePublicationDates()
+            ['2020', '2020'],
+            $obj->getHumanReadablePublicationDates()
         );
         $this->assertEquals(
-            ['Place :', 'Location :'], $obj->getPlacesOfPublication()
+            ['Place :', 'Location :'],
+            $obj->getPlacesOfPublication()
         );
         $this->assertEquals(['00:20:10', '01:30:55'], $obj->getPlayingTimes());
         $this->assertEquals(['Producer: VuFind'], $obj->getProductionCredits());
         $this->assertEquals(
-            ['Frequency varies, 2020-'], $obj->getPublicationFrequency()
+            ['Frequency varies, 2020-'],
+            $obj->getPublicationFrequency()
         );
         $this->assertEquals(
-            ['Merged with several branches'], $obj->getRelationshipNotes()
+            ['Merged with several branches'],
+            $obj->getRelationshipNotes()
         );
         $this->assertEquals(
             [
@@ -110,7 +115,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['(FOO)123', '(Baz)456'], $obj->getConsortialIDs());
         $this->assertEquals('ismn', $obj->getCleanISMN());
         $this->assertEquals(
-            ['nbn' => 'NBN12', 'source' => 'NB'], $obj->getCleanNBN()
+            ['nbn' => 'NBN12', 'source' => 'NB'],
+            $obj->getCleanNBN()
         );
         $marc21Xml = $obj->getXML('marc21');
         $this->assertStringStartsWith(
@@ -122,7 +128,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertStringContainsString('<leader>', $marc21Xml);
         $this->assertEquals(
-            1, substr_count($marc21Xml, '<leader>00000cam a22000004i 4500</leader>')
+            1,
+            substr_count($marc21Xml, '<leader>00000cam a22000004i 4500</leader>')
         );
         $this->assertEquals(2, substr_count($marc21Xml, '<controlfield '));
         $this->assertEquals(52, substr_count($marc21Xml, '<datafield '));

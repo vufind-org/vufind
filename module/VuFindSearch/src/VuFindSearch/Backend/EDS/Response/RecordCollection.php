@@ -119,7 +119,8 @@ class RecordCollection extends AbstractRecordCollection
             && !empty($this->response['SearchRequestGet']['QueryString'])
         ) {
             $qsParameters = explode(
-                '&', $this->response['SearchRequestGet']['QueryString']
+                '&',
+                $this->response['SearchRequestGet']['QueryString']
             );
             $page = empty($qsParameters['pagenumber'])
                 ? 0 : $qsParameters['pagenumber'];

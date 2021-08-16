@@ -51,7 +51,8 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
     {
         $l = new InjectTemplateListener();
         $this->assertEquals(
-            'search', $l->mapController(\VuFind\Controller\SearchController::class)
+            'search',
+            $l->mapController(\VuFind\Controller\SearchController::class)
         );
     }
 
@@ -64,7 +65,8 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
     {
         $l = new InjectTemplateListener();
         $this->assertEquals(
-            'testcase', $this->callMethod($l, 'inflectName', ['testCase'])
+            'testcase',
+            $this->callMethod($l, 'inflectName', ['testCase'])
         );
     }
 }

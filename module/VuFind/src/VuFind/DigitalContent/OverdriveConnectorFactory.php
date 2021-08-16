@@ -64,7 +64,8 @@ class OverdriveConnectorFactory implements
      * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
-        ContainerInterface $container, $requestedName,
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
@@ -84,13 +85,17 @@ class OverdriveConnectorFactory implements
             );
         }
         $connector = new $requestedName(
-            $config, $odConfig, $auth, $sessionContainer
+            $config,
+            $odConfig,
+            $auth,
+            $sessionContainer
         );
 
         // Populate cache storage
         $connector->setCacheStorage(
             $container->get(\VuFind\Cache\Manager::class)->getCache(
-                'object', "Overdrive"
+                'object',
+                "Overdrive"
             )
         );
 

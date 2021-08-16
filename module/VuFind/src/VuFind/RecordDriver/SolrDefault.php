@@ -121,7 +121,9 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
      * @param \Laminas\Config\Config $searchSettings Search-specific configuration
      * file
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         // Load snippet settings:

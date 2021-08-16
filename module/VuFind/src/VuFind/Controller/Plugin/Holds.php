@@ -55,7 +55,10 @@ class Holds extends AbstractRequestBase
      *
      * @return array $ilsDetails with cancellation info added
      */
-    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus,
+    public function addCancelDetails(
+        $catalog,
+        $ilsDetails,
+        $cancelStatus,
         $patron = []
     ) {
         // Generate Form Details for cancelling Holds if Cancelling Holds
@@ -211,7 +214,9 @@ class Holds extends AbstractRequestBase
      *
      * @return array
      */
-    public function validateDates(?string $startDate, ?string $requiredBy,
+    public function validateDates(
+        ?string $startDate,
+        ?string $requiredBy,
         array $enabledFormFields
     ): array {
         $result = [
@@ -285,7 +290,8 @@ class Holds extends AbstractRequestBase
      *
      * @return array
      */
-    public function validateFrozenThrough(?string $frozenThrough,
+    public function validateFrozenThrough(
+        ?string $frozenThrough,
         array $extraHoldFields
     ): array {
         $result = [
