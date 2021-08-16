@@ -182,7 +182,8 @@ class DbUpgrade extends AbstractPlugin
      * @return array
      */
     protected function getCharsetAndCollationProblemsForTableColumns(
-        $table, $collation
+        $table,
+        $collation
     ) {
         // Get column summary:
         $sql = "SHOW FULL COLUMNS FROM `{$table}`";
@@ -255,7 +256,8 @@ class DbUpgrade extends AbstractPlugin
         // more information):
         [$tableCharset] = explode('_', $table['Collation']);
         $problemColumns = $this->getCharsetAndCollationProblemsForTableColumns(
-            $table['Name'], $collation
+            $table['Name'],
+            $collation
         );
         if (strcasecmp($collation, $table['Collation']) !== 0
             || strcasecmp($charset, $tableCharset) !== 0
@@ -826,7 +828,8 @@ class DbUpgrade extends AbstractPlugin
         // formatting is used here.
         preg_match_all(
             '/^\s*(UNIQUE\s+)?KEY `([^`]+)` \((.+)\),?$/m',
-            $createSql, $keyMatches
+            $createSql,
+            $keyMatches
         );
         foreach (array_keys($keyMatches[0]) as $i) {
             $unique = !empty($keyMatches[1][$i]);
