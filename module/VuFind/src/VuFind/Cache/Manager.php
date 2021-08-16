@@ -149,16 +149,10 @@ class Manager
             if (!isset($this->cacheSettings[$name])) {
                 throw new \Exception('Requested unknown cache: ' . $name);
             }
-            // Special case for "no-cache" caches:
-            if ($this->cacheSettings[$name] === false) {
-                $this->caches[$key]
-                    = new \Laminas\Cache\Storage\Adapter\BlackHole();
-            } else {
-                $settings = $this->cacheSettings[$name];
-                $settings['options']['namespace'] = $namespace;
-                $this->caches[$key]
-                    = $this->factory->createFromArrayConfiguration($settings);
-            }
+            $settings = $this->cacheSettings[$name];
+            $settings['options']['namespace'] = $namespace;
+            $this->caches[$key]
+                = $this->factory->createFromArrayConfiguration($settings);
         }
 
         return $this->caches[$key];
@@ -246,7 +240,7 @@ class Manager
      */
     protected function createNoCache($cacheName)
     {
-        $this->cacheSettings[$cacheName] = false;
+        $this->cacheSettings[$cacheName] = ['name' => 'blackhole', 'options' => []];
     }
 
     /**
