@@ -808,7 +808,7 @@ class AbstractSearch extends AbstractBase
         $view = $this->createViewModel(
             [
                 'data' => $list,
-                'exclude' => $this->params()->fromQuery('facetexclude', 0),
+                'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
                 'facet' => $facet,
                 'facetLabel' => $facetLabel,
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),
