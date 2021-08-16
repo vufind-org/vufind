@@ -777,7 +777,8 @@ class Koha extends AbstractBase
             // YYYY-MM-DD HH:MM:SS
             return
                 $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d H:i:s', $date
+                    'Y-m-d H:i:s',
+                    $date
                 );
         } else {
             error_log("Unexpected date format: $date");

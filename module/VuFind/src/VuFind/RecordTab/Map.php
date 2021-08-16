@@ -82,7 +82,9 @@ class Map extends AbstractBase
      * @param array $basemapOptions basemap settings
      * @param array $mapTabOptions  MapTab settings
      */
-    public function __construct($mapTabDisplay = false, $basemapOptions = [],
+    public function __construct(
+        $mapTabDisplay = false,
+        $basemapOptions = [],
         $mapTabOptions = []
     ) {
         if ($mapTabDisplay) {
@@ -281,11 +283,12 @@ class Map extends AbstractBase
                 $mapLabel = $mapDisplayLabels[$key];
             }
             array_push(
-                $mapTabData, [
+                $mapTabData,
+                [
                     $geoCoords[$key][0], $geoCoords[$key][1],
                     $geoCoords[$key][2], $geoCoords[$key][3],
                     $mapLabel, $mapCoords
-                    ]
+                ]
             );
         }
         return $mapTabData;

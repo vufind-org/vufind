@@ -4,7 +4,7 @@
   $this->headScript()->appendFile('map_tab_leaflet.js');
   $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
   $this->jsTranslations()->addStrings(
-    ['Coordinates' => 'Coordinates', 'no_description' => 'no_description']
+      ['Coordinates' => 'Coordinates', 'no_description' => 'no_description']
   );
   $mapTabData = $this->tab->getMapTabData();
   $mapGraticule = $this->tab->getMapGraticule();

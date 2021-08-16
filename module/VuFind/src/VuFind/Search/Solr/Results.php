@@ -274,7 +274,9 @@ class Results extends \VuFind\Search\Base\Results
     public function getSpellingSuggestions()
     {
         return $this->getSpellingProcessor()->processSuggestions(
-            $this->getRawSuggestions(), $this->spellingQuery, $this->getParams()
+            $this->getRawSuggestions(),
+            $this->spellingQuery,
+            $this->getParams()
         );
     }
 
@@ -375,8 +377,13 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array list facet values for each index field with label and more bool
      */
-    public function getPartialFieldFacets($facetfields, $removeFilter = true,
-        $limit = -1, $facetSort = null, $page = null, $ored = false
+    public function getPartialFieldFacets(
+        $facetfields,
+        $removeFilter = true,
+        $limit = -1,
+        $facetSort = null,
+        $page = null,
+        $ored = false
     ) {
         $clone = clone $this;
         $params = $clone->getParams();

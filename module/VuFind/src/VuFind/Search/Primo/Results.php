@@ -65,7 +65,11 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()->search(
-            $this->backendId, $query, $offset, $limit, $params
+            $this->backendId,
+            $query,
+            $offset,
+            $limit,
+            $params
         );
 
         $this->responseFacets = $collection->getFacets();
@@ -108,7 +112,9 @@ class Results extends \VuFind\Search\Base\Results
                     foreach ($current as $value => $count) {
                         $rawFixed = $this->getParams()->fixPrimoFacetValue($value);
                         $displayText = $translate ? $this->translate(
-                            "$transTextDomain::$value", [], $rawFixed
+                            "$transTextDomain::$value",
+                            [],
+                            $rawFixed
                         ) : $rawFixed;
                         $new[] = [
                             'value' => $value,

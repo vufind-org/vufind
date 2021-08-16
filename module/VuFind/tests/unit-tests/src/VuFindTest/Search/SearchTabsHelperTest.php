@@ -82,7 +82,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         // Non-default tab with filters
         $helper = $this->getSearchTabsHelper('default_unfiltered', ['format:video']);
         $this->assertEquals(
-            ['format' => ['video']], $helper->getHiddenFilters('Solr')
+            ['format' => ['video']],
+            $helper->getHiddenFilters('Solr')
         );
         $this->assertEquals(
             ['format' => ['video']],
@@ -92,12 +93,14 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         // Default tab with filters
         $helper = $this->getSearchTabsHelper('default_filtered');
         $this->assertEquals(
-            ['building' => ['main']], $helper->getHiddenFilters('Solr')
+            ['building' => ['main']],
+            $helper->getHiddenFilters('Solr')
         );
         $this->assertEmpty($helper->getHiddenFilters('Solr', false));
 
         $helper = $this->getSearchTabsHelper(
-            'default_unfiltered', ['building:main', 'format:video']
+            'default_unfiltered',
+            ['building:main', 'format:video']
         );
         $this->assertEquals(
             ['building' => ['main'], 'format' => ['video']],
@@ -110,7 +113,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
 
         // Non-default tab with filters
         $helper = $this->getSearchTabsHelper(
-            'default_unfiltered', ['rtype:Dissertation']
+            'default_unfiltered',
+            ['rtype:Dissertation']
         );
         $this->assertEquals(
             ['rtype' => ['Dissertation']],
@@ -131,7 +135,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getSearchTabsHelper();
         $this->assertEquals(
-            $this->tabConfig['default_unfiltered'], $helper->getTabConfig()
+            $this->tabConfig['default_unfiltered'],
+            $helper->getTabConfig()
         );
         $this->assertEquals($this->filterConfig, $helper->getTabFilterConfig());
     }
@@ -204,7 +209,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\SearchTabsHelper
      */
-    protected function getSearchTabsHelper($config = 'default_unfiltered',
+    protected function getSearchTabsHelper(
+        $config = 'default_unfiltered',
         $filters = null
     ) {
         $mockRequest = $this->createMock(\Laminas\Http\Request::class);

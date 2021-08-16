@@ -87,7 +87,8 @@ class Flashmessages extends AbstractHelper
         $html = '';
         foreach ($this->namespaces as $ns) {
             $messages = array_merge(
-                $this->fm->getMessages($ns), $this->fm->getCurrentMessages($ns)
+                $this->fm->getMessages($ns),
+                $this->fm->getCurrentMessages($ns)
             );
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div role="alert" class="'

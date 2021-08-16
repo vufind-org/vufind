@@ -227,7 +227,8 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
         // Make sure Section 4 arrays were overwritten.
         $this->assertEquals([1, 2, 3], $config->Section4->j->toArray());
         $this->assertEquals(
-            ['a' => 1, 'b' => 2, 'c' => 3], $config->Section4->k->toArray()
+            ['a' => 1, 'b' => 2, 'c' => 3],
+            $config->Section4->k->toArray()
         );
     }
 

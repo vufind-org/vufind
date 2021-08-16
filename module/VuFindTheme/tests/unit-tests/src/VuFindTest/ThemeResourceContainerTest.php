@@ -176,7 +176,8 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         ];
         foreach ($tests as $test => $expected) {
             $this->assertEquals(
-                $expected, $container->parseSetting($test)
+                $expected,
+                $container->parseSetting($test)
             );
         }
     }

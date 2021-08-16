@@ -56,10 +56,12 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $reader = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
 
         $this->assertMatchesRegularExpression(
-            '/^\d{5}cam a22\d{5}4i 4500$/', $reader->getLeader()
+            '/^\d{5}cam a22\d{5}4i 4500$/',
+            $reader->getLeader()
         );
         $this->assertEquals(
-            '021122s2020    en            000 0 eng d', $reader->getField('008')
+            '021122s2020    en            000 0 eng d',
+            $reader->getField('008')
         );
 
         $field = $reader->getField('100');
@@ -73,7 +75,8 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(4, $title['i2']);
         $this->assertEquals('The Foo:', $reader->getSubfield($title, 'a'));
         $this->assertEquals(
-            '880-01 The Foo: Bar!', implode(' ', $reader->getSubfields($title, ''))
+            '880-01 The Foo: Bar!',
+            implode(' ', $reader->getSubfields($title, ''))
         );
         $link = $reader->getFieldLink($title);
         $this->assertEquals(

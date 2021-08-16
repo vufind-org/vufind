@@ -138,7 +138,8 @@ class EDS extends DefaultRecord
         return array_map(
             function ($data) {
                 return $data['Data'];
-            }, $this->getItems(null, null, 'Au')
+            },
+            $this->getItems(null, null, 'Au')
         );
     }
 
@@ -243,8 +244,11 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getItems($context = null, $labelFilter = null,
-        $groupFilter = null, $nameFilter = null
+    public function getItems(
+        $context = null,
+        $labelFilter = null,
+        $groupFilter = null,
+        $nameFilter = null
     ) {
         $items = [];
         foreach ($this->fields['Items'] ?? [] as $item) {
@@ -402,7 +406,8 @@ class EDS extends DefaultRecord
         $subjects = array_map(
             function ($data) {
                 return $data['Data'];
-            }, $this->getItems(null, null, 'Su')
+            },
+            $this->getItems(null, null, 'Su')
         );
         return empty($subjects) ? '' : implode(', ', $subjects);
     }
@@ -597,7 +602,8 @@ class EDS extends DefaultRecord
             $data = preg_replace('/<a idref="([^\"]*)"/', '<a href="#$1"', $data);
             $data = preg_replace(
                 '/<a id="([^\"]*)" idref="([^\"]*)" type="([^\"]*)"/',
-                '<a id="$1" href="#$2"', $data
+                '<a id="$1" href="#$2"',
+                $data
             );
 
             $data = $this->replaceBRWithCommas($data, $group);
@@ -776,7 +782,8 @@ class EDS extends DefaultRecord
         $pubDates = array_map(
             function ($data) {
                 return $data->getDate();
-            }, $this->getRawEDSPublicationDetails()
+            },
+            $this->getRawEDSPublicationDetails()
         );
         return !empty($pubDates) ? $pubDates : $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/IsPartOfRelationships/0/BibEntity/Dates/0/Y'
@@ -862,7 +869,8 @@ class EDS extends DefaultRecord
         return array_map(
             function ($data) {
                 return $data->getName();
-            }, $this->getRawEDSPublicationDetails()
+            },
+            $this->getRawEDSPublicationDetails()
         );
     }
 
@@ -876,7 +884,8 @@ class EDS extends DefaultRecord
         return array_map(
             function ($data) {
                 return $data->getPlace();
-            }, $this->getRawEDSPublicationDetails()
+            },
+            $this->getRawEDSPublicationDetails()
         );
     }
 
@@ -918,7 +927,9 @@ class EDS extends DefaultRecord
             $placeParts = explode('.', $place);
             $shortPlace = array_pop($placeParts);
             $details[] = new Response\PublicationDetails(
-                strlen($shortPlace) > 5 ? $shortPlace : $place, $pub, $date
+                strlen($shortPlace) > 5 ? $shortPlace : $place,
+                $pub,
+                $date
             );
         }
         return $details;

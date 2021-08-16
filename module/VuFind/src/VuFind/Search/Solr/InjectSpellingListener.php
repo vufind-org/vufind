@@ -93,10 +93,14 @@ class InjectSpellingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
         );
     }
 
@@ -129,7 +133,8 @@ class InjectSpellingListener
                     reset($this->dictionaries);
                     $params->set('spellcheck', 'true');
                     $params->set(
-                        'spellcheck.dictionary', current($this->dictionaries)
+                        'spellcheck.dictionary',
+                        current($this->dictionaries)
                     );
 
                     // Turn on spellcheck.q generation in query builder:
@@ -164,7 +169,8 @@ class InjectSpellingListener
             $spellcheckQuery = $params->get('spellcheck.q');
             if (!empty($spellcheckQuery)) {
                 $this->aggregateSpellcheck(
-                    $result->getSpellcheck(), end($spellcheckQuery)
+                    $result->getSpellcheck(),
+                    end($spellcheckQuery)
                 );
             }
         }

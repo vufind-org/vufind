@@ -228,7 +228,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->runQuestionTests(
             [
                 'test' => []
-            ], 'standard'
+            ],
+            'standard'
         );
     }
 
@@ -242,7 +243,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->runQuestionTests(
             [
                 'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']]
-            ], 'dismax'
+            ],
+            'dismax'
         );
     }
 
@@ -256,7 +258,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->runQuestionTests(
             [
                 'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
-            ], 'edismax'
+            ],
+            'edismax'
         );
     }
 

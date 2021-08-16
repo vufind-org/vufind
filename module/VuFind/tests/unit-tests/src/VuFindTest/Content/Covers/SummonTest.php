@@ -54,7 +54,9 @@ class SummonTest extends \PHPUnit\Framework\TestCase
             'http://api.summon.serialssolutions.com/2.0.0/image/isbn/'
             . 'mykey/9780739313121/small',
             $summon->getUrl(
-                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
+                'mykey',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }

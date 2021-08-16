@@ -47,7 +47,8 @@ class SummonDatabasesDeferredTest extends \VuFindTest\Unit\RecommendDeferredTest
     {
         $this->assertEquals(
             'mod=SummonDatabases&params=lookfor&lookfor=foo',
-            $this->getRecommend('VuFind\Recommend\SummonDatabasesDeferred')->getUrlParams()
+            $this->getRecommend(\VuFind\Recommend\SummonDatabasesDeferred::class)
+                ->getUrlParams()
         );
     }
 }

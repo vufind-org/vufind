@@ -96,7 +96,9 @@ class InjectOnCampusListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
     }
 

@@ -47,15 +47,18 @@
 
 
   <?php if ($filterList || $checkboxFilters): ?>
-    <?=$this->render('search/filters.phtml',
-      [
-        'urlQuery' => $results->getUrlQuery(),
-        'filterList' => $filterList,
-        'checkboxFilters' => $checkboxFilters,
-        'searchClassId' => $this->searchClassId,
-        'searchType' => 'basic',
-      ]
-    ); ?>
+    <?=
+      $this->render(
+          'search/filters.phtml',
+          [
+            'urlQuery' => $results->getUrlQuery(),
+            'filterList' => $filterList,
+            'checkboxFilters' => $checkboxFilters,
+            'searchClassId' => $this->searchClassId,
+            'searchType' => 'basic',
+          ]
+      );
+    ?>
   <?php endif; ?>
 
   <div class="collection-list-results">
