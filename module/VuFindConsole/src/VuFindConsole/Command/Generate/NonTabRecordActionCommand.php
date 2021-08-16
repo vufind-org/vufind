@@ -65,7 +65,9 @@ class NonTabRecordActionCommand extends AbstractCommand
      * @param string|null    $name       The name of the command; passing null
      * means it must be set in configure()
      */
-    public function __construct(GeneratorTools $tools, array $mainConfig,
+    public function __construct(
+        GeneratorTools $tools,
+        array $mainConfig,
         $name = null
     ) {
         $this->mainConfig = $mainConfig;
@@ -123,7 +125,9 @@ class NonTabRecordActionCommand extends AbstractCommand
                     $output->writeln($newRoute . ' already exists; skipping.');
                 } else {
                     $val['options']['route'] = str_replace(
-                        '[:id[/[:tab]]]', "[:id]/$action", $val['options']['route']
+                        '[:id[/[:tab]]]',
+                        "[:id]/$action",
+                        $val['options']['route']
                     );
                     $val['options']['defaults']['action'] = $action;
                     $config['router']['routes'][$newRoute] = $val;

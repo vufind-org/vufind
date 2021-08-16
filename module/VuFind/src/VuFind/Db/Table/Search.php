@@ -58,8 +58,12 @@ class Search extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, $table = 'search'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'search'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -81,7 +85,8 @@ class Search extends Gateway
             }
             $eventFeature = new Feature\EventFeature();
             $eventFeature->getEventManager()->attach(
-                Feature\EventFeature::EVENT_PRE_INITIALIZE, [$this, 'onPreInit']
+                Feature\EventFeature::EVENT_PRE_INITIALIZE,
+                [$this, 'onPreInit']
             );
             $this->featureSet->addFeature($eventFeature);
         }
@@ -218,8 +223,11 @@ class Search extends Gateway
      *
      * @return \VuFind\Db\Row\Search
      */
-    public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
-        $newSearch, $sessionId, $userId
+    public function saveSearch(
+        \VuFind\Search\Results\PluginManager $manager,
+        $newSearch,
+        $sessionId,
+        $userId
     ) {
         // Duplicate elimination
         // Normalize the URL params by minifying and deminifying the search object

@@ -164,7 +164,8 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
      * @return MockContainer
      */
     protected function getContainer(
-        string $expectedConfig = 'config', array $config = []
+        string $expectedConfig = 'config',
+        array $config = []
     ): MockContainer {
         $container = new MockContainer($this);
         $container->get(ConfigManager::class)->expects($this->once())->method('get')

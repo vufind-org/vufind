@@ -124,7 +124,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
@@ -150,7 +153,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function getIds(AbstractQuery $query, $offset, $limit,
+    public function getIds(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
@@ -177,7 +183,9 @@ class Backend extends AbstractBackend
      * @return RecordCollectionInterface
      */
     public function random(
-        AbstractQuery $query, $limit, ParamBag $params = null
+        AbstractQuery $query,
+        $limit,
+        ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -279,7 +287,10 @@ class Backend extends AbstractBackend
      *
      * @return Terms
      */
-    public function terms($field = null, $start = null, $limit = null,
+    public function terms(
+        $field = null,
+        $start = null,
+        $limit = null,
         ParamBag $params = null
     ) {
         // Support alternate syntax with ParamBag as first parameter:
@@ -333,8 +344,13 @@ class Backend extends AbstractBackend
      *
      * @return array
      */
-    public function alphabeticBrowse($source, $from, $page, $limit = 20,
-        $params = null, $offsetDelta = 0
+    public function alphabeticBrowse(
+        $source,
+        $from,
+        $page,
+        $limit = 20,
+        $params = null,
+        $offsetDelta = 0
     ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -523,7 +539,9 @@ class Backend extends AbstractBackend
                 "Alphabetic Browse index missing.  See " .
                 "https://vufind.org/wiki/indexing:alphabetical_heading_browse for " .
                 "details on generating the index.",
-                $e->getCode(), $e->getResponse(), $e->getPrevious()
+                $e->getCode(),
+                $e->getResponse(),
+                $e->getPrevious()
             );
         }
         throw $e;

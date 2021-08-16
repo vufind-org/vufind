@@ -458,7 +458,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         $this->putCachedData(
-            $cacheKey, $token->getHeaderValue(), $token->getExpiresIn()
+            $cacheKey,
+            $token->getHeaderValue(),
+            $token->getExpiresIn()
         );
 
         return $token->getHeaderValue();
@@ -530,8 +532,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return array
      * @throws ILSException
      */
-    protected function getHoldingsForChunk($current, $aggregateId = null,
-        $bibId = null, $patron = null
+    protected function getHoldingsForChunk(
+        $current,
+        $aggregateId = null,
+        $bibId = null,
+        $patron = null
     ) {
         $this->registerNamespaceFor($current);
 
@@ -803,7 +808,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConsortialHoldings($id, array $patron = null,
+    public function getConsortialHoldings(
+        $id,
+        array $patron = null,
         array $ids = null
     ) {
         $aggregateId = $id;
@@ -863,7 +870,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 // Build the array of holdings:
                 foreach ($avail as $current) {
                     $chunk = $this->getHoldingsForChunk(
-                        $current, $aggregateId, $bibId, $patron
+                        $current,
+                        $aggregateId,
+                        $bibId,
+                        $patron
                     );
                     $chunk['callnumber'] = empty($chunk['callnumber']) ?
                         $holdCallNo : $chunk['callnumber'];
@@ -1009,7 +1019,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getMyTransactions($patron)
     {
         $response = $this->getLookupUserResponse(
-            $patron['cat_username'], $patron['cat_password']
+            $patron['cat_username'],
+            $patron['cat_password']
         );
 
         $retVal = [];
@@ -1111,7 +1122,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getMyFines($patron)
     {
         $response = $this->getLookupUserResponse(
-            $patron['cat_username'], $patron['cat_password']
+            $patron['cat_username'],
+            $patron['cat_password']
         );
 
         $list = $response->xpath(
@@ -1171,7 +1183,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function getMyRequests(array $patron, array $types)
     {
         $response = $this->getLookupUserResponse(
-            $patron['cat_username'], $patron['cat_password']
+            $patron['cat_username'],
+            $patron['cat_password']
         );
 
         $retVal = [];
@@ -1267,7 +1280,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getMyProfile($patron)
     {
         $response = $this->getLookupUserResponse(
-            $patron['cat_username'], $patron['cat_password']
+            $patron['cat_username'],
+            $patron['cat_password']
         );
 
         $firstname = $response->xpath(
@@ -1545,7 +1559,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         return array_map(
             function ($block) {
                 return (string)$block;
-            }, $blocks
+            },
+            $blocks
         );
     }
 
@@ -1562,7 +1577,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $blocks = $this->getPatronBlocks($patron);
         $blocks = array_filter(
-            $blocks, function ($item) {
+            $blocks,
+            function ($item) {
                 return strpos($item, 'Block') === 0;
             }
         );
@@ -1708,7 +1724,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         $convertedDate = $this->dateConverter->convertFromDisplayDate(
-            'U', $details['requiredBy']
+            'U',
+            $details['requiredBy']
         );
         $lastInterestDate = \DateTime::createFromFormat('U', $convertedDate);
         $lastInterestDate->setTime(23, 59, 59);
@@ -1723,9 +1740,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
 
         $request = $this->getRequest(
-            $username, $password, $bibId, $itemId,
-            $details['patron']['patronAgencyId'], $details['item_agency_id'],
-            $type, "Item", $lastInterestDateStr, $pickUpLocation, $username
+            $username,
+            $password,
+            $bibId,
+            $itemId,
+            $details['patron']['patronAgencyId'],
+            $details['item_agency_id'],
+            $type,
+            "Item",
+            $lastInterestDateStr,
+            $pickUpLocation,
+            $username
         );
         $response = $this->sendRequest($request);
 
@@ -1780,8 +1805,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($details as $detail) {
             [$itemAgencyId, $requestId, $itemId] = explode("|", $detail);
             $request = $this->getCancelRequest(
-                $username, $password, $patronAgency,
-                $itemAgencyId, $requestId, $type,
+                $username,
+                $password,
+                $patronAgency,
+                $itemAgencyId,
+                $requestId,
+                $type,
                 $itemId
             );
             $cancelRequestResponse = $this->sendRequest($request);
@@ -1922,7 +1951,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             $request = $this->getRenewRequest(
                 $renewDetails['patron']['cat_username'],
-                $renewDetails['patron']['cat_password'], $itemId,
+                $renewDetails['patron']['cat_password'],
+                $itemId,
                 $agencyId,
                 $renewDetails['patron']['patronAgencyId']
             );
@@ -1966,7 +1996,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $blocks = array_map(
             function ($block) {
                 return $this->translateMessage($this->blockCodes[$block] ?? $block);
-            }, $blocks
+            },
+            $blocks
         );
         return empty($blocks) ? false : array_unique($blocks);
     }
@@ -1985,7 +2016,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string           NCIP request XML
      */
-    protected function getCancelRequest($username,
+    protected function getCancelRequest(
+        $username,
         $password,
         $patronAgency,
         $itemAgencyId,
@@ -2037,9 +2069,18 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string          NCIP request XML
      */
-    protected function getRequest($username, $password, $bibId, $itemId,
-        $patronAgencyId, $itemAgencyId, $requestType, $requestScope,
-        $lastInterestDate, $pickupLocation = null, $patronId = null
+    protected function getRequest(
+        $username,
+        $password,
+        $bibId,
+        $itemId,
+        $patronAgencyId,
+        $itemAgencyId,
+        $requestType,
+        $requestScope,
+        $lastInterestDate,
+        $pickupLocation = null,
+        $patronId = null
     ) {
         $ret = $this->getNCIPMessageStart() .
             '<ns1:RequestItem>' .
@@ -2072,7 +2113,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string          NCIP request XML
      */
-    protected function getRenewRequest($username,
+    protected function getRenewRequest(
+        $username,
         $password,
         $itemId,
         $itemAgencyId,
@@ -2100,8 +2142,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string          NCIP request XML
      */
-    protected function getLookupUserRequest($username, $password,
-        $patronAgencyId = null, $extras = [], $patronId = null
+    protected function getLookupUserRequest(
+        $username,
+        $password,
+        $patronAgencyId = null,
+        $extras = [],
+        $patronId = null
     ) {
         return $this->getNCIPMessageStart() .
             '<ns1:LookupUser>' .
@@ -2153,7 +2199,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string XML document
      */
-    protected function getLookupItemRequest(string $itemId, ?string $idType = null,
+    protected function getLookupItemRequest(
+        string $itemId,
+        ?string $idType = null,
         array $desiredParts = ['Bibliographic Description']
     ): string {
         $agency = $this->determineToAgencyId();
@@ -2296,7 +2344,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '<ns1:BibliographicItemId>' .
                 $this->element('BibliographicItemIdentifier', $id) .
                 $this->element(
-                    'BibliographicItemIdentifierCode', 'Legal Deposit Number'
+                    'BibliographicItemIdentifierCode',
+                    'Legal Deposit Number'
                 ) .
             '</ns1:BibliographicItemId>' .
         '</ns1:BibliographicId>';
@@ -2375,10 +2424,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             try {
                 $formatted = ($dateOrTime === 'time')
                     ? $this->dateConverter->convertToDisplayTime(
-                        $format, $dateString
+                        $format,
+                        $dateString
                     )
                     : $this->dateConverter->convertToDisplayDate(
-                        $format, $dateString
+                        $format,
+                        $dateString
                     );
             } catch (DateException $exception) {
                 continue;
@@ -2500,14 +2551,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      */
     protected function getLookupUserResponse(
-        string $username, ?string $password = null
+        string $username,
+        ?string $password = null
     ): \SimpleXMLElement {
         if (isset($this->responses['LookupUser'][$username])) {
             return $this->responses['LookupUser'][$username];
         }
         $extras = $this->getLookupUserExtras();
         $request = $this->getLookupUserRequest(
-            $username, $password, $this->determineToAgencyId(), $extras, $username
+            $username,
+            $password,
+            $this->determineToAgencyId(),
+            $extras,
+            $username
         );
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
@@ -2616,7 +2672,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string XML string
      */
-    protected function element(string $elementName, string $text,
+    protected function element(
+        string $elementName,
+        string $text,
         string $namespacePrefix = 'ns1'
     ): string {
         $fullElementName = $namespacePrefix . ':' . $elementName;

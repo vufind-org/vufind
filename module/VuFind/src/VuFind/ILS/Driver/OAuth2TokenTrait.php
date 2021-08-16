@@ -61,14 +61,17 @@ trait OAuth2TokenTrait
      * @throws AuthTokenException
      */
     public function getNewOAuth2Token(
-        string $tokenEndpoint, string $clientId,
-        string $clientSecret, string $grantType = 'client_credentials',
+        string $tokenEndpoint,
+        string $clientId,
+        string $clientSecret,
+        string $grantType = 'client_credentials',
         bool $useHttpBasic = false
     ): \VuFind\Auth\AuthToken {
         $client = $this->httpService->createClient($tokenEndpoint);
         $client->setMethod('POST');
         $client->getRequest()->getHeaders()->addHeaderLine(
-            'Content-Type', 'application/x-www-form-urlencoded'
+            'Content-Type',
+            'application/x-www-form-urlencoded'
         );
 
         $postFields = ['grant_type' => $grantType];
@@ -114,7 +117,8 @@ trait OAuth2TokenTrait
             );
         }
         return new AuthToken(
-            $tokenData['access_token'], $tokenData['expires_in'] ?? null,
+            $tokenData['access_token'],
+            $tokenData['expires_in'] ?? null,
             $tokenData['token_type']
         );
     }

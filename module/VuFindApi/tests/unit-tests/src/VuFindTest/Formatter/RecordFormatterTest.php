@@ -100,7 +100,8 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getFormatter($defs = null)
     {
         return new RecordFormatter(
-            $defs ?: $this->getDefaultDefs(), $this->getHelperPluginManager()
+            $defs ?: $this->getDefaultDefs(),
+            $this->getHelperPluginManager()
         );
     }
 
@@ -145,7 +146,8 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
 
         // Test requesting fields:
         $results = $formatter->format(
-            [$driver], array_keys($this->getDefaultDefs())
+            [$driver],
+            array_keys($this->getDefaultDefs())
         );
         $expectedRaw = $driver->getRawData();
         unset($expectedRaw['spelling']);
@@ -173,7 +175,8 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $filtered = '<filtered></filtered>';
         $driver->setFilteredXML($filtered);
         $results = $formatter->format(
-            [$driver], array_keys($this->getDefaultDefs())
+            [$driver],
+            array_keys($this->getDefaultDefs())
         );
         $expected[0]['fullRecord'] = $filtered;
         $expected[0]['rawData']['FilteredXML'] = $filtered;

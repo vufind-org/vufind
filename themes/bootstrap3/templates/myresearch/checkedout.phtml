@@ -24,10 +24,8 @@
       <?php if ($paginator): ?>
         <div class="search-stats">
           <?php
-            $end = min(
-              $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage()),
-              $paginator->getTotalItemCount()
-            );
+            $abs = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
+            $end = min($abs, $paginator->getTotalItemCount());
             $transParams = [
               '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
               '%%end%%' => $this->localizedNumber($end),

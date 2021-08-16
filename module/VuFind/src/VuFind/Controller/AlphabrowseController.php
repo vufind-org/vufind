@@ -112,8 +112,13 @@ class AlphabrowseController extends AbstractBase
      *
      * @return void
      */
-    protected function addResultsToView(ViewModel $view, int $page, int $limit,
-        int $rowsBefore, bool $highlighting, array $extras
+    protected function addResultsToView(
+        ViewModel $view,
+        int $page,
+        int $limit,
+        int $rowsBefore,
+        bool $highlighting,
+        array $extras
     ): void {
         $result = [];
         if ($view->source && $view->from !== false) {
@@ -134,7 +139,11 @@ class AlphabrowseController extends AbstractBase
             $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
                 ->get('Solr');
             $result = $db->alphabeticBrowse(
-                $view->source, $view->from, $page, $limit, $extraParams,
+                $view->source,
+                $view->from,
+                $page,
+                $limit,
+                $extraParams,
                 0 - $rowsBefore
             );
 
@@ -143,7 +152,12 @@ class AlphabrowseController extends AbstractBase
             if ($result['Browse']['totalCount'] == 0) {
                 $page--;
                 $result = $db->alphabeticBrowse(
-                    $view->source, $view->from, $page, $limit, $extraParams, 0
+                    $view->source,
+                    $view->from,
+                    $page,
+                    $limit,
+                    $extraParams,
+                    0
                 );
                 if ($highlighting) {
                     $view->highlight_end = true;
@@ -238,7 +252,12 @@ class AlphabrowseController extends AbstractBase
 
         // If required parameters are present, load results:
         $this->addResultsToView(
-            $view, $page, $limit, $rowsBefore, $highlighting, $extras
+            $view,
+            $page,
+            $limit,
+            $rowsBefore,
+            $highlighting,
+            $extras
         );
 
         return $view;

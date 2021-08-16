@@ -152,7 +152,8 @@ class CopyStringCommand extends AbstractCommand
                     return;
                 }
                 $sources[basename($full)] = $this->applyReplaceRule(
-                    $strings[$sourceKey], $replaceRule
+                    $strings[$sourceKey],
+                    $replaceRule
                 );
             };
         $this->processDirectory($sourceDir, $sourceCallback, [$output, 'writeln']);

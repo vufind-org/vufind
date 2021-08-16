@@ -163,12 +163,17 @@ class Memcache extends AbstractBase
         // behave differently depending on the class of the connection.
         if ($this->connection instanceof \Memcached) {
             return $this->connection->set(
-                "vufind_sessions/{$sessId}", $data, $this->lifetime
+                "vufind_sessions/{$sessId}",
+                $data,
+                $this->lifetime
             );
         }
         // The third parameter (0) here is $flags, which we do not use.
         return $this->connection->set(
-            "vufind_sessions/{$sessId}", $data, 0, $this->lifetime
+            "vufind_sessions/{$sessId}",
+            $data,
+            0,
+            $this->lifetime
         );
     }
 }

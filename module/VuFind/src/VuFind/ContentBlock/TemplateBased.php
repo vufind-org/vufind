@@ -90,7 +90,9 @@ class TemplateBased implements ContentBlockInterface
         $pattern = null
     ) {
         $data = $this->pageLocator->determineTemplateAndRenderer(
-            $pathPrefix, $page ?? $this->templateName, $pattern
+            $pathPrefix,
+            $page ?? $this->templateName,
+            $pattern
         );
 
         $method = isset($data) ? 'getContextFor' . ucwords($data['renderer'])
