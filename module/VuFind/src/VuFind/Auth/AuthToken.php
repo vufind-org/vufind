@@ -76,7 +76,9 @@ class AuthToken
      * @param string   $tokenType Type of token
      */
     public function __construct(
-        string $token, ?int $expiresIn, string $tokenType = 'Bearer'
+        string $token,
+        ?int $expiresIn,
+        string $tokenType = 'Bearer'
     ) {
         $this->token = $token;
         $this->timeCreated = time();

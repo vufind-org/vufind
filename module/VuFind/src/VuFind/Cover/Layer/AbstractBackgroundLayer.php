@@ -78,7 +78,10 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
         // Number to color, hsb to control saturation and lightness
         return $settings->accentColor == 'random'
             ? $this->getHSBColor(
-                $im, $seed % 256, $settings->saturation, $settings->lightness
+                $im,
+                $seed % 256,
+                $settings->saturation,
+                $settings->lightness
             ) : $this->getColor($im, $settings->accentColor);
     }
 }

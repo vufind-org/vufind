@@ -70,7 +70,9 @@ class Suggester
      * @param ConfigManager  $cm Config manager
      * @param OptionsManager $om Options manager
      */
-    public function __construct(PluginManager $pm, ConfigManager $cm,
+    public function __construct(
+        PluginManager $pm,
+        ConfigManager $cm,
         OptionsManager $om
     ) {
         $this->pluginManager = $pm;

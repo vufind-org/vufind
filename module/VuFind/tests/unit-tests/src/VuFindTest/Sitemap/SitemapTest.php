@@ -80,21 +80,21 @@ XML;
     {
         $sm = new Sitemap();
         $sm->addUrl(
-          [
-            'url' => 'http://foo',
-            'languages' => [
-              'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+            [
+                'url' => 'http://foo',
+                'languages' => [
+                    'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+                ]
             ]
-          ]
         );
         $sm->addUrl(
-          [
-            'url' => 'http://bar?t=1',
-            'languages' => [
-              'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
-            ],
-            'frequency' => 'daily'
-          ]
+            [
+                'url' => 'http://bar?t=1',
+                'languages' => [
+                  'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+                ],
+                'frequency' => 'daily'
+            ]
         );
         $sm->addUrl('http://baz');
         $expected = <<<XML

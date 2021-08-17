@@ -54,7 +54,8 @@ class OptimizeDocumentTest extends TestCase
     {
         $document = new OptimizeDocument(false);
         $this->assertEquals(
-            'text/xml; charset=UTF-8', $document->getContentType()
+            'text/xml; charset=UTF-8',
+            $document->getContentType()
         );
         $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(

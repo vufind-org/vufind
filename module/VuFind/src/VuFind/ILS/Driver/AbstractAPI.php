@@ -102,7 +102,10 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      *
      * @return \Laminas\Http\Response
      */
-    public function makeRequest($method = "GET", $path = "/", $params = [],
+    public function makeRequest(
+        $method = "GET",
+        $path = "/",
+        $params = [],
         $headers = []
     ) {
         $client = $this->httpService->createClient(

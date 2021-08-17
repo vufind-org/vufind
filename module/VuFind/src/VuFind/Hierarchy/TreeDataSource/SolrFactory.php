@@ -64,7 +64,9 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
@@ -85,8 +87,11 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
         return new $requestedName(
-            $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
-            $filters, $batchSize
+            $solr,
+            $formatterManager,
+            rtrim($cacheDir, '/') . '/hierarchy',
+            $filters,
+            $batchSize
         );
     }
 }

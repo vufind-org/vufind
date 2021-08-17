@@ -76,7 +76,8 @@ class EdsController extends AbstractSearch
         $view = parent::advancedAction();
         // Set up facet information:
         $view->limiterList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets(), $view->saved
+            $this->getAdvancedFacets(),
+            $view->saved
         );
         $view->expanderList = $this->processAdvancedExpanders($view->saved);
         $view->searchModes = $this->processAdvancedSearchModes($view->saved);
@@ -123,7 +124,7 @@ class EdsController extends AbstractSearch
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();
-        $availableLimiters = $options->getAvailableLimiters();
+        $availableLimiters = $options->getAdvancedLimiters();
         if (!$availableLimiters) {
             //execute a call to search just to pull in the limiters
             $this->setUp();

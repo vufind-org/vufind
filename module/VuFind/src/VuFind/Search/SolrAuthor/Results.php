@@ -50,8 +50,10 @@ class Results extends SolrResults
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
      */
-    public function __construct(\VuFind\Search\Base\Params $params,
-        SearchService $searchService, Loader $recordLoader
+    public function __construct(
+        \VuFind\Search\Base\Params $params,
+        SearchService $searchService,
+        Loader $recordLoader
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }

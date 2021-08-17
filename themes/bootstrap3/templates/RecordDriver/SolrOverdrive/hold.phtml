@@ -57,9 +57,13 @@
                     if($hold->holdReadyForCheckout):
                         echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                     else:
-                        echo $this->transEsc("od_hold_queue",
-                            ["%%holdPosition%%" => $result->data->hold->holdListPosition,
-                                "%%numberOfHolds%%" => $result->data->hold->numberOfHolds]);
+                        echo $this->transEsc(
+                            "od_hold_queue",
+                            [
+                                "%%holdPosition%%" => $result->data->hold->holdListPosition,
+                                "%%numberOfHolds%%" => $result->data->hold->numberOfHolds
+                            ]
+                        );
                     endif;?>
                 </div>
             </div>
@@ -95,9 +99,13 @@
                 if($hold->holdReadyForCheckout):
                     echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                 else:
-                    echo $this->transEsc("od_hold_queue",
-                        ["%%holdPosition%%" => $result->data->hold->holdListPosition,
-                            "%%numberOfHolds%%" => $result->data->hold->numberOfHolds]);
+                    echo $this->transEsc(
+                        "od_hold_queue",
+                        [
+                            "%%holdPosition%%" => $result->data->hold->holdListPosition,
+                            "%%numberOfHolds%%" => $result->data->hold->numberOfHolds
+                        ]
+                    );
                 endif;?>
             </div>
         </div>

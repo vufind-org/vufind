@@ -73,7 +73,8 @@ class SecureDelegator
      * @param HandlerInterface $handler       The wrapped session handler.
      */
     public function __construct(
-        CookieManager $cookieManager, HandlerInterface $handler
+        CookieManager $cookieManager,
+        HandlerInterface $handler
     ) {
         $this->handler = $handler;
         $this->cookieManager = $cookieManager;
