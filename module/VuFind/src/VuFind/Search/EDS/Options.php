@@ -81,11 +81,11 @@ class Options extends \VuFind\Search\Base\Options
     protected $limiterOptions = [];
 
     /**
-     * Enabled limiters
+     * Limiters enabled on advanced search screen (empty for all available)
      *
      * @var string[]
      */
-    protected $enabledLimiters = [];
+    protected $advancedLimiters = [];
 
     /**
      * Whether or not to return available facets with the search response
@@ -415,7 +415,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->configureAutocomplete($searchSettings);
 
         if (isset($searchSettings->General->advanced_limiters)) {
-            $this->enabledLimiters = array_map(
+            $this->advancedLimiters = array_map(
                 'trim',
                 explode(',', $searchSettings->General->advanced_limiters)
             );
@@ -570,6 +570,8 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getAdvancedLimiters()
     {
+        // Make sure that everything is labeled with an appropriate translation
+        // string:
         $labeledLimiters = array_map(
             function ($limiter) {
                 $limiter['Label'] = $this->getLabelForCheckboxFilter(
@@ -580,11 +582,14 @@ class Options extends \VuFind\Search\Base\Options
             },
             $this->limiterOptions
         );
-        if (empty($this->enabledLimiters)) {
+        // No setting = use all available values
+        if (empty($this->advancedLimiters)) {
             return $labeledLimiters;
         }
+        // If we got this far, let's create a list of enabled limiters in the
+        // requested order:
         $enabledLimiters = [];
-        foreach ($this->enabledLimiters as $limiter) {
+        foreach ($this->advancedLimiters as $limiter) {
             if (isset($labeledLimiters[$limiter])) {
                 $enabledLimiters[$limiter] = $labeledLimiters[$limiter];
             }
