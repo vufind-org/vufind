@@ -23,11 +23,11 @@
     </div>
   </form>
 
-  <?php if(false !== $this->type):?>
+  <?php if (false !== $this->type):?>
     <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="origin" value="manage" />
       <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($this->type) ?>" />
-      <?php if("user" == $type):?>
+      <?php if ("user" == $type):?>
         <div class="form-group">
           <label for="user_id" class="control-label"><?=$this->transEsc('Username')?></label>
           <select name="user_id" id="user_id" class="form-control">
@@ -39,7 +39,7 @@
           </select>
           <input type="submit"  name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary"/>
         </div>
-      <?php elseif("tag" == $type):?>
+      <?php elseif ("tag" == $type):?>
         <div class="form-group">
           <label for="tag_id" class="control-label"><?=$this->transEsc('Tag')?></label>
           <select name="tag_id" id="tag_id" class="form-control">
@@ -51,7 +51,7 @@
           </select>
           <input type="submit" name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary"/>
         </div>
-      <?php elseif("resource" == $type):?>
+      <?php elseif ("resource" == $type):?>
         <div class="form-group">
           <label for="resource_id" class="control-label"><?=$this->transEsc('Title')?></label>
           <select name="resource_id" id="resource_id" class="form-control">
