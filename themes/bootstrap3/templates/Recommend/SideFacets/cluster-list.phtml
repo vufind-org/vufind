@@ -37,19 +37,20 @@
       'urlBase' => '',
     ]) ?>
   <?php endforeach; ?>
-</div>
 
-<?php /* LESS and SEE MORE links */ ?>
-<?php if (isset($i) && $i >= $this->facets_before_more): ?>
-  <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
-    <?php
-      $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
-      if (!empty($this->baseUriExtra)) {
-        $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
-      }
-    ?>
-    <a class="facet narrow-toggle <?=$moreClass ?? '' ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-      <span class="text"><?=$this->transEsc('see all')?> ...</span>
-    </a>
+  <?php /* LESS and SEE MORE links */ ?>
+  <?php if (isset($i) && $i >= $this->facets_before_more): ?>
+    <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
+      <?php
+        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
+        if (!empty($this->baseUriExtra)) {
+          $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
+        }
+      ?>
+      <a class="facet narrow-toggle <?=$moreClass ?? '' ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+        <span class="text"><?=$this->transEsc('see all')?> ...</span>
+      </a>
+    <?php endif; ?>
   <?php endif; ?>
-<?php endif; ?>
+
+</div>
