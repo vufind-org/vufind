@@ -168,8 +168,13 @@ class Generator
      * @param array          $locales Enabled locales
      * @param PluginManager  $pm      Generator plugin manager
      */
-    public function __construct(BackendManager $bm, SearchService $ss, $baseUrl,
-        Config $config, array $locales, PluginManager $pm
+    public function __construct(
+        BackendManager $bm,
+        SearchService $ss,
+        $baseUrl,
+        Config $config,
+        array $locales,
+        PluginManager $pm
     ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
@@ -338,7 +343,9 @@ class Generator
     {
         $sitemapFiles = [];
         $sitemapIndexes = [];
-        $writeMap = function ($sitemap, $name) use (&$sitemapFiles, &$sitemapIndexes
+        $writeMap = function ($sitemap, $name) use (
+            &$sitemapFiles,
+            &$sitemapIndexes
         ) {
             $index = $sitemapIndexes[$name] ?? 0;
             ++$index;
@@ -559,7 +566,9 @@ class Generator
      *
      * @return array
      */
-    protected function getIdsFromBackendUsingCursorMark(Backend $backend, $cursorMark
+    protected function getIdsFromBackendUsingCursorMark(
+        Backend $backend,
+        $cursorMark
     ) {
         // If the previous cursor mark matches the current one, we're finished!
         static $prevCursorMark = '';

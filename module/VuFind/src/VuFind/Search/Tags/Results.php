@@ -59,8 +59,11 @@ class Results extends BaseResults
      * @param Loader                     $recordLoader  Record loader
      * @param TagsTable                  $tagsTable     Resource table
      */
-    public function __construct(\VuFind\Search\Base\Params $params,
-        SearchService $searchService, Loader $recordLoader, TagsTable $tagsTable
+    public function __construct(
+        \VuFind\Search\Base\Params $params,
+        SearchService $searchService,
+        Loader $recordLoader,
+        TagsTable $tagsTable
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->tagsTable = $tagsTable;
@@ -93,7 +96,12 @@ class Results extends BaseResults
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
             : $this->getParams()->getDisplayQuery();
         $rawResults = $this->tagsTable->resourceSearch(
-            $query, null, $this->getParams()->getSort(), 0, null, $fuzzy
+            $query,
+            null,
+            $this->getParams()->getSort(),
+            0,
+            null,
+            $fuzzy
         );
 
         // How many results were there?
@@ -103,8 +111,12 @@ class Results extends BaseResults
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
             $rawResults = $this->tagsTable->resourceSearch(
-                $query, null, $this->getParams()->getSort(),
-                $this->getStartRecord() - 1, $limit, $fuzzy
+                $query,
+                null,
+                $this->getParams()->getSort(),
+                $this->getStartRecord() - 1,
+                $limit,
+                $fuzzy
             );
         }
 

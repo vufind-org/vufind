@@ -82,7 +82,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $export = $this->getExport($config);
         $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulk'));
         $this->assertEquals(
-            ['foo', 'bar', 'xyzzy'], $export->getActiveFormats('record')
+            ['foo', 'bar', 'xyzzy'],
+            $export->getActiveFormats('record')
         );
     }
 
@@ -272,7 +273,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     {
         // We should get 'link' as the default if nothing is configured:
         $this->assertEquals(
-            'link', $this->getExport()->getBulkExportType('foo')
+            'link',
+            $this->getExport()->getBulkExportType('foo')
         );
 
         // We should get export-specific values from export.ini if set;

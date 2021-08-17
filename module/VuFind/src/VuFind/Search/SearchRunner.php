@@ -78,7 +78,8 @@ class SearchRunner
      * @param ResultsManager $resultsManager Results manager
      * @param EventManager   $events         Event manager (optional)
      */
-    public function __construct(ResultsManager $resultsManager,
+    public function __construct(
+        ResultsManager $resultsManager,
         EventManager $events = null
     ) {
         $this->resultsManager = $resultsManager;
@@ -103,7 +104,10 @@ class SearchRunner
      *
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
-    public function run($rawRequest, $searchClassId = 'Solr', $setupCallback = null,
+    public function run(
+        $rawRequest,
+        $searchClassId = 'Solr',
+        $setupCallback = null,
         $lastView = null
     ) {
         // Increment the ID counter, then save the current value to a variable;
@@ -130,7 +134,8 @@ class SearchRunner
 
         // Trigger the "configuration done" event.
         $this->getEventManager()->trigger(
-            self::EVENT_CONFIGURED, $this,
+            self::EVENT_CONFIGURED,
+            $this,
             compact('params', 'request', 'runningSearchId')
         );
 
@@ -155,7 +160,9 @@ class SearchRunner
 
         // Trigger the "search completed" event.
         $this->getEventManager()->trigger(
-            self::EVENT_COMPLETE, $this, compact('results', 'runningSearchId')
+            self::EVENT_COMPLETE,
+            $this,
+            compact('results', 'runningSearchId')
         );
 
         return $results;

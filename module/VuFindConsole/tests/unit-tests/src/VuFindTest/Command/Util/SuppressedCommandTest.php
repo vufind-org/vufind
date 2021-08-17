@@ -194,7 +194,8 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(['--outfile' => 'foo']);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
-            "Problem writing to foo\n", $commandTester->getDisplay()
+            "Problem writing to foo\n",
+            $commandTester->getDisplay()
         );
     }
 }

@@ -336,8 +336,15 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @throws MailException
      * @return void
      */
-    public function sendLink($to, $from, $msg, $url, $view, $subject = null,
-        $cc = null, $replyTo = null
+    public function sendLink(
+        $to,
+        $from,
+        $msg,
+        $url,
+        $view,
+        $subject = null,
+        $cc = null,
+        $replyTo = null
     ) {
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
@@ -382,8 +389,15 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @throws MailException
      * @return void
      */
-    public function sendRecord($to, $from, $msg, $record, $view, $subject = null,
-        $cc = null, $replyTo = null
+    public function sendRecord(
+        $to,
+        $from,
+        $msg,
+        $record,
+        $view,
+        $subject = null,
+        $cc = null,
+        $replyTo = null
     ) {
         if (null === $subject) {
             $subject = $this->getDefaultRecordSubject($record);

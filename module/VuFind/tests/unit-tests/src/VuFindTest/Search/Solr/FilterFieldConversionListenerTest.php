@@ -90,7 +90,8 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $command = new MockCommandForFilterFieldConversionListenerTest($params);
         $event = new Event(
-            Service::EVENT_PRE, $backend,
+            Service::EVENT_PRE,
+            $backend,
             ['params' => $params, 'command' => $command]
         );
         $listener->onSearchPre($event);

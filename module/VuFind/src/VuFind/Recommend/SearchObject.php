@@ -131,7 +131,8 @@ abstract class SearchObject implements RecommendInterface
         $callback = function ($runner, $params) use ($lookfor, $limit, $typeLabel) {
             $params->setLimit($limit);
             $params->setBasicSearch(
-                $lookfor, $params->getOptions()->getHandlerForLabel($typeLabel)
+                $lookfor,
+                $params->getOptions()->getHandlerForLabel($typeLabel)
             );
         };
 

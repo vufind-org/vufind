@@ -145,9 +145,13 @@ class Backend extends AbstractBackend
      * @param Config                           $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
-    public function __construct(Connector $client,
-        RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
-        SessionContainer $session, Config $config = null, $isGuest = true
+    public function __construct(
+        Connector $client,
+        RecordCollectionFactoryInterface $factory,
+        CacheAdapter $cache,
+        SessionContainer $session,
+        Config $config = null,
+        $isGuest = true
     ) {
         // Save dependencies/incoming parameters:
         $this->client = $client;
@@ -177,7 +181,10 @@ class Backend extends AbstractBackend
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      **/
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         // process EDS API communication tokens.
@@ -244,7 +251,10 @@ class Backend extends AbstractBackend
                 // controller can fix it from here:
                 $legalPage = floor($legalPos / $limit);
                 throw new \VuFindSearch\Backend\Exception\DeepPagingException(
-                    $e->getMessage(), $e->getCode(), $legalPage, $e
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $legalPage,
+                    $e
                 );
             default:
                 $response = [];
@@ -294,7 +304,12 @@ class Backend extends AbstractBackend
                 $extras['ebookpreferredformat'] = $eBookFormat;
             }
             $response = $this->client->retrieve(
-                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms, $extras
+                $an,
+                $dbId,
+                $authenticationToken,
+                $sessionToken,
+                $hlTerms,
+                $extras
             );
         } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more
@@ -310,7 +325,11 @@ class Backend extends AbstractBackend
                         $sessionToken = $this->getSessionToken(true);
                     }
                     $response = $this->client->retrieve(
-                        $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
+                        $an,
+                        $dbId,
+                        $authenticationToken,
+                        $sessionToken,
+                        $hlTerms
                     );
                 } catch (Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
@@ -568,7 +587,8 @@ class Backend extends AbstractBackend
             ? $this->defaultProfile : $this->profile;
         $this->session->sessionGuest = $this->isGuest();
         $this->session->sessionID = $this->createSession(
-            $this->session->sessionGuest, $this->session->profileID
+            $this->session->sessionGuest,
+            $this->session->profileID
         );
         return $this->session->sessionID;
     }

@@ -67,7 +67,9 @@ abstract class AbstractRelaisAction extends AbstractBase
      * @param Relais          $relais Relais connector
      * @param User            $user   Logged in user (or null if none)
      */
-    public function __construct(SessionSettings $ss, Relais $relais,
+    public function __construct(
+        SessionSettings $ss,
+        Relais $relais,
         User $user = null
     ) {
         $this->sessionSettings = $ss;
