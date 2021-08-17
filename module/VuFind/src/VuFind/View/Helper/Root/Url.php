@@ -79,7 +79,10 @@ class Url extends \Laminas\View\Helper\Url
      * @return string Url For the link href attribute
      */
     public function __invoke(
-        $name = null, $params = [], $options = [], $reuseMatchedParams = false
+        $name = null,
+        $params = [],
+        $options = [],
+        $reuseMatchedParams = false
     ) {
         // If argument list is empty, return object for method access:
         return func_num_args() == 0 ? $this : parent::__invoke(...func_get_args());

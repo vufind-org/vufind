@@ -106,7 +106,9 @@ class Generator
      * @param LayerManager $lm         Layer manager
      * @param array        $settings   Overwrite styles
      */
-    public function __construct(ThemeInfo $themeTools, LayerManager $lm,
+    public function __construct(
+        ThemeInfo $themeTools,
+        LayerManager $lm,
         array $settings = []
     ) {
         $this->themeTools = $themeTools;

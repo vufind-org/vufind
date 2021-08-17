@@ -59,7 +59,8 @@ class UpdateDocumentTest extends TestCase
         $document = new UpdateDocument();
         $document->addRecord($record, ['boost' => '2.0']);
         $this->assertEquals(
-            'text/xml; charset=UTF-8', $document->getContentType()
+            'text/xml; charset=UTF-8',
+            $document->getContentType()
         );
         $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(

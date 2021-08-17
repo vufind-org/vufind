@@ -102,7 +102,8 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return void
      */
-    public function __construct(array $specs = [],
+    public function __construct(
+        array $specs = [],
         $defaultDismaxHandler = 'dismax'
     ) {
         $this->defaultDismaxHandler = $defaultDismaxHandler;
@@ -242,7 +243,8 @@ class QueryBuilder implements QueryBuilderInterface
         foreach ($specs as $handler => $spec) {
             if (isset($spec['ExactSettings'])) {
                 $this->exactSpecs[strtolower($handler)] = new SearchHandler(
-                    $spec['ExactSettings'], $this->defaultDismaxHandler
+                    $spec['ExactSettings'],
+                    $this->defaultDismaxHandler
                 );
                 unset($spec['ExactSettings']);
             }
@@ -338,7 +340,8 @@ class QueryBuilder implements QueryBuilderInterface
     {
         if ($component instanceof QueryGroup) {
             $reduced = array_map(
-                [$this, 'reduceQueryGroupComponents'], $component->getQueries()
+                [$this, 'reduceQueryGroupComponents'],
+                $component->getQueries()
             );
             $searchString = $component->isNegated() ? 'NOT ' : '';
             $reduced = array_filter(
@@ -349,7 +352,8 @@ class QueryBuilder implements QueryBuilderInterface
             );
             if ($reduced) {
                 $searchString .= sprintf(
-                    '(%s)', implode(" {$component->getOperator()} ", $reduced)
+                    '(%s)',
+                    implode(" {$component->getOperator()} ", $reduced)
                 );
             }
         } else {
@@ -419,7 +423,9 @@ class QueryBuilder implements QueryBuilderInterface
         // Use a lookahead to skip matches found within quoted phrases.
         $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
         $string = preg_replace_callback(
-            '/([^\s:()]+\?)(\s|$)' . $lookahead . '/', $callback, $string
+            '/([^\s:()]+\?)(\s|$)' . $lookahead . '/',
+            $callback,
+            $string
         );
         return rtrim($string);
     }
@@ -448,7 +454,8 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function createAdvancedInnerSearchString($string,
+    protected function createAdvancedInnerSearchString(
+        $string,
         SearchHandler $handler
     ) {
         // Special case -- if the user wants all records but the current handler

@@ -108,7 +108,8 @@ class QRCodeController extends \Laminas\Mvc\Controller\AbstractActionController
     {
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine(
-            'Content-type', $this->loader->getContentType()
+            'Content-type',
+            $this->loader->getContentType()
         );
         $response->setContent($this->loader->getImage());
         return $response;

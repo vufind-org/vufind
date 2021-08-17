@@ -110,7 +110,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // We should see our "foo \ bar" search in the history, but no saved
         // searches because we are logged out:
         $this->assertEquals(
-            'foo \ bar', $this->findAndAssertLink($page, 'foo \ bar')->getText()
+            'foo \ bar',
+            $this->findAndAssertLink($page, 'foo \ bar')->getText()
         );
         $this->assertFalse(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
@@ -124,13 +125,15 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         $this->assertEquals(
-            'foo \ bar', $this->findAndAssertLink($page, 'foo \ bar')->getText()
+            'foo \ bar',
+            $this->findAndAssertLink($page, 'foo \ bar')->getText()
         );
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
         $this->assertEquals(
-            'test', $this->findAndAssertLink($page, 'test')->getText()
+            'test',
+            $this->findAndAssertLink($page, 'test')->getText()
         );
 
         // Now purge unsaved searches, confirm that unsaved search is gone
@@ -139,7 +142,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         $this->assertNull($page->findLink('foo \ bar'));
         $this->assertEquals(
-            'test', $this->findAndAssertLink($page, 'test')->getText()
+            'test',
+            $this->findAndAssertLink($page, 'test')->getText()
         );
     }
 
@@ -172,7 +176,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'username2@example.com']
+            $page,
+            ['username' => 'username2', 'email' => 'username2@example.com']
         );
         $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
@@ -190,7 +195,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
         $this->assertEquals(
-            'test', $this->findAndAssertLink($page, 'test')->getText()
+            'test',
+            $this->findAndAssertLink($page, 'test')->getText()
         );
     }
 
@@ -233,10 +239,12 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // unsaved):
         $this->assertEquals(2, count($page->findAll('css', $scheduleSelector)));
         $this->assertEquals(
-            1, count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+            1,
+            count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
         );
         $this->assertEquals(
-            1, count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            1,
+            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
         );
 
         // At this point, our journals search should be in the unsaved list; let's
@@ -245,7 +253,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption(7);
         $this->snooze();
         $this->assertEquals(
-            2, count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            2,
+            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
         );
 
         // Now let's delete the saved search and confirm that this clears the

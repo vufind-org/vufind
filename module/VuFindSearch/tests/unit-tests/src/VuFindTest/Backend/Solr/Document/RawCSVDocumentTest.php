@@ -52,7 +52,8 @@ class RawCSVDocumentTest extends TestCase
     {
         $document = new RawCSVDocument('a,b,c');
         $this->assertEquals(
-            'text/csv', $document->getContentType()
+            'text/csv',
+            $document->getContentType()
         );
         $this->assertEquals('a,b,c', $document->getContent());
     }

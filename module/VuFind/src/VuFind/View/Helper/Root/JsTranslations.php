@@ -75,7 +75,9 @@ class JsTranslations extends AbstractHelper
      * @param TransEsc  $transEsc  Translate + escape helper
      * @param string    $varName   Variable name to store translations
      */
-    public function __construct(Translate $translate, TransEsc $transEsc,
+    public function __construct(
+        Translate $translate,
+        TransEsc $transEsc,
         $varName = 'vufindString'
     ) {
         $this->translate = $translate;

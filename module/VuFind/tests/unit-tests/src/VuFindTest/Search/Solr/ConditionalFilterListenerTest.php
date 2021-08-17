@@ -83,7 +83,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $command = new MockCommandForConditionalFilterListenerTest($params);
         return new Event(
-            Service::EVENT_PRE, $this->backend,
+            Service::EVENT_PRE,
+            $this->backend,
             ['params' => $params, 'command' => $command]
         );
     }
@@ -157,7 +158,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $fq   = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
-            1 => 'field2:novalue'], $fq
+            1 => 'field2:novalue'],
+            $fq
         );
     }
 
@@ -207,7 +209,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $fq   = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
-            1 => 'field2:novalue'], $fq
+            1 => 'field2:novalue'],
+            $fq
         );
     }
 
@@ -234,7 +237,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 
         $fq   = $params->get('fq');
         $this->assertEquals(
-            [0 => 'institution:"MyInst"'], $fq
+            [0 => 'institution:"MyInst"'],
+            $fq
         );
     }
 
@@ -293,7 +297,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => '(NOT institution:"MyInst")'
-            ], $fq
+            ],
+            $fq
         );
     }
 
@@ -327,7 +332,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => 'institution:"MyInst"'
-            ], $fq
+            ],
+            $fq
         );
     }
 }

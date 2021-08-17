@@ -108,7 +108,8 @@ class Manager
             break;
         case 'File':
             $this->createFileCache(
-                'searchspecs', $cacheBase . 'searchspecs'
+                'searchspecs',
+                $cacheBase . 'searchspecs'
             );
             break;
         case false:

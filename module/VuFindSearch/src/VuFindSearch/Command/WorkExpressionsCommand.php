@@ -54,12 +54,18 @@ class WorkExpressionsCommand extends CallMethodCommand
      *                            the record to compare with if not specified)
      * @param ?ParamBag $params   Search backend parameters
      */
-    public function __construct(string $backend, string $id, ?array $workKeys,
+    public function __construct(
+        string $backend,
+        string $id,
+        ?array $workKeys,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend, WorkExpressionsInterface::class, 'workExpressions',
-            [$id, $workKeys], $params
+            $backend,
+            WorkExpressionsInterface::class,
+            'workExpressions',
+            [$id, $workKeys],
+            $params
         );
     }
 

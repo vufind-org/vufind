@@ -57,12 +57,16 @@ class NonTabRecordActionCommandFactory extends AbstractCommandFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         $config = $container->get('Config');
         return parent::__invoke(
-            $container, $requestedName, array_merge([$config], $options ?? [])
+            $container,
+            $requestedName,
+            array_merge([$config], $options ?? [])
         );
     }
 }

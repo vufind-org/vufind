@@ -52,7 +52,9 @@ class NoCacheAdapter extends AbstractAdapter
      *
      * @return mixed Data on success, null on failure
      */
-    protected function internalGetItem(& $normalizedKey, & $success = null,
+    protected function internalGetItem(
+        & $normalizedKey,
+        & $success = null,
         & $casToken = null
     ) {
         return null;

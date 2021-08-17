@@ -65,7 +65,8 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
     {
         $command = new MockCommandForOnCampusListenerTest($params);
         return new Event(
-            Service::EVENT_PRE, $this->backend,
+            Service::EVENT_PRE,
+            $this->backend,
             ['params' => $params, 'command' => $command]
         );
     }
@@ -158,7 +159,8 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $onCampus   = $params->get('onCampus');
         $this->assertEquals(
-            [0 => true], $onCampus
+            [0 => true],
+            $onCampus
         );
     }
 

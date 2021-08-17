@@ -79,8 +79,11 @@ class UrlQueryHelper
      * on the contents of $query to $urlParams (true) or are they already there
      * (false)?
      */
-    final public function __construct(array $urlParams, AbstractQuery $query,
-        array $options = [], $regenerateQueryParams = true
+    final public function __construct(
+        array $urlParams,
+        AbstractQuery $query,
+        array $options = [],
+        $regenerateQueryParams = true
     ) {
         $this->config = $options;
         $this->urlParams = $urlParams;
@@ -399,7 +402,8 @@ class UrlQueryHelper
             return [$field];
         }
         return call_user_func(
-            $this->config['getAliasesForFacetFieldCallback'], $field
+            $this->config['getAliasesForFacetFieldCallback'],
+            $field
         );
     }
 
@@ -487,7 +491,10 @@ class UrlQueryHelper
     public function setSort($s)
     {
         return $this->updateQueryString(
-            'sort', $s, $this->getDefault('sort'), true
+            'sort',
+            $s,
+            $this->getDefault('sort'),
+            true
         );
     }
 
@@ -539,7 +546,10 @@ class UrlQueryHelper
     public function setLimit($l)
     {
         return $this->updateQueryString(
-            'limit', $l, $this->getDefault('limit'), true
+            'limit',
+            $l,
+            $this->getDefault('limit'),
+            true
         );
     }
 
@@ -614,7 +624,10 @@ class UrlQueryHelper
      *
      * @return string
      */
-    protected function updateQueryString($field, $value, $default = null,
+    protected function updateQueryString(
+        $field,
+        $value,
+        $default = null,
         $clearPage = false
     ) {
         $params = $this->urlParams;

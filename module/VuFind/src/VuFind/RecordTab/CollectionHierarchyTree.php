@@ -51,7 +51,8 @@ class CollectionHierarchyTree extends HierarchyTree
      * @param \Laminas\Config\Config $config Configuration
      * @param \VuFind\Record\Loader  $loader Record loader
      */
-    public function __construct(\Laminas\Config\Config $config,
+    public function __construct(
+        \Laminas\Config\Config $config,
         \VuFind\Record\Loader $loader
     ) {
         parent::__construct($config);

@@ -123,8 +123,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return obj
      */
-    protected function makeRequest($api_query, $http_method = "GET",
-        $patronpassword = "", $json = false
+    protected function makeRequest(
+        $api_query,
+        $http_method = "GET",
+        $patronpassword = "",
+        $json = false
     ) {
         // auth has to be in GMT, otherwise use config-level TZ
         $site_config_TZ = date_default_timezone_get();
@@ -227,7 +230,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $holds = [];
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/holdrequests/all", 'GET',
+            "patron/{$patron['cat_username']}/holdrequests/all",
+            'GET',
             $patron['cat_password']
         );
         $holds_response_array = $response->PatronHoldRequestsGetRows;
@@ -431,7 +435,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             ];
 
             $reply_response = $this->makeRequest(
-                "holdrequest/{$response->RequestGUID}", 'PUT', '',
+                "holdrequest/{$response->RequestGUID}",
+                'PUT',
+                '',
                 $reply_jsonrequest
             );
 
@@ -619,7 +625,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $fineList = [];
 
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/account/outstanding", 'GET',
+            "patron/{$patron['cat_username']}/account/outstanding",
+            'GET',
             $patron['cat_password']
         );
         $fines_response_array = $response->PatronAccountGetRows;
@@ -655,7 +662,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // firstname, lastname, address1, address2, zip, phone, group
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/basicdata", 'GET',
+            "patron/{$patron['cat_username']}/basicdata",
+            'GET',
             $patron['cat_password']
         );
         $profile_response = $response->PatronBasicData;
@@ -685,7 +693,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // polaris apis: PatronItemsOutGet, Patron_RewewBlocksGet
         $transactions = [];
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/itemsout/all", 'GET',
+            "patron/{$patron['cat_username']}/itemsout/all",
+            'GET',
             $patron['cat_password']
         );
 
@@ -738,8 +747,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $jsonrequest['RenewData']['IgnoreOverrideErrors'] = 'true';
 
             $response = $this->makeRequest(
-                "patron/{$patron['cat_username']}/itemsout/$renew_id", 'PUT',
-                $patron['cat_password'], $jsonrequest
+                "patron/{$patron['cat_username']}/itemsout/$renew_id",
+                'PUT',
+                $patron['cat_password'],
+                $jsonrequest
             );
             if ($response->PAPIErrorCode == 0) {
                 $count++;
@@ -809,7 +820,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/cancelled"
-                . "?wsid=1&userid=1", 'PUT', $patron['cat_password']
+                . "?wsid=1&userid=1",
+                'PUT',
+                $patron['cat_password']
             );
 
             if ($response->PAPIErrorCode == 0) {
@@ -864,7 +877,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $response = $this->makeRequest(
             "patron/{$patron['cat_username']}/readinghistory?rowsperpage=1&page=-1",
-            'GET', $patron['cat_password']
+            'GET',
+            $patron['cat_password']
         );
 
         // error code returns number of results
@@ -888,7 +902,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         while ($page_offset <= $pages) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/readinghistory?rowsperpage="
-                . "$items_per_page&page=$page_offset", 'GET',
+                . "$items_per_page&page=$page_offset",
+                'GET',
                 $patron['cat_password']
             );
 
@@ -968,7 +983,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/inactive",
-                'PUT', $patron['cat_password'], $jsonrequest
+                'PUT',
+                $patron['cat_password'],
+                $jsonrequest
             );
 
             if ($response->PAPIErrorCode == 0) {
@@ -1034,7 +1051,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/active",
-                'PUT', $patron['cat_password'], $jsonrequest
+                'PUT',
+                $patron['cat_password'],
+                $jsonrequest
             );
 
             if ($response->PAPIErrorCode == 0) {

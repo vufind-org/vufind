@@ -453,49 +453,40 @@ class UpgradeController extends AbstractBase
                 ->updateModifiedConstraints($modifiedConstraints, $this->logsql);
         }
 
-        // Check for encoding problems.
-        $encProblems = $this->dbUpgrade()->getEncodingProblems();
-        if (!empty($encProblems)) {
-            if (!isset($this->session->dbChangeEncoding)) {
-                return $this->forwardTo('Upgrade', 'GetDbEncodingPreference');
-            }
-
-            if ($this->session->dbChangeEncoding) {
-                // Only manipulate DB if we're not in logging mode:
-                if (!$this->logsql) {
-                    if (!$this->hasDatabaseRootCredentials()) {
-                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                    }
-                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                    $this->session->warnings->append(
-                        "Modified encoding settings in table(s): "
-                        . implode(', ', array_keys($encProblems))
-                    );
+        // Check for modified keys.
+        $modifiedKeys = $this->dbUpgrade()->getModifiedKeys($mT);
+        if (!empty($modifiedKeys)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
-                $sql .= $this->dbUpgrade()
-                    ->fixEncodingProblems($encProblems, $this->logsql);
-                $this->setDbEncodingConfiguration('utf8');
-            } else {
-                // User has requested that we skip encoding conversion:
-                $this->setDbEncodingConfiguration('latin1');
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Modified key(s) in table(s): "
+                    . implode(', ', array_keys($modifiedKeys))
+                );
             }
+            $sql .= $this->dbUpgrade()
+                ->updateModifiedKeys($modifiedKeys, $this->logsql);
         }
 
-        // Check for collation problems.
-        $colProblems = $this->dbUpgrade()->getCollationProblems();
+        // Check for character set and collation problems.
+        $colProblems = $this->dbUpgrade()->getCharsetAndCollationProblems();
         if (!empty($colProblems)) {
             if (!$this->logsql) {
                 if (!$this->hasDatabaseRootCredentials()) {
                     return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Modified character set(s)/collation(s) in table(s): "
+                    . implode(', ', array_keys($colProblems))
+                );
             }
             $sql .= $this->dbUpgrade()
-                ->fixCollationProblems($colProblems, $this->logsql);
-            $this->session->warnings->append(
-                "Modified collation(s) in table(s): "
-                . implode(', ', array_keys($colProblems))
-            );
+                ->fixCharsetAndCollationProblems($colProblems, $this->logsql);
+            $this->setDbEncodingConfiguration('utf8mb4');
         }
 
         // Don't keep DB credentials in session longer than necessary:
@@ -638,24 +629,6 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(['dbrootuser' => $dbrootuser]);
-    }
-
-    /**
-     * Prompt the user for action on encoding problems.
-     *
-     * @return mixed
-     */
-    public function getdbencodingpreferenceAction()
-    {
-        $action = $this->params()->fromPost('encodingaction', '');
-        if ($action == 'Change') {
-            $this->session->dbChangeEncoding = true;
-            return $this->forwardTo('Upgrade', 'FixDatabase');
-        } elseif ($action == 'Keep') {
-            $this->session->dbChangeEncoding = false;
-            return $this->forwardTo('Upgrade', 'FixDatabase');
-        }
-        return $this->createViewModel();
     }
 
     /**
@@ -822,7 +795,7 @@ class UpgradeController extends AbstractBase
     public function getsourceversionAction()
     {
         // Process form submission:
-        $version = $this->params()->fromPost('sourceversion');
+        $version = floatval($this->params()->fromPost('sourceversion'));
         if (!empty($version)) {
             $this->cookie->newVersion = Version::getBuildVersion();
             if (floor($version) < 2) {
@@ -952,9 +925,11 @@ class UpgradeController extends AbstractBase
                 );
             }
 
-            $this->session->warnings->append(
-                'Added hash value(s) to ' . count($results) . ' short links.'
-            );
+            if (count($results) > 0) {
+                $this->session->warnings->append(
+                    'Added hash value(s) to ' . count($results) . ' short links.'
+                );
+            }
         } catch (Exception $e) {
             $this->session->warnings->append(
                 'Could not fix hashes in table shortlinks - maybe column ' .

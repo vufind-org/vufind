@@ -6,13 +6,15 @@
 <div class="results result-view-<?=$this->escapeHtmlAttr($view)?>">
   <nav class="search-header hidden-print">
     <div class="search-stats">
-      <?=$this->translate(
-        'showing_results_of_html', [
-          '%%start%%' => 1,
-          '%%end%%' => count($results),
-          '%%total%%' => $this->localizedNumber($results->getTotal())
-        ]
-      );
+      <?=
+        $this->translate(
+            'showing_results_of_html',
+            [
+              '%%start%%' => 1,
+              '%%end%%' => count($results),
+              '%%total%%' => $this->localizedNumber($results->getTotal())
+            ]
+        );
       ?>
     </div>
     <div class="search-controls">

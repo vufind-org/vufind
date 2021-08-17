@@ -70,7 +70,9 @@ class ThemeCommand extends AbstractThemeCommand
      * @param string|null    $name      The name of the command; passing null
      * means it must be set in configure()
      */
-    public function __construct(ThemeGenerator $generator, Config $config,
+    public function __construct(
+        ThemeGenerator $generator,
+        Config $config,
         $name = null
     ) {
         $this->config = $config;

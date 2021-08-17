@@ -144,7 +144,12 @@ class Alma extends AbstractBase
             }
 
             $record = compact(
-                'title', 'coverage', 'access', 'href', 'notes', 'authentication'
+                'title',
+                'coverage',
+                'access',
+                'href',
+                'notes',
+                'authentication'
             );
             $record['service_type'] = $serviceType;
             $records[] = $record;

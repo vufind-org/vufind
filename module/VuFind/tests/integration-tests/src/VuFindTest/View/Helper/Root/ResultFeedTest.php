@@ -142,7 +142,8 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(
-            'Showing 1 - 2 results of 2', $parsedFeed->getDescription()
+            'Showing 1 - 2 results of 2',
+            $parsedFeed->getDescription()
         );
         $items = [];
         $i = 0;

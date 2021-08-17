@@ -87,8 +87,13 @@ abstract class CallMethodCommand extends AbstractBase
      *                                   search interface method is used as the
      *                                   context.
      */
-    public function __construct(string $backend, string $interface, string $method,
-        array $args, ?ParamBag $params = null, bool $addParamsToArgs = true,
+    public function __construct(
+        string $backend,
+        string $interface,
+        string $method,
+        array $args,
+        ?ParamBag $params = null,
+        bool $addParamsToArgs = true,
         $context = null
     ) {
         parent::__construct($backend, $context ?: $method, $params);

@@ -123,8 +123,11 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
         } else {
             $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
         }
-        $obj = new Shibboleth($this->createMock(\Laminas\Session\ManagerInterface::class), $loader,
-            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class));
+        $obj = new Shibboleth(
+            $this->createMock(\Laminas\Session\ManagerInterface::class),
+            $loader,
+            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class)
+        );
         $obj->setDbTableManager($this->getLiveTableManager());
         $obj->setConfig($config);
         return $obj;
@@ -166,7 +169,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
                 'username' => 'username',
                 'email' => 'email',
                 'cat_username' => 'userLibraryId',
-            ], true
+            ],
+            true
         );
         $example2 = new Config(
             [
@@ -176,7 +180,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
                 'cat_username' => 'alephId',
                 'userattribute_1' => 'eduPersonScopedAffiliation',
                 'userattribute_value_1' => 'member@example.org',
-            ], true
+            ],
+            true
         );
         $config = [
             'example1' => $example1,

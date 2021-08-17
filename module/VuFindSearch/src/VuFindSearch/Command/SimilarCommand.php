@@ -52,11 +52,17 @@ class SimilarCommand extends CallMethodCommand
      * @param string    $id      Id of record to compare with
      * @param ?ParamBag $params  Search backend parameters
      */
-    public function __construct(string $backend, string $id,
+    public function __construct(
+        string $backend,
+        string $id,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend, SimilarInterface::class, 'similar', [$id], $params
+            $backend,
+            SimilarInterface::class,
+            'similar',
+            [$id],
+            $params
         );
     }
 }
