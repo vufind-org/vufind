@@ -353,7 +353,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 });
 
 function registerMoreLessFacetsEventHandlers() {
-  VuFind.truncate.initTruncate('.truncate-facets');
+  VuFind.truncate.initTruncate('.truncate-facets', '.facet');
 }
 
 VuFind.listen('VuFind.sidefacets.loaded', registerMoreLessFacetsEventHandlers);
