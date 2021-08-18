@@ -194,7 +194,8 @@ class DAIA extends AbstractBase implements
         }
         if (isset($this->config['DAIA']['daiaOnSiteServices'])) {
             $this->onSiteServices = explode(
-                ':', $this->config['DAIA']['daiaOnSiteServices']
+                ':',
+                $this->config['DAIA']['daiaOnSiteServices']
             );
         } else {
             $this->debug('Accepting loan and presentation as on-site services.');
@@ -484,7 +485,9 @@ class DAIA extends AbstractBase implements
         try {
             $result = $this->httpService->get(
                 $this->baseUrl,
-                $params, $this->daiaTimeout, $http_headers
+                $params,
+                $this->daiaTimeout,
+                $http_headers
             );
         } catch (\Exception $e) {
             $msg = 'HTTP request exited with Exception ' . $e->getMessage() .
@@ -858,7 +861,7 @@ class DAIA extends AbstractBase implements
                                 && $unavailable['service'] == $service
                             ) {
                                 $skipServices = array_keys(
-                                    $availableServices, 
+                                    $availableServices,
                                     $service
                                 );
                                 foreach ($skipServices as $skipService) {
@@ -891,7 +894,8 @@ class DAIA extends AbstractBase implements
                                     try {
                                         $duedate = $this->dateConverter
                                             ->convertToDisplayDate(
-                                                'Y-m-d', $unavailable['expected']
+                                                'Y-m-d',
+                                                $unavailable['expected']
                                             );
                                     } catch (\Exception $e) {
                                         $this->debug(
@@ -910,7 +914,7 @@ class DAIA extends AbstractBase implements
                                 // log messages for debugging
                                 if (isset($unavailable['message'])) {
                                     $this->logMessages(
-                                        $unavailable['message'], 
+                                        $unavailable['message'],
                                         'item->unavailable'
                                     );
                                 }
