@@ -95,7 +95,7 @@ class DAIA extends AbstractBase implements
         'presentation',
     ];
 
-   /**
+    /**
      * DAIA response format
      *
      * @var string
@@ -837,10 +837,12 @@ class DAIA extends AbstractBase implements
                         $serviceLink = $available['href'];
                     }
                     if (isset($available['limitation'])) {
-                        $item_notes = array_merge($item_notes,
+                        $item_notes = array_merge(
+                            $item_notes,
                             $this->getItemLimitationContent($available['limitation'])
                         );
-                        $item_limitation_types = array_merge($item_limitation_types,
+                        $item_limitation_types = array_merge(
+                            $item_limitation_types,
                             $this->getItemLimitationTypes($available['limitation'])
                         );
                     }
@@ -864,22 +866,31 @@ class DAIA extends AbstractBase implements
                                     $serviceLink = $available['href'];
                                 }
                                 if (isset($unavailable['limitation'])) {
-                                    $item_notes = array_merge($item_notes,
-                                        $this->getItemLimitationContent($unavailable['limitation'])
+                                    $item_notes = array_merge(
+                                        $item_notes,
+                                        $this->getItemLimitationContent(
+                                            $unavailable['limitation']
+                                        )
                                     );
-                                    $item_limitation_types = array_merge($item_limitation_types,
-                                        $this->getItemLimitationTypes($unavailable['limitation'])
+                                    $item_limitation_types = array_merge(
+                                        $item_limitation_types,
+                                        $this->getItemLimitationTypes(
+                                            $unavailable['limitation']
+                                        )
                                     );
                                 }
-                                // attribute expected is mandatory for unavailable element
+                                // attribute expected is mandatory for unavailable
+                                // element
                                 if (!empty($unavailable['expected'])) {
                                     try {
                                         $duedate = $this->dateConverter
                                             ->convertToDisplayDate(
-                                               'Y-m-d', $unavailable['expected']
+                                                'Y-m-d', $unavailable['expected']
                                             );
                                     } catch (\Exception $e) {
-                                        $this->debug('Date conversion failed: ' . $e->getMessage());
+                                        $this->debug(
+                                            'Date conversion failed: ' . $e->getMessage()
+                                        );
                                         $duedate = null;
                                     }
                                 }
@@ -891,7 +902,10 @@ class DAIA extends AbstractBase implements
 
                                 // log messages for debugging
                                 if (isset($unavailable['message'])) {
-                                    $this->logMessages($unavailable['message'], 'item->unavailable');
+                                    $this->logMessages(
+                                        $unavailable['message'], 
+                                        'item->unavailable'
+                                    );
                                 }
                             }
                         }
