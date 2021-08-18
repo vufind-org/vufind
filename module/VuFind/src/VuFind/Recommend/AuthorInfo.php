@@ -219,7 +219,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
             $nameParts[$i - 1] = $nameParts[$i];
         }
         $nameParts[count($nameParts) - 1] = $last;
-        $author = implode($nameParts, ' ');
+        $author = implode(' ', $nameParts);
         return $author;
     }
 
