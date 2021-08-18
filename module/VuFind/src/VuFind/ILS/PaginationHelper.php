@@ -104,7 +104,10 @@ class PaginationHelper
      *
      * @return array
      */
-    public function getOptions($page, $sort, $defaultPageSize,
+    public function getOptions(
+        $page,
+        $sort,
+        $defaultPageSize,
         $functionConfig
     ) {
         // Get page and page size:

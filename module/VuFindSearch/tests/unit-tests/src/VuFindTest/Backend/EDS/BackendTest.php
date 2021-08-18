@@ -62,7 +62,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->loadResponse('autocomplete')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, [], ['getAutocompleteData']
+            $conn,
+            $this->getRCFactory(),
+            null,
+            null,
+            [],
+            ['getAutocompleteData']
         );
         $autocompleteData = [
             'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234'
@@ -92,7 +97,11 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->loadResponse('retrieve')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, [],
+            $conn,
+            $this->getRCFactory(),
+            null,
+            null,
+            [],
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->expects($this->any())
@@ -124,7 +133,11 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->loadResponse('search')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, [],
+            $conn,
+            $this->getRCFactory(),
+            null,
+            null,
+            [],
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->expects($this->any())

@@ -84,7 +84,9 @@ class DedupeCommand extends RelativeFileAwareCommand
      *
      * @return string        User-entered response.
      */
-    protected function getInput(InputInterface $input, OutputInterface $output,
+    protected function getInput(
+        InputInterface $input,
+        OutputInterface $output,
         string $prompt
     ): string {
         $question = new Question($prompt, '');

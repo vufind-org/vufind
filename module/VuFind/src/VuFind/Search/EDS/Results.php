@@ -65,7 +65,11 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()->search(
-            $this->backendId, $query, $offset, $limit, $params
+            $this->backendId,
+            $query,
+            $offset,
+            $limit,
+            $params
         );
         if (null != $collection) {
             $this->responseFacets = $collection->getFacets();

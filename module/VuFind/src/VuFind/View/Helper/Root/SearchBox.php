@@ -85,8 +85,11 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      * @param array          $alphabrowseConfig source => label config for
      * alphabrowse options to display in combined box (empty for none)
      */
-    public function __construct(OptionsManager $optionsManager, $config = [],
-        $placeholders = [], $alphabrowseConfig = []
+    public function __construct(
+        OptionsManager $optionsManager,
+        $config = [],
+        $placeholders = [],
+        $alphabrowseConfig = []
     ) {
         $this->optionsManager = $optionsManager;
         $this->config = $config;
@@ -448,7 +451,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         // but we are configured to include them, we should add them now:
         if (!$addedBrowseHandlers && $this->alphaBrowseOptionsEnabled()) {
             $handlers = array_merge(
-                $handlers, $this->getAlphaBrowseHandlers($activeHandler, false)
+                $handlers,
+                $this->getAlphaBrowseHandlers($activeHandler, false)
             );
         }
 

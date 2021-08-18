@@ -81,7 +81,9 @@ class ExtendedIni implements FileLoaderInterface
      * @param ExtendedIniReader $reader          Helper for reading .ini files from
      * disk.
      */
-    public function __construct($pathStack = [], $fallbackLocales = null,
+    public function __construct(
+        $pathStack = [],
+        $fallbackLocales = null,
         ExtendedIniReader $reader = null
     ) {
         $this->pathStack = $pathStack;

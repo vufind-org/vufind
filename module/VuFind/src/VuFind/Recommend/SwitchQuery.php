@@ -118,7 +118,8 @@ class SwitchQuery implements RecommendInterface
         $optIns = !empty($params[2])
             ? explode(',', $params[2]) : [];
         $this->skipChecks = array_merge(
-            $this->skipChecks, array_diff($this->optInMethods, $optIns)
+            $this->skipChecks,
+            array_diff($this->optInMethods, $optIns)
         );
     }
 

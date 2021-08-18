@@ -74,8 +74,12 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return CookieManager
      */
-    protected function getMockCookieManager($cookies = [], $path = '/',
-        $domain = null, $secure = false, $httpOnly = false
+    protected function getMockCookieManager(
+        $cookies = [],
+        $path = '/',
+        $domain = null,
+        $secure = false,
+        $httpOnly = false
     ) {
         return $this->getMockBuilder(\VuFind\Cookie\CookieManager::class)
             ->onlyMethods(['set'])
@@ -150,7 +154,8 @@ class CartTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['success' => true], $cart->addItem('Solr|b'));
         $this->assertTrue($cart->isFull());
         $this->assertEquals(
-            ['success' => false, 'notAdded' => 1], $cart->addItem('Solr|c')
+            ['success' => false, 'notAdded' => 1],
+            $cart->addItem('Solr|c')
         );
     }
 

@@ -179,7 +179,10 @@ class CollectionsController extends AbstractBase
 
         // Only grab 150,000 facet values to avoid out-of-memory errors:
         $result = $searchObject->getFullFieldFacets(
-            [$browseField], false, 150000, 'index'
+            [$browseField],
+            false,
+            150000,
+            'index'
         );
         $result = $result[$browseField]['data']['list'] ?? [];
 
@@ -217,7 +220,9 @@ class CollectionsController extends AbstractBase
 
         // Select just the records to display
         $result = array_slice(
-            $result, $key, count($result) > $key + $limit ? $limit : null
+            $result,
+            $key,
+            count($result) > $key + $limit ? $limit : null
         );
 
         // Send other relevant values to the template:

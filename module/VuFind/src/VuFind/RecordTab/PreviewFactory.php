@@ -59,7 +59,9 @@ class PreviewFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -71,7 +73,8 @@ class PreviewFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $active = false;
         if (isset($cfg->Content->previews)) {
             $previews = array_map(
-                'trim', explode(',', strtolower($cfg->Content->previews))
+                'trim',
+                explode(',', strtolower($cfg->Content->previews))
             );
             if (in_array('google', $previews)
                 && strlen(trim($cfg->Content->GoogleOptions['tab'] ?? '')) > 0

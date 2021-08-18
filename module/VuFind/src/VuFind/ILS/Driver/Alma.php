@@ -334,7 +334,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $number = (string)$item->item_data->description;
                     $description = (string)$item->item_data->description;
                 }
-
+                $callnumber = $item->holding_data->call_number;
                 $results['holdings'][] = [
                     'id' => $id,
                     'source' => 'Solr',
@@ -342,9 +342,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'status' => $status,
                     'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
-                    'callnumber' => $this->getTranslatableString(
-                        $item->holding_data->call_number
-                    ),
+                    'callnumber' => (string)($callnumber->desc ?? $callnumber),
                     'duedate' => $duedate,
                     'returnDate' => false, // TODO: support recent returns
                     'number' => $number,
@@ -593,7 +591,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $xml->addChild('last_name', $formParams['lastname']);
         $xml->addChild('user_group', $newUserConfig['userGroup']);
         $xml->addChild(
-            'preferred_language', $newUserConfig['preferredLanguage']
+            'preferred_language',
+            $newUserConfig['preferredLanguage']
         );
         $xml->addChild('account_type', $newUserConfig['accountType']);
         $xml->addChild('status', $newUserConfig['status']);
@@ -1002,7 +1001,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return array Associative array of the results
      */
-    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    public function updateHolds(
+        array $holdsDetails,
+        array $fields,
+        array $patron
     ): array {
         $results = [];
         $patronId = $patron['id'];
@@ -1143,7 +1145,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $nowTS = time();
 
         $sort = explode(
-            ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
+            ' ',
+            !empty($params['sort']) ? $params['sort'] : 'checkout desc',
+            2
         );
         if ($sort[0] == 'checkout') {
             $sortKey = 'loan_date';

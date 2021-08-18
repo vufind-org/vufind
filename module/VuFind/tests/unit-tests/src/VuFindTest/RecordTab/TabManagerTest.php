@@ -49,7 +49,8 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      * @param  ConfigManager $configManager Config manager to use (null for default)
      * @return TabManager
      */
-    protected function getTabManager(PluginManager $pluginManager = null,
+    protected function getTabManager(
+        PluginManager $pluginManager = null,
         ConfigManager $configManager = null
     ) {
         $legacyConfig = [

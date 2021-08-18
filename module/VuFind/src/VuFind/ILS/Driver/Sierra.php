@@ -112,7 +112,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             . "WHERE bib_view.record_num = $1 "
             . "AND item_view.is_suppressed = false;";
         $record_ids = pg_query_params(
-            $this->db, $get_record_ids_query, [$this->idStrip($id)]
+            $this->db,
+            $get_record_ids_query,
+            [$this->idStrip($id)]
         );
         $itemRecords = [];
         while ($record = pg_fetch_row($record_ids)) {
@@ -173,7 +175,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . "varfield_view.varfield_type_code = 'c' and "
                 . "varfield_view.record_num = $1;";
             $results = pg_query_params(
-                $this->db, $query, [$this->idStrip($id)]
+                $this->db,
+                $query,
+                [$this->idStrip($id)]
             );
             if (pg_num_rows($results) > 0) {
                 $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
@@ -600,11 +604,15 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . "OFFSET CAST ($2 AS integer);";
             if ($fundID != null) {
                 $results = pg_query_params(
-                    $this->db, $query, [$limit, $offset, $fundID]
+                    $this->db,
+                    $query,
+                    [$limit, $offset, $fundID]
                 );
             } else {
                 $results = pg_query_params(
-                    $this->db, $query, [$limit, $offset]
+                    $this->db,
+                    $query,
+                    [$limit, $offset]
                 );
             }
             $newItems['count'] = (string)pg_num_rows($results);

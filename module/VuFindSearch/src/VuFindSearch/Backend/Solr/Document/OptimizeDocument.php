@@ -92,12 +92,14 @@ class OptimizeDocument implements DocumentInterface
         $writer->startElement('optimize');
         if ($this->waitFlush !== null) {
             $writer->writeAttribute(
-                'waitFlush', $this->waitFlush ? 'true' : 'false'
+                'waitFlush',
+                $this->waitFlush ? 'true' : 'false'
             );
         }
         if ($this->waitSearcher !== null) {
             $writer->writeAttribute(
-                'waitSearcher', $this->waitSearcher ? 'true' : 'false'
+                'waitSearcher',
+                $this->waitSearcher ? 'true' : 'false'
             );
         }
         $writer->endElement();

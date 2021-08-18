@@ -61,7 +61,9 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -71,7 +73,8 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $request = $container->get('Request');
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
-            $loader, $request
+            $loader,
+            $request
         );
     }
 

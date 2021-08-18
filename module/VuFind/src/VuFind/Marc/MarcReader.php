@@ -248,7 +248,9 @@ class MarcReader
      *
      * @return array
      */
-    public function getFieldsSubfields(string $fieldTag, array $subfieldCodes,
+    public function getFieldsSubfields(
+        string $fieldTag,
+        array $subfieldCodes,
         ?string $separator = ' '
     ): array {
         $result = [];
@@ -290,8 +292,11 @@ class MarcReader
      *
      * @return array
      */
-    public function getLinkedField(string $fieldTag, string $linkedFieldTag,
-        string $occurrence = '', ?array $subfieldCodes = null
+    public function getLinkedField(
+        string $fieldTag,
+        string $linkedFieldTag,
+        string $occurrence = '',
+        ?array $subfieldCodes = null
     ): array {
         $results
             = $this->getLinkedFields($fieldTag, $linkedFieldTag, $subfieldCodes);
@@ -313,7 +318,9 @@ class MarcReader
      *
      * @return array
      */
-    public function getLinkedFields(string $fieldTag, string $linkedFieldTag,
+    public function getLinkedFields(
+        string $fieldTag,
+        string $linkedFieldTag,
         ?array $subfieldCodes = null
     ): array {
         $result = [];
@@ -370,8 +377,11 @@ class MarcReader
      *
      * @return array
      */
-    public function getLinkedFieldsSubfields(string $fieldTag,
-        string $linkedFieldTag, array $subfieldCodes, ?string $separator = ' '
+    public function getLinkedFieldsSubfields(
+        string $fieldTag,
+        string $linkedFieldTag,
+        array $subfieldCodes,
+        ?string $separator = ' '
     ): array {
         $result = [];
         foreach ($this->getLinkedFields($fieldTag, $linkedFieldTag, $subfieldCodes)
@@ -426,7 +436,9 @@ class MarcReader
      *
      * @return string
      */
-    protected function getInternalSubfield(array $field, string $subfieldCode
+    protected function getInternalSubfield(
+        array $field,
+        string $subfieldCode
     ): string {
         foreach ($field['s'] ?? [] as $subfield) {
             if (key($subfield) == $subfieldCode) {

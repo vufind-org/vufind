@@ -129,7 +129,9 @@ class Export
                 break;
             case 'encodedCallback':
                 $template = str_replace(
-                    '{' . $current . '}', urlencode($callback), $template
+                    '{' . $current . '}',
+                    urlencode($callback),
+                    $template
                 );
                 break;
             }
@@ -168,7 +170,8 @@ class Export
             $ns = array_map(
                 function ($current) {
                     return explode('|', $current, 2);
-                }, $ns
+                },
+                $ns
             );
             foreach ($parts as $part) {
                 // Convert text into XML object:

@@ -90,8 +90,12 @@ class GetRecordDetails extends AbstractBase
      * @param TabManager        $tm       Record Tab manager
      * @param RendererInterface $renderer Renderer
      */
-    public function __construct(array $config, Request $request, Loader $loader,
-        TabManager $tm, RendererInterface $renderer
+    public function __construct(
+        array $config,
+        Request $request,
+        Loader $loader,
+        TabManager $tm,
+        RendererInterface $renderer
     ) {
         $this->config = $config;
         $this->request = $request;
@@ -112,11 +116,15 @@ class GetRecordDetails extends AbstractBase
         $driver = $this->recordLoader
             ->load($params->fromQuery('id'), $params->fromQuery('source'));
         $viewtype = preg_replace(
-            '/\W/', '', trim(strtolower($params->fromQuery('type')))
+            '/\W/',
+            '',
+            trim(strtolower($params->fromQuery('type')))
         );
 
         $details = $this->tabManager->getTabDetailsForRecord(
-            $driver, $this->request, 'Information'
+            $driver,
+            $this->request,
+            'Information'
         );
 
         $html = $this->renderer->render(

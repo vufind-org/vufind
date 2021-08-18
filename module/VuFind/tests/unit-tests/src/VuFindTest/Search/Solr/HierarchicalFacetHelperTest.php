@@ -259,14 +259,16 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertFalse($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
+            $facetList[0]['children'][0]['value'],
+            '1/Book/BookPart/'
         );
         $this->assertEquals(1, $facetList[0]['children'][0]['level']);
         $this->assertFalse($facetList[0]['children'][0]['isApplied']);
         $this->assertEquals('0/AV/', $facetList[1]['value']);
         $this->assertEquals('0/Audio/', $facetList[2]['value']);
         $this->assertEquals(
-            $facetList[2]['children'][0]['value'], '1/Audio/Spoken/'
+            $facetList[2]['children'][0]['value'],
+            '1/Audio/Spoken/'
         );
         $this->assertEquals('1/Audio/Music/', $facetList[2]['children'][1]['value']);
 
@@ -279,7 +281,8 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertTrue($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
+            $facetList[0]['children'][0]['value'],
+            '1/Book/BookPart/'
         );
         $this->assertEquals(true, $facetList[0]['children'][0]['isApplied']);
     }
@@ -320,7 +323,8 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     {
         $facetList = $this->helper->flattenFacetHierarchy(
             $this->helper->buildFacetArray(
-                'format', $this->facetList
+                'format',
+                $this->facetList
             )
         );
         $this->assertEquals('0/Book/', $facetList[0]['value']);
