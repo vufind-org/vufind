@@ -193,7 +193,9 @@ class DAIA extends AbstractBase implements
             $this->debug('No ContentTypes for response defined. Accepting any.');
         }
         if (isset($this->config['DAIA']['daiaOnSiteServices'])) {
-            $this->onSiteServices = explode(':', $this->config['DAIA']['daiaOnSiteServices']);
+            $this->onSiteServices = explode(
+                ':', $this->config['DAIA']['daiaOnSiteServices']
+            );
         } else {
             $this->debug('Accepting loan and presentation as on-site services.');
         }
@@ -855,14 +857,18 @@ class DAIA extends AbstractBase implements
                             if (isset($unavailable['service'])
                                 && $unavailable['service'] == $service
                             ) {
-                                foreach (array_keys($availableServices, $service) as $noService) {
-                                    unset($availableServices[$noService]);
+                                $skipServices = array_keys(
+                                    $availableServices, 
+                                    $service
+                                );
+                                foreach ($skipServices as $skipService) {
+                                    unset($availableServices[$skipService]);
                                 }
                                 if ($service == 'loan'
                                     && isset($available['href'])
                                 ) {
-                                    // save the link to the ils if we have a href for loan
-                                    // service
+                                    // save the link to the ils if we have a href
+                                    // for loan service
                                     $serviceLink = $available['href'];
                                 }
                                 if (isset($unavailable['limitation'])) {
@@ -889,7 +895,8 @@ class DAIA extends AbstractBase implements
                                             );
                                     } catch (\Exception $e) {
                                         $this->debug(
-                                            'Date conversion failed: ' . $e->getMessage()
+                                            'Date conversion failed: '
+                                            . $e->getMessage()
                                         );
                                         $duedate = null;
                                     }
