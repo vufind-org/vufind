@@ -2195,7 +2195,7 @@ class MyResearchController extends AbstractBase
                     'html' => true,
                     'msg' => 'email_change_pending_html',
                     'tokens' => [
-                        '%%pending%%' => $user->pending_email,
+                        '%%pending%%' => $this->escapeHtml($user->pending_email),
                         '%%url%%' => $url,
                     ],
                 ]
