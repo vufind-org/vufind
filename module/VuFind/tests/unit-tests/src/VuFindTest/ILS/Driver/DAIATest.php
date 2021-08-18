@@ -49,7 +49,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     protected $testResult = [
-        'holdings' =>
+        'holdings' => [
             0 =>
                 [
                     'status' =>    '',
