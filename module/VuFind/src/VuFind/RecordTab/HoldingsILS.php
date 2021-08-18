@@ -140,7 +140,7 @@ class HoldingsILS extends AbstractBase
 
         $unique = [];
         foreach ($callNos as $no) {
-            $unique[$no['display']] = $no;
+            $unique[(string)$no['display']] = $no;
         }
         $callNosUnique = array_values($unique);
 
