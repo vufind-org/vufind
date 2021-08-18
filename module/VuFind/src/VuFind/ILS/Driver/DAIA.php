@@ -93,7 +93,6 @@ class DAIA extends AbstractBase implements
     protected $onSiteServices = [
         'loan',
         'presentation',
-        'interloan',
     ];
 
    /**
@@ -196,7 +195,7 @@ class DAIA extends AbstractBase implements
         if (isset($this->config['DAIA']['daiaOnSiteServices'])) {
             $this->onSiteServices = explode(':', $this->config['DAIA']['daiaOnSiteServices']);
         } else {
-            $this->debug('Accepting loan, presentation and interloan as on-site services.');
+            $this->debug('Accepting loan and presentation as on-site services.');
         }
         if (isset($this->config['DAIA']['daiaCache'])) {
             $this->daiaCacheEnabled = $this->config['DAIA']['daiaCache'];
