@@ -96,6 +96,16 @@ class DAIA extends AbstractBase implements
     ];
 
     /**
+     * DAIA remote services
+     *
+     * @var array
+     */
+    protected $remoteServices = [
+         'remote',
+         'openaccess',
+     ];
+
+    /**
      * DAIA response format
      *
      * @var string
@@ -200,6 +210,15 @@ class DAIA extends AbstractBase implements
         } else {
             $this->debug('Accepting loan and presentation as on-site services.');
         }
+        if (isset($this->config['DAIA']['daiaRemoteServices'])) {
+            $this->remoteServices = explode(
+                ':',
+                $this->config['DAIA']['daiaRemoteServices']
+            );
+        } else {
+            $this->debug('Accepting remote and openaccess as remote services.');
+        }
+
         if (isset($this->config['DAIA']['daiaCache'])) {
             $this->daiaCacheEnabled = $this->config['DAIA']['daiaCache'];
         } else {
@@ -800,9 +819,13 @@ class DAIA extends AbstractBase implements
                 $result_item['storagehref'] = $this->getItemStorageLink($item);
                 // status and availability will be calculated in own function
                 $onSite_status = $this->getItemOnSiteStatus($item);
+                $remote_status = $this->getItemRemoteStatus($item);
                 // add result_item to the result array
                 if (!empty($onSite_status)) {
                     $result['holdings'][] = $onSite_status + $result_item;
+                }
+                if (!empty($remote_status)) {
+                    $result['electronic_holdings'][] = $remote_status + $result_item;
                 }
             } // end iteration on item
         }
@@ -943,6 +966,88 @@ class DAIA extends AbstractBase implements
         // not holdable.
         $return['addStorageRetrievalRequestLink'] = !$return['is_holdable']
             ? $this->checkIsStorageRetrievalRequest($item) : false;
+
+        // add a custom Field to allow passing custom DAIA data to the frontend in
+        // order to use it for more precise display of availability
+        $return['customData']      = $this->getCustomData($item);
+
+        $return['limitation_types'] = $item_limitation_types;
+
+        return $return;
+    }
+
+    /**
+     * Returns an array with status information for provided item.
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return array
+     */
+    protected function getItemRemoteStatus($item)
+    {
+        $return = [];
+        $availability = false;
+        $duedate = null;
+        $serviceLink = $queue = '';
+        $item_notes = $item_limitation_types = $availableServices = [];
+        $services = $this->remoteServices;
+
+        if (isset($item['available'])) {
+            foreach ($item['available'] as $available) {
+                if (isset($available['service'])
+                    && in_array($available['service'], $services)
+                ) {
+                    if (isset($available['href'])) {
+                        $service = $available['service'];
+                        $availableServices[] = $service;
+                        $remoteLink = $available['href'];
+                        $availability = true;
+                        if (!empty($remoteLink)) {
+                            $item_note = '<a href="' . $remoteLink . '">';
+                            if (!empty($available['title'])) {
+                                $item_note .= $available['title'] . '</a>';
+                            } else {
+                                $item_note .= $remoteLink . '</a>';
+                            }
+                            $item_notes[] = $item_note;
+                            if (isset($available['limitation'])) {
+                                $item_notes = array_merge(
+                                    $item_notes,
+                                    $this->getItemLimitationContent(
+                                        $available['limitation']
+                                    )
+                                );
+                            }
+                        }
+                        // log messages for debugging
+                        if (isset($available['message'])) {
+                            $this->logMessages(
+                                $available['message'],
+                                'item->available'
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        if (empty($remoteLink)) {
+            return [];
+        }
+
+        $return['ilslink'] = $remoteLink;
+        $return['item_notes']      = $item_notes;
+        $return['status']          = $this->getStatusString($item);
+        $return['availability']    = $availability;
+        $return['services']        = $availableServices;
+
+        // In this DAIA driver implementation addLink and is_holdable are assumed
+        // Boolean as patron based availability requires either a patron-id or -type.
+        // This should be handled in a custom DAIA driver
+        $return['addLink']     = false;
+        $return['is_holdable'] = false;
+        $return['holdtype']    = '';
+        $return['addStorageRetrievalRequestLink'] = false;
 
         // add a custom Field to allow passing custom DAIA data to the frontend in
         // order to use it for more precise display of availability

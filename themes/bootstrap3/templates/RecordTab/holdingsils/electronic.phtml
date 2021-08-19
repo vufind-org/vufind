@@ -23,7 +23,7 @@
             <b><?=$this->transEsc("Item Notes")?>:</b>
             <ul>
               <?php foreach ($item['item_notes'] as $item_note): ?>
-                <li><?=$this->escapeHtml($item_note) ?></li>
+                <li><?=$item_note ?></li>
               <?php endforeach; ?>
             </ul>
           </div>
