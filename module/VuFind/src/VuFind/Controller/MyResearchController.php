@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -35,8 +34,11 @@ use VuFind\Exception\AuthInProgress as AuthInProgressException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\ILS\PaginationHelper;
+use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
 
 /**
@@ -981,17 +983,11 @@ class MyResearchController extends AbstractBase
             }
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
-        } catch (\Exception $e) {
-            switch (get_class($e)) {
-            case 'VuFind\Exception\ListPermission':
-            case 'VuFind\Exception\MissingField':
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
-                return false;
-            case 'VuFind\Exception\LoginRequired':
-                return $this->forceLogin();
-            default:
-                throw $e;
-            }
+        } catch (ListPermissionException | MissingFieldException $e) {
+            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            return false;
+        } catch (LoginRequiredException $e) {
+            return $this->forceLogin();
         }
     }
 
@@ -1103,18 +1099,13 @@ class MyResearchController extends AbstractBase
 
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');
-            } catch (\Exception $e) {
-                switch (get_class($e)) {
-                case 'VuFind\Exception\LoginRequired':
-                case 'VuFind\Exception\ListPermission':
-                    $user = $this->getUser();
-                    if ($user == false) {
-                        return $this->forceLogin();
-                    }
-                    // Logged in? Fall through to default case!
-                default:
-                    throw $e;
+            } catch (LoginRequiredException | ListPermissionException $e) {
+                $user = $this->getUser();
+                if ($user == false) {
+                    return $this->forceLogin();
                 }
+                // Logged in? Then we have to rethrow the exception!
+                throw $e;
             }
             // Redirect to MyResearch home
             return $this->redirect()->toRoute('myresearch-favorites');
@@ -1641,7 +1632,7 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
-                    $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
+                    $this->serviceLocator->get(Mailer::class)->send(
                         $user->email,
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),
@@ -1702,7 +1693,7 @@ class MyResearchController extends AbstractBase
         );
         // If the user is setting up a new account, use the main email
         // address; if they have a pending address change, use that.
-        $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
+        $this->serviceLocator->get(Mailer::class)->send(
             $user->email,
             $config->Site->email,
             $this->translate('change_notification_email_subject'),
@@ -1753,7 +1744,7 @@ class MyResearchController extends AbstractBase
                     // address; if they have a pending address change, use that.
                     $to = empty($user->pending_email)
                         ? $user->email : $user->pending_email;
-                    $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
+                    $this->serviceLocator->get(Mailer::class)->send(
                         $to,
                         $config->Site->email,
                         $this->translate('verification_email_subject'),
