@@ -108,6 +108,36 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'limitation_types' => [],
                     'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
                 ],
+            2 =>
+                [
+                    'status' => '',
+                    'availability' => false,
+                    'duedate' => "02-09-2115",
+                    'requests_placed' => '',
+                    'id' => "027586081",
+                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:7111347777",
+                    'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                    'number' => 3,
+                    'barcode' => "1",
+                    'reserve' => "N",
+                    'callnumber' => "GHI 56",
+                    'location' => 'Example Library for DAIA Tests',
+                    'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
+                    'locationhref' => 'http://www.example-library.edu',
+                    'storage' => 'Abteilung III',
+                    'storageid' => '',
+                    'storagehref' => '',
+                    'item_notes' => [],
+                    'services' => [],
+                    'is_holdable' => false,
+                    'addLink' => false,
+                    'holdtype' => null,
+                    'addStorageRetrievalRequestLink' => false,
+                    'customData' => [],
+                    'limitation_types' => [],
+                    'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                ],
+
         ],
         'electronic_holdings' => []
     ];
