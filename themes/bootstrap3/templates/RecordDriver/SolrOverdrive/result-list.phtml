@@ -21,7 +21,7 @@
   <div class="media-body">
     <div class="result-body">
       <div>
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>">
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption()) ?>">
           <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
 

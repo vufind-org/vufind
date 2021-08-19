@@ -2190,12 +2190,17 @@ class MyResearchController extends AbstractBase
                 [],
                 ['query' => ['reverify' => 'true']]
             );
+            $pendingEmailEsc = htmlspecialchars(
+                $user->pending_email,
+                ENT_COMPAT,
+                'UTF-8'
+            );
             $this->flashMessenger()->addInfoMessage(
                 [
                     'html' => true,
                     'msg' => 'email_change_pending_html',
                     'tokens' => [
-                        '%%pending%%' => $user->pending_email,
+                        '%%pending%%' => $pendingEmailEsc,
                         '%%url%%' => $url,
                     ],
                 ]
