@@ -507,8 +507,8 @@ body.rtl {
 }
 
 .search-history-table {
-  @extend .table all;
-  @extend .table-striped all;
+  @extend .table;
+  @extend .table-striped;
 }
 table.search-history-table {
   table-layout: auto;

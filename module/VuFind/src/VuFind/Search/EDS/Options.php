@@ -69,21 +69,28 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Available expander options
      *
-     * @var unknown
+     * @var array
      */
     protected $expanderOptions = [];
 
     /**
      * Available limiter options
      *
-     * @var unknown
+     * @var array
      */
     protected $limiterOptions = [];
 
     /**
+     * Limiters enabled on advanced search screen (empty for all available)
+     *
+     * @var string[]
+     */
+    protected $advancedLimiters = [];
+
+    /**
      * Whether or not to return available facets with the search response
      *
-     * @var unknown
+     * @var array
      */
     protected $includeFacets = 'y';
 
@@ -406,6 +413,13 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load autocomplete preferences:
         $this->configureAutocomplete($searchSettings);
+
+        if (isset($searchSettings->General->advanced_limiters)) {
+            $this->advancedLimiters = array_map(
+                'trim',
+                explode(',', $searchSettings->General->advanced_limiters)
+            );
+        }
     }
 
     /**
@@ -516,7 +530,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Populate limiter values forom the EDS API INFO method data
+     * Populate limiter values from the EDS API INFO method data
      *
      * @param array $limiterValues Limiter values from the API
      *
@@ -540,13 +554,47 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Returns the available limters
+     * Returns the available limiters
      *
      * @return array
      */
     public function getAvailableLimiters()
     {
         return $this->limiterOptions;
+    }
+
+    /**
+     * Returns the enabled limiters for the advanced search
+     *
+     * @return array
+     */
+    public function getAdvancedLimiters()
+    {
+        // Make sure that everything is labeled with an appropriate translation
+        // string:
+        $labeledLimiters = array_map(
+            function ($limiter) {
+                $limiter['Label'] = $this->getLabelForCheckboxFilter(
+                    'eds_limiter_' . $limiter['Id'],
+                    $limiter['Label']
+                );
+                return $limiter;
+            },
+            $this->limiterOptions
+        );
+        // No setting = use all available values
+        if (empty($this->advancedLimiters)) {
+            return $labeledLimiters;
+        }
+        // If we got this far, let's create a list of enabled limiters in the
+        // requested order:
+        $enabledLimiters = [];
+        foreach ($this->advancedLimiters as $limiter) {
+            if (isset($labeledLimiters[$limiter])) {
+                $enabledLimiters[$limiter] = $labeledLimiters[$limiter];
+            }
+        }
+        return $enabledLimiters;
     }
 
     /**
