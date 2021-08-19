@@ -293,7 +293,8 @@ class ResourceContainer
             return $this->js;
         } else {
             return array_filter(
-                $this->js, function ($jsFile) use ($position) {
+                $this->js,
+                function ($jsFile) use ($position) {
                     return $jsFile['position'] == $position;
                 }
             );
