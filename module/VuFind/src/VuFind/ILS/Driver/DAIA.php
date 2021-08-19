@@ -834,9 +834,7 @@ class DAIA extends AbstractBase implements
                     $service = $available['service'];
                     $availableServices[] = $service;
                     $availability = true;
-                    if ($service == 'loan'
-                        && isset($available['href'])
-                    ) {
+                    if ($service == 'loan' && isset($available['href'])) {
                         // save the link to the ils if we have a href for loan
                         // service
                         $serviceLink = $available['href'];
@@ -855,76 +853,71 @@ class DAIA extends AbstractBase implements
                     if (isset($available['message'])) {
                         $this->logMessages($available['message'], 'item->available');
                     }
-                    if (isset($item['unavailable'])) {
-                        foreach ($item['unavailable'] as $unavailable) {
-                            if (isset($unavailable['service'])
-                                && $unavailable['service'] == $service
-                            ) {
-                                $skipServices = array_keys(
-                                    $availableServices,
-                                    $service
+                }
+            }
+        }
+        if (isset($item['unavailable'])) {
+            foreach ($item['unavailable'] as $unavailable) {
+                if (isset($unavailable['service'])
+                    && in_array($unavailable['service'], $services)
+                ) {
+                    $service = $unavailable['service'];
+                    $skipServices = array_keys($availableServices, $service);
+                    foreach ($skipServices as $skipService) {
+                        unset($availableServices[$skipService]);
+                    }
+                    if ($service == 'loan' && isset($unavailable['href'])) {
+                        // save the link to the ils if we have a href
+                        // for loan service
+                        $serviceLink = $unavailable['href'];
+                    }
+                    if (isset($unavailable['limitation'])) {
+                        $item_notes = array_merge(
+                            $item_notes,
+                            $this->getItemLimitationContent(
+                                $unavailable['limitation']
+                            )
+                        );
+                        $item_limitation_types = array_merge(
+                            $item_limitation_types,
+                            $this->getItemLimitationTypes(
+                                $unavailable['limitation']
+                            )
+                        );
+                    }
+                    // attribute expected is mandatory for unavailable
+                    // element
+                    if (!empty($unavailable['expected'])) {
+                        try {
+                            $duedate = $this->dateConverter
+                                ->convertToDisplayDate(
+                                    'Y-m-d',
+                                    $unavailable['expected']
                                 );
-                                foreach ($skipServices as $skipService) {
-                                    unset($availableServices[$skipService]);
-                                }
-                                if ($service == 'loan'
-                                    && isset($available['href'])
-                                ) {
-                                    // save the link to the ils if we have a href
-                                    // for loan service
-                                    $serviceLink = $available['href'];
-                                }
-                                if (isset($unavailable['limitation'])) {
-                                    $item_notes = array_merge(
-                                        $item_notes,
-                                        $this->getItemLimitationContent(
-                                            $unavailable['limitation']
-                                        )
-                                    );
-                                    $item_limitation_types = array_merge(
-                                        $item_limitation_types,
-                                        $this->getItemLimitationTypes(
-                                            $unavailable['limitation']
-                                        )
-                                    );
-                                }
-                                // attribute expected is mandatory for unavailable
-                                // element
-                                if (!empty($unavailable['expected'])) {
-                                    try {
-                                        $duedate = $this->dateConverter
-                                            ->convertToDisplayDate(
-                                                'Y-m-d',
-                                                $unavailable['expected']
-                                            );
-                                    } catch (\Exception $e) {
-                                        $this->debug(
-                                            'Date conversion failed: '
-                                            . $e->getMessage()
-                                        );
-                                        $duedate = null;
-                                    }
-                                }
-
-                                // attribute queue can be set
-                                if (isset($unavailable['queue'])) {
-                                    $queue = $unavailable['queue'];
-                                }
-
-                                // log messages for debugging
-                                if (isset($unavailable['message'])) {
-                                    $this->logMessages(
-                                        $unavailable['message'],
-                                        'item->unavailable'
-                                    );
-                                }
-                            }
+                        } catch (\Exception $e) {
+                            $this->debug(
+                                'Date conversion failed: ' . $e->getMessage()
+                            );
+                            $duedate = null;
                         }
+                    }
+
+                    // attribute queue can be set
+                    if (isset($unavailable['queue'])) {
+                        $queue = $unavailable['queue'];
+                    }
+
+                    // log messages for debugging
+                    if (isset($unavailable['message'])) {
+                        $this->logMessages(
+                            $unavailable['message'],
+                            'item->unavailable'
+                        );
                     }
                 }
             }
         }
-        if (empty($availableServices)) {
+        if (empty($serviceLink) && empty($duedate) && empty($availableServices)) {
             return [];
         }
 
