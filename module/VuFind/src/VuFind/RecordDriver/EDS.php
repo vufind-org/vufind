@@ -138,7 +138,8 @@ class EDS extends DefaultRecord
         return array_map(
             function ($data) {
                 return $data['Data'];
-            }, $this->getItems(null, null, 'Au')
+            },
+            $this->getItems(null, null, 'Au')
         );
     }
 
@@ -243,8 +244,11 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getItems($context = null, $labelFilter = null,
-        $groupFilter = null, $nameFilter = null
+    public function getItems(
+        $context = null,
+        $labelFilter = null,
+        $groupFilter = null,
+        $nameFilter = null
     ) {
         $items = [];
         foreach ($this->fields['Items'] ?? [] as $item) {
@@ -402,7 +406,8 @@ class EDS extends DefaultRecord
         $subjects = array_map(
             function ($data) {
                 return $data['Data'];
-            }, $this->getItems(null, null, 'Su')
+            },
+            $this->getItems(null, null, 'Su')
         );
         return empty($subjects) ? '' : implode(', ', $subjects);
     }
@@ -597,7 +602,8 @@ class EDS extends DefaultRecord
             $data = preg_replace('/<a idref="([^\"]*)"/', '<a href="#$1"', $data);
             $data = preg_replace(
                 '/<a id="([^\"]*)" idref="([^\"]*)" type="([^\"]*)"/',
-                '<a id="$1" href="#$2"', $data
+                '<a id="$1" href="#$2"',
+                $data
             );
 
             $data = $this->replaceBRWithCommas($data, $group);
@@ -776,7 +782,8 @@ class EDS extends DefaultRecord
         $pubDates = array_map(
             function ($data) {
                 return $data->getDate();
-            }, $this->getRawEDSPublicationDetails()
+            },
+            $this->getRawEDSPublicationDetails()
         );
         return !empty($pubDates) ? $pubDates : $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/IsPartOfRelationships/0/BibEntity/Dates/0/Y'
@@ -862,7 +869,8 @@ class EDS extends DefaultRecord
         return array_map(
             function ($data) {
                 return $data->getName();
-            }, $this->getRawEDSPublicationDetails()
+            },
+            $this->getRawEDSPublicationDetails()
         );
     }
 
@@ -876,7 +884,8 @@ class EDS extends DefaultRecord
         return array_map(
             function ($data) {
                 return $data->getPlace();
-            }, $this->getRawEDSPublicationDetails()
+            },
+            $this->getRawEDSPublicationDetails()
         );
     }
 
@@ -904,13 +913,13 @@ class EDS extends DefaultRecord
             // Try to extract place, publisher and date:
             if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
                 $placeParts = explode('.', $matches[1]);
-                list($place, $pub, $date)
+                [$place, $pub, $date]
                     = [trim($matches[1]), trim($matches[2]), $matches[3]];
             } elseif (preg_match('/^(.+):(.*)$/', $pub['Data'], $matches)) {
-                list($place, $pub, $date)
+                [$place, $pub, $date]
                     = [trim($matches[1]), trim($matches[2]), ''];
             } else {
-                list($place, $pub, $date) = ['', $pub['Data'], ''];
+                [$place, $pub, $date] = ['', $pub['Data'], ''];
             }
 
             // In some cases, the place may have noise on the front that needs
@@ -918,7 +927,9 @@ class EDS extends DefaultRecord
             $placeParts = explode('.', $place);
             $shortPlace = array_pop($placeParts);
             $details[] = new Response\PublicationDetails(
-                strlen($shortPlace) > 5 ? $shortPlace : $place, $pub, $date
+                strlen($shortPlace) > 5 ? $shortPlace : $place,
+                $pub,
+                $date
             );
         }
         return $details;
@@ -937,7 +948,7 @@ class EDS extends DefaultRecord
     {
         $result = [];
         foreach ($selectors as $selector) {
-            list($method, $params) = explode(':', $selector, 2);
+            [$method, $params] = explode(':', $selector, 2);
             $fullMethod = 'extractEbscoDataFrom' . ucwords($method);
             if (!is_callable([$this, $fullMethod])) {
                 throw new \Exception('Undefined method: ' . $fullMethod);

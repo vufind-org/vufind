@@ -52,7 +52,8 @@ class Linkify extends AbstractHelper
         $linkify = new \Misd\Linkify\Linkify();
         $proxyUrl = $this->getView()->plugin('proxyUrl');
         $escapeHtmlAttr = $this->getView()->plugin('escapeHtmlAttr');
-        $callback = function ($url, $caption, $isEmail) use ($proxyUrl,
+        $callback = function ($url, $caption, $isEmail) use (
+            $proxyUrl,
             $escapeHtmlAttr
         ) {
             $url = html_entity_decode($url);

@@ -443,22 +443,34 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $conn = $this->createMockConnector('patron.json');
 
         $result = $conn->checkRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron
+            'http://paia.gbv.de/',
+            [],
+            $this->patron
         );
         $resultStorageRetrieval = $conn->checkStorageRetrievalRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron
+            'http://paia.gbv.de/',
+            [],
+            $this->patron
         );
         $result_bad = $conn->checkRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_bad
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_bad
         );
         $resultStorage_bad = $conn->checkStorageRetrievalRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_bad
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_bad
         );
         $result_expired = $conn->checkRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_expired
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_expired
         );
         $resultStorage_expired = $conn->checkStorageRetrievalRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_expired
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_expired
         );
 
         $this->assertEquals(true, $result);
@@ -610,7 +622,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $sessionManager = new \Laminas\Session\SessionManager();
         $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
             ->setConstructorArgs([$dateConverter, $sessionManager])
-            ->setMethods(['getScope'])
+            ->onlyMethods(['getScope'])
             ->getMock();
         $conn->expects($this->any())->method('getScope')
             ->will(

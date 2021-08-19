@@ -65,7 +65,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'ophtalmologie*',
             $params->getDisplayQueryWithReplacedTerm(
-                'oftamologie*', 'ophtalmologie*'
+                'oftamologie*',
+                'ophtalmologie*'
             )
         );
     }

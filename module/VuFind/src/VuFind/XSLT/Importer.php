@@ -72,7 +72,10 @@ class Importer
      * @throws \Exception
      * @return string            Transformed XML
      */
-    public function save($xmlFile, $properties, $index = 'Solr',
+    public function save(
+        $xmlFile,
+        $properties,
+        $index = 'Solr',
         $testMode = false
     ) {
         // Process the file:
@@ -111,7 +114,8 @@ class Importer
             );
         }
         $xslFile = ConfigLocator::getConfigPath(
-            $options['General']['xslt'], 'import/xsl'
+            $options['General']['xslt'],
+            'import/xsl'
         );
 
         // Initialize the XSL processor:

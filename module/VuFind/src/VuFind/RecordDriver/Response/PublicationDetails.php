@@ -112,7 +112,8 @@ class PublicationDetails
     {
         return trim(
             preg_replace(
-                '/\s+/', ' ',
+                '/\s+/',
+                ' ',
                 implode(' ', [$this->place, $this->name, $this->date])
             )
         );

@@ -162,7 +162,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
         $this->assertEquals('parent', $ti->findContainingTheme('parent.txt'));
         $this->assertEquals($this->fixturePath . '/parent/parent.txt', $ti->findContainingTheme('parent.txt', true));
-        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt'];
+        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt', 'relativePath' => 'parent.txt'];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
     }
 
@@ -177,6 +177,40 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti->setTheme('mixin_user');
         $this->assertEquals('mixin', $ti->findContainingTheme('js/mixin.js'));
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
+    }
+
+    /**
+     * Test findInThemes()
+     *
+     * @return void
+     */
+    public function testFindInThemes()
+    {
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('child');
+        $files = $ti->findInThemes(
+            [
+                'templates/content/*.phtml',
+                'templates/content/*.md'
+            ]
+        );
+        $this->assertIsArray($files);
+        $this->assertEquals(3, count($files));
+        $this->assertEquals('parent', $files[0]['theme']);
+        $this->assertEquals(
+            'templates/content/page1.phtml',
+            $files[0]['relativeFile']
+        );
+        $this->assertEquals('child', $files[1]['theme']);
+        $this->assertEquals(
+            'templates/content/page2.phtml',
+            $files[1]['relativeFile']
+        );
+        $this->assertEquals('parent', $files[2]['theme']);
+        $this->assertEquals(
+            'templates/content/page3.md',
+            $files[2]['relativeFile']
+        );
     }
 
     /**

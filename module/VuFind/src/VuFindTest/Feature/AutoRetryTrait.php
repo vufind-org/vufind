@@ -61,7 +61,7 @@ trait AutoRetryTrait
      *
      * @var int
      */
-    protected $retriesLeft;
+    protected $retriesLeft = 0;
 
     /**
      * Override PHPUnit's main run method, introducing annotation-based retry
@@ -79,7 +79,8 @@ trait AutoRetryTrait
         // the cause of the initial error. We only really want to retry if it
         // will prevent ANY failures from occurring.
         $annotations = Test::parseTestMethodAnnotations(
-            static::class, $this->getName(false)
+            static::class,
+            $this->getName(false)
         );
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;

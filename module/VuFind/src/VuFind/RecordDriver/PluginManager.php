@@ -114,7 +114,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
@@ -138,7 +139,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
                 }
             }
         };
-        $this->addInitializer($initializer, false);
+        $this->addInitializer($initializer);
     }
 
     /**
@@ -161,7 +162,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return AbstractBase
      */
-    public function getSolrRecord($data, $keyPrefix = 'Solr',
+    public function getSolrRecord(
+        $data,
+        $keyPrefix = 'Solr',
         $defaultKeySuffix = 'Default'
     ) {
         $key = $keyPrefix . ucwords(

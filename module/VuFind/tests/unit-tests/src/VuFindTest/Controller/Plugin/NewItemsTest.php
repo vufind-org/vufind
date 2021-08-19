@@ -53,7 +53,11 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockCatalog(), $this->getMockParams(), 10, 'a', $flash
+            $this->getMockCatalog(),
+            $this->getMockParams(),
+            10,
+            'a',
+            $flash
         );
         $this->assertEquals([1, 2], $bibs);
     }
@@ -71,7 +75,11 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockCatalog(), $this->getMockParams(1), 10, 'a', $flash
+            $this->getMockCatalog(),
+            $this->getMockParams(1),
+            10,
+            'a',
+            $flash
         );
         $this->assertEquals([1], $bibs);
     }
@@ -84,7 +92,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     public function testGetFundList()
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
-            ->setMethods(['checkCapability', 'getFunds'])
+            ->onlyMethods(['checkCapability', 'getFunds'])
             ->disableOriginalConstructor()
             ->getMock();
         $catalog->expects($this->once())->method('checkCapability')
@@ -209,13 +217,15 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     protected function getMockCatalog(): \VuFind\ILS\Connection
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
-            ->setMethods(['getNewItems'])
+            ->onlyMethods(['getNewItems'])
             ->disableOriginalConstructor()
             ->getMock();
         $catalog->expects($this->once())->method('getNewItems')
             ->with(
-                $this->equalTo(1), $this->equalTo(200),
-                $this->equalTo(10), $this->equalTo('a')
+                $this->equalTo(1),
+                $this->equalTo(200),
+                $this->equalTo(10),
+                $this->equalTo('a')
             )
             ->will(
                 $this->returnValue(

@@ -96,7 +96,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     {
         $url = 'http://foo/bar';
         $this->assertEquals(
-            $url, $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
+            $url,
+            $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
         );
     }
 
@@ -139,7 +140,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
         }

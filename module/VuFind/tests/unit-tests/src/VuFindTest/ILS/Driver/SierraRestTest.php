@@ -67,7 +67,8 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
             return new \Laminas\Session\Container($namespace);
         };
         $this->driver = new SierraRest(
-            new \VuFind\Date\Converter(), $sessionFactory
+            new \VuFind\Date\Converter(),
+            $sessionFactory
         );
     }
 
@@ -82,10 +83,12 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
             // Extraction should return the same result whether we extract from
             // the raw value or the formatted value:
             $this->assertEquals(
-                $raw, $this->callMethod($this->driver, 'extractBibId', [$raw])
+                $raw,
+                $this->callMethod($this->driver, 'extractBibId', [$raw])
             );
             $this->assertEquals(
-                $raw, $this->callMethod($this->driver, 'extractBibId', [$formatted])
+                $raw,
+                $this->callMethod($this->driver, 'extractBibId', [$formatted])
             );
         }
     }

@@ -71,19 +71,6 @@ class MyResearchController extends AbstractBase
     protected $paginationHelper = null;
 
     /**
-     * Construct an HTTP 205 (refresh) response. Useful for reporting success
-     * in the lightbox without actually rendering content.
-     *
-     * @return \Laminas\Http\Response
-     */
-    protected function getRefreshResponse()
-    {
-        $response = $this->getResponse();
-        $response->setStatusCode(205);
-        return $response;
-    }
-
-    /**
      * Process an authentication error.
      *
      * @param AuthException $e Exception to process.
@@ -358,7 +345,9 @@ class MyResearchController extends AbstractBase
             // logging out and getting logged back in when using environment-based
             // authentication methods like Shibboleth.
             $logoutTarget = preg_replace(
-                '/([?&])auth_method=[^&]*&?/', '$1', $logoutTarget
+                '/([?&])auth_method=[^&]*&?/',
+                '$1',
+                $logoutTarget
             );
             $logoutTarget = rtrim($logoutTarget, '?');
 
@@ -566,6 +555,8 @@ class MyResearchController extends AbstractBase
         $view->accountDeletion
             = !empty($config->Authentication->account_deletion);
 
+        $this->addPendingEmailChangeMessage($user);
+
         return $view;
     }
 
@@ -738,7 +729,8 @@ class MyResearchController extends AbstractBase
                     'mytags'  => $tagParser->parse($tags),
                     'notes' => $this->params()->fromPost('notes' . $list)
                 ],
-                $user, $driver
+                $user,
+                $driver
             );
             $didSomething = true;
         }
@@ -774,11 +766,13 @@ class MyResearchController extends AbstractBase
         // Get current record (and, if applicable, selected list ID) for convenience:
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $source = $this->params()->fromPost(
-            'source', $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
+            'source',
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
         $driver = $this->getRecordLoader()->load($id, $source, true);
         $listID = $this->params()->fromPost(
-            'list_id', $this->params()->fromQuery('list_id', null)
+            'list_id',
+            $this->params()->fromQuery('list_id', null)
         );
 
         // Process save action if necessary:
@@ -844,7 +838,10 @@ class MyResearchController extends AbstractBase
             $url = $this->url()->fromRoute('userList', ['id' => $listID]);
         }
         return $this->confirm(
-            'confirm_delete_brief', $url, $url, 'confirm_delete',
+            'confirm_delete_brief',
+            $url,
+            $url,
+            'confirm_delete',
             ['delete' => $id, 'source' => $source]
         );
     }
@@ -864,7 +861,8 @@ class MyResearchController extends AbstractBase
         // Check for "delete item" request; parameter may be in GET or POST depending
         // on calling context.
         $deleteId = $this->params()->fromPost(
-            'delete', $this->params()->fromQuery('delete')
+            'delete',
+            $this->params()->fromQuery('delete')
         );
         if ($deleteId) {
             $deleteSource = $this->params()->fromPost(
@@ -874,7 +872,8 @@ class MyResearchController extends AbstractBase
             // If the user already confirmed the operation, perform the delete now;
             // otherwise prompt for confirmation:
             $confirm = $this->params()->fromPost(
-                'confirm', $this->params()->fromQuery('confirm')
+                'confirm',
+                $this->params()->fromQuery('confirm')
             );
             if ($confirm) {
                 $success = $this->performDeleteFavorite($deleteId, $deleteSource);
@@ -955,17 +954,20 @@ class MyResearchController extends AbstractBase
                 = $this->params()->fromQuery('recordSource', DEFAULT_SEARCH_BACKEND);
             if (!empty($recordId)) {
                 $details = $this->getRecordRouter()->getActionRouteDetails(
-                    $recordSource . '|' . $recordId, 'Save'
+                    $recordSource . '|' . $recordId,
+                    'Save'
                 );
                 return $this->redirect()->toRoute(
-                    $details['route'], $details['params']
+                    $details['route'],
+                    $details['params']
                 );
             }
 
             // Similarly, if the user is in the process of bulk-saving records,
             // send them back to the appropriate place in the cart.
             $bulkIds = $this->params()->fromPost(
-                'ids', $this->params()->fromQuery('ids', [])
+                'ids',
+                $this->params()->fromQuery('ids', [])
             );
             if (!empty($bulkIds)) {
                 $params = [];
@@ -1053,6 +1055,7 @@ class MyResearchController extends AbstractBase
     public function emailNotVerifiedAction()
     {
         if ($this->params()->fromQuery('reverify')) {
+            $change = false;
             $table = $this->getTable('User');
             // Case 1: new user:
             $user = $table
@@ -1064,7 +1067,7 @@ class MyResearchController extends AbstractBase
                     $change = true;
                 }
             }
-            $this->sendVerificationEmail($user, $change ?? false);
+            $this->sendVerificationEmail($user, $change);
         } else {
             $this->flashMessenger()->addMessage('verification_email_sent', 'info');
         }
@@ -1089,7 +1092,8 @@ class MyResearchController extends AbstractBase
 
         // Have we confirmed this?
         $confirm = $this->params()->fromPost(
-            'confirm', $this->params()->fromQuery('confirm')
+            'confirm',
+            $this->params()->fromQuery('confirm')
         );
         if ($confirm) {
             try {
@@ -1121,100 +1125,21 @@ class MyResearchController extends AbstractBase
             'confirm_delete_list_brief',
             $this->url()->fromRoute('myresearch-deletelist'),
             $this->url()->fromRoute('userList', ['id' => $listID]),
-            'confirm_delete_list_text', ['listID' => $listID]
+            'confirm_delete_list_text',
+            ['listID' => $listID]
         );
-    }
-
-    /**
-     * Get record driver objects corresponding to an array of record arrays returned
-     * by an ILS driver's methods such as getMyHolds / getMyTransactions.
-     *
-     * @param array $records Record information
-     *
-     * @return \VuFind\RecordDriver\AbstractBase[]
-     */
-    protected function getDriversForILSRecords(array $records): array
-    {
-        if (!$records) {
-            return [];
-        }
-        $ids = array_map(
-            function ($current) {
-                return [
-                    'id' => $current['id'] ?? '',
-                    'source' => $current['source'] ?? DEFAULT_SEARCH_BACKEND
-                ];
-            },
-            $records
-        );
-        $drivers = $this->serviceLocator->get(\VuFind\Record\Loader::class)
-            ->loadBatch($ids, true);
-        foreach ($records as $i => $current) {
-            // loadBatch takes care of maintaining correct order, so we can access
-            // the array by index
-            $drivers[$i]->setExtraDetail('ils_details', $current);
-        }
-        return $drivers;
     }
 
     /**
      * Send list of holds to view
      *
      * @return mixed
+     *
+     * @deprecated
      */
     public function holdsAction()
     {
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-
-        // Connect to the ILS:
-        $catalog = $this->getILS();
-
-        // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelHolds', compact('patron'));
-        $view = $this->createViewModel();
-        $view->cancelResults = $cancelStatus
-            ? $this->holds()->cancelHolds($catalog, $patron) : [];
-        // If we need to confirm
-        if (!is_array($view->cancelResults)) {
-            return $view->cancelResults;
-        }
-
-        // By default, assume we will not need to display a cancel form:
-        $view->cancelForm = false;
-
-        // Get held item details:
-        $result = $catalog->getMyHolds($patron);
-        $driversNeeded = [];
-        $this->holds()->resetValidation();
-        foreach ($result as $current) {
-            // Add cancel details if appropriate:
-            $current = $this->holds()->addCancelDetails(
-                $catalog, $current, $cancelStatus
-            );
-            if ($cancelStatus && $cancelStatus['function'] != "getCancelHoldLink"
-                && isset($current['cancel_details'])
-            ) {
-                // Enable cancel form if necessary:
-                $view->cancelForm = true;
-            }
-
-            $driversNeeded[] = $current;
-        }
-
-        // Get List of PickUp Libraries based on patron's home library
-        try {
-            $view->pickup = $catalog->getPickUpLocations($patron);
-        } catch (\Exception $e) {
-            // Do nothing; if we're unable to load information about pickup
-            // locations, they are not supported and we should ignore them.
-        }
-
-        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
-        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
-        return $view;
+        return $this->redirect()->toRoute('holds-list');
     }
 
     /**
@@ -1234,12 +1159,14 @@ class MyResearchController extends AbstractBase
 
         // Process cancel requests if necessary:
         $cancelSRR = $catalog->checkFunction(
-            'cancelStorageRetrievalRequests', compact('patron')
+            'cancelStorageRetrievalRequests',
+            compact('patron')
         );
         $view = $this->createViewModel();
         $view->cancelResults = $cancelSRR
             ? $this->storageRetrievalRequests()->cancelStorageRetrievalRequests(
-                $catalog, $patron
+                $catalog,
+                $patron
             )
             : [];
         // If we need to confirm
@@ -1257,7 +1184,10 @@ class MyResearchController extends AbstractBase
         foreach ($result as $current) {
             // Add cancel details if appropriate:
             $current = $this->storageRetrievalRequests()->addCancelDetails(
-                $catalog, $current, $cancelSRR, $patron
+                $catalog,
+                $current,
+                $cancelSRR,
+                $patron
             );
             if ($cancelSRR
                 && $cancelSRR['function'] != "getCancelStorageRetrievalRequestLink"
@@ -1278,8 +1208,9 @@ class MyResearchController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
-        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
-        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
+        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
+        $view->accountStatus = $this->ilsRecords()
+            ->collectRequestStats($view->recordList);
         return $view;
     }
 
@@ -1300,12 +1231,14 @@ class MyResearchController extends AbstractBase
 
         // Process cancel requests if necessary:
         $cancelStatus = $catalog->checkFunction(
-            'cancelILLRequests', compact('patron')
+            'cancelILLRequests',
+            compact('patron')
         );
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->ILLRequests()->cancelILLRequests(
-                $catalog, $patron
+                $catalog,
+                $patron
             )
             : [];
         // If we need to confirm
@@ -1323,7 +1256,10 @@ class MyResearchController extends AbstractBase
         foreach ($result as $current) {
             // Add cancel details if appropriate:
             $current = $this->ILLRequests()->addCancelDetails(
-                $catalog, $current, $cancelStatus, $patron
+                $catalog,
+                $current,
+                $cancelStatus,
+                $patron
             );
             if ($cancelStatus
                 && $cancelStatus['function'] != "getCancelILLRequestLink"
@@ -1336,8 +1272,9 @@ class MyResearchController extends AbstractBase
             $driversNeeded[] = $current;
         }
 
-        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
-        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
+        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
+        $view->accountStatus = $this->ilsRecords()
+            ->collectRequestStats($view->recordList);
         return $view;
     }
 
@@ -1363,7 +1300,10 @@ class MyResearchController extends AbstractBase
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
             ? $this->renewals()->processRenewals(
-                $this->getRequest()->getPost(), $catalog, $patron
+                $this->getRequest()->getPost(),
+                $catalog,
+                $patron,
+                $this->serviceLocator->get(\VuFind\Validator\Csrf::class)
             )
             : [];
 
@@ -1384,7 +1324,9 @@ class MyResearchController extends AbstractBase
 
         // Build paginator if needed:
         $paginator = $this->getPaginationHelper()->getPaginator(
-            $pageOptions, $result['count'], $result['records']
+            $pageOptions,
+            $result['count'],
+            $result['records']
         );
         if ($paginator) {
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
@@ -1412,7 +1354,9 @@ class MyResearchController extends AbstractBase
         foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
-                $catalog, $current, $renewStatus
+                $catalog,
+                $current,
+                $renewStatus
             );
             if ($renewStatus && !isset($current['renew_link'])
                 && $current['renewable']
@@ -1443,7 +1387,7 @@ class MyResearchController extends AbstractBase
             }
         }
 
-        $transactions = $this->getDriversForILSRecords($driversNeeded);
+        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
 
         $displayItemBarcode
             = !empty($config->Catalog->display_checked_out_item_barcode);
@@ -1453,8 +1397,15 @@ class MyResearchController extends AbstractBase
         $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
             compact(
-                'transactions', 'renewForm', 'renewResult', 'paginator', 'ilsPaging',
-                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'params',
+                'transactions',
+                'renewForm',
+                'renewResult',
+                'paginator',
+                'ilsPaging',
+                'hiddenTransactions',
+                'displayItemBarcode',
+                'sortList',
+                'params',
                 'accountStatus'
             )
         );
@@ -1477,7 +1428,8 @@ class MyResearchController extends AbstractBase
 
         // Check function config
         $functionConfig = $catalog->checkFunction(
-            'getMyTransactionHistory', $patron
+            'getMyTransactionHistory',
+            $patron
         );
         if (false === $functionConfig) {
             $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
@@ -1503,7 +1455,9 @@ class MyResearchController extends AbstractBase
         }
 
         $paginator = $this->getPaginationHelper()->getPaginator(
-            $pageOptions, $result['count'], $result['transactions']
+            $pageOptions,
+            $result['count'],
+            $result['transactions']
         );
         if ($paginator) {
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
@@ -1523,13 +1477,17 @@ class MyResearchController extends AbstractBase
             }
         }
 
-        $transactions = $this->getDriversForILSRecords($driversNeeded);
+        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
         $sortList = $pageOptions['sortList'];
         $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
             compact(
-                'transactions', 'paginator', 'params',
-                'hiddenTransactions', 'sortList', 'functionConfig'
+                'transactions',
+                'paginator',
+                'params',
+                'hiddenTransactions',
+                'sortList',
+                'functionConfig'
             )
         );
     }
@@ -1709,7 +1667,7 @@ class MyResearchController extends AbstractBase
     protected function sendFirstVerificationEmail($user)
     {
         if (empty($user->verify_hash)) {
-            return $this->sendVerificationEmail($user);
+            $this->sendVerificationEmail($user);
         }
     }
 
@@ -2046,21 +2004,7 @@ class MyResearchController extends AbstractBase
             $this->flashMessenger()
                 ->addMessage('change_email_verification_reminder', 'info');
         }
-        if (!empty($user->pending_email)) {
-            $url = $this->url()->fromRoute('myresearch-emailnotverified')
-                . '?reverify=true';
-            $this->flashMessenger()->addMessage(
-                [
-                    'html' => true,
-                    'msg' => 'email_change_pending_html',
-                    'tokens' => [
-                        '%%pending%%' => $user->pending_email,
-                        '%%url%%' => $url,
-                    ],
-                ],
-                'info'
-            );
-        }
+        $this->addPendingEmailChangeMessage($user);
         return $view;
     }
 
@@ -2117,7 +2061,8 @@ class MyResearchController extends AbstractBase
     {
         $method = trim(
             $this->params()->fromQuery(
-                'auth_method', $this->params()->fromPost('auth_method')
+                'auth_method',
+                $this->params()->fromPost('auth_method')
             )
         );
         if (!empty($method)) {
@@ -2189,7 +2134,8 @@ class MyResearchController extends AbstractBase
                 }
                 $user = $this->getTable('User')->getById($search->user_id);
                 $secret = $search->getUnsubscribeSecret(
-                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class), $user
+                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class),
+                    $user
                 );
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
@@ -2230,32 +2176,30 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Collect up to date status information for ajax account notifications.
+     * Add a message about any pending email change to the flash messenger
      *
-     * @param array $records Records for holds, ILL requests or storage retrieval
-     * requests
+     * @param \VuFind\Db\Row\User $user User
      *
-     * @return array
+     * @return void
      */
-    protected function collectRequestAccountStats(array $records): ?array
+    protected function addPendingEmailChangeMessage($user)
     {
-        // Collect up to date stats for ajax account notifications:
-        if (empty($this->getConfig()->Authentication->enableAjax)) {
-            return null;
+        if (!empty($user->pending_email)) {
+            $url = $this->url()->fromRoute(
+                'myresearch-emailnotverified',
+                [],
+                ['query' => ['reverify' => 'true']]
+            );
+            $this->flashMessenger()->addInfoMessage(
+                [
+                    'html' => true,
+                    'msg' => 'email_change_pending_html',
+                    'tokens' => [
+                        '%%pending%%' => $user->pending_email,
+                        '%%url%%' => $url,
+                    ],
+                ]
+            );
         }
-        $accountStatus = [
-            'available' => 0,
-            'in_transit' => 0
-        ];
-        foreach ($records as $record) {
-            $request = $record->getExtraDetail('ils_details');
-            if ($request['available'] ?? false) {
-                $accountStatus['available']++;
-            }
-            if ($request['in_transit'] ?? false) {
-                $accountStatus['in_transit']++;
-            }
-        }
-        return $accountStatus;
     }
 }

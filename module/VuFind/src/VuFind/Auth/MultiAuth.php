@@ -109,10 +109,7 @@ class MultiAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (!isset($this->config->MultiAuth)
-            || !isset($this->config->MultiAuth->method_order)
-            || !strlen($this->config->MultiAuth->method_order)
-        ) {
+        if (empty($this->config->MultiAuth->method_order)) {
             throw new AuthException(
                 "One or more MultiAuth parameters are missing. " .
                 "Check your config.ini!"
@@ -133,14 +130,16 @@ class MultiAuth extends AbstractBase
         parent::setConfig($config);
         if (isset($config->MultiAuth->method_order)) {
             $this->methods = array_map(
-                'trim', explode(',', $config->MultiAuth->method_order)
+                'trim',
+                explode(',', $config->MultiAuth->method_order)
             );
         }
         if (isset($config->MultiAuth->filters)
             && strlen($config->MultiAuth->filters)
         ) {
             $this->filters = array_map(
-                'trim', explode(',', $config->MultiAuth->filters)
+                'trim',
+                explode(',', $config->MultiAuth->filters)
             );
         }
     }
@@ -205,6 +204,7 @@ class MultiAuth extends AbstractBase
      */
     protected function authUser($request)
     {
+        $exception = null;
         $manager = $this->getPluginManager();
 
         // Try authentication methods until we find one that works:
@@ -228,11 +228,7 @@ class MultiAuth extends AbstractBase
         // along; or both variables are undefined, indicating that $this->methods
         // is empty and thus something is wrong!
         if (!isset($user)) {
-            if (isset($exception)) {
-                throw $exception;
-            } else {
-                throw new AuthException('authentication_error_technical');
-            }
+            throw $exception ?? new AuthException('authentication_error_technical');
         }
         return $user;
     }

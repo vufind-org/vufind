@@ -28,6 +28,8 @@
  */
 namespace VuFind\Recommend;
 
+use VuFindSearch\Backend\Solr\Backend;
+
 /**
  * MapSelection Recommendations Module
  *
@@ -114,46 +116,46 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $bboxSearchCoords = [];
 
     /**
-     * Solr search loader
+     * Solr search backend
      *
-     * @var \VuFind\Search\BackendManager
+     * @var Backend
      */
     protected $solr;
 
     /**
      * Query Builder object
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\Backend\Solr\QueryBuilder
      */
     protected $queryBuilder;
 
     /**
      * Solr connector Object
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\Backend\Solr\Connector
      */
     protected $solrConnector;
 
     /**
      * Query Object
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\Query\QueryInterface
      */
     protected $searchQuery;
 
     /**
      * Backend Parameters / Search Filters
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\ParamBag
      */
     protected $searchFilters;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\BackendManager $solr                Search interface
-     * @param array                         $basemapOptions      Basemap Options
-     * @param array                         $mapSelectionOptions Map Options
+     * @param Backend $solr                Search interface
+     * @param array   $basemapOptions      Basemap Options
+     * @param array   $mapSelectionOptions Map Options
      */
     public function __construct($solr, $basemapOptions, $mapSelectionOptions)
     {
@@ -175,21 +177,17 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function setConfig($settings)
     {
-        $basemapOptions = $this->basemapOptions;
         $mapSelectionOptions = $this->mapSelectionOptions;
         $this->defaultCoordinates = explode(
             ',',
             $mapSelectionOptions['default_coordinates']
         );
         $this->height = $mapSelectionOptions['height'];
-        $this->basemapUrl = $basemapOptions['basemap_url'];
-        $this->basemapAttribution = $basemapOptions['basemap_attribution'];
     }
 
     /**
-     * Init
-     *
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -224,19 +222,24 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
                 $match = [];
                 if (preg_match(
                     '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
-                    $value[0], $match
+                    $value[0],
+                    $match
                 )
                 ) {
                     array_push(
                         $this->bboxSearchCoords,
-                        (float)$match[1], (float)$match[2],
-                        (float)$match[3], (float)$match[4]
+                        (float)$match[1],
+                        (float)$match[2],
+                        (float)$match[3],
+                        (float)$match[4]
                     );
                     // Need to reorder coords from WENS to WSEN
                     array_push(
                         $reorder_coords,
-                        (float)$match[1], (float)$match[4],
-                        (float)$match[2], (float)$match[3]
+                        (float)$match[1],
+                        (float)$match[4],
+                        (float)$match[2],
+                        (float)$match[3]
                     );
                     $this->selectedCoordinates = $reorder_coords;
                 }

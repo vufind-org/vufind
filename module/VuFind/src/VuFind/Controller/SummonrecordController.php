@@ -94,7 +94,9 @@ class SummonrecordController extends AbstractRecord
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
         $events->attach(
-            MvcEvent::EVENT_DISPATCH, [$this, 'injectSummonMessage'], 1000
+            MvcEvent::EVENT_DISPATCH,
+            [$this, 'injectSummonMessage'],
+            1000
         );
     }
 }

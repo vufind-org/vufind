@@ -68,8 +68,7 @@ class PaginationHelper
         if (isset($functionConfig['default_sort'])) {
             return $functionConfig['default_sort'];
         }
-        reset($functionConfig['sort']);
-        return key($functionConfig['sort']);
+        return array_key_first($functionConfig['sort']);
     }
 
     /**
@@ -105,7 +104,10 @@ class PaginationHelper
      *
      * @return array
      */
-    public function getOptions($page, $sort, $defaultPageSize,
+    public function getOptions(
+        $page,
+        $sort,
+        $defaultPageSize,
         $functionConfig
     ) {
         // Get page and page size:

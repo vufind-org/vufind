@@ -62,7 +62,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->loadResponse('autocomplete')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, [], ['getAutocompleteData']
+            $conn,
+            $this->getRCFactory(),
+            null,
+            null,
+            [],
+            ['getAutocompleteData']
         );
         $autocompleteData = [
             'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234'
@@ -92,7 +97,11 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->loadResponse('retrieve')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, [],
+            $conn,
+            $this->getRCFactory(),
+            null,
+            null,
+            [],
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->expects($this->any())
@@ -124,7 +133,11 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->loadResponse('search')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, [],
+            $conn,
+            $this->getRCFactory(),
+            null,
+            null,
+            [],
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->expects($this->any())
@@ -227,7 +240,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs([[], $client])
             ->getMock();
     }
@@ -258,8 +271,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             return new Backend($connector, $factory, $cache, $container, new \Laminas\Config\Config($settings));
         } else {
             $params = [$connector, $factory, $cache, $container, new \Laminas\Config\Config($settings)];
-            return $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
-                ->setMethods($mock)
+            return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
+                ->onlyMethods($mock)
                 ->setConstructorArgs($params)
                 ->getMock();
         }
@@ -278,12 +291,5 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             return $driver;
         };
         return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
-    }
-}
-
-class BackendMock extends \VuFindSearch\Backend\EDS\Backend
-{
-    public function getAuthenticationToken($isInvalid = false)
-    {
     }
 }

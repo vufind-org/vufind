@@ -76,7 +76,9 @@ class ILSAuthenticator
      * @param ILSConnection      $catalog   ILS connection
      * @param EmailAuthenticator $emailAuth Email authenticator
      */
-    public function __construct(Manager $auth, ILSConnection $catalog,
+    public function __construct(
+        Manager $auth,
+        ILSConnection $catalog,
         EmailAuthenticator $emailAuth = null
     ) {
         $this->auth = $auth;
@@ -125,7 +127,8 @@ class ILSAuthenticator
                 return $this->ilsAccount[$user->cat_username];
             }
             $patron = $this->catalog->patronLogin(
-                $user->cat_username, $user->getCatPassword()
+                $user->cat_username,
+                $user->getCatPassword()
             );
             if (empty($patron)) {
                 // Problem logging in -- clear user credentials so they can be
@@ -204,7 +207,7 @@ class ILSAuthenticator
 
         try {
             $patron = $this->emailAuthenticator->authenticate($hash);
-        } catch (\Vufind\Exception\Auth $e) {
+        } catch (\VuFind\Exception\Auth $e) {
             return false;
         }
         $this->updateUser($patron['cat_username'], '', $patron);

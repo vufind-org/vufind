@@ -36,7 +36,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -46,7 +46,7 @@ class MarkdownFactory implements FactoryInterface
      * Create an object
      *
      * @param ContainerInterface $container     Service Manager
-     * @param type               $requestedName Service being created
+     * @param string             $requestedName Service being created
      * @param null|array         $options       Extra options (optional)
      *
      * @return object
@@ -54,7 +54,9 @@ class MarkdownFactory implements FactoryInterface
      * @throws \Exception (options not allowed in this implementation)
      */
     public function __invoke(
-        ContainerInterface $container, $requestedName, array $options = null
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
     ) {
         $markdownService = $container
             ->get(\League\CommonMark\MarkdownConverterInterface::class);

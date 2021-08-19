@@ -62,9 +62,11 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
@@ -85,8 +87,11 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
         return new $requestedName(
-            $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
-            $filters, $batchSize
+            $solr,
+            $formatterManager,
+            rtrim($cacheDir, '/') . '/hierarchy',
+            $filters,
+            $batchSize
         );
     }
 }

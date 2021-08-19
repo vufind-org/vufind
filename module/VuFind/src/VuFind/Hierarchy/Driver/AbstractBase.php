@@ -88,8 +88,10 @@ abstract class AbstractBase
      * @param RendererManager        $rendererManager Tree renderer plugin manager
      * @param array                  $options         Extra options (if any)
      */
-    public function __construct(\Laminas\Config\Config $config,
-        DataManager $dataManager, RendererManager $rendererManager,
+    public function __construct(
+        \Laminas\Config\Config $config,
+        DataManager $dataManager,
+        RendererManager $rendererManager,
         $options = []
     ) {
         $this->config = $config;
@@ -138,8 +140,11 @@ abstract class AbstractBase
      *
      * @return string
      */
-    public function render(\VuFind\RecordDriver\AbstractBase $driver, $context,
-        $mode, $hierarchyID
+    public function render(
+        \VuFind\RecordDriver\AbstractBase $driver,
+        $context,
+        $mode,
+        $hierarchyID
     ) {
         if (!$this->showTree()) {
             return false;

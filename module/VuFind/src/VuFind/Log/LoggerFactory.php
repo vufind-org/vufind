@@ -57,7 +57,9 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addDbWriters(Logger $logger, ContainerInterface $container,
+    protected function addDbWriters(
+        Logger $logger,
+        ContainerInterface $container,
         $config
     ) {
         $parts = explode(':', $config);
@@ -75,7 +77,8 @@ class LoggerFactory implements FactoryInterface
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
             $container->get(\Laminas\Db\Adapter\Adapter::class),
-            $table_name, $columnMapping
+            $table_name,
+            $columnMapping
         );
         $this->addWriters($logger, $writer, $filters);
     }
@@ -89,7 +92,9 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addEmailWriters(Logger $logger, ContainerInterface $container,
+    protected function addEmailWriters(
+        Logger $logger,
+        ContainerInterface $container,
         Config $config
     ) {
         // Set up the logger's mailer to behave consistently with VuFind's
@@ -147,12 +152,14 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addSlackWriters(Logger $logger, ContainerInterface $container,
+    protected function addSlackWriters(
+        Logger $logger,
+        ContainerInterface $container,
         Config $config
     ) {
         $options = [];
         // Get config
-        list($channel, $error_types) = explode(':', $config->Logging->slack);
+        [$channel, $error_types] = explode(':', $config->Logging->slack);
         if ($error_types == null) {
             $error_types = $channel;
             $channel = null;
@@ -187,8 +194,10 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addOffice365Writers(Logger $logger,
-        ContainerInterface $container, Config $config
+    protected function addOffice365Writers(
+        Logger $logger,
+        ContainerInterface $container,
+        Config $config
     ) {
         $options = [];
         // Get config
@@ -314,7 +323,9 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setFormatter($formatter);
         $this->addWriters(
-            $logger, $writer, 'debug-' . (is_int($debug) ? $debug : '5')
+            $logger,
+            $writer,
+            'debug-' . (is_int($debug) ? $debug : '5')
         );
     }
 
@@ -409,9 +420,11 @@ class LoggerFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -425,11 +438,9 @@ class LoggerFactory implements FactoryInterface
             $proxy->setProxyInitializer(null);
 
             // Now build the actual service:
-            $loggerOptions = [
-                'vufind_ip_reader' =>
-                    $container->get(\VuFind\Net\UserIpReader::class)
-            ];
-            $wrapped = new $requestedName($loggerOptions);
+            $wrapped = new $requestedName(
+                $container->get(\VuFind\Net\UserIpReader::class)
+            );
             $this->configureLogger($container, $wrapped);
         };
         $cfg = $container->get(\ProxyManager\Configuration::class);

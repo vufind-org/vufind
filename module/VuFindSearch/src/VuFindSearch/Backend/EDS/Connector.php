@@ -112,8 +112,13 @@ class Connector extends Base implements LoggerAwareInterface
      * @throws ApiException
      * @return string               HTTP response body
      */
-    protected function httpRequest($baseUrl, $method, $queryString, $headers,
-        $messageBody = null, $messageFormat = "application/json; charset=utf-8"
+    protected function httpRequest(
+        $baseUrl,
+        $method,
+        $queryString,
+        $headers,
+        $messageBody = null,
+        $messageFormat = "application/json; charset=utf-8"
     ) {
         $this->debugPrint("{$method}: {$baseUrl}?{$queryString}");
 

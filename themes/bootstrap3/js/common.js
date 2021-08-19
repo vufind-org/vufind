@@ -38,6 +38,21 @@ var VuFind = (function VuFind() {
       }
     }
   };
+
+  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
+    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
+      var $form = $(this);
+      // Disable submit elements via setTimeout so that the submit button value gets
+      // included in the submitted data before being disabled:
+      setTimeout(
+        function disableSubmit() {
+          $form.find('[type=submit]').prop('disabled', true);
+        },
+        0
+      );
+    });
+  };
+
   var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
@@ -45,6 +60,8 @@ var VuFind = (function VuFind() {
       }
     }
     _initialized = true;
+
+    initDisableSubmitOnClick();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -405,20 +422,26 @@ $(document).ready(function commonDocReady() {
   setupQRCodeLinks();
 
   // Checkbox select all
-  $('.checkbox-select-all').change(function selectAllCheckboxes() {
+  $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
     var $form = this.form ? $(this.form) : $(this).closest('form');
-    $form.find('.checkbox-select-item').prop('checked', this.checked);
+    if (this.checked) {
+      $form.find('.checkbox-select-item:not(:checked)').trigger('click');
+    } else {
+      $form.find('.checkbox-select-item:checked').trigger('click');
+    }
     $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
     $form.find('.checkbox-select-all').prop('checked', this.checked);
     $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
   });
-  $('.checkbox-select-item').change(function selectAllDisable() {
+  $('.checkbox-select-item').on('change', function selectAllDisable() {
     var $form = this.form ? $(this.form) : $(this).closest('form');
     if ($form.length === 0) {
       return;
     }
-    $form.find('.checkbox-select-all').prop('checked', false);
-    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
+    if (!$(this).prop('checked')) {
+      $form.find('.checkbox-select-all').prop('checked', false);
+      $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
+    }
   });
 
   // Print

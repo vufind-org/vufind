@@ -49,6 +49,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $response;
 
     /**
+     * Total records
+     *
+     * @var int
+     */
+    protected $total;
+
+    /**
      * Constructor.
      *
      * @param int $total  Total result count

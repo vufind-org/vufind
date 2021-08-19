@@ -46,6 +46,13 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
+     * Random recommendation module class
+     *
+     * @var Random
+     */
+    protected $recommend;
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -68,19 +75,24 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
         $this->recommend->setConfig("SolrWeb:5:mixed:disregard:20:facet1:value1:facet2:value2");
         $this->assertEquals(
-            "SolrWeb", $this->getProperty($this->recommend, 'backend')
+            "SolrWeb",
+            $this->getProperty($this->recommend, 'backend')
         );
         $this->assertEquals(
-            "5", $this->getProperty($this->recommend, 'limit')
+            "5",
+            $this->getProperty($this->recommend, 'limit')
         );
         $this->assertEquals(
-            "mixed", $this->getProperty($this->recommend, 'displayMode')
+            "mixed",
+            $this->getProperty($this->recommend, 'displayMode')
         );
         $this->assertEquals(
-            "disregard", $this->getProperty($this->recommend, 'mode')
+            "disregard",
+            $this->getProperty($this->recommend, 'mode')
         );
         $this->assertEquals(
-            "20", $this->getProperty($this->recommend, 'minimum')
+            "20",
+            $this->getProperty($this->recommend, 'minimum')
         );
         $filters = $this->getProperty($this->recommend, 'filters');
         $this->assertIsArray($filters);
@@ -99,22 +111,28 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
         $this->recommend->setConfig('');
         $this->assertEquals(
-            "Solr", $this->getProperty($this->recommend, 'backend')
+            "Solr",
+            $this->getProperty($this->recommend, 'backend')
         );
         $this->assertEquals(
-            "10", $this->getProperty($this->recommend, 'limit')
+            "10",
+            $this->getProperty($this->recommend, 'limit')
         );
         $this->assertEquals(
-            "standard", $this->getProperty($this->recommend, 'displayMode')
+            "standard",
+            $this->getProperty($this->recommend, 'displayMode')
         );
         $this->assertEquals(
-            "retain", $this->getProperty($this->recommend, 'mode')
+            "retain",
+            $this->getProperty($this->recommend, 'mode')
         );
         $this->assertEquals(
-            "0", $this->getProperty($this->recommend, 'minimum')
+            "0",
+            $this->getProperty($this->recommend, 'minimum')
         );
         $this->assertEquals(
-            [], $this->getProperty($this->recommend, 'filters')
+            [],
+            $this->getProperty($this->recommend, 'filters')
         );
     }
 

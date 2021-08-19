@@ -53,25 +53,62 @@ class Memcache extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config    $config Session configuration ([Session] section of
-     * config.ini)
-     * @param \Memcache $client Optional Memcache client object
+     * @param Config                 $config Session configuration ([Session] section
+     * of config.ini)
+     * @param ?\Memcache|?\Memcached $client Optional Memcache client object
      */
-    public function __construct(Config $config = null, \Memcache $client = null)
+    public function __construct(Config $config = null, object $client = null)
     {
         parent::__construct($config);
+        $this->connect($config, $client);
+    }
 
+    /**
+     * Set up the connection to Memcache.
+     *
+     * @param ?Config                $config Session configuration ([Session] section
+     * of config.ini)
+     * @param ?\Memcache|?\Memcached $client Optional Memcache client object
+     *
+     * @return void
+     */
+    protected function connect(?Config $config, ?object $client): void
+    {
         // Set defaults if nothing set in config file.
         $host = $config->memcache_host ?? 'localhost';
         $port = $config->memcache_port ?? 11211;
         $timeout = $config->memcache_connection_timeout ?? 1;
+        $clientClass = $config->memcache_client ?? 'Memcache';
 
-        // Connect to Memcache:
-        $this->connection = $client ?? new \Memcache();
-        if (!$this->connection->connect($host, $port, $timeout)) {
+        // Create/validate client object:
+        if (!in_array($clientClass, ['Memcache', 'Memcached'])) {
+            throw new \Exception("Unsupported Memcache client: $clientClass");
+        }
+        $this->connection = $client ?? new $clientClass();
+        if (!($this->connection instanceof $clientClass)) {
             throw new \Exception(
-                "Could not connect to Memcache (host = {$host}, port = {$port})."
+                'Unexpected Memcache client class: ' . get_class($this->connection)
             );
+        }
+
+        // Prepare a connection exception, just in case we need it:
+        $connectionException = new \Exception(
+            "Could not connect to $clientClass (host = {$host}, port = {$port})."
+        );
+
+        // Establish connection:
+        switch ($clientClass) {
+        case 'Memcache':
+            if (!$this->connection->connect($host, $port, $timeout)) {
+                throw $connectionException;
+            }
+            break;
+        case 'Memcached':
+            $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+            if (!$this->connection->addServer($host, $port)) {
+                throw $connectionException;
+            }
+            break;
         }
     }
 
@@ -85,7 +122,13 @@ class Memcache extends AbstractBase
      */
     public function read($sessId)
     {
-        $value = $this->connection->get("vufind_sessions/{$sessId}");
+        // For some reason, Memcache tests fail if we do not pass exactly three
+        // parameters to the get method, even though this seems inconsistent with
+        // the documentation. This mechanism makes the tests pass, but may be worth
+        // revisiting in the future.
+        $extraParams = $this->connection instanceof \Memcache ? [null, null] : [];
+        $value = $this->connection
+            ->get("vufind_sessions/{$sessId}", ...$extraParams);
         return empty($value) ? '' : $value;
     }
 
@@ -116,8 +159,21 @@ class Memcache extends AbstractBase
      */
     protected function saveSession($sessId, $data)
     {
+        // Memcached and Memcache have different set() signatures, so we need to
+        // behave differently depending on the class of the connection.
+        if ($this->connection instanceof \Memcached) {
+            return $this->connection->set(
+                "vufind_sessions/{$sessId}",
+                $data,
+                $this->lifetime
+            );
+        }
+        // The third parameter (0) here is $flags, which we do not use.
         return $this->connection->set(
-            "vufind_sessions/{$sessId}", $data, 0, $this->lifetime
+            "vufind_sessions/{$sessId}",
+            $data,
+            0,
+            $this->lifetime
         );
     }
 }

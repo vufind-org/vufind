@@ -182,7 +182,8 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -204,7 +205,9 @@ class EuropeanaResults implements RecommendInterface,
         $this->sitePath = 'http://www.europeana.eu/portal/search.html?query=' .
             $this->lookfor;
         $this->targetUrl = $this->getURL(
-            'http://' . $this->baseUrl, $this->requestParam, $this->excludeProviders
+            'http://' . $this->baseUrl,
+            $this->requestParam,
+            $this->excludeProviders
         );
     }
 

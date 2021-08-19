@@ -47,8 +47,11 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testRead()
     {
+        if (!class_exists(\Memcache::class)) {
+            $this->markTestSkipped();
+        }
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'get'])
+            ->onlyMethods(['connect', 'get'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->will($this->returnValue(true));
@@ -66,8 +69,11 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testWriteWithDefaults()
     {
+        if (!class_exists(\Memcache::class)) {
+            $this->markTestSkipped();
+        }
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'set'])
+            ->onlyMethods(['connect', 'set'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->with(
@@ -93,8 +99,11 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testWriteWithNonDefaults()
     {
+        if (!class_exists(\Memcache::class)) {
+            $this->markTestSkipped();
+        }
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'set'])
+            ->onlyMethods(['connect', 'set'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->with(
@@ -128,8 +137,11 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testDestroy()
     {
+        if (!class_exists(\Memcache::class)) {
+            $this->markTestSkipped();
+        }
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'delete'])
+            ->onlyMethods(['connect', 'delete'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->will($this->returnValue(true));
@@ -137,6 +149,152 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->with($this->equalTo('vufind_sessions/foo'))
             ->will($this->returnValue(true));
         $handler = $this->getHandler(null, $memcache);
+        $this->setUpDestroyExpectations('foo');
+
+        $this->assertTrue($handler->destroy('foo'));
+    }
+
+    /**
+     * Test reading a session from the database (Memcached version).
+     *
+     * @return void
+     */
+    public function testReadMemcached()
+    {
+        if (!class_exists(\Memcached::class)) {
+            $this->markTestSkipped();
+        }
+        $memcache = $this->getMockBuilder(\Memcached::class)
+            ->onlyMethods(['addServer', 'get', 'setOption'])
+            ->getMock();
+        $memcache->expects($this->once())->method('setOption')
+            ->with(
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(1)
+            );
+        $memcache->expects($this->once())->method('addServer')
+            ->will($this->returnValue(true));
+        $memcache->expects($this->once())->method('get')
+            ->with($this->equalTo('vufind_sessions/foo'))
+            ->will($this->returnValue('bar'));
+        $config = new \Laminas\Config\Config(
+            [
+                'memcache_client' => 'Memcached',
+            ]
+        );
+        $handler = $this->getHandler($config, $memcache);
+        $this->assertEquals('bar', $handler->read('foo'));
+    }
+
+    /**
+     * Test writing a session with default configs (Memcached version).
+     *
+     * @return void
+     */
+    public function testWriteWithDefaultsMemcached()
+    {
+        if (!class_exists(\Memcached::class)) {
+            $this->markTestSkipped();
+        }
+        $memcache = $this->getMockBuilder(\Memcached::class)
+            ->onlyMethods(['addServer', 'set', 'setOption'])
+            ->getMock();
+        $memcache->expects($this->once())->method('setOption')
+            ->with(
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(1)
+            );
+        $memcache->expects($this->once())->method('addServer')
+            ->with(
+                $this->equalTo('localhost'),
+                $this->equalTo(11211)
+            )->will($this->returnValue(true));
+        $memcache->expects($this->once())->method('set')
+            ->with(
+                $this->equalTo('vufind_sessions/foo'),
+                $this->equalTo('stuff'),
+                $this->equalTo(3600)
+            )->will($this->returnValue(true));
+        $config = new \Laminas\Config\Config(
+            [
+                'memcache_client' => 'Memcached',
+            ]
+        );
+        $handler = $this->getHandler($config, $memcache);
+        $this->assertTrue($handler->write('foo', 'stuff'));
+    }
+
+    /**
+     * Test writing a session with non-default configs (Memcached version).
+     *
+     * @return void
+     */
+    public function testWriteWithNonDefaultsMemcached()
+    {
+        if (!class_exists(\Memcached::class)) {
+            $this->markTestSkipped();
+        }
+        $memcache = $this->getMockBuilder(\Memcached::class)
+            ->onlyMethods(['addServer', 'set', 'setOption'])
+            ->getMock();
+        $memcache->expects($this->once())->method('setOption')
+            ->with(
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(2)
+            );
+        $memcache->expects($this->once())->method('addServer')
+            ->with(
+                $this->equalTo('myhost'),
+                $this->equalTo(1234)
+            )->will($this->returnValue(true));
+        $memcache->expects($this->once())->method('set')
+            ->with(
+                $this->equalTo('vufind_sessions/foo'),
+                $this->equalTo('stuff'),
+                $this->equalTo(1000)
+            )->will($this->returnValue(true));
+        $config = new \Laminas\Config\Config(
+            [
+                'lifetime' => 1000,
+                'memcache_host' => 'myhost',
+                'memcache_port' => 1234,
+                'memcache_connection_timeout' => 2,
+                'memcache_client' => 'Memcached',
+            ]
+        );
+        $handler = $this->getHandler($config, $memcache);
+        $this->assertTrue($handler->write('foo', 'stuff'));
+    }
+
+    /**
+     * Test destroying a session (Memcached version).
+     *
+     * @return void
+     */
+    public function testDestroyMemcached()
+    {
+        if (!class_exists(\Memcached::class)) {
+            $this->markTestSkipped();
+        }
+        $memcache = $this->getMockBuilder(\Memcached::class)
+            ->onlyMethods(['addServer', 'delete', 'setOption'])
+            ->getMock();
+        $memcache->expects($this->once())->method('setOption')
+            ->with(
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(1)
+            );
+        $memcache->expects($this->once())->method('addServer')
+            ->will($this->returnValue(true));
+        $memcache->expects($this->once())->method('delete')
+            ->with($this->equalTo('vufind_sessions/foo'))
+            ->will($this->returnValue(true));
+        $config = new \Laminas\Config\Config(
+            [
+                'memcache_client' => 'Memcached',
+            ]
+        );
+        $handler = $this->getHandler($config, $memcache);
         $this->setUpDestroyExpectations('foo');
 
         $this->assertTrue($handler->destroy('foo'));

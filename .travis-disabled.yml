@@ -1,0 +1,34 @@
+sudo: false
+language: php
+
+env:
+  global:
+    - VUFIND_HOME=$PWD
+    - VUFIND_LOCAL_DIR=$PWD/local
+
+matrix:
+  include:
+    - php: 7.3
+      env:
+        - PHING_TASKS=phpunitfast
+    - php: 7.4
+      env:
+        - PHING_TASKS="eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
+
+before_script:
+  - touch solr/.disableAutomaticInstall
+  - phpenv config-rm xdebug.ini
+  - phpenv rehash
+  - composer install
+  - npm install -g eslint@"<5.0.0"
+  - npm install -g jshint@"2.9.6"
+  - npm install
+
+cache:
+  directories:
+    - .php_cs_cache
+    - .phpstan_cache
+    - $HOME/.composer/cache/files
+
+script:
+  - vendor/bin/phing $PHING_TASKS

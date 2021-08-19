@@ -75,7 +75,7 @@ class Innovative extends AbstractBase implements
         try {
             $result = $this->httpService->get($url);
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {
@@ -189,35 +189,36 @@ class Innovative extends AbstractBase implements
                     $keys[$i] = $cols[$i];
                 } elseif ($count > 1) { // not the first row, has holding info
                     //look for location column
-                    if (stripos($keys[$i], $loc_col_name) > -1) {
+                    if (stripos($keys[$i], (string)$loc_col_name) > -1) {
                         $ret[$count - 2]['location'] = strip_tags($cols[$i]);
                     }
                     // Does column hold reserves information?
-                    if (stripos($keys[$i], $reserves_col_name) > -1) {
-                        if (stripos($cols[$i], $reserves_key_name) > -1) {
+                    if (stripos($keys[$i], (string)$reserves_col_name) > -1) {
+                        if (stripos($cols[$i], (string)$reserves_key_name) > -1) {
                             $ret[$count - 2]['reserve'] = 'Y';
                         } else {
                             $ret[$count - 2]['reserve'] = 'N';
                         }
                     }
                     // Does column hold call numbers?
-                    if (stripos($keys[$i], $call_col_name) > -1) {
+                    if (stripos($keys[$i], (string)$call_col_name) > -1) {
                         $ret[$count - 2]['callnumber'] = strip_tags($cols[$i]);
                     }
                     // Look for status information.
-                    if (stripos($keys[$i], $status_col_name) > -1) {
-                        if (stripos($cols[$i], $stat_avail) > -1) {
+                    if (stripos($keys[$i], (string)$status_col_name) > -1) {
+                        if (stripos($cols[$i], (string)$stat_avail) > -1) {
                             $ret[$count - 2]['status'] = "Available On Shelf";
                             $ret[$count - 2]['availability'] = 1;
                         } else {
                             $ret[$count - 2]['status'] = "Available to request";
                             $ret[$count - 2]['availability'] = 0;
                         }
-                        if (stripos($cols[$i], $stat_due) > -1) {
+                        if (stripos($cols[$i], (string)$stat_due) > -1) {
                             $t = trim(
                                 substr(
                                     $cols[$i],
-                                    stripos($cols[$i], $stat_due) + strlen($stat_due)
+                                    stripos($cols[$i], (string)$stat_due)
+                                        + strlen($stat_due)
                                 )
                             );
                             $t = substr($t, 0, stripos($t, " "));
@@ -421,7 +422,8 @@ class Innovative extends AbstractBase implements
             $ret['address1'] = str_replace("$", ", ", $api_data['ADDRESS']);
             $ret['address2'] = str_replace("$", ", ", $api_data['ADDRESS2']);
             preg_match(
-                "/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/", $api_data['ADDRESS'],
+                "/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/",
+                $api_data['ADDRESS'],
                 $zipmatch
             );
             $ret['zip'] = $zipmatch[1]; //retrieve from address

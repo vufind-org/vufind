@@ -88,8 +88,12 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      * @param Request       $request      Request
      * @param array         $permConfig   Tab permission configuration
      */
-    public function __construct(PluginManager $results, array $tabConfig,
-        array $filterConfig, Request $request, array $permConfig = []
+    public function __construct(
+        PluginManager $results,
+        array $tabConfig,
+        array $filterConfig,
+        Request $request,
+        array $permConfig = []
     ) {
         $this->results = $results;
         $this->tabConfig = $tabConfig;
@@ -109,7 +113,9 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getHiddenFilters($searchClassId, $returnDefaultsIfEmpty = true,
+    public function getHiddenFilters(
+        $searchClassId,
+        $returnDefaultsIfEmpty = true,
         $ignoreCurrentRequest = false
     ) {
         $filters = $ignoreCurrentRequest
@@ -160,7 +166,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      */
     public function extractClassName($tabId)
     {
-        list($class) = explode(':', $tabId, 2);
+        [$class] = explode(':', $tabId, 2);
         return $class;
     }
 
@@ -224,7 +230,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
         $params = $results->getParams();
         $result = [];
         foreach ($filters as $filter) {
-            list($field, $value) = $params->parseFilter($filter);
+            [$field, $value] = $params->parseFilter($filter);
             $result[$field][] = $value;
         }
         return $result;

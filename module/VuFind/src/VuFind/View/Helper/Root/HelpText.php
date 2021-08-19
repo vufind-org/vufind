@@ -39,25 +39,11 @@ namespace VuFind\View\Helper\Root;
 class HelpText extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * The current language
+     * The content view helper
      *
-     * @var string
+     * @var Content
      */
-    protected $language;
-
-    /**
-     * The default fallback language
-     *
-     * @var string
-     */
-    protected $defaultLanguage;
-
-    /**
-     * The context view helper
-     *
-     * @var Context
-     */
-    protected $contextHelper;
+    protected $contentHelper;
 
     /**
      * Warning messages
@@ -69,15 +55,11 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Context $context         The context view helper
-     * @param string  $language        The current user-selected language
-     * @param string  $defaultLanguage The default fallback language
+     * @param Content $content The content view helper
      */
-    public function __construct(Context $context, $language, $defaultLanguage = 'en')
+    public function __construct(Content $content)
     {
-        $this->contextHelper = $context;
-        $this->language = $language;
-        $this->defaultLanguage = $defaultLanguage;
+        $this->contentHelper = $content;
     }
 
     /**
@@ -100,39 +82,30 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string|bool
      */
-    public function render($name, $context = null)
+    public function render($name, $context = [])
     {
-        // Set up the needed context in the view:
-        $this->contextHelper->__invoke($this->getView());
-        $oldContext = $this->contextHelper
-            ->apply(null === $context ? [] : $context);
-
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.
-        $safe_topic = preg_replace('/[^\w]/', '', $name);
+        $safeTopic = preg_replace('/[^\w]/', '', $name);
 
-        // Clear warnings
         $this->warnings = [];
+        $html = $this->contentHelper->renderTranslated(
+            $safeTopic,
+            'HelpTranslations',
+            $context,
+            $pageDetails,
+            '%pathPrefix%/%language%/%pageName%',
+        );
 
-        $resolver = $this->getView()->resolver();
-        $tpl = "HelpTranslations/{$this->language}/{$safe_topic}.phtml";
-        if ($resolver->resolve($tpl)) {
-            $html = $this->getView()->render($tpl);
-        } else {
-            // language missing -- try default language
-            $tplFallback = 'HelpTranslations/' . $this->defaultLanguage . '/'
-                . $safe_topic . '.phtml';
-            if ($resolver->resolve($tplFallback)) {
-                $html = $this->getView()->render($tplFallback);
-                $this->warnings[] = 'Sorry, but the help you requested is '
-                    . 'unavailable in your language.';
-            } else {
-                // no translation available at all!
-                $html = false;
-            }
+        if (!$html) {
+            $this->warnings[] = 'help_page_missing';
+        } elseif (isset($pageDetails['pageLocatorDetails']['matchType'])
+            && $pageDetails['pageLocatorDetails']['matchType'] != 'language'
+        ) {
+            $this->warnings[] = 'Sorry, but the help you requested is '
+                . 'unavailable in your language.';
         }
 
-        $this->contextHelper->restore($oldContext);
         return $html;
     }
 }
