@@ -28,7 +28,6 @@
 namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
-use VuFindSearch\Service as SearchService;
 
 /**
  * Class for generating sitemaps
@@ -42,13 +41,6 @@ use VuFindSearch\Service as SearchService;
 class Generator
 {
     /**
-     * Search service.
-     *
-     * @var SearchService
-     */
-    protected $searchService;
-
-    /**
      * Base URL for site
      *
      * @var string
@@ -61,13 +53,6 @@ class Generator
      * @var string
      */
     protected $baseSitemapUrl;
-
-    /**
-     * Settings specifying which backends to index.
-     *
-     * @var array
-     */
-    protected $backendSettings = [];
 
     /**
      * Languages enabled for sitemaps
@@ -140,30 +125,20 @@ class Generator
     protected $verbose = null;
 
     /**
-     * Mode of retrieving IDs from the index (may be 'terms' or 'search')
-     *
-     * @var string
-     */
-    protected $retrievalMode = 'search';
-
-    /**
      * Constructor
      *
-     * @param SearchService $ss      Search manager
      * @param string        $baseUrl VuFind base URL
      * @param Config        $config  Sitemap configuration settings
      * @param array         $locales Enabled locales
      * @param PluginManager $pm      Generator plugin manager
      */
     public function __construct(
-        SearchService $ss,
         $baseUrl,
         Config $config,
         array $locales,
         PluginManager $pm
     ) {
         // Save incoming parameters:
-        $this->searchService = $ss;
         $this->baseUrl = $baseUrl;
         $this->config = $config;
         $this->pluginManager = $pm;
@@ -173,26 +148,10 @@ class Generator
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
-        // Process backend configuration:
-        $backendConfig = $this->config->Sitemap->index ?? ['Solr,/Record/'];
-        if ($backendConfig) {
-            $backendConfig = is_callable([$backendConfig, 'toArray'])
-                ? $backendConfig->toArray() : (array)$backendConfig;
-            $callback = function ($n) {
-                $parts = array_map('trim', explode(',', $n));
-                return ['id' => $parts[0], 'url' => $parts[1]];
-            };
-            $this->backendSettings = array_map($callback, $backendConfig);
-        }
-
-        // Store other key config settings:
         $this->frequency = $this->config->Sitemap->frequency ?? 'weekly';
         $this->countPerPage = $this->config->Sitemap->countPerPage ?? 10000;
         $this->fileLocation = $this->config->Sitemap->fileLocation ?? '/tmp';
         $this->fileStart = $this->config->Sitemap->fileName ?? 'sitemap';
-        if (isset($this->config->Sitemap->retrievalMode)) {
-            $this->retrievalMode = $this->config->Sitemap->retrievalMode;
-        }
         if (isset($this->config->SitemapIndex->indexFileName)) {
             $this->indexFile = $this->config->SitemapIndex->indexFileName . '.xml';
         }
@@ -285,19 +244,6 @@ class Generator
     }
 
     /**
-     * Get the class name of the command object for generating sitemaps through the
-     * search service.
-     *
-     * @return string
-     */
-    protected function getGenerateCommandClass(): string
-    {
-        return $this->retrievalMode === 'terms'
-            ? Command\GenerateSitemapWithTermsCommand::class
-            : Command\GenerateSitemapWithCursorMarkCommand::class;
-    }
-
-    /**
      * Generate the sitemaps based on settings established by the constructor.
      *
      * @return void
@@ -309,30 +255,8 @@ class Generator
 
         $additionalSitemaps = $this->generateWithPlugins();
 
-        // Initialize variables for use within the loop below:
-        $currentPage = 1;
-        $commandClass = $this->getGenerateCommandClass();
-
-        // Loop through all backends
-        foreach ($this->backendSettings as $current) {
-            $recordUrl = $this->baseUrl . $current['url'];
-            $context = compact('recordUrl', 'currentPage') + [
-                'generator' => $this,
-                'countPerPage' => $this->countPerPage,
-                'retrievalMode' => $this->retrievalMode,
-                'languages' => $this->languages,
-            ];
-            $command = new $commandClass(
-                $current['id'],
-                $context,
-                $this->searchService
-            );
-            $this->searchService->invoke($command);
-            $currentPage = $command->getResult();
-        }
-
         // Set-up Sitemap Index
-        $this->buildIndex($currentPage - 1, $additionalSitemaps);
+        $this->buildIndex($additionalSitemaps);
 
         // Display total elapsed time in verbose mode:
         $this->verboseMsg(
@@ -364,45 +288,46 @@ class Generator
             $sitemapFiles[] = $this->getFilenameForPage($pageName, false);
         };
 
-        if ($plugins = $this->config->Sitemap->plugins ?? []) {
-            $pluginSitemaps = [];
-            foreach ($plugins->toArray() as $pluginName) {
-                $plugin = $this->getPlugin($pluginName);
-                $sitemapName = $plugin->getSitemapName();
-                $this->verboseMsg(
-                    "Generating sitemap '$sitemapName' with '$pluginName'"
-                );
-                if (!isset($pluginSitemaps[$sitemapName])) {
-                    $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
-                }
-                $languages = $plugin->supportsVuFindLanguages()
-                    ? $this->languages : [];
-                $frequency = $plugin->getFrequency();
-                $sitemap = &$pluginSitemaps[$sitemapName];
-                $count = $sitemap->getCount();
-                foreach ($plugin->getUrls() as $url) {
-                    ++$count;
-                    if ($count > $this->countPerPage) {
-                        // Write the current sitemap and clear all entries from it:
-                        $writeMap($sitemap, $sitemapName);
-                        $sitemap->clear();
-                        $count = 1;
-                    }
-                    if (($languages || $frequency) && is_string($url)) {
-                        $sitemap->addUrl(
-                            [
-                                'url' => $url,
-                                'languages' => $languages,
-                                'frequency' => $frequency,
-                            ]
-                        );
-                    } else {
-                        $sitemap->addUrl($url);
-                    }
-                }
-                // Unset the reference:
-                unset($sitemap);
+        $plugins = isset($this->config->Sitemap->plugins)
+            ? $this->config->Sitemap->plugins->toArray() : [];
+        array_unshift($plugins, 'Index');
+        $pluginSitemaps = [];
+        foreach ($plugins as $pluginName) {
+            $plugin = $this->getPlugin($pluginName);
+            $sitemapName = $plugin->getSitemapName();
+            $this->verboseMsg(
+                "Generating sitemap '$sitemapName' with '$pluginName'"
+            );
+            if (!isset($pluginSitemaps[$sitemapName])) {
+                $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
             }
+            $languages = $plugin->supportsVuFindLanguages()
+                ? $this->languages : [];
+            $frequency = $plugin->getFrequency();
+            $sitemap = &$pluginSitemaps[$sitemapName];
+            $count = $sitemap->getCount();
+            foreach ($plugin->getUrls() as $url) {
+                ++$count;
+                if ($count > $this->countPerPage) {
+                    // Write the current sitemap and clear all entries from it:
+                    $writeMap($sitemap, $sitemapName);
+                    $sitemap->clear();
+                    $count = 1;
+                }
+                if (($languages || $frequency) && is_string($url)) {
+                    $sitemap->addUrl(
+                        [
+                            'url' => $url,
+                            'languages' => $languages,
+                            'frequency' => $frequency,
+                        ]
+                    );
+                } else {
+                    $sitemap->addUrl($url);
+                }
+            }
+            // Unset the reference:
+            unset($sitemap);
 
             // Write remaining sitemaps:
             foreach ($pluginSitemaps as $sitemapName => $sitemap) {
@@ -427,12 +352,11 @@ class Generator
     /**
      * Write a sitemap index if requested.
      *
-     * @param int   $totalPages         Total number of sitemap pages generated.
      * @param array $additionalSitemaps Additional files to add to the index.
      *
      * @return void
      */
-    protected function buildIndex($totalPages, $additionalSitemaps)
+    protected function buildIndex($additionalSitemaps)
     {
         // Only build index file if requested:
         if ($this->indexFile !== false) {
@@ -462,13 +386,6 @@ class Generator
 
             foreach ($additionalSitemaps ?? [] as $additional) {
                 $smf->addUrl($baseUrl . '/' . $additional);
-            }
-
-            // Add <sitemap /> group for each sitemap file generated.
-            for ($i = 1; $i <= $totalPages; $i++) {
-                $sitemapNumber = ($i == 1) ? "" : "-" . $i;
-                $file = $this->fileStart . $sitemapNumber . '.xml';
-                $smf->addUrl($baseUrl . '/' . $file);
             }
 
             if (false === $smf->write($this->fileLocation . '/' . $this->indexFile)

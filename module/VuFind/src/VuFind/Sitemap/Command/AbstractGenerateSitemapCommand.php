@@ -27,7 +27,6 @@
  */
 namespace VuFind\Sitemap\Command;
 
-use VuFind\Sitemap\Generator;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Command\CommandInterface;
@@ -80,11 +79,8 @@ abstract class AbstractGenerateSitemapCommand
         $context = $this->getContext();
         $this->result = $this->generateForBackend(
             $backend,
-            $context['recordUrl'],
-            $context['currentPage'],
             $context['countPerPage'],
-            $context['languages'],
-            $context['generator']
+            $context['offset']
         );
         return parent::execute($backend);
     }
@@ -96,70 +92,21 @@ abstract class AbstractGenerateSitemapCommand
      * @param string    $recordUrl    Base URL for record links
      * @param int       $currentPage  Sitemap page number to start generating
      * @param int       $countPerPage Page size
-     * @param string[]  $languages    Supported languages
-     * @param Generator $generator    Sitemap generator
      *
      * @return int                    Next sitemap page number to generate
      */
     protected function generateForBackend(
         Backend $backend,
-        string $recordUrl,
-        int $currentPage,
         int $countPerPage,
-        array $languages,
-        Generator $generator
+        $offset
     ) {
-        $generator->verboseMsg(
-            'Adding records from ' . $backend->getIdentifier()
-            . " with record base url $recordUrl"
-        );
-
-        // Initialize values for loop:
-        $currentOffset = $this->getInitialOffset();
-        $recordCount = 0;
-
         $this->setupBackend($backend);
-        while (true) {
-            // Get IDs and break out of the loop if we've run out:
-            $result = $this
-                ->getIdsFromBackend($backend, $currentOffset, $countPerPage);
-            if (empty($result['ids'])) {
-                break;
-            }
-            $currentOffset = $result['nextOffset'];
-
-            // Write the current entry:
-            $smf = $generator->getNewSitemap();
-            foreach ($result['ids'] as $item) {
-                $loc = htmlspecialchars($recordUrl . urlencode($item));
-                if (strpos($loc, 'http') === false) {
-                    $loc = 'http://' . $loc;
-                }
-                if ($languages) {
-                    $smf->addUrl(
-                        [
-                            'url' => $loc,
-                            'languages' => $languages
-                        ]
-                    );
-                } else {
-                    $smf->addUrl($loc);
-                }
-            }
-            $filename = $generator->getFilenameForPage($currentPage);
-            if (false === $smf->write($filename)) {
-                throw new \Exception("Problem writing $filename.");
-            }
-
-            // Update total record count:
-            $recordCount += count($result['ids']);
-
-            $generator->verboseMsg("Page $currentPage, $recordCount processed");
-
-            // Update counter:
-            $currentPage++;
-        }
-        return $currentPage;
+        // Get IDs and break out of the loop if we've run out:
+        return $this->getIdsFromBackend(
+            $backend,
+            $offset ?? $this->getInitialOffset(),
+            $countPerPage
+        );
     }
 
     /**

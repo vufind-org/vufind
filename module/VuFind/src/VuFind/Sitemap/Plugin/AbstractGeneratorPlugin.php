@@ -27,8 +27,6 @@
  */
 namespace VuFind\Sitemap\Plugin;
 
-use VuFind\Sitemap\Sitemap;
-
 /**
  * Base class for sitemap generator plugins
  *

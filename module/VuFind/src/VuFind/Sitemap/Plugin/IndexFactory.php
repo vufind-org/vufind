@@ -1,10 +1,10 @@
 <?php
 /**
- * Sitemap Generator factory.
+ * Index-based generator plugin factory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
+ * @package  Sitemap
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Sitemap;
+namespace VuFind\Sitemap\Plugin;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
@@ -34,15 +34,15 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Sitemap Generator factory.
+ * Index-based generator plugin factory
  *
  * @category VuFind
- * @package  Service
+ * @package  Sitemap
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GeneratorFactory implements FactoryInterface
+class IndexFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -67,15 +67,51 @@ class GeneratorFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $enabledLocales = array_keys(
-            $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
-                ->getEnabledLocales()
-        );
+        $sitemapConfig = $configLoader->get('sitemap');
+        $retrievalMode = $sitemapConfig->Sitemap->retrievalMode ?? 'search';
         return new $requestedName(
-            $configLoader->get('config')->Site->url ?? '',
-            $configLoader->get('sitemap'),
-            $enabledLocales,
-            $container->get(\VuFind\Sitemap\PluginManager::class)
+            $container->get(\VuFindSearch\Service::class),
+            $this->getBackendSettings($sitemapConfig),
+            $this->getGenerateCommandClass($retrievalMode),
+            $sitemapConfig->Sitemap->countPerPage ?? 10000
         );
+    }
+
+    /**
+     * Process backend configuration into a convenient array.
+     *
+     * @param Config $config Sitemap config
+     *
+     * @return array
+     */
+    protected function getBackendSettings($config): array
+    {
+        // Process backend configuration:
+        $backendConfig = $this->config->Sitemap->index ?? ['Solr,/Record/'];
+        if (!$backendConfig) {
+            return [];
+        }
+        $backendConfig = is_callable([$backendConfig, 'toArray'])
+            ? $backendConfig->toArray() : (array)$backendConfig;
+        $callback = function ($n) {
+            $parts = array_map('trim', explode(',', $n));
+            return ['id' => $parts[0], 'url' => $parts[1]];
+        };
+        return array_map($callback, $backendConfig);
+    }
+
+    /**
+     * Get the class name of the command object for generating sitemaps through the
+     * search service.
+     *
+     * @param string $retrievalMode Retrieval mode ('terms' or 'search')
+     *
+     * @return string
+     */
+    protected function getGenerateCommandClass($retrievalMode): string
+    {
+        return $retrievalMode === 'terms'
+            ? \VuFind\Sitemap\Command\GenerateSitemapWithTermsCommand::class
+            : \VuFind\Sitemap\Command\GenerateSitemapWithCursorMarkCommand::class;
     }
 }
