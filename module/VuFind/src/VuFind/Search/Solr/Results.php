@@ -27,9 +27,9 @@
  */
 namespace VuFind\Search\Solr;
 
+use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
-use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 
 /**
  * Solr Search Parameters
