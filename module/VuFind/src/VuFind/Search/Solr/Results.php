@@ -27,9 +27,9 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
+use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 
 /**
  * Solr Search Parameters
@@ -172,7 +172,7 @@ class Results extends \VuFind\Search\Base\Results
                 ->search($this->backendId, $query, $offset, $limit, $params);
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             // If the query caused a parser error, see if we can clean it up:
-            if ($e->hasTag('VuFind\Search\ParserError')
+            if ($e->hasTag(ErrorListener::TAG_PARSER_ERROR)
                 && $newQuery = $this->fixBadQuery($query)
             ) {
                 // We need to get a fresh set of $params, since the previous one was
