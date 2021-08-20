@@ -114,7 +114,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $nodes = $xmldoc2->GetElementsbyTagName("Fld520");
                     foreach ($nodes as $node) {
                         $summaries[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/', '',
+                            '/<a>|<a [^>]*>|<\/a>/',
+                            '',
                             html_entity_decode($node->nodeValue)
                         );
                     }

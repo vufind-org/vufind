@@ -136,7 +136,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), [], $context
+            $this->loadRecordFixture('testbug1.json'),
+            [],
+            $context
         );
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/format-class.phtml');
         $this->assertEquals('success', $record->getFormatClass('foo'));
@@ -300,7 +302,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), [], $context
+            $this->loadRecordFixture('testbug1.json'),
+            [],
+            $context
         );
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml');
         $this->assertEquals('success', $record->getLink('bar', 'foo'));
@@ -321,7 +325,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             )
             ->willReturnOnConsecutiveCalls('success', 'success');
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), [], $context
+            $this->loadRecordFixture('testbug1.json'),
+            [],
+            $context
         );
         // We run the test twice to ensure that checkbox incrementing works properly:
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
@@ -513,7 +519,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
         $record = $this->getRecord($driver, [], null, 'fake-route', true);
         $this->assertEquals(
-            ['http://proxy?_=http://server-foo/baz'], $record->getUrlList()
+            ['http://proxy?_=http://server-foo/baz'],
+            $record->getUrlList()
         );
     }
 
@@ -528,8 +535,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return Record
      */
-    protected function getRecord($driver, $config = [], $context = null,
-        $url = false, $serverurl = false
+    protected function getRecord(
+        $driver,
+        $config = [],
+        $context = null,
+        $url = false,
+        $serverurl = false
     ) {
         if (null === $context) {
             $context = $this->getMockContext();
@@ -646,7 +657,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setSuccessTemplate($record, $tpl, $response = 'success',
+    protected function setSuccessTemplate(
+        $record,
+        $tpl,
+        $response = 'success',
         $matcher = null
     ) {
         $record->getView()->resolver()->expects($matcher ?? $this->once())->method('resolve')

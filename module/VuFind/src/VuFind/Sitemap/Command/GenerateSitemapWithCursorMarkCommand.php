@@ -81,7 +81,9 @@ class GenerateSitemapWithCursorMarkCommand extends AbstractGenerateSitemapComman
      * @return array
      */
     protected function getIdsFromBackend(
-        Backend $backend, string $cursorMark, int $countPerPage
+        Backend $backend,
+        string $cursorMark,
+        int $countPerPage
     ): array {
         // If the previous cursor mark matches the current one, we're finished!
         static $prevCursorMark = '';

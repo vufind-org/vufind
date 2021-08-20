@@ -80,7 +80,8 @@ class ExpandFacets implements RecommendInterface
      * @param \VuFind\Search\Solr\Results  $emptyResults Empty result set (used
      * by the template as the basis for URL generation)
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader,
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
         \VuFind\Search\Solr\Results $emptyResults
     ) {
         $this->configLoader = $configLoader;

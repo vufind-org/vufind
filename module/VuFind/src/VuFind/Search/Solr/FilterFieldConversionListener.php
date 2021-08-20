@@ -72,7 +72,9 @@ class FilterFieldConversionListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
     }
 
@@ -94,7 +96,9 @@ class FilterFieldConversionListener
             foreach ($fq as $currentFilter) {
                 foreach ($this->map as $oldField => $newField) {
                     $currentFilter = preg_replace(
-                        "/\b$oldField:$lookahead/", "$newField:", $currentFilter
+                        "/\b$oldField:$lookahead/",
+                        "$newField:",
+                        $currentFilter
                     );
                 }
                 $new_fq[] = $currentFilter;

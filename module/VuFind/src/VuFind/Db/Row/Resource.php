@@ -87,7 +87,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
             $linker = $this->getDbTable('ResourceTags');
             $linker->createLink(
-                $this->id, $tag->id, is_object($user) ? $user->id : null, $list_id
+                $this->id,
+                $tag->id,
+                is_object($user) ? $user->id : null,
+                $list_id
             );
         }
     }
@@ -114,7 +117,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             if (!empty($tagIds)) {
                 $linker = $this->getDbTable('ResourceTags');
                 $linker->destroyResourceLinks(
-                    $this->id, $user->id, $list_id, $tagIds
+                    $this->id,
+                    $user->id,
+                    $list_id,
+                    $tagIds
                 );
             }
         }

@@ -134,8 +134,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             };
             $corporateAuthors = $authors = $this->prepareAuthors(
                 array_map(
-                    $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
-                ), true
+                    $trimmer,
+                    (array)$driver->tryMethod('getCorporateAuthors')
+                ),
+                true
             );
         }
         $secondary = $this->prepareAuthors(
@@ -323,7 +325,15 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     public function getCitationChicago()
     {
         return $this->getCitationMLA(
-            9, ', no. ', ' ', '', ' (%s)', ':', true, 'https://dx.doi.org/', false
+            9,
+            ', no. ',
+            ' ',
+            '',
+            ' (%s)',
+            ':',
+            true,
+            'https://dx.doi.org/',
+            false
         );
     }
 
@@ -349,9 +359,15 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getCitationMLA($etAlThreshold = 2, $volNumSeparator = ', no. ',
-        $numPrefix = ', ', $volPrefix = 'vol. ', $yearFormat = ', %s',
-        $pageNoSeparator = ',', $includePubPlace = false, $doiPrefix = false,
+    public function getCitationMLA(
+        $etAlThreshold = 2,
+        $volNumSeparator = ', no. ',
+        $numPrefix = ', ',
+        $volPrefix = 'vol. ',
+        $yearFormat = ', %s',
+        $pageNoSeparator = ',',
+        $includePubPlace = false,
+        $doiPrefix = false,
         $labelPageRange = true
     ) {
         $mla = [
@@ -378,7 +394,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $mla['pageRange'] = $this->getPageRange();
         $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
         $mla['numberAndDate'] = $numPrefix . $this->getMLANumberAndDate(
-            $volNumSeparator, $volPrefix, $yearFormat
+            $volNumSeparator,
+            $volPrefix,
+            $yearFormat
         );
         return $partial('Citation/mla-article.phtml', $mla);
     }
@@ -406,7 +424,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    protected function getMLANumberAndDate($volNumSeparator = '.', $volPrefix = '',
+    protected function getMLANumberAndDate(
+        $volNumSeparator = '.',
+        $volPrefix = '',
         $yearFormat = ', %s'
     ) {
         $vol = $this->driver->tryMethod('getContainerVolume');
@@ -605,7 +625,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // For good measure, strip out any remaining date ranges lurking in
         // non-standard places.
         return preg_replace(
-            '/\s+(\d{4}\-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/', '', $name
+            '/\s+(\d{4}\-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/',
+            '',
+            $name
         );
     }
 
@@ -935,7 +957,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             if (strlen($numericDate) > 4) {
                 try {
                     return $this->dateConverter->convertFromDisplayDate(
-                        'Y', $this->details['pubDate']
+                        'Y',
+                        $this->details['pubDate']
                     );
                 } catch (\Exception $e) {
                     // Ignore date errors -- no point in dying here:

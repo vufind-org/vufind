@@ -80,7 +80,8 @@ trait IlsAwareTrait
      *
      * @return void
      */
-    public function attachILS(\VuFind\ILS\Connection $ils,
+    public function attachILS(
+        \VuFind\ILS\Connection $ils,
         \VuFind\ILS\Logic\Holds $holdLogic,
         \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
     ) {
@@ -109,7 +110,8 @@ trait IlsAwareTrait
     public function getRealTimeHoldings()
     {
         return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->tryMethod('getConsortialIDs')
+            $this->getUniqueID(),
+            $this->tryMethod('getConsortialIDs')
         ) : [];
     }
 
@@ -156,7 +158,7 @@ trait IlsAwareTrait
      *
      * @param array $backends List of backends that support ILS integration
      *
-     * @return string[]
+     * @return void
      */
     public function setIlsBackends($backends)
     {

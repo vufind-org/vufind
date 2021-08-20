@@ -155,8 +155,12 @@ class Generator
      * @param array         $locales Enabled locales
      * @param PluginManager $pm      Generator plugin manager
      */
-    public function __construct(SearchService $ss, $baseUrl,
-        Config $config, array $locales, PluginManager $pm
+    public function __construct(
+        SearchService $ss,
+        $baseUrl,
+        Config $config,
+        array $locales,
+        PluginManager $pm
     ) {
         // Save incoming parameters:
         $this->searchService = $ss;
@@ -319,7 +323,9 @@ class Generator
                 'languages' => $this->languages,
             ];
             $command = new $commandClass(
-                $current['id'], $context, $this->searchService
+                $current['id'],
+                $context,
+                $this->searchService
             );
             $this->searchService->invoke($command);
             $currentPage = $command->getResult();
@@ -343,7 +349,9 @@ class Generator
     {
         $sitemapFiles = [];
         $sitemapIndexes = [];
-        $writeMap = function ($sitemap, $name) use (&$sitemapFiles, &$sitemapIndexes
+        $writeMap = function ($sitemap, $name) use (
+            &$sitemapFiles,
+            &$sitemapIndexes
         ) {
             $index = $sitemapIndexes[$name] ?? 0;
             ++$index;

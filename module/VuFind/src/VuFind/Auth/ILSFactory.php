@@ -57,7 +57,9 @@ class ILSFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

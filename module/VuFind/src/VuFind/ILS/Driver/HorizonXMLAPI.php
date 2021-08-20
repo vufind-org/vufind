@@ -324,14 +324,14 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                     $defaultPickUpLocation = $row['LOCATION'];
                     return $defaultPickUpLocation;
                 }
-                // If we didn't return above, there were no values.
-                return null;
             } catch (\Exception $e) {
                 $this->throwAsIlsException($e);
             }
         } elseif (isset($this->wsDefaultPickUpLocation)) {
             return $this->wsDefaultPickUpLocation;
         }
+        // If we didn't return above, there were no values.
+        return null;
     }
 
     /**
@@ -461,7 +461,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         // Register Account
         $session = $this->registerUser(
-            $patron['cat_username'], $patron['cat_password']
+            $patron['cat_username'],
+            $patron['cat_password']
         );
         if ($session) {
             $params = [
@@ -818,7 +819,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 // Convert Horizon Format to display format
                 if (!empty($dueDate)) {
                     $currentDueDate = $this->dateFormat->convertToDisplayDate(
-                        $this->wsDateFormat, $dueDate
+                        $this->wsDateFormat,
+                        $dueDate
                     );
                 }
 
@@ -876,7 +878,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 $renewData = $this->renewItems($session, $renewItemKeys);
                 if ($renewData) {
                     $response = $this->processRenewals(
-                        $renewIDs, $origData, $renewData
+                        $renewIDs,
+                        $origData,
+                        $renewData
                     );
                     return $response;
                 }

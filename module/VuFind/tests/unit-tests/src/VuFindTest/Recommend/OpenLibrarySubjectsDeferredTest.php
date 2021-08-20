@@ -27,6 +27,8 @@
  */
 namespace VuFindTest\Recommend;
 
+use VuFind\Recommend\OpenLibrarySubjectsDeferred;
+
 /**
  * OpenLibrarySubjectsDeferred recommendation module Test Class
  *
@@ -45,7 +47,7 @@ class OpenLibrarySubjectsDeferredTest extends \VuFindTest\Unit\RecommendDeferred
      */
     public function testStandardOperation()
     {
-        $mod = $this->getRecommend('VuFind\Recommend\OpenLibrarySubjectsDeferred');
+        $mod = $this->getRecommend(OpenLibrarySubjectsDeferred::class);
         $this->assertEquals(
             'mod=OpenLibrarySubjects&params=lookfor%3A%3ApublishDate&lookfor=foo',
             $mod->getUrlParams()

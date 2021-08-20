@@ -164,7 +164,10 @@ class Writer
      *
      * @return void
      */
-    public function save($backend, DocumentInterface $doc, $handler = 'update',
+    public function save(
+        $backend,
+        DocumentInterface $doc,
+        $handler = 'update',
         ParamBag $params = null
     ) {
         $connector = $this->getConnector($backend);

@@ -60,7 +60,7 @@ class OaiController extends AbstractBase
      */
     public function authserverAction()
     {
-        return $this->handleOAI('VuFind\OAI\Server\Auth');
+        return $this->handleOAI(\VuFind\OAI\Server\Auth::class);
     }
 
     /**
@@ -70,7 +70,7 @@ class OaiController extends AbstractBase
      */
     public function serverAction()
     {
-        return $this->handleOAI('VuFind\OAI\Server');
+        return $this->handleOAI(\VuFind\OAI\Server::class);
     }
 
     /**

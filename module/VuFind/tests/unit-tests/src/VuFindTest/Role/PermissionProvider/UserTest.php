@@ -122,7 +122,8 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $permissionProvider = new \VuFind\Role\PermissionProvider\User($auth);
 
         $this->assertEquals(
-            $roles, $permissionProvider->getPermissions($options)
+            $roles,
+            $permissionProvider->getPermissions($options)
         );
     }
 

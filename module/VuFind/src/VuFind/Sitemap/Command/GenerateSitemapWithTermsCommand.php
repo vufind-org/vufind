@@ -72,7 +72,9 @@ class GenerateSitemapWithTermsCommand extends AbstractGenerateSitemapCommand
      * @return array
      */
     protected function getIdsFromBackend(
-        Backend $backend, string $lastTerm, int $countPerPage
+        Backend $backend,
+        string $lastTerm,
+        int $countPerPage
     ): array {
         $key = $backend->getConnector()->getUniqueKey();
         $info = $backend->terms($key, $lastTerm, $countPerPage)

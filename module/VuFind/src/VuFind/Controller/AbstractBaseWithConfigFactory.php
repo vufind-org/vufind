@@ -57,7 +57,9 @@ class AbstractBaseWithConfigFactory extends AbstractBaseFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -66,7 +68,8 @@ class AbstractBaseWithConfigFactory extends AbstractBaseFactory
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         return $this->applyPermissions(
-            $container, new $requestedName($container, $config)
+            $container,
+            new $requestedName($container, $config)
         );
     }
 }

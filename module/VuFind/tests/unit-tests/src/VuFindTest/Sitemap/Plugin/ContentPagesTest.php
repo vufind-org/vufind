@@ -103,7 +103,8 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
      *
      * @return ContentPages
      */
-    protected function getContentPages(array $config = [],
+    protected function getContentPages(
+        array $config = [],
         ?RouteStackInterface $router = null,
         ?ThemeInfo $themeInfo = null
     ): ContentPages {

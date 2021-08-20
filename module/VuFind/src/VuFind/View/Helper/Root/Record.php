@@ -109,7 +109,10 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
         return $this->renderClassTemplate(
-            $template, $className, $context ?? ['driver' => $this->driver], $throw
+            $template,
+            $className,
+            $context ?? ['driver' => $this->driver],
+            $throw
         );
     }
 
@@ -187,7 +190,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getFormatClass($format)
     {
         return $this->renderTemplate(
-            'format-class.phtml', ['format' => $format]
+            'format-class.phtml',
+            ['format' => $format]
         );
     }
 
@@ -400,7 +404,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $context['formAttr'] = $formAttr;
         }
         return $this->contextHelper->renderInContext(
-            'record/checkbox.phtml', $context
+            'record/checkbox.phtml',
+            $context
         );
     }
 
@@ -527,7 +532,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string|bool
      */
-    public function getQrCode($context, $extra = [], $level = "L", $size = 3,
+    public function getQrCode(
+        $context,
+        $extra = [],
+        $level = "L",
+        $size = 3,
         $margin = 4
     ) {
         if (!isset($this->config->QRCode)) {
@@ -553,7 +562,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
 
         // Try to build text:
         $text = $this->renderTemplate(
-            $template, $extra + ['driver' => $this->driver]
+            $template,
+            $extra + ['driver' => $this->driver]
         );
         $qrcode = [
             "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
