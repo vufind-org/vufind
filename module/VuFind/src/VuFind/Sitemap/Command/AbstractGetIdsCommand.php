@@ -76,7 +76,7 @@ abstract class AbstractGetIdsCommand extends \VuFindSearch\Command\AbstractBase
             throw new \Exception('Unsupported backend: ' . get_class($backend));
         }
         $context = $this->getContext();
-        $this->result = $this->generateForBackend(
+        $this->result = $this->processBackend(
             $backend,
             $context['countPerPage'],
             $context['offset']
@@ -85,16 +85,15 @@ abstract class AbstractGetIdsCommand extends \VuFindSearch\Command\AbstractBase
     }
 
     /**
-     * Generate sitemap files for a single search backend.
+     * Set up a single search backend and retrieve a page of IDs from it.
      *
-     * @param Backend   $backend      Search backend
-     * @param string    $recordUrl    Base URL for record links
-     * @param int       $currentPage  Sitemap page number to start generating
-     * @param int       $countPerPage Page size
+     * @param Backend $backend      Search backend
+     * @param int     $countPerPage Page size
+     * @param mixed   $offset
      *
-     * @return int                    Next sitemap page number to generate
+     * @return array
      */
-    protected function generateForBackend(
+    protected function processBackend(
         Backend $backend,
         int $countPerPage,
         $offset
