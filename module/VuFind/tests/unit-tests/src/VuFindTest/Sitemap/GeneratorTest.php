@@ -30,7 +30,6 @@ namespace VuFindTest\Sitemap;
 use Laminas\Config\Config;
 use VuFind\Sitemap\Generator;
 use VuFind\Sitemap\PluginManager;
-use VuFindSearch\Service as SearchService;
 use VuFindTest\Container\MockContainer;
 
 /**
@@ -78,8 +77,6 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         string $baseUrl = 'http://foo'
     ) {
         return new Generator(
-            $objects[SearchService::class]
-                ?? $this->container->get(SearchService::class),
             $baseUrl,
             new Config($config),
             $locales,
