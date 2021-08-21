@@ -180,7 +180,7 @@ class Generator
      *
      * @return void
      */
-    public function verboseMsg($msg)
+    protected function verboseMsg($msg)
     {
         if (is_callable($this->verbose)) {
             call_user_func($this->verbose, $msg);
@@ -410,7 +410,7 @@ class Generator
      *
      * @return Sitemap
      */
-    public function getNewSitemap()
+    protected function getNewSitemap()
     {
         return new Sitemap($this->frequency);
     }
@@ -423,7 +423,7 @@ class Generator
      *
      * @return string
      */
-    public function getFilenameForPage($page, $includePath = true)
+    protected function getFilenameForPage($page, $includePath = true)
     {
         return ($includePath ? $this->fileLocation . '/' : '')
             . $this->fileStart . ($page == 1 ? '' : '-' . $page) . '.xml';
