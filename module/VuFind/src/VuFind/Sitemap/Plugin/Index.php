@@ -98,14 +98,15 @@ class Index extends AbstractGeneratorPlugin
     }
 
     /**
-     * Get the name of the sitemap used to create the sitemap file.
+     * Get the name of the sitemap used to create the sitemap file. This will be
+     * appended to the configured base name, and may be blank to use the base
+     * name without a suffix.
      *
      * @return string
      */
     public function getSitemapName(): string
     {
-        // TODO: match legacy file naming behavior
-        return 'index';
+        return '';
     }
 
     /**

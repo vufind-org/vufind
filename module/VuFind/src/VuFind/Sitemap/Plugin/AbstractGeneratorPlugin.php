@@ -79,7 +79,9 @@ abstract class AbstractGeneratorPlugin implements GeneratorPluginInterface
     }
 
     /**
-     * Get the name of the sitemap used to create the sitemap file.
+     * Get the name of the sitemap used to create the sitemap file. This will be
+     * appended to the configured base name, and may be blank to use the base
+     * name without a suffix.
      *
      * @return string
      */

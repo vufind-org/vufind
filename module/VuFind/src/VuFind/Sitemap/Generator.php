@@ -253,10 +253,8 @@ class Generator
         // Start timer:
         $startTime = $this->getTime();
 
-        $additionalSitemaps = $this->generateWithPlugins();
-
         // Set-up Sitemap Index
-        $this->buildIndex($additionalSitemaps);
+        $this->buildIndex($this->generateWithPlugins());
 
         // Display total elapsed time in verbose mode:
         $this->verboseMsg(
@@ -280,7 +278,7 @@ class Generator
             $index = $sitemapIndexes[$name] ?? 0;
             ++$index;
             $sitemapIndexes[$name] = $index;
-            $pageName = "$name-$index";
+            $pageName = empty($name) ? $index : "$name-$index";
             $filePath = $this->getFilenameForPage($pageName);
             if (false === $sitemap->write($filePath)) {
                 throw new \Exception("Problem writing $filePath.");
