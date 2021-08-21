@@ -1,6 +1,6 @@
 <?php
 /**
- * Command to generate a sitemap from a backend using cursor marks (if supported).
+ * Command to get IDs for a sitemap from a backend using cursor marks (if supported).
  *
  * PHP version 7
  *
@@ -33,7 +33,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
 /**
- * Command to generate a sitemap from a backend using cursor marks (if supported).
+ * Command to get IDs for a sitemap from a backend using cursor marks (if supported).
  *
  * @category VuFind
  * @package  Search
@@ -41,7 +41,7 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GenerateSitemapWithCursorMarkCommand extends AbstractGenerateSitemapCommand
+class GetIdsWithCursorMarkCommand extends AbstractGetIdsCommand
 {
     /**
      * Get the initial offset to seed the search process

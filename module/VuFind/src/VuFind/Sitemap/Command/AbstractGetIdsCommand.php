@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstract command to generate a sitemap from a backend (if supported).
+ * Abstract command to get IDs for a sitemap from a backend (if supported).
  *
  * PHP version 7
  *
@@ -33,7 +33,7 @@ use VuFindSearch\Command\CommandInterface;
 use VuFindSearch\Service;
 
 /**
- * Abstract command to generate a sitemap from a backend (if supported).
+ * Abstract command to get IDs for a sitemap from a backend (if supported).
  *
  * @category VuFind
  * @package  Search
@@ -41,8 +41,7 @@ use VuFindSearch\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-abstract class AbstractGenerateSitemapCommand
-    extends \VuFindSearch\Command\AbstractBase
+abstract class AbstractGetIdsCommand extends \VuFindSearch\Command\AbstractBase
 {
     /**
      * Search service

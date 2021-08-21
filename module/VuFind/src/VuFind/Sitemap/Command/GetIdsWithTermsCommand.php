@@ -1,6 +1,6 @@
 <?php
 /**
- * Command to generate a sitemap from a backend using terms (if supported).
+ * Command to get IDs for a sitemap from a backend using terms (if supported).
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\Sitemap\Command;
 use VuFindSearch\Backend\Solr\Backend;
 
 /**
- * Command to generate a sitemap from a backend using terms (if supported).
+ * Command to get IDs for a sitemap from a backend using terms (if supported).
  *
  * @category VuFind
  * @package  Search
@@ -38,7 +38,7 @@ use VuFindSearch\Backend\Solr\Backend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GenerateSitemapWithTermsCommand extends AbstractGenerateSitemapCommand
+class GetIdsWithTermsCommand extends AbstractGetIdsCommand
 {
     /**
      * Get the initial offset to seed the search process

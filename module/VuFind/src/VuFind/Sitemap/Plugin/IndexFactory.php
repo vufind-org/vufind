@@ -111,7 +111,7 @@ class IndexFactory implements FactoryInterface
     protected function getGenerateCommandClass($retrievalMode): string
     {
         return $retrievalMode === 'terms'
-            ? \VuFind\Sitemap\Command\GenerateSitemapWithTermsCommand::class
-            : \VuFind\Sitemap\Command\GenerateSitemapWithCursorMarkCommand::class;
+            ? \VuFind\Sitemap\Command\GetIdsWithTermsCommand::class
+            : \VuFind\Sitemap\Command\GetIdsWithCursorMarkCommand::class;
     }
 }
