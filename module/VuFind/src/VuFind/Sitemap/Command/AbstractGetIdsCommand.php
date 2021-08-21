@@ -89,7 +89,7 @@ abstract class AbstractGetIdsCommand extends \VuFindSearch\Command\AbstractBase
      *
      * @param Backend $backend      Search backend
      * @param int     $countPerPage Page size
-     * @param mixed   $offset
+     * @param mixed   $offset       Offset value (null for first pass)
      *
      * @return array
      */
