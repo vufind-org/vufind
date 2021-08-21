@@ -263,7 +263,7 @@ class Generator
     }
 
     /**
-     * Generate sitemaps with any enabled plugins
+     * Generate sitemaps from all mandatory and configured plugins
      *
      * @return array
      */
@@ -275,8 +275,7 @@ class Generator
             &$sitemapFiles,
             &$sitemapIndexes
         ) {
-            $index = $sitemapIndexes[$name] ?? 0;
-            ++$index;
+            $index = ($sitemapIndexes[$name] ?? 0) + 1;
             $sitemapIndexes[$name] = $index;
             $pageName = empty($name) ? $index : "$name-$index";
             $filePath = $this->getFilenameForPage($pageName);
@@ -286,11 +285,11 @@ class Generator
             $sitemapFiles[] = $this->getFilenameForPage($pageName, false);
         };
 
-        $plugins = isset($this->config->Sitemap->plugins)
+        $mandatoryPlugins = ['Index'];
+        $extraPlugins = isset($this->config->Sitemap->plugins)
             ? $this->config->Sitemap->plugins->toArray() : [];
-        array_unshift($plugins, 'Index');
         $pluginSitemaps = [];
-        foreach ($plugins as $pluginName) {
+        foreach (array_merge($mandatoryPlugins, $extraPlugins) as $pluginName) {
             $plugin = $this->getPlugin($pluginName);
             $sitemapName = $plugin->getSitemapName();
             $this->verboseMsg(
@@ -312,17 +311,9 @@ class Generator
                     $sitemap->clear();
                     $count = 1;
                 }
-                if (($languages || $frequency) && is_string($url)) {
-                    $sitemap->addUrl(
-                        [
-                            'url' => $url,
-                            'languages' => $languages,
-                            'frequency' => $frequency,
-                        ]
-                    );
-                } else {
-                    $sitemap->addUrl($url);
-                }
+                $dataToAdd = (($languages || $frequency) && is_string($url))
+                    ? compact('url', 'languages', 'frequency') : $url;
+                $sitemap->addUrl($dataToAdd);
             }
             // Unset the reference:
             unset($sitemap);
