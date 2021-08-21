@@ -342,11 +342,11 @@ class Generator
     /**
      * Write a sitemap index if requested.
      *
-     * @param array $additionalSitemaps Additional files to add to the index.
+     * @param array $sitemaps Sitemaps to add to the index.
      *
      * @return void
      */
-    protected function buildIndex($additionalSitemaps)
+    protected function buildIndex($sitemaps)
     {
         // Only build index file if requested:
         if ($this->indexFile !== false) {
@@ -374,8 +374,8 @@ class Generator
                 }
             }
 
-            foreach ($additionalSitemaps ?? [] as $additional) {
-                $smf->addUrl($baseUrl . '/' . $additional);
+            foreach ($sitemaps ?? [] as $sitemap) {
+                $smf->addUrl($baseUrl . '/' . $sitemap);
             }
 
             if (false === $smf->write($this->fileLocation . '/' . $this->indexFile)
