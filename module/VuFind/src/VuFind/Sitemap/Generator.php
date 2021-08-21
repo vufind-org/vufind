@@ -292,8 +292,10 @@ class Generator
         foreach (array_merge($mandatoryPlugins, $extraPlugins) as $pluginName) {
             $plugin = $this->getPlugin($pluginName);
             $sitemapName = $plugin->getSitemapName();
+            $msgName = empty($sitemapName)
+                ? "core sitemap" : "sitemap '$sitemapName'";
             $this->verboseMsg(
-                "Generating sitemap '$sitemapName' with '$pluginName'"
+                "Generating $msgName with '$pluginName'"
             );
             if (!isset($pluginSitemaps[$sitemapName])) {
                 $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
@@ -317,12 +319,11 @@ class Generator
             }
             // Unset the reference:
             unset($sitemap);
-
-            // Write remaining sitemaps:
-            foreach ($pluginSitemaps as $sitemapName => $sitemap) {
-                if (!$sitemap->isEmpty()) {
-                    $writeMap($sitemap, $sitemapName);
-                }
+        }
+        // Write remaining sitemaps:
+        foreach ($pluginSitemaps as $sitemapName => $sitemap) {
+            if (!$sitemap->isEmpty()) {
+                $writeMap($sitemap, $sitemapName);
             }
         }
         return $sitemapFiles;
