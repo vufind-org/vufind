@@ -151,8 +151,8 @@ class Index extends AbstractGeneratorPlugin
                     yield $loc;
                 }
                 $offset = $result['nextOffset'];
-                $currentPage++;
                 $this->verboseMsg("Page $currentPage, $recordCount processed");
+                $currentPage++;
             }
         }
     }
