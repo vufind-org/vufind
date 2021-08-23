@@ -13,7 +13,7 @@
 <h2><?=$this->transEsc($pageTitle); ?></h2>
 
 <form class="form-edit-list" method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>">
-  <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->list->id ?>"/>
+  <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->escapeHtmlAttr($this->list->id) ?>"/>
   <div class="form-group">
     <label class="control-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
     <input id="list_title" class="form-control" type="text" name="title" value="<?=isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : ''?>"/>

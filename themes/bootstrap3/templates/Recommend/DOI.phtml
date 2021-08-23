@@ -1,7 +1,7 @@
 <?php $doi = $this->recommend->getDOI(); if (!empty($doi)): ?>
   <?php $url = $this->recommend->getURL(); ?>
   <div class="alert alert-info">
-    <?=$this->translate('doi_detected_html', ['%%url%%' => $url, '%%doi%%' => $doi])?>
+    <?=$this->translate('doi_detected_html', ['%%url%%' => $this->escapeHtmlAttr($url), '%%doi%%' => $this->escapeHtml($doi)])?>
   </div>
   <?php if ($this->recommend->isFullMatch() && $this->recommend->redirectFullMatch()): ?>
     <?php $redirect = 'document.location.href = "' . $this->escapeJs($url) . '";'; ?>
