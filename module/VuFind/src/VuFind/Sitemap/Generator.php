@@ -285,11 +285,11 @@ class Generator
             $sitemapFiles[] = $this->getFilenameForPage($pageName, false);
         };
 
-        $mandatoryPlugins = ['Index'];
-        $extraPlugins = isset($this->config->Sitemap->plugins)
-            ? $this->config->Sitemap->plugins->toArray() : [];
+        // If no plugins are defined, use the Index plugin by default:
+        $plugins = isset($this->config->Sitemap->plugins)
+            ? $this->config->Sitemap->plugins->toArray() : ['Index'];
         $pluginSitemaps = [];
-        foreach (array_merge($mandatoryPlugins, $extraPlugins) as $pluginName) {
+        foreach ($plugins as $pluginName) {
             $plugin = $this->getPlugin($pluginName);
             $sitemapName = $plugin->getSitemapName();
             $msgName = empty($sitemapName)
