@@ -43,6 +43,11 @@ use VuFind\View\Helper\Root\RecordLink;
  */
 class MakeLinkTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Get MakeLink helper with mock view
+     *
+     * return \Laminas\View\Helper\EscapeHtml
+     */
     protected function getHelper()
     {
         $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
@@ -94,7 +99,7 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
 
         $this->assertEquals('text', $helper('text', ''));
-        // Escapes
+        // Test no escape
         $this->assertEquals('text&', $helper('text&', null));
         $this->assertEquals('text<', $helper('text<', false));
     }
@@ -128,7 +133,7 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
         // No href but attributes
         $this->assertEquals(
             '<span class="btn">text</span>',
-            $helper('text', null, 'btn')
+            $helper('text', null, 'btn') // class only
         );
         $this->assertEquals(
             '<span class="btn">text</span>',
@@ -137,6 +142,10 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             '<span class="btn">text</span>',
             $helper('text', null, ['class' => 'btn'])
+        );
+        $this->assertEquals(
+            '<span class="btn">text</span>',
+            $helper('text', false, ['class' => 'btn'])
         );
     }
 
@@ -155,7 +164,6 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
             $helper('recordLink', $recordLink->getUrl('Solr|foo'))
         );
 
-        $urlHelper = $this->getUrl();
         $this->assertEquals(
             '<a href="/Record/foo%2Fbar?checkRoute=1">recordLink</a>',
             $helper(
