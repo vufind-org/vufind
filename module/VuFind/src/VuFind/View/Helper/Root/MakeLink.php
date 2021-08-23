@@ -43,7 +43,10 @@ class MakeLink extends AbstractHelper
     /**
      * Create an anchor tag
      *
-     * If $href, will try to find an href in $attrs
+     * $href will override $attrs['href']
+     * > Feel free to use like makeLink('text', 'href', $defaults);
+     *
+     * If no $href, will try to find an href in $attrs
      * > makeLink('text', ['href' => '#', 'class' => 'btn-link'])
      *
      * If $attrs is a string, will be treated like a class
@@ -57,32 +60,34 @@ class MakeLink extends AbstractHelper
      */
     public function __invoke($text, $href = null, $attrs = [])
     {
-        // Class string
-        if (is_string($attrs)) {
-            $attrs = ['class' => $attrs];
-        }
-
-        // Skipped $href, treat $href like $attrs
+        // Skip href
         if (is_array($href)) {
             $attrs = $href;
             $href = null;
         }
 
-        // Plain text on falsey href
-        if (!$href && !isset($attrs['href'])) {
-            // Don't waste passed in attributes
-            if (!empty($attrs)) {
-                return $this->compileAttrs($text, $attrs, 'span');
-            }
+        // $attr string, interpret as class name
+        if (is_string($attrs)) {
+            $attrs = ['class' => $attrs];
+        }
 
-            return $text;
+        // Merge all attributes
+        $mergedAttrs = array_merge(
+            [],
+            $attrs ?? [],
+            $href ? ['href' => $href] : []
+        );
+
+        // Plain text on false-y href
+        if (!isset($mergedAttrs['href']) || !$mergedAttrs['href']) {
+            if (empty($mergedAttrs)) {
+                return $text;
+            }
+            return $this->compileAttrs($text, $mergedAttrs, 'span');
         }
 
         // Compile attributes
-        if ($href && !isset($attrs['href'])) {
-            $attrs['href'] = $href;
-        }
-        return $this->compileAttrs($text, $attrs);
+        return $this->compileAttrs($text, $mergedAttrs);
     }
 
     /**
