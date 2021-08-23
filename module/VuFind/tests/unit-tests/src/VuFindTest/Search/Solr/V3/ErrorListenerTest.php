@@ -29,13 +29,9 @@
 namespace VuFindTest\Search\Solr\V3;
 
 use Laminas\EventManager\Event;
-
 use Laminas\Http\Response;
-
 use PHPUnit\Framework\TestCase;
-
 use VuFind\Search\Solr\V3\ErrorListener;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**
@@ -66,7 +62,7 @@ class ErrorListenerTest extends TestCase
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /**
@@ -84,7 +80,7 @@ class ErrorListenerTest extends TestCase
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /// Internal API
