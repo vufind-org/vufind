@@ -30,6 +30,7 @@ namespace VuFindTest\View\Helper\Root;
 use Laminas\Config\Config;
 use VuFind\Record\Router;
 use VuFind\View\Helper\Root\RecordLink;
+use VuFind\View\Helper\Root\Url;
 
 /**
  * RecordLink view helper Test Class
@@ -47,15 +48,23 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRecordUrl()
+    public function testRecordUrl(): void
     {
         $recordLink = $this->getRecordLink();
         $this->assertEquals(
             '/Record/foo',
             $recordLink->getUrl('Solr|foo')
         );
+    }
 
-        // Make sure any percent signs in record ID are properly URL-encoded
+    /**
+     * Make sure any percent signs in record ID are properly URL-encoded
+     *
+     * @return void
+     */
+    public function testPercentEscaping(): void
+    {
+        $recordLink = $this->getRecordLink();
         $this->assertEquals(
             '/Record/foo%252fbar',
             $recordLink->getUrl('Solr|foo%2fbar')
@@ -63,6 +72,20 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             '/Record/foo%252fbar?checkRoute=1',
             $recordLink->getTabUrl('Solr|foo%2fbar', null, ['checkRoute' => 1])
+        );
+    }
+
+    /**
+     * Test behavior when there are multiple GET parameters
+     *
+     * @return void
+     */
+    public function testMultiQueryParams(): void
+    {
+        $recordLink = $this->getRecordLink();
+        $this->assertEquals(
+            '/Record/foo?param1=1&param2=2',
+            $recordLink->getTabUrl('Solr|foo', null, ['param1' => 1, 'param2' => 2])
         );
     }
 
@@ -86,9 +109,9 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a URL helper.
      *
-     * @return \VuFind\View\Helper\Root\Url
+     * @return Url
      */
-    protected function getUrl()
+    protected function getUrl(): Url
     {
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->onlyMethods(['getQuery'])->getMock();
