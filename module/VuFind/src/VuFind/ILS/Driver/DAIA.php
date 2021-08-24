@@ -987,8 +987,7 @@ class DAIA extends AbstractBase implements
     {
         $return = [];
         $availability = false;
-        $duedate = null;
-        $serviceLink = $queue = '';
+        $location = $locationhref = [];
         $item_notes = $item_limitation_types = $availableServices = [];
         $services = $this->remoteServices;
 
@@ -997,27 +996,19 @@ class DAIA extends AbstractBase implements
                 if (isset($available['service'])
                     && in_array($available['service'], $services)
                 ) {
-                    if (isset($available['href'])) {
-                        $service = $available['service'];
-                        $availableServices[] = $service;
-                        $remoteLink = $available['href'];
+                    if (!empty($available['href']) || !empty($available['title'])) {
+                        $availableServices[] = $available['service'];
+                        $locationhref[] = $available['href'];
+                        $location[] = $available['title'] ?? $available['href'];
+                        $locationnote[] = $available['limitation'] ?? '';
                         $availability = true;
-                        if (!empty($remoteLink)) {
-                            $item_note = '<a href="' . $remoteLink . '">';
-                            if (!empty($available['title'])) {
-                                $item_note .= $available['title'] . '</a>';
-                            } else {
-                                $item_note .= $remoteLink . '</a>';
-                            }
-                            $item_notes[] = $item_note;
-                            if (isset($available['limitation'])) {
-                                $item_notes = array_merge(
-                                    $item_notes,
-                                    $this->getItemLimitationContent(
-                                        $available['limitation']
-                                    )
-                                );
-                            }
+                        if (isset($available['limitation'])) {
+                            $item_notes = array_merge(
+                                $item_notes,
+                                $this->getItemLimitationContent(
+                                    $available['limitation']
+                                )
+                            );
                         }
                         // log messages for debugging
                         if (isset($available['message'])) {
@@ -1031,11 +1022,20 @@ class DAIA extends AbstractBase implements
             }
         }
 
-        if (empty($remoteLink)) {
+                        if (isset($item['about'])) {
+                            $item_notes = array_merge(
+                                $item_notes,
+                                [$item['about']]
+                            );
+                        }
+
+
+        if (empty($location)) {
             return [];
         }
 
-        $return['ilslink'] = $remoteLink;
+        $return['location']        = $location;
+        $return['locationhref']    = $locationhref;
         $return['item_notes']      = $item_notes;
         $return['status']          = $this->getStatusString($item);
         $return['availability']    = $availability;
