@@ -73,7 +73,6 @@ class MakeLink extends AbstractHelper
 
         // Merge all attributes
         $mergedAttrs = array_merge(
-            [],
             $attrs ?? [],
             $href ? ['href' => $href] : []
         );
@@ -84,7 +83,7 @@ class MakeLink extends AbstractHelper
         }
 
         // Span instead of anchor when no href present
-        if (!isset($mergedAttrs['href']) || !$mergedAttrs['href']) {
+        if (!($mergedAttrs['href'] ?? false)) {
             return $this->compileAttrs($text, $mergedAttrs, 'span');
         }
 
