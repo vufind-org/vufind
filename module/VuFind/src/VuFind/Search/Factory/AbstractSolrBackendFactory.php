@@ -401,12 +401,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $options['ttl'] = 300;
             }
             $settings = [
-                'adapter' => [
-                    'name' => $cacheConfig['adapter'],
-                    'options' => $options,
-                ]
+                'name' => $cacheConfig['adapter'],
+                'options' => $options,
             ];
-            $cache = \Laminas\Cache\StorageFactory::factory($settings);
+            $cache = $this->serviceLocator
+                ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+                ->createFromArrayConfiguration($settings);
             $connector->setCache($cache);
         }
         return $connector;

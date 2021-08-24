@@ -4,23 +4,23 @@
     <tr>
       <td class="fullLocation">
         <?php if (!is_array($item['location'])): ?>
-          <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
+          <?php $locationTextEsc = $this->transEscWithPrefix('location_', $item['location']); ?>
           <?php if ($item['locationhref'] ?? false): ?>
-            <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
+            <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
           <?php else: ?>
-            <?=$locationText?>
+            <?=$locationTextEsc?>
           <?php endif; ?>
         <?php else: ?>
           <?php foreach ($item['location'] as $index => $location): ?>
-            <?php $locationText = $this->transEscWithPrefix('location_', $location); ?>
+            <?php $locationTextEsc = $this->transEscWithPrefix('location_', $location); ?>
             <?php if ($item['locationhref'][$index] ?? false): ?>
                <p>
-               <a href="<?=$item['locationhref'][$index]?>" target="_blank"><?=$locationText?></a>
+               <a href="<?=$this->escapeHtmlAttr($item['locationhref'][$index])?>" target="_blank"><?=$locationTextEsc?></a>
                <?=$item['locationnote'] ?? ''?>
                </p>
             <?php else: ?>
               <p>
-              <?=$locationText?>
+              <?=$locationTextEsc?>
               <?=$item['locationnote'] ?? ''?>
               </p>
             <?php endif; ?>

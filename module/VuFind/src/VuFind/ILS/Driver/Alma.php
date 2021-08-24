@@ -334,7 +334,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $number = (string)$item->item_data->description;
                     $description = (string)$item->item_data->description;
                 }
-
+                $callnumber = $item->holding_data->call_number;
                 $results['holdings'][] = [
                     'id' => $id,
                     'source' => 'Solr',
@@ -342,9 +342,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'status' => $status,
                     'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
-                    'callnumber' => $this->getTranslatableString(
-                        $item->holding_data->call_number
-                    ),
+                    'callnumber' => (string)($callnumber->desc ?? $callnumber),
                     'duedate' => $duedate,
                     'returnDate' => false, // TODO: support recent returns
                     'number' => $number,
