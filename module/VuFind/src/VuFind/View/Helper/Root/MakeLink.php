@@ -50,7 +50,7 @@ class MakeLink extends AbstractHelper
      * > makeLink('text', ['href' => '#', 'class' => 'btn-link'])
      *
      * If $attrs is a string, will be treated like a class
-     * > makeLink('text', 'btn-link') == makeLink('text', ['class' => 'btn-link'])
+     * > makeLink('text', $href, 'btn-link')
      *
      * @param string       $text  Link contents
      * @param string|array $href  Link destination (skippable for (text, attrs))
@@ -78,11 +78,13 @@ class MakeLink extends AbstractHelper
             $href ? ['href' => $href] : []
         );
 
-        // Plain text on false-y href
+        // just text
+        if (empty($mergedAttrs)) {
+            return $text;
+        }
+
+        // Span instead of anchor when no href present
         if (!isset($mergedAttrs['href']) || !$mergedAttrs['href']) {
-            if (empty($mergedAttrs)) {
-                return $text;
-            }
             return $this->compileAttrs($text, $mergedAttrs, 'span');
         }
 
