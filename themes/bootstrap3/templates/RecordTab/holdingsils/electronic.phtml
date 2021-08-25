@@ -25,6 +25,11 @@
               </p>
             <?php endif; ?>
           <?php endforeach; ?>
+        <?php $locationTextEsc = $this->transEscWithPrefix('location_', $item['location']); ?>
+        <?php if ($item['locationhref'] ?? false): ?>
+          <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
+        <?php else: ?>
+          <?=$locationTextEsc?>
         <?php endif; ?>
       </td>
       <td class="fullAvailability">
@@ -40,7 +45,7 @@
             <b><?=$this->transEsc("Item Notes")?>:</b>
             <ul>
               <?php foreach ($item['item_notes'] as $item_note): ?>
-                <li><?=$item_note ?></li>
+                <li><?=$this->escapeHtml($item_note) ?></li>
               <?php endforeach; ?>
             </ul>
           </div>

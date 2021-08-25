@@ -68,7 +68,8 @@ class ManagerFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Config\PluginManager::class)->get('searches')
+            $container->get(\VuFind\Config\PluginManager::class)->get('searches'),
+            $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
         );
     }
 }
