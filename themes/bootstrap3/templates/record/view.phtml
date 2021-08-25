@@ -1,4 +1,9 @@
 <?php
+  // Set a default page title; this will usually be overridden when a tab is
+  // loaded, but it may be useful if there are no tabs, or when tabs are loaded
+  // via AJAX:
+  $this->headTitle($this->driver->getBreadcrumb());
+
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");

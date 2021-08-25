@@ -1097,7 +1097,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'suspended_until' => \DateTime::createFromFormat(
                     'U',
                     $holdDetails['startDateTS']
-                )->modify('-1 DAY')->format('Y-m-d')
+                )->modify('-1 DAY')->format('Y-m-d') . ' 23:59:59'
             ];
             $result = $this->makeRequest(
                 [
@@ -1145,7 +1145,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if ($fields['frozen']) {
                     if (isset($fields['frozenThrough'])) {
                         $updateFields['suspended_until']
-                            = date('Y-m-d', $fields['frozenThroughTS']);
+                            = date('Y-m-d', $fields['frozenThroughTS'])
+                                . ' 23:59:59';
                         $result = false;
                     } else {
                         $result = $this->makeRequest(
