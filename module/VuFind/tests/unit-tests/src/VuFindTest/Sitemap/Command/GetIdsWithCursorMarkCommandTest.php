@@ -67,9 +67,12 @@ class GetIdsWithCursorMarkCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock search backend
      *
+     * @param int $factoryCalls The number of times we expect custom factory setup to
+     * occur
+     *
      * @return Backend
      */
-    protected function getMockBackend(): Backend
+    protected function getMockBackend(int $factoryCalls = 1): Backend
     {
         $connector = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
@@ -84,6 +87,9 @@ class GetIdsWithCursorMarkCommandTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($connector));
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue($this->backendId));
+        // We expect the command to set up a custom factory:
+        $backend->expects($this->exactly($factoryCalls))
+            ->method('setRecordCollectionFactory');
         return $backend;
     }
 
@@ -179,7 +185,7 @@ class GetIdsWithCursorMarkCommandTest extends \PHPUnit\Framework\TestCase
         $records = new RecordCollection(['nextCursorMark' => 'nextCursor']);
         $expectedIds = $this->addRecordsToCollection($records);
         $service = $this->getMockService($records, 'nextCursor');
-        $backend = $this->getMockBackend();
+        $backend = $this->getMockBackend(2);
         $command = new GetIdsWithCursorMarkCommand($this->backendId, $context, $service);
         $this->assertEquals($command, $command->execute($backend));
         $this->assertEquals(
