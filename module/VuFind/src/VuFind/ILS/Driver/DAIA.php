@@ -1022,13 +1022,9 @@ class DAIA extends AbstractBase implements
             }
         }
 
-                        if (isset($item['about'])) {
-                            $item_notes = array_merge(
-                                $item_notes,
-                                [$item['about']]
-                            );
-                        }
-
+        if (isset($item['about'])) {
+            $item_notes[] = $item['about'];
+        }
 
         if (empty($location)) {
             return [];
