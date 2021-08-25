@@ -3,10 +3,7 @@
   <?php foreach ($this->holdings as $item): ?>
     <tr>
       <td class="fullLocation">
-        <?php if (!is_array($item['location'])): ?>
-          <?php $item['location'] = [$item['location']]; ?>
-        <?php endif; ?>
-        <?php foreach ($item['location'] as $index => $location): ?>
+        <?php foreach ((array)$item['location'] as $index => $location): ?>
           <?php $locationTextEsc = $this->transEscWithPrefix('location_', $location); ?>
             <p>
           <?php if ($item['locationhref'][$index] ?? false): ?>
