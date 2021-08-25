@@ -116,9 +116,8 @@ class Index extends AbstractGeneratorPlugin
      */
     public function getUrls(): \Generator
     {
-        // Initialize variables for use within the loop below:
-        $currentPage = 1;
-        $recordCount = 0;
+        // Initialize variables for message displays within the loop below:
+        $currentPage = $recordCount = 0;
 
         // Loop through all backends
         foreach ($this->backendSettings as $current) {
@@ -129,7 +128,7 @@ class Index extends AbstractGeneratorPlugin
             );
             $offset = null;
             while (true) {
-                $context = compact('currentPage', 'offset') + [
+                $context = compact('offset') + [
                     'countPerPage' => $this->countPerPage,
                 ];
                 $command = new $this->commandClass(
@@ -151,8 +150,8 @@ class Index extends AbstractGeneratorPlugin
                     yield $loc;
                 }
                 $offset = $result['nextOffset'];
-                $this->verboseMsg("Page $currentPage, $recordCount processed");
                 $currentPage++;
+                $this->verboseMsg("Page $currentPage, $recordCount processed");
             }
         }
     }
