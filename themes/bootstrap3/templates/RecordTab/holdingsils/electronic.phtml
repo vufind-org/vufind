@@ -4,33 +4,19 @@
     <tr>
       <td class="fullLocation">
         <?php if (!is_array($item['location'])): ?>
-          <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
-          <?php if ($item['locationhref'] ?? false): ?>
-            <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
-          <?php else: ?>
-            <?=$locationText?>
-          <?php endif; ?>
-        <?php else: ?>
-          <?php foreach ($item['location'] as $index => $location): ?>
-            <?php $locationText = $this->transEscWithPrefix('location_', $location); ?>
-            <?php if ($item['locationhref'][$index] ?? false): ?>
-               <p>
-               <a href="<?=$item['locationhref'][$index]?>" target="_blank"><?=$locationText?></a>
-               <?=$item['locationnote'] ?? ''?>
-               </p>
-            <?php else: ?>
-              <p>
-              <?=$locationText?>
-              <?=$item['locationnote'] ?? ''?>
-              </p>
-            <?php endif; ?>
-          <?php endforeach; ?>
-        <?php $locationTextEsc = $this->transEscWithPrefix('location_', $item['location']); ?>
-        <?php if ($item['locationhref'] ?? false): ?>
-          <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
-        <?php else: ?>
-          <?=$locationTextEsc?>
+          <?php $item['location'] = [$item['location']]; ?>
         <?php endif; ?>
+        <?php foreach ($item['location'] as $index => $location): ?>
+          <?php $locationTextEsc = $this->transEscWithPrefix('location_', $location); ?>
+            <p>
+          <?php if ($item['locationhref'][$index] ?? false): ?>
+              <a href="<?=$item['locationhref'][$index]?>" target="_blank"><?=$locationTextEsc?></a>
+          <?php else: ?>
+              <?=$locationTextEsc?>
+          <?php endif; ?>
+              <?=$this->escapeHtml($item['locationnote']) ?? ''?>
+            </p>
+        <?php endforeach; ?>
       </td>
       <td class="fullAvailability">
         <?php if ($item['use_unknown_message'] ?? false): ?>
