@@ -88,7 +88,7 @@ class GetIdsWithCursorMarkCommand extends AbstractGetIdsCommand
         // If the previous cursor mark matches the current one, we're finished!
         static $prevCursorMark = '';
         if ($cursorMark === $prevCursorMark) {
-            return ['ids' => [], 'cursorMark' => $cursorMark];
+            return ['ids' => [], 'nextOffset' => $cursorMark];
         }
         $prevCursorMark = $cursorMark;
 
