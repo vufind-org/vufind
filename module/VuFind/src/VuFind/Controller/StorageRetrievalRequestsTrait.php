@@ -157,7 +157,6 @@ trait StorageRetrievalRequestsTrait
                 'defaultPickup',
                 'homeLibrary',
                 'extraFields',
-                'defaultStartDate',
                 'defaultRequiredDate',
                 'helpText',
                 'helpTextHtml'
