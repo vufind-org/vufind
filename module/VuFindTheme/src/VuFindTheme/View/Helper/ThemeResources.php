@@ -58,22 +58,13 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Set up items based on contents of theme resource container.
      *
-     * @param string $position Position for the items to be inserted
-     * ('header' or 'footer')
-     *
-     * @return string|null
+     * @return void
      */
-    public function __invoke($position)
+    public function __invoke()
     {
-        if ($position == 'header') {
-            $this->addMetaTags();
-            $this->addLinks();
-            $this->addScripts('header');
-            return null;
-        }
-        if ($position == 'footer') {
-            return $this->addScripts('footer');
-        }
+        $this->addMetaTags();
+        $this->addLinks();
+        $this->addScripts();
     }
 
     /**
@@ -151,37 +142,33 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Add scripts to header or footer.
      *
-     * @param string $position 'header' or 'footer'.
-     *
      * @return string|null
      */
-    protected function addScripts($position)
+    protected function addScripts()
     {
+        $legalHelpers = ['footScript', 'headScript'];
+
         // Load Javascript (same ordering considerations as CSS, above):
-        $js = array_reverse($this->container->getJs($position));
-        if ($position == 'header') {
-            $headScript = $this->getView()->plugin('headScript');
-            foreach ($js as $current) {
-                $headScript()->forcePrependFile(
+        $js = array_reverse($this->container->getJs());
+
+        foreach ($js as $current) {
+            $position = $current['position'] ?? 'header';
+            $helper = substr($position, 0, 4) . 'Script';
+            if (!in_array($helper, $legalHelpers)) {
+                throw new \Exception(
+                    'Invalid script position for '
+                    . $current['file'] . ': ' . $position . '.'
+                );
+            }
+
+            $this->getView()
+                ->plugin($helper)
+                ->forcePrependFile(
                     $current['file'],
                     'text/javascript',
                     $current['attributes'] ?? []
                 );
-            }
-            return null;
-        } elseif ($position == 'footer') {
-            $scripts = '';
-            foreach ($js as $current) {
-                // not sure if this call is correct, there seems to be
-                // lots of overhead, no matter if setFile, appendFile,
-                // or prependFile is used
-                $scripts .= $this->getView()->plugin('inlineScript')->setFile(
-                    $current['file'],
-                    'text/javascript',
-                    $current['attributes'] ?? []
-                );
-            }
-            return $scripts;
         }
+        return null;
     }
 }
