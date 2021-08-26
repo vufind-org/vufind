@@ -486,11 +486,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['extraFields'])) {
                 $response['extraFields'] = $functionConfig['extraFields'];
             }
-            if (isset($functionConfig['helpText'])) {
-                $response['helpText'] = $this->getHelpText(
-                    $functionConfig['helpText']
-                );
-            }
+            $response['helpText']
+                = $this->getHelpText($functionConfig['helpText'] ?? '');
         }
         return $response;
     }
@@ -576,11 +573,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['extraFields'])) {
                 $response['extraFields'] = $functionConfig['extraFields'];
             }
-            if (isset($functionConfig['helpText'])) {
-                $response['helpText'] = $this->getHelpText(
-                    $functionConfig['helpText']
-                );
-            }
+            $response['helpText']
+                = $this->getHelpText($functionConfig['helpText']);
         }
         return $response;
     }
