@@ -51,7 +51,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     public function related($link, $escape = true, $source = DEFAULT_SEARCH_BACKEND)
     {
         // Call parent helper, omitting $escape param:
-        $value = $this->__call(__METHOD__, [$link, $source]);
+        $value = $this->__call(__FUNCTION__, [$link, $source]);
         $escapeHelper = $this->getView()->plugin('escapeHtml');
         return $escape ? $escapeHelper($value) : $value;
     }
@@ -93,7 +93,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
      */
     public function getRequestUrl($url, $includeAnchor = true)
     {
-        $finalUrl = $this->__call(__METHOD__, func_get_args());
+        $finalUrl = $this->__call(__FUNCTION__, func_get_args());
         // Make sure everything is properly HTML encoded:
         $escaper = $this->getView()->plugin('escapehtml');
         return $escaper($finalUrl);
@@ -108,7 +108,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
      */
     public function getChildRecordSearchUrl($driver)
     {
-        $url = $this->__call(__METHOD__, func_get_args());
+        $url = $this->__call(__FUNCTION__, func_get_args());
         // Make sure everything is properly HTML encoded:
         $escaper = $this->getView()->plugin('escapehtml');
         return $escaper($url);
@@ -123,7 +123,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
      */
     public function getVersionsSearchUrl($driver)
     {
-        $url = $this->__call(__METHOD__, func_get_args());
+        $url = $this->__call(__FUNCTION__, func_get_args());
         // Make sure everything is properly HTML encoded:
         $escaper = $this->getView()->plugin('escapehtml');
         return $escaper($url);
