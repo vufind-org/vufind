@@ -1,10 +1,10 @@
 <?php
 /**
- * Head script view helper (extended for VuFind's theme system)
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,10 +21,24 @@
  *
  * @category VuFind
  * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
 
-class FootScript extends HeadScript {}
+/**
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
+ *
+ * @category VuFind
+ * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class FootScript extends HeadScript
+{
+    // pass
+}

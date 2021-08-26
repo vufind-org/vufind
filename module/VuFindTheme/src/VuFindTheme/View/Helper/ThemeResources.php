@@ -142,7 +142,7 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Add scripts to header or footer.
      *
-     * @return string|null
+     * @return null
      */
     protected function addScripts()
     {
