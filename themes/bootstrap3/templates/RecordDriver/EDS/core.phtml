@@ -49,7 +49,7 @@
       <?php endif; ?>
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <span>
-          <a href="<?=$this->recordLink()->getUrl($this->driver)?>#html" class="icon html fulltext">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon html fulltext">
             <?=$this->transEsc('HTML Full Text')?>
           </a>
         </span><br />

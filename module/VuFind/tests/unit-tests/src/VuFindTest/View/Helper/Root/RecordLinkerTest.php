@@ -1,6 +1,6 @@
 <?php
 /**
- * RecordLink view helper Test Class
+ * RecordLinker view helper Test Class
  *
  * PHP version 7
  *
@@ -29,11 +29,11 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Config\Config;
 use VuFind\Record\Router;
-use VuFind\View\Helper\Root\RecordLink;
+use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\View\Helper\Root\Url;
 
 /**
- * RecordLink view helper Test Class
+ * RecordLinker view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ use VuFind\View\Helper\Root\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RecordLinkTest extends \PHPUnit\Framework\TestCase
+class RecordLinkerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test record URL creation.
@@ -50,7 +50,7 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      */
     public function testRecordUrl(): void
     {
-        $recordLink = $this->getRecordLink();
+        $recordLink = $this->getRecordLinker();
         $this->assertEquals(
             '/Record/foo',
             $recordLink->getUrl('Solr|foo')
@@ -64,7 +64,7 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      */
     public function testPercentEscaping(): void
     {
-        $recordLink = $this->getRecordLink();
+        $recordLink = $this->getRecordLinker();
         $this->assertEquals(
             '/Record/foo%252fbar',
             $recordLink->getUrl('Solr|foo%2fbar')
@@ -82,7 +82,7 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      */
     public function testMultiQueryParams(): void
     {
-        $recordLink = $this->getRecordLink();
+        $recordLink = $this->getRecordLinker();
         $this->assertEquals(
             '/Record/foo?param1=1&param2=2',
             $recordLink->getTabUrl('Solr|foo', null, ['param1' => 1, 'param2' => 2])
@@ -94,14 +94,14 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordLink
      */
-    protected function getRecordLink(): RecordLink
+    protected function getRecordLinker(): RecordLinker
     {
         $view = new \Laminas\View\Renderer\PhpRenderer();
         $container = new \VuFindTest\Container\MockViewHelperContainer($this);
         $container->set('url', $this->getUrl());
         $view->setHelperPluginManager($container);
 
-        $recordLink = new RecordLink(new Router(new Config([])));
+        $recordLink = new RecordLinker(new Router(new Config([])));
         $recordLink->setView($view);
         return $recordLink;
     }
