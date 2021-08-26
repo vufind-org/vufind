@@ -59,6 +59,9 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     /**
      * Magic method to proxy recordLinker functionality.
      *
+     * @param string $method Method being called
+     * @param array  $args   Method arguments
+     *
      * @return mixed
      */
     public function __call($method, $args)
