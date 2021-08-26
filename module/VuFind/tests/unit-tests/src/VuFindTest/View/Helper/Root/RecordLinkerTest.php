@@ -50,10 +50,10 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      */
     public function testRecordUrl(): void
     {
-        $recordLink = $this->getRecordLinker();
+        $recordLinker = $this->getRecordLinker();
         $this->assertEquals(
             '/Record/foo',
-            $recordLink->getUrl('Solr|foo')
+            $recordLinker->getUrl('Solr|foo')
         );
     }
 
@@ -64,14 +64,14 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      */
     public function testPercentEscaping(): void
     {
-        $recordLink = $this->getRecordLinker();
+        $recordLinker = $this->getRecordLinker();
         $this->assertEquals(
             '/Record/foo%252fbar',
-            $recordLink->getUrl('Solr|foo%2fbar')
+            $recordLinker->getUrl('Solr|foo%2fbar')
         );
         $this->assertEquals(
             '/Record/foo%252fbar?checkRoute=1',
-            $recordLink->getTabUrl('Solr|foo%2fbar', null, ['checkRoute' => 1])
+            $recordLinker->getTabUrl('Solr|foo%2fbar', null, ['checkRoute' => 1])
         );
     }
 
@@ -82,10 +82,10 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      */
     public function testMultiQueryParams(): void
     {
-        $recordLink = $this->getRecordLinker();
+        $recordLinker = $this->getRecordLinker();
         $this->assertEquals(
             '/Record/foo?param1=1&param2=2',
-            $recordLink->getTabUrl('Solr|foo', null, ['param1' => 1, 'param2' => 2])
+            $recordLinker->getTabUrl('Solr|foo', null, ['param1' => 1, 'param2' => 2])
         );
     }
 
@@ -101,9 +101,9 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $container->set('url', $this->getUrl());
         $view->setHelperPluginManager($container);
 
-        $recordLink = new RecordLinker(new Router(new Config([])));
-        $recordLink->setView($view);
-        return $recordLink;
+        $recordLinker = new RecordLinker(new Router(new Config([])));
+        $recordLinker->setView($view);
+        return $recordLinker;
     }
 
     /**
