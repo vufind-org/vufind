@@ -367,11 +367,10 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                     explode(':', $functionConfig['updateFields'])
                 );
             }
-            if (isset($functionConfig['helpText'])) {
-                $response['helpText'] = $this->getHelpText(
-                    $functionConfig['helpText']
-                );
-            }
+            $response['helpText']
+                = $this->getHelpText($functionConfig['helpText'] ?? '');
+            $response['updateHelpText']
+                = $this->getHelpText($functionConfig['updateHelpText'] ?? '');
             if (isset($functionConfig['consortium'])) {
                 $response['consortium'] = $functionConfig['consortium'];
             }
