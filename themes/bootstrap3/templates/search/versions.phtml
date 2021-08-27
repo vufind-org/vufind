@@ -37,7 +37,7 @@
   // Override breadcrumbs:
   $titleLink = '';
   if ($this->driver) {
-    $titleLink .= ' - <a href="' . $this->escapeHtmlAttr($this->recordLink()->getUrl($this->driver)) . '">' . $this->driver->getBreadcrumb() . '</a>';
+    $titleLink .= ' - <a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)) . '">' . $this->driver->getBreadcrumb() . '</a>';
   }
 
   $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Versions') . $titleLink . '</li>';
