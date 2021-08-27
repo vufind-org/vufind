@@ -305,7 +305,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     protected $profileTestResult = [
-        'firstname' => "Nobody",
+        'firstname' => "Susan Q.",
         'lastname' => "Nothing",
         'address1' => "No street at all 8, D-21073 Hamburg",
         'address2' => null,
