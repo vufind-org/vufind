@@ -60,21 +60,15 @@ class MakeLink extends AbstractHelper
      */
     public function __invoke($text, $href = null, $attrs = [])
     {
-        // Skip href
-        if (is_array($href)) {
-            $attrs = $href;
-            $href = null;
-        }
-
-        // $attr string, interpret as class name
-        if (is_string($attrs)) {
-            $attrs = ['class' => $attrs];
+        // $attr not an object, interpret as class name
+        if (!is_array($attrs)) {
+            $attrs = !empty($attrs) ? ['class' => $attrs] : [];
         }
 
         // Merge all attributes
         $mergedAttrs = array_merge(
             $attrs ?? [],
-            $href ? ['href' => $href] : []
+            !empty($href) ? ['href' => $href] : []
         );
 
         // just text
