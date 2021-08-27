@@ -47,7 +47,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 {
     public const HOLDINGS_LINE_NUMBER = 40;
 
-    use CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }

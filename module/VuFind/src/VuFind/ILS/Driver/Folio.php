@@ -51,7 +51,7 @@ class Folio extends AbstractAPI implements
         logError as error;
     }
 
-    use CacheTrait {
+    use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
 
