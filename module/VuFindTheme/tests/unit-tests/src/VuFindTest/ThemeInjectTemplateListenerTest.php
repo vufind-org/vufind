@@ -66,7 +66,7 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
         $l = new InjectTemplateListener(['VuFind/']);
         $this->assertEquals(
             'testcase',
-            $this->callMethod($l, 'inflectName', ['testCase'])
+            $this->callMethod($l, 'inflectName', ['VuFind/testCase'])
         );
     }
 }
