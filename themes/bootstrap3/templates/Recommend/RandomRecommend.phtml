@@ -8,7 +8,7 @@
       <li class="list-group-item">
         <?php if ($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"): ?>
           <?php /* Display thumbnail if appropriate: */ ?>
-          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
+          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLinker()->getUrl($driver)); ?>
         <?php endif; ?>
 
         <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
