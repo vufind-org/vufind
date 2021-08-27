@@ -42,10 +42,17 @@ namespace VuFindTheme;
 class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListener
 {
     /**
-     * @var string[]
+     * List of prefixes for theme files
+     *
+     * @var array $prefixes
      */
     protected $prefixes;
 
+    /**
+     * InjectTemplateListener constructor.
+     *
+     * @param array $prefixes List of prefixes for theme files
+     */
     public function __construct(array $prefixes)
     {
         $this->prefixes = $prefixes;
