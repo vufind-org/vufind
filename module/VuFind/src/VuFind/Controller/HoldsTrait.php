@@ -227,7 +227,8 @@ trait HoldsTrait
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
             ? $this->getUser()->home_library : '';
-        $helpText = $checkHolds['helpText'] ?? null;
+        // helpText is only for backward compatibility:
+        $helpText = $helpTextHtml = $checkHolds['helpText'];
 
         $view = $this->createViewModel(
             compact(
@@ -241,7 +242,8 @@ trait HoldsTrait
                 'requestGroups',
                 'defaultRequestGroup',
                 'requestGroupNeeded',
-                'helpText'
+                'helpText',
+                'helpTextHtml'
             )
         );
         $view->setTemplate('record/hold');
