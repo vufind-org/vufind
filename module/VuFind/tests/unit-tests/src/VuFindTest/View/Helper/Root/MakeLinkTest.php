@@ -162,36 +162,15 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
 
-        $recordLink = $this->getRecordLink();
         $this->assertEquals(
             '<a href="/Record/foo">recordLink</a>',
-            $helper('recordLink', $recordLink->getUrl('Solr|foo'))
+            $helper('recordLink', '/Record/foo')
         );
 
         $this->assertEquals(
             '<a href="/Record/foo%2Fbar?checkRoute=1">recordLink</a>',
-            $helper(
-                'recordLink',
-                $recordLink->getTabUrl('Solr|foo/bar', null, ['checkRoute' => 1])
-            )
+            $helper('recordLink', '/Record/foo%2Fbar?checkRoute=1')
         );
-    }
-
-    /**
-     * Get a RecordLink object ready for testing.
-     *
-     * @return Record
-     */
-    protected function getRecordLink()
-    {
-        $view = new \Laminas\View\Renderer\PhpRenderer();
-        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $container->set('url', $this->getUrl());
-        $view->setHelperPluginManager($container);
-
-        $recordLink = new RecordLink(new Router(new Config([])));
-        $recordLink->setView($view);
-        return $recordLink;
     }
 
     /**
