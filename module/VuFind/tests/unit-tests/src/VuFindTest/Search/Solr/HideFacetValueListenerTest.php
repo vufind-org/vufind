@@ -45,6 +45,8 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
  */
 class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Get a mock backend
      *
@@ -143,7 +145,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener(['format' => ['Unknown']]);
         $result = $this->getMockResult();
         $facets = $result->getFacets()->getFieldFacets();
-        $command = new MockCommandForHideFacetValueTest($result);
+        $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
@@ -167,7 +169,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener([], ['format' => ['Book']]);
         $result = $this->getMockResult();
         $facets = $result->getFacets()->getFieldFacets();
-        $command = new MockCommandForHideFacetValueTest($result);
+        $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
@@ -196,7 +198,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $result = $this->getMockResult();
         $facets = $result->getFacets()->getFieldFacets();
-        $command = new MockCommandForHideFacetValueTest($result);
+        $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
@@ -208,15 +210,5 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
             ['Book' => 124],
             $facets['format']->toArray()
         );
-    }
-}
-
-class MockCommandForHideFacetValueTest extends \VuFindSearch\Command\AbstractBase
-{
-    public function __construct(RecordCollection $result = null)
-    {
-        parent::__construct('Solr', 'search');
-        $this->executed = true;
-        $this->result = $result;
     }
 }

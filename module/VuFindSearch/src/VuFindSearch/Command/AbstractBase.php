@@ -41,7 +41,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class AbstractBase implements CommandInterface
+abstract class AbstractBase implements CommandInterface
 {
     /**
      * Search backend identifier
@@ -109,7 +109,15 @@ class AbstractBase implements CommandInterface
      *
      * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    abstract public function execute(BackendInterface $backend): CommandInterface;
+
+    /**
+     * Flag the command as executed and return it; useful as the final step in
+     * execute() implementations.
+     *
+     * @return CommandInterface
+     */
+    protected function finalizeExecution(): CommandInterface
     {
         $this->executed = true;
         return $this;
