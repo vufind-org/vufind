@@ -142,14 +142,14 @@ class Icon extends AbstractHelper
      * Reduce extra parameters to one attribute string.
      * Broken out for easier customization.
      *
-     * @param array $extra Extra HTML attributes for the HTML tag
+     * @param array $attrs Additional HTML attributes for the HTML tag
      *
      * @return string
      */
-    protected function compileAttrs(array $extra): string
+    protected function compileAttrs(array $attrs): string
     {
         $attrs = '';
-        foreach ($extra as $key => $val) {
+        foreach ($attrs as $key => $val) {
             $attrs .= ' ' . $key . '="' . ($this->esc)($val) . '"';
         }
         return $attrs;
@@ -159,42 +159,42 @@ class Icon extends AbstractHelper
      * Create a unique key for icon names and extra attributes
      *
      * @param string $name  Icon name or key from theme.config.php
-     * @param array  $extra Extra HTML attributes for the HTML tag
+     * @param array  $attrs Additional HTML attributes for the HTML tag
      *
      * @return string
      */
-    protected function cacheKey(string $name, $extra = []): string
+    protected function cacheKey(string $name, $attrs = []): string
     {
-        if (empty($extra)) {
+        if (empty($attrs)) {
             return $name;
         }
-        ksort($extra);
-        return $name . '+' . md5(json_encode($extra));
+        ksort($attrs);
+        return $name . '+' . md5(json_encode($attrs));
     }
 
     /**
      * Returns inline HTML for icon
      *
      * @param string $name  Which icon?
-     * @param array  $extra Just extra HTML attributes for now
+     * @param array  $attrs Additional HTML attributes
      *
      * @return string
      */
-    public function __invoke(string $name, $extra = []): string
+    public function __invoke(string $name, $attrs = []): string
     {
         if (!$this->styleAppended) {
             $this->headLink->appendStylesheet('icon-helper.css');
             $this->styleAppended = true;
         }
 
-        $cacheKey = $this->cacheKey($name, $extra);
+        $cacheKey = $this->cacheKey($name, $attrs);
         $cached = $this->cache->getItem($cacheKey);
 
         if ($cached == null) {
             [$icon, $set, $template] = $this->mapIcon($name);
 
             // Compile additional HTML attributes
-            $attrs = $this->compileAttrs($extra);
+            $attrs = $this->compileAttrs($attrs);
 
             // Surface set config and add icon and attrs
             $cached = $this->getView()->render(
@@ -204,7 +204,7 @@ class Icon extends AbstractHelper
                     [
                         'icon' => ($this->esc)($icon),
                         'attrs' => $attrs,
-                        'extra' => $extra
+                        'extra' => $attrs
                     ]
                 )
             );
