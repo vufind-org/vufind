@@ -14,7 +14,7 @@
   </div>
 <?php endforeach; ?>
 <?php if ($showMore): ?>
-  <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>">
+  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getChildRecordSearchUrl($this->driver))?>">
     <?=$this->transEsc('see all')?>
   </a>
 <?php endif; ?>
