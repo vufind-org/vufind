@@ -89,6 +89,8 @@ class Module
     {
         return [
             'factories' => [
+                View\Helper\FootScript::class =>
+                    View\Helper\PipelineInjectorFactory::class,
                 View\Helper\HeadThemeResources::class =>
                     InvokableFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
@@ -104,10 +106,11 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\TemplatePath::class =>
                     View\Helper\TemplatePathFactory::class,
-                View\Helper\ThemeResources::class =>
-                    View\Helper\ThemeResourcesFactory::class,
+                View\Helper\SetupThemeResources::class =>
+                    View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
+                'footScript' => View\Helper\FootScript::class,
                 'headThemeResources' => View\Helper\HeadThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
                 \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
@@ -118,7 +121,7 @@ class Module
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,
-                'themeResources' => View\Helper\ThemeResources::class,
+                'setupThemeResources' => View\Helper\SetupThemeResources::class,
             ],
         ];
     }
