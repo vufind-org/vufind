@@ -1378,13 +1378,12 @@ class PAIA extends DAIA
             $lastname = $nameArr[0];
         } else {
             $nameArr = explode(' ', $username);
-            $firstname = $nameArr[0];
-            $lastname = '';
-            array_shift($nameArr);
+            $firstname = '';
+            $lastname = array_pop($nameArr);
             foreach ($nameArr as $value) {
-                $lastname .= ' ' . $value;
+                $firstname .= ' ' . $value;
             }
-            $lastname = trim($lastname);
+            $firstname = trim($firstname);
         }
 
         // TODO: implement parsing of user details according to types set
