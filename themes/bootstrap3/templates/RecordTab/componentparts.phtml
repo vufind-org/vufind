@@ -8,7 +8,7 @@
   ?>
   <div>
     <?=($i + 1)?>.
-    <a href="<?=$this->recordLink()->getUrl($current)?>">
+    <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($current))?>">
       <?=$this->record($current)->getTitleHtml()?>
     </a>
   </div>

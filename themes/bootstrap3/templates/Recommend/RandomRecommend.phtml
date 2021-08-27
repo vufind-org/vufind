@@ -12,7 +12,7 @@
         <?php endif; ?>
 
         <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
-        <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
           <?=$this->record($driver)->getTitleHtml()?>
           <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
           <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">
