@@ -70,6 +70,19 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Alias for getBreadcrumbHtml(), for backward compatibility with
+     * VuFind 7.x and earlier versions.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record to link to.
+     *
+     * @return string
+     */
+    public function getBreadcrumb($driver)
+    {
+        return $this->__call('getBreadcrumbHtml', [$driver]);
+    }
+
+    /**
      * Alias for getRequestUrl(), to maintain backward compatibility with
      * VuFind 2.2 and earlier versions.
      *

@@ -4,7 +4,7 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
-    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('permanent_link') . '</li>';
 
   // Collect permalink data:

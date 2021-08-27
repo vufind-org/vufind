@@ -191,7 +191,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getBreadcrumb($driver)
+    public function getBreadcrumbHtml($driver)
     {
         $truncateHelper = $this->getView()->plugin('truncate');
         $escapeHelper = $this->getView()->plugin('escapeHtml');
