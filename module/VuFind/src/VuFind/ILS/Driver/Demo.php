@@ -154,8 +154,11 @@ class Demo extends AbstractBase
      * hits
      * @param HttpRequest            $request        HTTP request object (optional)
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        SearchService $ss, $sessionFactory, HttpRequest $request = null
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
+        SearchService $ss,
+        $sessionFactory,
+        HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
@@ -504,10 +507,12 @@ class Demo extends AbstractBase
             $currentItem = [
                 "location" => $location,
                 "create"   => $this->dateConverter->convertToDisplayDate(
-                    'U', strtotime("now - {$randDays} days")
+                    'U',
+                    strtotime("now - {$randDays} days")
                 ),
                 "expire"   => $this->dateConverter->convertToDisplayDate(
-                    'U', strtotime("now + 30 days")
+                    'U',
+                    strtotime("now + 30 days")
                 ),
                 "item_id" => $i,
                 "reqnum" => $i
@@ -548,9 +553,9 @@ class Demo extends AbstractBase
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
-                if (!$currentItem['available'] && !$currentItem['in_transit']) {
-                    $currentItem['updateDetails'] = $currentItem['reqnum'];
-                }
+                $currentItem['cancel_details'] = $currentItem['updateDetails']
+                    = (!$currentItem['available'] && !$currentItem['in_transit'])
+                    ? $currentItem['reqnum'] : '';
             } else {
                 $status = rand() % 5;
                 $currentItem['available'] = $status == 1;
@@ -935,7 +940,8 @@ class Demo extends AbstractBase
                     // 50% chance they've paid half of it
                     "balance"  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
                     "duedate"  => $this->dateConverter->convertToDisplayDate(
-                        'U', strtotime("now - $day_overdue days")
+                        'U',
+                        strtotime("now - $day_overdue days")
                     )
                 ];
                 // Some fines will have no id or title:
@@ -1093,7 +1099,8 @@ class Demo extends AbstractBase
                 // one is used for renewals, in case the user display
                 // format is incompatible with date math).
                 'duedate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $rawDueDate
+                    'U',
+                    $rawDueDate
                 ),
                 'rawduedate' => $rawDueDate,
                 'dueStatus' => $this->calculateDueStatus($rawDueDate),
@@ -1152,7 +1159,9 @@ class Demo extends AbstractBase
         $transactions = $session->transactions;
         if (!empty($params['sort'])) {
             $sort = explode(
-                ' ', !empty($params['sort']) ? $params['sort'] : 'date_due desc', 2
+                ' ',
+                !empty($params['sort']) ? $params['sort'] : 'date_due desc',
+                2
             );
 
             $descending = isset($sort[1]) && 'desc' === $sort[1];
@@ -1224,13 +1233,16 @@ class Demo extends AbstractBase
             // Create a generic transaction:
             $transList[] = $this->getRandomItemIdentifier() + [
                 'checkoutDate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $checkoutDate
+                    'U',
+                    $checkoutDate
                 ),
                 'dueDate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $dueDate
+                    'U',
+                    $dueDate
                 ),
                 'returnDate' => $this->dateConverter->convertToDisplayDate(
-                    'U', $returnDate
+                    'U',
+                    $returnDate
                 ),
                 // Raw dates for sorting
                 '_checkoutDate' => $checkoutDate,
@@ -1453,7 +1465,9 @@ class Demo extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRequestGroups($bibId = null, $patron = null,
+    public function getRequestGroups(
+        $bibId = null,
+        $patron = null,
         $holdDetails = null
     ) {
         $this->checkIntermittentFailure();
@@ -1641,8 +1655,7 @@ class Demo extends AbstractBase
     /**
      * Cancel Holds
      *
-     * Attempts to Cancel a hold or recall on a particular item. The
-     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     * Attempts to Cancel a hold or recall on a particular item.
      *
      * @param array $cancelDetails An array of item and patron data
      *
@@ -1685,30 +1698,6 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Get Cancel Hold Details
-     *
-     * Get required data for canceling a hold. This value is relayed to the
-     * cancelHolds function when the user attempts to cancel holds. Returning an
-     * empty string means that the hold is not cancelable.
-     *
-     * N.B. This must return same information as the updateDetails field of each
-     * hold returned by getMyHolds since it is used as the identifier also for
-     * updates when both functions are available.
-     *
-     * @param array $hold   An array of hold data
-     * @param array $patron Patron information from patronLogin
-     *
-     * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getCancelHoldDetails($hold, $patron = [])
-    {
-        return empty($hold['available']) && empty($hold['in_transit'])
-            ? $hold['reqnum'] : '';
-    }
-
-    /**
      * Update holds
      *
      * This is responsible for changing the status of hold requests
@@ -1719,7 +1708,10 @@ class Demo extends AbstractBase
      *
      * @return array Associative array of the results
      */
-    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    public function updateHolds(
+        array $holdsDetails,
+        array $fields,
+        array $patron
     ): array {
         $results = [];
         $session = $this->getSession($patron['id']);
@@ -1864,7 +1856,8 @@ class Demo extends AbstractBase
                         = $this->calculateDueStatus($transactions[$i]['rawduedate']);
                     $transactions[$i]['duedate']
                         = $this->dateConverter->convertToDisplayDate(
-                            'U', $transactions[$i]['rawduedate']
+                            'U',
+                            $transactions[$i]['rawduedate']
                         );
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
                     $transactions[$i]['renewable']
@@ -2003,6 +1996,7 @@ class Demo extends AbstractBase
             $frozen = false;
             $frozenThrough = '';
         }
+        $reqNum = sprintf('%06d', $nextId);
         $session->holds->append(
             [
                 'id'       => $holdDetails['id'],
@@ -2012,14 +2006,15 @@ class Demo extends AbstractBase
                     $this->dateConverter->convertToDisplayDate('U', $expire),
                 'create'   =>
                     $this->dateConverter->convertToDisplayDate('U', time()),
-                'reqnum'   => sprintf('%06d', $nextId),
+                'reqnum'   => $reqNum,
                 'item_id'  => $nextId,
                 'volume'   => '',
                 'processed' => '',
                 'requestGroup' => $requestGroup,
                 'frozen'   => $frozen,
                 'frozenThrough' => $frozenThrough,
-                'updateDetails' => sprintf('%06d', $nextId)
+                'updateDetails' => $reqNum,
+                'cancel_details' => $reqNum,
             ]
         );
 
@@ -2105,7 +2100,8 @@ class Demo extends AbstractBase
         } else {
             try {
                 $expire = $this->dateConverter->convertFromDisplayDate(
-                    "U", $details['requiredBy']
+                    "U",
+                    $details['requiredBy']
                 );
             } catch (DateException $e) {
                 // Expiration date is invalid
@@ -2219,7 +2215,8 @@ class Demo extends AbstractBase
         } else {
             try {
                 $expire = $this->dateConverter->convertFromDisplayDate(
-                    'U', $details['requiredBy']
+                    'U',
+                    $details['requiredBy']
                 );
             } catch (DateException $e) {
                 // Expiration Date is invalid
@@ -2560,7 +2557,9 @@ class Demo extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+    public function getRecentlyReturnedBibs(
+        $limit = 30,
+        $maxage = 30,
         $patron = null
     ) {
         // This is similar to getNewItems for demo purposes.

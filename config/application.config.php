@@ -2,7 +2,7 @@
 
 // Set up modules:
 $modules = [
-    'Laminas\Form', 'Laminas\Router', 'LmcRbacMvc', 'Laminas\I18n',
+    'Laminas\Cache', 'Laminas\Form', 'Laminas\Router', 'LmcRbacMvc', 'Laminas\I18n',
     'Laminas\Mvc\I18n', 'SlmLocale', 'VuFindTheme', 'VuFindSearch', 'VuFind',
     'VuFindAdmin', 'VuFindApi'
 ];

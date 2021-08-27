@@ -49,9 +49,10 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testNamespaceStripping()
     {
-        $l = new InjectTemplateListener(['VuFind/']);
+        $l = new InjectTemplateListener();
         $this->assertEquals(
-            'search', $l->mapController('VuFind\Controller\SearchController')
+            'search',
+            $l->mapController(\VuFind\Controller\SearchController::class)
         );
     }
 
@@ -62,9 +63,10 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testCamelCaseToLowerCase()
     {
-        $l = new InjectTemplateListener(['VuFind/']);
+        $l = new InjectTemplateListener();
         $this->assertEquals(
-            'testcase', $this->callMethod($l, 'inflectName', ['VuFind/testCase'])
+            'testcase',
+            $this->callMethod($l, 'inflectName', ['testCase'])
         );
     }
 }

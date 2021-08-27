@@ -272,10 +272,10 @@ class Koha extends AbstractBase
                     'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 ];
             }
-            return $holding;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $holding;
     }
 
     /**
@@ -378,10 +378,10 @@ class Koha extends AbstractBase
                     'create' => $this->displayDate($row['RSVDATE'])
                 ];
             }
-            return $holdLst;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $holdLst;
     }
 
     /**
@@ -419,10 +419,10 @@ class Koha extends AbstractBase
                 ];
                 return $profile;
             }
-            return null;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return null;
     }
 
     /**
@@ -458,10 +458,10 @@ class Koha extends AbstractBase
                     'renew' => $row['RENEWALS']
                 ];
             }
-            return $transactionLst;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $transactionLst;
     }
 
     /**
@@ -578,13 +578,13 @@ class Koha extends AbstractBase
                     'returnDate' => $this->displayDateTime($row['RETURNED']),
                 ];
             }
-            return [
-                'count' => $totalCount,
-                'transactions' => $historicLoans
-            ];
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return [
+            'count' => $totalCount,
+            'transactions' => $historicLoans
+        ];
     }
 
     /**
@@ -777,7 +777,8 @@ class Koha extends AbstractBase
             // YYYY-MM-DD HH:MM:SS
             return
                 $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d H:i:s', $date
+                    'Y-m-d H:i:s',
+                    $date
                 );
         } else {
             error_log("Unexpected date format: $date");

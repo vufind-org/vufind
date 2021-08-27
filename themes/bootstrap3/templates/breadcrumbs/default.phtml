@@ -4,8 +4,8 @@
   <li><a href="<?=$this->record($this->driver)->getLink('collection', $id)?>"><?=$parent ?></a></li>
 <?php endforeach; ?>
 <?php if(isset($this->layout()->end)): ?>
-  <li title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
+  <li title="<?=$this->escapeHtmlAttr($this->layout()->title) ?>"><?=$this->escapeHtml($this->truncate($this->layout()->title, 100)) ?></li>
   <li class="active" aria-current="page"><?=$this->layout()->end ?></li>
 <?php else: ?>
-  <li class="active" aria-current="page" title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
+  <li class="active" aria-current="page" title="<?=$this->escapeHtmlAttr($this->layout()->title) ?>"><?=$this->escapeHtml($this->truncate($this->layout()->title, 100)) ?></li>
 <?php endif; ?>

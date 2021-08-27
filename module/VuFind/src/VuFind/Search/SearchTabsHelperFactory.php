@@ -58,7 +58,9 @@ class SearchTabsHelperFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -74,8 +76,10 @@ class SearchTabsHelperFactory implements FactoryInterface
             ? $config->SearchTabsPermissions->toArray() : [];
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $tabConfig, $filterConfig,
-            $container->get('Application')->getRequest(), $permissionConfig
+            $tabConfig,
+            $filterConfig,
+            $container->get('Application')->getRequest(),
+            $permissionConfig
         );
     }
 }

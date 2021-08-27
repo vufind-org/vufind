@@ -154,7 +154,8 @@ class ConnectorTest extends TestCase
             ->getMock();
         // The client will be reset before it is given the expected mime type:
         $client->expects($this->exactly(2))->method('setEncType')->withConsecutive(
-            ['application/x-www-form-urlencoded'], ['application/json']
+            ['application/x-www-form-urlencoded'],
+            ['application/json']
         );
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($jsonData));

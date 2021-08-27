@@ -60,17 +60,20 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($form->showOnlyForLoggedUsers());
         $this->assertEquals([], $form->getElements());
         $this->assertEquals(
-            [['email' => null, 'name' => null]], $form->getRecipient()
+            [['email' => null, 'name' => null]],
+            $form->getRecipient()
         );
         $this->assertNull($form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.', $form->getSubmitResponse()
+            'Thank you for your feedback.',
+            $form->getSubmitResponse()
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertEquals(
-            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter',
+            get_class($form->getInputFilter())
         );
     }
 
@@ -92,7 +95,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $defaults
         );
         $this->assertEquals(
-            [['name' => 'me', 'email' => 'me@example.com']], $form->getRecipient()
+            [['name' => 'me', 'email' => 'me@example.com']],
+            $form->getRecipient()
         );
         $this->assertEquals('subject', $form->getEmailSubject([]));
     }
@@ -163,14 +167,16 @@ class FormTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertEquals(
-            [['email' => null, 'name' => null]], $form->getRecipient()
+            [['email' => null, 'name' => null]],
+            $form->getRecipient()
         );
 
         $this->assertEquals('Send us your feedback!', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.', $form->getSubmitResponse()
+            'Thank you for your feedback.',
+            $form->getSubmitResponse()
         );
         $this->assertEquals(
             [
@@ -190,7 +196,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
             )
         );
         $this->assertEquals(
-            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter',
+            get_class($form->getInputFilter())
         );
 
         // Validators: Required field problems

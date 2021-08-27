@@ -119,7 +119,8 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
             $this->loader->setCacheContext(Cache::CONTEXT_FAVORITE);
             foreach ($records as $record) {
                 $this->cache->createOrUpdate(
-                    $record->getUniqueID(), $record->getSourceIdentifier(),
+                    $record->getUniqueID(),
+                    $record->getSourceIdentifier(),
                     $record->getRawData()
                 );
             }

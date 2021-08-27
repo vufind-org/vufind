@@ -93,7 +93,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
-            $page, ['username' => $username, 'email' => $username . '@vufind.org']
+            $page,
+            ['username' => $username, 'email' => $username . '@vufind.org']
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -324,8 +325,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
         $this->assertEquals(
-            $expected, substr(
-                $this->findCss($page, '.search-stats')->getText(), 0,
+            $expected,
+            substr(
+                $this->findCss($page, '.search-stats')->getText(),
+                0,
                 strlen($expected)
             )
         );

@@ -48,7 +48,8 @@ class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
      * @param \Laminas\Config\Config $config     Configuration
      * @param \Laminas\Config\Config $shibConfig Shibboleth configuration for IdPs
      */
-    public function __construct(\Laminas\Config\Config $config,
+    public function __construct(
+        \Laminas\Config\Config $config,
         \Laminas\Config\Config $shibConfig
     ) {
         $this->config = $config;

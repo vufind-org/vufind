@@ -50,8 +50,12 @@ class Shortlinks extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, $table = 'shortlinks'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'shortlinks'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }

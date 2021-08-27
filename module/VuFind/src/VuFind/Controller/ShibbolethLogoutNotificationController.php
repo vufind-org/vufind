@@ -63,7 +63,8 @@ class ShibbolethLogoutNotificationController extends AbstractBase
         $this->disableSessionWrites();
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine(
-            'Content-Type', 'application/wsdl+xml'
+            'Content-Type',
+            'application/wsdl+xml'
         );
         $response->setContent($this->getWsdl());
         return $response;

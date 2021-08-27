@@ -56,7 +56,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\ILS\Driver\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
 
@@ -222,8 +221,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * SessionContainer object
      * @param ?SafeMoneyFormat       $safeMoneyFormat Money formatting view helper
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
+        $sessionFactory,
+        ?SafeMoneyFormat $safeMoneyFormat
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -257,25 +258,29 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         if (!empty($this->config['StatusRankings'])) {
             $this->statusRankings = array_merge(
-                $this->statusRankings, $this->config['StatusRankings']
+                $this->statusRankings,
+                $this->config['StatusRankings']
             );
         }
 
         if (!empty($this->config['FeeTypeMappings'])) {
             $this->feeTypeMappings = array_merge(
-                $this->feeTypeMappings, $this->config['FeeTypeMappings']
+                $this->feeTypeMappings,
+                $this->config['FeeTypeMappings']
             );
         }
 
         if (!empty($this->config['PatronStatusMappings'])) {
             $this->patronStatusMappings = array_merge(
-                $this->patronStatusMappings, $this->config['PatronStatusMappings']
+                $this->patronStatusMappings,
+                $this->config['PatronStatusMappings']
             );
         }
 
         if (!empty($this->config['ItemStatusMappings'])) {
             $this->itemStatusMappings = array_merge(
-                $this->itemStatusMappings, $this->config['ItemStatusMappings']
+                $this->itemStatusMappings,
+                $this->config['ItemStatusMappings']
             );
         }
 
@@ -777,8 +782,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Cancel Holds
      *
-     * Attempts to Cancel a hold. The data in $cancelDetails['details'] is determined
-     * by getCancelHoldDetails().
+     * Attempts to Cancel a hold. The data in $cancelDetails['details'] is taken from
+     * holds' cancel_details field.
      *
      * @param array $cancelDetails An array of item and patron data
      *
@@ -1092,7 +1097,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'suspended_until' => \DateTime::createFromFormat(
                     'U',
                     $holdDetails['startDateTS']
-                )->modify('-1 DAY')->format('Y-m-d')
+                )->modify('-1 DAY')->format('Y-m-d') . ' 23:59:59'
             ];
             $result = $this->makeRequest(
                 [
@@ -1126,7 +1131,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array Associative array of the results
      */
-    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    public function updateHolds(
+        array $holdsDetails,
+        array $fields,
+        array $patron
     ): array {
         $results = [];
         foreach ($holdsDetails as $requestId) {
@@ -1137,7 +1145,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if ($fields['frozen']) {
                     if (isset($fields['frozenThrough'])) {
                         $updateFields['suspended_until']
-                            = date('Y-m-d', $fields['frozenThroughTS']);
+                            = date('Y-m-d', $fields['frozenThroughTS'])
+                                . ' 23:59:59';
                         $result = false;
                     } else {
                         $result = $this->makeRequest(
@@ -1597,7 +1606,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if ($adapter instanceof \Laminas\Http\Client\Adapter\Socket) {
                 $context = $adapter->getStreamContext();
                 $res = stream_context_set_option(
-                    $context, 'ssl', 'verify_peer_name', false
+                    $context,
+                    'ssl',
+                    'verify_peer_name',
+                    false
                 );
                 if (!$res) {
                     throw new \Exception('Unable to set sslverifypeername option');
@@ -1615,7 +1627,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         // Set Accept header
         $client->getRequest()->getHeaders()->addHeaderLine(
-            'Accept', 'application/json'
+            'Accept',
+            'application/json'
         );
 
         return $client;
@@ -1673,7 +1686,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         } elseif (!empty($request['json'])) {
             $client->getRequest()->setContent(json_encode($request['json']));
             $client->getRequest()->getHeaders()->addHeaderLine(
-                'Content-Type', 'application/json'
+                'Content-Type',
+                'application/json'
             );
         }
 
@@ -1773,7 +1787,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         try {
             $token = $this->getNewOAuth2Token(
-                $url, $this->config['Catalog']['clientId'],
+                $url,
+                $this->config['Catalog']['clientId'],
                 $this->config['Catalog']['clientSecret'],
                 $this->config['Catalog']['grantType'] ?? 'client_credentials'
             );
@@ -1784,7 +1799,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $this->putCachedData(
-            $cacheKey, $token->getHeaderValue(), $token->getExpiresIn()
+            $cacheKey,
+            $token->getHeaderValue(),
+            $token->getExpiresIn()
         );
 
         return $token->getHeaderValue();
@@ -2166,7 +2183,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 // other than hold block
                 if ($nonHoldBlock) {
                     array_unshift(
-                        $blockReason, $this->translate('patron_status_card_blocked')
+                        $blockReason,
+                        $this->translate('patron_status_card_blocked')
                     );
                 }
             }
@@ -2489,7 +2507,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $entry['renewability_blocks']
                 );
                 $permanent = in_array(
-                    $entry['renewability_blocks'], $this->permanentRenewalBlocks
+                    $entry['renewability_blocks'],
+                    $this->permanentRenewalBlocks
                 );
                 if ($permanent) {
                     $renewals = null;

@@ -52,6 +52,8 @@ interface RandomInterface
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
     public function random(
-        AbstractQuery $query, $limit, ParamBag $params = null
+        AbstractQuery $query,
+        $limit,
+        ParamBag $params = null
     );
 }

@@ -110,7 +110,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function submitCatalogLoginForm(Element $page, string $username,
+    protected function submitCatalogLoginForm(
+        Element $page,
+        string $username,
         string $password
     ): void {
         $this->findCss($page, '#profile_cat_username')->setValue($username);
@@ -149,7 +151,8 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Make sure we arrived where we expected to:
         $this->assertEquals(
-            'Interlibrary Loan Requests', $this->findCss($page, 'h2')->getText()
+            'Interlibrary Loan Requests',
+            $this->findCss($page, 'h2')->getText()
         );
     }
 
@@ -183,7 +186,8 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Make sure we arrived where we expected to:
         $this->assertEquals(
-            'Storage Retrieval Requests', $this->findCss($page, 'h2')->getText()
+            'Storage Retrieval Requests',
+            $this->findCss($page, 'h2')->getText()
         );
     }
 

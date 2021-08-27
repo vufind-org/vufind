@@ -205,7 +205,9 @@ class EuropeanaResults implements RecommendInterface,
         $this->sitePath = 'http://www.europeana.eu/portal/search.html?query=' .
             $this->lookfor;
         $this->targetUrl = $this->getURL(
-            'http://' . $this->baseUrl, $this->requestParam, $this->excludeProviders
+            'http://' . $this->baseUrl,
+            $this->requestParam,
+            $this->excludeProviders
         );
     }
 
