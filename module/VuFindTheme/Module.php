@@ -106,8 +106,8 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\TemplatePath::class =>
                     View\Helper\TemplatePathFactory::class,
-                View\Helper\ThemeResources::class =>
-                    View\Helper\ThemeResourcesFactory::class,
+                View\Helper\SetupThemeResources::class =>
+                    View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
                 'footScript' => View\Helper\FootScript::class,
@@ -121,7 +121,7 @@ class Module
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,
-                'setupThemeResources' => View\Helper\ThemeResources::class,
+                'setupThemeResources' => View\Helper\SetupThemeResources::class,
             ],
         ];
     }
