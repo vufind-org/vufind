@@ -28,7 +28,6 @@
  */
 namespace VuFindSearch\Command;
 
-use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Exception\LogicException;
 use VuFindSearch\ParamBag;
 
@@ -101,15 +100,6 @@ abstract class AbstractBase implements CommandInterface
     {
         return $this->backend;
     }
-
-    /**
-     * Execute command on backend.
-     *
-     * @param BackendInterface $backend Backend
-     *
-     * @return CommandInterface Command instance for method chaining
-     */
-    abstract public function execute(BackendInterface $backend): CommandInterface;
 
     /**
      * Flag the command as executed and return it; useful as the final step in
