@@ -553,9 +553,9 @@ class Demo extends AbstractBase
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
-                if (!$currentItem['available'] && !$currentItem['in_transit']) {
-                    $currentItem['updateDetails'] = $currentItem['reqnum'];
-                }
+                $currentItem['cancel_details'] = $currentItem['updateDetails']
+                    = (!$currentItem['available'] && !$currentItem['in_transit'])
+                    ? $currentItem['reqnum'] : '';
             } else {
                 $status = rand() % 5;
                 $currentItem['available'] = $status == 1;
@@ -1655,8 +1655,7 @@ class Demo extends AbstractBase
     /**
      * Cancel Holds
      *
-     * Attempts to Cancel a hold or recall on a particular item. The
-     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     * Attempts to Cancel a hold or recall on a particular item.
      *
      * @param array $cancelDetails An array of item and patron data
      *
@@ -1696,30 +1695,6 @@ class Demo extends AbstractBase
 
         $session->holds = $newHolds;
         return $retVal;
-    }
-
-    /**
-     * Get Cancel Hold Details
-     *
-     * Get required data for canceling a hold. This value is relayed to the
-     * cancelHolds function when the user attempts to cancel holds. Returning an
-     * empty string means that the hold is not cancelable.
-     *
-     * N.B. This must return same information as the updateDetails field of each
-     * hold returned by getMyHolds since it is used as the identifier also for
-     * updates when both functions are available.
-     *
-     * @param array $hold   An array of hold data
-     * @param array $patron Patron information from patronLogin
-     *
-     * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getCancelHoldDetails($hold, $patron = [])
-    {
-        return empty($hold['available']) && empty($hold['in_transit'])
-            ? $hold['reqnum'] : '';
     }
 
     /**
@@ -2021,6 +1996,7 @@ class Demo extends AbstractBase
             $frozen = false;
             $frozenThrough = '';
         }
+        $reqNum = sprintf('%06d', $nextId);
         $session->holds->append(
             [
                 'id'       => $holdDetails['id'],
@@ -2030,14 +2006,15 @@ class Demo extends AbstractBase
                     $this->dateConverter->convertToDisplayDate('U', $expire),
                 'create'   =>
                     $this->dateConverter->convertToDisplayDate('U', time()),
-                'reqnum'   => sprintf('%06d', $nextId),
+                'reqnum'   => $reqNum,
                 'item_id'  => $nextId,
                 'volume'   => '',
                 'processed' => '',
                 'requestGroup' => $requestGroup,
                 'frozen'   => $frozen,
                 'frozenThrough' => $frozenThrough,
-                'updateDetails' => sprintf('%06d', $nextId)
+                'updateDetails' => $reqNum,
+                'cancel_details' => $reqNum,
             ]
         );
 
