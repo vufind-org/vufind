@@ -726,7 +726,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         if (is_array($helpText)) {
             $lang = $this->getTranslatorLocale();
-            return $helpText[$lang] ?? '';
+            return $helpText[$lang] ?? $helpText['*'] ?? '';
         }
         return $helpText;
     }
