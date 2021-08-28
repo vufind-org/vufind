@@ -28,7 +28,7 @@
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\ResourceContainer;
-use VuFindTheme\View\Helper\ThemeResources;
+use VuFindTheme\View\Helper\SetupThemeResources;
 
 /**
  * ThemeResources view helper Test Class
@@ -39,7 +39,7 @@ use VuFindTheme\View\Helper\ThemeResources;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeResourcesTest extends \PHPUnit\Framework\TestCase
+class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 
@@ -50,10 +50,9 @@ class ThemeResourcesTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelper()
     {
-        $helper = new ThemeResources($this->getResourceContainer());
+        $helper = new SetupThemeResources($this->getResourceContainer());
         $helper->setView($this->getMockView());
-        $helper('header');
-        $helper('footer');
+        $helper();
     }
 
     /**
