@@ -43,7 +43,7 @@
     </div>
 
     <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
-      <div class="channel-add-menu hidden" data-group="<?=$groupId ?>">
+      <div class="channel-add-menu hidden" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
         <button type="button" class="add-btn btn btn-link"><?=$this->transEsc('channel_add_more') ?></button><!--
      --><button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="caret"></span>

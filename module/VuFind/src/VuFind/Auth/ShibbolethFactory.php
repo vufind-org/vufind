@@ -45,7 +45,7 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
  */
 class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
-    public const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
+    public const SHIBBOLETH_CONFIG_FILE_NAME = "Shibboleth";
 
     /**
      * Create an object
@@ -87,14 +87,12 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      */
     public function getConfigurationLoader(ContainerInterface $container)
     {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $configManager->get('config');
         $override = $config->Shibboleth->allow_configuration_override ?? false;
         $loader = null;
         if ($override) {
-            $shibConfig = $container->get('VuFind\Config')->get(
-                self::SHIBBOLETH_CONFIG_FILE_NAME
-            );
+            $shibConfig = $configManager->get(self::SHIBBOLETH_CONFIG_FILE_NAME);
             $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
         } else {
             $loader = new SingleIdPConfigurationLoader($config);

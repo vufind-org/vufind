@@ -66,7 +66,7 @@ class ErrorListenerTest extends TestCase
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /**
@@ -84,7 +84,7 @@ class ErrorListenerTest extends TestCase
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /// Internal API
