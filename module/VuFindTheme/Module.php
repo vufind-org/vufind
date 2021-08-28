@@ -91,8 +91,6 @@ class Module
             'factories' => [
                 View\Helper\FootScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
-                View\Helper\HeadThemeResources::class =>
-                    InvokableFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
                 View\Helper\HeadLink::class =>
                     View\Helper\PipelineInjectorFactory::class,
@@ -111,7 +109,8 @@ class Module
             ],
             'aliases' => [
                 'footScript' => View\Helper\FootScript::class,
-                'headThemeResources' => View\Helper\HeadThemeResources::class,
+                // Legacy alias for compatibility with pre-8.0 templates:
+                'headThemeResources' => View\Helper\SetupThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
                 \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
                 \Laminas\View\Helper\HeadScript::class =>
