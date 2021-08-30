@@ -87,7 +87,11 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
     }
 
     /**
-     * Retrieve a batch of IDs.
+     * Retrieve a batch of IDs. Returns an array with two possible keys: ids (the
+     * latest set of retrieved IDs) and nextOffset (an offset which can be passed
+     * to the next call to this function to retrieve the next page). When all IDs
+     * have been retrieved, the nextOffset value MUST NOT be included in the return
+     * array.
      *
      * @param string $backend      Search backend ID
      * @param string $cursorMark   String representing progress through set
