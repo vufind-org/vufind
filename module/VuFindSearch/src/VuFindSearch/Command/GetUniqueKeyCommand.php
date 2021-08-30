@@ -54,9 +54,7 @@ class GetUniqueKeyCommand extends AbstractBase
         if (is_callable([$backend, 'getConnector'])) {
             $connector = $backend->getConnector();
             if (is_callable([$connector, 'getUniqueKey'])) {
-                $this->result = $connector->getUniqueKey();
-                // TODO: update this when #2080 is merged
-                return parent::execute($backend);
+                return $this->finalizeExecution($connector->getUniqueKey());
             }
         }
         throw new \Exception('Unsupported backend.');
