@@ -27,10 +27,8 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
 use VuFind\Record\Router;
 use VuFind\View\Helper\Root\MakeLink;
-use VuFind\View\Helper\Root\RecordLink;
 
 /**
  * makeLink view helper Test Class
