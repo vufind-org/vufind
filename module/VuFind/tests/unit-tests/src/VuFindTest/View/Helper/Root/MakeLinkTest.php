@@ -160,14 +160,22 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
 
+        // Test standard output of recordLink helper:
         $this->assertEquals(
             '<a href="/Record/foo">recordLink</a>',
             $helper('recordLink', '/Record/foo')
         );
 
+        // Confirm that HTML inside the text contents is NOT escaped, but
+        // HTML attributes ARE:
         $this->assertEquals(
-            '<a href="/Record/foo%2Fbar?checkRoute=1">recordLink</a>',
-            $helper('recordLink', '/Record/foo%2Fbar?checkRoute=1')
+            '<a data-foo="this&amp;that" '
+            . 'href="/Record/foo%2Fbar?checkRoute=1">contains <b>bold</b></a>',
+            $helper(
+                'contains <b>bold</b>',
+                '/Record/foo%2Fbar?checkRoute=1',
+                ['data-foo' => 'this&that']
+            )
         );
     }
 
