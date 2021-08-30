@@ -257,6 +257,7 @@ class HoldsController extends AbstractBase
                 'gatheredDetails' => $gatheredDetails,
                 'pickupLocations' => $pickupLocationInfo['pickupLocations'],
                 'conflictingPickupLocations' => $pickupLocationInfo['differences'],
+                'helpTextHtml' => $holdConfig['updateHelpText'],
             ]
         );
 

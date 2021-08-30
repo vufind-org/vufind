@@ -132,10 +132,11 @@ trait ILLRequestsTrait
         }
 
         // Find and format the default required date:
-        $defaultRequired = $this->ILLRequests()
+        $defaultRequiredDate = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequired);
+        $defaultRequiredDate
+            = $this->serviceLocator->get(\VuFind\Date\Converter::class)
+            ->convertToDisplayDate("U", $defaultRequiredDate);
 
         // Get pickup libraries
         $pickupLibraries = $catalog->getILLPickUpLibraries(
@@ -150,18 +151,22 @@ trait ILLRequestsTrait
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
 
         $config = $this->getConfig();
-        $allowHomeLibrary = $config->Account->set_home_library ?? true;
+        $homeLibrary = ($config->Account->set_home_library ?? true)
+            ? $this->getUser()->home_library : '';
+        // helpText is only for backward compatibility:
+        $helpText = $helpTextHtml = $checkRequests['helpText'];
+
         $view = $this->createViewModel(
-            [
-                'gatheredDetails' => $gatheredDetails,
-                'pickupLibraries' => $pickupLibraries,
-                'pickupLocations' => $pickupLocations,
-                'homeLibrary' => $allowHomeLibrary
-                    ? $this->getUser()->home_library : '',
-                'extraFields' => $extraFields,
-                'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText'] ?? null
-            ]
+            compact(
+                'gatheredDetails',
+                'pickupLibraries',
+                'pickupLocations',
+                'homeLibrary',
+                'extraFields',
+                'defaultRequiredDate',
+                'helpText',
+                'helpTextHtml'
+            )
         );
         $view->setTemplate('record/illrequest');
         return $view;
