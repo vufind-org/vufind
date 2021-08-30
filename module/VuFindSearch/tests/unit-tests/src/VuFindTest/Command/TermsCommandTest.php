@@ -49,9 +49,6 @@ class TermsCommandTest extends TestCase
      */
     public function testCommand(): void
     {
-        $factory = $this
-            ->getMockBuilder(RecordCollectionFactoryInterface::class)
-            ->getMock();
         $backendId = 'bar';
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
