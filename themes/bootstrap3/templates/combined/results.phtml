@@ -7,18 +7,18 @@
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
-    'search/searchbox.phtml',
-    [
-      'lookfor' => $lookfor,
-      'searchIndex' => $this->params->getSearchHandler(),
-      'searchType' => $this->params->getSearchType(),
-      'searchId' => $this->results->getSearchId(),
-      'searchClassId' => $this->params->getSearchClassId(),
-      'checkboxFilters' => $this->params->getCheckboxFacets(),
-      'filterList' => $this->params->getFilterList(true),
-      'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
-      'selectedShards' => $this->params->getSelectedShards()
-    ]
+      'search/searchbox.phtml',
+      [
+        'lookfor' => $lookfor,
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchType' => $this->params->getSearchType(),
+        'searchId' => $this->results->getSearchId(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'filterList' => $this->params->getFilterList(true),
+        'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+        'selectedShards' => $this->params->getSelectedShards()
+      ]
   );
 
   // Create shortcut to combined results (since $this->results may get overwritten in processing below):
@@ -37,7 +37,7 @@
   // Check if any results have version support enabled:
   $displayVersions = false;
   foreach (array_keys($this->combinedResults) as $configSection) {
-    list($searchClassId) = explode(':', $configSection);
+    [$searchClassId] = explode(':', $configSection);
     if ($this->searchOptions($searchClassId)->getVersionsAction()) {
       $displayVersions = true;
       break;

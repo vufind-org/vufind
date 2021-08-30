@@ -46,6 +46,13 @@ use VuFind\View\Helper\Root\SafeMoneyFormat;
 class GetUserFines extends AbstractIlsAndUserAction
 {
     /**
+     * Money formatting view helper
+     *
+     * @var SafeMoneyFormat
+     */
+    protected $safeMoneyFormat;
+
+    /**
      * Constructor
      *
      * @param SessionSettings  $ss               Session settings
@@ -54,8 +61,12 @@ class GetUserFines extends AbstractIlsAndUserAction
      * @param User|bool        $user             Logged in user (or false)
      * @param SafeMoneyFormat  $safeMoneyFormat  Money formatting view helper
      */
-    public function __construct(SessionSettings $ss, Connection $ils,
-        ILSAuthenticator $ilsAuthenticator, $user, SafeMoneyFormat $safeMoneyFormat
+    public function __construct(
+        SessionSettings $ss,
+        Connection $ils,
+        ILSAuthenticator $ilsAuthenticator,
+        $user,
+        SafeMoneyFormat $safeMoneyFormat
     ) {
         parent::__construct($ss, $ils, $ilsAuthenticator, $user);
         $this->safeMoneyFormat = $safeMoneyFormat;
@@ -73,17 +84,17 @@ class GetUserFines extends AbstractIlsAndUserAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH, 401);
+            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
         }
         if (!$this->ils->checkCapability('getMyFines')) {
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $sum = 0;
         foreach ($this->ils->getMyFines($patron) as $fine) {
             $sum += $fine['balance'];
         }
         $value = $sum / 100;
-        $display = $this->safeMoneyFormat->__invoke($sum / 100);
+        $display = ($this->safeMoneyFormat)($sum / 100);
         return $this->formatResponse(compact('value', 'display'));
     }
 }

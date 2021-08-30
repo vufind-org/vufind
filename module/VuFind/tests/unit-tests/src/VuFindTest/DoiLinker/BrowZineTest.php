@@ -49,7 +49,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      * @param string $doi      DOI expected by connector
      * @param array  $response Response for connector to return
      *
-     * @return void
+     * @return Connector
      */
     protected function getMockConnector($doi, $response)
     {

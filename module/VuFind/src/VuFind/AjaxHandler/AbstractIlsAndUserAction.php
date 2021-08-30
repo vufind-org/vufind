@@ -76,8 +76,11 @@ abstract class AbstractIlsAndUserAction extends AbstractBase
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      * @param User|bool        $user             Logged in user (or false)
      */
-    public function __construct(SessionSettings $ss, Connection $ils,
-        ILSAuthenticator $ilsAuthenticator, $user
+    public function __construct(
+        SessionSettings $ss,
+        Connection $ils,
+        ILSAuthenticator $ilsAuthenticator,
+        $user
     ) {
         $this->sessionSettings = $ss;
         $this->ils = $ils;

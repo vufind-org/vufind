@@ -46,6 +46,7 @@ use VuFind\Config\Writer as ConfigWriter;
  */
 abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
@@ -237,17 +238,24 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param Element $page     Page element
      * @param string  $selector CSS selector
      * @param int     $timeout  Wait timeout (in ms)
+     * @param int     $index    Index of the element (0-based)
      *
      * @return mixed
      */
-    protected function findCss(Element $page, $selector, $timeout = 1000)
+    protected function findCss(Element $page, $selector, $timeout = 1000, $index = 0)
     {
         $session = $this->getMinkSession();
         $session->wait(
-            $timeout, "typeof $ !== 'undefined' && $('$selector').length > 0"
+            $timeout,
+            "typeof $ !== 'undefined' && $('$selector').length > 0"
         );
-        $result = $page->find('css', $selector);
-        $this->assertTrue(is_object($result), "Selector not found: $selector");
+        $results = $page->findAll('css', $selector);
+        $this->assertIsArray($results, "Selector not found: $selector");
+        $result = $results[$index] ?? null;
+        $this->assertTrue(
+            is_object($result),
+            "Element not found: $selector index $index"
+        );
         return $result;
     }
 
@@ -257,12 +265,18 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param Element $page     Page element
      * @param string  $selector CSS selector
      * @param int     $timeout  Wait timeout (in ms)
+     * @param int     $index    Index of the element (0-based)
      *
      * @return mixed
      */
-    protected function clickCss(Element $page, $selector, $timeout = 1000)
-    {
-        $result = $this->findCss($page, $selector, $timeout);
+    protected function clickCss(
+        Element $page,
+        $selector,
+        $timeout = 1000,
+        $index = 0
+    ) {
+        $e = null;
+        $result = $this->findCss($page, $selector, $timeout, $index);
         for ($tries = 0; $tries < 3; $tries++) {
             try {
                 $result->click();
@@ -287,8 +301,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findCssAndSetValue(Element $page, $selector, $value,
-        $timeout = 1000, $retries = 6
+    protected function findCssAndSetValue(
+        Element $page,
+        $selector,
+        $value,
+        $timeout = 1000,
+        $retries = 6
     ) {
         $field = $this->findCss($page, $selector, $timeout);
 
@@ -388,10 +406,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
-        // AutoRetryTrait when it is use, and we'll default it to 0 to cover
-        // cases where that trait is not in play):
+        // AutoRetryTrait):
         if ($this->hasFailed() && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
-            && ($this->retriesLeft ?? 0) === 0
+            && $this->retriesLeft === 0
         ) {
             $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
             if (!empty($imageData)) {

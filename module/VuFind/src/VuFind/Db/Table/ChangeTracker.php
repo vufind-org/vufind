@@ -58,8 +58,12 @@ class ChangeTracker extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, $table = 'change_tracker'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'change_tracker'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -90,12 +94,22 @@ class ChangeTracker extends Gateway
      *
      * @return callable
      */
-    public function getRetrieveDeletedCallback($core, $from, $until, $offset = 0,
-        $limit = null, $columns = null
+    public function getRetrieveDeletedCallback(
+        $core,
+        $from,
+        $until,
+        $offset = 0,
+        $limit = null,
+        $columns = null
     ) {
-        $params = compact('core', 'from', 'until', 'offset', 'limit', 'columns');
-        return function ($select) use ($params) {
-            extract($params);
+        return function ($select) use (
+            $core,
+            $from,
+            $until,
+            $offset,
+            $limit,
+            $columns
+        ) {
             if ($columns !== null) {
                 $select->columns($columns);
             }
@@ -145,11 +159,19 @@ class ChangeTracker extends Gateway
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function retrieveDeleted($core, $from, $until, $offset = 0,
+    public function retrieveDeleted(
+        $core,
+        $from,
+        $until,
+        $offset = 0,
         $limit = null
     ) {
         $callback = $this->getRetrieveDeletedCallback(
-            $core, $from, $until, $offset, $limit
+            $core,
+            $from,
+            $until,
+            $offset,
+            $limit
         );
         return $this->select($callback);
     }
@@ -212,7 +234,7 @@ class ChangeTracker extends Gateway
     {
         $oldTz = date_default_timezone_get();
         date_default_timezone_set('UTC');
-        $date = date($this->dateFormat, null === $ts ? time() : $ts);
+        $date = date($this->dateFormat, $ts ?? time());
         date_default_timezone_set($oldTz);
         return $date;
     }

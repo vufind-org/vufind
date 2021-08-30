@@ -39,8 +39,6 @@ namespace VuFindTest\Mink;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * CSS selector for finding active filters
      *
@@ -167,7 +165,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // When exclusion is active, the result count is outside of the link tag:
         $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9';
         $weirdIDs = $this->findAndAssertLink(
-            $page->findById('modal'), $expectedLinkText
+            $page->findById('modal'),
+            $expectedLinkText
         );
         $this->assertEquals($expectedLinkText, $weirdIDs->getText());
         // apply US facet

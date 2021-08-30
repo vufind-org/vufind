@@ -327,7 +327,7 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = submit.data('lightbox-title') || $(form).data('lightbox-title') || false;
     // Get Lightbox content
     ajax({
-      url: $(form).attr('action') || _currentUrl,
+      url: $(form).attr('action') || _currentUrl || window.location.href,
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
@@ -466,7 +466,8 @@ VuFind.register('lightbox', function Lightbox() {
       });
     });
   }
-
+  // Element which to focus after modal is closed
+  var _beforeOpenElement = null;
   function reset() {
     _html(VuFind.translate('loading') + '...');
     _originalUrl = false;
@@ -481,6 +482,10 @@ VuFind.register('lightbox', function Lightbox() {
       if (VuFind.lightbox.refreshOnClose) {
         VuFind.refreshPage();
       } else {
+        if (_beforeOpenElement) {
+          _beforeOpenElement.focus();
+          _beforeOpenElement = null;
+        }
         unbindFocus();
         this.setAttribute('aria-hidden', true);
         _emit('VuFind.lightbox.closing');
@@ -496,8 +501,8 @@ VuFind.register('lightbox', function Lightbox() {
 
     VuFind.modal = function modalShortcut(cmd) {
       if (cmd === 'show') {
+        _beforeOpenElement = document.activeElement;
         _modal.modal($.extend({ show: true }, _modalParams)).attr('aria-hidden', false);
-
         // Set keyboard focus
         setFocusToFirstNode();
       } else {

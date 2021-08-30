@@ -76,7 +76,8 @@ class EdsController extends AbstractSearch
         $view = parent::advancedAction();
         // Set up facet information:
         $view->limiterList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets(), $view->saved
+            $this->getAdvancedFacets(),
+            $view->saved
         );
         $view->expanderList = $this->processAdvancedExpanders($view->saved);
         $view->searchModes = $this->processAdvancedSearchModes($view->saved);
@@ -123,7 +124,7 @@ class EdsController extends AbstractSearch
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();
-        $availableLimiters = $options->getAvailableLimiters();
+        $availableLimiters = $options->getAdvancedLimiters();
         if (!$availableLimiters) {
             //execute a call to search just to pull in the limiters
             $this->setUp();
@@ -282,28 +283,6 @@ class EdsController extends AbstractSearch
         $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
         $params->isSetupOnly = true;
-
-        // Attempt to perform the search; if there is a problem, inspect any Solr
-        // exceptions to see if we should communicate to the user about them.
-        try {
-            // Explicitly execute search within controller -- this allows us to
-            // catch exceptions more reliably:
-            $results->performAndProcessSearch();
-        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            if ($e->hasTag('VuFind\Search\ParserError')) {
-                // If it's a parse error or the user specified an invalid field, we
-                // should display an appropriate message:
-                $view->parseError = true;
-
-                // We need to create and process an "empty results" object to
-                // ensure that recommendation modules and templates behave
-                // properly when displaying the error message.
-                $view->results = $this->getResultsManager()->get('EmptySet');
-                $view->results->setParams($params);
-                $view->results->performAndProcessSearch();
-            } else {
-                throw $e;
-            }
-        }
+        $results->performAndProcessSearch();
     }
 }

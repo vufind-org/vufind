@@ -79,9 +79,16 @@ class Bookplate implements RelatedInterface
     protected $displayTitles;
 
     /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
      * Constructor
      *
-     * @param VuFind\Config\PluginManager $configLoader PluginManager
+     * @param \VuFind\Config\PluginManager $configLoader PluginManager
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {

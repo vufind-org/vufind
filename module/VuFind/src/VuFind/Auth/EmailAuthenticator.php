@@ -29,7 +29,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\DB\Table\AuthHash as AuthHashTable;
+use VuFind\Db\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -115,11 +115,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param \Laminas\Config\Config                   $config       Configuration
      * @param AuthHashTable                            $authHash     AuthHash Table
      */
-    public function __construct(\Laminas\Session\SessionManager $session,
-        \VuFind\Validator\Csrf $csrf, \VuFind\Mailer\Mailer $mailer,
+    public function __construct(
+        \Laminas\Session\SessionManager $session,
+        \VuFind\Validator\Csrf $csrf,
+        \VuFind\Mailer\Mailer $mailer,
         \Laminas\View\Renderer\RendererInterface $viewRenderer,
         RemoteAddress $remoteAddr,
-        \Laminas\Config\Config $config, AuthHashTable $authHash
+        \Laminas\Config\Config $config,
+        AuthHashTable $authHash
     ) {
         $this->sessionManager = $session;
         $this->csrf = $csrf;
@@ -145,8 +148,11 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      *
      * @return void
      */
-    public function sendAuthenticationLink($email, $data,
-        $urlParams, $linkRoute = 'myresearch-home',
+    public function sendAuthenticationLink(
+        $email,
+        $data,
+        $urlParams,
+        $linkRoute = 'myresearch-home',
         $subject = 'email_login_subject',
         $template = 'Email/login-link.phtml'
     ) {

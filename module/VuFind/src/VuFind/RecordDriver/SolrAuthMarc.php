@@ -41,8 +41,8 @@ namespace VuFind\RecordDriver;
  */
 class SolrAuthMarc extends SolrAuthDefault
 {
-    use MarcReaderTrait;
-    use MarcAdvancedTrait;
+    use Feature\MarcReaderTrait;
+    use Feature\MarcAdvancedTrait;
 
     /**
      * Get a raw LCCN (not normalized).  Returns false if none available.

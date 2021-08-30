@@ -68,7 +68,7 @@ class ThemeInfo
     protected $allThemeInfo = null;
 
     // Constant for use with findContainingTheme:
-    const RETURN_ALL_DETAILS = 'all';
+    public const RETURN_ALL_DETAILS = 'all';
 
     /**
      * Constructor
@@ -197,7 +197,8 @@ class ThemeInfo
      * search within themes
      * @param string|bool  $returnType   If boolean true, return full file path;
      * if boolean false, return containing theme name; if self::RETURN_ALL_DETAILS,
-     * return an array containing both values (keyed with 'path' and 'theme').
+     * return an array containing both values (keyed with 'path', 'theme' and
+     * 'relativePath').
      *
      * @return string|array|null
      */
@@ -221,7 +222,8 @@ class ThemeInfo
                     if (file_exists($path)) {
                         // Depending on return type, send back the requested data:
                         if (self::RETURN_ALL_DETAILS === $returnType) {
-                            return compact('path', 'theme');
+                            $relativePath = $currentPath;
+                            return compact('path', 'theme', 'relativePath');
                         }
                         return $returnType ? $path : $theme;
                     }
@@ -231,5 +233,57 @@ class ThemeInfo
         }
 
         return null;
+    }
+
+    /**
+     * Search the themes for a file pattern. Returns all matching files.
+     *
+     * Note that for any matching file the last match in the theme hierarchy is
+     * returned.
+     *
+     * @param string|array $relativePathPattern Relative path pattern (or array of
+     * patterns) to search within themes
+     *
+     * @return array
+     */
+    public function findInThemes($relativePathPattern)
+    {
+        $basePath = $this->getBaseDir();
+        $allPaths = (array)$relativePathPattern;
+
+        $currentTheme = $this->getTheme();
+        $allThemeInfo = $this->getThemeInfo();
+
+        $allThemes = [];
+        while (!empty($currentTheme)) {
+            $allThemes = array_merge(
+                $allThemes,
+                (array)$currentTheme,
+                $allThemeInfo[$currentTheme]['mixins'] ?? []
+            );
+            $currentTheme = $allThemeInfo[$currentTheme]['extends'];
+        }
+
+        // Start from the base theme so that we can find any overrides properly
+        $allThemes = array_reverse($allThemes);
+        $results = [];
+        foreach ($allThemes as $theme) {
+            $themePath = "$basePath/$theme/";
+            foreach ($allPaths as $currentPath) {
+                $path = $themePath . $currentPath;
+                foreach (glob($path) as $file) {
+                    if (filetype($file) === 'dir') {
+                        continue;
+                    }
+                    $relativeFile = substr($file, strlen($themePath));
+                    $results[$relativeFile] = [
+                        'theme' => $theme,
+                        'file' => $file,
+                        'relativeFile' => $relativeFile,
+                    ];
+                }
+            }
+        }
+        return array_values($results);
     }
 }

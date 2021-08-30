@@ -124,7 +124,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      * @param RecordFormatter         $rf Record formatter
      * @param FacetFormatter          $ff Facet formatter
      */
-    public function __construct(ServiceLocatorInterface $sm, RecordFormatter $rf,
+    public function __construct(
+        ServiceLocatorInterface $sm,
+        RecordFormatter $rf,
         FacetFormatter $ff
     ) {
         parent::__construct($sm);
@@ -182,7 +184,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'maxLimit' => $this->maxLimit,
         ];
         $json = $this->getViewRenderer()->render(
-            'searchapi/swagger', $viewParams
+            'searchapi/swagger',
+            $viewParams
         );
         return $json;
     }
@@ -208,7 +211,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             // Disable session writes
             $this->disableSessionWrites();
             $headers->addHeaderLine(
-                'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+                'Access-Control-Allow-Methods',
+                'GET, POST, OPTIONS'
             );
             $headers->addHeaderLine('Access-Control-Max-Age', '86400');
 
@@ -244,6 +248,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         }
 
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $results = [];
         try {
             if (is_array($request['id'])) {
                 $results = $loader->loadBatchForSource(
@@ -255,7 +260,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             }
         } catch (\Exception $e) {
             return $this->output(
-                [], self::STATUS_ERROR, 400,
+                [],
+                self::STATUS_ERROR,
+                400,
                 'Error loading record'
             );
         }
@@ -316,7 +323,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 $request,
                 $this->searchClassId,
                 function ($runner, $params, $searchId) use (
-                    $hierarchicalFacets, $request, $requestedFields
+                    $hierarchicalFacets,
+                    $request,
+                    $requestedFields
                 ) {
                     foreach ($request['facet'] ?? []
                        as $facet
@@ -348,7 +357,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $response = ['resultCount' => $results->getResultTotal()];
 
         $records = $this->recordFormatter->format(
-            $results->getResults(), $requestedFields
+            $results->getResults(),
+            $requestedFields
         );
         if ($records) {
             $response['records'] = $records;
@@ -359,7 +369,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             array_intersect($requestedFacets, $hierarchicalFacets)
         );
         $facets = $this->facetFormatter->format(
-            $request, $results, $hierarchicalFacetData
+            $request,
+            $results,
+            $hierarchicalFacetData
         );
         if ($facets) {
             $response['facets'] = $facets;

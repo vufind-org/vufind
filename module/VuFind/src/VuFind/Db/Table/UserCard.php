@@ -50,8 +50,12 @@ class UserCard extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, $table = 'user_card'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'user_card'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }

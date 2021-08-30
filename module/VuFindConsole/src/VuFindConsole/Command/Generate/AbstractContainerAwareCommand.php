@@ -56,7 +56,9 @@ class AbstractContainerAwareCommand extends AbstractCommand
      * @param string|null        $name      The name of the command; passing null
      * means it must be set in configure()
      */
-    public function __construct(GeneratorTools $tools, ContainerInterface $container,
+    public function __construct(
+        GeneratorTools $tools,
+        ContainerInterface $container,
         $name = null
     ) {
         $this->container = $container;

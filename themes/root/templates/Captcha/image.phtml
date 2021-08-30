@@ -5,4 +5,4 @@
 <img src="<?=$this->captcha->getCacheBasePath() . $id . $laminasCaptcha->getSuffix();?>">
 <br/><br/>
 <p><label for="<?=$this->captcha->getHtmlInputId()?>"><?=$this->transEsc('captcha_label_input')?></label> <input name="<?=$this->captcha->getHtmlInputId()?>" id="<?=$this->captcha->getHtmlInputId()?>"></p>
-<input type="hidden" name="<?=$this->captcha->getHtmlInternalId()?>" value="<?=$id?>">
+<input type="hidden" name="<?=$this->captcha->getHtmlInternalId()?>" value="<?=$this->escapeHtmlAttr($id)?>">

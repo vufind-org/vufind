@@ -31,6 +31,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 
 /**
  * VuFind Search Runner
@@ -48,8 +49,8 @@ class SearchRunner
      *
      * @var string
      */
-    const EVENT_CONFIGURED = 'configured';
-    const EVENT_COMPLETE = 'complete';
+    public const EVENT_CONFIGURED = 'configured';
+    public const EVENT_COMPLETE = 'complete';
 
     /**
      * Event manager.
@@ -78,7 +79,8 @@ class SearchRunner
      * @param ResultsManager $resultsManager Results manager
      * @param EventManager   $events         Event manager (optional)
      */
-    public function __construct(ResultsManager $resultsManager,
+    public function __construct(
+        ResultsManager $resultsManager,
         EventManager $events = null
     ) {
         $this->resultsManager = $resultsManager;
@@ -103,7 +105,10 @@ class SearchRunner
      *
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
-    public function run($rawRequest, $searchClassId = 'Solr', $setupCallback = null,
+    public function run(
+        $rawRequest,
+        $searchClassId = 'Solr',
+        $setupCallback = null,
         $lastView = null
     ) {
         // Increment the ID counter, then save the current value to a variable;
@@ -130,7 +135,8 @@ class SearchRunner
 
         // Trigger the "configuration done" event.
         $this->getEventManager()->trigger(
-            self::EVENT_CONFIGURED, $this,
+            self::EVENT_CONFIGURED,
+            $this,
             compact('params', 'request', 'runningSearchId')
         );
 
@@ -141,7 +147,7 @@ class SearchRunner
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            if ($e->hasTag('VuFind\Search\ParserError')) {
+            if ($e->hasTag(ErrorListener::TAG_PARSER_ERROR)) {
                 // We need to create and process an "empty results" object to
                 // ensure that recommendation modules and templates behave
                 // properly when displaying the error message.
@@ -155,7 +161,9 @@ class SearchRunner
 
         // Trigger the "search completed" event.
         $this->getEventManager()->trigger(
-            self::EVENT_COMPLETE, $this, compact('results', 'runningSearchId')
+            self::EVENT_COMPLETE,
+            $this,
+            compact('results', 'runningSearchId')
         );
 
         return $results;

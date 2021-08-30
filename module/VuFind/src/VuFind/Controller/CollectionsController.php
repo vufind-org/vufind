@@ -85,8 +85,7 @@ class CollectionsController extends AbstractBase
      */
     public function homeAction()
     {
-        $browseType = (isset($this->config->Collections->browseType))
-            ? $this->config->Collections->browseType : 'Index';
+        $browseType = $this->config->Collections->browseType ?? 'Index';
         return ($browseType == 'Alphabetic')
             ? $this->showBrowseAlphabetic() : $this->showBrowseIndex();
     }
@@ -180,13 +179,16 @@ class CollectionsController extends AbstractBase
 
         // Only grab 150,000 facet values to avoid out-of-memory errors:
         $result = $searchObject->getFullFieldFacets(
-            [$browseField], false, 150000, 'index'
+            [$browseField],
+            false,
+            150000,
+            'index'
         );
         $result = $result[$browseField]['data']['list'] ?? [];
 
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result as $rkey => $collection) {
-            list($name, $id) = explode($delimiter, $collection['value'], 2);
+            [$name, $id] = explode($delimiter, $collection['value'], 2);
             $result[$rkey]['displayText'] = $name;
             $result[$rkey]['value'] = $id;
         }
@@ -218,7 +220,9 @@ class CollectionsController extends AbstractBase
 
         // Select just the records to display
         $result = array_slice(
-            $result, $key, count($result) > $key + $limit ? $limit : null
+            $result,
+            $key,
+            count($result) > $key + $limit ? $limit : null
         );
 
         // Send other relevant values to the template:

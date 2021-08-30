@@ -41,8 +41,6 @@ use Behat\Mink\Element\Element;
  */
 class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Standard setup method.
      *
@@ -138,7 +136,8 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
         $print = $this->findCss($page, 'a.access-unknown');
         $this->assertEquals('Print', $print->getText());
         $this->assertEquals(
-            'Print fake1 General notes', $print->getParent()->getText()
+            'Print fake1 General notes',
+            $print->getParent()->getText()
         );
         $this->assertEquals(
             'https://vufind.org/wiki?' . $openUrl . '#print',

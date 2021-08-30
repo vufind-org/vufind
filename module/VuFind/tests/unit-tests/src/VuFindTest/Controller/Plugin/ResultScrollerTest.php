@@ -61,7 +61,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
 
         $this->assertEquals(
-            $expected, $plugin->getScrollData(
+            $expected,
+            $plugin->getScrollData(
                 $results->getMockRecordDriver('sorted20')
             )
         );
@@ -332,7 +333,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             'currentPosition' => 20, 'resultTotal' => 30
         ];
         $this->assertEquals(
-            $expected, $plugin->getScrollData(
+            $expected,
+            $plugin->getScrollData(
                 $results->getMockRecordDriver('sorted20')
             )
         );
@@ -347,11 +349,15 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      * @param bool   $firstLast Turn on first/last config?
      * @param string $sort      Sort type (null for default)
      *
-     * @return \VuFind\Search\Base\Results
+     * @return \VuFindTest\Search\TestHarness\Results
      */
-    protected function getMockResults($page = 1, $limit = 20, $total = 0,
-        $firstLast = true, $sort = null
-    ) {
+    protected function getMockResults(
+        $page = 1,
+        $limit = 20,
+        $total = 0,
+        $firstLast = true,
+        $sort = null
+    ): \VuFindTest\Search\TestHarness\Results {
         $pm = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->disableOriginalConstructor()->getMock();
         $config = new \Laminas\Config\Config(
             $firstLast ? $this->getFirstLastConfig() : []
@@ -369,7 +375,10 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()->getMock();
         $results = new \VuFindTest\Search\TestHarness\Results(
-            $params, $ss, $rl, $total
+            $params,
+            $ss,
+            $rl,
+            $total
         );
         return $results;
     }
@@ -381,9 +390,9 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      * (null to ignore)
      * @param array                       $methods Methods to mock
      *
-     * @return ResultScroller
+     * @return ResultScrollerMock
      */
-    protected function getMockResultScroller($results)
+    protected function getMockResultScroller($results): ResultScrollerMock
     {
         $mockManager = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()->getMock();

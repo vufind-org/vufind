@@ -83,6 +83,7 @@ trait TranslatorAwareTrait
     public function getTranslatorLocale($default = 'en')
     {
         return null !== $this->translator
+            && is_callable([$this->translator, 'getLocale'])
             ? $this->translator->getLocale()
             : $default;
     }
@@ -102,7 +103,7 @@ trait TranslatorAwareTrait
     public function translate($target, $tokens = [], $default = null)
     {
         // Figure out the text domain for the string:
-        list($domain, $str) = $this->extractTextDomain($target);
+        [$domain, $str] = $this->extractTextDomain($target);
 
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
@@ -126,7 +127,7 @@ trait TranslatorAwareTrait
             if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
                 return $this->translate($str, $tokens, $default);
             } else {
-                list($domain, $str) = $this->extractTextDomain($str);
+                [$domain, $str] = $this->extractTextDomain($str);
             }
         }
 
@@ -148,7 +149,10 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function translateWithPrefix($prefix, $target, $tokens = [],
+    public function translateWithPrefix(
+        $prefix,
+        $target,
+        $tokens = [],
         $default = null
     ) {
         if (is_string($target)) {
@@ -171,7 +175,10 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    protected function translateString($str, $tokens = [], $default = null,
+    protected function translateString(
+        $str,
+        $tokens = [],
+        $default = null,
         $domain = 'default'
     ) {
         $msg = (null === $this->translator)
@@ -218,7 +225,9 @@ trait TranslatorAwareTrait
             if ($target instanceof \VuFind\I18n\TranslatableStringInterface) {
                 $class = get_class($target);
                 $parts[1] = new $class(
-                    $parts[1], $target->getDisplayString(), $target->isTranslatable()
+                    $parts[1],
+                    $target->getDisplayString(),
+                    $target->isTranslatable()
                 );
             }
             return $parts;

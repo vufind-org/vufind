@@ -82,7 +82,9 @@ class Router
     public function getTabRouteDetails($driver, $tab = null, $query = [])
     {
         $route = $this->getRouteDetails(
-            $driver, '', empty($tab) ? [] : ['tab' => $tab]
+            $driver,
+            '',
+            empty($tab) ? [] : ['tab' => $tab]
         );
         // Add the options and query elements only if we need a query to avoid
         // an empty element in the route definition:
@@ -128,7 +130,9 @@ class Router
      *
      * @return array
      */
-    public function getRouteDetails($driver, $routeSuffix = '',
+    public function getRouteDetails(
+        $driver,
+        $routeSuffix = '',
         $extraParams = []
     ) {
         // Extract source and ID from driver or string:
@@ -136,7 +140,7 @@ class Router
             $source = $driver->getSourceIdentifier();
             $id = $driver->getUniqueId();
         } else {
-            list($source, $id) = $this->extractSourceAndId($driver);
+            [$source, $id] = $this->extractSourceAndId($driver);
         }
 
         // Build URL parameters:

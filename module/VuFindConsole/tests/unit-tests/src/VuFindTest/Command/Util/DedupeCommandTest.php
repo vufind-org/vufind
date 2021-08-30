@@ -59,7 +59,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
             'closeOutputFile',
         ];
         return $this->getMockBuilder(DedupeCommand::class)
-            ->setMethods($mockMethods)
+            ->onlyMethods($mockMethods)
             ->getMock();
     }
 

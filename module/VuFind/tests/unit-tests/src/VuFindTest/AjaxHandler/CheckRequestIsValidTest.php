@@ -92,7 +92,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     /**
      * Generic support function for successful request tests.
      *
-     * @return void
+     * @return array
      */
     protected function runSuccessfulTest($ilsMethod, $requestType = null)
     {
@@ -147,8 +147,10 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->assertEquals(
             [
                 ['status' => true, 'msg' => 'storage_retrieval_request_place_text']
-            ], $this->runSuccessfulTest(
-                'checkStorageRetrievalRequestIsValid', 'StorageRetrievalRequest'
+            ],
+            $this->runSuccessfulTest(
+                'checkStorageRetrievalRequestIsValid',
+                'StorageRetrievalRequest'
             )
         );
     }

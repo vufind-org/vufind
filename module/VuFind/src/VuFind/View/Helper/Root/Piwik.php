@@ -321,6 +321,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
                 return $driver;
             }
+            return null;
         }
         $children = $current->getChildren();
         if (isset($children[0])) {

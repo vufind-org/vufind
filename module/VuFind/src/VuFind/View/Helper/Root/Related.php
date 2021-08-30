@@ -72,8 +72,10 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      * @param ConfigManager  $cm            Configuration manager
      * @param OptionsManager $om            Search options manager
      */
-    public function __construct(RelatedManager $pluginManager,
-        ConfigManager $cm, OptionsManager $om
+    public function __construct(
+        RelatedManager $pluginManager,
+        ConfigManager $cm,
+        OptionsManager $om
     ) {
         $this->pluginManager = $pluginManager;
         $this->configManager = $cm;

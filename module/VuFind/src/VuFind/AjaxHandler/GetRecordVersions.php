@@ -73,7 +73,10 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
      * @param Record          $rp     Record plugin
      * @param TabManager      $tm     Tab manager
      */
-    public function __construct(SessionSettings $ss, Loader $loader, Record $rp,
+    public function __construct(
+        SessionSettings $ss,
+        Loader $loader,
+        Record $rp,
         TabManager $tm
     ) {
         $this->sessionSettings = $ss;
@@ -100,7 +103,8 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         $full = true;
 
         $html = ($this->recordPlugin)($driver)->renderTemplate(
-            'versions-link.phtml', compact('driver', 'tabs', 'full')
+            'versions-link.phtml',
+            compact('driver', 'tabs', 'full')
         );
 
         return $this->formatResponse($html);

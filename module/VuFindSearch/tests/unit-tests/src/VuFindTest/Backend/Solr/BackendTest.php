@@ -359,14 +359,14 @@ class BackendTest extends TestCase
     {
         // Test that random sort parameter is added:
         $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
-            ->setMethods(['set'])->getMock();
+            ->onlyMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
         $back = $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
-            ->setMethods(['search', 'injectResponseWriter'])
+            ->onlyMethods(['search', 'injectResponseWriter'])
             ->setConstructorArgs([$this->getConnectorMock()])
             ->getMock();
         $back->expects($this->once())->method('injectResponseWriter');
@@ -422,7 +422,7 @@ class BackendTest extends TestCase
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['http://example.org/', $map])
             ->getMock();
     }

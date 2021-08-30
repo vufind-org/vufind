@@ -85,7 +85,7 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
         // Parse level from each facet value so that the sort function
         // can run faster
         foreach ($facetList as &$facetItem) {
-            list($facetItem['level']) = explode('/', $facetItem['value'], 2);
+            [$facetItem['level']] = explode('/', $facetItem['value'], 2);
             if (!is_numeric($facetItem['level'])) {
                 $facetItem['level'] = 0;
             }
@@ -124,14 +124,20 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
      * converting-a-flat-array-with-parent-ids-to-a-nested-tree/
      * Based on this example
      */
-    public function buildFacetArray($facet, $facetList, $urlHelper = false,
+    public function buildFacetArray(
+        $facet,
+        $facetList,
+        $urlHelper = false,
         $escape = true
     ) {
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper, $escape
+                $facet,
+                $item,
+                $urlHelper,
+                $escape
             );
         }
 
@@ -169,7 +175,8 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
             $results[] = $facetItem;
             if ($children) {
                 $results = array_merge(
-                    $results, $this->flattenFacetHierarchy($children)
+                    $results,
+                    $this->flattenFacetHierarchy($children)
                 );
             }
         }
@@ -189,7 +196,9 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
      * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
-        $displayText, $allLevels = false, $separator = '/',
+        $displayText,
+        $allLevels = false,
+        $separator = '/',
         $domain = false
     ) {
         $originalText = $displayText;
@@ -290,11 +299,15 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
         if ($urlHelper !== false) {
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
-                    $facet, $item['value'], $item['operator']
+                    $facet,
+                    $item['value'],
+                    $item['operator']
                 )->getParams($escape);
             } else {
                 $href = $urlHelper->addFacet(
-                    $facet, $item['value'], $item['operator']
+                    $facet,
+                    $item['value'],
+                    $item['operator']
                 )->getParams($escape);
             }
             $exclude = $urlHelper->addFacet($facet, $item['value'], 'NOT')

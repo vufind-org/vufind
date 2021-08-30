@@ -251,7 +251,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPhysicalDescriptions()
     {
-        $physical[0] = "296 p. : ill. ; 24 cm.";
+        $physical = ["296 p. : ill. ; 24 cm."];
         $this->assertEquals($physical, $this->getDriver()->getPhysicalDescriptions());
     }
 
@@ -415,7 +415,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             ['bar ,     APA,MLA', ['APA', 'MLA']],
         ];
         foreach ($tests as $current) {
-            list($input, $output) = $current;
+            [$input, $output] = $current;
             $cfg = new Config(['Record' => ['citation_formats' => $input]]);
             $this->assertEquals(
                 $output,

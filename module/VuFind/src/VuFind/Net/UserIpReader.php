@@ -71,7 +71,9 @@ class UserIpReader
      * @param array       $ipFilter          IP addresses to exclude from
      * consideration
      */
-    public function __construct(Parameters $server, $allowForwardedIps = false,
+    public function __construct(
+        Parameters $server,
+        $allowForwardedIps = false,
         array $ipFilter = []
     ) {
         $this->server = $server;
@@ -89,7 +91,7 @@ class UserIpReader
         if ($this->allowForwardedIps) {
             foreach (explode(',', $this->allowForwardedIps) as $chunk) {
                 // Extract field and behavior from chunk:
-                list($field, $behavior) = explode(':', $chunk . ':', 2);
+                [$field, $behavior] = explode(':', $chunk . ':', 2);
 
                 // Look up field value; skip if empty:
                 $fieldValue = $this->server->get($field);

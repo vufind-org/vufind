@@ -41,8 +41,6 @@ use Behat\Mink\Element\Element;
  */
 class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Standard setup method.
      *

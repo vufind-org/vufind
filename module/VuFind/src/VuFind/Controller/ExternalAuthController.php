@@ -82,7 +82,8 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
                 );
             }
             $url = $this->params()->fromPost(
-                'url', $this->params()->fromQuery('url')
+                'url',
+                $this->params()->fromQuery('url')
             );
             $username = !empty($config->EZproxy->anonymous_ticket) || !$user
                 ? 'anonymous' : $user->username;

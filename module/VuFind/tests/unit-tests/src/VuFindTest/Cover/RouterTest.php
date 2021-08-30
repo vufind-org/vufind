@@ -96,7 +96,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     {
         $url = 'http://foo/bar';
         $this->assertEquals(
-            $url, $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
+            $url,
+            $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
         );
     }
 
@@ -123,7 +124,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      * @param \VuFindHttp\HttpService              $httpService HTTP client factory
      * @param array|bool                           $mock        Array of functions to mock, or false for real object
      *
-     * @return Loader
+     * @return Loader|\PHPUnit\Framework\MockObject\MockObject
      */
     protected function getCoverLoader($config = [], $manager = null, $theme = null, $httpService = null, $mock = false)
     {
@@ -139,7 +140,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
         }

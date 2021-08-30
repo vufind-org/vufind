@@ -90,8 +90,11 @@ class SimilarItems extends AbstractChannelProvider
      * @param RecordRouter          $router  Record router
      * @param array                 $options Settings (optional)
      */
-    public function __construct(\VuFindSearch\Service $search, Url $url,
-        RecordRouter $router, array $options = []
+    public function __construct(
+        \VuFindSearch\Service $search,
+        Url $url,
+        RecordRouter $router,
+        array $options = []
     ) {
         $this->searchService = $search;
         $this->url = $url;
@@ -143,6 +146,7 @@ class SimilarItems extends AbstractChannelProvider
      */
     public function getFromSearch(Results $results, $channelToken = null)
     {
+        $driver = null;
         $channels = [];
         foreach ($results->getResults() as $driver) {
             // If we have a token and it doesn't match the current driver, skip
@@ -166,7 +170,8 @@ class SimilarItems extends AbstractChannelProvider
             && $channelToken !== null
         ) {
             $driver = $this->searchService->retrieve(
-                $driver->getSourceIdentifier(), $channelToken
+                $driver->getSourceIdentifier(),
+                $channelToken
             )->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
@@ -185,7 +190,8 @@ class SimilarItems extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildChannelFromRecord(RecordDriver $driver,
+    protected function buildChannelFromRecord(
+        RecordDriver $driver,
         $tokenOnly = false
     ) {
         $heading = $this->translate('Similar Items');
@@ -199,7 +205,9 @@ class SimilarItems extends AbstractChannelProvider
         } else {
             $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
             $similar = $this->searchService->similar(
-                $driver->getSourceIdentifier(), $driver->getUniqueID(), $params
+                $driver->getSourceIdentifier(),
+                $driver->getUniqueID(),
+                $params
             );
             $retVal['contents'] = $this->summarizeRecordDrivers($similar);
             $route = $this->recordRouter->getRouteDetails($driver);

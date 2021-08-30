@@ -33,6 +33,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFind\Search\Solr\DeduplicationListener;
+use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\HierarchicalFacetListener;
@@ -215,6 +216,15 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $search = $this->config->get($this->searchConfig);
         $facet = $this->config->get($this->facetConfig);
 
+        // Attach default parameters listener first so that any other listeners can
+        // override the parameters as necessary:
+        if (!empty($search->General->default_parameters)) {
+            $this->getDefaultParametersListener(
+                $backend,
+                $search->General->default_parameters->toArray()
+            )->attach($events);
+        }
+
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
 
@@ -251,7 +261,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Apply deduplication if applicable:
         if (isset($search->Records->deduplication)) {
             $this->getDeduplicationListener(
-                $backend, $search->Records->deduplication
+                $backend,
+                $search->Records->deduplication
             )->attach($events);
         }
 
@@ -365,20 +376,19 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
+        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
+        $client = $httpService->createClient();
+
         $connector = new $this->connectorClass(
-            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
+            $this->getSolrUrl(),
+            new HandlerMap($handlers),
+            $this->uniqueKey,
+            $client
         );
-        $connector->setTimeout(
-            $config->Index->timeout ?? 30
-        );
+        $connector->setTimeout($config->Index->timeout ?? 30);
 
         if ($this->logger) {
             $connector->setLogger($this->logger);
-        }
-        if ($this->serviceLocator->has(\VuFindHttp\HttpService::class)) {
-            $connector->setProxy(
-                $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            );
         }
 
         if (!empty($searchConfig->SearchCache->adapter)) {
@@ -391,12 +401,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $options['ttl'] = 300;
             }
             $settings = [
-                'adapter' => [
-                    'name' => $cacheConfig['adapter'],
-                    'options' => $options,
-                ]
+                'name' => $cacheConfig['adapter'],
+                'options' => $options,
             ];
-            $cache = \Laminas\Cache\StorageFactory::factory($settings);
+            $cache = $this->serviceLocator
+                ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+                ->createFromArrayConfiguration($settings);
             $connector->setCache($cache);
         }
         return $connector;
@@ -421,7 +431,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $caseSensitiveRanges
             = $search->General->case_sensitive_ranges ?? true;
         $helper = new LuceneSyntaxHelper(
-            $caseSensitiveBooleans, $caseSensitiveRanges
+            $caseSensitiveBooleans,
+            $caseSensitiveRanges
         );
         $builder->setLuceneHelper($helper);
 
@@ -436,7 +447,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createSimilarBuilder()
     {
         return new SimilarBuilder(
-            $this->config->get($this->searchConfig), $this->uniqueKey
+            $this->config->get($this->searchConfig),
+            $this->uniqueKey
         );
     }
 
@@ -482,14 +494,17 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         BackendInterface $backend,
         Config $facet
     ) {
-        if (!isset($facet->HideFacetValue)
-            || ($facet->HideFacetValue->count()) == 0
-        ) {
+        $hideFacetValue = isset($facet->HideFacetValue)
+            ? $facet->HideFacetValue->toArray() : [];
+        $showFacetValue = isset($facet->ShowFacetValue)
+            ? $facet->ShowFacetValue->toArray() : [];
+        if (empty($hideFacetValue) && empty($showFacetValue)) {
             return null;
         }
         return new HideFacetValueListener(
             $backend,
-            $facet->HideFacetValue->toArray()
+            $hideFacetValue,
+            $showFacetValue
         );
     }
 
@@ -517,7 +532,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @return InjectHighlightingListener
      */
-    protected function getInjectHighlightingListener(BackendInterface $backend,
+    protected function getInjectHighlightingListener(
+        BackendInterface $backend,
         Config $search
     ) {
         $fl = $search->General->highlighting_fields ?? '*';
@@ -541,5 +557,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 ->get(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $listener;
+    }
+
+    /**
+     * Get a default parameters listener for the backend
+     *
+     * @param Backend $backend Search backend
+     * @param array   $params  Default parameters
+     *
+     * @return DeduplicationListener
+     */
+    protected function getDefaultParametersListener(Backend $backend, array $params)
+    {
+        return new DefaultParametersListener($backend, $params);
     }
 }

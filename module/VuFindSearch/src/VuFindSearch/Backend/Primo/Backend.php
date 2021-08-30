@@ -72,7 +72,8 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function __construct(Connector $connector,
+    public function __construct(
+        Connector $connector,
         RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
@@ -91,7 +92,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
@@ -105,7 +109,8 @@ class Backend extends AbstractBackend
         $primoQuery = $this->paramBagToPrimoQuery($baseParams);
         try {
             $response = $this->connector->query(
-                $this->connector->getInstitutionCode(), $primoQuery['query'],
+                $this->connector->getInstitutionCode(),
+                $primoQuery['query'],
                 $primoQuery
             );
         } catch (\Exception $e) {
@@ -136,7 +141,9 @@ class Backend extends AbstractBackend
         try {
             $response   = $this->connector
                 ->getRecord(
-                    $id, $this->connector->getInstitutionCode(), $onCampus
+                    $id,
+                    $this->connector->getInstitutionCode(),
+                    $onCampus
                 );
         } catch (\Exception $e) {
             throw new BackendException(

@@ -54,12 +54,10 @@ class TagsController extends AbstractAdmin
      */
     protected function getParam($param)
     {
-        return (isset($this->params[$param]))
-            ? $this->params[$param]
-            : $this->params()->fromPost(
-                $param,
-                $this->params()->fromQuery($param, null)
-            );
+        return $this->params[$param] ?? $this->params()->fromPost(
+            $param,
+            $this->params()->fromQuery($param, null)
+        );
     }
 
     /**
@@ -181,7 +179,8 @@ class TagsController extends AbstractAdmin
             [
                 'msg' => 'tags_deleted',
                 'tokens' => ['%count%' => $delete]
-            ], 'success'
+            ],
+            'success'
         );
         return $this->redirect()->toUrl($originUrl);
     }

@@ -87,7 +87,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function addHiddenFilter($newFilter)
     {
-        list($field, $value) = $this->parseFilter($newFilter);
+        [$field, $value] = $this->parseFilter($newFilter);
         if ($field == 'ids') {
             $this->setRecordIdsFromFilter($value);
         } else {
@@ -119,7 +119,8 @@ class Params extends \VuFind\Search\Base\Params
     public function getDisplayQuery()
     {
         return $this->translate(
-            'result_count', ['%%count%%' => count($this->recordsToRequest)]
+            'result_count',
+            ['%%count%%' => count($this->recordsToRequest)]
         );
     }
 

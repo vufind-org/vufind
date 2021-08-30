@@ -71,7 +71,9 @@ class SolrMarcRemote extends SolrMarc implements
      *
      * @throws \Exception
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);

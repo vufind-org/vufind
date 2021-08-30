@@ -191,7 +191,8 @@ class PrimoPermissionHandler
                 && is_array($this->primoConfig[$section])
             ) {
                 $codes = array_merge(
-                    $codes, array_keys($this->primoConfig[$section])
+                    $codes,
+                    array_keys($this->primoConfig[$section])
                 );
             }
         }
@@ -249,8 +250,7 @@ class PrimoPermissionHandler
      */
     protected function getDefaultCode()
     {
-        return (isset($this->primoConfig['defaultCode']))
-            ? $this->primoConfig['defaultCode'] : false;
+        return $this->primoConfig['defaultCode'] ?? false;
     }
 
     /**
