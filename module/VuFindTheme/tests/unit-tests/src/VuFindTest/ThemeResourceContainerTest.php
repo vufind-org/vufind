@@ -125,14 +125,16 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals(
-            $expectedHeaderResult, array_values($container->getJs('header'))
+            $expectedHeaderResult,
+            array_values($container->getJs('header'))
         );
 
         $expectedFooterResult = [
             ['file' => 'df', 'position' => 'footer'],
         ];
         $this->assertEquals(
-            $expectedFooterResult, array_values($container->getJs('footer'))
+            $expectedFooterResult,
+            array_values($container->getJs('footer'))
         );
     }
 
