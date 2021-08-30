@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for ThemeResources view helper.
+ * Factory for SetupThemeResources view helper.
  *
  * PHP version 7
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for ThemeResources view helper.
+ * Factory for SetupThemeResources view helper.
  *
  * @category VuFind
  * @package  Theme
