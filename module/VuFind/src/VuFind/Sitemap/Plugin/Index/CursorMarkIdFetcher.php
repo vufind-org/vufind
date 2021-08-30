@@ -1,6 +1,6 @@
 <?php
 /**
- * Command to get IDs for a sitemap from a backend using cursor marks (if supported).
+ * Plugin to get IDs for a sitemap from a backend using cursor marks (if supported).
  *
  * PHP version 7
  *
@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFind\Sitemap\Command;
+namespace VuFind\Sitemap\Plugin\Index;
 
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
@@ -33,7 +33,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
 /**
- * Command to get IDs for a sitemap from a backend using cursor marks (if supported).
+ * Plugin to get IDs for a sitemap from a backend using cursor marks (if supported).
  *
  * @category VuFind
  * @package  Search
@@ -41,14 +41,21 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetIdsWithCursorMarkCommand extends AbstractGetIdsCommand
+class CursorMarkIdFetcher extends AbstractIdFetcher
 {
+    /**
+     * Previous cursor mark
+     *
+     * @var string
+     */
+    protected $prevCursorMark = '';
+
     /**
      * Get the initial offset to seed the search process
      *
      * @return string
      */
-    protected function getInitialOffset(): string
+    public function getInitialOffset(): string
     {
         return '*';
     }
@@ -56,44 +63,51 @@ class GetIdsWithCursorMarkCommand extends AbstractGetIdsCommand
     /**
      * Set up the backend.
      *
-     * @param Backend $backend Search backend
+     * @param string $backend Search backend ID
      *
      * @return void
      */
-    protected function setupBackend(Backend $backend): void
+    public function setupBackend(string $backend): void
     {
         // Set up the record factory. We use a very simple factory since performance
         // is important and we only need the identifier.
         $recordFactory = function ($data) {
             return new \VuFindSearch\Response\SimpleRecord($data);
         };
-        $collectionFactory = new RecordCollectionFactory($recordFactory);
-        $backend->setRecordCollectionFactory($collectionFactory);
+        $this->searchService->invoke(
+            new \VuFindSearch\Command\SetRecordCollectionFactoryCommand(
+                $backend,
+                new RecordCollectionFactory($recordFactory)
+            )
+        );
+
+        // Reset the "previous cursor mark" (in case we're reusing this object on
+        // multiple backends).
+        $this->prevCursorMark = '';
     }
 
     /**
      * Retrieve a batch of IDs.
      *
-     * @param Backend $backend      Search backend
-     * @param string  $cursorMark   String representing progress through set
-     * @param int     $countPerPage Page size
+     * @param string $backend      Search backend ID
+     * @param string $cursorMark   String representing progress through set
+     * @param int    $countPerPage Page size
      *
      * @return array
      */
-    protected function getIdsFromBackend(
-        Backend $backend,
+    public function getIdsFromBackend(
+        string $backend,
         string $cursorMark,
         int $countPerPage
     ): array {
         // If the previous cursor mark matches the current one, we're finished!
-        static $prevCursorMark = '';
-        if ($cursorMark === $prevCursorMark) {
-            return ['ids' => [], 'nextOffset' => $cursorMark];
+        if ($cursorMark === $this->prevCursorMark) {
+            return ['ids' => []];
         }
-        $prevCursorMark = $cursorMark;
+        $this->prevCursorMark = $cursorMark;
 
-        $connector = $backend->getConnector();
-        $key = $connector->getUniqueKey();
+        $getKeyCommand = new \VuFindSearch\Command\GetUniqueKeyCommand($backend, []);
+        $key = $this->searchService->invoke($getKeyCommand)->getResult();
         $params = new ParamBag(
             [
                 'q' => '*:*',
@@ -107,13 +121,14 @@ class GetIdsWithCursorMarkCommand extends AbstractGetIdsCommand
                 'cursorMark' => $cursorMark
             ]
         );
-        $results = $this->searchService->getIds(
-            $backend->getIdentifier(),
+        $getIdsCommand = new \VuFindSearch\Command\GetIdsCommand(
+            $backend,
             new Query('*:*'),
             0,
             $countPerPage,
             $params
         );
+        $results = $this->searchService->invoke($getIdsCommand)->getResult();
         $ids = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Command to get IDs for a sitemap from a backend using terms (if supported).
+ * Abstract helper to get IDs for a sitemap from a backend (if supported).
  *
  * PHP version 7
  *
@@ -25,12 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFind\Sitemap\Command;
+namespace VuFind\Sitemap\Plugin\Index;
 
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Service;
 
 /**
- * Command to get IDs for a sitemap from a backend using terms (if supported).
+ * Abstract helper to get IDs for a sitemap from a backend (if supported).
  *
  * @category VuFind
  * @package  Search
@@ -38,49 +39,53 @@ use VuFindSearch\Backend\Solr\Backend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetIdsWithTermsCommand extends AbstractGetIdsCommand
+abstract class AbstractIdFetcher
 {
+    /**
+     * Search service
+     *
+     * @var Service
+     */
+    protected $searchService;
+
+    /**
+     * CallMethodCommand constructor.
+     *
+     * @param Service $searchService Search service
+     */
+    public function __construct(Service $searchService)
+    {
+        $this->searchService = $searchService;
+    }
+
     /**
      * Get the initial offset to seed the search process
      *
      * @return string
      */
-    protected function getInitialOffset(): string
-    {
-        return '';
-    }
+    abstract public function getInitialOffset(): string;
 
     /**
      * Set up the backend.
      *
-     * @param Backend $backend Search backend
+     * @param string $backend Search backend ID
      *
      * @return void
      */
-    protected function setupBackend(Backend $backend): void
-    {
-        // No special action needed.
-    }
+    abstract public function setupBackend(string $backend): void;
 
     /**
      * Retrieve a batch of IDs.
      *
-     * @param Backend $backend      Search backend
-     * @param string  $lastTerm     String representing progress through set
-     * @param int     $countPerPage Page size
+     * @param string $backend       Search backend ID
+     * @param string $currentOffset String representing progress through set
+     * @param int    $countPerPage  Page size
      *
      * @return array
      */
-    protected function getIdsFromBackend(
-        Backend $backend,
-        string $lastTerm,
+    abstract public function getIdsFromBackend(
+        string $backend,
+        string $currentOffset,
         int $countPerPage
-    ): array {
-        $key = $backend->getConnector()->getUniqueKey();
-        $info = $backend->terms($key, $lastTerm, $countPerPage)
-            ->getFieldTerms($key);
-        $ids = null === $info ? [] : array_keys($info->toArray());
-        $nextOffset = empty($ids) ? null : $ids[count($ids) - 1];
-        return compact('ids', 'nextOffset');
-    }
+    ): array;
 }

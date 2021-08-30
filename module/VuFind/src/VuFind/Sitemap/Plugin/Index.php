@@ -27,8 +27,6 @@
  */
 namespace VuFind\Sitemap\Plugin;
 
-use VuFindSearch\Service as SearchService;
-
 /**
  * Index-based generator plugin
  *
@@ -48,13 +46,6 @@ class Index extends AbstractGeneratorPlugin
     protected $baseUrl  = '';
 
     /**
-     * Search service
-     *
-     * @var SearchService
-     */
-    protected $searchService;
-
-    /**
      * Settings specifying which backends to index.
      *
      * @var array
@@ -62,11 +53,11 @@ class Index extends AbstractGeneratorPlugin
     protected $backendSettings;
 
     /**
-     * The class of the command for retrieving IDs
+     * Helper for fetching IDs from the search service.
      *
-     * @var string
+     * @var Index\AbstractIdFetcher
      */
-    protected $commandClass;
+    protected $idFetcher;
 
     /**
      * Page size for data retrieval
@@ -78,22 +69,19 @@ class Index extends AbstractGeneratorPlugin
     /**
      * Constructor
      *
-     * @param SearchService $searchService   Search service
-     * @param array         $backendSettings Settings specifying which backends to
-     * index
-     * @param string        $commandClass    The class of the command for retrieving
-     * IDs
-     * @param int           $countPerPage    Page size for data retrieval
+     * @param array                   $backendSettings Settings specifying which
+     * backends to index
+     * @param Index\AbstractIdFetcher $idFetcher       The helper object for
+     * retrieving IDs
+     * @param int                     $countPerPage    Page size for data retrieval
      */
     public function __construct(
-        SearchService $searchService,
         array $backendSettings,
-        string $commandClass,
+        Index\AbstractIdFetcher $idFetcher,
         int $countPerPage
     ) {
-        $this->searchService = $searchService;
         $this->backendSettings = $backendSettings;
-        $this->commandClass = $commandClass;
+        $this->idFetcher = $idFetcher;
         $this->countPerPage = $countPerPage;
     }
 
@@ -126,21 +114,14 @@ class Index extends AbstractGeneratorPlugin
                 'Adding records from ' . $current['id']
                 . " with record base url $recordUrl"
             );
-            $offset = null;
+            $offset = $this->idFetcher->getInitialOffset();
+            $this->idFetcher->setupBackend($current['id']);
             while (true) {
-                $context = compact('offset') + [
-                    'countPerPage' => $this->countPerPage,
-                ];
-                $command = new $this->commandClass(
+                $result = $this->idFetcher->getIdsFromBackend(
                     $current['id'],
-                    $context,
-                    $this->searchService
+                    $offset,
+                    $this->countPerPage
                 );
-                $this->searchService->invoke($command);
-                $result = $command->getResult();
-                if (empty($result['ids'])) {
-                    break;
-                }
                 foreach ($result['ids'] as $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
                     if (strpos($loc, 'http') === false) {
@@ -149,9 +130,12 @@ class Index extends AbstractGeneratorPlugin
                     $recordCount++;
                     yield $loc;
                 }
-                $offset = $result['nextOffset'];
                 $currentPage++;
                 $this->verboseMsg("Page $currentPage, $recordCount processed");
+                if (!isset($result['nextOffset'])) {
+                    break;
+                }
+                $offset = $result['nextOffset'];
             }
         }
     }

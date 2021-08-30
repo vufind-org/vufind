@@ -70,9 +70,8 @@ class IndexFactory implements FactoryInterface
         $sitemapConfig = $configLoader->get('sitemap');
         $retrievalMode = $sitemapConfig->Sitemap->retrievalMode ?? 'search';
         return new $requestedName(
-            $container->get(\VuFindSearch\Service::class),
             $this->getBackendSettings($sitemapConfig),
-            $this->getGenerateCommandClass($retrievalMode),
+            $this->getIdFetcher($container, $retrievalMode),
             $sitemapConfig->Sitemap->countPerPage ?? 10000
         );
     }
@@ -101,17 +100,19 @@ class IndexFactory implements FactoryInterface
     }
 
     /**
-     * Get the class name of the command object for generating sitemaps through the
-     * search service.
+     * Get the helper object for generating sitemaps through the search service.
      *
-     * @param string $retrievalMode Retrieval mode ('terms' or 'search')
+     * @param ContainerInterface $container     Service manager
+     * @param string             $retrievalMode Retrieval mode ('terms' or 'search')
      *
-     * @return string
+     * @return Index\AbstractIdFetcher
      */
-    protected function getGenerateCommandClass($retrievalMode): string
-    {
-        return $retrievalMode === 'terms'
-            ? \VuFind\Sitemap\Command\GetIdsWithTermsCommand::class
-            : \VuFind\Sitemap\Command\GetIdsWithCursorMarkCommand::class;
+    protected function getIdFetcher(
+        ContainerInterface $container,
+        $retrievalMode
+    ): Index\AbstractIdFetcher {
+        $class = $retrievalMode === 'terms'
+            ? Index\TermsIdFetcher::class : Index\CursorMarkIdFetcher::class;
+        return new $class($container->get(\VuFindSearch\Service::class));
     }
 }
