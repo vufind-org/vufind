@@ -96,9 +96,6 @@ class RetrieveBatchCommand extends CallMethodCommand
             }
         }
 
-        $this->result = $response;
-
-        $this->executed = true;
-        return $this;
+        return $this->finalizeExecution($response);
     }
 }

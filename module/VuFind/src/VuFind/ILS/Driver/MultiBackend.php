@@ -939,7 +939,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * Cancel Holds
      *
      * Attempts to Cancel a hold or recall on a particular item. The
-     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     * data in $cancelDetails['details'] is taken from holds' cancel_details fields
+     * or, if cancel_details is not set, determined by getCancelHoldDetails().
      *
      * @param array $cancelDetails An array of item and patron data
      *

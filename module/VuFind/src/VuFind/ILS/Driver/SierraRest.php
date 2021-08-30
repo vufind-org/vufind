@@ -47,7 +47,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 {
     public const HOLDINGS_LINE_NUMBER = 40;
 
-    use CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
@@ -851,8 +851,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     /**
      * Cancel Holds
      *
-     * Attempts to Cancel a hold. The data in $cancelDetails['details'] is determined
-     * by getCancelHoldDetails().
+     * Attempts to Cancel a hold. The data in $cancelDetails['details'] is taken from
+     * holds' cancel_details field.
      *
      * @param array $cancelDetails An array of item and patron data
      *

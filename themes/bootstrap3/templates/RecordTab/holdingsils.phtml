@@ -73,11 +73,11 @@
 
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 <h3>
-  <?php $locationText = $this->transEscWithPrefix('location_', $holding['location']); ?>
+  <?php $locationTextEsc = $this->transEscWithPrefix('location_', $holding['location']); ?>
   <?php if ($holding['locationhref'] ?? false): ?>
-    <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
+    <a href="<?=$this->escapeHtmlAttr($holding['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
   <?php else: ?>
-    <?=$locationText?>
+    <?=$locationTextEsc?>
   <?php endif; ?>
 </h3>
 <?php

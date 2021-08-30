@@ -47,7 +47,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
-    use CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -334,7 +334,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $number = (string)$item->item_data->description;
                     $description = (string)$item->item_data->description;
                 }
-
+                $callnumber = $item->holding_data->call_number;
                 $results['holdings'][] = [
                     'id' => $id,
                     'source' => 'Solr',
@@ -342,9 +342,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'status' => $status,
                     'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
-                    'callnumber' => $this->getTranslatableString(
-                        $item->holding_data->call_number
-                    ),
+                    'callnumber' => (string)($callnumber->desc ?? $callnumber),
                     'duedate' => $duedate,
                     'returnDate' => false, // TODO: support recent returns
                     'number' => $number,
@@ -934,8 +932,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param array $cancelDetails An associative array with two keys: patron
      *                             (array returned by the driver's
      *                             patronLogin method) and details (an array
-     *                             of strings eturned by the driver's
-     *                             getCancelHoldDetails method)
+     *                             of strings returned in holds' cancel_details
+     *                             field.
      *
      * @return array                Associative array containing with keys 'count'
      *                                 (number of items successfully cancelled) and

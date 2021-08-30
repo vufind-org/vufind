@@ -31,6 +31,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 
 /**
  * VuFind Search Runner
@@ -146,7 +147,7 @@ class SearchRunner
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            if ($e->hasTag('VuFind\Search\ParserError')) {
+            if ($e->hasTag(ErrorListener::TAG_PARSER_ERROR)) {
                 // We need to create and process an "empty results" object to
                 // ensure that recommendation modules and templates behave
                 // properly when displaying the error message.

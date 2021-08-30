@@ -30,7 +30,7 @@
             if (!empty($item)): ?>
               <div class="resultItemLine1">
                 <?php if('Ti' == $item['Group']): ?>
-                  <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull _record_link"  data-view="<?=$this->params->getOptions()->getListViewOption()?>">
+                  <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
                   <?=$item['Data']?> </a>
                 <?php else:?>
                   <p>

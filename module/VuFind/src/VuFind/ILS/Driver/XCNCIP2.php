@@ -46,8 +46,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
-    use \VuFind\Log\LoggerAwareTrait;
-    use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
