@@ -128,10 +128,9 @@ abstract class CallMethodCommand extends AbstractBase
         if ($this->addParamsToArgs) {
             $callArgs[] = $this->params;
         }
-        $this->result
-            = call_user_func([$backendInstance, $this->method], ...$callArgs);
-
-        return parent::execute($backendInstance);
+        return $this->finalizeExecution(
+            call_user_func([$backendInstance, $this->method], ...$callArgs)
+        );
     }
 
     /**
