@@ -102,13 +102,16 @@ abstract class AbstractBase implements CommandInterface
     }
 
     /**
-     * Flag the command as executed and return it; useful as the final step in
-     * execute() implementations.
+     * Save a result, flag the command as executed, and return the command object;
+     * useful as the final step in execute() implementations.
+     *
+     * @param mixed $result Result of execution.
      *
      * @return CommandInterface
      */
-    protected function finalizeExecution(): CommandInterface
+    protected function finalizeExecution($result): CommandInterface
     {
+        $this->result = $result;
         $this->executed = true;
         return $this;
     }
