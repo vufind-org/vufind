@@ -48,6 +48,8 @@ use VuFindSearch\Service;
  */
 class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Sample configuration for ConditionalFilters.
      *
@@ -81,11 +83,11 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockPreEvent(ParamBag $params): Event
     {
-        $command = new MockCommandForConditionalFilterListenerTest($params);
+        $command = $this->getMockSearchCommand($params);
         return new Event(
             Service::EVENT_PRE,
             $this->backend,
-            ['params' => $params, 'command' => $command]
+            compact('params', 'command')
         );
     }
 
@@ -335,14 +337,5 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ],
             $fq
         );
-    }
-}
-
-class MockCommandForConditionalFilterListenerTest
-    extends \VuFindSearch\Command\AbstractBase
-{
-    public function __construct(ParamBag $params)
-    {
-        parent::__construct('foo', 'foo', $params);
     }
 }
