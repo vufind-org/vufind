@@ -114,7 +114,7 @@ abstract class CallMethodCommand extends AbstractBase
     {
         if (($backend = $backendInstance->getIdentifier()) !== $this->backend) {
             throw new RuntimeException(
-                "Excpected backend instance $this->backend instead of $backend"
+                "Expected backend instance $this->backend instead of $backend"
             );
         }
         if (!($backendInstance instanceof $this->interface)
@@ -132,5 +132,15 @@ abstract class CallMethodCommand extends AbstractBase
             = call_user_func([$backendInstance, $this->method], ...$callArgs);
 
         return parent::execute($backendInstance);
+    }
+
+    /**
+     * Get function arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return $this->args;
     }
 }
