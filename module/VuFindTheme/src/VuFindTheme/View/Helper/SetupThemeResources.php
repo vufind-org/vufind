@@ -142,7 +142,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Add scripts to header or footer.
      *
-     * @return null
+     * @return void
      */
     protected function addScripts()
     {
@@ -169,6 +169,5 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
                     $current['attributes'] ?? []
                 );
         }
-        return null;
     }
 }
