@@ -148,11 +148,11 @@ class Icon extends AbstractHelper
      */
     protected function compileAttrs(array $attrs): string
     {
-        $attrs = '';
+        $attrStr = '';
         foreach ($attrs as $key => $val) {
-            $attrs .= ' ' . $key . '="' . ($this->esc)($val) . '"';
+            $attrStr .= ' ' . $key . '="' . ($this->esc)($val) . '"';
         }
-        return $attrs;
+        return $attrStr;
     }
 
     /**
