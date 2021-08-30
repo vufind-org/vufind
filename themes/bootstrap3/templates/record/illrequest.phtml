@@ -8,8 +8,8 @@
         . '<li class="active">' . $this->transEsc('ill_request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('ill_request_place_text')?></h2>
-<?php if ($this->helpText): ?>
-  <p class="help-block"><?=$this->helpText?></p>
+<?php if ($this->helpTextHtml): ?>
+  <p class="help-block"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
 
 <form id="ILLRequestForm" name="placeILLRequest" class="form-ill-retrieval-request" method="post" data-clear-account-cache="illRequests">

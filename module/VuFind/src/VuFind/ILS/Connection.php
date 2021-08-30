@@ -367,11 +367,10 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                     explode(':', $functionConfig['updateFields'])
                 );
             }
-            if (isset($functionConfig['helpText'])) {
-                $response['helpText'] = $this->getHelpText(
-                    $functionConfig['helpText']
-                );
-            }
+            $response['helpText']
+                = $this->getHelpText($functionConfig['helpText'] ?? '');
+            $response['updateHelpText']
+                = $this->getHelpText($functionConfig['updateHelpText'] ?? '');
             if (isset($functionConfig['consortium'])) {
                 $response['consortium'] = $functionConfig['consortium'];
             }
@@ -487,11 +486,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['extraFields'])) {
                 $response['extraFields'] = $functionConfig['extraFields'];
             }
-            if (isset($functionConfig['helpText'])) {
-                $response['helpText'] = $this->getHelpText(
-                    $functionConfig['helpText']
-                );
-            }
+            $response['helpText']
+                = $this->getHelpText($functionConfig['helpText'] ?? '');
         }
         return $response;
     }
@@ -577,11 +573,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['extraFields'])) {
                 $response['extraFields'] = $functionConfig['extraFields'];
             }
-            if (isset($functionConfig['helpText'])) {
-                $response['helpText'] = $this->getHelpText(
-                    $functionConfig['helpText']
-                );
-            }
+            $response['helpText']
+                = $this->getHelpText($functionConfig['helpText']);
         }
         return $response;
     }
@@ -733,7 +726,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         if (is_array($helpText)) {
             $lang = $this->getTranslatorLocale();
-            return $helpText[$lang] ?? '';
+            return $helpText[$lang] ?? $helpText['*'] ?? '';
         }
         return $helpText;
     }
