@@ -74,7 +74,6 @@ class AlphabeticBrowseCommandTest extends TestCase
             $params,
             -1
         );
-        $command->execute($backend);
-        $this->assertEquals('result', $command->getResult());
+        $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 }
