@@ -356,11 +356,19 @@ class Service
                 $args
             );
             if (!$response->stopped()) {
+                // We need to construct our error message differently depending
+                // on whether or not we have a command object...
+                $commandClass = isset($args['command'])
+                    ? get_class($args['command']) : 'null';
+                $context = $args['context'] ?? $commandClass;
+                $backend = isset($args['command'])
+                    ? $args['command']->getTargetBackendName()
+                    : ($args['backend'] ?? $backend);
                 throw new Exception\RuntimeException(
                     sprintf(
                         'Unable to resolve backend: %s, %s',
-                        $args['context'],
-                        $args['backend']
+                        $context,
+                        $backend
                     )
                 );
             }
