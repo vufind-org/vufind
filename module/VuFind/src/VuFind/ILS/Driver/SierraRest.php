@@ -1728,7 +1728,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // Set timeout value
         $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(
-            ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => true]
+            ['timeout' => $timeout, 'useragent' => 'VuFind']
         );
 
         // Set Accept header
