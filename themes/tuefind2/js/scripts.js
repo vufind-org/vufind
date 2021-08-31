@@ -5,10 +5,6 @@ $(document).scroll(function(){
     } else {
         $('#tf-button-footer-back-to-top').fadeOut();
     }
-    $('.add_search_group_link').click(function(){
-        addGroup();
-        return false;
-    });
 });
 
 $('#tf-back-to-top').tooltip();
@@ -20,7 +16,6 @@ $(function() {
         e.preventDefault();
         $('html, body').animate({ scrollTop: $("#content").offset().top}, 500, 'linear');
     });
-
     // back-to-top button
     $('#tf-button-footer-back-to-top').click(function() {
         $('body,html').animate({
@@ -28,7 +23,6 @@ $(function() {
         }, 800);
         return false;
     });
-
     // expand panel if url parameter is set
     let urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('expand')) {
