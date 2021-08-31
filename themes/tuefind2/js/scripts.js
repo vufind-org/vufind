@@ -5,6 +5,12 @@ $(document).scroll(function(){
     } else {
         $('#tf-button-footer-back-to-top').fadeOut();
     }
+    
+    $('.add_search_group_link').click(function(){
+        addGroup();
+        return false;
+    });
+    
 });
 
 $('#tf-back-to-top').tooltip();

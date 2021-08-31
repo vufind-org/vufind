@@ -140,4 +140,8 @@ $(document).ready(function advSearchReady() {
     $("option:selected").prop("selected", false);
     $("#illustrated_-1").click();
   });
+  $('.add_search_group_link').click(function(){
+    addGroup();
+    return false;
+  });
 });
