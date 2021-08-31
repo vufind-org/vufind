@@ -101,8 +101,10 @@ class Icon extends AbstractHelper
      * @param HeadLink         $headLink For stylesheet appending
      */
     public function __construct(
-        array $config, StorageInterface $cache,
-        EscapeHtmlAttr $escAttr, HeadLink $headLink
+        array $config,
+        StorageInterface $cache,
+        EscapeHtmlAttr $escAttr,
+        HeadLink $headLink
     ) {
         $this->config = $config;
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
