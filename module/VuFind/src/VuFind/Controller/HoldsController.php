@@ -70,6 +70,8 @@ class HoldsController extends AbstractBase
         parent::__construct($sm);
         $this->csrf = $csrf;
         $this->setCacheStorage($cache);
+        // Cache the data related to holds for up to 10 minutes:
+        $this->cacheLifetime = 600;
     }
 
     /**
@@ -158,22 +160,16 @@ class HoldsController extends AbstractBase
         // Cache the current list of requests for editing:
         $this->putCachedData(
             $this->getCacheId($patron, 'holds'),
-            $driversNeeded,
-            600
+            $driversNeeded
         );
 
         // Get List of PickUp Libraries based on patron's home library
         try {
-            $view->pickup = $this->getCachedData(
-                $this->getCacheId($patron, 'pickup')
-            );
+            $pickupCacheId = $this->getCacheId($patron, 'pickup');
+            $view->pickup = $this->getCachedData($pickupCacheId);
             if (null === $view->pickup) {
                 $view->pickup = $catalog->getPickUpLocations($patron);
-                $this->putCachedData(
-                    $this->getCacheId($patron, 'pickup'),
-                    $view->pickup,
-                    600
-                );
+                $this->putCachedData($pickupCacheId, $view->pickup);
             }
         } catch (\Exception $e) {
             // Do nothing; if we're unable to load information about pickup
