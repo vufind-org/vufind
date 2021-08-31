@@ -29,6 +29,7 @@
 namespace VuFindTest\Autocomplete;
 
 use VuFind\Autocomplete\Eds;
+use VuFindSearch\Backend\EDS\Backend;
 
 /**
  * Eds autocomplete test class.
@@ -42,18 +43,32 @@ use VuFind\Autocomplete\Eds;
  */
 class EdsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\SearchServiceTrait;
+
     /**
      * Get a mock backend
      *
-     * @param string $id ID of fake backend.
-     *
-     * @return \VuFindSearch\Backend\EDS\Backend
+     * @return Backend
      */
-    protected function getMockBackend($id = 'EDS')
+    protected function getMockBackend()
     {
         return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->onlyMethods(['autocomplete'])
             ->disableOriginalConstructor()->getMock();
+    }
+
+    /**
+     * Wrap a mock backend in a backend manager
+     *
+     * @param Backend $backend Backend to wrap
+     *
+     * @return \VuFind\Search\BackendManager
+     */
+    protected function getMockBackendManager(Backend $backend)
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set('EDS', $backend);
+        return new \VuFind\Search\BackendManager($container);
     }
 
     /**
@@ -64,7 +79,8 @@ class EdsTest extends \PHPUnit\Framework\TestCase
     public function testGetSuggestions()
     {
         $backend = $this->getMockBackend();
-        $eds = new Eds($backend);
+        $manager = $this->getMockBackendManager($backend);
+        $eds = new Eds($this->getSearchService($manager));
         $backend->expects($this->once())
             ->method('autocomplete')
             ->with($this->equalTo('query'), $this->equalTo('rawqueries'))
@@ -80,7 +96,8 @@ class EdsTest extends \PHPUnit\Framework\TestCase
     public function testGetSuggestionsWithNonDefaultConfiguration()
     {
         $backend = $this->getMockBackend();
-        $eds = new Eds($backend);
+        $manager = $this->getMockBackendManager($backend);
+        $eds = new Eds($this->getSearchService($manager));
         $eds->setConfig('holdings');
         $backend->expects($this->once())
             ->method('autocomplete')
