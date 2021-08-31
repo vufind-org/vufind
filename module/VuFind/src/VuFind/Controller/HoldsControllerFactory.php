@@ -65,7 +65,10 @@ class HoldsControllerFactory extends AbstractBaseFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$container->get(\VuFind\Validator\Csrf::class)]
+            [
+                $container->get(\VuFind\Validator\Csrf::class),
+                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
+            ]
         );
     }
 }
