@@ -75,7 +75,6 @@ class GetUniqueKeyCommandTest extends TestCase
         $backend->expects($this->once())->method('getConnector')
             ->will($this->returnValue($connector));
         $command = new GetUniqueKeyCommand('bar', []);
-        $command->execute($backend);
-        $this->assertEquals('foo', $command->getResult());
+        $this->assertEquals('foo', $command->execute($backend)->getResult());
     }
 }
