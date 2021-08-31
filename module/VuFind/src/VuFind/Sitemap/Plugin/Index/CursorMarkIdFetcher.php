@@ -125,14 +125,13 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
                 'cursorMark' => $cursorMark
             ]
         );
-        $getIdsCommand = new \VuFindSearch\Command\GetIdsCommand(
+        $results = $this->searchService->getIds(
             $backend,
             new Query('*:*'),
             0,
             $countPerPage,
             $params
         );
-        $results = $this->searchService->invoke($getIdsCommand)->getResult();
         $ids = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);

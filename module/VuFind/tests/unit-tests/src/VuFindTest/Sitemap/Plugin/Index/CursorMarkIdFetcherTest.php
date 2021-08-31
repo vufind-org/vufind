@@ -78,6 +78,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(Service::class)
             ->disableOriginalConstructor()
+            ->onlyMethods(['invoke', 'legacyInvoke'])
             ->getMock();
     }
 
@@ -102,22 +103,6 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             $records->add($driver);
         }
         return $expectedIds;
-    }
-
-    /**
-     * Get a mock "GetIdsCommand" to use as a container for a test value.
-     *
-     * @param RecordCollection $records Records to return
-     *
-     * @return GetIdsCommand
-     */
-    protected function getMockIdsCommand(RecordCollection $records): GetIdsCommand
-    {
-        $command = $this->getMockBuilder(GetIdsCommand::class)
-            ->disableOriginalConstructor()->getMock();
-        $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($records));
-        return $command;
     }
 
     /**
@@ -191,18 +176,19 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockService();
 
         // Set up all the expected commands...
-        $service->expects($this->any())->method('invoke')
+        $service->expects($this->exactly(2))->method('invoke')
             ->withConsecutive(
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
-                [$this->callback($this->getIdsExpectation('*'))],
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
-                [$this->callback($this->getIdsExpectation('nextCursor'))],
             )->willReturnOnConsecutiveCalls(
                 $this->getMockKeyCommand(),
-                $this->getMockIdsCommand($records1),
                 $this->getMockKeyCommand(),
-                $this->getMockIdsCommand($records2)
             );
+        $service->expects($this->exactly(2))->method('legacyInvoke')
+            ->withConsecutive(
+                [$this->callback($this->getIdsExpectation('*'))],
+                [$this->callback($this->getIdsExpectation('nextCursor'))],
+            )->willReturnOnConsecutiveCalls($records1, $records2);
         $fetcher = new CursorMarkIdFetcher($service);
         // Initial iteration
         $this->assertEquals(
