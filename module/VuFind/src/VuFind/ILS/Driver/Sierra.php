@@ -112,7 +112,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             . "WHERE bib_view.record_num = $1 "
             . "AND item_view.is_suppressed = false;";
         $record_ids = pg_query_params(
-            $this->db, $get_record_ids_query, [$this->idStrip($id)]
+            $this->db,
+            $get_record_ids_query,
+            [$this->idStrip($id)]
         );
         $itemRecords = [];
         while ($record = pg_fetch_row($record_ids)) {
@@ -173,7 +175,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . "varfield_view.varfield_type_code = 'c' and "
                 . "varfield_view.record_num = $1;";
             $results = pg_query_params(
-                $this->db, $query, [$this->idStrip($id)]
+                $this->db,
+                $query,
+                [$this->idStrip($id)]
             );
             if (pg_num_rows($results) > 0) {
                 $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
@@ -238,10 +242,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             while ($row = pg_fetch_row($results)) {
                 $courses[$row[1]] = $row[0];
             }
-            return $courses;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $courses;
     }
 
     /**
@@ -254,13 +258,8 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function getDepartments()
     {
-        try {
-            // Sierra does not allow for searching for reserves by departments.
-            $departments = [];
-            return $departments;
-        } catch (\Exception $e) {
-            $this->throwAsIlsException($e);
-        }
+        // Sierra does not allow for searching for reserves by departments.
+        return [];
     }
 
     /**
@@ -302,10 +301,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                     $instructors[$row[2]] = $row[0] . " (" . $row[1] . ")";
                 }
             }
-            return $instructors;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $instructors;
     }
 
     /**
@@ -351,11 +350,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 $fullNumber = $this->createFullId($bareNumber);
                 $reserves[]['BIB_ID'] = $fullNumber;
             }
-
-            return $reserves;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $reserves;
     }
 
     /**
@@ -376,10 +374,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             while ($resultArray = pg_fetch_row($results)) {
                 $funds[$resultArray[0]] = $resultArray[1];
             }
-            return $funds;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $funds;
     }
 
     /**
@@ -546,10 +544,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
 
                 $holdings[] = $itemInfo;
             }
-            return $holdings;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $holdings;
     }
 
     /**
@@ -606,11 +604,15 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . "OFFSET CAST ($2 AS integer);";
             if ($fundID != null) {
                 $results = pg_query_params(
-                    $this->db, $query, [$limit, $offset, $fundID]
+                    $this->db,
+                    $query,
+                    [$limit, $offset, $fundID]
                 );
             } else {
                 $results = pg_query_params(
-                    $this->db, $query, [$limit, $offset]
+                    $this->db,
+                    $query,
+                    [$limit, $offset]
                 );
             }
             $newItems['count'] = (string)pg_num_rows($results);
@@ -624,10 +626,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 $newItems['results'] = [];
                 $newItems['results'][0]['id'] = null;
             }
-            return $newItems;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $newItems;
     }
 
     /**
@@ -667,15 +669,15 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function getStatuses($ids)
     {
+        $statuses = [];
         try {
-            $statuses = [];
             foreach ($ids as $id) {
                 $statuses[] = $this->getStatus($id);
             }
-            return $statuses;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $statuses;
     }
 
     /**
@@ -685,8 +687,8 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function getSuppressedAuthorityRecords()
     {
+        $authRecords = [];
         try {
-            $authRecords = [];
             $query = "SELECT record_metadata.record_num FROM "
                 . "sierra_view.authority_record LEFT JOIN "
                 . "sierra_view.record_metadata ON "
@@ -696,10 +698,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             while ($record = pg_fetch_row($record_ids)) {
                 $authRecords[] = $record[0];
             }
-            return $authRecords;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $authRecords;
     }
 
     /**
@@ -710,8 +712,8 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function getSuppressedRecords()
     {
+        $suppRecords = [];
         try {
-            $suppRecords = [];
             $query = "SELECT record_metadata.record_num FROM "
                 . "sierra_view.bib_record LEFT JOIN sierra_view.record_metadata "
                 . "ON (bib_record.record_id = record_metadata.id) "
@@ -720,9 +722,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             while ($record = pg_fetch_row($record_ids)) {
                 $suppRecords[] = $record[0];
             }
-            return $suppRecords;
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $suppRecords;
     }
 }

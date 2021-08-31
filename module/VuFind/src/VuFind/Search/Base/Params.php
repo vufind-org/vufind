@@ -472,7 +472,8 @@ class Params
     {
         if ($this->searchType === 'basic') {
             $this->query = new QueryGroup(
-                'AND', [new QueryGroup('AND', [$this->query])]
+                'AND',
+                [new QueryGroup('AND', [$this->query])]
             );
             $this->searchType = 'advanced';
         }
@@ -496,7 +497,8 @@ class Params
     protected function initAdvancedSearch($request)
     {
         $this->query = QueryAdapter::fromRequest(
-            $request, $this->getOptions()->getDefaultHandler()
+            $request,
+            $this->getOptions()->getDefaultHandler()
         );
 
         $this->searchType = $this->query instanceof Query ? 'basic' : 'advanced';
@@ -522,7 +524,7 @@ class Params
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return string
+     * @return void
      */
     protected function initSort($request)
     {
@@ -551,7 +553,7 @@ class Params
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return string
+     * @return void
      */
     protected function initView($request)
     {
@@ -1044,7 +1046,10 @@ class Params
                 ) {
                     $facetLabel = $this->getFacetLabel($field, $value);
                     $list[$facetLabel][] = $this->formatFilterListEntry(
-                        $field, $value, $operator, $translate
+                        $field,
+                        $value,
+                        $operator,
+                        $translate
                     );
                 }
             }
@@ -1284,8 +1289,11 @@ class Params
      *
      * @return void
      */
-    protected function initGenericRangeFilters($request,
-        $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
+    protected function initGenericRangeFilters(
+        $request,
+        $requestParam = 'genericrange',
+        $valueFilter = null,
+        $filterGenerator = null
     ) {
         $rangeFacets = $request->get($requestParam);
         if (!empty($rangeFacets)) {
@@ -1385,7 +1393,9 @@ class Params
     protected function initDateFilters($request)
     {
         $this->initGenericRangeFilters(
-            $request, 'daterange', [$this, 'formatYearForDateRange'],
+            $request,
+            'daterange',
+            [$this, 'formatYearForDateRange'],
             [$this, 'buildDateRangeFilter']
         );
     }
@@ -1403,7 +1413,9 @@ class Params
     protected function initFullDateFilters($request)
     {
         $this->initGenericRangeFilters(
-            $request, 'fulldaterange', [$this, 'formatDateForFullDateRange'],
+            $request,
+            'fulldaterange',
+            [$this, 'formatDateForFullDateRange'],
             [$this, 'buildFullDateRangeFilter']
         );
     }
@@ -1421,7 +1433,9 @@ class Params
     protected function initNumericRangeFilters($request)
     {
         $this->initGenericRangeFilters(
-            $request, 'numericrange', [$this, 'formatValueForNumericRange'],
+            $request,
+            'numericrange',
+            [$this, 'formatValueForNumericRange'],
             [$this, 'buildNumericRangeFilter']
         );
     }
@@ -1779,7 +1793,8 @@ class Params
      *
      * @return bool             True if facets set, false if no settings found
      */
-    protected function initCheckboxFacets($facetList = 'CheckboxFacets',
+    protected function initCheckboxFacets(
+        $facetList = 'CheckboxFacets',
         $cfgFile = null
     ) {
         $config = $this->configLoader

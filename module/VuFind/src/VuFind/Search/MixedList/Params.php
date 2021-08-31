@@ -119,7 +119,8 @@ class Params extends \VuFind\Search\Base\Params
     public function getDisplayQuery()
     {
         return $this->translate(
-            'result_count', ['%%count%%' => count($this->recordsToRequest)]
+            'result_count',
+            ['%%count%%' => count($this->recordsToRequest)]
         );
     }
 

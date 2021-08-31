@@ -123,7 +123,9 @@ class PermissionDeniedManager
             $defaultBehavior = $this->defaultDeniedControllerBehavior;
         }
         return $this->getDeniedBehavior(
-            $permission, 'deniedControllerBehavior', $defaultBehavior
+            $permission,
+            'deniedControllerBehavior',
+            $defaultBehavior
         );
     }
 
@@ -142,7 +144,9 @@ class PermissionDeniedManager
             $defaultBehavior = $this->defaultDeniedTemplateBehavior;
         }
         return $this->getDeniedBehavior(
-            $permission, 'deniedTemplateBehavior', $defaultBehavior
+            $permission,
+            'deniedTemplateBehavior',
+            $defaultBehavior
         );
     }
 

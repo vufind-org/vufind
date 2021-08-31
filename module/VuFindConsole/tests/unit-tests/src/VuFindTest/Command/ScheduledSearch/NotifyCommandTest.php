@@ -178,7 +178,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(
             [
                 'searchTable' => $this->getMockSearchTable(
-                    [], null, null, $resultsCallback
+                    [],
+                    null,
+                    null,
+                    $resultsCallback
                 ),
                 'userTable' => $this->getMockUserTable(),
             ]
@@ -211,7 +214,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(
             [
                 'searchTable' => $this->getMockSearchTable(
-                    [], $optionsCallback, null, $resultsCallback
+                    [],
+                    $optionsCallback,
+                    null,
+                    $resultsCallback
                 ),
                 'userTable' => $this->getMockUserTable(),
             ]
@@ -246,7 +252,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(
             [
                 'searchTable' => $this->getMockSearchTable(
-                    [], $optionsCallback, null, $resultsCallback
+                    [],
+                    $optionsCallback,
+                    null,
+                    $resultsCallback
                 ),
                 'userTable' => $this->getMockUserTable(),
             ]
@@ -306,7 +315,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $renderer = $this->container->createMock(
-            \Laminas\View\Renderer\PhpRenderer::class, ['render']
+            \Laminas\View\Renderer\PhpRenderer::class,
+            ['render']
         );
         $renderer->expects($this->once())->method('render')
             ->with(
@@ -331,7 +341,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'renderer' => $renderer,
                 'translator' => $translator,
                 'searchTable' => $this->getMockSearchTable(
-                    [], $optionsCallback, $paramsCallback, $resultsCallback
+                    [],
+                    $optionsCallback,
+                    $paramsCallback,
+                    $resultsCallback
                 ),
                 'userTable' => $this->getMockUserTable(),
             ]
@@ -369,8 +382,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getMockNotifications($overrides = [], $optionsCallback = null,
-        $paramsCallback = null, $resultsCallback = null
+    protected function getMockNotifications(
+        $overrides = [],
+        $optionsCallback = null,
+        $paramsCallback = null,
+        $resultsCallback = null
     ) {
         $defaults = [
             'id' => 1,
@@ -391,7 +407,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         if (!array_key_exists('search_object', $overrides)) {
             $defaults['search_object'] = serialize(
                 $this->getMockSearch(
-                    $optionsCallback, $paramsCallback, $resultsCallback
+                    $optionsCallback,
+                    $paramsCallback,
+                    $resultsCallback
                 )
             );
         }
@@ -413,8 +431,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockSearchResults($optionsCallback = null,
-        $paramsCallback = null, $resultsCallback = null
+    protected function getMockSearchResults(
+        $optionsCallback = null,
+        $paramsCallback = null,
+        $resultsCallback = null
     ) {
         $options = $this->container->createMock(\VuFind\Search\Solr\Options::class);
         if ($optionsCallback) {
@@ -447,7 +467,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Minified
      */
-    protected function getMockSearch($optionsCallback = null, $paramsCallback = null,
+    protected function getMockSearch(
+        $optionsCallback = null,
+        $paramsCallback = null,
         $resultsCallback = null
     ) {
         $search = $this->container->createMock(\VuFind\Search\Minified::class);
@@ -456,7 +478,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             ->will(
                 $this->returnValue(
                     $this->getMockSearchResults(
-                        $optionsCallback, $paramsCallback, $resultsCallback
+                        $optionsCallback,
+                        $paramsCallback,
+                        $resultsCallback
                     )
                 )
             );
@@ -549,15 +573,20 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getMockSearchTable($overrides = [], $optionsCallback = null,
-        $paramsCallback = null, $resultsCallback = null)
-    {
+    protected function getMockSearchTable(
+        $overrides = [],
+        $optionsCallback = null,
+        $paramsCallback = null,
+        $resultsCallback = null
+    ) {
         $searchTable = $this->container->createMock(\VuFind\Db\Table\Search::class);
         $searchTable->expects($this->once())->method('getScheduledSearches')
             ->will(
                 $this->returnValue(
                     $this->getMockNotifications(
-                        $overrides, $optionsCallback, $paramsCallback,
+                        $overrides,
+                        $optionsCallback,
+                        $paramsCallback,
                         $resultsCallback
                     )
                 )

@@ -47,6 +47,8 @@ use VuFindSearch\Service;
  */
 class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Backend.
      *
@@ -63,10 +65,11 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockPreEvent(ParamBag $params): Event
     {
-        $command = new MockCommandForOnCampusListenerTest($params);
+        $command = $this->getMockSearchCommand($params);
         return new Event(
-            Service::EVENT_PRE, $this->backend,
-            ['params' => $params, 'command' => $command]
+            Service::EVENT_PRE,
+            $this->backend,
+            compact('params', 'command')
         );
     }
 
@@ -158,7 +161,8 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $onCampus   = $params->get('onCampus');
         $this->assertEquals(
-            [0 => true], $onCampus
+            [0 => true],
+            $onCampus
         );
     }
 
@@ -251,13 +255,5 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $onCampus   = $params->get('onCampus');
         $this->assertEquals([0 => false], $onCampus);
-    }
-}
-
-class MockCommandForOnCampusListenerTest extends \VuFindSearch\Command\AbstractBase
-{
-    public function __construct(ParamBag $params)
-    {
-        parent::__construct('foo', 'foo', $params);
     }
 }

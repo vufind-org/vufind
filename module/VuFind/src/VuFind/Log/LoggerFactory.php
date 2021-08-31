@@ -57,7 +57,9 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addDbWriters(Logger $logger, ContainerInterface $container,
+    protected function addDbWriters(
+        Logger $logger,
+        ContainerInterface $container,
         $config
     ) {
         $parts = explode(':', $config);
@@ -75,7 +77,8 @@ class LoggerFactory implements FactoryInterface
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
             $container->get(\Laminas\Db\Adapter\Adapter::class),
-            $table_name, $columnMapping
+            $table_name,
+            $columnMapping
         );
         $this->addWriters($logger, $writer, $filters);
     }
@@ -89,7 +92,9 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addEmailWriters(Logger $logger, ContainerInterface $container,
+    protected function addEmailWriters(
+        Logger $logger,
+        ContainerInterface $container,
         Config $config
     ) {
         // Set up the logger's mailer to behave consistently with VuFind's
@@ -147,7 +152,9 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addSlackWriters(Logger $logger, ContainerInterface $container,
+    protected function addSlackWriters(
+        Logger $logger,
+        ContainerInterface $container,
         Config $config
     ) {
         $options = [];
@@ -187,8 +194,10 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addOffice365Writers(Logger $logger,
-        ContainerInterface $container, Config $config
+    protected function addOffice365Writers(
+        Logger $logger,
+        ContainerInterface $container,
+        Config $config
     ) {
         $options = [];
         // Get config
@@ -314,7 +323,9 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setFormatter($formatter);
         $this->addWriters(
-            $logger, $writer, 'debug-' . (is_int($debug) ? $debug : '5')
+            $logger,
+            $writer,
+            'debug-' . (is_int($debug) ? $debug : '5')
         );
     }
 
@@ -411,7 +422,9 @@ class LoggerFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

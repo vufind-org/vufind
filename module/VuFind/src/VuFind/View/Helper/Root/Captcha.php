@@ -62,7 +62,8 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
      * @param \Laminas\Config\Config $config   Config
      * @param array                  $captchas Captchas
      */
-    public function __construct(\Laminas\Config\Config $config,
+    public function __construct(
+        \Laminas\Config\Config $config,
         array $captchas=[]
     ) {
         $this->config = $config;
@@ -110,7 +111,8 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
         }
 
         return $this->getView()->render(
-            'Helpers/captcha', ['wrapHtml' => $wrapHtml,
+            'Helpers/captcha',
+            ['wrapHtml' => $wrapHtml,
                                 'captchas' => $this->captchas]
         );
     }

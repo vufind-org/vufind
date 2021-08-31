@@ -80,7 +80,10 @@ class Renewals extends AbstractPlugin
      * @return array                  The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)
      */
-    public function processRenewals($request, $catalog, $patron,
+    public function processRenewals(
+        $request,
+        $catalog,
+        $patron,
         $csrfValidator = null
     ) {
         // Pick IDs to renew based on which button was pressed:

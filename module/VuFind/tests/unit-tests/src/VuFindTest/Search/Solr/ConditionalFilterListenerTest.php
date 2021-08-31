@@ -48,6 +48,8 @@ use VuFindSearch\Service;
  */
 class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Sample configuration for ConditionalFilters.
      *
@@ -81,10 +83,11 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockPreEvent(ParamBag $params): Event
     {
-        $command = new MockCommandForConditionalFilterListenerTest($params);
+        $command = $this->getMockSearchCommand($params);
         return new Event(
-            Service::EVENT_PRE, $this->backend,
-            ['params' => $params, 'command' => $command]
+            Service::EVENT_PRE,
+            $this->backend,
+            compact('params', 'command')
         );
     }
 
@@ -157,7 +160,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $fq   = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
-            1 => 'field2:novalue'], $fq
+            1 => 'field2:novalue'],
+            $fq
         );
     }
 
@@ -207,7 +211,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $fq   = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
-            1 => 'field2:novalue'], $fq
+            1 => 'field2:novalue'],
+            $fq
         );
     }
 
@@ -234,7 +239,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 
         $fq   = $params->get('fq');
         $this->assertEquals(
-            [0 => 'institution:"MyInst"'], $fq
+            [0 => 'institution:"MyInst"'],
+            $fq
         );
     }
 
@@ -293,7 +299,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => '(NOT institution:"MyInst")'
-            ], $fq
+            ],
+            $fq
         );
     }
 
@@ -327,16 +334,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => 'institution:"MyInst"'
-            ], $fq
+            ],
+            $fq
         );
-    }
-}
-
-class MockCommandForConditionalFilterListenerTest
-    extends \VuFindSearch\Command\AbstractBase
-{
-    public function __construct(ParamBag $params)
-    {
-        parent::__construct('foo', 'foo', $params);
     }
 }

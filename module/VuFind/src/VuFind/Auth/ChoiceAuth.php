@@ -120,7 +120,8 @@ class ChoiceAuth extends AbstractBase
     {
         parent::setConfig($config);
         $this->strategies = array_map(
-            'trim', explode(',', $this->getConfig()->ChoiceAuth->choice_order)
+            'trim',
+            explode(',', $this->getConfig()->ChoiceAuth->choice_order)
         );
     }
 

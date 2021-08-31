@@ -133,8 +133,10 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return AddUsingTemplateCommand
      */
-    protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null,
+    protected function getMockCommand(
+        ExtendedIniNormalizer $normalizer = null,
+        ExtendedIniReader $reader = null,
+        $languageDir = null,
         array $methods = ['writeFileToDisk']
     ) {
         return $this->getMockBuilder(DeleteCommand::class)

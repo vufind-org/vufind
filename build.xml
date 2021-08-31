@@ -21,18 +21,18 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="2.0.13" />
+  <property name="composer_version" value="2.1.6" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="7.7.3" />
+  <property name="solr_version" value="8.9.0" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="7.1.1" />
+  <property name="version" value="8.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -85,7 +85,7 @@
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
-    <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuDL/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+    <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
   </target>
 
   <!-- Measure project with phploc -->
@@ -124,12 +124,12 @@
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php_cs -vvv" passthru="true" escape="false" />
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php_cs -vvv" passthru="true" escape="false" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php-cs-fixer.php -vvv" passthru="true" escape="false" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php -vvv" passthru="true" escape="false" />
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php_cs --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php_cs --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php-cs-fixer.php --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
   <!-- ESLint -->

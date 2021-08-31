@@ -2,7 +2,7 @@
  <div class="media clearfix">
      <div class="pull-right <?= $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
          <?php if($cover): ?>
-             <img alt="Cover Image"  class="recordcover" src="<?= $cover?>">
+             <img alt="Cover Image" class="recordcover" src="<?=$this->escapeHtmlAttr($cover)?>">
          <?php endif; ?>
      </div>
      <div class="media-body">
@@ -41,7 +41,7 @@
             <div class="pull-right">
 
                 <input name="doAction" value="doCheckout" type="hidden">
-                <input class="btn btn-primary" name="doCheckout" value="<?= $this->transEsc("od_but_checkout_s"); ?>" type="submit">
+                <input class="btn btn-primary" name="doCheckout" value="<?= $this->transEscAttr("od_but_checkout_s"); ?>" type="submit">
             </div>
             </form>
         <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
@@ -57,9 +57,13 @@
                     if($hold->holdReadyForCheckout):
                         echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                     else:
-                        echo $this->transEsc("od_hold_queue",
-                            ["%%holdPosition%%" => $result->data->hold->holdListPosition,
-                                "%%numberOfHolds%%" => $result->data->hold->numberOfHolds]);
+                        echo $this->transEsc(
+                            "od_hold_queue",
+                            [
+                                "%%holdPosition%%" => $result->data->hold->holdListPosition,
+                                "%%numberOfHolds%%" => $result->data->hold->numberOfHolds
+                            ]
+                        );
                     endif;?>
                 </div>
             </div>
@@ -79,7 +83,7 @@
          </div>
          <div class="form-group pull-right">
              <input name="doAction" value="placeHold" type="hidden">
-             <input class="btn btn-primary" name="placeHold" value="<?= $this->transEsc("od_but_hold_s"); ?>" type="submit">
+             <input class="btn btn-primary" name="placeHold" value="<?= $this->transEscAttr("od_but_hold_s"); ?>" type="submit">
          </div>
      </form>
         <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
@@ -95,9 +99,13 @@
                 if($hold->holdReadyForCheckout):
                     echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                 else:
-                    echo $this->transEsc("od_hold_queue",
-                        ["%%holdPosition%%" => $result->data->hold->holdListPosition,
-                            "%%numberOfHolds%%" => $result->data->hold->numberOfHolds]);
+                    echo $this->transEsc(
+                        "od_hold_queue",
+                        [
+                            "%%holdPosition%%" => $result->data->hold->holdListPosition,
+                            "%%numberOfHolds%%" => $result->data->hold->numberOfHolds
+                        ]
+                    );
                 endif;?>
             </div>
         </div>
@@ -113,7 +121,7 @@
 
                 <div class="form-group pull-right">
                     <input name="doAction" value="cancelHold" type="hidden">
-                    <input class="btn btn-primary" name="cancelHold" value="<?= $this->transEsc("od_but_cancel_hold"); ?>" type="submit">
+                    <input class="btn btn-primary" name="cancelHold" value="<?= $this->transEscAttr("od_but_cancel_hold"); ?>" type="submit">
                 </div>
             </form>
 
@@ -123,7 +131,7 @@
             <div class="pull-right">
 
                 <input name="doAction" value="returnTitle" type="hidden">
-                <input class="btn btn-primary" name="returnTitle" value="<?= $this->transEsc("od_but_return"); ?>" type="submit">
+                <input class="btn btn-primary" name="returnTitle" value="<?= $this->transEscAttr("od_but_return"); ?>" type="submit">
             </div>
         </form>
 

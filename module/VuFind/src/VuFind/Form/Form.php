@@ -112,7 +112,8 @@ class Form extends \Laminas\Form\Form implements
      * @throws \Exception
      */
     public function __construct(
-        YamlReader $yamlReader, HelperPluginManager $viewHelperManager,
+        YamlReader $yamlReader,
+        HelperPluginManager $viewHelperManager,
         array $defaultConfig = null
     ) {
         parent::__construct();
@@ -665,7 +666,9 @@ class Form extends \Laminas\Form\Form implements
         }
 
         return str_replace(
-            array_keys($translated), array_values($translated), $subject
+            array_keys($translated),
+            array_values($translated),
+            $subject
         );
     }
 

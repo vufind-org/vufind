@@ -67,16 +67,9 @@ public class WorkKeys
     ) {
         Set<String> workKeys = new LinkedHashSet<String>();
 
-        if (!transliterationRules.isEmpty()) {
-            if (!this.transliterators.containsKey(transliterationRules)) {
-                this.transliterators.put(
-                    transliterationRules,
-                    Transliterator.createFromRules("workkeys", transliterationRules, Transliterator.FORWARD)
-                );
-            }
-        }
         final Transliterator transliterator = transliterationRules.isEmpty()
-            ? null : this.transliterators.get(transliterationRules);
+            ? null : this.transliterators.computeIfAbsent(transliterationRules, rules ->
+                Transliterator.createFromRules("workkeys", rules, Transliterator.FORWARD));
 
         // Uniform title
         final Set<String> uniformTitles = FieldSpecTools.getFieldsByTagList(record, uniformTitleTagList);

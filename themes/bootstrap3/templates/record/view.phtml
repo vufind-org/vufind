@@ -1,4 +1,9 @@
 <?php
+  // Set a default page title; this will usually be overridden when a tab is
+  // loaded, but it may be useful if there are no tabs, or when tabs are loaded
+  // via AJAX:
+  $this->headTitle($this->driver->getBreadcrumb());
+
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
@@ -55,7 +60,7 @@
               if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
               if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
             ?>
-            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
               <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-lightbox-ignore>
                 <?=$this->transEsc($desc)?>
               </a>

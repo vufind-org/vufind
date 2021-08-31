@@ -69,7 +69,9 @@ class GetIlsStatus extends AbstractBase
      * @param Connection        $ils      ILS connection
      * @param RendererInterface $renderer View renderer
      */
-    public function __construct(SessionSettings $ss, Connection $ils,
+    public function __construct(
+        SessionSettings $ss,
+        Connection $ils,
         RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
@@ -90,7 +92,8 @@ class GetIlsStatus extends AbstractBase
         $this->disableSessionWrites();
         if ($this->ils->getOfflineMode(true) == 'ils-offline') {
             $offlineModeMsg = $params->fromPost(
-                'offlineModeMsg', $params->fromQuery('offlineModeMsg')
+                'offlineModeMsg',
+                $params->fromQuery('offlineModeMsg')
             );
             $html = $this->renderer
                 ->render('Helpers/ils-offline.phtml', compact('offlineModeMsg'));

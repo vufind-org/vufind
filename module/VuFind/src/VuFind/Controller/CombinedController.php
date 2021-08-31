@@ -144,7 +144,9 @@ class CombinedController extends AbstractSearch
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
         $results = $this->serviceLocator->get(SearchRunner::class)->run(
-            $request, 'Combined', $this->getSearchSetupCallback()
+            $request,
+            'Combined',
+            $this->getSearchSetupCallback()
         );
 
         // Remember the current URL, then disable memory so multi-search results
@@ -166,7 +168,8 @@ class CombinedController extends AbstractSearch
             [$searchClassId] = explode(':', $current);
             $currentOptions = $options->get($searchClassId);
             $this->adjustQueryForSettings(
-                $settings, $currentOptions->getHandlerForLabel($initialType)
+                $settings,
+                $currentOptions->getHandlerForLabel($initialType)
             );
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {

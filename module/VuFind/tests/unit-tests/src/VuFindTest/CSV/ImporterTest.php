@@ -77,7 +77,8 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     protected function getImporter(): Importer
     {
         $configBaseDir = implode(
-            '/', array_slice(explode('/', realpath($this->csvFixtureDir)), -5)
+            '/',
+            array_slice(explode('/', realpath($this->csvFixtureDir)), -5)
         );
         return new Importer($this->container, compact('configBaseDir'));
     }
@@ -200,7 +201,10 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         );
         $importer = $this->getImporter();
         $importer->save(
-            $this->csvFixtureDir . 'test-iso.csv', 'test.ini', 'Solr', true
+            $this->csvFixtureDir . 'test-iso.csv',
+            'test.ini',
+            'Solr',
+            true
         );
     }
 
@@ -218,7 +222,8 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             $this->callback(function ($doc) {
                 $expected = file_get_contents($this->csvFixtureDir . 'test.json');
                 $this->assertJsonStringEqualsJsonString(
-                    $expected, $doc->getContent()
+                    $expected,
+                    $doc->getContent()
                 );
                 // If we got past the assertion, we can report success!
                 return true;
@@ -228,7 +233,10 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();
         $result = $importer->save(
-            $this->csvFixtureDir . 'test.csv', 'test.ini', 'Solr', false
+            $this->csvFixtureDir . 'test.csv',
+            'test.ini',
+            'Solr',
+            false
         );
         $this->assertEquals('', $result); // no output in non-test mode
     }
@@ -252,7 +260,10 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();
         $result = $importer->save(
-            $this->csvFixtureDir . 'test.csv', 'test-small-batch.ini', 'Solr', false
+            $this->csvFixtureDir . 'test.csv',
+            'test-small-batch.ini',
+            'Solr',
+            false
         );
         $this->assertEquals('', $result); // no output in non-test mode
     }

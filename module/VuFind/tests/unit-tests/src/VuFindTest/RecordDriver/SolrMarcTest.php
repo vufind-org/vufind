@@ -90,7 +90,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $series = $record->getSeries();
         $this->assertEquals(count($series), 1);
         $this->assertEquals(
-            'Vico, Giambattista, 1668-1744. Works. 1982 ;', $series[0]['name']
+            'Vico, Giambattista, 1668-1744. Works. 1982 ;',
+            $series[0]['name']
         );
         $this->assertEquals('2, pt. 1.', $series[0]['number']);
     }

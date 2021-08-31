@@ -180,7 +180,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -241,7 +243,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery6Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery6Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -297,7 +301,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -497,7 +503,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             $expected,
             $sp->processSuggestions(
-                $suggestions, $spelling->getQuery(), $params
+                $suggestions,
+                $spelling->getQuery(),
+                $params
             )
         );
     }

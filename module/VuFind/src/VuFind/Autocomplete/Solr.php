@@ -197,7 +197,8 @@ class Solr implements AutocompleteInterface
 
         try {
             $this->searchObject->getParams()->setBasicSearch(
-                $this->mungeQuery($query), $this->handler
+                $this->mungeQuery($query),
+                $this->handler
             );
             $this->searchObject->getParams()->setSort($this->sortField);
             foreach ($this->filters as $current) {
@@ -213,7 +214,9 @@ class Solr implements AutocompleteInterface
             $results = $this->getSuggestionsFromSearch($searchResults, $query, true);
             if (empty($results)) {
                 $results = $this->getSuggestionsFromSearch(
-                    $searchResults, $query, false
+                    $searchResults,
+                    $query,
+                    false
                 );
             }
         } catch (\Exception $e) {
@@ -239,7 +242,9 @@ class Solr implements AutocompleteInterface
             foreach ($this->displayField as $field) {
                 if (isset($current[$field])) {
                     $bestMatch = $this->pickBestMatch(
-                        $current[$field], $query, $exact
+                        $current[$field],
+                        $query,
+                        $exact
                     );
                     if ($bestMatch) {
                         $results[] = $bestMatch;

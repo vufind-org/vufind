@@ -87,8 +87,13 @@ abstract class CallMethodCommand extends AbstractBase
      *                                   search interface method is used as the
      *                                   context.
      */
-    public function __construct(string $backend, string $interface, string $method,
-        array $args, ?ParamBag $params = null, bool $addParamsToArgs = true,
+    public function __construct(
+        string $backend,
+        string $interface,
+        string $method,
+        array $args,
+        ?ParamBag $params = null,
+        bool $addParamsToArgs = true,
         $context = null
     ) {
         parent::__construct($backend, $context ?: $method, $params);
@@ -109,7 +114,7 @@ abstract class CallMethodCommand extends AbstractBase
     {
         if (($backend = $backendInstance->getIdentifier()) !== $this->backend) {
             throw new RuntimeException(
-                "Excpected backend instance $this->backend instead of $backend"
+                "Expected backend instance $this->backend instead of $backend"
             );
         }
         if (!($backendInstance instanceof $this->interface)
@@ -123,9 +128,18 @@ abstract class CallMethodCommand extends AbstractBase
         if ($this->addParamsToArgs) {
             $callArgs[] = $this->params;
         }
-        $this->result
-            = call_user_func([$backendInstance, $this->method], ...$callArgs);
+        return $this->finalizeExecution(
+            call_user_func([$backendInstance, $this->method], ...$callArgs)
+        );
+    }
 
-        return parent::execute($backendInstance);
+    /**
+     * Get function arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return $this->args;
     }
 }

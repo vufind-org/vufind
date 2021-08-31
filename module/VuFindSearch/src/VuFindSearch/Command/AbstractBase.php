@@ -28,7 +28,6 @@
  */
 namespace VuFindSearch\Command;
 
-use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Exception\LogicException;
 use VuFindSearch\ParamBag;
 
@@ -41,7 +40,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class AbstractBase implements CommandInterface
+abstract class AbstractBase implements CommandInterface
 {
     /**
      * Search backend identifier
@@ -103,14 +102,16 @@ class AbstractBase implements CommandInterface
     }
 
     /**
-     * Execute command on backend.
+     * Save a result, flag the command as executed, and return the command object;
+     * useful as the final step in execute() implementations.
      *
-     * @param BackendInterface $backend Backend
+     * @param mixed $result Result of execution.
      *
-     * @return CommandInterface Command instance for method chaining
+     * @return CommandInterface
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    protected function finalizeExecution($result): CommandInterface
     {
+        $this->result = $result;
         $this->executed = true;
         return $this;
     }

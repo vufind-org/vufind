@@ -51,7 +51,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     /**
      * ID fields in holds
      */
-    const HOLD_ID_FIELDS = ['id', 'item_id', 'cat_username'];
+    public const HOLD_ID_FIELDS = ['id', 'item_id', 'cat_username'];
 
     /**
      * The array of configured driver names.
@@ -116,8 +116,10 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
      * @param PluginManager                 $dm           ILS driver manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth, PluginManager $dm
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        PluginManager $dm
     ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
@@ -472,7 +474,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $patron = $driver->patronLogin(
-                $this->getLocalId($username), $password
+                $this->getLocalId($username),
+                $password
             );
             $patron = $this->addIdPrefixes($patron, $source);
             return $patron;
@@ -497,7 +500,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $transactions = $driver->getMyTransactions(
-                $this->stripIdPrefixes($patron, $source), $params
+                $this->stripIdPrefixes($patron, $source),
+                $params
             );
             return $this->addIdPrefixes($transactions, $source);
         }
@@ -521,7 +525,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $transactions = $driver->getMyTransactionHistory(
-                $this->stripIdPrefixes($patron, $source), $params
+                $this->stripIdPrefixes($patron, $source),
+                $params
             );
             return $this->addIdPrefixes($transactions, $source);
         }
@@ -636,7 +641,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver) {
             $holds = $driver->getMyHolds($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes(
-                $holds, $source, self::HOLD_ID_FIELDS
+                $holds,
+                $source,
+                self::HOLD_ID_FIELDS
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -657,7 +664,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $supported = $this->methodSupported(
-                $driver, 'getMyStorageRetrievalRequests', compact('patron')
+                $driver,
+                'getMyStorageRetrievalRequests',
+                compact('patron')
             );
             if (!$supported) {
                 // Return empty array if not supported by the driver
@@ -772,7 +781,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             $locations = $driver->getPickUpLocations(
                 $this->stripIdPrefixes($patron, $source),
                 $this->stripIdPrefixes(
-                    $holdDetails, $source, self::HOLD_ID_FIELDS
+                    $holdDetails,
+                    $source,
+                    self::HOLD_ID_FIELDS
                 )
             );
             return $this->addIdPrefixes($locations, $source);
@@ -877,7 +888,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             if (!empty($holdDetails)) {
                 if (!$this->driverSupportsSource($source, $holdDetails['id'])
                     || !$this->methodSupported(
-                        $driver, 'getDefaultRequestGroup',
+                        $driver,
+                        'getDefaultRequestGroup',
                         compact('patron', 'holdDetails')
                     )
                 ) {
@@ -927,7 +939,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * Cancel Holds
      *
      * Attempts to Cancel a hold or recall on a particular item. The
-     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     * data in $cancelDetails['details'] is taken from holds' cancel_details fields
+     * or, if cancel_details is not set, determined by getCancelHoldDetails().
      *
      * @param array $cancelDetails An array of item and patron data
      *
@@ -967,7 +980,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $hold = $this->stripIdPrefixes(
-                $hold, $source, self::HOLD_ID_FIELDS
+                $hold,
+                $source,
+                self::HOLD_ID_FIELDS
             );
             return $driver->getCancelHoldDetails(
                 $hold,
@@ -1050,7 +1065,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'cancelStorageRetrievalRequests', compact('cancelDetails')
+                $driver,
+                'cancelStorageRetrievalRequests',
+                compact('cancelDetails')
             )
         ) {
             return $driver->cancelStorageRetrievalRequests(
@@ -1079,7 +1096,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'getCancelStorageRetrievalRequestDetails',
+                $driver,
+                'getCancelStorageRetrievalRequestDetails',
                 compact('request', 'patron')
             )
         ) {
@@ -1110,7 +1128,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'checkILLRequestIsValid', compact('id', 'data', 'patron')
+                $driver,
+                'checkILLRequestIsValid',
+                compact('id', 'data', 'patron')
             )
         ) {
             // Patron is not stripped so that the correct library can be determined
@@ -1140,7 +1160,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'getILLPickupLibraries', compact('id', 'patron')
+                $driver,
+                'getILLPickupLibraries',
+                compact('id', 'patron')
             )
         ) {
             // Patron is not stripped so that the correct library can be determined
@@ -1171,7 +1193,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'getILLPickupLocations',
+                $driver,
+                'getILLPickupLocations',
                 compact('id', 'pickupLib', 'patron')
             )
         ) {
@@ -1226,7 +1249,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $supported = $this->methodSupported(
-                $driver, 'getMyILLRequests', compact('patron')
+                $driver,
+                'getMyILLRequests',
+                compact('patron')
             );
             if (!$supported) {
                 // Return empty array if not supported by the driver
@@ -1236,7 +1261,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $this->stripIdPrefixes($patron, $source)
             );
             return $this->addIdPrefixes(
-                $requests, $source, ['id', 'item_id', 'cat_username']
+                $requests,
+                $source,
+                ['id', 'item_id', 'cat_username']
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -1260,7 +1287,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'cancelILLRequests', compact('cancelDetails')
+                $driver,
+                'cancelILLRequests',
+                compact('cancelDetails')
             )
         ) {
             return $driver->cancelILLRequests(
@@ -1289,7 +1318,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'getCancelILLRequestDetails', compact('request', 'patron')
+                $driver,
+                'getCancelILLRequestDetails',
+                compact('request', 'patron')
             )
         ) {
             return $driver->getCancelILLRequestDetails(
@@ -1338,7 +1369,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $supported = $this->methodSupported(
-                $driver, 'getRequestBlocks', compact('patron')
+                $driver,
+                'getRequestBlocks',
+                compact('patron')
             );
             if (!$supported) {
                 return false;
@@ -1364,7 +1397,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $supported = $this->methodSupported(
-                $driver, 'getAccountBlocks', compact('patron')
+                $driver,
+                'getAccountBlocks',
+                compact('patron')
             );
             if (!$supported) {
                 return false;
@@ -1406,7 +1441,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         // If we have resolved the needed driver, just getConfig and return.
         if ($driver && $this->methodSupported($driver, 'getConfig', $params)) {
             return $driver->getConfig(
-                $function, $this->stripIdPrefixes($params, $source)
+                $function,
+                $this->stripIdPrefixes($params, $source)
             );
         }
 
@@ -1604,7 +1640,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * @return mixed     Modified array or empty/null if that input was
      *                   empty/null
      */
-    protected function addIdPrefixes($data, $source,
+    protected function addIdPrefixes(
+        $data,
+        $source,
         $modifyFields = ['id', 'cat_username']
     ) {
         if (empty($source) || empty($data) || !is_array($data)) {
@@ -1614,7 +1652,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $data[$key] = $this->addIdPrefixes(
-                    $value, $source, $modifyFields
+                    $value,
+                    $source,
+                    $modifyFields
                 );
             } else {
                 if (!ctype_digit((string)$key)
@@ -1640,8 +1680,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * @return mixed     Modified array or empty/null if that input was
      *                   empty/null
      */
-    protected function stripIdPrefixes($data, $source,
-        $modifyFields = ['id', 'cat_username'], $ignoreFields = []
+    protected function stripIdPrefixes(
+        $data,
+        $source,
+        $modifyFields = ['id', 'cat_username'],
+        $ignoreFields = []
     ) {
         if (!isset($data) || empty($data)) {
             return $data;
@@ -1654,7 +1697,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                     continue;
                 }
                 $array[$key] = $this->stripIdPrefixes(
-                    $value, $source, $modifyFields
+                    $value,
+                    $source,
+                    $modifyFields
                 );
             } else {
                 $prefixLen = strlen($source) + 1;

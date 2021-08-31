@@ -141,7 +141,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     public function testCheckExcludedRecordsRulesFalseDueToWildcardFailure()
     {
         $driver = $this->getMockDriver(
-            'fake-data', 'VuFind\RecordDriver\SolrMarc', ['Article'], false
+            'fake-data',
+            'VuFind\RecordDriver\SolrMarc',
+            ['Article'],
+            false
         );
         $fixture = $this->getJsonFixture("openurlrules/rule5.json");
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
@@ -173,7 +176,9 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     public function testCheckSupportedRecordsRulesWithWildcardStillFalse()
     {
         $driver = $this->getMockDriver(
-            'fake-openurl', 'VuFind\RecordDriver\SolrDefault', ['CrazyFormat']
+            'fake-openurl',
+            'VuFind\RecordDriver\SolrDefault',
+            ['CrazyFormat']
         );
         $fixture = $this->getJsonFixture("openurlrules/rule5.json");
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
@@ -205,10 +210,14 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     {
         $formats = ['Article'];
         $defaultDriver = $this->getMockDriver(
-            'fake-data', 'VuFind\RecordDriver\SolrDefault', $formats
+            'fake-data',
+            'VuFind\RecordDriver\SolrDefault',
+            $formats
         );
         $marcDriver = $this->getMockDriver(
-            'fake-data', 'VuFind\RecordDriver\SolrMarc', $formats
+            'fake-data',
+            'VuFind\RecordDriver\SolrMarc',
+            $formats
         );
         $openUrl = $this
             ->getOpenUrl($this->getJsonFixture("openurlrules/rule1.json"), $this->rulesConfig);
@@ -237,7 +246,8 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\RecordDriver\SolrDefault
      */
-    protected function getMockDriver($openUrl = 'fake-data',
+    protected function getMockDriver(
+        $openUrl = 'fake-data',
         $class = 'VuFind\RecordDriver\SolrDefault',
         $formats = ['ElectronicArticle', 'Article'],
         $issn = '1234-5678'

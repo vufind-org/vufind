@@ -80,7 +80,9 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -108,7 +110,9 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             throw new \Exception('"database" setting missing');
         }
         return $this->getAdapterFromConnectionString(
-            $this->config->Database->database, $overrideUser, $overridePass
+            $this->config->Database->database,
+            $overrideUser,
+            $overridePass
         );
     }
 
@@ -162,7 +166,14 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $driver = strtolower($options['driver']);
         switch ($driver) {
         case 'mysqli':
-            $options['charset'] = $this->config->Database->charset ?? 'utf8';
+            $options['charset'] = $this->config->Database->charset ?? 'utf8mb4';
+            if (strtolower($options['charset']) === 'latin1') {
+                throw new \Exception(
+                    'The latin1 encoding is no longer supported for MySQL databases'
+                    . ' in VuFind. Please convert your database to utf8 using VuFind'
+                    . ' 7.x or earlier BEFORE upgrading to this version.'
+                );
+            }
             $options['options'] = ['buffer_results' => true];
             break;
         }
@@ -194,8 +205,10 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      *
      * @return Adapter
      */
-    public function getAdapterFromConnectionString($connectionString,
-        $overrideUser = null, $overridePass = null
+    public function getAdapterFromConnectionString(
+        $connectionString,
+        $overrideUser = null,
+        $overridePass = null
     ) {
         [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);

@@ -229,10 +229,15 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $ils->expects($this->exactly(4))->method('__call')
             ->withConsecutive(
-                ['getInstructors'], ['getCourses'], ['getDepartments'],
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
                 ['findReserves']
             )->willReturnOnConsecutiveCalls(
-                $instructors, $courses, $departments, $reserves
+                $instructors,
+                $courses,
+                $departments,
+                $reserves
             );
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')

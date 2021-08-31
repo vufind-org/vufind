@@ -28,7 +28,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: intl, xsl
-          tools: composer:2.0.13
+          tools: composer:2.1.6
 
       - name: Setup node
         uses: actions/setup-node@v2

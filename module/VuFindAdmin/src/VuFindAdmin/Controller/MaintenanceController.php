@@ -122,9 +122,11 @@ class MaintenanceController extends AbstractAdmin
         if ($daysOld < $minAge) {
             $this->flashMessenger()->addMessage(
                 str_replace(
-                    '%%age%%', $minAge,
+                    '%%age%%',
+                    $minAge,
                     'Expiration age must be at least %%age%% days.'
-                ), 'error'
+                ),
+                'error'
             );
         } else {
             $search = $this->getTable($table);
