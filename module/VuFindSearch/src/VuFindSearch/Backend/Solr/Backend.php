@@ -338,7 +338,6 @@ class Backend extends AbstractBackend
      * @param int      $page        Result page to return (starts at 0)
      * @param int      $limit       Number of results to return on each page
      * @param ParamBag $params      Additional parameters
-     * POST)
      * @param int      $offsetDelta Delta to use when calculating page
      * offset (useful for showing a few results above the highlighted row)
      *
