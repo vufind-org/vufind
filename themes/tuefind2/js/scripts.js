@@ -15,7 +15,6 @@ $('#tf-back-to-top').tooltip();
 
 // onclick-events
 $(function() {
-
     // scroll down button
     $('#scroll-down-button').click(function(e) {
         e.preventDefault();
