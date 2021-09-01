@@ -101,8 +101,8 @@ public class TueFindAuth extends TueFind {
         }
         return results;
     }
-    
-    private String getYearRangeOfSubfield(String subfieldData) {
+
+    protected String getYearRangeOfSubfieldValue(String subfieldData) {
         final Matcher matcher = YEAR_RANGE_PATTERN.matcher(subfieldData);
         if (matcher.matches()) {
             String year1 = matcher.group(2);
@@ -132,24 +132,13 @@ public class TueFindAuth extends TueFind {
     }
 
     public String getYearRange(final Record record) {
-        final List<VariableField> yearFields = record.getVariableFields("400");
-        final List<VariableField> yearFieldsAlternative = record.getVariableFields("548");
-        for (final VariableField yearField : yearFields) {
-            final DataField field = (DataField) yearField;
-            for (final Subfield subfield_400d : field.getSubfields('d')) {
-                String yearResult = getYearRangeOfSubfield(subfield_400d.getData());
-                if (yearResult != null)
-                    return yearResult;
-            }
+        List<String> values = getSubfieldValuesMatchingList(record, "400d:548a");
+        for (final String value : values) {
+            final String yearRange = getYearRangeOfSubfieldValue(value);
+            if (yearRange != null)
+                return yearRange;
         }
-        for (final VariableField yearFieldAlternative : yearFieldsAlternative) {
-            final DataField field = (DataField) yearFieldAlternative;
-            for (final Subfield subfield_548a : field.getSubfields('a')) {
-                String yearResult = getYearRangeOfSubfield(subfield_548a.getData());
-                if (yearResult != null)
-                    return yearResult;
-            }
-        }
+
         return null;
     }
 
@@ -207,10 +196,10 @@ public class TueFindAuth extends TueFind {
         if (gndNumber != null)
             externalReferences.add("GND");
 
-        for (final String beaconId : getSubfieldValuesMatchlingList(record, "BEAa")) {
+        for (final String beaconId : getSubfieldValuesMatchingList(record, "BEAa")) {
             externalReferences.add(beaconId);
         }
-        
+
         String wikipediaUrl = getFirstSubfieldValueWithPrefix(record, "670a","Wikipedia");
         if (wikipediaUrl != null)
             externalReferences.add("Wikipedia");
