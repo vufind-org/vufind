@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SetRecordCollectionFactoryCommand.
+ * Get information from the EDS backend
  *
  * PHP version 7
  *
@@ -26,14 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindTest\Command;
+namespace VuFindSearch\Backend\EDS\Command;
 
-use PHPUnit\Framework\TestCase;
-use VuFindSearch\Command\SetRecordCollectionFactoryCommand;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Backend\EDS\Backend;
+use VuFindSearch\Command\CallMethodCommand;
+use VuFindSearch\ParamBag;
 
 /**
- * Unit tests for SetRecordCollectionFactoryCommand.
+ * Get information from the EDS backend
  *
  * @category VuFind
  * @package  Search
@@ -41,27 +41,25 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SetRecordCollectionFactoryCommandTest extends TestCase
+class GetInfoCommand extends CallMethodCommand
 {
     /**
-     * Test that the command works as expected
+     * Constructor.
      *
-     * @return void
+     * @param string    $backend Search backend identifier
+     * @param ?ParamBag $params  Search backend parameters
      */
-    public function testCommand(): void
-    {
-        $factory = $this
-            ->getMockBuilder(RecordCollectionFactoryInterface::class)
-            ->getMock();
-        $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
-        $backend->expects($this->once())->method('setRecordCollectionFactory')
-            ->with($this->equalTo($factory));
-        $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
-        $this->assertEmpty($command->execute($backend)->getResult());  // void method
+    public function __construct(
+        string $backend = 'EDS',
+        ParamBag $params = null
+    ) {
+        parent::__construct(
+            $backend,
+            Backend::class,
+            'getInfo',
+            [],
+            $params,
+            false
+        );
     }
 }

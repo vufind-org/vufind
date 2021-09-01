@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for TermsCommand.
+ * Unit tests for AutocompleteCommand.
  *
  * PHP version 7
  *
@@ -26,14 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindTest\Command;
+namespace VuFindTest\Backend\EDS\Command;
 
 use PHPUnit\Framework\TestCase;
-use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Command\TermsCommand;
+use VuFindSearch\Backend\EDS\Command\AutocompleteCommand;
 
 /**
- * Unit tests for TermsCommand.
+ * Unit tests for AutocompleteCommand.
  *
  * @category VuFind
  * @package  Search
@@ -41,7 +40,7 @@ use VuFindSearch\Command\TermsCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class TermsCommandTest extends TestCase
+class AutocompleteCommandTest extends TestCase
 {
     /**
      * Test that the command works as expected
@@ -52,37 +51,16 @@ class TermsCommandTest extends TestCase
     {
         $backendId = 'bar';
         $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
-        $backend->expects($this->once())->method('terms')
-            ->with(
-                $this->equalTo('field'),
-                $this->equalTo('from'),
-                $this->equalTo(10)
-            )->will($this->returnValue('result'));  // not a realistic value!
-        $command = new TermsCommand($backendId, 'field', 'from', 10);
-        $this->assertEquals('result', $command->execute($backend)->getResult());
-    }
-
-    /**
-     * Test that the command throws an appropriate exception for an unsupported
-     * backend.
-     *
-     * @return void
-     */
-    public function testUnsupportedBackend(): void
-    {
-        $backendId = 'bar';
-        $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue($backendId));
-        $command = new TermsCommand($backendId, 'field', 'from', 10);
-        $this->expectException(BackendException::class);
-        $this->expectExceptionMessage('bar does not support terms()');
-        $command->execute($backend);
+        $backend->expects($this->once())->method('autocomplete')
+            ->with(
+                $this->equalTo('foo'),
+                $this->equalTo('bar')
+            )->will($this->returnValue('result'));  // not a realistic value!
+        $command = new AutocompleteCommand($backendId, 'foo', 'bar');
+        $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 }

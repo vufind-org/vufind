@@ -242,11 +242,19 @@ class Writer
         // accordingly:
         if (is_array($value)) {
             $retVal = '';
-            foreach ($value as $current) {
-                $retVal .= $key . '[]' . $tabStr . " = "
-                    . $this->buildContentValue($current);
+            // TODO: replace $autoIndex code with array_is_list() check
+            // when supported (after PHP 8.1 is minimum required version).
+            $autoIndex = 0;
+            foreach ($value as $i => $current) {
+                // If the array indices are a numeric sequence starting at 0,
+                // omit them from the key names; any other index should be
+                // explicitly set:
+                $currentIndex = ($i === $autoIndex) ? '' : $i;
+                $retVal .= $key . '[' . $currentIndex . ']' . $tabStr . " = "
+                    . $this->buildContentValue($current) . "\n";
+                $autoIndex++;
             }
-            return $retVal;
+            return rtrim($retVal);
         }
 
         // Standard case: value is not an array:
