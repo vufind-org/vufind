@@ -54,7 +54,8 @@ class GetHoldingsCommand extends \VuFindSearch\Command\AbstractBase
         if (!($backend instanceof \VuFindSearch\Backend\WorldCat\Backend)) {
             throw new \Exception("Unexpected backend: " . get_class($backend));
         }
-        $this->result = $backend->getConnector()->getHoldings($this->getContext());
-        return parent::execute($backend);
+        return $this->finalizeExecution(
+            $backend->getConnector()->getHoldings($this->getContext())
+        );
     }
 }
