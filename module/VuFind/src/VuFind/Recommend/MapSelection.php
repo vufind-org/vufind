@@ -28,7 +28,8 @@
  */
 namespace VuFind\Recommend;
 
-use VuFindSearch\Backend\Solr\Backend;
+use VuFind\GeoFeatures\Command\GetResultCoordinatesCommand;
+use VuFindSearch\Service;
 
 /**
  * MapSelection Recommendations Module
@@ -90,16 +91,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     /**
      * Search parameters
      *
-     * @var string
+     * @var object
      */
     protected $searchParams = null;
-
-    /**
-     * Search object
-     *
-     * @var string
-     */
-    protected $searchObject;
 
     /**
      * Search Results coordinates
@@ -116,25 +110,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $bboxSearchCoords = [];
 
     /**
-     * Solr search backend
+     * Search service
      *
-     * @var Backend
+     * @var Service
      */
-    protected $solr;
-
-    /**
-     * Query Builder object
-     *
-     * @var \VuFindSearch\Backend\Solr\QueryBuilder
-     */
-    protected $queryBuilder;
-
-    /**
-     * Solr connector Object
-     *
-     * @var \VuFindSearch\Backend\Solr\Connector
-     */
-    protected $solrConnector;
+    protected $searchService;
 
     /**
      * Query Object
@@ -153,15 +133,13 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     /**
      * Constructor
      *
-     * @param Backend $solr                Search interface
+     * @param Service $ss                  Search service
      * @param array   $basemapOptions      Basemap Options
      * @param array   $mapSelectionOptions Map Options
      */
-    public function __construct($solr, $basemapOptions, $mapSelectionOptions)
+    public function __construct($ss, $basemapOptions, $mapSelectionOptions)
     {
-        $this->solr = $solr;
-        $this->queryBuilder = $solr->getQueryBuilder();
-        $this->solrConnector = $solr->getConnector();
+        $this->searchService = $ss;
         $this->basemapOptions = $basemapOptions;
         $this->mapSelectionOptions = $mapSelectionOptions;
     }
@@ -334,26 +312,19 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function getSearchResultCoordinates()
     {
-        $result = [];
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
         $filters = $params->get('fq');
         if (!empty($filters) && strpos($filters[0], $this->geoField) !== false) {
-            $params->mergeWith($this->queryBuilder->build($this->searchQuery));
-            $params->set('fl', 'id, ' . $this->geoField . ', title');
-            $params->set('wt', 'json');
-            $params->set('rows', '10000000'); // set to return all results
-            $response = json_decode($this->solrConnector->search($params));
-            foreach ($response->response->docs as $current) {
-                if (!isset($current->title)) {
-                    $current->title = $this->translate('Title not available');
-                }
-                $result[] = [
-                    $current->id, $current->{$this->geoField}, $current->title
-                ];
-            }
+            $context = [
+                'searchQuery' => $this->searchQuery,
+                'defaultTitle' => $this->translate('Title not available'),
+                'geoField' => $this->geoField,
+            ];
+            $command = new GetResultCoordinatesCommand('Solr', $context, $params);
+            return $this->searchService->invoke($command)->getResult();
         }
-        return $result;
+        return [];
     }
 
     /**
