@@ -55,7 +55,8 @@ class LookupIssnsCommand extends \VuFindSearch\Command\AbstractBase
         if (!($backend instanceof Backend)) {
             throw new \Exception('Unexpected backend: ' . get_class($backend));
         }
-        $this->result = $backend->getConnector()->lookupIssns($this->getContext());
-        return parent::execute($backend);
+        return $this->finalizeExecution(
+            $backend->getConnector()->lookupIssns($this->getContext())
+        );
     }
 }

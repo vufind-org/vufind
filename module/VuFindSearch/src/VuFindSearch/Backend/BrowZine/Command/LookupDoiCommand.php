@@ -55,7 +55,8 @@ class LookupDoiCommand extends \VuFindSearch\Command\AbstractBase
         if (!($backend instanceof Backend)) {
             throw new \Exception('Unexpected backend: ' . get_class($backend));
         }
-        $this->result = $backend->getConnector()->lookupDoi($this->getContext());
-        return parent::execute($backend);
+        return $this->finalizeExecution(
+            $backend->getConnector()->lookupDoi($this->getContext())
+        );
     }
 }
