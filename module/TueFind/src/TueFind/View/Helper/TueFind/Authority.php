@@ -110,7 +110,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     public function getName(AuthorityRecordDriver &$driver): string
     {
         $name = $driver->getTitle();
-        $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
+        $name = trim(preg_replace('"\d+\-?\d*$"', '', $name));
         return '<span property="name">' . $name . '</span>';
     }
 
