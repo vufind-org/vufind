@@ -28,7 +28,7 @@
  */
 namespace VuFind\Recommend;
 
-use VuFind\GeoFeatures\Command\GetResultCoordinatesCommand;
+use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\Service;
 
 /**
@@ -306,6 +306,31 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     }
 
     /**
+     * Fetch details from search service
+     *
+     * @return array
+     */
+    public function fetchDataFromSearchService()
+    {
+        $params = $this->searchFilters;
+        $params->set('fl', 'id, ' . $this->geoField . ', title');
+        $params->set('rows', '10000000'); // set to return all results
+        $command = new RawJsonSearchCommand('Solr', $this->searchQuery, $params);
+        $response = $this->searchService->invoke($command)->getResult();
+        $defaultTitle = $this->translate('Title not available');
+        $result = [];
+        foreach ($response->response->docs as $current) {
+            if (!isset($current->title)) {
+                $current->title = $defaultTitle;
+            }
+            $result[] = [
+                $current->id, $current->{$this->geoField}, $current->title
+            ];
+        }
+        return $result;
+    }
+
+    /**
      * Get geo field values for all search results
      *
      * @return array
@@ -315,16 +340,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
         $filters = $params->get('fq');
-        if (!empty($filters) && strpos($filters[0], $this->geoField) !== false) {
-            $context = [
-                'searchQuery' => $this->searchQuery,
-                'defaultTitle' => $this->translate('Title not available'),
-                'geoField' => $this->geoField,
-            ];
-            $command = new GetResultCoordinatesCommand('Solr', $context, $params);
-            return $this->searchService->invoke($command)->getResult();
-        }
-        return [];
+        return (!empty($filters) && strpos($filters[0], $this->geoField) !== false)
+            ? $this->fetchDataFromSearchService() : [];
     }
 
     /**

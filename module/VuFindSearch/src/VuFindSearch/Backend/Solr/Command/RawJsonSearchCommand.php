@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Command to fetch map coordinates for search results.
+ * Command to perform a Solr search and return a decoded JSON response
+ * free from additional processing.
  *
  * PHP version 7
  *
@@ -26,13 +27,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFind\GeoFeatures\Command;
+namespace VuFindSearch\Backend\Solr\Command;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Command\CommandInterface;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 
 /**
- * Command to fetch map coordinates for search results.
+ * Command to perform a Solr search and return a decoded JSON response
+ * free from additional processing.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -40,8 +44,23 @@ use VuFindSearch\Command\CommandInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetResultCoordinatesCommand extends \VuFindSearch\Command\AbstractBase
+class RawJsonSearchCommand extends \VuFindSearch\Command\AbstractBase
 {
+    /**
+     * Constructor
+     *
+     * @param string        $backend Search backend identifier
+     * @param AbstractQuery $query   Search query string
+     * @param ?ParamBag     $params  Search backend parameters
+     */
+    public function __construct(
+        string $backend,
+        AbstractQuery $query,
+        ParamBag $params
+    ) {
+        parent::__construct($backend, $query, $params);
+    }
+
     /**
      * Execute command on backend.
      *
@@ -54,23 +73,12 @@ class GetResultCoordinatesCommand extends \VuFindSearch\Command\AbstractBase
         if (!($backend instanceof \VuFindSearch\Backend\Solr\Backend)) {
             throw new \Exception('Unexpected backend: ' . get_class($backend));
         }
-        $context = $this->getContext();
         $queryBuilder = $backend->getQueryBuilder();
         $params = $this->getSearchParameters();
-        $params->mergeWith($queryBuilder->build($context['searchQuery']));
-        $params->set('fl', 'id, ' . $context['geoField'] . ', title');
+        $params->mergeWith($queryBuilder->build($this->getContext()));
         $params->set('wt', 'json');
-        $params->set('rows', '10000000'); // set to return all results
-        $response = json_decode($backend->getConnector()->search($params));
-        $this->result = [];
-        foreach ($response->response->docs as $current) {
-            if (!isset($current->title)) {
-                $current->title = $context['defaultTitle'];
-            }
-            $this->result[] = [
-                $current->id, $current->{$context['geoField']}, $current->title
-            ];
-        }
-        return parent::execute($backend);
+        return $this->finalizeExecution(
+            json_decode($backend->getConnector()->search($params))
+        );
     }
 }
