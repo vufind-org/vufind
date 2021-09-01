@@ -123,7 +123,7 @@ VuFind.register('lightbox', function Lightbox() {
       return;
     }
     // An external link should be just opened
-    if (obj.url.indexOf(window.location.hostname) == -1) {
+    if (obj.url.indexOf(window.location.hostname) === -1) {
       window.open(obj.url, "_blank").focus();
       return true;
     }
