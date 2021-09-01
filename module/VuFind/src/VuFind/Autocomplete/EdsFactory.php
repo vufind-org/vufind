@@ -66,8 +66,6 @@ class EdsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class)->get('EDS')
-        );
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }
