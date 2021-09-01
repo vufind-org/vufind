@@ -242,6 +242,8 @@ class Writer
         // accordingly:
         if (is_array($value)) {
             $retVal = '';
+            // TODO: replace $autoIndex code with array_is_list() check
+            // when supported (after PHP 8.1 is minimum required version).
             $autoIndex = 0;
             foreach ($value as $i => $current) {
                 // If the array indices are a numeric sequence starting at 0,
