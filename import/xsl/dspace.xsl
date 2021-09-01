@@ -13,6 +13,20 @@
     <xsl:param name="workKey_include_regEx"></xsl:param>
     <xsl:param name="workKey_exclude_regEx"></xsl:param>
     <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
+    <xsl:template match="/">
+        <xsl:if test="collection">
+            <collection>
+            <xsl:for-each select="collection">
+                <xsl:for-each select="oai_dc:dc">
+                    <xsl:apply-templates select="."/>
+                </xsl:for-each>
+            </xsl:for-each>
+            </collection>
+        </xsl:if>
+        <xsl:if test="oai_dc:dc">
+            <xsl:apply-templates/>
+        </xsl:if>
+    </xsl:template>
     <xsl:template match="oai_dc:dc">
         <add>
             <doc>
