@@ -76,7 +76,7 @@
       <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
         <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
           <h4 class="panel-title">
-            <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc) ?></a>
+            <a class="accordion-toggle" data-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav"><?=$this->transEsc($desc) ?></a>
           </h4>
         </div>
         <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if($this->defaultTab === strtolower($tab)): ?> in<?php endif; ?>"></div>

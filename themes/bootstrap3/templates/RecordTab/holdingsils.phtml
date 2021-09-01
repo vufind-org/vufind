@@ -39,17 +39,17 @@
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <?php if (!$user): ?>
       <div class="alert alert-info">
-        <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'Holdings', ['login' => 'true', 'catalogLogin' => 'true'])?>" data-lightbox><?=$this->transEsc("hold_login")?></a>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['login' => 'true', 'catalogLogin' => 'true']))?>" data-lightbox><?=$this->transEsc("hold_login")?></a>
       </div>
     <?php elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true'])])?>
+        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true']))])?>
       </div>
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
 <?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-  <a class="placehold" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
+  <a class="placehold" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
 <?php endif; ?>
 <?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
