@@ -29,6 +29,7 @@
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
+use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\TermsCommand;
 
 /**
@@ -62,7 +63,26 @@ class TermsCommandTest extends TestCase
                 $this->equalTo(10)
             )->will($this->returnValue('result'));  // not a realistic value!
         $command = new TermsCommand($backendId, 'field', 'from', 10);
+        $this->assertEquals('result', $command->execute($backend)->getResult());
+    }
+
+    /**
+     * Test that the command throws an appropriate exception for an unsupported
+     * backend.
+     *
+     * @return void
+     */
+    public function testUnsupportedBackend(): void
+    {
+        $backendId = 'bar';
+        $backend = $this
+            ->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
+            ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue($backendId));
+        $command = new TermsCommand($backendId, 'field', 'from', 10);
+        $this->expectException(BackendException::class);
+        $this->expectExceptionMessage('bar does not support terms()');
         $command->execute($backend);
-        $this->assertEquals('result', $command->getResult());
     }
 }
