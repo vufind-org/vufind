@@ -358,9 +358,9 @@ class Service
             if (!$response->stopped()) {
                 // We need to construct our error message differently depending
                 // on whether or not we have a command object...
-                $commandClass = isset($args['command'])
-                    ? get_class($args['command']) : 'null';
-                $context = $args['context'] ?? $commandClass;
+                $context = isset($args['command'])
+                    ? $args['command']->getContext()
+                    : ($args['context'] ?? 'null');
                 $backend = isset($args['command'])
                     ? $args['command']->getTargetBackendName()
                     : ($args['backend'] ?? $backend);

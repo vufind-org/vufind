@@ -643,6 +643,30 @@ class SearchServiceTest extends TestCase
         $service->retrieve('junk', 'foo');
     }
 
+    /**
+     * Test a failure to resolve using a command object.
+     *
+     * @return void
+     */
+    public function testFailedResolveWithCommand()
+    {
+        $this->expectException(\VuFindSearch\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Unable to resolve backend: getInfo, EDS');
+
+        $mockResponse = $this->createMock(\Laminas\EventManager\ResponseCollection::class);
+        $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
+        $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $service = new Service();
+        $em->expects($this->any())->method('triggerUntil')
+            ->with(
+                $this->anything(),
+                $this->equalTo('resolve'),
+                $this->equalTo($service)
+            )->will($this->returnValue($mockResponse));
+        $service->setEventManager($em);
+        $service->invoke(new \VuFindSearch\Backend\EDS\Command\GetInfoCommand());
+    }
+
     // Internal API
 
     /**
