@@ -222,7 +222,7 @@
 
       <?php $canonLawRangesStrings = $this->driver->tryMethod('getCanonLawRangesStrings');
         if (!empty($canonLawRangesStrings) && count($canonLawRangesStrings) > 0) {
-          echo '<div>' . implode($canonLawRangesStrings, ', ') . '</div>';
+          echo '<div>' . implode(array_unique($canonLawRangesStrings), '; ') . '</div>';
         }
       ?>
 
@@ -293,14 +293,14 @@
             <div class="hierarchyTreeLink">
               <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <i class="result-link-icon fa fa-fw fa-sitemap" aria-hidden="true"></i>
-            <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
+            <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID])?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID])?>" data-lightbox-post="tab=hierarchytree">
                 <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
               </a>
             </div>
           <?php endforeach; ?>
         <?php endif; ?>
 
-        <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
       </div>
     </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
