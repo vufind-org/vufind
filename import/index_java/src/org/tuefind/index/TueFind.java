@@ -130,7 +130,7 @@ public class TueFind extends SolrIndexerMixin {
         return getSubfieldsMatchingList(record, subfieldList, null);
     }
 
-    protected List<String> getSubfieldValuesMatchlingList(final Record record, final String subfieldList) {
+    protected List<String> getSubfieldValuesMatchingList(final Record record, final String subfieldList) {
         List<Subfield> subfields = getSubfieldsMatchingList(record, subfieldList);
         List<String> values = new ArrayList<>();
         for (final Subfield subfield : subfields) {
