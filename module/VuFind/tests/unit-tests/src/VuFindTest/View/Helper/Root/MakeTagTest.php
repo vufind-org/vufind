@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use VuFind\Record\Router;
 use VuFind\View\Helper\Root\MakeTag;
 
 /**

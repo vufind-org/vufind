@@ -68,13 +68,13 @@ class MakeTag extends AbstractHelper
     /**
      * Turn associative array into a string of attributes in an anchor
      *
-     * @param string $tagName HTML tag name
-     * @param string $text    Link contents
-     * @param array  $attrs   Link attributes (associative array)
+     * @param string $tagName   HTML tag name
+     * @param string $innerHTML InnerHTML
+     * @param array  $attrs     Tag attributes (associative array)
      *
      * @return string
      */
-    protected function compileTag(string $tagName, string $content, array $attrs)
+    protected function compileTag(string $tagName, string $innerHTML, array $attrs)
     {
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
 
