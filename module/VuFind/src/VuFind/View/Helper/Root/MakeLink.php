@@ -38,10 +38,10 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MakeLink extends AbstractHelper
+class MakeLink extends MakeTag
 {
     /**
-     * Create an anchor tag
+     * Render an HTML link
      *
      * $href will override $attrs['href']
      * > Feel free to use like makeLink('text', 'href', $defaults);
@@ -52,15 +52,15 @@ class MakeLink extends AbstractHelper
      * If $attrs is a string, will be treated like a class
      * > makeLink('text', $href, 'btn-link')
      *
-     * @param string       $text  Link contents (should be properly-formed HTML)
+     * @param string       $text  Link contents (must be properly-formed HTML)
      * @param string|array $href  Link destination (null to skip)
      * @param array        $attrs Link attributes (associative array)
      *
      * @return string HTML for an anchor tag
      */
-    public function __invoke($text, $href = null, $attrs = [])
+    public function __invoke(string $text, string $href = null, $attrs = [])
     {
-        // $attr not an object, interpret as class name
+        // If $attrs is not an object, interpret as class name
         if (!is_array($attrs)) {
             $attrs = !empty($attrs) ? ['class' => $attrs] : [];
         }
@@ -71,39 +71,12 @@ class MakeLink extends AbstractHelper
             !empty($href) ? ['href' => $href] : []
         );
 
-        // just text
-        if (empty($mergedAttrs)) {
-            return $text;
-        }
-
         // Span instead of anchor when no href present
-        if (!($mergedAttrs['href'] ?? false)) {
-            return $this->compileAttrs($text, $mergedAttrs, 'span');
+        if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
+            return $this->compileTag('span', $text, $mergedAttrs);
         }
 
         // Compile attributes
-        return $this->compileAttrs($text, $mergedAttrs);
-    }
-
-    /**
-     * Turn associative array into a string of attributes in an anchor
-     *
-     * @param string $text    Link contents
-     * @param array  $attrs   Link attributes (associative array)
-     * @param string $tagName HTML tag name
-     *
-     * @return string
-     */
-    protected function compileAttrs($text, $attrs, $tagName = 'a')
-    {
-        $escAttr = $this->getView()->plugin('escapeHtmlAttr');
-
-        $anchor = '<' . $tagName;
-        foreach ($attrs as $key => $val) {
-            $anchor .= ' ' . $key . '="' . $escAttr($val) . '"';
-        }
-
-        $anchor .= '>' . $text . '</' . $tagName . '>';
-        return $anchor;
+        return $this->compileTag('a', $text, $mergedAttrs);
     }
 }

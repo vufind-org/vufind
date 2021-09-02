@@ -73,17 +73,12 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             '<a href="/Record/id">text</a>',
-            $helper('text', '/Record/id')
+            $helper('text', false, ['href' => '/Record/id'])
         );
 
         $this->assertEquals(
             '<a href="#anchor">text</a>',
-            $helper('text', '#anchor')
-        );
-
-        $this->assertEquals(
-            '<a href="#">text</a>',
-            $helper('text', '#')
+            $helper('text', '#anchor', ['href' => 'default'])
         );
     }
 
@@ -92,14 +87,16 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNoLink()
+    public function testSpan()
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals('text', $helper('text', null, ''));
+        $this->assertEquals('<span>text</span>', $helper('text', null, ''));
+        $this->assertEquals('<span>text</span>', $helper('text', '', ''));
+        $this->assertEquals('<span>text</span>', $helper('text', false, []));
         // Test no escape
-        $this->assertEquals('text&', $helper('text&', null, null));
-        $this->assertEquals('text<', $helper('text<', false, false));
+        $this->assertEquals('<span>text&</span>', $helper('text&', null, null));
+        $this->assertEquals('<span>text<</span>', $helper('text<', false, false));
     }
 
     /**
