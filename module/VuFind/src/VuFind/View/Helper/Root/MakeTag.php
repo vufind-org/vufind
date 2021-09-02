@@ -86,7 +86,7 @@ class MakeTag extends AbstractHelper
             }
         }
 
-        $anchor .= '>' . $content . '</' . $tagName . '>';
+        $anchor .= '>' . $innerHTML . '</' . $tagName . '>';
         return $anchor;
     }
 }
