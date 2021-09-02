@@ -49,11 +49,13 @@ class GetHoldingsCommandTest extends TestCase
      */
     public function testUnsupportedBackend(): void
     {
-        $command = new GetHoldingsCommand('foo', []);
+        $command = new GetHoldingsCommand('foo', 'id');
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $this->expectExceptionMessage('Unexpected backend: ' . get_class($backend));
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue('foo'));
+        $this->expectExceptionMessage('foo does not support getHoldings()');
         $command->execute($backend);
     }
 
@@ -64,17 +66,14 @@ class GetHoldingsCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\WorldCat\Connector::class)
-            ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->once())->method('getHoldings')
-            ->with($this->equalTo('id'))
-            ->will($this->returnValue('foo'));
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\WorldCat\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue('WorldCat'));
+        $backend->expects($this->once())->method('getHoldings')
+            ->with($this->equalTo('id'))
+            ->will($this->returnValue('foo'));
         $command = new GetHoldingsCommand('WorldCat', 'id');
         $this->assertEquals('foo', $command->execute($backend)->getResult());
     }

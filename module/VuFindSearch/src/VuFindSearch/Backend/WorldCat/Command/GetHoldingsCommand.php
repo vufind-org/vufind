@@ -28,9 +28,6 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Command;
 
-use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Command\CommandInterface;
-
 /**
  * Command to fetch holdings from the WorldCat backend.
  *
@@ -40,22 +37,23 @@ use VuFindSearch\Command\CommandInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetHoldingsCommand extends \VuFindSearch\Command\AbstractBase
+class GetHoldingsCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
-     * Execute command on backend.
+     * Constructor
      *
-     * @param BackendInterface $backend Backend
-     *
-     * @return CommandInterface Command instance for method chaining
+     * @param string $backend Search backend identifier
+     * @param string $id      WorldCat record ID
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    public function __construct(string $backend, string $id)
     {
-        if (!($backend instanceof \VuFindSearch\Backend\WorldCat\Backend)) {
-            throw new \Exception("Unexpected backend: " . get_class($backend));
-        }
-        return $this->finalizeExecution(
-            $backend->getConnector()->getHoldings($this->getContext())
+        parent::__construct(
+            $backend,
+            \VuFindSearch\Backend\WorldCat\Backend::class,
+            'getHoldings',
+            [$id],
+            null,
+            false
         );
     }
 }
