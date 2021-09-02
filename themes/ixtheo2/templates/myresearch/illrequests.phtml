@@ -5,6 +5,8 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
         . '<li class="active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
+
+    $this->headScript()->appendFile('requests.js');
 ?>
 
 <div class="row">
@@ -13,27 +15,27 @@
 
     <?=$this->flashmessages()?>
 
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
     <?php if (!empty($this->recordList)): ?>
       <?php if ($this->cancelForm): ?>
-        <form name="cancelForm" class="inline" method="post" id="cancelILLRequest">
+      <form name="cancelForm" class="inline" method="post" id="cancelILLRequest" data-clear-account-cache="illRequests">
           <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
           <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
           <div class="btn-group">
-            <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("ill_request_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
+          <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr("ill_request_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
             <ul class="dropdown-menu">
               <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
-              <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            <li><a href="#" id="confirm_cancel_selected_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
           <div class="btn-group">
-            <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("ill_request_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
+          <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr("ill_request_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
             <ul class="dropdown-menu">
               <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
-              <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
       <?php endif; ?>
@@ -71,7 +73,7 @@
                 $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                 echo '<a href="' . $this->recordLink()->getUrl($resource)
                   . '" class="title">' . $title . '</a>';
-              } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+              } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
                 // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
                 echo $this->escapeHtml($ilsDetails['title']);
               } else {
@@ -131,7 +133,7 @@
             <br />
 
             <?php if (isset($this->cancelResults['items'])): ?>
-              <?php foreach ($this->cancelResults['items'] as $itemId=>$cancelResult): ?>
+              <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
                 <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
                   <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
                 <?php endif; ?>
@@ -139,7 +141,7 @@
             <?php endif; ?>
 
             <?php if (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
-              <div class="text-success"><?=$this->transEsc("request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
+              <div class="text-success"><?=$this->transEsc("request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], [], $ilsDetails['in_transit']) : '') ?></div>
             <?php endif; ?>
             <?php if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
               <div class="text-success"><?=$this->transEsc("ill_request_processed") . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
@@ -153,9 +155,10 @@
             <?php if (isset($ilsDetails['cancel_link'])): ?>
               <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("ill_request_cancel") ?></a></p>
             <?php endif; ?>
-
           </div>
         </div>
+        <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
+      </div>
       <?php endforeach; ?>
       <?php if ($this->cancelForm): ?></form><?php endif; ?>
     <?php else: ?>
@@ -163,7 +166,7 @@
     <?php endif; ?>
   </div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'ILLRequests'))?>
+  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'ILLRequests'])?>
   </div>
 </div>

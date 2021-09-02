@@ -7,13 +7,13 @@
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'Favorites';
-  $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
 
   // Load Javascript only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption()!="full") {
+  if ($this->params->getOptions()->getListViewOption() != "full") {
     $this->headScript()->appendFile("record.js");
     $this->headScript()->appendFile("embedded_record.js");
   }
@@ -33,8 +33,8 @@
       <h2 class="pull-left flip"><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
       <div class="pull-right flip">
         <?php if (isset($list)): ?>
-          <?php if (isset($list) && $list->editAllowed($account->isLoggedIn())): ?>
-            <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
+        <?php if ($list->editAllowed($account->isLoggedIn())): ?>
+          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
             <div class="btn-group">
               <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
                 <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc("delete_list")?>

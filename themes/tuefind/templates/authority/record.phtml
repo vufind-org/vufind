@@ -2,7 +2,6 @@
     $this->layout()->breadcrumbs = false;
     $this->backgroundTabs = $this->BackgroundTabs ?? [];
     $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
-
     // TueFind:
     // - record.js is needed for AJAX tab logic
     // - disabled, because we use the non-ajax-version.
@@ -122,7 +121,10 @@
   // Pick a tab to display -- Details if available, otherwise first option (if any):
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
 ?>
-
+<?php /*
+<h1><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h1>
+<p><?=empty($tab) ? $this->transEsc('no_description') :  $this->record($this->driver)->getTab($tab)?></p>
+ */?>
 <?php /* TueFind: Use similar tab logic as for title data (without AJAX!)*/?>
 <div class="record-tabs">
   <ul class="nav nav-tabs">

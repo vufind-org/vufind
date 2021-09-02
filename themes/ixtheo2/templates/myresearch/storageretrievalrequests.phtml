@@ -4,6 +4,8 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
+
+  $this->headScript()->appendFile('requests.js');
 ?>
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">

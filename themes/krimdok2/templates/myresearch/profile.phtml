@@ -47,7 +47,7 @@
                   <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
               </select>
-              <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
+              <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Save')?>" />
             </form>
           <?php else: // case 2: set home library disallowed, but default provided by ILS ?>
             <?=$this->transEscWithPrefix('location_', $this->preferredLibraryDisplay)?>
