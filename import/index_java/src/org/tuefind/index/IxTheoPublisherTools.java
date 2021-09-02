@@ -6,7 +6,7 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 
-public class IxTheoPublisher extends TueFind {
+public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
     private final static Map<String, String> replacements = new LinkedHashMap<>(128);
     private final static Set<String> replacementBlackList = new HashSet<>();
 
@@ -115,7 +115,7 @@ public class IxTheoPublisher extends TueFind {
      */
     public Set<String> getNormalizedPublishers(final Record record) {
         Set<String> publishers = new LinkedHashSet<>();
-        final Set<String> rawPublishers = getRawPublishers(record);
+        final Set<String> rawPublishers = getPublishers(record);
 
         for (String publisher : rawPublishers) {
             publisher = publisher.trim();
@@ -138,49 +138,6 @@ public class IxTheoPublisher extends TueFind {
         if (publishers == null || publishers.isEmpty()) {
             return TueFindBiblio.UNASSIGNED_SET;
         }
-        return publishers;
-    }
-
-    public Set<String> getRawPublishers(final Record record) {
-        final Set<String> publishers = new LinkedHashSet<>();
-
-        // First check old-style 260b name:
-        final List<VariableField> list260 = record.getVariableFields("260");
-        for (final VariableField vf : list260) {
-            final DataField df = (DataField) vf;
-            final Subfield current = df.getSubfield('b');
-            if (current != null) {
-                publishers.add(current.getData());
-            }
-        }
-
-        // Now track down relevant RDA-style 264b names; we only care about
-        // copyright and publication names (and ignore copyright names if
-        // publication names are present).
-        final Set<String> pubNames = new LinkedHashSet<>();
-        final Set<String> copyNames = new LinkedHashSet<>();
-        final List<VariableField> list264 = record.getVariableFields("264");
-        for (final VariableField vf : list264) {
-            final DataField df = (DataField) vf;
-            final Subfield currentName = df.getSubfield('b');
-            if (currentName != null) {
-                final char ind2 = df.getIndicator2();
-                switch (ind2) {
-                    case '1':
-                        pubNames.add(currentName.getData());
-                        break;
-                    case '4':
-                        copyNames.add(currentName.getData());
-                        break;
-                }
-            }
-        }
-        if (!pubNames.isEmpty()) {
-            publishers.addAll(pubNames);
-        } else if (!copyNames.isEmpty()) {
-            publishers.addAll(copyNames);
-        }
-
         return publishers;
     }
 }
