@@ -57,7 +57,10 @@ class MakeLink extends MakeTag
      *
      * @return string HTML for an anchor tag
      */
-    public function __invoke(string $text, string $href = null, $attrs = [],
+    public function __invoke(
+        string $text,
+        string $href = null,
+        $attrs = [],
         $options = []
     ) {
         // If $attrs is not an object, interpret as class name
