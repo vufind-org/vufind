@@ -170,7 +170,7 @@ class LocaleSettings
      */
     protected function parseDefaultLocale(Config $config): string
     {
-        $locale = $config->Site->language;
+        $locale = $config->Site->language ?? null;
         if (empty($locale)) {
             throw new \Exception('Default locale not configured!');
         }
