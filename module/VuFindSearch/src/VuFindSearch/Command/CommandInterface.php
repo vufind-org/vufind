@@ -51,7 +51,7 @@ interface CommandInterface
      *
      * @return string
      */
-    public function getTargetBackendIdentifier(): string;
+    public function getTargetIdentifier(): string;
 
     /**
      * Execute command on backend.

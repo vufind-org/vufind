@@ -96,7 +96,7 @@ abstract class AbstractBase implements CommandInterface
      *
      * @return string
      */
-    public function getTargetBackendIdentifier(): string
+    public function getTargetIdentifier(): string
     {
         return $this->backend;
     }
