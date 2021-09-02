@@ -7,8 +7,13 @@ import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 
 public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
-    private final static Map<String, String> replacements = new LinkedHashMap<>(128);
-    private final static Set<String> replacementBlackList = new HashSet<>();
+    protected final static Map<String, String> replacements = new LinkedHashMap<>(128);
+    protected final static Set<String> replacementBlackList = new HashSet<>();
+
+    // Placeholder values inspired by https://www.loc.gov/marc/bibliographic/concise/bd264.html
+    protected final static String placeholderForCopyright = "[copyright not identified]";
+    protected final static String placeholderForPublication = "[publication not identified]";
+    protected final static String placeholderForPublisher = "[publisher not identified]";
 
     static {
 // delete commas at the end
@@ -128,6 +133,8 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
 
             if (!publisher.isEmpty()) {
                 publishers.add(publisher);
+            } else {
+                publishers.add(placeholderForPublisher);
             }
         }
         return publishers;
@@ -138,6 +145,81 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
         if (publishers == null || publishers.isEmpty()) {
             return TueFindBiblio.UNASSIGNED_SET;
         }
+        return publishers;
+    }
+
+    /**
+     * We need to override this parent function to store placeholder values if no subfield is found.
+     * This is necessary to keep the publishers field in sync with other fields
+     * which will be combined on PHP side.
+     *
+     * See also:
+     * - VuFind\RecordDriver\DefaultRecord::getPublicationDetails()
+     * - Issue #1339
+     *
+     * @param record
+     *
+     * @return
+     */
+    public Set<String> getPublishers(final Record record) {
+        Set<String> publishers = new LinkedHashSet<String>();
+
+        // First check old-style 260b name:
+        List<VariableField> list260 = record.getVariableFields("260");
+        for (VariableField vf : list260)
+        {
+            DataField df = (DataField) vf;
+            String currentString = "";
+            for (Subfield current : df.getSubfields('b')) {
+                currentString = currentString.trim().concat(" " + current.getData()).trim();
+            }
+
+            // TueFind: Add placeholder if the subfield is missing
+            if (currentString.length() > 0) {
+                publishers.add(currentString);
+            } else {
+                publishers.add(placeholderForPublisher);
+            }
+        }
+
+        // Now track down relevant RDA-style 264b names; we only care about
+        // copyright and publication names (and ignore copyright names if
+        // publication names are present).
+        Set<String> pubNames = new LinkedHashSet<String>();
+        Set<String> copyNames = new LinkedHashSet<String>();
+        List<VariableField> list264 = record.getVariableFields("264");
+        for (VariableField vf : list264)
+        {
+            DataField df = (DataField) vf;
+            String currentString = "";
+            for (Subfield current : df.getSubfields('b')) {
+                currentString = currentString.trim().concat(" " + current.getData()).trim();
+            }
+
+            // TueFind: Add placeholder if the subfield is missing
+            char ind2 = df.getIndicator2();
+            switch (ind2)
+            {
+                case '1':
+                    if (currentString.isEmpty()) {
+                        currentString = placeholderForPublication;
+                    }
+                    pubNames.add(currentString);
+                    break;
+                case '4':
+                    if (currentString.isEmpty()) {
+                        currentString = placeholderForCopyright;
+                    }
+                    copyNames.add(currentString);
+                    break;
+            }
+        }
+        if (pubNames.size() > 0) {
+            publishers.addAll(pubNames);
+        } else if (copyNames.size() > 0) {
+            publishers.addAll(copyNames);
+        }
+
         return publishers;
     }
 }
