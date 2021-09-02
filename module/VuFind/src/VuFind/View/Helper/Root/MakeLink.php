@@ -50,14 +50,16 @@ class MakeLink extends MakeTag
      * If $attrs is a string, will be treated like a class
      * > makeLink('text', $href, 'btn-link')
      *
-     * @param string       $text  Link contents (must be properly-formed HTML)
-     * @param string|array $href  Link destination (null to skip)
-     * @param array        $attrs Link attributes (associative array)
+     * @param string       $text    Link contents (must be properly-formed HTML)
+     * @param string|array $href    Link destination (null to skip)
+     * @param array        $attrs   Link attributes (associative array)
+     * @param array        $options Additional options
      *
      * @return string HTML for an anchor tag
      */
-    public function __invoke(string $text, string $href = null, $attrs = [])
-    {
+    public function __invoke(string $text, string $href = null, $attrs = [],
+        $options = []
+    ) {
         // If $attrs is not an object, interpret as class name
         if (!is_array($attrs)) {
             $attrs = !empty($attrs) ? ['class' => $attrs] : [];
@@ -72,6 +74,11 @@ class MakeLink extends MakeTag
         // Span instead of anchor when no href present
         if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
             return $this->compileTag('span', $text, $mergedAttrs);
+        }
+
+        // Special options
+        if ($options['proxyUrl'] ?? false) {
+            $mergedAttrs['href'] = $options['proxyUrl'] . $mergedAttrs['href'];
         }
 
         // Compile attributes

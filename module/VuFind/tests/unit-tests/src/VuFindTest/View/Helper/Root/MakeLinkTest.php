@@ -177,6 +177,26 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that helper obeys options
+     *
+     * @return void
+     */
+    public function testProxy()
+    {
+        $helper = $this->getHelper();
+
+        $this->assertEquals(
+            '<a href="/Record/foo">recordLink</a>',
+            $helper('recordLink', '/Record/foo', null, null)
+        );
+
+        $this->assertEquals(
+            '<a href="https://super.safe?url=/Record/foo">recordLink</a>',
+            $helper('recordLink', '/Record/foo', null, ['proxyUrl' => 'https://super.safe?url='])
+        );
+    }
+
+    /**
      * Get a URL helper.
      *
      * @return \VuFind\View\Helper\Root\Url
