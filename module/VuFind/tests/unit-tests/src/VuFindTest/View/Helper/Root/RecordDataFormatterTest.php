@@ -81,7 +81,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
-            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockRecordRouter()),
+            'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($container)),
             'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
