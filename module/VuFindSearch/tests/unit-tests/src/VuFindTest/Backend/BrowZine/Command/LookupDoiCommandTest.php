@@ -43,38 +43,20 @@ use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
 class LookupDoiCommandTest extends TestCase
 {
     /**
-     * Test that an error is thrown for unsupported backends.
-     *
-     * @return void
-     */
-    public function testUnsupportedBackend(): void
-    {
-        $command = new LookupDoiCommand('foo', []);
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\WorldCat\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $this->expectExceptionMessage('Unexpected backend: ' . get_class($backend));
-        $command->execute($backend);
-    }
-
-    /**
      * Test that a supported backend behaves as expected.
      *
      * @return void
      */
     public function testSupportedBackend(): void
     {
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Connector::class)
-            ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->once())->method('lookupDoi')
-            ->with($this->equalTo('doi'))
-            ->will($this->returnValue('foo'));
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue('BrowZine'));
+        $backend->expects($this->once())->method('lookupDoi')
+            ->with($this->equalTo('doi'))
+            ->will($this->returnValue('foo'));
         $command = new LookupDoiCommand('BrowZine', 'doi');
         $this->assertEquals('foo', $command->execute($backend)->getResult());
     }

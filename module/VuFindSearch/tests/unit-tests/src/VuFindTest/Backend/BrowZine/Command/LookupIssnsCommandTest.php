@@ -43,38 +43,20 @@ use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
 class LookupIssnsCommandTest extends TestCase
 {
     /**
-     * Test that an error is thrown for unsupported backends.
-     *
-     * @return void
-     */
-    public function testUnsupportedBackend(): void
-    {
-        $command = new LookupIssnsCommand('foo', []);
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\WorldCat\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $this->expectExceptionMessage('Unexpected backend: ' . get_class($backend));
-        $command->execute($backend);
-    }
-
-    /**
      * Test that a supported backend behaves as expected.
      *
      * @return void
      */
     public function testSupportedBackend(): void
     {
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Connector::class)
-            ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->once())->method('lookupIssns')
-            ->with($this->equalTo(['1111-1111']))
-            ->will($this->returnValue('foo'));
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue('BrowZine'));
+        $backend->expects($this->once())->method('lookupIssns')
+            ->with($this->equalTo(['1111-1111']))
+            ->will($this->returnValue('foo'));
         $command = new LookupIssnsCommand('BrowZine', ['1111-1111']);
         $this->assertEquals('foo', $command->execute($backend)->getResult());
     }

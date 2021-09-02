@@ -28,9 +28,7 @@
  */
 namespace VuFindSearch\Backend\BrowZine\Command;
 
-use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\BrowZine\Backend;
-use VuFindSearch\Command\CommandInterface;
 
 /**
  * Command to look up a DOI in the BrowZine backend.
@@ -41,22 +39,23 @@ use VuFindSearch\Command\CommandInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class LookupDoiCommand extends \VuFindSearch\Command\AbstractBase
+class LookupDoiCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
-     * Execute command on backend.
+     * Constructor
      *
-     * @param BackendInterface $backend Backend
-     *
-     * @return CommandInterface Command instance for method chaining
+     * @param string $backend Search backend identifier
+     * @param string $doi     DOI to look up
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    public function __construct(string $backend, string $doi)
     {
-        if (!($backend instanceof Backend)) {
-            throw new \Exception('Unexpected backend: ' . get_class($backend));
-        }
-        return $this->finalizeExecution(
-            $backend->getConnector()->lookupDoi($this->getContext())
+        return parent::__construct(
+            $backend,
+            Backend::class,
+            'lookupDoi',
+            [$doi],
+            null,
+            false
         );
     }
 }
