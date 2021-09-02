@@ -92,11 +92,11 @@ abstract class AbstractBase implements CommandInterface
     }
 
     /**
-     * Return name of target backend.
+     * Return target backend identifier.
      *
      * @return string
      */
-    public function getTargetBackendName(): string
+    public function getTargetBackendIdentifier(): string
     {
         return $this->backend;
     }

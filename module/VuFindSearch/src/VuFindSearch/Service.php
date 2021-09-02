@@ -110,7 +110,8 @@ class Service
         // All other legacy event parameters are accessible via the command object.
         $args = ['command' => $command];
 
-        $backendInstance = $this->resolve($command->getTargetBackendName(), $args);
+        $backendInstance
+            = $this->resolve($command->getTargetBackendIdentifier(), $args);
 
         $this->triggerPre($command, $args);
         try {
@@ -311,7 +312,7 @@ class Service
      */
     protected function legacyInvoke(CommandInterface $command, array $args = [])
     {
-        $backend = $command->getTargetBackendName();
+        $backend = $command->getTargetBackendIdentifier();
         $params = $command->getSearchParameters();
         $context = $command->getContext();
         $args = array_merge(
