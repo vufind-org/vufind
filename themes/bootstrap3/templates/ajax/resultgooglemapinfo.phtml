@@ -9,7 +9,7 @@
           <?php if ($thumb = $this->record($record)->getThumbnail()): ?><img class="mapInfoResultThumbImg" src="<?=$this->escapeHtmlAttr($thumb) ?>"/><?php endif; ?>
         </div>
 
-        &bull; <a href="<?=$this->recordLink()->getUrl($record)?>"><?=($title = $record->getTitle()) ? $title : $this->transEsc('Title not available') ?></a>
+        &bull; <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($record))?>"><?=($title = $record->getTitle()) ? $title : $this->transEsc('Title not available') ?></a>
         <?php $authors = $record->getPrimaryAuthors(); if (!empty($authors)): ?>
           <span class="small">
             <?=$this->transEsc('by')?> <a href="<?=$this->record($record)->getLink('author', $authors[0])?>"><?=$this->escapeHtml($authors[0]);?></a><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>

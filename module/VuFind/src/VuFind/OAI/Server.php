@@ -163,9 +163,9 @@ class Server
     /**
      * Record link helper (optional)
      *
-     * @var \VuFind\View\Helper\Root\RecordLink
+     * @var \VuFind\View\Helper\Root\RecordLinker
      */
-    protected $recordLinkHelper = null;
+    protected $recordLinkerHelper = null;
 
     /**
      * Set queries
@@ -252,16 +252,16 @@ class Server
     }
 
     /**
-     * Add a record link helper (optional -- allows enhancement of some metadata
+     * Add a record linker helper (optional -- allows enhancement of some metadata
      * with VuFind-specific links).
      *
-     * @param \VuFind\View\Helper\Root\RecordLink $helper Helper to set
+     * @param \VuFind\View\Helper\Root\RecordLinker $helper Helper to set
      *
      * @return void
      */
-    public function setRecordLinkHelper($helper)
+    public function setRecordLinkerHelper($helper)
     {
-        $this->recordLinkHelper = $helper;
+        $this->recordLinkerHelper = $helper;
     }
 
     /**
@@ -406,7 +406,7 @@ class Server
         // Add oai_dc part
         $oaiDc = new \DOMDocument();
         $oaiDc->loadXML(
-            $record->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
+            $record->getXML('oai_dc', $this->baseHostURL, $this->recordLinkerHelper)
         );
         $rootNode->appendChild(
             $recordDoc->importNode($oaiDc->documentElement, true)
@@ -455,7 +455,7 @@ class Server
             $xml = $this->getVuFindMetadata($record);   // special case
         } else {
             $xml = $record
-                ->getXML($format, $this->baseHostURL, $this->recordLinkHelper);
+                ->getXML($format, $this->baseHostURL, $this->recordLinkerHelper);
             if ($xml === false) {
                 return false;
             }
