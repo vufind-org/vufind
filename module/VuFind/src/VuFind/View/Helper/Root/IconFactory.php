@@ -70,8 +70,8 @@ class IconFactory implements FactoryInterface
         }
         $config = $container->get(\VuFindTheme\ThemeInfo::class)
             ->getMergedConfig('icons', true);
-        $cache = $$container->get(\VuFind\Cache\Manager::class)
-            ->getCache('object', 'iconHelper');
+        $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+            ->createFromArrayConfiguration(['name' => 'memory', 'options' => []]);
         $helpers = $container->get('ViewHelperManager');
         return new $requestedName(
             $config,
