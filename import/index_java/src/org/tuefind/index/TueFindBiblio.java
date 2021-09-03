@@ -313,7 +313,7 @@ public class TueFindBiblio extends TueFind {
      * @return Set of local subjects
      */
     public Set<String> getAllTopics(final Record record) {
-        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a:936a", '0');
+        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a:936a", "0");
         topics.addAll(getLocal689Topics(record));
         return topics;
     }
@@ -327,7 +327,7 @@ public class TueFindBiblio extends TueFind {
      * @return Set "topic_facet"
      */
     public Set<String> getFacetTopics(final Record record) {
-        final Set<String> result = getAllSubfieldsBut(record, "600x:610x:611x:630x:648x:650a:650x:651x:655x", '0');
+        final Set<String> result = getAllSubfieldsBut(record, "600x:610x:611x:630x:648x:650a:650x:651x:655x", "0");
         String topic_string;
         // Check 689 subfield a and d
         final List<VariableField> fields = record.getVariableFields("689");
