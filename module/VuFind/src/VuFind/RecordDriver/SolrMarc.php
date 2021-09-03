@@ -41,6 +41,13 @@ namespace VuFind\RecordDriver;
  */
 class SolrMarc extends SolrDefault
 {
+    /**
+     * Type to export in MarcAdvancedTrait::getXML()
+     *
+     * @var string
+     */
+    protected $xmlType = 'Bibliographic';
+
     use Feature\IlsAwareTrait;
     use Feature\MarcReaderTrait;
     use Feature\MarcAdvancedTrait;

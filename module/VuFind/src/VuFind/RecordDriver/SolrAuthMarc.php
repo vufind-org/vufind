@@ -41,6 +41,13 @@ namespace VuFind\RecordDriver;
  */
 class SolrAuthMarc extends SolrAuthDefault
 {
+    /**
+     * Type to export in MarcAdvancedTrait::getXML()
+     *
+     * @var string
+     */
+    protected $xmlType = 'Authority';
+
     use Feature\MarcReaderTrait;
     use Feature\MarcAdvancedTrait;
 
