@@ -109,9 +109,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getName(AuthorityRecordDriver &$driver): string
     {
-        $name = $driver->getTitle();
-        $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
-        return '<span property="name">' . $name . '</span>';
+        $name = $driver->getHeadingShort();
+        $timespan = $driver->getHeadingTimespan();
+
+        $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
+        if ($timespan != null)
+            $heading .= ' ' . htmlspecialchars($timespan);
+        return $heading;
     }
 
     public function getOccupations(AuthorityRecordDriver &$driver): string
@@ -121,7 +125,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
                 $occupationsDisplay .= ' / ';
-            $occupationsDisplay .= '<span property="hasOccupation">' . $occupation . '</span>';
+            $occupationsDisplay .= '<span property="hasOccupation">' . htmlspecialchars($occupation) . '</span>';
         }
         return $occupationsDisplay;
     }
