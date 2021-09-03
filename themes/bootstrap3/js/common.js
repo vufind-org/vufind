@@ -38,6 +38,21 @@ var VuFind = (function VuFind() {
       }
     }
   };
+
+  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
+    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
+      var $form = $(this);
+      // Disable submit elements via setTimeout so that the submit button value gets
+      // included in the submitted data before being disabled:
+      setTimeout(
+        function disableSubmit() {
+          $form.find('[type=submit]').prop('disabled', true);
+        },
+        0
+      );
+    });
+  };
+
   var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
@@ -45,6 +60,8 @@ var VuFind = (function VuFind() {
       }
     }
     _initialized = true;
+
+    initDisableSubmitOnClick();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -367,38 +384,10 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).change();
 }
 
-$(document).ready(function commonDocReady() {
-  // Start up all of our submodules
-  VuFind.init();
-  // Setup search autocomplete
-  setupAutocomplete();
-  // Off canvas
-  setupOffcanvas();
-  // Keyboard shortcuts in detail view
-  keyboardShortcuts();
+function setupQRCodeLinks(_container) {
+  var container = _container || $('body');
 
-  // support "jump menu" dropdown boxes
-  setupJumpMenus();
-
-  // Checkbox select all
-  $('.checkbox-select-all').change(function selectAllCheckboxes() {
-    var $form = this.form ? $(this.form) : $(this).closest('form');
-    $form.find('.checkbox-select-item').prop('checked', this.checked);
-    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
-    $form.find('.checkbox-select-all').prop('checked', this.checked);
-    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
-  });
-  $('.checkbox-select-item').change(function selectAllDisable() {
-    var $form = this.form ? $(this.form) : $(this).closest('form');
-    if ($form.length === 0) {
-      return;
-    }
-    $form.find('.checkbox-select-all').prop('checked', false);
-    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
-  });
-
-  // handle QR code links
-  $('a.qrcodeLink').click(function qrcodeToggle() {
+  container.find('a.qrcodeLink').click(function qrcodeToggle() {
     if ($(this).hasClass("active")) {
       $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
     } else {
@@ -414,16 +403,57 @@ $(document).ready(function commonDocReady() {
     holder.toggleClass('hidden');
     return false;
   });
+}
+
+$(document).ready(function commonDocReady() {
+  // Start up all of our submodules
+  VuFind.init();
+  // Setup search autocomplete
+  setupAutocomplete();
+  // Off canvas
+  setupOffcanvas();
+  // Keyboard shortcuts in detail view
+  keyboardShortcuts();
+
+  // support "jump menu" dropdown boxes
+  setupJumpMenus();
+
+  // handle QR code links
+  setupQRCodeLinks();
+
+  // Checkbox select all
+  $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    if (this.checked) {
+      $form.find('.checkbox-select-item:not(:checked)').trigger('click');
+    } else {
+      $form.find('.checkbox-select-item:checked').trigger('click');
+    }
+    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
+    $form.find('.checkbox-select-all').prop('checked', this.checked);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
+  });
+  $('.checkbox-select-item').on('change', function selectAllDisable() {
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    if ($form.length === 0) {
+      return;
+    }
+    if (!$(this).prop('checked')) {
+      $form.find('.checkbox-select-all').prop('checked', false);
+      $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
+    }
+  });
 
   // Print
   var url = window.location.href;
-  if (url.indexOf('?' + 'print' + '=') !== -1 || url.indexOf('&' + 'print' + '=') !== -1) {
+  if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
     $(document).ajaxStop(function triggerPrint() {
       // Print dialogs cause problems during testing, so disable them
       // when the "test mode" cookie is set. This should never happen
       // under normal usage outside of the Phing startup process.
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
+        window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
         window.print();
       } else {
         console.log("Printing disabled due to test mode."); // eslint-disable-line no-console

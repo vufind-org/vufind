@@ -93,7 +93,11 @@ class GetRecordTags extends AbstractBase
         $tags = $this->table->getForResource(
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
-            0, null, null, 'count', $is_me_id
+            0,
+            null,
+            null,
+            'count',
+            $is_me_id
         );
 
         // Build data structure for return:

@@ -133,7 +133,8 @@ class OpenLibrarySubjects implements RecommendInterface,
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -152,7 +153,9 @@ class OpenLibrarySubjects implements RecommendInterface,
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
             $this->publishedIn = $this->getPublishedDates(
-                $this->pubFilter, $params, $request
+                $this->pubFilter,
+                $params,
+                $request
             );
         }
     }
@@ -173,8 +176,14 @@ class OpenLibrarySubjects implements RecommendInterface,
             $result = [];
             $ol = new OpenLibrary($this->httpService->createClient());
             $result = $ol->getSubjects(
-                $this->subject, $this->publishedIn, $this->subjectTypes, true, false,
-                $this->limit, null, true
+                $this->subject,
+                $this->publishedIn,
+                $this->subjectTypes,
+                true,
+                false,
+                $this->limit,
+                null,
+                true
             );
 
             if (!empty($result)) {
@@ -199,6 +208,7 @@ class OpenLibrarySubjects implements RecommendInterface,
      */
     protected function getPublishedDates($field, $params, $request)
     {
+        $range = null;
         // Try to extract range details from request parameters or SearchObject:
         $from = $request->get($field . 'from');
         $to = $request->get($field . 'to');

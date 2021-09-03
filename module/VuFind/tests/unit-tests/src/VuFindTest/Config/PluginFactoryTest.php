@@ -39,7 +39,7 @@ use VuFind\Config\Locator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PluginFactoryTest extends \VuFindTest\Unit\TestCase
+class PluginFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Flag -- did writing config files fail?
@@ -134,9 +134,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConfig($name)
     {
-        return $this->factory->__invoke(
-            $this->createMock(\Interop\Container\ContainerInterface::class), $name
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        return ($this->factory)($container, $name);
     }
 
     /**
@@ -228,7 +227,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
         // Make sure Section 4 arrays were overwritten.
         $this->assertEquals([1, 2, 3], $config->Section4->j->toArray());
         $this->assertEquals(
-            ['a' => 1, 'b' => 2, 'c' => 3], $config->Section4->k->toArray()
+            ['a' => 1, 'b' => 2, 'c' => 3],
+            $config->Section4->k->toArray()
         );
     }
 

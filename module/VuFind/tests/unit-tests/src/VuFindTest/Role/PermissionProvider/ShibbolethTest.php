@@ -40,7 +40,7 @@ use VuFind\Role\PermissionProvider\Shibboleth;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ShibbolethTest extends \VuFindTest\Unit\TestCase
+class ShibbolethTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test option alias idpentityid for Shib-Identity-Provider
@@ -96,7 +96,10 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    protected function checkShibboleth($headers, $options, $expectedResult,
+    protected function checkShibboleth(
+        $headers,
+        $options,
+        $expectedResult,
         $config = []
     ) {
         $request = new \Laminas\Http\PhpEnvironment\Request();

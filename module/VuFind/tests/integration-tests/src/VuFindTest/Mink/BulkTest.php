@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink bulk action test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,10 +41,10 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class BulkTest extends \VuFindTest\Unit\MinkTestCase
+final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -160,7 +162,9 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
         $this->findCssAndSetValue(
-            $page, '.modal #email_to', 'demian.katz@villanova.edu'
+            $page,
+            '.modal #email_to',
+            'demian.katz@villanova.edu'
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -209,11 +213,12 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
-            'Your item(s) were saved successfully. Go to List.', $result->getText()
+            'Your item(s) were saved successfully. Go to List.',
+            $result->getText()
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
             $result->getOuterHtml()
         );
@@ -280,7 +285,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)

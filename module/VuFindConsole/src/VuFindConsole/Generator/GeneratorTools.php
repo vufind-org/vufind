@@ -212,7 +212,9 @@ class GeneratorTools
      *
      * @return ContainerInterface
      */
-    protected function getPluginManagerForClassParts($container, $classParts,
+    protected function getPluginManagerForClassParts(
+        $container,
+        $classParts,
         $topLevelService
     ) {
         // Special case -- short-circuit for top-level service:
@@ -243,8 +245,11 @@ class GeneratorTools
      * @return bool
      * @throws \Exception
      */
-    public function createPlugin(ContainerInterface $container, $class,
-        $factory = null, $topLevelService = false
+    public function createPlugin(
+        ContainerInterface $container,
+        $class,
+        $factory = null,
+        $topLevelService = false
     ) {
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
@@ -261,7 +266,9 @@ class GeneratorTools
 
         // Figure out further information based on the plugin manager:
         $pm = $this->getPluginManagerForClassParts(
-            $container, $classParts, $topLevelService
+            $container,
+            $classParts,
+            $topLevelService
         );
         $interface = $this->getExpectedInterfaceFromPluginManager($pm);
 
@@ -290,7 +297,8 @@ class GeneratorTools
         // Add extra lowercase alias if necessary:
         if (strtolower($shortName) != $shortName) {
             $lowerAliasPath = array_merge(
-                $configPath, ['aliases', strtolower($shortName)]
+                $configPath,
+                ['aliases', strtolower($shortName)]
             );
             $this->writeNewConfig($lowerAliasPath, $class, $module, false);
         }
@@ -310,7 +318,9 @@ class GeneratorTools
     protected function generateFactory($class, $factory, $module)
     {
         $this->createClassInModule(
-            $factory, $module, null,
+            $factory,
+            $module,
+            null,
             ['Laminas\ServiceManager\Factory\FactoryInterface'],
             function ($generator) use ($class) {
                 $method = MethodGenerator::fromArray(
@@ -334,7 +344,8 @@ class GeneratorTools
                 $method->setParameters([$param1, $param2, $param3]);
                 // Copy doc block from this class' factory:
                 $reflection = new \Laminas\Code\Reflection\MethodReflection(
-                    GeneratorToolsFactory::class, '__invoke'
+                    GeneratorToolsFactory::class,
+                    '__invoke'
                 );
                 $example = MethodGenerator::fromReflection($reflection);
                 $method->setDocBlock($example->getDocBlock());
@@ -356,13 +367,17 @@ class GeneratorTools
      * @return bool
      * @throws \Exception
      */
-    public function extendClass(ContainerInterface $container, $class, $target,
+    public function extendClass(
+        ContainerInterface $container,
+        $class,
+        $target,
         $extendFactory = false
     ) {
         // Set things up differently depending on whether this is a top-level
         // service or a class in a plugin manager.
         $cm = $container->get('ControllerManager');
         $cpm = $container->get('ControllerPluginManager');
+        $configPath = [];
         $delegators = [];
         if ($container->has($class)) {
             $factory = $this->getFactoryFromContainer($container, $class);
@@ -466,7 +481,8 @@ class GeneratorTools
      *
      * @return array
      */
-    protected function getDelegatorsFromContainer(ContainerInterface $container,
+    protected function getDelegatorsFromContainer(
+        ContainerInterface $container,
         $class
     ) {
         $delegators = $this->getAllDelegatorsFromContainer($container);
@@ -482,7 +498,8 @@ class GeneratorTools
      *
      * @return ContainerInterface
      */
-    protected function getPluginManagerContainingClass(ContainerInterface $container,
+    protected function getPluginManagerContainingClass(
+        ContainerInterface $container,
         $class
     ) {
         $factories = $this->getAllFactoriesFromContainer($container);
@@ -569,7 +586,7 @@ class GeneratorTools
         ) {
             throw new \Exception('Unexpected factory configuration format.');
         }
-        list($factoryClass, $factoryMethod) = $parts;
+        [$factoryClass, $factoryMethod] = $parts;
         $newFactoryClass = $this->generateLocalClassName($factoryClass, $module);
         if (!class_exists($newFactoryClass)) {
             $this->createSubclassInModule($factoryClass, $module);
@@ -594,7 +611,9 @@ class GeneratorTools
                 $oldReflection->getMethod($factoryMethod)
             );
             $this->updateFactory(
-                $method, $oldReflection->getNamespaceName(), $module
+                $method,
+                $oldReflection->getNamespaceName(),
+                $module
             );
             $generator->addMethodFromGenerator($method);
             $this->writeClass($generator, $module, true, $skipBackup);
@@ -627,8 +646,10 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function updateFactory(MethodGenerator $method,
-        $ns, $module
+    protected function updateFactory(
+        MethodGenerator $method,
+        $ns,
+        $module
     ) {
         $body = $method->getBody();
         $regex = '/new\s+([\w\\\\]*)\s*\(/m';
@@ -677,23 +698,27 @@ class GeneratorTools
      * Extend a specified class within a specified module. Return the name of
      * the new subclass.
      *
-     * @param string    $class      Name of class to create
-     * @param string    $module     Module in which to create the new class
-     * @param string    $parent     Parent class (null for no parent)
-     * @param string[]  $interfaces Interfaces for class to implement
-     * @param \Callable $callback   Callback to set up class generator
+     * @param string   $class      Name of class to create
+     * @param string   $module     Module in which to create the new class
+     * @param string   $parent     Parent class (null for no parent)
+     * @param string[] $interfaces Interfaces for class to implement
+     * @param callable $callback   Callback to set up class generator
      *
      * @return void
      * @throws \Exception
      */
-    protected function createClassInModule($class, $module, $parent = null,
-        array $interfaces = [], $callback = null
+    protected function createClassInModule(
+        $class,
+        $module,
+        $parent = null,
+        array $interfaces = [],
+        $callback = null
     ) {
         $generator = new ClassGenerator($class, null, null, $parent, $interfaces);
         if (is_callable($callback)) {
             $callback($generator);
         }
-        return $this->writeClass($generator, $module);
+        $this->writeClass($generator, $module);
     }
 
     /**
@@ -707,8 +732,11 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function writeClass(ClassGenerator $classGenerator, $module,
-        $allowOverwrite = false, $skipBackup = false
+    protected function writeClass(
+        ClassGenerator $classGenerator,
+        $module,
+        $allowOverwrite = false,
+        $skipBackup = false
     ) {
         // Use the class name parts from the previous step to determine a path
         // and filename, then create the new path.
@@ -733,7 +761,9 @@ class GeneratorTools
         // omits the leading backslash on "extends" statements when rewriting
         // existing classes. Can we remove this after a future Laminas\Code upgrade?
         $code = str_replace(
-            'extends VuFind\\', 'extends \\VuFind\\', $generator->generate()
+            'extends VuFind\\',
+            'extends \\VuFind\\',
+            $generator->generate()
         );
         if (!file_put_contents($fullPath, $code)) {
             throw new \Exception("Problem writing to $fullPath.");

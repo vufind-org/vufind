@@ -34,7 +34,7 @@ use VuFindSearch\Backend\Primo\Backend;
 
 use VuFindSearch\Backend\Primo\Connector;
 use VuFindSearch\ParamBag;
-use VuFindTest\Unit\TestCase;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for OnCampus listener.
@@ -45,14 +45,33 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class OnCampusListenerTest extends TestCase
+class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Backend.
      *
      * @var BackendInterface
      */
     protected $backend;
+
+    /**
+     * Construct a mock search backend pre event.
+     *
+     * @param ParamBag $params Search backend parameters
+     *
+     * @return Event
+     */
+    protected function getMockPreEvent(ParamBag $params): Event
+    {
+        $command = $this->getMockSearchCommand($params);
+        return new Event(
+            Service::EVENT_PRE,
+            $this->backend,
+            compact('params', 'command')
+        );
+    }
 
     /**
      * Setup.
@@ -89,7 +108,7 @@ class OnCampusListenerTest extends TestCase
      */
     public function testAttachWithParameter()
     {
-        $mockPermController = $this->getMockBuilder(\PrimoPermissionHandler::class)
+        $mockPermController = $this->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener = new InjectOnCampusListener($mockPermController);
@@ -113,7 +132,7 @@ class OnCampusListenerTest extends TestCase
         $params   = new ParamBag([ ]);
         $listener = new InjectOnCampusListener();
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params]);
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -137,12 +156,13 @@ class OnCampusListenerTest extends TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params]);
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
         $this->assertEquals(
-            [0 => true], $onCampus
+            [0 => true],
+            $onCampus
         );
     }
 
@@ -162,7 +182,7 @@ class OnCampusListenerTest extends TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -187,7 +207,7 @@ class OnCampusListenerTest extends TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -212,7 +232,7 @@ class OnCampusListenerTest extends TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -230,7 +250,7 @@ class OnCampusListenerTest extends TestCase
 
         $listener = new InjectOnCampusListener();
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');

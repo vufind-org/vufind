@@ -60,11 +60,19 @@ class AbstractExpireCommand extends Command
     protected $rowLabel = 'rows';
 
     /**
-     * Minimum (and default) legal age of rows to delete.
+     * Minimum legal age (in days) of rows to delete.
      *
      * @var int
      */
     protected $minAge = 2;
+
+    /**
+     * Default age of rows (in days) to delete. $minAge is used if $defaultAge is
+     * null.
+     *
+     * @var int|null
+     */
+    protected $defaultAge = null;
 
     /**
      * Table on which to expire rows
@@ -82,11 +90,9 @@ class AbstractExpireCommand extends Command
      */
     public function __construct(Gateway $table, $name = null)
     {
-        foreach (['getExpiredIdRange', 'deleteExpired'] as $method) {
-            if (!method_exists($table, $method)) {
-                $tableName = get_class($table);
-                throw new \Exception("$tableName does not support $method()");
-            }
+        if (!method_exists($table, 'deleteExpired')) {
+            $tableName = get_class($table);
+            throw new \Exception("$tableName does not support deleteExpired()");
         }
         $this->table = $table;
         parent::__construct($name);
@@ -106,19 +112,21 @@ class AbstractExpireCommand extends Command
                 'batch',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'number of records to delete in a single batch',
+                'Number of records to delete in a single batch',
                 1000
             )->addOption(
                 'sleep',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'milliseconds to sleep between batches',
+                'Milliseconds to sleep between batches',
                 100
             )->addArgument(
                 'age',
                 InputArgument::OPTIONAL,
-                "the age (in days) of {$this->rowLabel} to expire",
-                $this->minAge
+                'Minimum age (in days, starting from '
+                    . number_format($this->minAge, 1, '.', '')
+                    . ") of {$this->rowLabel} to expire",
+                $this->defaultAge ?? $this->minAge
             );
     }
 
@@ -153,7 +161,8 @@ class AbstractExpireCommand extends Command
         if ($daysOld < $this->minAge) {
             $output->writeln(
                 str_replace(
-                    '%%age%%', $this->minAge,
+                    '%%age%%',
+                    number_format($this->minAge, 1, '.', ''),
                     'Expiration age must be at least %%age%% days.'
                 )
             );
@@ -162,28 +171,24 @@ class AbstractExpireCommand extends Command
 
         // Delete the expired rows--this cleans up any junk left in the database
         // e.g. from old searches or sessions that were not caught by the session
-        // garbage collector.
-        $idRange = $this->table->getExpiredIdRange($daysOld);
-        if (false === $idRange) {
-            $output->writeln(
-                $this->getTimestampedMessage("No {$this->rowLabel} to delete.")
-            );
-            return 0;
-        }
-
-        // Delete records in batches
-        for ($batch = $idRange[0]; $batch <= $idRange[1]; $batch += $batchSize) {
-            $count = $this->table->deleteExpired(
-                $daysOld, $batch, $batch + $batchSize - 1
-            );
-            $output->writeln(
-                $this->getTimestampedMessage("{$count} {$this->rowLabel} deleted.")
-            );
-            // Be nice to others and wait between batches
-            if ($batch + $batchSize <= $idRange[1]) {
+        // garbage collector. Records are deleted in batches until no more records to
+        // delete are found.
+        $total = 0;
+        do {
+            $count = $this->table->deleteExpired($daysOld, $batchSize);
+            if ($count > 0) {
+                $output->writeln(
+                    $this->getTimestampedMessage("$count {$this->rowLabel} deleted.")
+                );
+                $total += $count;
+                // Be nice to others and wait between batches
                 usleep($sleepTime * 1000);
             }
-        }
+        } while ($count > 0);
+
+        $output->writeln(
+            $this->getTimestampedMessage("Total $total {$this->rowLabel} deleted.")
+        );
         return 0;
     }
 }

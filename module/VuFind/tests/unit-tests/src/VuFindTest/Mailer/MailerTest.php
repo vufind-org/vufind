@@ -42,7 +42,7 @@ use VuFindTest\Container\MockContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MailerTest extends \VuFindTest\Unit\TestCase
+class MailerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the factory configures the object correctly.
@@ -88,7 +88,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSend()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
                 && 'body' == $message->getBody()
@@ -107,7 +107,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendWithAddressObjectInSender()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && 'Sender TextName <from@example.com>' == $fromString
@@ -128,7 +128,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendWithAddressObjectInRecipient()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
@@ -149,7 +149,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendWithAddressListObjectInRecipient()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
@@ -171,7 +171,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendWithFromOverride()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<me@example.com>' == $message->getReplyTo()->current()->toString()
@@ -194,7 +194,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendWithReplyTo()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
@@ -217,7 +217,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendWithFromOverrideAndReplyTo()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
@@ -261,7 +261,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send(
-            'good@good.com', 'from@example.com', 'subject', 'body', null, 'bad@bad'
+            'good@good.com',
+            'from@example.com',
+            'subject',
+            'body',
+            null,
+            'bad@bad'
         );
     }
 
@@ -348,19 +353,19 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendLink()
     {
-        $viewCallback = function ($in) {
+        $viewCallback = function ($in): bool {
             return $in['msgUrl'] == 'http://foo'
                 && $in['to'] == 'to@example.com;to2@example.com'
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
         $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+            ->onlyMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
 
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $to = $message->getTo();
             return $to->has('to@example.com')
                 && $to->has('to2@example.com')
@@ -375,7 +380,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $mailer = new Mailer($transport);
         $mailer->setMaxRecipients(2);
         $mailer->sendLink(
-            'to@example.com;to2@example.com', 'from@example.com', 'message', 'http://foo', $view, null,
+            'to@example.com;to2@example.com',
+            'from@example.com',
+            'message',
+            'http://foo',
+            $view,
+            null,
             'cc@example.com'
         );
     }
@@ -390,19 +400,19 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
 
-        $viewCallback = function ($in) use ($driver) {
+        $viewCallback = function ($in) use ($driver): bool {
             return $in['driver'] == $driver
                 && $in['to'] == 'to@example.com'
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
         $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+            ->onlyMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
 
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
                 && 'body' == $message->getBody()
@@ -435,22 +445,22 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendMimeMessageWithMultipartAlternativeContentType()
     {
-        $this->html = '<!DOCTYPE html><head><title>html</title></head><body>html body part</body></html>';
-        $this->text = 'this is the text part';
-        $callback = function ($message) {
+        $html = '<!DOCTYPE html><head><title>html</title></head><body>html body part</body></html>';
+        $text = 'this is the text part';
+        $callback = function ($message) use ($html, $text): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && 'Sender TextName <from@example.com>' == $fromString
                 && 'subject' == $message->getSubject()
-                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $this->html)
-                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $this->text)
+                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $html)
+                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $text)
                 && 'multipart/alternative' == $message->getHeaders()->get('Content-Type')->getType();
         };
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('from@example.com', 'Sender TextName');
         $mailer = new Mailer($transport);
-        $body = $mailer->buildMultipartBody($this->text, $this->html);
+        $body = $mailer->buildMultipartBody($text, $html);
         $mailer->send('to@example.com', $address, 'subject', $body);
     }
 }

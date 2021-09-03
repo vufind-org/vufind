@@ -44,6 +44,8 @@ use VuFindConsole\Generator\GeneratorTools;
  */
 class RecordRouteCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test that missing parameters yield an error message.
      *
@@ -73,7 +75,7 @@ class RecordRouteCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $configFixturePath = __DIR__ . '/../../../../../fixtures/empty.config.php';
+        $configFixturePath = $this->getFixtureDir('VuFindConsole') . 'empty.config.php';
         $expectedConfig = include $configFixturePath;
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
@@ -118,7 +120,7 @@ class RecordRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -133,7 +135,7 @@ class RecordRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(RouteGenerator::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

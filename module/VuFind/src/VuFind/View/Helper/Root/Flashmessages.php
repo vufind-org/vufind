@@ -49,6 +49,13 @@ class Flashmessages extends AbstractHelper
     protected $fm;
 
     /**
+     * Flash messenger namespaces
+     *
+     * @var string[]
+     */
+    protected $namespaces = ['error', 'warning', 'info', 'success', 'default'];
+
+    /**
      * Constructor
      *
      * @param FlashMessenger $fm Flash messenger controller helper
@@ -78,13 +85,14 @@ class Flashmessages extends AbstractHelper
     public function __invoke()
     {
         $html = '';
-        $namespaces = ['error', 'info', 'success'];
-        foreach ($namespaces as $ns) {
+        foreach ($this->namespaces as $ns) {
             $messages = array_merge(
-                $this->fm->getMessages($ns), $this->fm->getCurrentMessages($ns)
+                $this->fm->getMessages($ns),
+                $this->fm->getCurrentMessages($ns)
             );
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
-                $html .= '<div class="' . $this->getClassForNamespace($ns) . '"';
+                $html .= '<div role="alert" class="'
+                    . $this->getClassForNamespace($ns) . '"';
                 if (isset($msg['dataset'])) {
                     foreach ($msg['dataset'] as $attr => $value) {
                         $html .= ' data-' . $attr . '="'

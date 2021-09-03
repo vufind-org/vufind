@@ -28,6 +28,9 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for Demo ILS driver.
@@ -52,9 +55,11 @@ class DemoFactory extends DriverWithDateConverterFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -65,8 +70,13 @@ class DemoFactory extends DriverWithDateConverterFactory
             return new \Laminas\Session\Container('DemoDriver' . $ns, $manager);
         };
         return parent::__invoke(
-            $container, $requestedName,
-            [$container->get(\VuFindSearch\Service::class), $sessionFactory]
+            $container,
+            $requestedName,
+            [
+                $container->get(\VuFindSearch\Service::class),
+                $sessionFactory,
+                $container->get('Request')
+            ]
         );
     }
 }

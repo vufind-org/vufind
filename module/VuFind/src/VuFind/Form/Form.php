@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Form
@@ -28,7 +28,9 @@
 namespace VuFind\Form;
 
 use Laminas\InputFilter\InputFilter;
+use Laminas\Validator\Callback;
 use Laminas\Validator\EmailAddress;
+use Laminas\Validator\Identical;
 use Laminas\Validator\NotEmpty;
 use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
@@ -110,7 +112,8 @@ class Form extends \Laminas\Form\Form implements
      * @throws \Exception
      */
     public function __construct(
-        YamlReader $yamlReader, HelperPluginManager $viewHelperManager,
+        YamlReader $yamlReader,
+        HelperPluginManager $viewHelperManager,
         array $defaultConfig = null
     ) {
         parent::__construct();
@@ -154,8 +157,8 @@ class Form extends \Laminas\Form\Form implements
     public function getDisplayString($translationKey, $escape = null)
     {
         $escape = $escape ?? substr($translationKey, -5) !== '_html';
-        return $this->viewHelperManager->get($escape ? 'transEsc' : 'translate')
-            ->__invoke($translationKey);
+        $helper = $this->viewHelperManager->get($escape ? 'transEsc' : 'translate');
+        return $helper($translationKey);
     }
 
     /**
@@ -327,7 +330,7 @@ class Form extends \Laminas\Form\Form implements
 
             $settings = [];
             if (isset($el['settings'])) {
-                foreach ($el['settings'] as list($settingId, $settingVal)) {
+                foreach ($el['settings'] as [$settingId, $settingVal]) {
                     $settingId = trim($settingId);
                     $settingVal = trim($settingVal);
                     if ($settingId === 'placeholder') {
@@ -397,7 +400,8 @@ class Form extends \Laminas\Form\Form implements
     protected function getFormElementSettingFields()
     {
         return [
-            'required', 'help', 'value', 'inputType', 'group', 'placeholder'
+            'required', 'requireOne', 'help', 'value', 'inputType', 'group',
+            'placeholder'
         ];
     }
 
@@ -662,7 +666,9 @@ class Form extends \Laminas\Form\Form implements
         }
 
         return str_replace(
-            array_keys($translated), array_values($translated), $subject
+            array_keys($translated),
+            array_values($translated),
+            $subject
         );
     }
 
@@ -758,11 +764,45 @@ class Form extends \Laminas\Form\Form implements
         ];
 
         foreach ($this->getElements() as $el) {
-            $required = ($el['required'] ?? false) === true;
+            $isCheckbox = $el['type'] === 'checkbox';
+            $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
+            $required = $el['required'] ?? $requireOne;
+
             $fieldValidators = [];
-            if ($required) {
+            if ($required || $requireOne) {
                 $fieldValidators[] = $validators['notEmpty'];
             }
+            if ($isCheckbox) {
+                if ($requireOne) {
+                    $fieldValidators[] = [
+                        'name' => Callback::class,
+                        'options' => [
+                            'callback' => function ($value, $context) use ($el) {
+                                return
+                                    !empty(
+                                        array_intersect(
+                                            array_keys($el['options']),
+                                            $value
+                                        )
+                                    );
+                            }
+                         ]
+                    ];
+                } elseif ($required) {
+                    $fieldValidators[] = [
+                        'name' => Identical::class,
+                        'options' => [
+                            'message' => [
+                                Identical::MISSING_TOKEN
+                                => $this->getValidationMessage('empty')
+                            ],
+                            'strict' => true,
+                            'token' => array_keys($el['options'])
+                        ]
+                    ];
+                }
+            }
+
             if ($el['type'] === 'email') {
                 $fieldValidators[] = $validators['email'];
             }

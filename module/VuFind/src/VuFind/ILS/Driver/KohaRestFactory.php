@@ -28,6 +28,9 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for KohaRest ILS driver.
@@ -52,9 +55,11 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -64,9 +69,16 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container("KohaRest_$namespace", $manager);
         };
-        $helper = $container->get('ViewHelperManager')->get('safeMoneyFormat');
+        // Create safeMoneyFormat helper conditionally to avoid hard dependency on
+        // themes (which otherwise could cause problems for command line tools that
+        // use the ILS driver when the theme system is not active).
+        $helperManager = $container->get('ViewHelperManager');
+        $safeMoneyFormat = $helperManager->has('safeMoneyFormat')
+            ? $helperManager->get('safeMoneyFormat') : null;
         return parent::__invoke(
-            $container, $requestedName, [$sessionFactory, $helper]
+            $container,
+            $requestedName,
+            [$sessionFactory, $safeMoneyFormat]
         );
     }
 }

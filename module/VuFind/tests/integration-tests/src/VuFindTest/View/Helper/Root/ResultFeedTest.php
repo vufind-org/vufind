@@ -38,8 +38,12 @@ use VuFind\View\Helper\Root\ResultFeed;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
+class ResultFeedTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\LiveDetectionTrait;
+    use \VuFindTest\Feature\LiveSolrTrait;
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Standard setup method.
      *
@@ -65,7 +69,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $currentPath->expects($this->any())->method('__invoke')
             ->will($this->returnValue('/test/path'));
 
-        $recordLink = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLink::class)
+        $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
@@ -73,18 +77,14 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
                     )
                 ]
             )->getMock();
-        $recordLink->expects($this->any())->method('getUrl')
+        $recordLinker->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->any())->method('__invoke')
             ->will($this->returnValue('http://server/url'));
 
-        return [
-            'currentPath' => $currentPath,
-            'recordLink' => $recordLink,
-            'serverurl' => $serverUrl
-        ];
+        return compact('currentPath', 'recordLinker') + ['serverurl' => $serverUrl];
     }
 
     /**
@@ -96,9 +96,9 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
-        $mock->expects($this->at(1))->method('translate')
-            ->with($this->equalTo('showing_results_of_html'), $this->equalTo('default'))
-            ->will($this->returnValue('Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>'));
+        $mock->expects($this->any())->method('translate')
+            ->withConsecutive(['Results for'], ['showing_results_of_html', 'default'])
+            ->willReturnOnConsecutiveCalls('Results for', 'Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>');
         return $mock;
     }
 
@@ -118,15 +118,14 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $request->set('sort', 'title');
         $request->set('view', 'rss');
 
-        $results = $this->getServiceManager()
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();
-        $helper->registerExtensions($this->getServiceManager());
+        $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
-        $feed = $helper->__invoke($results, '/test/path');
+        $feed = $helper($results, '/test/path');
         $this->assertTrue(is_object($feed));
         $rss = $feed->export('rss');
 
@@ -139,7 +138,8 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(
-            'Showing 1 - 2 results of 2', $parsedFeed->getDescription()
+            'Showing 1 - 2 results of 2',
+            $parsedFeed->getDescription()
         );
         $items = [];
         $i = 0;

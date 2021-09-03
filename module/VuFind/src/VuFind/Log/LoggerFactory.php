@@ -28,8 +28,11 @@
 namespace VuFind\Log;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
 use Laminas\Log\Writer\WriterInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -54,7 +57,9 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addDbWriters(Logger $logger, ContainerInterface $container,
+    protected function addDbWriters(
+        Logger $logger,
+        ContainerInterface $container,
         $config
     ) {
         $parts = explode(':', $config);
@@ -72,7 +77,8 @@ class LoggerFactory implements FactoryInterface
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
             $container->get(\Laminas\Db\Adapter\Adapter::class),
-            $table_name, $columnMapping
+            $table_name,
+            $columnMapping
         );
         $this->addWriters($logger, $writer, $filters);
     }
@@ -86,7 +92,9 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addEmailWriters(Logger $logger, ContainerInterface $container,
+    protected function addEmailWriters(
+        Logger $logger,
+        ContainerInterface $container,
         Config $config
     ) {
         // Set up the logger's mailer to behave consistently with VuFind's
@@ -144,12 +152,14 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addSlackWriters(Logger $logger, ContainerInterface $container,
+    protected function addSlackWriters(
+        Logger $logger,
+        ContainerInterface $container,
         Config $config
     ) {
         $options = [];
         // Get config
-        list($channel, $error_types) = explode(':', $config->Logging->slack);
+        [$channel, $error_types] = explode(':', $config->Logging->slack);
         if ($error_types == null) {
             $error_types = $channel;
             $channel = null;
@@ -164,6 +174,41 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $writer = new Writer\Slack(
             $config->Logging->slackurl,
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
+            $options
+        );
+        $writer->setContentType('application/json');
+        $formatter = new \Laminas\Log\Formatter\Simple(
+            "*%priorityName%*: %message%"
+        );
+        $writer->setFormatter($formatter);
+        $this->addWriters($logger, $writer, $filters);
+    }
+
+    /**
+     * Configure Office365 writers.
+     *
+     * @param Logger             $logger    Logger object
+     * @param ContainerInterface $container Service manager
+     * @param Config             $config    Configuration
+     *
+     * @return void
+     */
+    protected function addOffice365Writers(
+        Logger $logger,
+        ContainerInterface $container,
+        Config $config
+    ) {
+        $options = [];
+        // Get config
+        $error_types = $config->Logging->office365;
+        if (isset($config->Logging->office365_title)) {
+            $options['title'] = $config->Logging->office365_title;
+        }
+        $filters = explode(',', $error_types);
+        // Make Writers
+        $writer = new Writer\Office365(
+            $config->Logging->office365_url,
             $container->get(\VuFindHttp\HttpService::class)->createClient(),
             $options
         );
@@ -235,6 +280,14 @@ class LoggerFactory implements FactoryInterface
             $this->addEmailWriters($logger, $container, $config);
         }
 
+        // Activate Office365 logging, if applicable:
+        if (isset($config->Logging->office365)
+            && isset($config->Logging->office365_url)
+        ) {
+            $hasWriter = true;
+            $this->addOffice365Writers($logger, $container, $config);
+        }
+
         // Activate slack logging, if applicable:
         if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
             $hasWriter = true;
@@ -270,7 +323,9 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setFormatter($formatter);
         $this->addWriters(
-            $logger, $writer, 'debug-' . (is_int($debug) ? $debug : '5')
+            $logger,
+            $writer,
+            'debug-' . (is_int($debug) ? $debug : '5')
         );
     }
 
@@ -365,9 +420,11 @@ class LoggerFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -381,11 +438,9 @@ class LoggerFactory implements FactoryInterface
             $proxy->setProxyInitializer(null);
 
             // Now build the actual service:
-            $loggerOptions = [
-                'vufind_ip_reader' =>
-                    $container->get(\VuFind\Net\UserIpReader::class)
-            ];
-            $wrapped = new $requestedName($loggerOptions);
+            $wrapped = new $requestedName(
+                $container->get(\VuFind\Net\UserIpReader::class)
+            );
             $this->configureLogger($container, $wrapped);
         };
         $cfg = $container->get(\ProxyManager\Configuration::class);

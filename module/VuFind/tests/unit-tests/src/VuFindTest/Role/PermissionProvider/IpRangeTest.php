@@ -39,7 +39,7 @@ use VuFind\Role\PermissionProvider\IpRange;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IpRangeTest extends \VuFindTest\Unit\TestCase
+class IpRangeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a permission provider with the specified IP assigned.
@@ -47,9 +47,9 @@ class IpRangeTest extends \VuFindTest\Unit\TestCase
      * @param string         $ipAddr IP address to send to provider.
      * @param IpAddressUtils $utils  IP address utils to use
      *
-     * @return IpRegEx
+     * @return IpRange
      */
-    protected function getPermissionProvider($ipAddr, IpAddressUtils $utils)
+    protected function getPermissionProvider($ipAddr, IpAddressUtils $utils): IpRange
     {
         $mockRequestClass = $this->getMockClass(
             \Laminas\Http\PhpEnvironment\Request::class
@@ -82,7 +82,8 @@ class IpRangeTest extends \VuFindTest\Unit\TestCase
             ->will($this->returnValue(true));
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals(
-            ['guest', 'loggedin'], $provider->getPermissions($ipAddr)
+            ['guest', 'loggedin'],
+            $provider->getPermissions($ipAddr)
         );
     }
 

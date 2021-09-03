@@ -305,6 +305,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Does this authentication method support connecting library card of
+     * currently authenticated user?
+     *
+     * @return bool
+     */
+    public function supportsConnectingLibraryCard()
+    {
+        return method_exists($this, 'connectLibraryCard');
+    }
+
+    /**
      * Return a canned password policy hint when available
      *
      * @param string $pattern Current policy pattern
@@ -402,7 +413,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 }
             } else {
                 $result = preg_match(
-                    "/({$policy['pattern']})/", $password, $matches
+                    "/({$policy['pattern']})/",
+                    $password,
+                    $matches
                 );
                 if ($result === false) {
                     throw new \Exception(

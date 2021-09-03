@@ -39,6 +39,13 @@ namespace VuFind\View\Helper\Root;
 class ContentLoader extends \Laminas\View\Helper\AbstractHelper
 {
     /**
+     * Content loader
+     *
+     * @var \VuFind\Content\Loader
+     */
+    protected $loader;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Content\Loader $loader Content loader

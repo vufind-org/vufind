@@ -7,18 +7,18 @@
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
-    'search/searchbox.phtml',
-    [
-      'lookfor' => $lookfor,
-      'searchIndex' => $this->params->getSearchHandler(),
-      'searchType' => $this->params->getSearchType(),
-      'searchId' => $this->results->getSearchId(),
-      'searchClassId' => $this->params->getSearchClassId(),
-      'checkboxFilters' => $this->params->getCheckboxFacets(),
-      'filterList' => $this->params->getFilterList(true),
-      'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
-      'selectedShards' => $this->params->getSelectedShards()
-    ]
+      'search/searchbox.phtml',
+      [
+        'lookfor' => $lookfor,
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchType' => $this->params->getSearchType(),
+        'searchId' => $this->results->getSearchId(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'filterList' => $this->params->getFilterList(true),
+        'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+        'selectedShards' => $this->params->getSelectedShards()
+      ]
   );
 
   // Create shortcut to combined results (since $this->results may get overwritten in processing below):
@@ -34,10 +34,18 @@
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
+  // Check if any results have version support enabled:
+  $displayVersions = false;
+  foreach (array_keys($this->combinedResults) as $configSection) {
+    [$searchClassId] = explode(':', $configSection);
+    if ($this->searchOptions($searchClassId)->getVersionsAction()) {
+      $displayVersions = true;
+      break;
+    }
+  }
+
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("vendor/hunt.min.js");
-  $this->headScript()->appendFile("check_item_statuses.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->render('search/results-scripts.phtml', compact('displayVersions'));
   $this->headScript()->appendFile("combined-search.js");
   // Style
   $this->headLink()->appendStylesheet('combined-search.css');

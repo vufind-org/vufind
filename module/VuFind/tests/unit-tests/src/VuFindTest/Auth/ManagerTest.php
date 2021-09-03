@@ -43,8 +43,10 @@ use VuFind\Db\Table\User as UserTable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ManagerTest extends \VuFindTest\Unit\TestCase
+class ManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test that database is the default method.
      *
@@ -504,7 +506,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
 
         // Fake the session inside the manager:
         $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
         $mockSession->expects($this->any())->method('__get')->with($this->equalTo('userId'))->will($this->returnValue('foo'));
@@ -543,7 +545,12 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             ]
         );
         return new Manager(
-            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
+            $config,
+            $userTable,
+            $sessionManager,
+            $pm,
+            $cookies,
+            $csrf
         );
     }
 
@@ -578,7 +585,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager($this->getServiceManager());
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -594,10 +601,10 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockShib = $this->getMockBuilder(\VuFind\Auth\Shibboleth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('VuFind\Auth\ChoiceAuth', $mockChoice);
-        $pm->setService('VuFind\Auth\Database', $mockDb);
-        $pm->setService('VuFind\Auth\MultiILS', $mockMulti);
-        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
+        $pm->setService(\VuFind\Auth\ChoiceAuth::class, $mockChoice);
+        $pm->setService(\VuFind\Auth\Database::class, $mockDb);
+        $pm->setService(\VuFind\Auth\MultiILS::class, $mockMulti);
+        $pm->setService(\VuFind\Auth\Shibboleth::class, $mockShib);
         return $pm;
     }
 

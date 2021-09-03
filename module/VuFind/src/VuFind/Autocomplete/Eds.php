@@ -29,6 +29,8 @@
  */
 namespace VuFind\Autocomplete;
 
+use VuFindSearch\Service;
+
 /**
  * EDS Autocomplete Module
  *
@@ -58,20 +60,20 @@ class Eds implements AutocompleteInterface
     protected $searchClassId = 'EDS';
 
     /**
-     * Results plugin manager
+     * Search service
      *
-     * @var \VuFindSearch\Backend\EDS\Backend
+     * @var Service
      */
-    protected $backend;
+    protected $searchService;
 
     /**
      * Constructor
      *
-     * @param \VuFindSearch\Backend\EDS\Backend $backend Results plugin manager
+     * @param Service $ss Search service
      */
-    public function __construct(\VuFindSearch\Backend\EDS\Backend $backend)
+    public function __construct(Service $ss)
     {
-        $this->backend = $backend;
+        $this->searchService = $ss;
     }
 
     /**
@@ -84,13 +86,19 @@ class Eds implements AutocompleteInterface
      */
     public function getSuggestions($query)
     {
+        $results = null;
         try {
             // Perform the autocomplete search:
-            $results = $this->backend->autocomplete($query, $this->domain);
+            $command = new \VuFindSearch\Backend\EDS\Command\AutocompleteCommand(
+                $this->searchClassId,
+                $query,
+                $this->domain
+            );
+            $results = $this->searchService->invoke($command)->getResult();
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }
-        return is_array($results ?? null) ? array_unique($results) : [];
+        return is_array($results) ? array_unique($results) : [];
     }
 
     /**

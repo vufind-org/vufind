@@ -28,6 +28,9 @@
 namespace VuFind\Controller;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Generic controller factory (with config injection).
@@ -52,9 +55,11 @@ class AbstractBaseWithConfigFactory extends AbstractBaseFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -63,7 +68,8 @@ class AbstractBaseWithConfigFactory extends AbstractBaseFactory
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         return $this->applyPermissions(
-            $container, new $requestedName($container, $config)
+            $container,
+            new $requestedName($container, $config)
         );
     }
 }

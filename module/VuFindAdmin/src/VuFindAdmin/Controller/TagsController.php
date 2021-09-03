@@ -54,12 +54,10 @@ class TagsController extends AbstractAdmin
      */
     protected function getParam($param)
     {
-        return (isset($this->params[$param]))
-            ? $this->params[$param]
-            : $this->params()->fromPost(
-                $param,
-                $this->params()->fromQuery($param, null)
-            );
+        return $this->params[$param] ?? $this->params()->fromPost(
+            $param,
+            $this->params()->fromQuery($param, null)
+        );
     }
 
     /**
@@ -181,7 +179,8 @@ class TagsController extends AbstractAdmin
             [
                 'msg' => 'tags_deleted',
                 'tokens' => ['%count%' => $delete]
-            ], 'success'
+            ],
+            'success'
         );
         return $this->redirect()->toUrl($originUrl);
     }
@@ -363,7 +362,7 @@ class TagsController extends AbstractAdmin
      */
     protected function getResourceTags()
     {
-        $currentPage = isset($this->params['page']) ? $this->params['page'] : "1";
+        $currentPage = $this->params['page'] ?? "1";
         $resourceTags = $this->getTable('ResourceTags');
         $tags = $resourceTags->getResourceTags(
             $this->convertFilter($this->getParam('user_id')),

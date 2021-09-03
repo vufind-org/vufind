@@ -38,8 +38,10 @@ namespace VuFindTest\Search\Base;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ParamsTest extends \VuFindTest\Unit\TestCase
+class ParamsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\SolrSearchObjectTrait;
+
     /**
      * Test a record that used to be known to cause problems because of the way
      * series name was handled (the old "Bug2" test from VuFind 1.x).
@@ -49,8 +51,7 @@ class ParamsTest extends \VuFindTest\Unit\TestCase
     public function testSpellingReplacements()
     {
         // Use Solr since some Base components are abstract:
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $params = $this->getSolrParams();
 
         // Key test: word boundaries:
         $params->setBasicSearch('go good googler');
@@ -64,7 +65,8 @@ class ParamsTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             'ophtalmologie*',
             $params->getDisplayQueryWithReplacedTerm(
-                'oftamologie*', 'ophtalmologie*'
+                'oftamologie*',
+                'ophtalmologie*'
             )
         );
     }

@@ -73,17 +73,27 @@ class Printms extends AbstractHelper
                 if ($years) {
                     return sprintf(
                         "%d years %d days %d hours %d minutes %d seconds",
-                        $years, $days, $hours, $minutes, $seconds
+                        $years,
+                        $days,
+                        $hours,
+                        $minutes,
+                        $seconds
                     );
                 } else {
                     return sprintf(
                         "%d days %d hours %d minutes %d seconds",
-                        $days, $hours, $minutes, $seconds
+                        $days,
+                        $hours,
+                        $minutes,
+                        $seconds
                     );
                 }
             } else {
                 return sprintf(
-                    "%d hours %d minutes %d seconds", $hours, $minutes, $seconds
+                    "%d hours %d minutes %d seconds",
+                    $hours,
+                    $minutes,
+                    $seconds
                 );
             }
         } else {

@@ -32,7 +32,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VStelmakh\UrlHighlight\UrlHighlight;
 use VuFind\View\Helper\Root\Linkify;
 use VuFind\View\Helper\Root\ProxyUrl;
-use VuFindTest\Unit\ViewHelperTestCase;
 
 /**
  * Linkify Test Class
@@ -44,37 +43,47 @@ use VuFindTest\Unit\ViewHelperTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LinkifyTest extends ViewHelperTestCase
+class LinkifyTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var ProxyUrl&MockObject
+     * Mock URL highlighter
+     *
+     * @var UrlHighlight&MockObject
      */
-    private $urlHighlight;
+    protected $urlHighlight;
 
     /**
+     * Linkify helper being tested
+     *
      * @var Linkify
      */
-    private $linkify;
+    protected $linkify;
 
+    /**
+     * Setup method
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $this->urlHighlight = $this->createMock(UrlHighlight::class);
         $this->linkify = new Linkify($this->urlHighlight);
     }
 
-    public function tearDown(): void
-    {
-        unset($this->proxyUrl, $this->urlHighlight);
-    }
-
+    /**
+     * Test that Linkify proxies the UrlHighlight object as expected.
+     *
+     * @return void
+     */
     public function testLinkify(): void
     {
         $this->urlHighlight
-            ->expects(self::atLeastOnce())
+            ->expects($this->once())
             ->method('highlightUrls')
+            ->with($this->equalTo('input text'))
             ->willReturn('Text with highlighted urls');
 
-        $actual = $this->linkify->__invoke('input text');
-        self::assertSame('Text with highlighted urls', $actual);
+        $actual = $this->linkify('input text');
+        $this->assertSame('Text with highlighted urls', $actual);
     }
 }

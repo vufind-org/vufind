@@ -118,12 +118,14 @@ class SwitchQuery implements RecommendInterface
         $optIns = !empty($params[2])
             ? explode(',', $params[2]) : [];
         $this->skipChecks = array_merge(
-            $this->skipChecks, array_diff($this->optInMethods, $optIns)
+            $this->skipChecks,
+            array_diff($this->optInMethods, $optIns)
         );
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.

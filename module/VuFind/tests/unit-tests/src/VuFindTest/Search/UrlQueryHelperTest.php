@@ -31,7 +31,6 @@ namespace VuFindTest\Search;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\UrlQueryHelper;
 use VuFindSearch\Query\Query;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * UrlQueryHelper unit tests.
@@ -42,75 +41,151 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UrlQueryHelperTest extends TestCase
+class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
+    /**
+     * Get a preconfigured helper.
+     *
+     * @param array $request Request parameters
+     * @param Query $query   Query object
+     *
+     * @return UrlQueryHelper
+     */
+    protected function getHelper($request = ['foo' => 'bar'], $query = null)
+    {
+        return new UrlQueryHelper($request, $query ?? new Query('search'));
+    }
+
     /**
      * Test the basic functionality of the helper.
      *
      * @return void
      */
-    public function testBasicFunctionality()
+    public function testBasicGetters()
     {
         // Test basic getters
-        $query = new Query('search');
-        $helper = new UrlQueryHelper(['foo' => 'bar'], $query);
+        $helper = $this->getHelper();
         $this->assertEquals('?foo=bar&amp;lookfor=search', $helper->getParams());
         $this->assertEquals('?foo=bar&amp;lookfor=search', (string)$helper);
         $this->assertEquals(
-            ['foo' => 'bar', 'lookfor' => 'search'], $helper->getParamArray()
+            ['foo' => 'bar', 'lookfor' => 'search'],
+            $helper->getParamArray()
         );
         $this->assertEquals(
             '<input type="hidden" name="foo" value="bar" />',
             $helper->asHiddenFields(['lookfor' => '/.*/'])
         );
+    }
 
-        // Test setDefaultParameters and disabling escaping
+    /**
+     * Test the behavior of setDefaultParameters
+     *
+     * @return void
+     */
+    public function testSetDefaultParameters()
+    {
+        $helper = $this->getHelper();
+
+        // Test setDefaultParameters and disabling escaping. Note that, because
+        // the "foo" parameter is already set in the original request, adding a
+        // default does NOT override the existing value.
         $this->assertEquals(
-            '?foo=baz&lookfor=search',
-            $helper->setDefaultParameter('foo', 'baz')->getParams(false)
+            '?foo=bar&lookfor=search',
+            $helper->setDefaultParameter('foo', 'baz', false)->getParams(false)
+        );
+        // Now let's add a default parameter that was NOT part of the incoming
+        // request... we DO want this to get added to the query:
+        $this->assertEquals(
+            '?foo=bar&lookfor=search&xyzzy=true',
+            $helper->setDefaultParameter('xyzzy', 'true', false)->getParams(false)
+        );
+        // Finally, let's force an override of an existing parameter:
+        $this->assertEquals(
+            '?foo=baz&lookfor=search&xyzzy=true',
+            $helper->setDefaultParameter('foo', 'baz', true)->getParams(false)
         );
 
-        // Test query suppression
+        // Confirm that we can look up a list of configured parameters:
+        $this->assertEquals(
+            ['foo', 'xyzzy'],
+            $helper->getParamsWithConfiguredDefaults()
+        );
+    }
+
+    /**
+     * Test query suppression.
+     *
+     * @return void
+     */
+    public function testQuerySuppression()
+    {
+        $helper = $this->getHelper();
         $this->assertEquals(false, $helper->isQuerySuppressed());
         $helper->setSuppressQuery(true);
         $this->assertEquals(true, $helper->isQuerySuppressed());
-        $this->assertEquals('?foo=baz', $helper->getParams());
+        $this->assertEquals('?foo=bar', $helper->getParams());
         $helper->setSuppressQuery(false);
         $this->assertEquals(false, $helper->isQuerySuppressed());
-        $this->assertEquals('?foo=baz&lookfor=search', $helper->getParams(false));
+        $this->assertEquals('?foo=bar&lookfor=search', $helper->getParams(false));
+    }
 
-        // Test replacing query terms
+    /**
+     * Test replacing query terms
+     *
+     * @return void
+     */
+    public function testReplacingQueryTerms()
+    {
+        $helper = $this->getHelper();
         $this->assertEquals(
-            '?foo=baz&amp;lookfor=srch',
+            '?foo=bar&amp;lookfor=srch',
             $helper->replaceTerm('search', 'srch')->getParams()
         );
         $this->assertEquals(
-            '?foo=baz&amp;lookfor=srch',
+            '?foo=bar&amp;lookfor=srch',
             $helper->setSearchTerms('srch')->getParams()
         );
+    }
 
-        // Test adding/removing facets and filters
+    /**
+     * Test adding/removing facets and filters
+     *
+     * @return void
+     */
+    public function testFacetsAndFilters()
+    {
+        $helper = $this->getHelper();
         $faceted = $helper->addFacet('f', '1')->addFilter('f:2');
         $this->assertEquals(
-            '?foo=baz&lookfor=search&filter%5B%5D=f%3A%221%22&filter%5B%5D=f%3A2',
+            '?foo=bar&lookfor=search&filter%5B%5D=f%3A%221%22&filter%5B%5D=f%3A2',
             $faceted->getParams(false)
         );
         $this->assertEquals(
-            '?foo=baz&lookfor=search&filter%5B%5D=f%3A%221%22',
+            '?foo=bar&lookfor=search&filter%5B%5D=f%3A%221%22',
             $faceted->removeFacet('f', '2')->getParams(false)
         );
         $this->assertEquals(
-            '?foo=baz&lookfor=search&filter%5B%5D=f%3A2',
+            '?foo=bar&lookfor=search&filter%5B%5D=f%3A2',
             $faceted->removeFilter('f:1')->getParams(false)
         );
         $this->assertEquals(
-            '?foo=baz&lookfor=search',
+            '?foo=bar&lookfor=search',
             $faceted->removeAllFilters()->getParams(false)
         );
+    }
 
-        // Test stacking setters
+    /**
+     * Test stacking setters
+     *
+     * @return void
+     */
+    public function testStackingSetters()
+    {
+        $helper = $this->getHelper();
         $this->assertEquals(
-            '?foo=baz&sort=title&view=grid&lookfor=search&type=x&limit=50&page=3',
+            '?foo=bar&sort=title&view=grid&lookfor=search&type=x&limit=50&page=3',
             $helper->setSort('title')->setViewParam('grid')->setHandler('x')
                 ->setLimit(50)->setPage(3)->getParams(false)
         );
@@ -123,8 +198,7 @@ class UrlQueryHelperTest extends TestCase
      */
     public function testAdvancedSearch()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/advanced/';
-        $q = unserialize(file_get_contents($fixturePath . 'query'));
+        $q = unserialize($this->getFixture('searches/advanced/query'));
         $helper = new UrlQueryHelper([], $q);
         $this->assertEquals(
             '?join=OR&bool0%5B%5D=AND&lookfor0%5B%5D=oranges&lookfor0%5B%5D=bananas'
@@ -146,7 +220,8 @@ class UrlQueryHelperTest extends TestCase
         $factory = new UrlQueryHelperFactory();
         $config = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new \VuFindTest\Search\TestHarness\Params(
-            new \VuFindTest\Search\TestHarness\Options($config), $config
+            new \VuFindTest\Search\TestHarness\Options($config),
+            $config
         );
         $params->setBasicSearch('foo', 'bar');
         $params->setLimit(100);

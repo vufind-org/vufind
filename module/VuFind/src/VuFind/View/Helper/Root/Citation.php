@@ -68,6 +68,35 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected $dateConverter;
 
     /**
+     * List of words to never capitalize when using title case.
+     *
+     * Some words that were considered for this list, but excluded due to their
+     * potential ambiguity: down, near, out, past, up
+     *
+     * Some words that were considered, but excluded because they were five or
+     * more characters in length: about, above, across, after, against, along,
+     * among, around, before, behind, below, beneath, beside, between, beyond,
+     * despite, during, except,  inside, opposite, outside, round, since, through,
+     * towards, under, underneath, unlike, until, within, without
+     *
+     * @var string[]
+     */
+    protected $uncappedWords = [
+        'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'from', 'in',
+        'into', 'like', 'nor', 'of', 'off', 'on', 'onto', 'or', 'over', 'so',
+        'than', 'the', 'to', 'upon', 'via', 'with', 'yet',
+    ];
+
+    /**
+     * List of multi-word phrases to never capitalize when using title case.
+     *
+     * @var string[]
+     */
+    protected $uncappedPhrases = [
+        'even if', 'if only', 'now that', 'on top of'
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $converter Date converter
@@ -87,12 +116,33 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($driver)
     {
+        // Store the driver first, since we will need it for prepareAuthors checks.
+        $this->driver = $driver;
+
         // Build author list:
-        $authors = (array)$driver->tryMethod('getPrimaryAuthors');
+        $authors = $this->prepareAuthors(
+            (array)$driver->tryMethod('getPrimaryAuthors')
+        );
+        $corporateAuthors = [];
         if (empty($authors)) {
-            $authors = (array)$driver->tryMethod('getCorporateAuthors');
+            // Corporate authors are more likely to have inappropriate trailing
+            // punctuation; strip it off, unless the last word is short, like
+            // "Co.", "Ltd.," etc.:
+            $trimmer = function ($str) {
+                return preg_match('/\s+.{1,3}\.$/', $str)
+                    ? $str : rtrim($str, '.');
+            };
+            $corporateAuthors = $authors = $this->prepareAuthors(
+                array_map(
+                    $trimmer,
+                    (array)$driver->tryMethod('getCorporateAuthors')
+                ),
+                true
+            );
         }
-        $secondary = (array)$driver->tryMethod('getSecondaryAuthors');
+        $secondary = $this->prepareAuthors(
+            (array)$driver->tryMethod('getSecondaryAuthors')
+        );
         if (!empty($secondary)) {
             $authors = array_unique(array_merge($authors, $secondary));
         }
@@ -108,7 +158,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
         // Find subtitle in title if they're not separated:
         if (empty($subtitle) && strstr($title, ':')) {
-            list($title, $subtitle) = explode(':', $title, 2);
+            [$title, $subtitle] = explode(':', $title, 2);
         }
 
         // Extract the additional details from the record driver:
@@ -117,10 +167,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
         $edition = $driver->tryMethod('getEdition');
 
-        // Store everything:
-        $this->driver = $driver;
+        // Store all the collected details:
         $this->details = [
-            'authors' => $this->prepareAuthors($authors),
+            'authors' => $authors,
+            'corporateAuthors' => $corporateAuthors,
             'title' => trim($title), 'subtitle' => trim($subtitle),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
@@ -137,34 +187,68 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * This support method (used by the main citation() method) attempts to fix
      * any non-compliant names.
      *
-     * @param array $authors Authors to process.
+     * @param array $authors     Authors to process.
+     * @param bool  $isCorporate Is this a list of corporate authors?
      *
      * @return array
      */
-    protected function prepareAuthors($authors)
+    protected function prepareAuthors($authors, $isCorporate = false)
     {
+        $callables = [];
+
         // If this data comes from a MARC record, we can probably assume that
-        // anything without a comma is a valid corporate author that should be
-        // left alone...
-        if (is_a($this->driver, 'VuFind\RecordDriver\SolrMarc')) {
-            return $authors;
+        // anything without a comma is supposed to be formatted that way. We
+        // also know if we have a valid corporate author name that it should be
+        // left alone... otherwise, it's worth trying to reverse names (for example,
+        // this may be dirty data from Summon):
+        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
+            && !$isCorporate
+        ) {
+            $callables[] = function (string $name): string {
+                $name = $this->cleanNameDates($name);
+                if (!strstr($name, ',')) {
+                    $parts = explode(' ', $name);
+                    if (count($parts) > 1) {
+                        $last = array_pop($parts);
+                        $first = implode(' ', $parts);
+                        return rtrim($last, '.') . ', ' . $first;
+                    }
+                }
+                return $name;
+            };
         }
 
-        // If we got this far, it's worth trying to reverse names (for example,
-        // this may be dirty data from Summon):
-        $processed = [];
-        foreach ($authors as $name) {
-            if (!strstr($name, ',')) {
-                $parts = explode(' ', $name);
-                if (count($parts) > 1) {
-                    $last = array_pop($parts);
-                    $first = implode(' ', $parts);
-                    $name = $last . ', ' . $first;
+        // We always want to apply these standard cleanup routines to non-corporate
+        // authors:
+        if (!$isCorporate) {
+            $callables[] = function (string $name): string {
+                // Eliminate parenthetical information:
+                $strippedName = trim(preg_replace('/\s\(.*\)/', '', $name));
+
+                // Split the text into words:
+                $parts = explode(' ', empty($strippedName) ? $name : $strippedName);
+
+                // If we have exactly two parts, we should trim any trailing
+                // punctuation from the second part (this reduces the odds of
+                // accidentally trimming a "Jr." or "Sr."):
+                if (count($parts) == 2) {
+                    $parts[1] = rtrim($parts[1], '.');
                 }
-            }
-            $processed[] = $name;
+                // Put the parts back together; eliminate stray commas:
+                return rtrim(implode(' ', $parts), ',');
+            };
         }
-        return $processed;
+
+        // Now apply all of the functions we collected to all of the strings:
+        return array_map(
+            function (string $value) use ($callables): string {
+                foreach ($callables as $current) {
+                    $value = $current($value);
+                }
+                return $value;
+            },
+            $authors
+        );
     }
 
     /**
@@ -205,27 +289,29 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             'authors' => $this->getAPAAuthors(),
             'edition' => $this->getEdition()
         ];
+
         // Show a period after the title if it does not already have punctuation
         // and is not followed by an edition statement:
         $apa['periodAfterTitle']
             = (!$this->isPunctuated($apa['title']) && empty($apa['edition']));
+        if ($doi = $this->driver->tryMethod('getCleanDOI')) {
+            $apa['doi'] = $doi;
+        }
 
-        // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
+        // Behave differently for books vs. journals:
         if (empty($this->details['journal'])) {
-            $apa['publisher'] = $this->getPublisher();
+            $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
             return $partial('Citation/apa.phtml', $apa);
-        } else {
-            list($apa['volume'], $apa['issue'], $apa['date'])
-                = $this->getAPANumbersAndDate();
-            $apa['journal'] = $this->details['journal'];
-            $apa['pageRange'] = $this->getPageRange();
-            if ($doi = $this->driver->tryMethod('getCleanDOI')) {
-                $apa['doi'] = $doi;
-            }
-            return $partial('Citation/apa-article.phtml', $apa);
         }
+
+        // If we got this far, it's the default article case:
+        [$apa['volume'], $apa['issue'], $apa['date']]
+            = $this->getAPANumbersAndDate();
+        $apa['journal'] = $this->details['journal'];
+        $apa['pageRange'] = $this->getPageRange();
+        return $partial('Citation/apa-article.phtml', $apa);
     }
 
     /**
@@ -238,7 +324,17 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCitationChicago()
     {
-        return $this->getCitationMLA(9, ', no. ');
+        return $this->getCitationMLA(
+            9,
+            ', no. ',
+            ' ',
+            '',
+            ' (%s)',
+            ':',
+            true,
+            'https://dx.doi.org/',
+            false
+        );
     }
 
     /**
@@ -252,31 +348,57 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * al.'
      * @param string $volNumSeparator String to separate volume and issue number
      * in citation.
+     * @param string $numPrefix       String to display in front of numbering
+     * @param string $volPrefix       String to display in front of volume
+     * @param string $yearFormat      Format string for year display
+     * @param string $pageNoSeparator Separator between date / page no.
+     * @param bool   $includePubPlace Should we include the place of publication?
+     * @param string $doiPrefix       Prefix to display in front of DOI; set to
+     * false to omit DOIs.
+     * @param bool   $labelPageRange  Should we include p./pp. before page ranges?
      *
      * @return string
      */
-    public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.')
-    {
+    public function getCitationMLA(
+        $etAlThreshold = 2,
+        $volNumSeparator = ', no. ',
+        $numPrefix = ', ',
+        $volPrefix = 'vol. ',
+        $yearFormat = ', %s',
+        $pageNoSeparator = ',',
+        $includePubPlace = false,
+        $doiPrefix = false,
+        $labelPageRange = true
+    ) {
         $mla = [
             'title' => $this->getMLATitle(),
-            'authors' => $this->getMLAAuthors($etAlThreshold)
+            'authors' => $this->getMLAAuthors($etAlThreshold),
+            'labelPageRange' => $labelPageRange,
+            'pageNumberSeparator' => $pageNoSeparator,
         ];
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
+        if ($doiPrefix && $doi = $this->driver->tryMethod('getCleanDOI')) {
+            $mla['doi'] = $doi;
+            $mla['doiPrefix'] = $doiPrefix;
+        }
 
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
-            $mla['publisher'] = $this->getPublisher();
+            $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
             return $partial('Citation/mla.phtml', $mla);
-        } else {
-            // Add other journal-specific details:
-            $mla['pageRange'] = $this->getPageRange();
-            $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
-            $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator);
-            return $partial('Citation/mla-article.phtml', $mla);
         }
+        // If we got this far, we should add other journal-specific details:
+        $mla['pageRange'] = $this->getPageRange();
+        $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
+        $mla['numberAndDate'] = $numPrefix . $this->getMLANumberAndDate(
+            $volNumSeparator,
+            $volPrefix,
+            $yearFormat
+        );
+        return $partial('Citation/mla-article.phtml', $mla);
     }
 
     /**
@@ -297,11 +419,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $volNumSeparator String to separate volume and issue number
      * in citation (only difference between MLA/Chicago Style).
+     * @param string $volPrefix       String to display in front of volume
+     * @param string $yearFormat      Format string for year display
      *
      * @return string
      */
-    protected function getMLANumberAndDate($volNumSeparator = '.')
-    {
+    protected function getMLANumberAndDate(
+        $volNumSeparator = '.',
+        $volPrefix = '',
+        $yearFormat = ', %s'
+    ) {
         $vol = $this->driver->tryMethod('getContainerVolume');
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
@@ -322,21 +449,23 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $month = $day = '';
         }
 
-        // We need to supply additional date information if no vol/num:
+        // If vol/num is set, we need to display one format...
         if (!empty($vol) || !empty($num)) {
             // If volume and number are both non-empty, separate them with a
             // period; otherwise just use the one that is set.
             $volNum = (!empty($vol) && !empty($num))
                 ? $vol . $volNumSeparator . $num : $vol . $num;
-            return $volNum . ' (' . $year . ')';
-        } else {
-            // Right now, we'll assume if day == 1, this is a monthly publication;
-            // that's probably going to result in some bad citations, but it's the
-            // best we can do without writing extra record driver methods.
-            return (($day > 1) ? $day . ' ' : '')
-                . (empty($month) ? '' : $month . ' ')
-                . $year;
+            return (empty($vol) ? '' : $volPrefix)
+                . $volNum . sprintf($yearFormat, $year);
         }
+        // If we got this far, there's no vol/num, so we need to supply additional
+        // date information...
+        // Right now, we'll assume if day == 1, this is a monthly publication;
+        // that's probably going to result in some bad citations, but it's the
+        // best we can do without writing extra record driver methods.
+        return (($day > 1) ? $day . ' ' : '')
+            . (empty($month) ? '' : $month . ' ')
+            . $year;
     }
 
     /**
@@ -377,15 +506,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 $num = '';
             }
             return [$vol, $num, $year];
-        } else {
-            // Right now, we'll assume if day == 1, this is a monthly publication;
-            // that's probably going to result in some bad citations, but it's the
-            // best we can do without writing extra record driver methods.
-            $finalDate = $year
-                . (empty($month) ? '' : ', ' . $month)
-                . (($day > 1) ? ' ' . $day : '');
-            return ['', '', $finalDate];
         }
+        // Right now, we'll assume if day == 1, this is a monthly publication;
+        // that's probably going to result in some bad citations, but it's the
+        // best we can do without writing extra record driver methods.
+        $finalDate = $year
+            . (empty($month) ? '' : ', ' . $month)
+            . (($day > 1) ? ' ' . $day : '');
+        return ['', '', $finalDate];
     }
 
     /**
@@ -437,21 +565,18 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     protected function abbreviateName($name)
     {
-        $parts = explode(', ', $name);
+        $parts = explode(', ', $this->cleanNameDates($name));
         $name = $parts[0];
 
-        // Attach initials... but if we encountered a date range, the name
-        // ended earlier than expected, and we should stop now.
-        if (isset($parts[1]) && !$this->isDateRange($parts[1])) {
+        // Attach initials...
+        if (isset($parts[1])) {
             $fnameParts = explode(' ', $parts[1]);
             for ($i = 0; $i < count($fnameParts); $i++) {
                 // Use the multi-byte substring function if available to avoid
                 // problems with accented characters:
-                if (function_exists('mb_substr')) {
-                    $fnameParts[$i] = mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.';
-                } else {
-                    $fnameParts[$i] = substr($fnameParts[$i], 0, 1) . '.';
-                }
+                $fnameParts[$i] = function_exists('mb_substr')
+                    ? mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.'
+                    : substr($fnameParts[$i], 0, 1) . '.';
             }
             $name .= ', ' . implode(' ', $fnameParts);
             if (isset($parts[2]) && $this->isNameSuffix($parts[2])) {
@@ -497,7 +622,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 $name .= ', ' . $arr[2];
             }
         }
-        return $name;
+        // For good measure, strip out any remaining date ranges lurking in
+        // non-standard places.
+        return preg_replace(
+            '/\s+(\d{4}\-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/',
+            '',
+            $name
+        );
     }
 
     /**
@@ -562,24 +693,45 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     protected function capitalizeTitle($str)
     {
-        $exceptions = ['a', 'an', 'the', 'against', 'between', 'in', 'of',
-            'to', 'and', 'but', 'for', 'nor', 'or', 'so', 'yet', 'to'];
-
         $words = explode(' ', $str);
         $newwords = [];
         $followsColon = false;
         foreach ($words as $word) {
             // Capitalize words unless they are in the exception list...  but even
-            // exceptional words get capitalized if they follow a colon.
-            if (!in_array($word, $exceptions) || $followsColon) {
-                $word = ucfirst($word);
+            // exceptional words get capitalized if they follow a colon. Note that
+            // we need to strip non-word characters (like punctuation) off of words
+            // in order to reliably look them up in the uncappedWords list.
+            $baseWord = preg_replace('/\W/', '', $word);
+            if (!in_array($baseWord, $this->uncappedWords) || $followsColon) {
+                // Includes special case to properly capitalize words in quotes:
+                $firstChar = substr($word, 0, 1);
+                $word = in_array($firstChar, ['"', "'"])
+                    ? $firstChar . ucfirst(substr($word, 1))
+                    : ucfirst($word);
             }
             array_push($newwords, $word);
 
             $followsColon = substr($word, -1) == ':';
         }
 
-        return ucfirst(join(' ', $newwords));
+        // We've dealt with capitalization of words; now we need to deal with
+        // multi-word phrases:
+        $adjustedTitle = ucfirst(join(' ', $newwords));
+        foreach ($this->uncappedPhrases as $phrase) {
+            // We need to cover two cases: the phrase at the start of a title,
+            // and the phrase in the middle of a title:
+            $adjustedTitle = preg_replace(
+                '/^' . $phrase . '\b/i',
+                strtoupper(substr($phrase, 0, 1)) . substr($phrase, 1),
+                $adjustedTitle
+            );
+            $adjustedTitle = preg_replace(
+                '/(.+)\b' . $phrase . '\b/i',
+                '$1' . $phrase,
+                $adjustedTitle
+            );
+        }
+        return $adjustedTitle;
     }
 
     /**
@@ -617,11 +769,12 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         ) {
             $i = 0;
             $ellipsis = false;
+            $authorCount = count($this->details['authors']);
             foreach ($this->details['authors'] as $author) {
-                $author = $this->abbreviateName($author);
-                if (($i + 1 == count($this->details['authors']))
-                    && ($i > 0)
-                ) { // Last
+                // Do not abbreviate corporate authors:
+                $author = in_array($author, $this->details['corporateAuthors'])
+                    ? $author : $this->abbreviateName($author);
+                if (($i + 1 == $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
                     // an ampersand:
                     $authorStr .= $ellipsis ? ' ' : '& ';
@@ -632,8 +785,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                         $authorStr .= '. . .';
                         $ellipsis = true;
                     }
-                } elseif (count($this->details['authors']) > 1) {
-                    $authorStr .= $author . ', ';
+                } elseif ($authorCount > 1) {
+                    // If this is the second-to-last author, and we have not found
+                    // any commas yet, we can skip the comma. Otherwise, add one to
+                    // the list. Useful for two-item lists including corporate
+                    // authors as the first entry.
+                    $skipComma = ($i + 2 == $authorCount)
+                        && (strpos($authorStr . $author, ',') === false);
+                    $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
                     $authorStr .= $this->stripPunctuation($author) . '.';
                 }
@@ -688,14 +847,44 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Format an author name for inclusion as the first name in an MLA citation.
+     *
+     * @param string $author Name to reformat.
+     *
+     * @return string
+     */
+    protected function formatPrimaryMLAAuthor($author)
+    {
+        // Corporate authors should not be reformatted:
+        return in_array($author, $this->details['corporateAuthors'])
+            ? $author : $this->cleanNameDates($author);
+    }
+
+    /**
+     * Format an author name for inclusion in an MLA citation (after the primary
+     * name, which gets formatted differently).
+     *
+     * @param string $author Name to reformat.
+     *
+     * @return string
+     */
+    protected function formatSecondaryMLAAuthor($author)
+    {
+        // If there is no comma in the name, we don't need to reverse it and
+        // should leave its punctuation alone (since it was adjusted earlier).
+        return strpos($author, ',') === false
+            ? $author : $this->reverseName($this->stripPunctuation($author));
+    }
+
+    /**
      * Get an array of authors for an MLA or Chicago Style citation.
      *
      * @param int $etAlThreshold The number of authors to abbreviate with 'et al.'
-     * This is the only difference between MLA/Chicago Style.
+     * This is a major difference between MLA/Chicago Style.
      *
      * @return array
      */
-    protected function getMLAAuthors($etAlThreshold = 4)
+    protected function getMLAAuthors($etAlThreshold = 2)
     {
         $authorStr = '';
         if (isset($this->details['authors'])
@@ -704,19 +893,24 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $i = 0;
             if (count($this->details['authors']) > $etAlThreshold) {
                 $author = $this->details['authors'][0];
-                $authorStr = $this->cleanNameDates($author) . ', et al.';
+                $authorStr = $this->formatPrimaryMLAAuthor($author) . ', et al.';
             } else {
-                foreach ($this->details['authors'] as $author) {
+                foreach ($this->details['authors'] as $rawAuthor) {
+                    $author = $this->formatPrimaryMLAAuthor($rawAuthor);
                     if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
-                        $authorStr .= ', ' . $this->translate('and') . ' ' .
-                            $this->reverseName($this->stripPunctuation($author));
+                        // Only add a comma if there are commas already in the
+                        // preceding text. This helps, for example, with cases where
+                        // the first author is a corporate author.
+                        $finalJoin = strpos($authorStr, ',') !== false ? ', ' : ' ';
+                        $authorStr .= $finalJoin . $this->translate('and') . ' '
+                            . $this->formatSecondaryMLAAuthor($author);
                     } elseif ($i > 0) {
-                        $authorStr .= ', ' .
-                            $this->reverseName($this->stripPunctuation($author));
+                        $authorStr .= ', '
+                            . $this->formatSecondaryMLAAuthor($author);
                     } else {
                         // First
-                        $authorStr .= $this->cleanNameDates($author);
+                        $authorStr .= $author;
                     }
                     $i++;
                 }
@@ -729,18 +923,18 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * Get publisher information (place: name) for inclusion in a citation.
      * Shared by APA and MLA functionality.
      *
+     * @param bool $includePubPlace Should we include the place of publication?
+     *
      * @return string
      */
-    protected function getPublisher()
+    protected function getPublisher($includePubPlace = true)
     {
         $parts = [];
-        if (isset($this->details['pubPlace'])
-            && !empty($this->details['pubPlace'])
+        if ($includePubPlace && !empty($this->details['pubPlace'])
         ) {
             $parts[] = $this->stripPunctuation($this->details['pubPlace']);
         }
-        if (isset($this->details['pubName'])
-            && !empty($this->details['pubName'])
+        if (!empty($this->details['pubName'])
         ) {
             $parts[] = $this->details['pubName'];
         }
@@ -759,17 +953,19 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getYear()
     {
         if (isset($this->details['pubDate'])) {
-            if (strlen($this->details['pubDate']) > 4) {
+            $numericDate = preg_replace('/\D/', '', $this->details['pubDate']);
+            if (strlen($numericDate) > 4) {
                 try {
                     return $this->dateConverter->convertFromDisplayDate(
-                        'Y', $this->details['pubDate']
+                        'Y',
+                        $this->details['pubDate']
                     );
                 } catch (\Exception $e) {
                     // Ignore date errors -- no point in dying here:
                     return false;
                 }
             }
-            return preg_replace('/[^0-9]/', '', $this->details['pubDate']);
+            return $numericDate;
         }
         return false;
     }

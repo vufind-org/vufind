@@ -39,8 +39,10 @@ namespace VuFindTest\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SolrMarcTest extends \VuFindTest\Unit\TestCase
+class SolrMarcTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test a record that used to be known to cause problems because of the way
      * its linking fields are set up.
@@ -56,7 +58,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
         $config = new \Laminas\Config\Config($configArr);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadRecordFixture('testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
             ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
@@ -75,7 +77,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     public function testBug2()
     {
         $record = new \VuFind\RecordDriver\SolrMarc();
-        $fixture = $this->loadRecordFixture('testbug2.json');
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($fixture['response']['docs'][0]);
 
         $this->assertEquals(
@@ -88,7 +90,8 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $series = $record->getSeries();
         $this->assertEquals(count($series), 1);
         $this->assertEquals(
-            'Vico, Giambattista, 1668-1744. Works. 1982 ;', $series[0]['name']
+            'Vico, Giambattista, 1668-1744. Works. 1982 ;',
+            $series[0]['name']
         );
         $this->assertEquals('2, pt. 1.', $series[0]['number']);
     }
@@ -102,7 +105,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     {
         $config = new \Laminas\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadRecordFixture('testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $this->assertEquals(
             [['Matematica', 'Periodici.']],
@@ -113,10 +116,63 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
                 [
                     'heading' => ['Matematica', 'Periodici.'],
                     'type' => '',
-                    'source' => ''
+                    'source' => '',
+                    'id' => ''
                 ],
             ],
             $record->getAllSubjectHeadings(true)
+        );
+    }
+
+    /**
+     * Test table of contents support.
+     *
+     * @return void
+     */
+    public function testTOC()
+    {
+        $marc = $this->getFixture('marc/toc1.xml');
+        $config = new \Laminas\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $record->setRawData(['fullrecord' => $marc]);
+        $this->assertEquals(
+            [
+                'About the Association of Professors of Missions / Robert Danielson',
+                'Foreword / Angel Santiago-Vendrell',
+                'Conference theme',
+                'Plenary Papers',
+                'Teaching missiology in and for world Christianity content and method / Peter C. Phan',
+                'The bodies we teach by: (en) gendering mission for global Christianities / Mai-Ahn Le',
+                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the 1916 Panama Congress / Philip Wingeier-Rayo',
+                'Conference Papers',
+                'Theological metaphors of teaching mission in an age of world Christianity in the North American context / David Thang Moe',
+                'Mission shifts from Pope Benedict XVI to Pope Francis / William P. Gregory',
+                'The elephant in the room: towards a paradigm shift in missiological education / Sarita D. Gallagher',
+                'Historic models of teaching Christian mission: case studies informing an age of world Christianity / Robert L. Gallagher',
+                'How the West was won: world Christianity as historic reality / Matt Friedman',
+                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s Christian universities / Janice Horsager Rasmussen',
+                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
+                'Mary McLeod Bethune: Christ did not designate any particular color to go / Mary Cloutier',
+                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the classroom / Angel Santiago-Vendrell',
+                'Conference Proceedings',
+                'First Fruits report for the APM',
+                'Minutes of 2016 meeting',
+                'Secretary\'s treasury report',
+                'Conference program.',
+            ],
+            $record->getTOC()
+        );
+        $marc2 = $this->getFixture('marc/toc2.xml');
+        $record2 = new \VuFind\RecordDriver\SolrMarc($config);
+        $record2->setRawData(['fullrecord' => $marc2]);
+        $this->assertEquals(
+            [
+                'Don\'t split the unspaced--separator.',
+                'Do split the spaced one.',
+                'Respect pre-AACR2-style separation',
+                'Even though it\'s old.',
+            ],
+            $record2->getTOC()
         );
     }
 
@@ -129,7 +185,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     {
         $config = new \Laminas\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadRecordFixture('testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $input = [
             'foo' => 'msg|true',
@@ -160,21 +216,35 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Load a fixture file.
+     * Test methods in MarcReaderTrait.
      *
-     * @param string $file File to load from fixture directory.
-     *
-     * @return array
+     * @return void
      */
-    protected function loadRecordFixture($file)
+    public function testMarcReaderTrait()
     {
-        return json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/' . $file
-                )
-            ),
-            true
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->will($this->returnValue($record));
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getFieldArray');
+        $getFieldArray->setAccessible(true);
+        $this->assertEquals(
+            ['Author, Test (1800-)'],
+            $getFieldArray->invokeArgs($obj, [100, ['a', 'd']])
+        );
+
+        $getSubfieldArray = $reflection->getMethod('getSubfieldArray');
+        $getSubfieldArray->setAccessible(true);
+        $this->assertEquals(
+            ['Author, Test (1800-)'],
+            $getSubfieldArray
+                ->invokeArgs($obj, [$record->getField('100'), ['a', 'd']])
         );
     }
 }

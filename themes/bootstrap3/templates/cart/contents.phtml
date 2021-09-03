@@ -6,7 +6,7 @@
       <div class="checkbox">
         <label>
           <?=$this->record($record)->getCheckbox('cart')?>
-          <a title="<?=$this->transEsc('View Record')?>" href="<?=$this->recordLink()->getUrl($record)?>" data-lightbox-ignore><?=$this->escapeHtml($record->getBreadcrumb())?></a>
+          <a title="<?=$this->transEscAttr('View Record')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($record))?>" data-lightbox-ignore><?=$this->escapeHtml($record->getBreadcrumb())?></a>
         </label>
       </div>
     </li>

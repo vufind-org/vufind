@@ -149,7 +149,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     }
                     // Decode the content and strip unwanted <a> tags:
                     $review[$i]['Content'] = preg_replace(
-                        '/<a>|<a [^>]*>|<\/a>/', '',
+                        '/<a>|<a [^>]*>|<\/a>/',
+                        '',
                         html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
                     );
 
@@ -164,7 +165,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
 
                     if ($review[$i]['Copyright']) {  //stop duplicate copyrights
                         $location = strripos(
-                            $review[0]['Content'], $review[0]['Copyright']
+                            $review[0]['Content'],
+                            (string)$review[0]['Copyright']
                         );
                         if ($location > 0) {
                             $review[$i]['Content']

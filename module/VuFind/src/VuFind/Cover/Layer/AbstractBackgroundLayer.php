@@ -60,7 +60,7 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
             return $cv;
         } else {
             // If no callnumber, random
-            return ceil(rand(pow(2, 4), pow(2, 32)));
+            return ceil(rand(2 ** 4, 2 ** 32));
         }
     }
 
@@ -78,7 +78,10 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
         // Number to color, hsb to control saturation and lightness
         return $settings->accentColor == 'random'
             ? $this->getHSBColor(
-                $im, $seed % 256, $settings->saturation, $settings->lightness
+                $im,
+                $seed % 256,
+                $settings->saturation,
+                $settings->lightness
             ) : $this->getColor($im, $settings->accentColor);
     }
 }

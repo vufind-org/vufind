@@ -181,9 +181,7 @@
 Author:
   DismaxFields:
     - author^100
-    - author_fuller^50
     - author2
-    - author2_fuller
     - author_additional
     - author_corporate
     - author_variant
@@ -271,7 +269,6 @@ AllFields:
     - series^50
     - series2^30
     - author^300
-    - author_fuller^150
     - contents^10
     - topic_unstemmed^550
     - topic^500
@@ -431,3 +428,9 @@ oclc_num:
   QueryFields:
     oclc_num:
       - [oclc_num, ~]
+
+WorkKeys:
+  QueryFields:
+    work_keys_str_mv:
+      - [and, 100]
+      - [or, ~]

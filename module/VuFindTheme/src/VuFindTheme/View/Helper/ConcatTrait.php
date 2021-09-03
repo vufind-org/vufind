@@ -76,7 +76,7 @@ trait ConcatTrait
      * @param stdClass $item Element object
      * @param string   $path New path string
      *
-     * @return void
+     * @return stdClass
      */
     abstract protected function setResourceFilePath($item, $path);
 
@@ -86,6 +86,20 @@ trait ConcatTrait
      * @return minifying object like \MatthiasMullie\Minify\JS
      */
     abstract protected function getMinifier();
+
+    /**
+     * Add a content security policy nonce to the item
+     *
+     * @param stdClass $item Item
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function addNonce($item)
+    {
+        // Default implementation does nothing
+    }
 
     /**
      * Set the file path of the link object
@@ -355,7 +369,10 @@ trait ConcatTrait
         foreach ($this->groups as $group) {
             if (isset($group['other'])) {
                 $output[] = $this->itemToString(
-                    $group['item'], $indent, $escapeStart, $escapeEnd
+                    $group['item'],
+                    $indent,
+                    $escapeStart,
+                    $escapeEnd
                 );
             } else {
                 // Note that we  use parent::itemToString() below instead of
@@ -364,14 +381,19 @@ trait ConcatTrait
                 // files, which are stored in a theme-independent cache).
                 $path = $this->getConcatenatedFilePath($group);
                 $item = $this->setResourceFilePath($group['items'][0], $path);
+                $this->addNonce($item);
                 $output[] = parent::itemToString(
-                    $item, $indent, $escapeStart, $escapeEnd
+                    $item,
+                    $indent,
+                    $escapeStart,
+                    $escapeEnd
                 );
             }
         }
 
         return $indent . implode(
-            $this->escape($this->getSeparator()) . $indent, $output
+            $this->escape($this->getSeparator()) . $indent,
+            $output
         );
     }
 

@@ -40,8 +40,10 @@ use VuFind\Form\Form;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class FormTest extends \VuFindTest\Unit\TestCase
+class FormTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test defaults with no configuration.
      *
@@ -58,17 +60,20 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $this->assertFalse($form->showOnlyForLoggedUsers());
         $this->assertEquals([], $form->getElements());
         $this->assertEquals(
-            [['email' => null, 'name' => null]], $form->getRecipient()
+            [['email' => null, 'name' => null]],
+            $form->getRecipient()
         );
         $this->assertNull($form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.', $form->getSubmitResponse()
+            'Thank you for your feedback.',
+            $form->getSubmitResponse()
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertEquals(
-            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter',
+            get_class($form->getInputFilter())
         );
     }
 
@@ -90,7 +95,8 @@ class FormTest extends \VuFindTest\Unit\TestCase
             $defaults
         );
         $this->assertEquals(
-            [['name' => 'me', 'email' => 'me@example.com']], $form->getRecipient()
+            [['name' => 'me', 'email' => 'me@example.com']],
+            $form->getRecipient()
         );
         $this->assertEquals('subject', $form->getEmailSubject([]));
     }
@@ -161,14 +167,16 @@ class FormTest extends \VuFindTest\Unit\TestCase
         );
 
         $this->assertEquals(
-            [['email' => null, 'name' => null]], $form->getRecipient()
+            [['email' => null, 'name' => null]],
+            $form->getRecipient()
         );
 
         $this->assertEquals('Send us your feedback!', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.', $form->getSubmitResponse()
+            'Thank you for your feedback.',
+            $form->getSubmitResponse()
         );
         $this->assertEquals(
             [
@@ -188,7 +196,8 @@ class FormTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter',
+            get_class($form->getInputFilter())
         );
 
         // Validators: Required field problems
@@ -219,14 +228,10 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testElementOptions()
     {
-        $config = Yaml::parse(
-            file_get_contents(
-                __DIR__ . '/../../../../fixtures/configs/feedbackforms/test.yaml'
-            )
-        );
+        $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
         $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
+            ->onlyMethods(['get'])
             ->getMock();
         $mock->expects($this->any())->method('get')
             ->with($this->equalTo('FeedbackForms.yaml'))
@@ -306,5 +311,159 @@ class FormTest extends \VuFindTest\Unit\TestCase
             ['option-1' => 'option-1', 'option-2' => 'option-2'],
             $el['options']
         );
+    }
+
+    /**
+     * Test checkbox element validators.
+     *
+     * @return void
+     */
+    public function testCheckboxValidators()
+    {
+        $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
+        $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get'])
+            ->getMock();
+        $mock->expects($this->any())->method('get')
+            ->with($this->equalTo('FeedbackForms.yaml'))
+            ->will($this->returnValue($config));
+
+        // Test checkbox with all options required
+        $ids = [
+            'TestCheckboxWithAllOptionsRequired',  // options with value
+            'TestCheckboxWithAllOptionsRequired-2' // options with label and value
+        ];
+
+        foreach ($ids as $id) {
+            $form = new Form(
+                $mock,
+                $this->createMock(\Laminas\View\HelperPluginManager::class)
+            );
+            $form->setFormId($id);
+
+            // No options
+            $form->setData(['checkbox' => []]);
+            $this->assertFalse($form->isValid());
+
+            // One OK option, another missing
+            $form->setData(['checkbox' => ['option-1']]);
+            $this->assertFalse($form->isValid());
+
+            // One OK option, another invalid
+            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $this->assertFalse($form->isValid());
+
+            // Both required options
+            $form->setData(['checkbox' => ['option-1', 'option-2']]);
+            $this->assertTrue($form->isValid());
+
+            // Both required options and one invalid
+            $form->setData(['checkbox' => ['option-1', 'option-2', 'invalid-option']]);
+            $this->assertFalse($form->isValid());
+        }
+
+        // Test checkbox with one required option
+        $ids = [
+            'TestCheckboxWithOneOptionRequired',  // options with value
+            'TestCheckboxWithOneOptionRequired-2' // options with label and value
+        ];
+
+        foreach ($ids as $id) {
+            $form = new Form(
+                $mock,
+                $this->createMock(\Laminas\View\HelperPluginManager::class)
+            );
+            $form->setFormId($id);
+
+            // No options
+            $form->setData(['checkbox' => []]);
+            $this->assertFalse($form->isValid());
+
+            // One invalid option
+            $form->setData(['checkbox' => ['invalid-option']]);
+            $this->assertFalse($form->isValid());
+
+            // One OK option
+            $form->setData(['checkbox' => ['option-1']]);
+            $this->assertTrue($form->isValid());
+
+            // One OK options
+            $form->setData(['checkbox' => ['option-2']]);
+            $this->assertTrue($form->isValid());
+
+            // Both options OK
+            $form->setData(['checkbox' => ['option-1', 'option-2']]);
+            $this->assertTrue($form->isValid());
+
+            // One OK and one invalid option
+            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $this->assertTrue($form->isValid());
+        }
+
+        // Test checkbox with a single options that is required
+        $ids = [
+            // options with value
+            'TestCheckboxWithOneOptionThatIsRequired',
+            // options with label and value
+            'TestCheckboxWithOneOptionThatIsRequired-2'
+        ];
+
+        foreach ($ids as $id) {
+            $form = new Form(
+                $mock,
+                $this->createMock(\Laminas\View\HelperPluginManager::class)
+            );
+            $form->setFormId($id);
+
+            // No options
+            $form->setData(['checkbox' => []]);
+            $this->assertFalse($form->isValid());
+
+            // One invalid option
+            $form->setData(['checkbox' => ['invalid-option']]);
+            $this->assertFalse($form->isValid());
+
+            // One OK option
+            $form->setData(['checkbox' => ['option-1']]);
+            $this->assertTrue($form->isValid());
+
+            // One OK and one invalid option
+            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $this->assertFalse($form->isValid());
+        }
+
+        // Test checkbox with a single options that is required,
+        // configured with requireOne
+        $ids = [
+            // options with value
+            'TestCheckboxWithOneOptionThatIsRequiredConfiguredWithRequireOne',
+            // options with label and value
+            'TestCheckboxWithOneOptionThatIsRequiredConfiguredWithRequireOne-2',
+        ];
+
+        foreach ($ids as $id) {
+            $form = new Form(
+                $mock,
+                $this->createMock(\Laminas\View\HelperPluginManager::class)
+            );
+            $form->setFormId($id);
+
+            // No options
+            $form->setData(['checkbox' => []]);
+            $this->assertFalse($form->isValid());
+
+            // One invalid option
+            $form->setData(['checkbox' => ['invalid-option']]);
+            $this->assertFalse($form->isValid());
+
+            // One OK option
+            $form->setData(['checkbox' => ['option-1']]);
+            $this->assertTrue($form->isValid());
+
+            // One OK and one invalid option
+            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $this->assertTrue($form->isValid());
+        }
     }
 }

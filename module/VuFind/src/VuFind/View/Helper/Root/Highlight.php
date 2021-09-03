@@ -66,7 +66,10 @@ class Highlight extends AbstractHelper
      *
      * @return string          Highlighted, HTML encoded string
      */
-    public function __invoke($haystack, $needle = null, $clear = false,
+    public function __invoke(
+        $haystack,
+        $needle = null,
+        $clear = false,
         $escape = true
     ) {
         // Normalize value to an array so we can loop through it; this saves us from
@@ -87,7 +90,8 @@ class Highlight extends AbstractHelper
                 $phrase = preg_quote($phrase, '/');
                 $haystack = preg_replace(
                     "/($phrase)/iu",
-                    '{{{{START_HILITE}}}}$1{{{{END_HILITE}}}}', $haystack
+                    '{{{{START_HILITE}}}}$1{{{{END_HILITE}}}}',
+                    $haystack
                 );
             }
         }

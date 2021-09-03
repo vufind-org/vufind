@@ -106,7 +106,9 @@ class Generator
      * @param LayerManager $lm         Layer manager
      * @param array        $settings   Overwrite styles
      */
-    public function __construct(ThemeInfo $themeTools, LayerManager $lm,
+    public function __construct(
+        ThemeInfo $themeTools,
+        LayerManager $lm,
         array $settings = []
     ) {
         $this->themeTools = $themeTools;
@@ -135,7 +137,7 @@ class Generator
         if (count($parts) < 2) {
             $settings['width'] = $settings['height'] = $parts[0];
         } else {
-            list($settings['width'], $settings['height']) = $parts;
+            [$settings['width'], $settings['height']] = $parts;
         }
 
         // Store the results as an object:

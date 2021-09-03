@@ -40,41 +40,6 @@ import org.solrmarc.index.SolrIndexer;
 public class CallNumberTools
 {
     /**
-     * Extract the full call number from a record, stripped of spaces
-     * @param record MARC record
-     * @return Call number label
-     * @deprecated Obsolete as of VuFind 2.4.
-     *          This method exists only to support the VuFind call number search, version <= 2.3.
-     *          As of VuFind 2.4, the munging for call number search in handled entirely in Solr.
-     */
-    @Deprecated
-    public String getFullCallNumber(final Record record) {
-
-        return(getFullCallNumber(record, "099ab:090ab:050ab"));
-    }
-
-    /**
-     * Extract the full call number from a record, stripped of spaces
-     * @param record MARC record
-     * @param fieldSpec taglist for call number fields
-     * @return Call number label
-     * @deprecated Obsolete as of VuFind 2.4.
-     *          This method exists only to support the VuFind call number search, version <= 2.3.
-     *          As of VuFind 2.4, the munging for call number search in handled entirely in Solr.
-     */
-    @Deprecated
-    public String getFullCallNumber(final Record record, String fieldSpec) {
-
-        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
-
-        if (val != null) {
-            return val.toUpperCase().replaceAll(" ", "");
-        } else {
-            return val;
-        }
-    }
-
-    /**
      * Extract the call number label from a record
      * @param record MARC record
      * @return Call number label
@@ -274,6 +239,10 @@ public class CallNumberTools
             }
         }
 
+        // if the call number is empty, return null to indicate there is no LC number
+        if (firstCall.length() == 0) {
+            return null;
+        }
         // If we made it this far, did not find a valid LC number, so use what we have:
         return new LCCallNumber(firstCall).getShelfKey();
     }

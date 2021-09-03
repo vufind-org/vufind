@@ -40,8 +40,10 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Related extends AbstractClassBasedTemplateRenderer
+class Related extends \Laminas\View\Helper\AbstractHelper
 {
+    use ClassBasedTemplateRendererTrait;
+
     /**
      * Config manager
      *
@@ -70,8 +72,10 @@ class Related extends AbstractClassBasedTemplateRenderer
      * @param ConfigManager  $cm            Configuration manager
      * @param OptionsManager $om            Search options manager
      */
-    public function __construct(RelatedManager $pluginManager,
-        ConfigManager $cm, OptionsManager $om
+    public function __construct(
+        RelatedManager $pluginManager,
+        ConfigManager $cm,
+        OptionsManager $om
     ) {
         $this->pluginManager = $pluginManager;
         $this->configManager = $cm;
@@ -109,7 +113,7 @@ class Related extends AbstractClassBasedTemplateRenderer
         $retVal = [];
         $config = $this->getConfigForSource($driver->getSourceIdentifier());
         foreach ($config as $current) {
-            $parts = explode(':', $current);
+            $parts = explode(':', $current, 2);
             $type = $parts[0];
             $params = $parts[1] ?? null;
             if ($this->pluginManager->has($type)) {

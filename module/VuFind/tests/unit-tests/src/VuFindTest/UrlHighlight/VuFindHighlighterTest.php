@@ -32,7 +32,6 @@ use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use VStelmakh\UrlHighlight\Matcher\Match;
 use VuFind\UrlHighlight\VuFindHighlighter;
 use VuFind\View\Helper\Root\ProxyUrl;
-use VuFindTest\Unit\ViewHelperTestCase;
 
 /**
  * VuFindHighlighter Test Class
@@ -43,7 +42,7 @@ use VuFindTest\Unit\ViewHelperTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VuFindHighlighterTest extends ViewHelperTestCase
+class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ProxyUrl&MockObject

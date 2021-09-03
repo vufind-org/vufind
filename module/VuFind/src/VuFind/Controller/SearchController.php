@@ -84,9 +84,11 @@ class SearchController extends AbstractSolrSearch
                 $query = $query->addFilter($filter);
             }
         } elseif ($removeFacet) {
-            $defaults = ['operator' => 'AND', 'field' => '', 'value' => ''];
-            extract($removeFacet + $defaults);
-            $query = $initialParams->removeFacet($field, $value, $operator);
+            $query = $initialParams->removeFacet(
+                $removeFacet['field'] ?? '',
+                $removeFacet['value'] ?? '',
+                $removeFacet['operator'] ?? 'AND'
+            );
         } elseif ($removeFilter) {
             $query = $initialParams->removeFilter($removeFilter);
         } else {
@@ -120,7 +122,8 @@ class SearchController extends AbstractSolrSearch
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
         $view->url = $this->params()->fromPost(
-            'url', $this->params()->fromQuery(
+            'url',
+            $this->params()->fromQuery(
                 'url',
                 $this->getRequest()->getServer()->get('HTTP_REFERER')
             )
@@ -154,8 +157,13 @@ class SearchController extends AbstractSolrSearch
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
                 $mailer->sendLink(
-                    $view->to, $view->from, $view->message,
-                    $view->url, $this->getViewRenderer(), $view->subject, $cc
+                    $view->to,
+                    $view->from,
+                    $view->message,
+                    $view->url,
+                    $this->getViewRenderer(),
+                    $view->subject,
+                    $cc
                 );
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirect()->toUrl($view->url);
@@ -254,7 +262,9 @@ class SearchController extends AbstractSolrSearch
             $bibIDs = $this->newItems()->getBibIDsFromCatalog(
                 $this->getILS(),
                 $this->getResultsManager()->get('Solr')->getParams(),
-                $range, $dept, $this->flashMessenger()
+                $range,
+                $dept,
+                $this->flashMessenger()
             );
             $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
         } else {
@@ -348,7 +358,9 @@ class SearchController extends AbstractSolrSearch
         $view = $this->createViewModel();
         $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
         $view->results = $runner->run(
-            $request, 'SolrReserves', $this->getSearchSetupCallback()
+            $request,
+            'SolrReserves',
+            $this->getSearchSetupCallback()
         );
         $view->params = $view->results->getParams();
         return $view;
@@ -452,7 +464,8 @@ class SearchController extends AbstractSolrSearch
         case 'describe':
             $config = $this->getConfig();
             $xml = $this->getViewRenderer()->render(
-                'search/opensearch-describe.phtml', ['site' => $config->Site]
+                'search/opensearch-describe.phtml',
+                ['site' => $config->Site]
             );
             break;
         default:
@@ -488,7 +501,7 @@ class SearchController extends AbstractSolrSearch
         // Send the JSON response:
         $response = $this->getResponse();
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'application/javascript');
+        $headers->addHeaderLine('Content-type', 'application/json');
         $response->setContent(
             json_encode([$query->get('lookfor', ''), $suggestions])
         );

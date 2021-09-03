@@ -61,7 +61,7 @@ class Params extends \VuFind\Search\Base\Params
      * @var array
      */
     protected $defaultFacetLabelSections
-        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+        = ['FacetsTop', 'Facets'];
 
     /**
      * Config sections to search for checkbox facet labels if no override
@@ -77,6 +77,13 @@ class Params extends \VuFind\Search\Base\Params
      * @var bool
      */
     public $isSetupOnly = false;
+
+    /**
+     * Facet settings
+     *
+     * @var array
+     */
+    protected $fullFacetSettings = [];
 
     /**
      * Constructor
@@ -234,7 +241,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // Field name may have parameters attached -- remove them:
         $parts = explode(',', $newField);
-        return parent::addFacet($parts[0], $newAlias, $ored);
+        parent::addFacet($parts[0], $newAlias, $ored);
     }
 
     /**
@@ -245,7 +252,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getFullFacetSettings()
     {
-        return isset($this->fullFacetSettings) ? $this->fullFacetSettings : [];
+        return $this->fullFacetSettings;
     }
 
     /**
@@ -293,7 +300,8 @@ class Params extends \VuFind\Search\Base\Params
         if (isset($ssLimiters)) {
             foreach ($ssLimiters as $ssLimiter) {
                 $this->addCheckboxFacet(
-                    $ssLimiter['selectedvalue'], $ssLimiter['description']
+                    $ssLimiter['selectedvalue'],
+                    $ssLimiter['description']
                 );
             }
         }
@@ -312,7 +320,8 @@ class Params extends \VuFind\Search\Base\Params
         if (isset($availableExpanders)) {
             foreach ($availableExpanders as $expander) {
                 $this->addCheckboxFacet(
-                    $expander['selectedvalue'], $expander['description']
+                    $expander['selectedvalue'],
+                    $expander['description']
                 );
             }
         }

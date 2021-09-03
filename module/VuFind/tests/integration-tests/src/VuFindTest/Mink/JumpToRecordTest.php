@@ -37,10 +37,8 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class JumpToRecordTest extends \VuFindTest\Unit\MinkTestCase
+class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Test that we can jump to the first record in a single-record result set.
      *
@@ -72,8 +70,10 @@ class JumpToRecordTest extends \VuFindTest\Unit\MinkTestCase
 
         $expected = 'Showing 1 - 1 results of 1 for search \'id:testbug2\'';
         $this->assertEquals(
-            $expected, substr(
-                $this->findCss($page, '.search-stats')->getText(), 0,
+            $expected,
+            substr(
+                $this->findCss($page, '.search-stats')->getText(),
+                0,
                 strlen($expected)
             )
         );

@@ -39,7 +39,7 @@ use VuFind\Auth\SIP2;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SIP2Test extends \VuFindTest\Unit\DbTestCase
+class SIP2Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get an authentication object.
@@ -53,7 +53,10 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone $this->getAuthManager()->get('SIP2');
+        $authManager = new \VuFind\Auth\PluginManager(
+            new \VuFindTest\Container\MockContainer($this)
+        );
+        $obj = $authManager->get('SIP2');
         $obj->setConfig($config);
         return $obj;
     }
@@ -69,7 +72,8 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
             [
                 'host' => 'my.fake.host',
                 'port' => '6002'
-            ], true
+            ],
+            true
         );
         return new Config(['MultiAuth' => $config], true);
     }

@@ -38,8 +38,25 @@ use VuFind\XSLT\Import\VuFind;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VuFindTest extends \VuFindTest\Unit\DbTestCase
+class VuFindTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Support method -- set up a mock container for testing the class.
+     *
+     * @return \VuFindTest\Container\MockContainer
+     */
+    protected function getMockContainer()
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $tableManager = new \VuFindTest\Container\MockDbTablePluginManager($this);
+        $tableManager->set(
+            'ChangeTracker',
+            $tableManager->get(\VuFind\Db\Table\ChangeTracker::class)
+        );
+        $container->set(\VuFind\Db\Table\PluginManager::class, $tableManager);
+        return $container;
+    }
+
     /**
      * Test the getChangeTracker helper.
      *
@@ -47,10 +64,9 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testGetChangeTracker()
     {
-        VuFind::setServiceLocator($this->getServiceManager());
-        $this->assertEquals(
-            \VuFind\Db\Table\ChangeTracker::class,
-            get_class(VuFind::getChangeTracker())
+        VuFind::setServiceLocator($this->getMockContainer());
+        $this->assertTrue(
+            VuFind::getChangeTracker() instanceof \VuFind\Db\Table\ChangeTracker
         );
     }
 
@@ -61,10 +77,12 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testGetConfig()
     {
-        VuFind::setServiceLocator($this->getServiceManager());
-        $this->assertEquals(
-            \Laminas\Config\Config::class, get_class(VuFind::getConfig())
-        );
+        $container = $this->getMockContainer();
+        $config = new \Laminas\Config\Config([]);
+        $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
+            ->method('get')->with('config')->will($this->returnValue($config));
+        VuFind::setServiceLocator($container);
+        $this->assertEquals($config, VuFind::getConfig());
     }
 
     /**
@@ -98,7 +116,8 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
     public function testMapString()
     {
         $this->assertEquals(
-            'CD', VuFind::mapString('SoundDisc', 'format_map.properties')
+            'CD',
+            VuFind::mapString('SoundDisc', 'format_map.properties')
         );
     }
 
@@ -141,7 +160,8 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         $node->appendChild(new \DOMElement('xyzzy', 'baz'));
         $expected = '<?xml version="1.0"?>' . "\n<bar>foo</bar>\n";
         $this->assertEquals(
-            $expected, VuFind::removeTagAndReturnXMLasText([$node], 'xyzzy')
+            $expected,
+            VuFind::removeTagAndReturnXMLasText([$node], 'xyzzy')
         );
     }
 
@@ -155,7 +175,8 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<part>a</part>\n<part>b</part>\n";
         $this->assertEquals(
-            $expected, simplexml_import_dom(VuFind::explode(',', 'a,b'))->asXml()
+            $expected,
+            simplexml_import_dom(VuFind::explode(',', 'a,b'))->asXml()
         );
     }
 
@@ -166,7 +187,7 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testImplode()
     {
-        $domify = function ($input) {
+        $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
         };
         $this->assertEquals(
@@ -187,12 +208,13 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
             '1990-1991' => ['foo', '1990-1991', '1992'],
             'foo' => ['foo', 'bar', 'baz'],
         ];
-        $domify = function ($input) {
+        $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
         };
         foreach ($data as $output => $input) {
             $this->assertEquals(
-                $output, VuFind::extractBestDateOrRange(
+                $output,
+                VuFind::extractBestDateOrRange(
                     array_map($domify, $input)
                 )
             );
@@ -215,7 +237,8 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         ];
         foreach ($data as $input => $output) {
             $this->assertEquals(
-                $output, VuFind::extractEarliestYear(
+                $output,
+                VuFind::extractEarliestYear(
                     [new \DOMElement('foo', $input)]
                 )
             );

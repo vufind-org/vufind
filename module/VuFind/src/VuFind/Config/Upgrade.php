@@ -338,8 +338,7 @@ class Upgrade
         // Now override on a section-by-section basis where necessary:
         foreach ($fullSections as $section) {
             $this->newConfigs[$filename][$section]
-                = isset($this->oldConfigs[$filename][$section])
-                ? $this->oldConfigs[$filename][$section] : [];
+                = $this->oldConfigs[$filename][$section] ?? [];
         }
     }
 
@@ -378,7 +377,9 @@ class Upgrade
         }
 
         $writer = new ConfigWriter(
-            $outfile, $this->newConfigs[$filename], $this->comments[$filename]
+            $outfile,
+            $this->newConfigs[$filename],
+            $this->comments[$filename]
         );
         if (!$writer->save()) {
             throw new FileAccessException(
@@ -438,8 +439,7 @@ class Upgrade
     protected function checkTheme($setting, $default = null)
     {
         // If a setting is not set, there is nothing to check:
-        $theme = isset($this->newConfigs['config.ini']['Site'][$setting])
-            ? $this->newConfigs['config.ini']['Site'][$setting] : null;
+        $theme = $this->newConfigs['config.ini']['Site'][$setting] ?? null;
         if (empty($theme)) {
             return;
         }
@@ -547,7 +547,7 @@ class Upgrade
         // If [Statistics] is present, warn the user about its deprecation.
         if (isset($newConfig['Statistics'])) {
             $this->addWarning(
-                'The Statistics module has been removed from Vufind. ' .
+                'The Statistics module has been removed from VuFind. ' .
                 'For usage tracking, please configure Google Analytics or Piwik.'
             );
             unset($newConfig['Statistics']);
@@ -631,7 +631,8 @@ class Upgrade
             && in_array('Editions', $newConfig['Record']['related'])
         ) {
             $newConfig['Record']['related'] = array_diff(
-                $newConfig['Record']['related'], ['Editions']
+                $newConfig['Record']['related'],
+                ['Editions']
             );
             $this->addWarning(
                 'The Editions related record module is no longer '
@@ -771,13 +772,17 @@ class Upgrade
         $didWork = false;
         if (isset($this->newConfigs['facets.ini']['Results'][$old])) {
             $this->newConfigs['facets.ini']['Results'] = $this->changeArrayKey(
-                $this->newConfigs['facets.ini']['Results'], $old, $new
+                $this->newConfigs['facets.ini']['Results'],
+                $old,
+                $new
             );
             $didWork = true;
         }
         if (isset($this->newConfigs['Collection.ini']['Facets'][$old])) {
             $this->newConfigs['Collection.ini']['Facets'] = $this->changeArrayKey(
-                $this->newConfigs['Collection.ini']['Facets'], $old, $new
+                $this->newConfigs['Collection.ini']['Facets'],
+                $old,
+                $new
             );
             $didWork = true;
         }
@@ -876,7 +881,7 @@ class Upgrade
                 }
             }
         }
-        $this->upgradeSpellingSettings('searches.ini', ['CallNumber']);
+        $this->upgradeSpellingSettings('searches.ini', ['CallNumber', 'WorkKeys']);
 
         // save the file
         $this->saveModifiedConfig('searches.ini');
@@ -1035,9 +1040,10 @@ class Upgrade
         // prior to 2.3.
         if ((float)$this->from < 2.3) {
             $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
-            if (!isset($cfg['special_facets']) || empty($cfg['special_facets'])) {
+            $specialFacets = $cfg['special_facets'] ?? null;
+            if (empty($specialFacets)) {
                 $cfg['special_facets'] = 'checkboxes:Summon';
-            } elseif (false === strpos('checkboxes', $cfg['special_facets'])) {
+            } elseif (false === strpos('checkboxes', (string)$specialFacets)) {
                 $cfg['special_facets'] .= ',checkboxes:Summon';
             }
         }
@@ -1226,7 +1232,8 @@ class Upgrade
             && in_array('WorldCatEditions', $newConfig['Record']['related'])
         ) {
             $newConfig['Record']['related'] = array_diff(
-                $newConfig['Record']['related'], ['WorldCatEditions']
+                $newConfig['Record']['related'],
+                ['WorldCatEditions']
             );
             $this->addWarning(
                 'The WorldCatEditions related record module is no longer '
@@ -1326,8 +1333,7 @@ class Upgrade
      */
     protected function upgradeILS()
     {
-        $driver = isset($this->newConfigs['config.ini']['Catalog']['driver'])
-            ? $this->newConfigs['config.ini']['Catalog']['driver'] : '';
+        $driver = $this->newConfigs['config.ini']['Catalog']['driver'] ?? '';
         if (empty($driver)) {
             $this->addWarning("WARNING: Could not find ILS driver setting.");
         } elseif ('Sample' == $driver) {

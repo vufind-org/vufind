@@ -39,8 +39,11 @@ use VuFind\Config\Upgrade;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UpgradeTest extends \VuFindTest\Unit\TestCase
+class UpgradeTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Target upgrade version
      *
@@ -57,7 +60,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
      */
     protected function getUpgrader($version)
     {
-        $oldDir = realpath(__DIR__ . '/../../../../fixtures/configs/' . $version);
+        $oldDir = realpath($this->getFixtureDir() . 'configs/' . $version);
         $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
         return new Upgrade($version, $this->targetVersion, $oldDir, $rawDir);
     }
@@ -91,7 +94,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
         $expectedWarnings = [
-            'The Statistics module has been removed from Vufind. '
+            'The Statistics module has been removed from VuFind. '
             . 'For usage tracking, please configure Google Analytics or Piwik.'
         ];
         if ((float)$version < 1.3) {
@@ -131,7 +134,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
-                'CallNumber' => ['TopFacets:ResultsTop']
+                'CallNumber' => ['TopFacets:ResultsTop'],
+                'WorkKeys' => ['']
             ],
             $results['searches.ini']['TopRecommendations']
         );
@@ -162,15 +166,18 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertFalse(isset($results['facets.ini']['Results']['authorStr']));
         $this->assertFalse(isset($results['Collection.ini']['Facets']['authorStr']));
         $this->assertEquals(
-            'Author', $results['facets.ini']['Results']['author_facet']
+            'Author',
+            $results['facets.ini']['Results']['author_facet']
         );
         $this->assertEquals(
-            'author_facet', $results['facets.ini']['LegacyFields']['authorStr']
+            'author_facet',
+            $results['facets.ini']['LegacyFields']['authorStr']
         );
         // Collection.ini only exists after release 1.3:
         if ((float)$version > 1.3) {
             $this->assertEquals(
-                'Author', $results['Collection.ini']['Facets']['author_facet']
+                'Author',
+                $results['Collection.ini']['Facets']['author_facet']
             );
         }
         // verify expected order of facet fields
@@ -247,7 +254,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
-            'Custom Generator', $results['config.ini']['Site']['generator']
+            'Custom Generator',
+            $results['config.ini']['Site']['generator']
         );
     }
 
@@ -263,7 +271,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
-            1, $results['config.ini']['Syndetics']['use_ssl']
+            1,
+            $results['config.ini']['Syndetics']['use_ssl']
         );
 
         // Test upgrading a non-SSL URL
@@ -271,7 +280,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
-            '', $results['config.ini']['Syndetics']['use_ssl']
+            '',
+            $results['config.ini']['Syndetics']['use_ssl']
         );
     }
 
@@ -286,7 +296,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
-            'noview,full', $results['config.ini']['Content']['GoogleOptions']['link']
+            'noview,full',
+            $results['config.ini']['Content']['GoogleOptions']['link']
         );
     }
 
@@ -301,10 +312,12 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
-            ['Similar'], $results['config.ini']['Record']['related']
+            ['Similar'],
+            $results['config.ini']['Record']['related']
         );
         $this->assertEquals(
-            ['WorldCatSimilar'], $results['WorldCat.ini']['Record']['related']
+            ['WorldCatSimilar'],
+            $results['WorldCat.ini']['Record']['related']
         );
         $this->assertEquals(['apiKey' => 'foo'], $results['config.ini']['WorldCat']);
         $expectedWarnings = [
@@ -338,7 +351,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             'permission' => 'access.AdminModule'
         ];
         $this->assertEquals(
-            $adminConfig, $results['permissions.ini']['access.AdminModule']
+            $adminConfig,
+            $results['permissions.ini']['access.AdminModule']
         );
 
         // Summon assertions
@@ -357,14 +371,16 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // EIT assertions:
         $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
         $this->assertEquals(
-            $eitConfig, $results['permissions.ini']['default.EITModule']
+            $eitConfig,
+            $results['permissions.ini']['default.EITModule']
         );
 
         // Primo assertions:
         $this->assertFalse(isset($results['Primo.ini']['Institutions']['code']));
         $this->assertFalse(isset($results['Primo.ini']['Institutions']['regex']));
         $this->assertEquals(
-            'DEFAULT', $results['Primo.ini']['Institutions']['defaultCode']
+            'DEFAULT',
+            $results['Primo.ini']['Institutions']['defaultCode']
         );
         $expectedRegex = [
             'MEMBER1' => '/^1\.2\..*/',
@@ -373,7 +389,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         foreach ($expectedRegex as $code => $regex) {
             $perm = "access.PrimoInstitution.$code";
             $this->assertEquals(
-                $perm, $results['Primo.ini']['Institutions']["onCampusRule['$code']"]
+                $perm,
+                $results['Primo.ini']['Institutions']["onCampusRule['$code']"]
             );
             $permDetails = [
                 'ipRegEx' => $regex,
@@ -469,19 +486,23 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     {
         $upgrader = $this->getUpgrader('1.4');
         $meaningless = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/empty.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/empty.properties'
         );
         $this->assertFalse(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', [$meaningless]
+                $upgrader,
+                'fileContainsMeaningfulLines',
+                [$meaningless]
             )
         );
         $meaningful = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/meaningful.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/meaningful.properties'
         );
         $this->assertTrue(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', [$meaningful]
+                $upgrader,
+                'fileContainsMeaningfulLines',
+                [$meaningful]
             )
         );
     }

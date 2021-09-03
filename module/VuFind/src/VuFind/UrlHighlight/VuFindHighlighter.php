@@ -29,7 +29,7 @@ namespace VuFind\UrlHighlight;
 
 use VStelmakh\UrlHighlight\Highlighter\HighlighterInterface;
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 use VuFind\View\Helper\Root\ProxyUrl;
 
@@ -75,11 +75,11 @@ class VuFindHighlighter implements HighlighterInterface
     /**
      * Return html highlighted url with proxy
      *
-     * @param Match $match url highlight match
+     * @param UrlMatch $match url highlight match
      *
      * @return string
      */
-    public function getHighlight(Match $match): string
+    public function getHighlight(UrlMatch $match): string
     {
         $link = LinkHelper::getLink($match, self::DEFAULT_SCHEME);
         $linkProxy = $this->_proxyUrl->__invoke($link);

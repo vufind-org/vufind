@@ -48,7 +48,9 @@ class SolrWeb extends SolrDefault
      * @param \Laminas\Config\Config $searchSettings Search-specific configuration
      * file
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         $this->preferredSnippetFields = ['description', 'fulltext'];
@@ -83,7 +85,6 @@ class SolrWeb extends SolrDefault
      */
     public function getLastModified()
     {
-        return isset($this->fields['last_modified'])
-            ? $this->fields['last_modified'] : '';
+        return $this->fields['last_modified'] ?? '';
     }
 }

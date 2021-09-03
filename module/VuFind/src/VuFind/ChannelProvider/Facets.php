@@ -47,6 +47,7 @@ class Facets extends AbstractChannelProvider
    implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Facet fields to use (field name => description).
      *
@@ -197,7 +198,10 @@ class Facets extends AbstractChannelProvider
                     $tokenOnly = $fieldCount >= $this->maxFieldsToSuggest
                         || $currentValueCount >= $this->maxValuesToSuggestPerField;
                     $channel = $this->buildChannelFromFacet(
-                        $results, $field, $current, $tokenOnly
+                        $results,
+                        $field,
+                        $current,
+                        $tokenOnly
                     );
                     if ($tokenOnly || count($channel['contents']) > 0) {
                         $channels[] = $channel;
@@ -238,7 +242,10 @@ class Facets extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildChannel(Results $results, $filter, $title,
+    protected function buildChannel(
+        Results $results,
+        $filter,
+        $title,
         $tokenOnly = false
     ) {
         $retVal = [
@@ -307,7 +314,10 @@ class Facets extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildChannelFromFacet(Results $results, $field, $value,
+    protected function buildChannelFromFacet(
+        Results $results,
+        $field,
+        $value,
         $tokenOnly = false
     ) {
         return $this->buildChannel(

@@ -74,8 +74,11 @@ class Recommend extends AbstractBase
      * @param Results           $results  Solr results object
      * @param RendererInterface $renderer View renderer
      */
-    public function __construct(SessionSettings $ss, RecommendManager $pm,
-        Results $results, RendererInterface $renderer
+    public function __construct(
+        SessionSettings $ss,
+        RecommendManager $pm,
+        Results $results,
+        RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
         $this->pluginManager = $pm;
@@ -99,7 +102,11 @@ class Recommend extends AbstractBase
         $module = $this->pluginManager->get($params->fromQuery('mod'));
         $module->setConfig($params->fromQuery('params'));
         $paramsObj = $this->results->getParams();
-        $module->init($paramsObj, new Parameters($params->fromQuery()));
+        $request = new Parameters($params->fromQuery());
+        // Initialize search parameters from Ajax request parameters in case the
+        // original request parameters were passed to the Ajax request.
+        $paramsObj->initFromRequest($request);
+        $module->init($paramsObj, $request);
         $module->process($this->results);
 
         // Render recommendations:

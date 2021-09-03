@@ -33,7 +33,6 @@ use Laminas\EventManager\Event;
 use Laminas\Http\Response;
 
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 use VuFind\Search\Solr\V4\ErrorListener;
 
@@ -50,6 +49,8 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
  */
 class ErrorListenerTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Detect parser error response.
      *
@@ -65,7 +66,7 @@ class ErrorListenerTest extends TestCase
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /**
@@ -83,7 +84,7 @@ class ErrorListenerTest extends TestCase
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /// Internal API
@@ -97,15 +98,8 @@ class ErrorListenerTest extends TestCase
      */
     protected function createResponse($name)
     {
-        $file = realpath(
-            \VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/response/solr/' . $name
+        return Response::fromString(
+            $this->getFixture('response/solr/' . $name)
         );
-        if (!$file) {
-            throw new RuntimeException(
-                sprintf('Unable to resolve fixture to fixture file: %s', $name)
-            );
-        }
-        $response = Response::fromString(file_get_contents($file));
-        return $response;
     }
 }

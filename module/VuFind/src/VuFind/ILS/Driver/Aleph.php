@@ -37,6 +37,8 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\I18n\Translator\TranslatorInterface;
+
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -51,6 +53,34 @@ use VuFind\Exception\ILS as ILSException;
  */
 class AlephTranslator
 {
+    /**
+     * Character set
+     *
+     * @var string
+     */
+    protected $charset;
+
+    /**
+     * Table 15 configuration
+     *
+     * @var array
+     */
+    protected $table15;
+
+    /**
+     * Table 40 configuration
+     *
+     * @var array
+     */
+    protected $table40;
+
+    /**
+     * Sub library configuration table
+     *
+     * @var array
+     */
+    protected $table_sub_library;
+
     /**
      * Constructor
      *
@@ -79,7 +109,7 @@ class AlephTranslator
      * @param string $file     Input file
      * @param string $callback Callback routine for parsing
      *
-     * @return string
+     * @return array
      */
     public function parsetable($file, $callback)
     {
@@ -99,7 +129,8 @@ class AlephTranslator
                 $matches = "";
                 if (preg_match($rgxp, $line, $matches)) {
                     call_user_func_array(
-                        $callback, [$matches, &$result, $this->charset]
+                        $callback,
+                        [$matches, &$result, $this->charset]
                     );
                 }
             }
@@ -220,7 +251,9 @@ class AlephTranslator
      *
      * @return void
      */
-    public static function tabSubLibraryCallback($matches, &$tab_sub_library,
+    public static function tabSubLibraryCallback(
+        $matches,
+        &$tab_sub_library,
         $charset
     ) {
         $sublib = trim($matches[1]);
@@ -306,12 +339,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
-    /**
-     * Duedate configuration
-     *
-     * @var array
-     */
-    protected $duedates = false;
+    public const RECORD_ID_BASE_SEPARATOR = '-';
 
     /**
      * Translator object
@@ -328,6 +356,13 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $cacheManager;
 
     /**
+     * Translator
+     *
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
@@ -342,16 +377,134 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $dlfbaseurl = null;
 
     /**
+     * Aleph server
+     *
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * Bibliographic bases
+     *
+     * @var array
+     */
+    protected $bib;
+
+    /**
+     * User library
+     *
+     * @var string
+     */
+    protected $useradm;
+
+    /**
+     * Item library
+     *
+     * @var string
+     */
+    protected $admlib;
+
+    /**
+     * X server user name
+     *
+     * @var string
+     */
+    protected $wwwuser;
+
+    /**
+     * X server user password
+     *
+     * @var string
+     */
+    protected $wwwpasswd;
+
+    /**
+     * Is X server enabled?
+     *
+     * @var bool
+     */
+    protected $xserver_enabled;
+
+    /**
+     * X server port (defaults to 80)
+     *
+     * @var int
+     */
+    protected $xport;
+
+    /**
+     * DLF REST API port
+     *
+     * @var int
+     */
+    protected $dlfport;
+
+    /**
+     * Statuse considered as available
+     *
+     * @var array
+     */
+    protected $available_statuses;
+
+    /**
+     * List of patron hoe libraries
+     *
+     * @var array
+     */
+    protected $sublibadm;
+
+    /**
+     * If enabled and Xserver is disabled, slower RESTful API is used for
+     * availability check.
+     *
+     * @var bool
+     */
+    protected $quick_availability;
+
+    /**
+     * Is debug mode enabled?
+     *
+     * @var bool
+     */
+    protected $debug_enabled;
+
+    /**
+     * Preferred pickup locations
+     *
+     * @var array
+     */
+    protected $preferredPickUpLocations;
+
+    /**
+     * Patron id used when no specific patron defined
+     *
+     * @var string
+     */
+    protected $defaultPatronId;
+
+    /**
+     * ISO 3166-1 alpha-2 to ISO 3166-1 alpha-3 mapping for
+     * translation in REST DLF API.
+     *
+     * @var array
+     */
+    protected $languages = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      * @param \VuFind\Cache\Manager  $cacheManager  Cache manager (optional)
+     * @param TranslatorInterface    $translator    Translator (optional)
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        \VuFind\Cache\Manager $cacheManager = null
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
+        \VuFind\Cache\Manager $cacheManager = null,
+        TranslatorInterface $translator = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->cacheManager = $cacheManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -389,8 +542,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $this->wwwuser = $this->config['Catalog']['wwwuser'];
             $this->wwwpasswd = $this->config['Catalog']['wwwpasswd'];
             $this->xserver_enabled = true;
-            $this->xport = isset($this->config['Catalog']['xport'])
-                ? $this->config['Catalog']['xport'] : 80;
+            $this->xport = $this->config['Catalog']['xport'] ?? 80;
         } else {
             $this->xserver_enabled = false;
         }
@@ -399,20 +551,16 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $this->dlfbaseurl = $this->config['Catalog']['dlfbaseurl'];
         }
         $this->sublibadm = $this->config['sublibadm'];
-        if (isset($this->config['duedates'])) {
-            $this->duedates = $this->config['duedates'];
-        }
         $this->available_statuses
             = explode(',', $this->config['Catalog']['available_statuses']);
         $this->quick_availability
-            = isset($this->config['Catalog']['quick_availability'])
-            ? $this->config['Catalog']['quick_availability'] : false;
-        $this->debug_enabled = isset($this->config['Catalog']['debug'])
-            ? $this->config['Catalog']['debug'] : false;
+            = $this->config['Catalog']['quick_availability'] ?? false;
+        $this->debug_enabled = $this->config['Catalog']['debug'] ?? false;
         if (isset($this->config['util']['tab40'])
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])
         ) {
+            $cache = null;
             if (isset($this->config['Cache']['type'])
                 && null !== $this->cacheManager
             ) {
@@ -429,11 +577,17 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         }
         if (isset($this->config['Catalog']['preferred_pick_up_locations'])) {
             $this->preferredPickUpLocations = explode(
-                ',', $this->config['Catalog']['preferred_pick_up_locations']
+                ',',
+                $this->config['Catalog']['preferred_pick_up_locations']
             );
         }
         if (isset($this->config['Catalog']['default_patron_id'])) {
             $this->defaultPatronId = $this->config['Catalog']['default_patron_id'];
+        }
+        if (isset($this->config['Languages'])) {
+            foreach ($this->config['Languages'] as $locale => $lang) {
+                $this->languages[$locale] = $lang;
+            }
         }
     }
 
@@ -486,8 +640,11 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      *
      * @return SimpleXMLElement
      */
-    protected function doRestDLFRequest($path_elements, $params = null,
-        $method = 'GET', $body = null
+    protected function doRestDLFRequest(
+        $path_elements,
+        $params = null,
+        $method = 'GET',
+        $body = null
     ) {
         $path = implode('/', $path_elements);
         if ($this->dlfbaseurl === null) {
@@ -495,13 +652,23 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         } else {
             $url = $this->dlfbaseurl . $path;
         }
+        if ($params == null) {
+            $params = [];
+        }
+        if (!empty($this->languages) && $this->translator != null) {
+            $locale = $this->translator->getLocale();
+            if (isset($this->languages[$locale])) {
+                $params['lang'] = $this->languages[$locale];
+            }
+        }
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
         $replyCode = (string)$result->{'reply-code'};
         if ($replyCode != "0000") {
             $replyText = (string)$result->{'reply-text'};
             $this->logError(
-                "DLF request failed", [
+                "DLF request failed",
+                [
                     'url' => $url, 'reply-code' => $replyCode,
                     'reply-message' => $replyText
                 ]
@@ -557,7 +724,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             }
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         if (!$result->isSuccess()) {
             throw new ILSException('HTTP error');
@@ -580,7 +747,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     }
 
     /**
-     * Convert an ID string into an array of library and ID within the library.
+     * Convert an ID string into an array of bibliographic base and ID within
+     * the base.
      *
      * @param string $id ID to parse.
      *
@@ -588,18 +756,22 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     protected function parseId($id)
     {
-        if (count($this->bib) == 1) {
-            $retval = [$this->bib[0], $id];
+        $result = null;
+        if (strpos($id, self::RECORD_ID_BASE_SEPARATOR) !== false) {
+            $result = explode(self::RECORD_ID_BASE_SEPARATOR, $id);
+            $base = $result[0];
+            if (!in_array($base, $this->bib)) {
+                throw new \Exception("Unknown library base '$base'");
+            }
+        } elseif (count($this->bib) == 1) {
+            $result = [$this->bib[0], $id];
         } else {
-            $retval = explode('-', $id);
+            throw new \Exception(
+                "Invalid record identifier '$id' "
+                . "without library base"
+            );
         }
-        if (count($retval) != 2) {
-            throw new \Exception("The resulting array has incorrect size");
-        }
-        if (!in_array($retval[0], $this->bib)) {
-            throw new \Exception("The resulting array contains unknown library ID");
-        }
-        return $retval;
+        return $result;
     }
 
     /**
@@ -659,7 +831,9 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $sep = ",";
         }
         $xml = $this->doXRequest(
-            "publish_avail", ['library' => $bib, 'doc_num' => $doc_nums], false
+            "publish_avail",
+            ['library' => $bib, 'doc_num' => $doc_nums],
+            false
         );
         $holding = [];
         foreach ($xml->xpath('/publish-avail/OAI-PMH') as $rec) {
@@ -716,7 +890,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $ids = [];
         $holdings = [];
         foreach ($idList as $id) {
-            list($bib, $sys_no) = $this->parseId($id);
+            [$bib, $sys_no] = $this->parseId($id);
             $ids[$bib][] = $sys_no;
         }
         foreach ($ids as $key => $values) {
@@ -749,7 +923,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     public function getHolding($id, array $patron = null, array $options = [])
     {
         $holding = [];
-        list($bib, $sys_no) = $this->parseId($id);
+        [$bib, $sys_no] = $this->parseId($id);
         $resource = $bib . $sys_no;
         $params = ['view' => 'full'];
         if (!empty($patron['id'])) {
@@ -771,7 +945,9 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $z30 = $item->z30;
             if ($this->alephTranslator) {
                 $item_status = $this->alephTranslator->tab15Translate(
-                    $sub_library_code, $item_status, $item_process_status
+                    $sub_library_code,
+                    $item_status,
+                    $item_process_status
                 );
             } else {
                 $item_status = [
@@ -791,7 +967,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             if ($this->alephTranslator) {
                 $collection_code = (string)$item->{'z30-collection-code'};
                 $collection_desc = $this->alephTranslator->tab40Translate(
-                    $collection_code, $sub_library_code
+                    $collection_code,
+                    $sub_library_code
                 );
             }
             $requested = false;
@@ -809,8 +986,9 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $addLink = ($hold_request[0] == 'Y');
             }
             $matches = [];
-            $dueDateWithStatusRegEx = "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*);([a-zA-Z ]*)/";
-            $dueDateRegEx = "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*)/";
+            $dueDateWithStatusRegEx
+                = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*);([a-zA-Z ]*)/";
+            $dueDateRegEx = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*)/";
             if (preg_match($dueDateWithStatusRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
                 $requested = (trim($matches[2]) == "Requested");
@@ -818,23 +996,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $duedate = $this->parseDate($matches[1]);
             } else {
                 $duedate = null;
-            }
-            // process duedate
-            if ($availability) {
-                if ($this->duedates) {
-                    foreach ($this->duedates as $key => $value) {
-                        if (preg_match($value, $item_status['desc'])) {
-                            $duedate = $key;
-                            break;
-                        }
-                    }
-                } else {
-                    $duedate = $item_status['desc'];
-                }
-            } else {
-                if ($status == "On Hold" || $status == "Requested") {
-                    $duedate = "requested";
-                }
             }
             $item_id = $item->attributes()->href;
             $item_id = substr($item_id, strrpos($item_id, '/') + 1);
@@ -887,7 +1048,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         ];
 
         $xml = $this->doRestDLFRequest(
-            ['patron', $userId, 'circulationActions', 'loans'], $requestParams
+            ['patron', $userId, 'circulationActions', 'loans'],
+            $requestParams
         );
 
         foreach ($xml->xpath('//loan') as $item) {
@@ -915,7 +1077,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 'location' => $location,
                 'title' => $title,
                 'author' => $author,
-                'isbn' => [$isbn],
+                'isbn' => $isbn,
                 'reqnum' => $reqnum,
                 'barcode' => $barcode,
                 'checkoutDate' => $this->parseDate($issued),
@@ -988,7 +1150,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $transList = [];
         $params = ["view" => "full"];
         $xml = $this->doRestDLFRequest(
-            ['patron', $userId, 'circulationActions', 'loans'], $params
+            ['patron', $userId, 'circulationActions', 'loans'],
+            $params
         );
 
         foreach ($xml->xpath('//loan') as $item) {
@@ -1013,15 +1176,19 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $author = (string)$z13->{'z13-author'};
             $isbn = (string)$z13->{'z13-isbn-issn'};
             $barcode = (string)$z30->{'z30-barcode'};
+            // Secondary, Aleph-specific identifier that may be useful for
+            // local customizations
+            $adm_id = (string)$z30->{'z30-doc-number'};
 
             $transList[] = [
                 //'type' => $type,
                 'id' => $this->barcodeToID($barcode),
+                'adm_id'   => $adm_id,
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
                 'author' => $author,
-                'isbn' => [$isbn],
+                'isbn' => $isbn,
                 'reqnum' => $reqnum,
                 'barcode' => $barcode,
                 'issuedate' => $this->parseDate($issued),
@@ -1074,7 +1241,9 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     [
                         'patron', $patron['id'], 'circulationActions', 'loans', $id
                     ],
-                    null, 'POST', null
+                    null,
+                    'POST',
+                    null
                 );
                 $due = (string)current($xml->xpath('//new-due-date'));
                 $result[$id] = [
@@ -1138,13 +1307,18 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     $holddate = $this->parseDate($holddate);
                 }
                 $delete = ($delete[0] == "Y");
+                // Secondary, Aleph-specific identifier that may be useful for
+                // local customizations
+                $adm_id = (string)$z30->{'z30-doc-number'};
+
                 $holdList[] = [
                     'type' => $type,
                     'item_id' => $item_id,
+                    'adm_id'   => $adm_id,
                     'location' => $location,
                     'title' => $title,
                     'author' => $author,
-                    'isbn' => [$isbn],
+                    'isbn' => $isbn,
                     'reqnum' => $reqnum,
                     'barcode' => $barcode,
                     'id' => $this->barcodeToID($barcode),
@@ -1163,11 +1337,14 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     /**
      * Get Cancel Hold Details
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if ($holdDetails['delete']) {
             return $holdDetails['item_id'];
@@ -1194,23 +1371,22 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $count = 0;
         $statuses = [];
         foreach ($details['details'] as $id) {
-            $result = $this->doRestDLFRequest(
-                [
-                    'patron', $patronId, 'circulationActions', 'requests', 'holds',
-                    $id
-                ], null, "DELETE"
-            );
-            $reply_code = $result->{'reply-code'};
-            if ($reply_code != "0000") {
-                $message = $result->{'del-pat-hold'}->{'note'};
-                if ($message == null) {
-                    $message = $result->{'reply-text'};
-                }
+            try {
+                $result = $this->doRestDLFRequest(
+                    [
+                        'patron', $patronId, 'circulationActions', 'requests',
+                         'holds', $id
+                    ],
+                    null,
+                    "DELETE"
+                );
+            } catch (AlephRestfulException $e) {
                 $statuses[$id] = [
                     'success' => false, 'status' => 'cancel_hold_failed',
-                    'sysMessage' => (string)$message
+                    'sysMessage' => $e->getMessage(),
                 ];
-            } else {
+            }
+            if (isset($result)) {
                 $count++;
                 $statuses[$id]
                     = ['success' => true, 'status' => 'cancel_hold_ok'];
@@ -1310,10 +1486,12 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     public function getMyProfile($user)
     {
         if ($this->xserver_enabled) {
-            return $this->getMyProfileX($user);
+            $profile = $this->getMyProfileX($user);
         } else {
-            return $this->getMyProfileDLF($user);
+            $profile = $this->getMyProfileDLF($user);
         }
+        $profile['cat_username'] = $profile['cat_username'] ?? $user['id'];
+        return $profile;
     }
 
     /**
@@ -1326,7 +1504,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyProfileX($user)
     {
-        $recordList = [];
         if (!isset($user['college'])) {
             $user['college'] = $this->useradm;
         }
@@ -1335,7 +1512,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             [
                 'loans' => 'N', 'cash' => 'N', 'hold' => 'N',
                 'library' => $user['college'], 'bor_id' => $user['id']
-            ], true
+            ],
+            true
         );
         $id = (string)$xml->z303->{'z303-id'};
         $address1 = (string)$xml->z304->{'z304-address-2'};
@@ -1349,7 +1527,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $credit_sign = (string)$xml->z305->{'z305-credit-debit'};
         $name = (string)$xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
-            list($lastname, $firstname) = explode(",", $name);
+            [$lastname, $firstname] = explode(",", $name);
         } else {
             $lastname = $name;
             $firstname = "";
@@ -1357,8 +1535,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         if ($credit_sign == null) {
             $credit_sign = "C";
         }
-        $recordList['firstname'] = $firstname;
-        $recordList['lastname'] = $lastname;
+        $recordList = compact('firstname', 'lastname');
         if (isset($user['email'])) {
             $recordList['email'] = $user['email'];
         }
@@ -1386,6 +1563,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyProfileDLF($user)
     {
+        $recordList = [];
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
@@ -1405,7 +1583,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $recordList['lastname'] = $address2;
             $recordList['firstname'] = "";
         } else {
-            list($recordList['lastname'], $recordList['firstname'])
+            [$recordList['lastname'], $recordList['firstname']]
                 = explode(",", $address2);
         }
         $recordList['address1'] = $address2;
@@ -1452,18 +1630,19 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 [
                     'library' => $this->useradm, 'bor_id' => $user,
                     'verification' => $password
-                ], true
+                ],
+                true
             );
         } catch (\Exception $ex) {
             if (strpos($ex->getMessage(), 'Error in Verification') !== false) {
                 return null;
             }
-            throw new ILSException($ex->getMessage());
+            $this->throwAsIlsException($ex);
         }
         $patron = [];
         $name = $xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
-            list($lastName, $firstName) = explode(",", $name);
+            [$lastName, $firstName] = explode(",", $name);
         } else {
             $lastName = $name;
             $firstName = "";
@@ -1501,7 +1680,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getHoldingInfoForItem($patronId, $id, $group)
     {
-        list($bib, $sys_no) = $this->parseId($id);
+        [$bib, $sys_no] = $this->parseId($id);
         $resource = $bib . $sys_no;
         $xml = $this->doRestDLFRequest(
             ['patron', $patronId, 'record', $resource, 'items', $group]
@@ -1521,7 +1700,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $requests = 0;
         $str = $xml->xpath('//item/queue/text()');
         if ($str != null) {
-            list($requests) = explode(' ', trim($str[0]));
+            [$requests] = explode(' ', trim($str[0]));
         }
         $date = $xml->xpath('//last-interest-date/text()');
         $date = $date[0];
@@ -1544,9 +1723,12 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
+        $details = [];
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
-                $patron['id'], $holdInfo['id'], $holdInfo['item_id']
+                $patron['id'],
+                $holdInfo['id'],
+                $holdInfo['item_id']
             );
         }
         if (isset($details['last-interest-date'])) {
@@ -1578,7 +1760,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function placeHold($details)
     {
-        list($bib, $sys_no) = $this->parseId($details['id']);
+        [$bib, $sys_no] = $this->parseId($details['id']);
         $recordId = $bib . $sys_no;
         $itemId = $details['item_id'];
         $patron = $details['patron'];
@@ -1589,6 +1771,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $comment = $details['comment'];
         if (strlen($comment) <= 50) {
             $comment1 = $comment;
+            $comment2 = null;
         } else {
             $comment1 = substr($comment, 0, 50);
             $comment2 = substr($comment, 50, 50);
@@ -1619,7 +1802,10 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 [
                     'patron', $patronId, 'record', $recordId, 'items', $itemId,
                     'hold'
-                ], null, "PUT", $body
+                ],
+                null,
+                "PUT",
+                $body
             );
         } catch (AlephRestfulException $exception) {
             $message = $exception->getMessage();
@@ -1649,13 +1835,16 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         foreach ($this->bib as $base) {
             try {
                 $xml = $this->doXRequest(
-                    "find", ["base" => $base, "request" => "BAR=$bar"], false
+                    "find",
+                    ["base" => $base, "request" => "BAR=$bar"],
+                    false
                 );
                 $docs = (int)$xml->{"no_records"};
                 if ($docs == 1) {
                     $set = (string)$xml->{"set_number"};
                     $result = $this->doXRequest(
-                        "present", ["set_number" => $set, "set_entry" => "1"],
+                        "present",
+                        ["set_number" => $set, "set_entry" => "1"],
                         false
                     );
                     $id = $result->xpath('//doc_number/text()');
@@ -1766,10 +1955,12 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      *
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
@@ -1780,7 +1971,9 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $pickupLocations = [];
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
-                $patron['id'], $holdInfo['id'], $holdInfo['item_id']
+                $patron['id'],
+                $holdInfo['id'],
+                $holdInfo['item_id']
             );
             foreach ($details['pickup-locations'] as $key => $value) {
                 $pickupLocations[] = [
@@ -1817,7 +2010,9 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     {
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
-                $patron['id'], $holdInfo['id'], $holdInfo['item_id']
+                $patron['id'],
+                $holdInfo['id'],
+                $holdInfo['item_id']
             );
             $pickupLocations = $details['pickup-locations'];
             if (isset($this->preferredPickUpLocations)) {
@@ -1829,8 +2024,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             }
             // nothing found or preferredPickUpLocations is empty? Return the first
             // locationId in pickupLocations array
-            reset($pickupLocations);
-            return key($pickupLocations);
+            return array_key_first($pickupLocations);
         } elseif (isset($this->preferredPickUpLocations)) {
             return $this->preferredPickUpLocations[0];
         } else {

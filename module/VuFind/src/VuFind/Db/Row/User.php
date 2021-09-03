@@ -174,7 +174,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             return isset($this->cat_pass_enc)
                 ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
         }
-        return isset($this->cat_password) ? $this->cat_password : null;
+        return $this->cat_password ?? null;
     }
 
     /**
@@ -186,8 +186,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         if (null === $this->encryptionEnabled) {
             $this->encryptionEnabled
-                = isset($this->config->Authentication->encrypt_ils_password)
-                ? $this->config->Authentication->encrypt_ils_password : false;
+                = $this->config->Authentication->encrypt_ils_password ?? false;
         }
         return $this->encryptionEnabled;
     }
@@ -223,9 +222,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $algo = isset($this->config->Authentication->ils_encryption_algo)
-            ? $this->config->Authentication->ils_encryption_algo
-            : 'blowfish';
+        $algo = $this->config->Authentication->ils_encryption_algo ?? 'blowfish';
         $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
@@ -272,7 +269,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
         return $this->getDbTable('Tags')
-            ->getForUser($this->id, $resourceId, $listId, $source);
+            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
     }
 
     /**
@@ -341,14 +338,17 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
                 [
                     Select::SQL_STAR,
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', ['ur.resource_id'],
+                        'COUNT(DISTINCT(?))',
+                        ['ur.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
                     )
                 ]
             );
             $select->join(
-                ['ur' => 'user_resource'], 'user_list.id = ur.list_id',
-                [], $select::JOIN_LEFT
+                ['ur' => 'user_resource'],
+                'user_list.id = ur.list_id',
+                [],
+                $select::JOIN_LEFT
             );
             $select->where->equalTo('user_list.user_id', $userId);
             $select->group(
@@ -374,7 +374,9 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return array
      */
-    public function getSavedData($resourceId, $listId = null,
+    public function getSavedData(
+        $resourceId,
+        $listId = null,
         $source = DEFAULT_SEARCH_BACKEND
     ) {
         $table = $this->getDbTable('UserResource');
@@ -396,7 +398,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @return void
      */
     public function saveResource(
-        $resource, $list, $tagArray, $notes, $replaceExisting = true
+        $resource,
+        $list,
+        $tagArray,
+        $notes,
+        $replaceExisting = true
     ) {
         // Create the resource link if it doesn't exist and update the notes in any
         // case:
@@ -495,7 +501,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             }
             if ($this->passwordEncryptionEnabled()) {
                 $row->cat_password = $this->encryptOrDecrypt(
-                    $row->cat_pass_enc, false
+                    $row->cat_pass_enc,
+                    false
                 );
             }
         }
@@ -576,8 +583,12 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @return int Card ID
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function saveLibraryCard($id, $cardName, $username,
-        $password, $homeLib = ''
+    public function saveLibraryCard(
+        $id,
+        $cardName,
+        $username,
+        $password,
+        $homeLib = ''
     ) {
         if (!$this->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');

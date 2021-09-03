@@ -28,8 +28,6 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use InvalidArgumentException;
-
 use VuFind\ILS\Driver\Folio;
 
 /**
@@ -41,8 +39,10 @@ use VuFind\ILS\Driver\Folio;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FolioTest extends \VuFindTest\Unit\TestCase
+class FolioTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     protected $testConfig = [
         'API' => [
             'base_url' => 'localhost',
@@ -73,7 +73,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         // Run preRequest
         $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
-        list($httpHeaders, $params) = $this->driver->preRequest($httpHeaders, $params);
+        [$httpHeaders, $params] = $this->driver->preRequest($httpHeaders, $params);
         // Log request
         $this->testRequestLog[] = [
             'method' => $method,
@@ -99,16 +99,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     protected function createConnector($test)
     {
         // Setup test responses
-        $file = realpath(
-            __DIR__ .
-            '/../../../../../../tests/fixtures/folio/responses/' . $test . '.json'
-        );
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(
-                sprintf('Unable to load fixture file: %s ', $file)
-            );
-        }
-        $this->testResponses = json_decode(file_get_contents($file), true);
+        $this->testResponses = $this->getJsonFixture("folio/responses/$test.json");
         // Reset log
         $this->testRequestLog = [];
         // Session factory
@@ -119,7 +110,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
             ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
-            ->setMethods(['makeRequest'])
+            ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($this->testConfig);

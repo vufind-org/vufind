@@ -16,8 +16,8 @@
       <div class="item active">
         <?php foreach ($similarRecords as $index => $data): ?>
           <div class="carousel-item">
-            <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
-              <?=$this->record($data)->getCoverDetails('core', 'large')['html']?>
+            <a class="hover-overlay record-cover-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+              <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
               <div class="content">
                 <?php $formats = $data->getFormats(); ?>
                 <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
@@ -40,11 +40,11 @@
     </div>
 
     <!-- Controls -->
-    <a class="left carousel-control" href="#similar-items-carousel" role="button" data-slide="prev" aria-label="<?=$this->transEsc('Prev') ?>">
-      <span class="fa fa-chevron-left glyphicon-chevron-left" title="<?=$this->transEsc('Prev') ?>"></span>
+    <a class="left carousel-control" href="#similar-items-carousel" role="button" data-slide="prev" aria-label="<?=$this->transEscAttr('Prev') ?>">
+      <span class="fa fa-chevron-left glyphicon-chevron-left" title="<?=$this->transEscAttr('Prev') ?>"></span>
     </a>
-    <a class="right carousel-control" href="#similar-items-carousel" role="button" data-slide="next" aria-label="<?=$this->transEsc('Next') ?>">
-      <span class="fa fa-chevron-right glyphicon-chevron-right" title="<?=$this->transEsc('Next') ?>"></span>
+    <a class="right carousel-control" href="#similar-items-carousel" role="button" data-slide="next" aria-label="<?=$this->transEscAttr('Next') ?>">
+      <span class="fa fa-chevron-right glyphicon-chevron-right" title="<?=$this->transEscAttr('Next') ?>"></span>
     </a>
   </div>
 <?php else: ?>
@@ -65,7 +65,7 @@ function normalizeHeights() {
   });
   items.css('min-height', (tallest+25) + 'px');
 }
-$('#similar-items-carousel img').load(normalizeHeights);
+$('#similar-items-carousel img').on('load', normalizeHeights);
 JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

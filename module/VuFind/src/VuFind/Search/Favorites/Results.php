@@ -80,6 +80,13 @@ class Results extends BaseResults
     protected $listTable;
 
     /**
+     * Facet list
+     *
+     * @var array
+     */
+    protected $facets;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -89,9 +96,12 @@ class Results extends BaseResults
      * @param ResourceTable              $resourceTable Resource table
      * @param ListTable                  $listTable     UserList table
      */
-    public function __construct(\VuFind\Search\Base\Params $params,
-        SearchService $searchService, Loader $recordLoader,
-        ResourceTable $resourceTable, ListTable $listTable
+    public function __construct(
+        \VuFind\Search\Base\Params $params,
+        SearchService $searchService,
+        Loader $recordLoader,
+        ResourceTable $resourceTable,
+        ListTable $listTable
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->resourceTable = $resourceTable;
@@ -132,7 +142,7 @@ class Results extends BaseResults
                 switch ($field) {
                 case 'tags':
                     if ($this->list) {
-                        $tags = $this->list->getTags();
+                        $tags = $this->list->getResourceTags();
                     } else {
                         $tags = $this->user ? $this->user->getTags() : [];
                     }
@@ -187,7 +197,10 @@ class Results extends BaseResults
         $userId = null === $list ? $this->user->id : $list->user_id;
         $listId = null === $list ? null : $list->id;
         $rawResults = $this->resourceTable->getFavorites(
-            $userId, $listId, $this->getTagFilters(), $this->getParams()->getSort()
+            $userId,
+            $listId,
+            $this->getTagFilters(),
+            $this->getParams()->getSort()
         );
         $this->resultTotal = count($rawResults);
 
@@ -195,8 +208,12 @@ class Results extends BaseResults
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
             $rawResults = $this->resourceTable->getFavorites(
-                $userId, $listId, $this->getTagFilters(),
-                $this->getParams()->getSort(), $this->getStartRecord() - 1, $limit
+                $userId,
+                $listId,
+                $this->getTagFilters(),
+                $this->getParams()->getSort(),
+                $this->getStartRecord() - 1,
+                $limit
             );
         }
 

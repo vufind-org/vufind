@@ -85,8 +85,7 @@ class ChoiceAuth extends AbstractBase
     {
         // Set up session container and load cached strategy (if found):
         $this->session = $container;
-        $this->strategy = isset($this->session->auth_method)
-            ? $this->session->auth_method : false;
+        $this->strategy = $this->session->auth_method ?? false;
     }
 
     /**
@@ -121,7 +120,8 @@ class ChoiceAuth extends AbstractBase
     {
         parent::setConfig($config);
         $this->strategies = array_map(
-            'trim', explode(',', $this->getConfig()->ChoiceAuth->choice_order)
+            'trim',
+            explode(',', $this->getConfig()->ChoiceAuth->choice_order)
         );
     }
 
@@ -163,7 +163,7 @@ class ChoiceAuth extends AbstractBase
     {
         try {
             return $this->proxyUserLoad($request, 'authenticate', func_get_args());
-        } catch (AuthException $e) {
+        } catch (\Exception $e) {
             // If an exception was thrown during login, we need to clear the
             // stored strategy to ensure that we display the full ChoiceAuth
             // form rather than the form for only the method that the user

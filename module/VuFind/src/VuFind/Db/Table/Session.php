@@ -56,8 +56,12 @@ class Session extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, $table = 'session'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'session'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -155,43 +159,16 @@ class Session extends Gateway
     }
 
     /**
-     * Get a query representing expired sessions (this can be passed
-     * to select() or delete() for further processing).
-     *
-     * @param int $daysOld Age in days of an "expired" session.
-     *
-     * @return function
-     */
-    public function getExpiredQuery($daysOld = 2)
-    {
-        // Determine the expiration date:
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $callback = function ($select) use ($expireDate) {
-            $select->where->lessThan('last_used', $expireDate);
-        };
-        return $callback;
-    }
-
-    /**
      * Update the select statement to find records to delete.
      *
      * @param Select $select  Select clause
      * @param int    $daysOld Age in days of an "expired" record.
-     * @param int    $idFrom  Lowest id of rows to delete.
-     * @param int    $idTo    Highest id of rows to delete.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld, $idFrom = null,
-        $idTo = null
-    ) {
+    protected function expirationCallback($select, $daysOld)
+    {
         $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $where = $select->where->lessThan('last_used', $expireDate);
-        if (null !== $idFrom) {
-            $where->and->greaterThanOrEqualTo('id', $idFrom);
-        }
-        if (null !== $idTo) {
-            $where->and->lessThanOrEqualTo('id', $idTo);
-        }
+        $select->where->lessThan('last_used', $expireDate);
     }
 }

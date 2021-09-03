@@ -31,7 +31,7 @@ use Exception;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\Driver\ConnectionInterface;
 use Laminas\Db\Adapter\Driver\DriverInterface;
-use Laminas\Db\ResultSet;
+use Laminas\Db\ResultSet\ResultSet;
 use PHPUnit\Framework\TestCase;
 use VuFind\Db\Table\Shortlinks;
 use VuFind\UrlShortener\Database;
@@ -71,7 +71,7 @@ class DatabaseTest extends TestCase
     {
         return $this->getMockBuilder(Shortlinks::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -85,7 +85,7 @@ class DatabaseTest extends TestCase
     public function testShortener()
     {
         $connection = $this->getMockBuilder(ConnectionInterface::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'beginTransaction', 'commit', 'connect', 'getResource',
                     'isConnected', 'getCurrentSchema', 'disconnect', 'rollback',
@@ -96,7 +96,7 @@ class DatabaseTest extends TestCase
         $connection->expects($this->once())->method('beginTransaction');
         $connection->expects($this->once())->method('commit');
         $driver = $this->getMockBuilder(DriverInterface::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getConnection', 'getDatabasePlatformName', 'checkEnvironment',
                     'createStatement', 'createResult', 'getPrepareType',
@@ -107,7 +107,7 @@ class DatabaseTest extends TestCase
         $driver->expects($this->once())->method('getConnection')
             ->will($this->returnValue($connection));
         $adapter = $this->getMockBuilder(Adapter::class)
-            ->setMethods(['getDriver'])
+            ->onlyMethods(['getDriver'])
             ->disableOriginalConstructor()
             ->getMock();
         $adapter->expects($this->once())->method('getDriver')
@@ -118,7 +118,7 @@ class DatabaseTest extends TestCase
         $table->expects($this->once())->method('getAdapter')
             ->will($this->returnValue($adapter));
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count', 'current'])
+            ->onlyMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
@@ -141,7 +141,7 @@ class DatabaseTest extends TestCase
     {
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count', 'current'])
+            ->onlyMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
@@ -168,7 +168,7 @@ class DatabaseTest extends TestCase
 
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count'])
+            ->onlyMethods(['count'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
@@ -191,7 +191,7 @@ class DatabaseTest extends TestCase
     {
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count', 'current'])
+            ->onlyMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')

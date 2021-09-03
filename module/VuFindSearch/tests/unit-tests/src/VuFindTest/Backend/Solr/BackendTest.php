@@ -49,6 +49,8 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test retrieving a record.
      *
@@ -84,8 +86,20 @@ class BackendTest extends TestCase
         $conn->expects($this->once())
             ->method('search')
             ->will($this->returnValue($resp->getBody()));
-
         $back = new Backend($conn);
+        $this->runRetrieveBatchTests($back);
+    }
+
+    /**
+     * Given a configured backend, run some standard tests (this allows us
+     * to test two different versions of the same scenario.
+     *
+     * @param Backend $back Backend
+     *
+     * @return void
+     */
+    protected function runRetrieveBatchTests($back)
+    {
         $back->setIdentifier('test');
         $coll = $back->retrieveBatch(['12345', '125456', '234547']);
         $this->assertCount(3, $coll);
@@ -99,6 +113,26 @@ class BackendTest extends TestCase
         $rec  = $coll->next();
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('234547', $recs[2]->id);
+    }
+
+    /**
+     * Test retrieving a batch of records, using a non-default page size.
+     *
+     * @return void
+     */
+    public function testRetrieveBatchWithNonDefaultPageSize()
+    {
+        $resp1 = $this->loadResponse('multi-record-part1');
+        $resp2 = $this->loadResponse('multi-record-part2');
+        $resp3 = $this->loadResponse('multi-record-part3');
+        $conn = $this->getConnectorMock(['search']);
+        $conn->expects($this->exactly(3))
+            ->method('search')
+            ->willReturnOnConsecutiveCalls($resp1->getBody(), $resp2->getBody(), $resp3->getBody());
+
+        $back = new Backend($conn);
+        $back->setPageSize(1);
+        $this->runRetrieveBatchTests($back);
     }
 
     /**
@@ -325,14 +359,14 @@ class BackendTest extends TestCase
     {
         // Test that random sort parameter is added:
         $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
-            ->setMethods(['set'])->getMock();
+            ->onlyMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
         $back = $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
-            ->setMethods(['search', 'injectResponseWriter'])
+            ->onlyMethods(['search', 'injectResponseWriter'])
             ->setConstructorArgs([$this->getConnectorMock()])
             ->getMock();
         $back->expects($this->once())->method('injectResponseWriter');
@@ -372,11 +406,9 @@ class BackendTest extends TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-        }
-        return Response::fromString(file_get_contents($file));
+        return Response::fromString(
+            $this->getFixture("solr/response/$fixture", 'VuFindSearch')
+        );
     }
 
     /**
@@ -390,7 +422,7 @@ class BackendTest extends TestCase
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['http://example.org/', $map])
             ->getMock();
     }

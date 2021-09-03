@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink saved searches test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,10 +39,10 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
+final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -108,7 +110,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         // We should see our "foo \ bar" search in the history, but no saved
         // searches because we are logged out:
         $this->assertEquals(
-            'foo \ bar', $this->findAndAssertLink($page, 'foo \ bar')->getText()
+            'foo \ bar',
+            $this->findAndAssertLink($page, 'foo \ bar')->getText()
         );
         $this->assertFalse(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
@@ -122,13 +125,15 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         $this->assertEquals(
-            'foo \ bar', $this->findAndAssertLink($page, 'foo \ bar')->getText()
+            'foo \ bar',
+            $this->findAndAssertLink($page, 'foo \ bar')->getText()
         );
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
         $this->assertEquals(
-            'test', $this->findAndAssertLink($page, 'test')->getText()
+            'test',
+            $this->findAndAssertLink($page, 'test')->getText()
         );
 
         // Now purge unsaved searches, confirm that unsaved search is gone
@@ -137,7 +142,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->assertNull($page->findLink('foo \ bar'));
         $this->assertEquals(
-            'test', $this->findAndAssertLink($page, 'test')->getText()
+            'test',
+            $this->findAndAssertLink($page, 'test')->getText()
         );
     }
 
@@ -164,13 +170,14 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Use user A's delete link, but try to execute it as user B:
-        list($base, $params) = explode('?', $delete);
+        [$base, $params] = explode('?', $delete);
         $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
         $page = $session->getPage();
         $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'username2@example.com']
+            $page,
+            ['username' => 'username2', 'email' => 'username2@example.com']
         );
         $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
@@ -188,7 +195,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
         $this->assertEquals(
-            'test', $this->findAndAssertLink($page, 'test')->getText()
+            'test',
+            $this->findAndAssertLink($page, 'test')->getText()
         );
     }
 
@@ -231,10 +239,12 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         // unsaved):
         $this->assertEquals(2, count($page->findAll('css', $scheduleSelector)));
         $this->assertEquals(
-            1, count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+            1,
+            count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
         );
         $this->assertEquals(
-            1, count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            1,
+            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
         );
 
         // At this point, our journals search should be in the unsaved list; let's
@@ -243,7 +253,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         $select->selectOption(7);
         $this->snooze();
         $this->assertEquals(
-            2, count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            2,
+            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
         );
 
         // Now let's delete the saved search and confirm that this clears the

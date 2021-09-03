@@ -28,10 +28,12 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\ILS\Driver\CacheTrait;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * GetRecordCover AJAX handler.
@@ -61,16 +63,43 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     protected $coverRouter;
 
     /**
+     * PHP renderer
+     *
+     * @var PhpRenderer
+     */
+    protected $renderer;
+
+    /**
+     * If true we will render a fallback html template in case no image could be
+     * loaded
+     *
+     * @var bool
+     */
+    protected $useCoverFallbacksOnFail = false;
+
+    /**
      * GetRecordCover constructor.
      *
-     * @param RecordLoader $recordLoader Record loader
-     * @param CoverRouter  $coverRouter  Cover router
+     * @param SessionSettings $ss                      Session settings
+     * @param RecordLoader    $recordLoader            Record loader
+     * @param CoverRouter     $coverRouter             Cover router
+     * @param PhpRenderer     $renderer                PHP renderer (only
+     * required if $userCoverFallbacksOnFail is set to true)
+     * @param bool            $useCoverFallbacksOnFail If true we will render a
+     * fallback html template in case no image could be loaded
      */
-    public function __construct(RecordLoader $recordLoader,
-        CoverRouter $coverRouter
+    public function __construct(
+        SessionSettings $ss,
+        RecordLoader $recordLoader,
+        CoverRouter $coverRouter,
+        ?PhpRenderer $renderer = null,
+        $useCoverFallbacksOnFail = false
     ) {
+        $this->sessionSettings = $ss;
         $this->recordLoader = $recordLoader;
         $this->coverRouter = $coverRouter;
+        $this->renderer = $renderer;
+        $this->useCoverFallbacksOnFail = $useCoverFallbacksOnFail;
     }
 
     /**
@@ -83,6 +112,8 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      */
     public function handleRequest(Params $params)
     {
+        $this->disableSessionWrites();
+
         $recordId = $params->fromQuery('recordId');
         $recordSource = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $size = $params->fromQuery('size', 'small');
@@ -102,11 +133,23 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             );
         }
 
-        return $this->formatResponse(
-            [
-                'url' => $this->coverRouter->getUrl($record, $size ?? 'small'),
-                'size' => $size,
-            ]
+        $metadata = $this->coverRouter->getMetadata(
+            $record,
+            $size ?? 'small',
+            true,
+            $this->useCoverFallbacksOnFail,
+            true
         );
+
+        return ($metadata || !$this->renderer || !$this->useCoverFallbacksOnFail)
+            ? $this->formatResponse(array_merge($metadata, compact('size')))
+            : $this->formatResponse(
+                [
+                    'html' => $this->renderer->render(
+                        'record/coverReplacement',
+                        ['driver' => $record]
+                    )
+                ]
+            );
     }
 }

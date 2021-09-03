@@ -39,7 +39,7 @@ use VuFind\Net\UserIpReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserIpReaderTest extends \VuFindTest\Unit\TestCase
+class UserIpReaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test X-Real-IP; it should take priority over all other settings when
@@ -58,7 +58,8 @@ class UserIpReaderTest extends \VuFindTest\Unit\TestCase
         );
         // Test appropriate behavior with forwarding configured to prefer Real-IP:
         $reader1 = new UserIpReader(
-            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+            $params,
+            'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
         $this->assertEquals('1.2.3.4', $reader1->getUserIp());
         // Test appropriate behavior with forwarding configured to ignore Real-IP:
@@ -196,7 +197,8 @@ class UserIpReaderTest extends \VuFindTest\Unit\TestCase
         );
         // Test appropriate behavior with forwarding enabled:
         $reader1 = new UserIpReader(
-            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+            $params,
+            'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
         $this->assertEquals('127.0.0.1', $reader1->getUserIp());
         // Test appropriate behavior with forwarding disabled:

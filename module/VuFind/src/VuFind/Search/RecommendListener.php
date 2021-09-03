@@ -98,11 +98,13 @@ class RecommendListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search\SearchRunner', SearchRunner::EVENT_CONFIGURED,
+            'VuFind\Search\SearchRunner',
+            SearchRunner::EVENT_CONFIGURED,
             [$this, 'onSearchConfigured']
         );
         $manager->attach(
-            'VuFind\Search\SearchRunner', SearchRunner::EVENT_COMPLETE,
+            'VuFind\Search\SearchRunner',
+            SearchRunner::EVENT_COMPLETE,
             [$this, 'onSearchComplete']
         );
     }
@@ -150,6 +152,9 @@ class RecommendListener
                 // Break apart the setting into module name and extra parameters:
                 $current = explode(':', $current);
                 $module = array_shift($current);
+                if (empty($module)) {
+                    continue;
+                }
                 $config = implode(':', $current);
                 if (!$this->pluginManager->has($module)) {
                     throw new \Exception(

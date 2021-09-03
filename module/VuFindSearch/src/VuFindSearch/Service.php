@@ -6,6 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,8 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -32,10 +35,14 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Feature\GetIdsInterface;
-use VuFindSearch\Feature\RandomInterface;
-
-use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Command\CommandInterface;
+use VuFindSearch\Command\GetIdsCommand;
+use VuFindSearch\Command\RandomCommand;
+use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
+use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\Command\SimilarCommand;
+use VuFindSearch\Command\WorkExpressionsCommand;
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -44,6 +51,8 @@ use VuFindSearch\Response\RecordCollectionInterface;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -54,10 +63,10 @@ class Service
      *
      * @var string
      */
-    const EVENT_PRE     = 'pre';
-    const EVENT_POST    = 'post';
-    const EVENT_ERROR   = 'error';
-    const EVENT_RESOLVE = 'resolve';
+    public const EVENT_PRE     = 'pre';
+    public const EVENT_POST    = 'post';
+    public const EVENT_ERROR   = 'error';
+    public const EVENT_RESOLVE = 'resolve';
 
     /**
      * Event manager.
@@ -89,6 +98,33 @@ class Service
     }
 
     /**
+     * Invoke a command.
+     *
+     * @param CommandInterface $command Command
+     *
+     * @return CommandInterface
+     */
+    public function invoke(CommandInterface $command)
+    {
+        // The backend instance is no longer added as an event parameter.
+        // All other legacy event parameters are accessible via the command object.
+        $args = ['command' => $command];
+
+        $backendInstance = $this->resolve($command->getTargetIdentifier(), $args);
+
+        $this->triggerPre($command, $args);
+        try {
+            $command->execute($backendInstance);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($command, $args);
+
+        return $command;
+    }
+
+    /**
      * Perform a search and return a wrapped response.
      *
      * @param string              $backend Search backend identifier
@@ -98,25 +134,21 @@ class Service
      * @param ParamBag            $params  Search backend parameters
      *
      * @return RecordCollectionInterface
+     *
+     * @deprecated Use Service::invoke(SearchCommand $command) instead
      */
-    public function search($backend, Query\AbstractQuery $query, $offset = 0,
-        $limit = 20, ParamBag $params = null
+    public function search(
+        $backend,
+        Query\AbstractQuery $query,
+        $offset = 0,
+        $limit = 20,
+        ParamBag $params = null
     ) {
-        $context = __FUNCTION__;
-        $params  = $params ?: new ParamBag();
-        $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
-        $backend  = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backend;
-
-        $this->triggerPre($backend, $args);
-        try {
-            $response = $backend->search($query, $offset, $limit, $params);
-        } catch (BackendException $e) {
-            $this->triggerError($e, $args);
-            throw $e;
-        }
-        $this->triggerPost($response, $args);
-        return $response;
+        $command = new SearchCommand($backend, $query, $offset, $limit, $params);
+        return $this->legacyInvoke(
+            $command,
+            ['query' => $query, 'offset' => $offset, 'limit' => $limit]
+        );
     }
 
     /**
@@ -129,30 +161,21 @@ class Service
      * @param ParamBag            $params  Search backend parameters
      *
      * @return RecordCollectionInterface
+     *
+     * @deprecated Use Service::invoke(GetIdsCommand $command) instead
      */
-    public function getIds($backend, Query\AbstractQuery $query, $offset = 0,
-        $limit = 20, ParamBag $params = null
+    public function getIds(
+        $backend,
+        Query\AbstractQuery $query,
+        $offset = 0,
+        $limit = 20,
+        ParamBag $params = null
     ) {
-        $context = strtolower(__FUNCTION__);
-
-        $params  = $params ?: new ParamBag();
-        $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
-        $backend  = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backend;
-
-        $this->triggerPre($backend, $args);
-        try {
-            if ($backend instanceof GetIdsInterface) {
-                $response = $backend->getIds($query, $offset, $limit, $params);
-            } else {
-                $response = $backend->search($query, $offset, $limit, $params);
-            }
-        } catch (BackendException $e) {
-            $this->triggerError($e, $args);
-            throw $e;
-        }
-        $this->triggerPost($response, $args);
-        return $response;
+        $command = new GetIdsCommand($backend, $query, $offset, $limit, $params);
+        return $this->legacyInvoke(
+            $command,
+            ['query' => $query, 'offset' => $offset, 'limit' => $limit]
+        );
     }
 
     /**
@@ -163,24 +186,13 @@ class Service
      * @param ParamBag $params  Search backend parameters
      *
      * @return RecordCollectionInterface
+     *
+     * @deprecated Use Service::invoke(RetrieveCommand $command) instead
      */
     public function retrieve($backend, $id, ParamBag $params = null)
     {
-        $params  = $params ?: new ParamBag();
-        $context = __FUNCTION__;
-        $args = compact('backend', 'id', 'params', 'context');
-        $backend = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backend;
-
-        $this->triggerPre($backend, $args);
-        try {
-            $response = $backend->retrieve($id, $params);
-        } catch (BackendException $e) {
-            $this->triggerError($e, $args);
-            throw $e;
-        }
-        $this->triggerPost($response, $args);
-        return $response;
+        $command = new RetrieveCommand($backend, $id, $params);
+        return $this->legacyInvoke($command, ['id' => $id]);
     }
 
     /**
@@ -191,46 +203,13 @@ class Service
      * @param ParamBag $params  Search backend parameters
      *
      * @return RecordCollectionInterface
+     *
+     * @deprecated Use Service::invoke(RetrieveBatchCommand $command) instead
      */
     public function retrieveBatch($backend, $ids, ParamBag $params = null)
     {
-        $params  = $params ?: new ParamBag();
-        $context = __FUNCTION__;
-        $args = compact('backend', 'ids', 'params', 'context');
-        $backend = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backend;
-
-        $this->triggerPre($backend, $args);
-
-        // If the backend implements the RetrieveBatchInterface, we can load
-        // all the records at once; otherwise, we need to load them one at a
-        // time and aggregate them:
-        if ($backend instanceof RetrieveBatchInterface) {
-            try {
-                $response = $backend->retrieveBatch($ids, $params);
-            } catch (BackendException $e) {
-                $this->triggerError($e, $args);
-                throw $e;
-            }
-        } else {
-            $response = false;
-            foreach ($ids as $id) {
-                try {
-                    $next = $backend->retrieve($id, $params);
-                } catch (BackendException $e) {
-                    $this->triggerError($e, $args);
-                    throw $e;
-                }
-                if (!$response) {
-                    $response = $next;
-                } elseif ($record = $next->first()) {
-                    $response->add($record);
-                }
-            }
-        }
-
-        $this->triggerPost($response, $args);
-        return $response;
+        $command = new RetrieveBatchCommand($backend, $ids, $params);
+        return $this->legacyInvoke($command, ['ids' => $ids]);
     }
 
     /**
@@ -242,78 +221,13 @@ class Service
      * @param ParamBag            $params  Search backend parameters
      *
      * @return RecordCollectionInterface
+     *
+     * @deprecated Use Service::invoke(RandomCommand $command) instead
      */
     public function random($backend, $query, $limit = 20, $params = null)
     {
-        $params  = $params ?: new ParamBag();
-        $context = __FUNCTION__;
-        $args = compact('backend', 'query', 'limit', 'params', 'context');
-        $backend = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backend;
-
-        $this->triggerPre($backend, $args);
-
-        // If the backend implements the RetrieveRandomInterface, we can load
-        // all the records at once; otherwise, we need to load them one at a
-        // time and aggregate them:
-        if ($backend instanceof RandomInterface) {
-            try {
-                $response = $backend->random($query, $limit, $params);
-            } catch (BackendException $e) {
-                $this->triggerError($e, $args);
-                throw $e;
-            }
-        } else {
-            // offset/limit of 0 - we don't need records, just count
-            try {
-                $results = $backend->search($query, 0, 0, $params);
-            } catch (BackendException $e) {
-                $this->triggerError($e, $args);
-                throw $e;
-            }
-            $total_records = $results->getTotal();
-
-            if (0 === $total_records) {
-                // Empty result? Send back as-is:
-                $response = $results;
-            } elseif ($total_records < $limit) {
-                // Result set smaller than limit? Get everything and shuffle:
-                try {
-                    $response = $backend->search($query, 0, $limit, $params);
-                } catch (BackendException $e) {
-                    $this->triggerError($e, $args);
-                    throw $e;
-                }
-                $response->shuffle();
-            } else {
-                // Default case: retrieve n random records:
-                $response = false;
-                $retrievedIndexes = [];
-                for ($i = 0; $i < $limit; $i++) {
-                    $nextIndex = rand(0, $total_records - 1);
-                    while (in_array($nextIndex, $retrievedIndexes)) {
-                        // avoid duplicate records
-                        $nextIndex = rand(0, $total_records - 1);
-                    }
-                    $retrievedIndexes[] = $nextIndex;
-                    try {
-                        $currentBatch = $backend->search(
-                            $query, $nextIndex, 1, $params
-                        );
-                    } catch (BackendException $e) {
-                        $this->triggerError($e, $args);
-                        throw $e;
-                    }
-                    if (!$response) {
-                        $response = $currentBatch;
-                    } elseif ($record = $currentBatch->first()) {
-                        $response->add($record);
-                    }
-                }
-            }
-        }
-        $this->triggerPost($response, $args);
-        return $response;
+        $command = new RandomCommand($backend, $query, $limit, $params);
+        return $this->legacyInvoke($command, ['query' => $query, 'limit' => $limit]);
     }
 
     /**
@@ -324,27 +238,36 @@ class Service
      * @param ParamBag $params  Search backend parameters
      *
      * @return RecordCollectionInterface
+     *
+     * @deprecated Use Service::invoke(SimilarCommand $command) instead
      */
     public function similar($backend, $id, ParamBag $params = null)
     {
-        $params  = $params ?: new ParamBag();
-        $context = __FUNCTION__;
-        $args = compact('backend', 'id', 'params', 'context');
-        $backendInstance = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backendInstance;
+        $command = new SimilarCommand($backend, $id, $params);
+        return $this->legacyInvoke($command, ['id' => $id]);
+    }
 
-        $this->triggerPre($backendInstance, $args);
-        try {
-            if (!($backendInstance instanceof Feature\SimilarInterface)) {
-                throw new BackendException("$backend does not support similar()");
-            }
-            $response = $backendInstance->similar($id, $params);
-        } catch (BackendException $e) {
-            $this->triggerError($e, $args);
-            throw $e;
-        }
-        $this->triggerPost($response, $args);
-        return $response;
+    /**
+     * Return records for work expressions.
+     *
+     * @param string   $backend  Search backend identifier
+     * @param string   $id       Id of record to compare with
+     * @param array    $workKeys Work identification keys (optional; retrieved from
+     * the record to compare with if not specified)
+     * @param ParamBag $params   Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     *
+     * @deprecated Use Service::invoke(WorkExpressionsCommand $command) instead
+     */
+    public function workExpressions(
+        $backend,
+        $id,
+        $workKeys = null,
+        ParamBag $params = null
+    ) {
+        $command = new WorkExpressionsCommand($backend, $id, $workKeys, $params);
+        return $this->legacyInvoke($command, ['id' => $id, 'workKeys' => $workKeys]);
     }
 
     /**
@@ -379,6 +302,39 @@ class Service
     /// Internal API
 
     /**
+     * Invoke a command triggering deprecated legacy events and return the result.
+     *
+     * @param CommandInterface $command Command
+     * @param array            $args    Additional event parameters
+     *
+     * @return mixed
+     */
+    protected function legacyInvoke(CommandInterface $command, array $args = [])
+    {
+        $backend = $command->getTargetIdentifier();
+        $params = $command->getSearchParameters();
+        $context = $command->getContext();
+        $args = array_merge(
+            compact('backend', 'params', 'context', 'command'),
+            $args
+        );
+
+        $backendInstance = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backendInstance;
+
+        $this->triggerPre($backendInstance, $args);
+        try {
+            $response = $command->execute($backendInstance)->getResult();
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($response, $args);
+
+        return $response;
+    }
+
+    /**
      * Resolve a backend.
      *
      * @param string            $backend Backend name
@@ -400,10 +356,19 @@ class Service
                 $args
             );
             if (!$response->stopped()) {
+                // We need to construct our error message differently depending
+                // on whether or not we have a command object...
+                $context = isset($args['command'])
+                    ? $args['command']->getContext()
+                    : ($args['context'] ?? 'null');
+                $backend = isset($args['command'])
+                    ? $args['command']->getTargetIdentifier()
+                    : ($args['backend'] ?? $backend);
                 throw new Exception\RuntimeException(
                     sprintf(
-                        'Unable to resolve backend: %s, %s', $args['context'],
-                        $args['backend']
+                        'Unable to resolve backend: %s, %s',
+                        $context,
+                        $backend
                     )
                 );
             }
@@ -428,26 +393,28 @@ class Service
     /**
      * Trigger the pre event.
      *
-     * @param BackendInterface $backend Selected backend
-     * @param array            $args    Event arguments
+     * @param mixed $target Command object, or backend instance for deprecated
+     *                      legacy events
+     * @param array $args   Event arguments
      *
      * @return void
      */
-    protected function triggerPre(BackendInterface $backend, $args)
+    protected function triggerPre($target, $args)
     {
-        $this->getEventManager()->trigger(self::EVENT_PRE, $backend, $args);
+        $this->getEventManager()->trigger(self::EVENT_PRE, $target, $args);
     }
 
     /**
      * Trigger the post event.
      *
-     * @param mixed $response Backend response
-     * @param array $args     Event arguments
+     * @param mixed $target Command object, or backend response for deprecated
+     *                      legacy events
+     * @param array $args   Event arguments
      *
      * @return void
      */
-    protected function triggerPost($response, $args)
+    protected function triggerPost($target, $args)
     {
-        $this->getEventManager()->trigger(self::EVENT_POST, $response, $args);
+        $this->getEventManager()->trigger(self::EVENT_POST, $target, $args);
     }
 }

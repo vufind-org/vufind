@@ -23,6 +23,7 @@ import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
 import org.solrmarc.index.SolrIndexer;
 import org.apache.log4j.Logger;
+import org.vufind.index.FieldSpecTools;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,6 +46,9 @@ public class CreatorTools
 
     private ConcurrentHashMap<String, String> relatorSynonymLookup = RelatorContainer.instance().getSynonymLookup();
     private Set<String> knownRelators = RelatorContainer.instance().getKnownRelators();
+    private Set<Pattern> punctuationRegEx = PunctuationContainer.instance().getPunctuationRegEx();
+    private Set<String> punctuationPairs = PunctuationContainer.instance().getPunctuationPairs();
+    private Set<String> untrimmedAbbreviations = PunctuationContainer.instance().getUntrimmedAbbreviations();
 
     /**
      * Extract all valid relator terms from a list of subfields using a whitelist.
@@ -151,31 +156,39 @@ public class CreatorTools
     }
 
     /**
-     * Parse a SolrMarc fieldspec into a map of tag name to set of subfield strings
-     * (note that we need to map to a set rather than a single string, because the
-     * same tag may repeat with different subfields to extract different sections
-     * of the same field into distinct values).
+     * Fix trailing punctuation on a name string.
      *
-     * @param tagList The field specification to parse
-     * @return HashMap
+     * @param name Name to fix
+     *
+     * @return Stripped name
      */
-    protected HashMap<String, Set<String>> getParsedTagList(String tagList)
+    protected String fixTrailingPunctuation(String name)
     {
-        String[] tags = tagList.split(":");//convert string input to array
-        HashMap<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
-        //cut tags array up into key/value pairs in hash map
-        Set<String> currentSet;
-        for(int i = 0; i < tags.length; i++){
-            String tag = tags[i].substring(0, 3);
-            if (!tagMap.containsKey(tag)) {
-                currentSet = new LinkedHashSet<String>();
-                tagMap.put(tag, currentSet);
-            } else {
-                currentSet = tagMap.get(tag);
-            }
-            currentSet.add(tags[i].substring(3));
+        // First, apply regular expressions:
+        for (Pattern regex : punctuationRegEx) {
+            name = regex.matcher(name).replaceAll("");
         }
-        return tagMap;
+
+        // Strip periods, except when they follow an initial or abbreviation:
+        int nameLength = name.length();
+        if (name.endsWith(".") && nameLength > 3 && !name.substring(nameLength - 3, nameLength - 2).startsWith(" ")) {
+            int p = name.lastIndexOf(" ");
+            String lastWord = (p > 0) ? name.substring(p + 1) : name;
+            if (!untrimmedAbbreviations.contains(lastWord.toLowerCase())) {
+                name = name.substring(0, nameLength - 1);
+                nameLength--;
+            }
+        }
+
+        // Remove trailing close characters with no corresponding open characters:
+        for (String pair : punctuationPairs) {
+            String left = pair.substring(0, 1);
+            String right = pair.substring(1);
+            if (name.endsWith(right) && !name.contains(left)) {
+                name = name.substring(0, nameLength - 1);
+            }
+        }
+        return name;
     }
 
     /**
@@ -202,7 +215,7 @@ public class CreatorTools
         List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
         List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){
@@ -219,7 +232,7 @@ public class CreatorTools
                         // fixed.
                         //String current = authorField.getSubfieldsAsString(subfields);
                         if (null != current) {
-                            result.add(current);
+                            result.add(fixTrailingPunctuation(current));
                             if (firstOnly) {
                                 return result;
                             }
@@ -419,7 +432,7 @@ public class CreatorTools
         List result = new LinkedList();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
         List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){
