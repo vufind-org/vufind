@@ -98,7 +98,7 @@ class Icon extends AbstractHelper
      * @param array            $config   Icon configuration
      * @param StorageInterface $cache    Cache instance
      * @param EscapeHtmlAttr   $escAttr  EscapeHtmlAttr view helper
-     * @param HeadLink         $headLink For stylesheet appending
+     * @param HeadLink         $headLink HeadLink view helper
      */
     public function __construct(
         array $config,
