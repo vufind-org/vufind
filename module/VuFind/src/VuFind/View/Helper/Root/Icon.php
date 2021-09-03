@@ -58,6 +58,13 @@ class Icon extends AbstractHelper
     protected $defaultSet;
 
     /**
+     * Default icon template
+     *
+     * @var string
+     */
+    protected $defaultTemplate;
+
+    /**
      * Transforming map
      *
      * @var array
@@ -108,6 +115,7 @@ class Icon extends AbstractHelper
     ) {
         $this->config = $config;
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
+        $this->defaultTemplate = $this->config['defaultTemplate'] ?? 'font';
         $this->iconMap = $this->config['aliases'] ?? [];
         $this->cache = $cache;
         $this->esc = $escAttr;
@@ -134,7 +142,7 @@ class Icon extends AbstractHelper
 
         // Find set in theme.config.php
         $setConfig = $this->config['sets'][$set] ?? [];
-        $template = $setConfig['template'] ?? $set;
+        $template = $setConfig['template'] ?? $this->defaultTemplate;
         $prefix = $setConfig['prefix'] ?? '';
 
         return [$prefix . $icon, $set, $template];
