@@ -29,7 +29,7 @@
  */
 namespace VuFindSearch\Backend\Solr\Command;
 
-use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Command\CommandInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -44,41 +44,44 @@ use VuFindSearch\Query\AbstractQuery;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawJsonSearchCommand extends \VuFindSearch\Command\AbstractBase
+class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
      * Constructor
      *
      * @param string        $backend Search backend identifier
      * @param AbstractQuery $query   Search query string
+     * @param int           $offset  Search offset
+     * @param int           $limit   Search limit
      * @param ?ParamBag     $params  Search backend parameters
      */
     public function __construct(
         string $backend,
         AbstractQuery $query,
-        ParamBag $params
+        int $offset = 0,
+        int $limit = 100,
+        ParamBag $params = null
     ) {
-        parent::__construct($backend, $query, $params);
+        parent::__construct(
+            $backend,
+            Backend::class,
+            'rawJsonSearch',
+            [$query, $offset, $limit],
+            $params
+        );
     }
 
     /**
-     * Execute command on backend.
+     * Save a result, flag the command as executed, and return the command object;
+     * useful as the final step in execute() implementations.
      *
-     * @param BackendInterface $backend Backend
+     * @param mixed $result Result of execution.
      *
-     * @return CommandInterface Command instance for method chaining
+     * @return CommandInterface
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    protected function finalizeExecution($result): CommandInterface
     {
-        if (!($backend instanceof \VuFindSearch\Backend\Solr\Backend)) {
-            throw new \Exception('Unexpected backend: ' . get_class($backend));
-        }
-        $queryBuilder = $backend->getQueryBuilder();
-        $params = $this->getSearchParameters();
-        $params->mergeWith($queryBuilder->build($this->getContext()));
-        $params->set('wt', 'json');
-        return $this->finalizeExecution(
-            json_decode($backend->getConnector()->search($params))
-        );
+        // We should JSON-decode the result when we save it, for convenience:
+        return parent::finalizeExecution(json_decode($result));
     }
 }

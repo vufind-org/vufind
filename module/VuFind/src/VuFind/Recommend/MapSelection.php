@@ -314,8 +314,13 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     {
         $params = $this->searchFilters;
         $params->set('fl', 'id, ' . $this->geoField . ', title');
-        $params->set('rows', '10000000'); // set to return all results
-        $command = new RawJsonSearchCommand('Solr', $this->searchQuery, $params);
+        $command = new RawJsonSearchCommand(
+            'Solr',
+            $this->searchQuery,
+            0,
+            10000000,   // set to return all results
+            $params
+        );
         $response = $this->searchService->invoke($command)->getResult();
         $defaultTitle = $this->translate('Title not available');
         $result = [];
