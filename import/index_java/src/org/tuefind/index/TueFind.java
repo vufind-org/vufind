@@ -34,31 +34,38 @@ public class TueFind extends SolrIndexerMixin {
 
     protected static final Pattern SORTABLE_STRING_REMOVE_PATTERN = Pattern.compile("[^\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{N}]+");
 
-    protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpecList, char excludeSubfield) {
-        final Set<String> extractedValues = new TreeSet<>();
+    protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpecList, final String excludeSubfields) {
+        final Set<String> extractedValues = new LinkedHashSet<>();
         final String[] fieldSpecs = fieldSpecList.split(":");
         List<Subfield> subfieldsToSearch = new ArrayList<>();
         for (final String fieldSpec : fieldSpecs) {
             final List<VariableField> fieldSpecFields = record.getVariableFields(fieldSpec.substring(0,3));
             for (final VariableField variableField : fieldSpecFields) {
-                 final DataField field = (DataField) variableField;
-                 if (field == null)
-                     continue;
-                 // Differentiate between field and subfield specifications:
-                 if (fieldSpec.length() == 3 + 1)
-                     subfieldsToSearch = field.getSubfields(fieldSpec.charAt(3));
-                 else if (fieldSpec.length() == 3)
-                     subfieldsToSearch = field.getSubfields();
-                 else {
-                     logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
-                     System.exit(1);
-                 }
-                 for (final Subfield subfield : subfieldsToSearch)
-                     if (subfield.getCode() != excludeSubfield)
-                         extractedValues.add(subfield.getData());
+                final DataField field = (DataField) variableField;
+                if (field == null)
+                    continue;
+                // Differentiate between field and subfield specifications:
+                if (fieldSpec.length() == 3 + 1)
+                    subfieldsToSearch = field.getSubfields(fieldSpec.charAt(3));
+                else if (fieldSpec.length() == 3)
+                    subfieldsToSearch = field.getSubfields();
+                else {
+                    logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
+                    System.exit(1);
+                }
+
+                for (final Subfield subfield : subfieldsToSearch) {
+                    if (!excludeSubfields.contains(Character.toString(subfield.getCode())))
+                        extractedValues.add(subfield.getData());
+                }
             }
         }
         return extractedValues;
+    }
+
+    public static String getAllSubfieldsBut(final Record record, final String fieldSpecList, final String excludeSubfields, final String delimiter) {
+        final Set<String> subfields = getAllSubfieldsBut(record, fieldSpecList, excludeSubfields);
+        return  String.join(delimiter, subfields);
     }
 
     protected interface SubfieldMatcher {
