@@ -9,6 +9,16 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['gnd'] ?? null;
     }
 
+    public function getHeadingShort()
+    {
+        return $this->fields['heading_short'] ?? null;
+    }
+
+    public function getHeadingTimespan()
+    {
+        return $this->fields['heading_timespan'] ?? null;
+    }
+
     public function getISNI() {
         return $this->fields['isni'] ?? null;
     }
