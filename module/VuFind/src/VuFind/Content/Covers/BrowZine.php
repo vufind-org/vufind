@@ -27,7 +27,8 @@
  */
 namespace VuFind\Content\Covers;
 
-use VuFindSearch\Backend\BrowZine\Connector;
+use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
+use VuFindSearch\Service;
 
 /**
  * BrowZine cover content loader.
@@ -41,20 +42,20 @@ use VuFindSearch\Backend\BrowZine\Connector;
 class BrowZine extends \VuFind\Content\AbstractCover
 {
     /**
-     * BrowZine connector.
+     * Search service
      *
-     * @var Connector
+     * @var Service
      */
-    protected $connector;
+    protected $searchService;
 
     /**
      * Constructor
      *
-     * @param Connector $connector BrowZine connector object
+     * @param Service $searchService Search service
      */
-    public function __construct(Connector $connector)
+    public function __construct(Service $searchService)
     {
-        $this->connector = $connector;
+        $this->searchService = $searchService;
         $this->supportsIssn = true;
     }
 
@@ -77,7 +78,8 @@ class BrowZine extends \VuFind\Content\AbstractCover
             return false;
         }
 
-        $result = $this->connector->lookupIssns($ids['issn']);
+        $command = new LookupIssnsCommand('BrowZine', $ids['issn']);
+        $result = $this->searchService->invoke($command)->getResult();
         return $result['data'][0]['coverImageUrl'] ?? false;
     }
 }
