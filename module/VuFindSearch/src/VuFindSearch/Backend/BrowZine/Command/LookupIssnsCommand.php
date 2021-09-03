@@ -49,7 +49,7 @@ class LookupIssnsCommand extends \VuFindSearch\Command\CallMethodCommand
      */
     public function __construct(string $backend, $issns)
     {
-        return parent::__construct(
+        parent::__construct(
             $backend,
             Backend::class,
             'lookupIssns',

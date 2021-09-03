@@ -49,7 +49,7 @@ class LookupDoiCommand extends \VuFindSearch\Command\CallMethodCommand
      */
     public function __construct(string $backend, string $doi)
     {
-        return parent::__construct(
+        parent::__construct(
             $backend,
             Backend::class,
             'lookupDoi',
