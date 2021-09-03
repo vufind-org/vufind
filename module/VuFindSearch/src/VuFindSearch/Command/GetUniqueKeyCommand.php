@@ -50,6 +50,7 @@ class GetUniqueKeyCommand extends AbstractBase
      */
     public function execute(BackendInterface $backend): CommandInterface
     {
+        $this->validateBackend($backend);
         if (is_callable([$backend, 'getConnector'])) {
             $connector = $backend->getConnector();
             if (is_callable([$connector, 'getUniqueKey'])) {
