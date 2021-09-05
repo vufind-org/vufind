@@ -28,8 +28,7 @@
 namespace VuFindTest\UrlHighlight;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Replacer\ReplacerFactory;
 use VuFind\UrlHighlight\VuFindHighlighter;
 use VuFind\View\Helper\Root\ProxyUrl;
 
@@ -50,11 +49,6 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     private $proxyUrl;
 
     /**
-     * @var HtmlHighlighter&MockObject
-     */
-    private $htmlHighlighter;
-
-    /**
      * @var VuFindHighlighter
      */
     private $vuFindHighlighter;
@@ -62,8 +56,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $this->proxyUrl = $this->createMock(ProxyUrl::class);
-        $this->htmlHighlighter = $this->createMock(HtmlHighlighter::class);
-        $this->vuFindHighlighter = new VuFindHighlighter($this->proxyUrl, $this->htmlHighlighter);
+        $this->vuFindHighlighter = new VuFindHighlighter($this->proxyUrl);
     }
 
     public function tearDown(): void
@@ -74,18 +67,18 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getHighlightDataProvider
      *
-     * @param array $urlData
+     * @param string $url
      * @param string $expected
      */
-    public function testGetHighlight(array $urlData, string $expected): void
+    public function testGetHighlight(string $url, string $expected): void
     {
         $this->proxyUrl
             ->expects(self::atLeastOnce())
             ->method('__invoke')
             ->willReturnOnConsecutiveCalls('URL_WITH_PROXY');
 
-        $match = $this->createMatchMock(...$urlData);
-        $actual = $this->vuFindHighlighter->getHighlight($match);
+        $replacer = ReplacerFactory::createReplacer();
+        $actual = $this->vuFindHighlighter->highlight($url, $replacer);
         self::assertSame($expected, $actual);
     }
 
@@ -96,57 +89,25 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'http' => [
-                ['http://vufind.org', 'http', null],
+                'http://vufind.org',
                 '<a href="URL_WITH_PROXY">http://vufind.org</a>',
             ],
             'complex link' => [
-                ['https://vufind.org?foo=1&bar=2#xyzzy', 'https', null],
+                'https://vufind.org?foo=1&bar=2#xyzzy',
                 '<a href="URL_WITH_PROXY">https://vufind.org?foo=1&bar=2#xyzzy</a>',
             ],
             'quotes' => [
-                ['http://vufind.org/path/with"quotes"/?q=search', 'http', null],
+                'http://vufind.org/path/with"quotes"/?q=search',
                 '<a href="URL_WITH_PROXY">http://vufind.org/path/with"quotes"/?q=search</a>',
             ],
             'no scheme' => [
-                ['vufind.org', null, null],
+                'vufind.org',
                 '<a href="URL_WITH_PROXY">vufind.org</a>',
             ],
             'email' => [
-                ['user@vufind.org', null, 'user'],
+                'user@vufind.org',
                 '<a href="URL_WITH_PROXY">user@vufind.org</a>',
             ],
         ];
-    }
-
-    /**
-     * @param string $string
-     * @param string $expected
-     */
-    public function testFilterOverhighlight(): void
-    {
-        $string = 'some input';
-
-        $this->htmlHighlighter
-            ->expects(self::once())
-            ->method('filterOverhighlight')
-            ->with($string);
-
-        $this->vuFindHighlighter->filterOverhighlight($string);
-    }
-
-    /**
-     * @param string $url
-     * @param string|null $scheme
-     * @param string|null $userinfo
-     * @return Match&MockObject
-     */
-    private function createMatchMock(string $url, ?string $scheme, ?string $userinfo): MockObject
-    {
-        $match = $this->createMock(Match::class);
-        $match->method('getFullMatch')->willReturn($url);
-        $match->method('getScheme')->willReturn($scheme);
-        $match->method('getUserinfo')->willReturn($userinfo);
-        $match->method('getUrl')->willReturn($url);
-        return $match;
     }
 }

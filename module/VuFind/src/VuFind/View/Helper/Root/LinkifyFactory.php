@@ -30,7 +30,6 @@ namespace VuFind\View\Helper\Root;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
-use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use VStelmakh\UrlHighlight\UrlHighlight;
 use VuFind\UrlHighlight\VuFindHighlighter;
 
@@ -67,10 +66,7 @@ class LinkifyFactory implements FactoryInterface
 
         $proxyUrl = $container->get('ViewHelperManager')->get('proxyUrl');
 
-        $highlighter = new VuFindHighlighter(
-            $proxyUrl,
-            new HtmlHighlighter(VuFindHighlighter::DEFAULT_SCHEME)
-        );
+        $highlighter = new VuFindHighlighter($proxyUrl);
         $encoder = new HtmlSpecialcharsEncoder();
         $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
 

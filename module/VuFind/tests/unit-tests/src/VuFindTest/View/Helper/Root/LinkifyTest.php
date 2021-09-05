@@ -31,7 +31,6 @@ namespace VuFindTest\View\Helper\Root;
 use PHPUnit\Framework\MockObject\MockObject;
 use VStelmakh\UrlHighlight\UrlHighlight;
 use VuFind\View\Helper\Root\Linkify;
-use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
  * Linkify Test Class
@@ -83,7 +82,7 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('input text'))
             ->willReturn('Text with highlighted urls');
 
-        $actual = $this->linkify('input text');
+        $actual = $this->linkify->__invoke('input text');
         $this->assertSame('Text with highlighted urls', $actual);
     }
 }

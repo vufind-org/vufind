@@ -27,10 +27,8 @@
  */
 namespace VuFind\UrlHighlight;
 
-use VStelmakh\UrlHighlight\Highlighter\HighlighterInterface;
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
-use VStelmakh\UrlHighlight\Util\LinkHelper;
 use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
@@ -42,16 +40,9 @@ use VuFind\View\Helper\Root\ProxyUrl;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class VuFindHighlighter implements HighlighterInterface
+class VuFindHighlighter extends HtmlHighlighter
 {
     public const DEFAULT_SCHEME = 'http';
-
-    /**
-     * Url highlight html highlighter
-     *
-     * @var HtmlHighlighter
-     */
-    private $_htmlHighlighter;
 
     /**
      * Proxy url helper
@@ -63,39 +54,24 @@ class VuFindHighlighter implements HighlighterInterface
     /**
      * Constructor
      *
-     * @param ProxyUrl        $proxyUrl        Proxy url helper
-     * @param HtmlHighlighter $htmlHighlighter Default html highlighter
+     * @param ProxyUrl $proxyUrl Proxy url helper
      */
-    public function __construct(ProxyUrl $proxyUrl, HtmlHighlighter $htmlHighlighter)
+    public function __construct(ProxyUrl $proxyUrl)
     {
-        $this->_htmlHighlighter = $htmlHighlighter;
         $this->_proxyUrl = $proxyUrl;
+        parent::__construct(self::DEFAULT_SCHEME);
     }
 
     /**
-     * Return html highlighted url with proxy
+     * Return url with proxy
      *
      * @param UrlMatch $match url highlight match
      *
      * @return string
      */
-    public function getHighlight(UrlMatch $match): string
+    protected function getLink(UrlMatch $match): string
     {
-        $link = LinkHelper::getLink($match, self::DEFAULT_SCHEME);
-        $linkProxy = $this->_proxyUrl->__invoke($link);
-        $linkSafeQuot = str_replace('"', '%22', $linkProxy);
-        return sprintf('<a href="%s">%s</a>', $linkSafeQuot, $match->getFullMatch());
-    }
-
-    /**
-     * Filter already highlighted urls
-     *
-     * @param string $string string after highlighter applied
-     *
-     * @return string
-     */
-    public function filterOverhighlight(string $string): string
-    {
-        return $this->_htmlHighlighter->filterOverhighlight($string);
+        $link = parent::getLink($match);
+        return $this->_proxyUrl->__invoke($link);
     }
 }
