@@ -27,7 +27,6 @@
  */
 namespace VuFind\Sitemap\Plugin\Index;
 
-use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
 
 /**
@@ -84,12 +83,14 @@ abstract class AbstractIdFetcher
      * @param string $backend       Search backend ID
      * @param string $currentOffset String representing progress through set
      * @param int    $countPerPage  Page size
+     * @param array  $filters      Filters to apply to the search
      *
      * @return array
      */
     abstract public function getIdsFromBackend(
         string $backend,
         string $currentOffset,
-        int $countPerPage
+        int $countPerPage,
+        array $filters = []
     ): array;
 }

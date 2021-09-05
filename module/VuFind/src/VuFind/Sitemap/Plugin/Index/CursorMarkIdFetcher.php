@@ -27,7 +27,6 @@
  */
 namespace VuFind\Sitemap\Plugin\Index;
 
-use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
@@ -96,13 +95,15 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
      * @param string $backend      Search backend ID
      * @param string $cursorMark   String representing progress through set
      * @param int    $countPerPage Page size
+     * @param array  $filters      Filters to apply to the search
      *
      * @return array
      */
     public function getIdsFromBackend(
         string $backend,
         string $cursorMark,
-        int $countPerPage
+        int $countPerPage,
+        array $filters = []
     ): array {
         // If the previous cursor mark matches the current one, we're finished!
         if ($cursorMark === $this->prevCursorMark) {
@@ -125,6 +126,10 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
                 'cursorMark' => $cursorMark
             ]
         );
+        // Apply filters:
+        foreach ($filters as $filter) {
+            $params->add('fq', $filter);
+        }
         $results = $this->searchService->getIds(
             $backend,
             new Query('*:*'),
