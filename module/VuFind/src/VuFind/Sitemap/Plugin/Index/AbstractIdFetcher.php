@@ -91,6 +91,6 @@ abstract class AbstractIdFetcher
         string $backend,
         string $currentOffset,
         int $countPerPage,
-        array $filters = []
+        array $filters
     ): array;
 }

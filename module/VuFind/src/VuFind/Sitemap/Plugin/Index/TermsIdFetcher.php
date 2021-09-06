@@ -81,7 +81,7 @@ class TermsIdFetcher extends AbstractIdFetcher
         string $backend,
         string $lastTerm,
         int $countPerPage,
-        array $filters = []
+        array $filters
     ): array {
         if (!empty($filters)) {
             throw new \Exception('extraFilters[] option incompatible with terms');

@@ -103,7 +103,7 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
         string $backend,
         string $cursorMark,
         int $countPerPage,
-        array $filters = []
+        array $filters
     ): array {
         // If the previous cursor mark matches the current one, we're finished!
         if ($cursorMark === $this->prevCursorMark) {
