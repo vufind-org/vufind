@@ -70,6 +70,61 @@
 #
 # ...etc.
 #
+# ExtraParams allows extra parameters to be (conditionally) added to the Solr search
+# request:
+#
+# ExtraParams:
+#   - param: bf
+#     value: "recip(rord(publishDateSort),1,1000,1000)"
+#     conditions:
+#       - NoBoost
+#       - NoBoostQuery
+#       - NoBoostFunction
+#       - SearchTypeIn:
+#         - AllFields
+#         - Title
+#         - Author
+#       - SearchTypeNotIn:
+#         - Series
+#
+# Value can be a single string or a list of strings to repeat the parameter.
+#
+# Available conditions:
+#
+# - NoBoost: None of the search types specifies a boost of their own in DismaxParams
+# - NoBoostQuery: None of the search types specifies a boost query of their own in
+#   DismaxParams
+# - NoBoostFunction: None of the search types specifies a boost function of their own
+#   in DismaxParams
+# - SearchTypeIn: One of the search types must be in the given list
+# - SearchTypeNotIn: None of the search types must be in the given list
+#
+# Note that conditions are processed in the order of occurrence. SearchTypeNotIn is
+# skipped if a previous match for has been found with SearchTypeIn, and vice versa.
+#
+# Example: Boost more recent material if any of the search fields is of type
+# "AllFields" or "Title":
+#
+# ExtraParams:
+#   - param: bf
+#     value: "recip(ms(NOW/DAY,publishDateSort),1,1000,1000)"
+#     conditions:
+#       - SearchTypeIn:
+#         - AllFields
+#         - Title
+#
+#
+# Example: Boost material in English if any of the search fields is of type
+# "AllFields" unless any of the search fields is of type "year":
+#
+# ExtraParams:
+#   - param: bq
+#     value: "language:English^100"
+#     conditions:
+#       - SearchTypeNotIn: year
+#       - SearchTypeIn: AllFields
+#
+#
 #-----------------------------------------------------------------------------------
 #
 # Within the QueryFields area, fields are OR'd together, unless they're in an

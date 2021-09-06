@@ -581,4 +581,151 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $processedQ = $response->get('q');
         $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "foo\"bar"))', $processedQ[0]);
     }
+
+    /**
+     * Test generation with ExtraParams
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithExtraParams()
+    {
+        $testSets = [
+            [
+                'description' => 'Single value',
+                'ExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo'
+                    ]
+                ],
+                'expected1' => [
+                    'bq' => ['a:foo']
+                ],
+                'expected2' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+            [
+                'description' => 'Two values',
+                'ExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => [
+                            'a:foo',
+                            'a:bar'
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bq' => [
+                        'a:foo',
+                        'a:bar'
+                    ]
+                ],
+                'expected2' => [
+                    'bq' => [
+                        'a:foo',
+                        'a:bar'
+                    ]
+                ],
+            ],
+            [
+                'description' => 'Value with SearchTypeIn condition',
+                'ExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SearchTypeIn' => [
+                                    'test'
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bq' => ['a:foo']
+                ],
+                'expected2' => [
+                    'bq' => null
+                ]
+            ],
+            [
+                'description' => 'Value with SearchTypeNotIn condition',
+                'ExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SearchTypeNotIn' => [
+                                    'test'
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bq' => null
+                ],
+                'expected2' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+            [
+                'description' => 'Value with NoBoostFunction condition',
+                'ExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            'NoBoostFunction'
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bq' => null
+                ],
+                'expected2' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+        ];
+
+        $q1 = new Query('q', 'test');
+        $q2 = new Query('q', 'test2');
+
+        foreach ($testSets as $testSet) {
+            $qb = new QueryBuilder(
+                [
+                    'test' => [
+                        'DismaxFields' => ['a'],
+                        'DismaxParams' => [
+                            ['bf', 'a:filter']
+                        ]
+                    ],
+                    'ExtraParams' => $testSet['ExtraParams']
+                ]
+            );
+            $response = $qb->build($q1);
+            foreach ($testSet['expected1'] as $field => $expected) {
+                $values = $response->get($field);
+                $this->assertEquals(
+                    $expected,
+                    $values,
+                    $testSet['description'] . ' - query 1'
+                );
+            }
+            $response = $qb->build($q2);
+            foreach ($testSet['expected2'] as $field => $expected) {
+                $values = $response->get($field);
+                $this->assertEquals(
+                    $expected,
+                    $values,
+                    $testSet['description'] . ' - query 2'
+                );
+            }
+        }
+    }
 }

@@ -71,6 +71,13 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
+     * Extra Solr query parameters
+     *
+     * @var array
+     */
+    protected $extraParams = [];
+
+    /**
      * Solr fields to highlight. Also serves as a flag for whether to perform
      * highlight-specific behavior; if the field list is empty, highlighting is
      * skipped.
@@ -154,10 +161,12 @@ class QueryBuilder implements QueryBuilderInterface
                     $oldString = $string;
                     $string = $handler->createBoostQueryString($string);
 
-                    // If a boost was added, we don't want to highlight based on
-                    // the boost query, so we should use the non-boosted version:
-                    if ($highlight && $oldString != $string) {
-                        $params->set('hl.q', $oldString);
+                    if ($string !== $oldString) {
+                        // If a boost was added, we don't want to highlight based on
+                        // the boost query, so we should use the non-boosted version:
+                        if ($highlight) {
+                            $params->set('hl.q', $oldString);
+                        }
                     }
                 }
             } elseif ($handler->hasDismax()) {
@@ -180,7 +189,134 @@ class QueryBuilder implements QueryBuilderInterface
         }
         $params->set('q', $string);
 
+        // Handle any extra parameters:
+        foreach ($this->extraParams as $extraParam) {
+            if (empty($extraParam['param']) || empty($extraParam['value'])) {
+                continue;
+            }
+            if (!$this->checkParamConditions($query, $extraParam['conditions'] ?? [])
+            ) {
+                continue;
+            }
+            foreach ((array)$extraParam['value'] as $value) {
+                $params->add($extraParam['param'], $value);
+            }
+        }
+
         return $params;
+    }
+
+    /**
+     * Check if the conditions match for an extra parameter
+     *
+     * @param AbstractQuery $query      Search query
+     * @param array         $conditions Required conditions
+     *
+     * @return bool
+     */
+    protected function checkParamConditions(
+        AbstractQuery $query,
+        array $conditions
+    ): bool {
+        if (empty($conditions)) {
+            return true;
+        }
+        $searchTypes = $this->getSearchTypes($query);
+        $searchTypeOk = null;
+        foreach ($conditions as $condition) {
+            if (is_array($condition)) {
+                $values = reset($condition);
+                $condition = key($condition);
+                switch ($condition) {
+                case 'SearchTypeIn':
+                    if (null === $searchTypeOk) {
+                        $searchTypeOk = !empty(
+                            array_intersect((array)$values, $searchTypes)
+                        );
+                        if (!$searchTypeOk) {
+                            return false;
+                        }
+                    }
+                    break;
+                case 'SearchTypeNotIn':
+                    if (null === $searchTypeOk) {
+                        if (!empty(array_intersect((array)$values, $searchTypes))) {
+                            return false;
+                        }
+                    }
+                    break;
+                default:
+                    throw new \Exception("Unknown parameter condition: $condition");
+                }
+            } else {
+                switch ($condition) {
+                case 'NoBoost':
+                    if ($this->hasDismaxParamsField($searchTypes, 'bf')
+                        || $this->hasDismaxParamsField($searchTypes, 'bq')
+                    ) {
+                        return false;
+                    }
+                    break;
+                case 'NoBoostFunction':
+                    if ($this->hasDismaxParamsField($searchTypes, 'bf')) {
+                        return false;
+                    }
+                    break;
+                case 'NoBoostQuery':
+                    if ($this->hasDismaxParamsField($searchTypes, 'bq')) {
+                        return false;
+                    }
+                    break;
+                default:
+                    throw new \Exception("Unknown parameter condition: $condition");
+                }
+            }
+        }
+        return null !== $searchTypeOk ? $searchTypeOk : true;
+    }
+
+    /**
+     * Check if any of the given search types has the field in DismaxParams
+     *
+     * @param array  $searchTypes Search types to check
+     * @param string $field       Field to check for
+     *
+     * @return bool
+     */
+    protected function hasDismaxParamsField(array $searchTypes, string $field): bool
+    {
+        foreach ($searchTypes as $searchType) {
+            if ($handler = $this->getSearchHandler($searchType, '')) {
+                foreach ($handler->getDismaxParams() as $param) {
+                    if (reset($param) === $field) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get an array of search types used in the given search
+     *
+     * @param AbstractQuery $query Query
+     *
+     * @return array
+     */
+    protected function getSearchTypes(AbstractQuery $query): array
+    {
+        $types = [];
+        if ($query instanceof QueryGroup) {
+            foreach ($query->getQueries() as $innerQuery) {
+                $types = array_merge(
+                    $types,
+                    $this->getSearchTypes($innerQuery)
+                );
+            }
+            return array_unique($types);
+        }
+        return [$query->getHandler()];
     }
 
     /**
@@ -241,6 +377,10 @@ class QueryBuilder implements QueryBuilderInterface
     public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
+            if ('ExtraParams' === $handler) {
+                $this->extraParams = $spec;
+                continue;
+            }
             if (isset($spec['ExactSettings'])) {
                 $this->exactSpecs[strtolower($handler)] = new SearchHandler(
                     $spec['ExactSettings'],
