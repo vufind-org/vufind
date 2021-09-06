@@ -83,6 +83,13 @@ trait MarcAdvancedTrait
     ];
 
     /**
+     * Type to export in getXML().
+     *
+     * @var string
+     */
+    protected $xmlType = 'Bibliographic';
+
+    /**
      * Get access restriction notes for the record.
      *
      * @return array
