@@ -104,24 +104,7 @@ JS;
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
-          <ul class="breadcrumb hidden-print">
-            <?php if(is_array($this->layout()->breadcrumbs)): ?>
-              <?php if(count($this->layout()->breadcrumbs) > 1): ?>
-                <?=$this->render('breadcrumbs/multi.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title' => $this->layout()->title,
-                    'from' => $this->layout()->from
-                  ]) ?>
-              <?php else: ?>
-                <?=$this->render('breadcrumbs/default.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title' => $this->layout()->title
-                  ]) ?>
-              <?php endif; ?>
-            <?php else: ?>
-              <?=$this->layout()->breadcrumbs ?>
-            <?php endif; ?>
-          </ul>
+          <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
         <?php endif; ?>
       </div>
     </nav>

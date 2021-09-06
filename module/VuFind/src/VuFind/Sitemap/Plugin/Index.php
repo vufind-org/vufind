@@ -67,6 +67,13 @@ class Index extends AbstractGeneratorPlugin
     protected $countPerPage;
 
     /**
+     * Search filters
+     *
+     * @var string[]
+     */
+    protected $filters;
+
+    /**
      * Constructor
      *
      * @param array                   $backendSettings Settings specifying which
@@ -74,15 +81,18 @@ class Index extends AbstractGeneratorPlugin
      * @param Index\AbstractIdFetcher $idFetcher       The helper object for
      * retrieving IDs
      * @param int                     $countPerPage    Page size for data retrieval
+     * @param string[]                $filters         Search filters
      */
     public function __construct(
         array $backendSettings,
         Index\AbstractIdFetcher $idFetcher,
-        int $countPerPage
+        int $countPerPage,
+        array $filters = []
     ) {
         $this->backendSettings = $backendSettings;
         $this->idFetcher = $idFetcher;
         $this->countPerPage = $countPerPage;
+        $this->filters = $filters;
     }
 
     /**
@@ -120,7 +130,8 @@ class Index extends AbstractGeneratorPlugin
                 $result = $this->idFetcher->getIdsFromBackend(
                     $current['id'],
                     $offset,
-                    $this->countPerPage
+                    $this->countPerPage,
+                    $this->filters
                 );
                 foreach ($result['ids'] as $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));

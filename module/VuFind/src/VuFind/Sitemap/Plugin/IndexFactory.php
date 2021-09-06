@@ -72,7 +72,8 @@ class IndexFactory implements FactoryInterface
         return new $requestedName(
             $this->getBackendSettings($sitemapConfig),
             $this->getIdFetcher($container, $retrievalMode),
-            $sitemapConfig->Sitemap->countPerPage ?? 10000
+            $sitemapConfig->Sitemap->countPerPage ?? 10000,
+            (array)($sitemapConfig->Sitemap->extraFilters ?? [])
         );
     }
 

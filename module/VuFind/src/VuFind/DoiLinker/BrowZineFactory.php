@@ -67,11 +67,10 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backend = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('BrowZine');
+        $search = $container->get(\VuFindSearch\Service::class);
         $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('BrowZine');
         $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
-        return new $requestedName($backend->getConnector(), $config);
+        return new $requestedName($search, $config);
     }
 }

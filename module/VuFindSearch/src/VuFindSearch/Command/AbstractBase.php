@@ -28,7 +28,9 @@
  */
 namespace VuFindSearch\Command;
 
+use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Exception\LogicException;
+use VuFindSearch\Exception\RuntimeException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -92,11 +94,11 @@ abstract class AbstractBase implements CommandInterface
     }
 
     /**
-     * Return name of target backend.
+     * Return target backend identifier.
      *
      * @return string
      */
-    public function getTargetBackendName(): string
+    public function getTargetIdentifier(): string
     {
         return $this->backend;
     }
@@ -114,6 +116,23 @@ abstract class AbstractBase implements CommandInterface
         $this->result = $result;
         $this->executed = true;
         return $this;
+    }
+
+    /**
+     * Validate that the provided backend matches the expected target identifier.
+     *
+     * @param BackendInterface $backendInstance Backend instance
+     *
+     * @throws RuntimeException
+     * @return void
+     */
+    protected function validateBackend(BackendInterface $backendInstance): void
+    {
+        if (($backend = $backendInstance->getIdentifier()) !== $this->backend) {
+            throw new RuntimeException(
+                "Expected backend instance $this->backend instead of $backend"
+            );
+        }
     }
 
     /**
