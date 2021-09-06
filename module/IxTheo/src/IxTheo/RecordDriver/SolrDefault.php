@@ -241,11 +241,17 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         $displayString .= ' can. ' . $canonLawRangeStart['canon'];
 
         if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0) {
-            $displayString .= ', §' . $canonLawRangeStart['pars1'];
-            if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2'])
-                $displayString .=  ' n. ' . $canonLawRangeStart['pars2'];
-            else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2'])
-                $displayString .= '-' . $canonLawRangeStart['pars2'];
+            if ($canonLawRangeStart['pars1'] != $canonLawRangeEnd['pars1']) {
+                $displayString .= ', §§' . $canonLawRangeStart['pars1'] . '-' . $canonLawRangeEnd['pars1'];
+            } else {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'];
+                if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2']) {
+                    $displayString .= ' n. ' . $canonLawRangeStart['pars2'];
+                }
+                else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                    $displayString .= '-' . $canonLawRangeStart['pars2'];
+                }
+            }
         }
 
         if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon']) {
