@@ -130,7 +130,7 @@ class Backend extends AbstractBackend
         $limit,
         ParamBag $params = null
     ) {
-        $json = $this->rawJsonSearch(...func_get_args());
+        $json = $this->rawJsonSearch($query, $offset, $limit, $params);
         $collection = $this->createRecordCollection($json);
         $this->injectSourceIdentifier($collection);
 
