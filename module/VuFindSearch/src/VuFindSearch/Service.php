@@ -110,7 +110,7 @@ class Service
         // All other legacy event parameters are accessible via the command object.
         $args = ['command' => $command];
 
-        $backendInstance = $this->resolve($command->getTargetBackendName(), $args);
+        $backendInstance = $this->resolve($command->getTargetIdentifier(), $args);
 
         $this->triggerPre($command, $args);
         try {
@@ -311,7 +311,7 @@ class Service
      */
     protected function legacyInvoke(CommandInterface $command, array $args = [])
     {
-        $backend = $command->getTargetBackendName();
+        $backend = $command->getTargetIdentifier();
         $params = $command->getSearchParameters();
         $context = $command->getContext();
         $args = array_merge(
@@ -356,11 +356,19 @@ class Service
                 $args
             );
             if (!$response->stopped()) {
+                // We need to construct our error message differently depending
+                // on whether or not we have a command object...
+                $context = isset($args['command'])
+                    ? $args['command']->getContext()
+                    : ($args['context'] ?? 'null');
+                $backend = isset($args['command'])
+                    ? $args['command']->getTargetIdentifier()
+                    : ($args['backend'] ?? $backend);
                 throw new Exception\RuntimeException(
                     sprintf(
                         'Unable to resolve backend: %s, %s',
-                        $args['context'],
-                        $args['backend']
+                        $context,
+                        $backend
                     )
                 );
             }

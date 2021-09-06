@@ -142,7 +142,7 @@ class BackendManager
      */
     public function onResolve(EventInterface $e)
     {
-        $name = $e->getParam('command')->getTargetBackendName();
+        $name = $e->getParam('command')->getTargetIdentifier();
         if ($name && $this->has($name)) {
             return $this->get($name);
         }

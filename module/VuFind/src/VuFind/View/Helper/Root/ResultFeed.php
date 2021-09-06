@@ -240,9 +240,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             empty($title) ? $this->translate('Title not available') : $title
         );
         $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordLink');
+        $recordLinker = $this->getView()->plugin('recordLinker');
         try {
-            $url = $serverUrl($recordLink->getUrl($record));
+            $url = $serverUrl($recordLinker->getUrl($record));
         } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.

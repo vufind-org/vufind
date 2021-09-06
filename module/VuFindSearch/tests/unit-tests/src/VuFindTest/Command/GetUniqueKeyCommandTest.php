@@ -54,6 +54,26 @@ class GetUniqueKeyCommandTest extends TestCase
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue('foo'));
+        $command->execute($backend);
+    }
+
+    /**
+     * Test that an error is thrown for mismatched backend IDs.
+     *
+     * @return void
+     */
+    public function testMismatchedBackendId(): void
+    {
+        $command = new GetUniqueKeyCommand('foo', []);
+        $this
+            ->expectExceptionMessage('Expected backend instance foo instead of bar');
+        $backend = $this
+            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
+            ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue('bar'));
         $command->execute($backend);
     }
 
@@ -72,10 +92,11 @@ class GetUniqueKeyCommandTest extends TestCase
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue('bar'));
         $backend->expects($this->once())->method('getConnector')
             ->will($this->returnValue($connector));
         $command = new GetUniqueKeyCommand('bar', []);
-        $command->execute($backend);
-        $this->assertEquals('foo', $command->getResult());
+        $this->assertEquals('foo', $command->execute($backend)->getResult());
     }
 }
