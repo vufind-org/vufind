@@ -212,9 +212,10 @@ class Server
     protected $deleteLifetime = null;
 
     /**
-     * Should we use cursormarks for Solr retrieval? Normally this is the best
+     * Should we use cursorMarks for Solr retrieval? Normally this is the best
      * option, but it is incompatible with some other Solr features and may need
-     * to be disabled in rare circumstances (e.g. when using field collapsing).
+     * to be disabled in rare circumstances (e.g. when using field collapsing/
+     * result grouping).
      *
      * @var bool
      */
@@ -723,8 +724,8 @@ class Server
         }
 
         // Change cursormark behavior if necessary:
-        $cursormark = $config->OAI->use_cursormark ?? true;
-        if (!$cursormark || strtolower($cursormark) === 'false') {
+        $cursor = $config->OAI->use_cursor ?? true;
+        if (!$cursor || strtolower($cursor) === 'false') {
             $this->useCursorMark = false;
         }
     }
