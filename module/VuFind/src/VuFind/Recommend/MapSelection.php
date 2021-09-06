@@ -75,13 +75,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $height;
 
     /**
-     * Map Selection configuration options
-     *
-     * @var array
-     */
-    protected $mapSelectionOptions = [];
-
-    /**
      * Selected coordinates
      *
      * @var string
@@ -141,7 +134,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     {
         $this->searchService = $ss;
         $this->basemapOptions = $basemapOptions;
-        $this->mapSelectionOptions = $mapSelectionOptions;
+        $this->defaultCoordinates = explode(
+            ',',
+            $mapSelectionOptions['default_coordinates']
+        );
+        $this->height = $mapSelectionOptions['height'];
     }
 
     /**
@@ -155,12 +152,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function setConfig($settings)
     {
-        $mapSelectionOptions = $this->mapSelectionOptions;
-        $this->defaultCoordinates = explode(
-            ',',
-            $mapSelectionOptions['default_coordinates']
-        );
-        $this->height = $mapSelectionOptions['height'];
     }
 
     /**
@@ -323,16 +314,14 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         );
         $response = $this->searchService->invoke($command)->getResult();
         $defaultTitle = $this->translate('Title not available');
-        $result = [];
-        foreach ($response->response->docs as $current) {
-            if (!isset($current->title)) {
-                $current->title = $defaultTitle;
-            }
-            $result[] = [
-                $current->id, $current->{$this->geoField}, $current->title
+        $callback = function ($current) use ($defaultTitle) {
+            return [
+                $current->id,
+                $current->{$this->geoField},
+                $current->title ?? $defaultTitle
             ];
-        }
-        return $result;
+        };
+        return array_map($callback, $response->response->docs);
     }
 
     /**
