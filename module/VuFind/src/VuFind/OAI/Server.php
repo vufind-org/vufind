@@ -721,6 +721,12 @@ class Server
         if (isset($config->OAI->delete_lifetime)) {
             $this->deleteLifetime = intval($config->OAI->delete_lifetime);
         }
+
+        // Change cursormark behavior if necessary:
+        $cursormark = $config->OAI->use_cursormark ?? true;
+        if (!$cursormark || strtolower($cursormark) === 'false') {
+            $this->useCursorMark = false;
+        }
     }
 
     /**
