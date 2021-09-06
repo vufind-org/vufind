@@ -1,0 +1,10 @@
+<?php
+    $this->headLink()->appendStylesheet($this->src);
+
+    // Append extra classes
+    if (isset($this->extra['class'])) {
+        $this->icon .= ' ' . $this->extra['class'];
+        $this->attrs = preg_replace('/ class="[^"]+"/', '', $this->attrs);
+    }
+?>
+<span class="icon--font <?=$this->escapeHtmlAttr($this->icon) ?>"<?=$this->attrs ?> role="img" aria-hidden="true"></span>

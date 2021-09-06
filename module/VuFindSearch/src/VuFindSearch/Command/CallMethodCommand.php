@@ -30,7 +30,6 @@ namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Exception\RuntimeException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -112,11 +111,7 @@ abstract class CallMethodCommand extends AbstractBase
      */
     public function execute(BackendInterface $backendInstance): CommandInterface
     {
-        if (($backend = $backendInstance->getIdentifier()) !== $this->backend) {
-            throw new RuntimeException(
-                "Expected backend instance $this->backend instead of $backend"
-            );
-        }
+        $this->validateBackend($backendInstance);
         if (!($backendInstance instanceof $this->interface)
             || !method_exists($this->interface, $this->method)
         ) {
