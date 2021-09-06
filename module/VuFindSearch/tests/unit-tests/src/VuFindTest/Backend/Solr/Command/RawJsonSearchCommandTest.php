@@ -30,7 +30,7 @@ namespace VuFindTest\Backend\Solr\Command;
 
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
-use VuFIndSearch\Query\Query;
+use VuFindSearch\Query\Query;
 
 /**
  * Unit tests for RawJsonSearchCommand.
