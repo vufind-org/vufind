@@ -73,13 +73,15 @@ class WriteDocumentCommand extends \VuFindSearch\Command\AbstractBase
      */
     public function execute(BackendInterface $backend): CommandInterface
     {
+        $this->validateBackend($backend);
         $connector = is_callable([$backend, 'getConnector'])
             ? $backend->getConnector() : null;
         if (!($connector instanceof Connector)) {
-            throw new \Exception('Unexpected connector: ' . get_class($connector));
-        }
-        if (!isset($this->context['doc'])) {
-            throw new \Exception('Missing document');
+            throw new \Exception(
+                $connector === null
+                    ? 'Connector not found'
+                    : 'Unexpected connector: ' . get_class($connector)
+            );
         }
         // If we have a custom timeout, remember the old timeout value and then
         // override it with a different one:
