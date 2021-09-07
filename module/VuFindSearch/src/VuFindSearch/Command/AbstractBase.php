@@ -30,6 +30,7 @@ namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Exception\LogicException;
+use VuFindSearch\Exception\RuntimeException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -41,7 +42,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class AbstractBase implements CommandInterface
+abstract class AbstractBase implements CommandInterface
 {
     /**
      * Search backend identifier
@@ -93,26 +94,45 @@ class AbstractBase implements CommandInterface
     }
 
     /**
-     * Return name of target backend.
+     * Return target backend identifier.
      *
      * @return string
      */
-    public function getTargetBackendName(): string
+    public function getTargetIdentifier(): string
     {
         return $this->backend;
     }
 
     /**
-     * Execute command on backend.
+     * Save a result, flag the command as executed, and return the command object;
+     * useful as the final step in execute() implementations.
      *
-     * @param BackendInterface $backend Backend
+     * @param mixed $result Result of execution.
      *
-     * @return CommandInterface Command instance for method chaining
+     * @return CommandInterface
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    protected function finalizeExecution($result): CommandInterface
     {
+        $this->result = $result;
         $this->executed = true;
         return $this;
+    }
+
+    /**
+     * Validate that the provided backend matches the expected target identifier.
+     *
+     * @param BackendInterface $backendInstance Backend instance
+     *
+     * @throws RuntimeException
+     * @return void
+     */
+    protected function validateBackend(BackendInterface $backendInstance): void
+    {
+        if (($backend = $backendInstance->getIdentifier()) !== $this->backend) {
+            throw new RuntimeException(
+                "Expected backend instance $this->backend instead of $backend"
+            );
+        }
     }
 
     /**

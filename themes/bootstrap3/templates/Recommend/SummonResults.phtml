@@ -5,7 +5,7 @@
       <div class="list-group-item">
         <span>
           <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
-          <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
             <?=$this->record($driver)->getTitleHtml()?>
           </a>
           <?php $summAuthors = $driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>

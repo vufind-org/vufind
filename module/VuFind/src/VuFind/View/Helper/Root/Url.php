@@ -104,6 +104,8 @@ class Url extends \Laminas\View\Helper\Url
             'query' => array_merge($requestQuery, $params),
             'normalize_path' => false, // fix for VUFIND-1392
         ];
-        return ($this)(null, [], $options, $reuseMatchedParams);
+        // If we don't have a route match, direct any url's to default route:
+        $routeName = $this->routeMatch ? null : 'default';
+        return ($this)($routeName, [], $options, $reuseMatchedParams);
     }
 }

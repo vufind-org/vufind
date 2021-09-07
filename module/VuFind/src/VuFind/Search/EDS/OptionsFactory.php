@@ -65,9 +65,9 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $backend = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('EDS');
-        $extra = [$backend->getInfo()];
+        $command = new \VuFindSearch\Backend\EDS\Command\GetInfoCommand();
+        $searchService = $container->get(\VuFindSearch\Service::class);
+        $extra = [$searchService->invoke($command)->getResult()];
         return parent::__invoke($container, $requestedName, $extra);
     }
 }

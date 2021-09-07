@@ -94,7 +94,7 @@
         <span class="badge"><?=$list->cnt ?></span>
       </a>
     <?php endforeach; ?>
-    <a href="<?=$this->url('editList', ['id' => 'NEW'])?>">
+    <a href="<?=$this->url('editList', ['id' => 'NEW'])?>"<?=$this->active == 'editlist/NEW' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Create a List') ?>
     </a>
   </div>

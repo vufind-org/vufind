@@ -28,9 +28,10 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
-use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+use VuFindSearch\Service;
 
 /**
  * Hierarchy Tree Data Source (Solr)
@@ -48,9 +49,16 @@ class Solr extends AbstractBase
     /**
      * Search service
      *
-     * @var Connector
+     * @var Service
      */
-    protected $solrConnector;
+    protected $searchService;
+
+    /**
+     * Search backend ID used for tree generation.
+     *
+     * @var string
+     */
+    protected $backendId;
 
     /**
      * Formatter manager
@@ -90,20 +98,23 @@ class Solr extends AbstractBase
     /**
      * Constructor.
      *
-     * @param Connector        $connector Solr connector
+     * @param Service          $ss        Search service
+     * @param string           $backendId Search backend ID
      * @param FormatterManager $fm        Formatter manager
      * @param string           $cacheDir  Directory to hold cache results (optional)
      * @param array            $filters   Filters to apply to Solr tree queries
      * @param int              $batchSize Number of records retrieved in a batch
      */
     public function __construct(
-        Connector $connector,
+        Service $ss,
+        string $backendId,
         FormatterManager $fm,
         $cacheDir = null,
         $filters = [],
         $batchSize = 1000
     ) {
-        $this->solrConnector = $connector;
+        $this->searchService = $ss;
+        $this->backendId = $backendId;
         $this->formatterManager = $fm;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
@@ -131,14 +142,11 @@ class Solr extends AbstractBase
     /**
      * Get default search parameters shared by cursorMark and legacy methods.
      *
-     * @param string $q Search query
-     *
      * @return array
      */
-    protected function getDefaultSearchParams(string $q): array
+    protected function getDefaultSearchParams(): array
     {
         return [
-            'q'  => [$q],
             'fq' => $this->filters,
             'hl' => ['false'],
             'fl' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
@@ -152,51 +160,41 @@ class Solr extends AbstractBase
      * Search Solr using legacy, non-cursorMark method (sometimes needed for
      * backward compatibility, but usually disabled).
      *
-     * @param string $q    Search query
-     * @param int    $rows Max rows to retrieve
+     * @param Query $query Search query
+     * @param int   $rows  Page size
      *
      * @return array
      */
-    protected function searchSolrLegacy(string $q, int $rows): array
+    protected function searchSolrLegacy(Query $query, $rows): array
     {
-        $params = new ParamBag(
-            $this->getDefaultSearchParams($q) +
-            [
-                'rows' => [$rows], // Integer max
-                'start' => [0]
-            ]
+        $params = new ParamBag($this->getDefaultSearchParams());
+        $command = new RawJsonSearchCommand(
+            $this->backendId,
+            $query,
+            0,
+            $rows,
+            $params
         );
-        $response = $this->solrConnector->search($params);
-        $json = json_decode($response);
+        $json = $this->searchService->invoke($command)->getResult();
         return $json->response->docs ?? [];
     }
 
     /**
-     * Search Solr.
+     * Search Solr using a cursor.
      *
-     * @param string $q    Search query
-     * @param int    $rows Max rows to retrieve (default = int max / 2 since Solr
-     * may choke with higher values)
+     * @param Query $query Search query
+     * @param int   $rows  Page size
      *
      * @return array
      */
-    protected function searchSolr($q, $rows = 1073741823)
+    protected function searchSolrCursor(Query $query, $rows): array
     {
-        // Use legacy method if configured to do so:
-        if ($this->batchSize <= 0) {
-            return $this->searchSolrLegacy($q, $rows);
-        }
-
-        // By default, use cursorMark method:
         $prevCursorMark = '';
         $cursorMark = '*';
         $records = [];
         while ($cursorMark !== $prevCursorMark) {
             $params = new ParamBag(
-                $this->getDefaultSearchParams($q) + [
-                    'rows' => [min([$this->batchSize, $rows])],
-                    // Start is always 0 when using cursorMark
-                    'start' => [0],
+                $this->getDefaultSearchParams() + [
                     // Sort is required
                     'sort' => ['id asc'],
                     // Override any default timeAllowed since it cannot be used with
@@ -205,7 +203,14 @@ class Solr extends AbstractBase
                     'cursorMark' => $cursorMark
                 ]
             );
-            $results = json_decode($this->solrConnector->search($params));
+            $command = new RawJsonSearchCommand(
+                $this->backendId,
+                $query,
+                0, // Start is always 0 when using cursorMark
+                min([$this->batchSize, $rows]),
+                $params
+            );
+            $results = $this->searchService->invoke($command)->getResult();
             if (empty($results->response->docs)) {
                 break;
             }
@@ -217,6 +222,24 @@ class Solr extends AbstractBase
             $cursorMark = $results->nextCursorMark;
         }
         return $records;
+    }
+
+    /**
+     * Search Solr.
+     *
+     * @param string $q    Search query
+     * @param int    $rows Max rows to retrieve (default = int max / 2 since Solr
+     * may choke with higher values)
+     *
+     * @return array
+     */
+    protected function searchSolr($q, $rows = 1073741823): array
+    {
+        $query = new Query($q);
+        // If batch size is zero or negative, use legacy, non-cursor method:
+        return $this->batchSize <= 0
+            ? $this->searchSolrLegacy($query, $rows)
+            : $this->searchSolrCursor($query, $rows);
     }
 
     /**

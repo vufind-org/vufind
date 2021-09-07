@@ -145,7 +145,7 @@ class DeduplicationListener
     public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $params = $command->getSearchParameters();
             $context = $command->getContext();
             $contexts = ['search', 'similar', 'getids', 'workExpressions'];
@@ -194,7 +194,7 @@ class DeduplicationListener
         // Inject deduplication details into record objects:
         $command = $event->getParam('command');
 
-        if ($command->getTargetBackendName() !== $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
         $context = $command->getContext();

@@ -47,7 +47,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
-    use CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -932,8 +932,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param array $cancelDetails An associative array with two keys: patron
      *                             (array returned by the driver's
      *                             patronLogin method) and details (an array
-     *                             of strings eturned by the driver's
-     *                             getCancelHoldDetails method)
+     *                             of strings returned in holds' cancel_details
+     *                             field.
      *
      * @return array                Associative array containing with keys 'count'
      *                                 (number of items successfully cancelled) and
