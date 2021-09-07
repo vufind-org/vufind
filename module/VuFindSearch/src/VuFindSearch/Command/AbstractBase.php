@@ -80,7 +80,7 @@ abstract class AbstractBase implements CommandInterface
     protected $result;
 
     /**
-     * CallMethodCommand constructor.
+     * Constructor.
      *
      * @param string    $backend Search backend identifier
      * @param mixed     $context Command context

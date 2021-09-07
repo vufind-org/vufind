@@ -42,6 +42,8 @@ use VuFind\Solr\Writer;
  */
 class WriterTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\SearchServiceTrait;
+
     /**
      * Test commit
      *
@@ -54,7 +56,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $connector->expects($this->exactly(2))->method('setTimeout')
             ->withConsecutive([60 * 60], [30]);
         $connector->expects($this->once())->method('write')->with($this->isInstanceOf('VuFindSearch\Backend\Solr\Document\CommitDocument'));
-        $writer = new Writer($bm, $this->getMockChangeTracker());
+        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->commit('Solr');
     }
 
@@ -72,9 +74,11 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             ->with(
                 $this->equalTo($commit),
                 $this->equalTo('update'),
-                $this->equalTo(null)
+                $this->callback(function ($params) {
+                    return count($params) === 0;
+                })
             );
-        $writer = new Writer($bm, $this->getMockChangeTracker());
+        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->save('Solr', $commit);
     }
 
@@ -95,7 +99,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('customUpdateHandler'),
                 $this->equalTo($params)
             );
-        $writer = new Writer($bm, $this->getMockChangeTracker());
+        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->save('Solr', $csv, 'customUpdateHandler', $params);
     }
 
@@ -111,7 +115,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $connector->expects($this->exactly(2))->method('setTimeout')
             ->withConsecutive([60 * 60 * 24], [30]);
         $connector->expects($this->once())->method('write')->with($this->isInstanceOf('VuFindSearch\Backend\Solr\Document\OptimizeDocument'));
-        $writer = new Writer($bm, $this->getMockChangeTracker());
+        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->optimize('Solr');
     }
 
@@ -128,7 +132,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             return trim($i->getContent()) == "<?xml version=\"1.0\"?>\n<delete><query>*:*</query></delete>";
         };
         $connector->expects($this->once())->method('write')->with($this->callback($callback));
-        $writer = new Writer($bm, $this->getMockChangeTracker());
+        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->deleteAll('Solr');
     }
 
@@ -148,7 +152,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $ct = $this->getMockChangeTracker();
         $ct->expects($this->exactly(2))->method('markDeleted')
             ->withConsecutive(['biblio', 'foo'], ['biblio', 'bar']);
-        $writer = new Writer($bm, $ct);
+        $writer = new Writer($this->getSearchService($bm), $ct);
         $writer->deleteRecords('Solr', ['foo', 'bar']);
     }
 
