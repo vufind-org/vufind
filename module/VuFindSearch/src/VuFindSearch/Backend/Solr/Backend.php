@@ -32,6 +32,7 @@ use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 
+use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Feature\GetIdsInterface;
@@ -43,7 +44,6 @@ use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 
-use VuFindSearch\Query\Query;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Response\RecordCollectionInterface;
@@ -420,6 +420,44 @@ class Backend extends AbstractBackend
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
+    }
+
+    /**
+     * Write a document to Solr. Return an array of details about the updated index.
+     *
+     * @param DocumentInterface $doc     Document to write
+     * @param ?int              $timeout Timeout value (null for default)
+     * @param string            $handler Handler to use
+     * @param ?ParamBag         $params  Search backend parameters
+     *
+     * @return array
+     */
+    public function writeDocument(
+        DocumentInterface $doc,
+        int $timeout = null,
+        string $handler = 'update',
+        ?ParamBag $params = null
+    ) {
+        $connector = $this->getConnector();
+
+        // If we have a custom timeout, remember the old timeout value and then
+        // override it with a different one:
+        $oldTimeout = null;
+        if (is_int($timeout ?? null)) {
+            $oldTimeout = $connector->getTimeout();
+            $connector->setTimeout($timeout);
+        }
+
+        // Write!
+        $connector->write($doc, $handler ?? 'update', $params);
+
+        // Restore previous timeout value, if necessary:
+        if (null !== $oldTimeout) {
+            $connector->setTimeout($oldTimeout);
+        }
+
+        // Save the core name in the results in case the caller needs it.
+        return ['core' => $connector->getCore()];
     }
 
     /**
