@@ -82,7 +82,7 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('input text'))
             ->willReturn('Text with highlighted urls');
 
-        $actual = $this->linkify->__invoke('input text');
+        $actual = ($this->linkify)('input text');
         $this->assertSame('Text with highlighted urls', $actual);
     }
 }
