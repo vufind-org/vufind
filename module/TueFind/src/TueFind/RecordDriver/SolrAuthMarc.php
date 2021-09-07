@@ -360,4 +360,17 @@ class SolrAuthMarc extends SolrAuthDefault {
 
         return $relations;
     }
+
+    public function isFamily(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('v');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'pif')
+                    return true;
+            }
+        }
+        return false;
+    }
 }
