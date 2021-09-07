@@ -69,9 +69,15 @@ class SolrAuthMarc extends SolrAuthDefault {
 
                 $urlSubfield = $field->getSubfield('u');
 
-                if ($nameSubfield !== false && $urlSubfield !== false)
-                    $references[] = ['title' => $nameSubfield->getData(),
-                                     'url' => $urlSubfield->getData()];
+                if ($nameSubfield !== false && $urlSubfield !== false) {
+                    $url = $urlSubfield->getData();
+                    $title = $nameSubfield->getData();
+                    if ($title == 'Wikipedia')
+                        $url = preg_replace('"&(oldid|diff)=[^&]+"', '', $url);
+
+                    $references[] = ['title' => $title,
+                                     'url' => $url];
+                }
             }
         }
         $references = array_merge($references, $this->getBeaconReferences());
