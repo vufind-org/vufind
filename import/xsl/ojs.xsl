@@ -7,6 +7,7 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">OJS</xsl:param>
+    <xsl:param name="id_selector">identifier</xsl:param>
     <xsl:param name="change_tracking_core">biblio</xsl:param>
     <xsl:param name="change_tracking_date_selector"></xsl:param>
     <xsl:param name="workKey_include_regEx"></xsl:param>
@@ -32,7 +33,7 @@
                 <!-- ID -->
                 <!-- Important: This relies on an <identifier> tag being injected by the OAI-PMH harvester. -->
                 <field name="id">
-                    <xsl:value-of select="identifier"/>
+                    <xsl:value-of select="*[local-name()=$id_selector]"/>
                 </field>
 
                 <!-- RECORD FORMAT -->
@@ -151,7 +152,7 @@
                         <xsl:value-of select="php:function('VuFind::getFirstIndexed', $change_tracking_core, normalize-space(string(identifier)), normalize-space(*[local-name()=$change_tracking_date_selector]))" />
                     </field>
                     <field name="last_indexed">
-                        <xsl:value-of select="php:function('VuFind::getLastIndexed', $change_tracking_core, normalize-space(string(identifier)), normalize-space(*[local-name()=$change_tracking_date_selector]))" />
+                        <xsl:value-of select="php:function('VuFind::getLastIndexed', $change_tracking_core, normalize-space(string(*[local-name()=$id_selector])), normalize-space(*[local-name()=$change_tracking_date_selector]))" />
                     </field>
                 </xsl:if>
             </doc>
