@@ -13,13 +13,27 @@
     <xsl:param name="workKey_include_regEx"></xsl:param>
     <xsl:param name="workKey_exclude_regEx"></xsl:param>
     <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
+    <xsl:template match="/">
+        <xsl:if test="collection">
+            <collection>
+            <xsl:for-each select="collection">
+                <xsl:for-each select="oai_dc:dc">
+                    <xsl:apply-templates select="."/>
+                </xsl:for-each>
+            </xsl:for-each>
+            </collection>
+        </xsl:if>
+        <xsl:if test="oai_dc:dc">
+            <xsl:apply-templates/>
+        </xsl:if>
+    </xsl:template>
     <xsl:template match="oai_dc:dc">
         <add>
             <doc>
                 <!-- ID -->
                 <!-- Important: This relies on an <identifier> tag being injected by the OAI-PMH harvester. -->
                 <field name="id">
-                    <xsl:value-of select="//identifier"/>
+                    <xsl:value-of select="identifier"/>
                 </field>
 
                 <!-- RECORD FORMAT -->
@@ -28,13 +42,13 @@
                 <!-- FULLRECORD -->
                 <!-- disabled for now; records are so large that they cause memory problems!
                 <field name="fullrecord">
-                    <xsl:copy-of select="php:function('VuFind::xmlAsText', //oai_dc:dc)"/>
+                    <xsl:copy-of select="php:function('VuFind::xmlAsText', .)"/>
                 </field>
                   -->
 
                 <!-- ALLFIELDS -->
                 <field name="allfields">
-                    <xsl:value-of select="normalize-space(string(//oai_dc:dc))"/>
+                    <xsl:value-of select="normalize-space(string(.))"/>
                 </field>
 
                 <!-- INSTITUTION -->
@@ -48,8 +62,8 @@
                 </field>
 
                 <!-- LANGUAGE -->
-                <xsl:if test="//dc:language">
-                    <xsl:for-each select="//dc:language">
+                <xsl:if test="dc:language">
+                    <xsl:for-each select="dc:language">
                         <xsl:if test="string-length() > 0">
                             <field name="language">
                                 <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map_iso639-1.properties')"/>
@@ -66,8 +80,8 @@
                 -->
 
                 <!-- SUBJECT -->
-                <xsl:if test="//dc:subject">
-                    <xsl:for-each select="//dc:subject">
+                <xsl:if test="dc:subject">
+                    <xsl:for-each select="dc:subject">
                         <xsl:if test="string-length() > 0">
                             <field name="topic">
                                 <xsl:value-of select="normalize-space()"/>
@@ -77,29 +91,29 @@
                 </xsl:if>
 
                 <!-- DESCRIPTION -->
-                <xsl:if test="//dc:description">
+                <xsl:if test="dc:description">
                     <field name="description">
-                        <xsl:value-of select="//dc:description" />
+                        <xsl:value-of select="dc:description" />
                     </field>
                 </xsl:if>
 
                 <!-- ADVISOR / CONTRIBUTOR -->
-                <xsl:if test="//dc:contributor[normalize-space()]">
+                <xsl:if test="dc:contributor[normalize-space()]">
                     <field name="author2">
-                        <xsl:value-of select="//dc:contributor[normalize-space()]" />
+                        <xsl:value-of select="dc:contributor[normalize-space()]" />
                     </field>
                 </xsl:if>
 
                 <!-- TYPE -->
-                <xsl:if test="//dc:type">
+                <xsl:if test="dc:type">
                     <field name="format">
-                        <xsl:value-of select="//dc:type" />
+                        <xsl:value-of select="dc:type" />
                     </field>
                 </xsl:if>
 
                 <!-- AUTHOR -->
-                <xsl:if test="//dc:creator">
-                    <xsl:for-each select="//dc:creator">
+                <xsl:if test="dc:creator">
+                    <xsl:for-each select="dc:creator">
                         <xsl:if test="normalize-space()">
                             <field name="author">
                                 <xsl:value-of select="normalize-space()"/>
@@ -115,41 +129,41 @@
                 </xsl:if>
 
                 <!-- TITLE -->
-                <xsl:if test="//dc:title[normalize-space()]">
+                <xsl:if test="dc:title[normalize-space()]">
                     <field name="title">
-                        <xsl:value-of select="//dc:title[normalize-space()]"/>
+                        <xsl:value-of select="dc:title[normalize-space()]"/>
                     </field>
                     <field name="title_short">
-                        <xsl:value-of select="//dc:title[normalize-space()]"/>
+                        <xsl:value-of select="dc:title[normalize-space()]"/>
                     </field>
                     <field name="title_full">
-                        <xsl:value-of select="//dc:title[normalize-space()]"/>
+                        <xsl:value-of select="dc:title[normalize-space()]"/>
                     </field>
                     <field name="title_sort">
-                        <xsl:value-of select="php:function('VuFind::stripArticles', string(//dc:title[normalize-space()]))"/>
+                        <xsl:value-of select="php:function('VuFind::stripArticles', string(dc:title[normalize-space()]))"/>
                     </field>
                 </xsl:if>
 
                 <!-- PUBLISHER -->
-                <xsl:if test="//dc:publisher[normalize-space()]">
+                <xsl:if test="dc:publisher[normalize-space()]">
                     <field name="publisher">
-                        <xsl:value-of select="//dc:publisher[normalize-space()]"/>
+                        <xsl:value-of select="dc:publisher[normalize-space()]"/>
                     </field>
                 </xsl:if>
 
                 <!-- PUBLISHDATE -->
-                <xsl:if test="//dc:date">
+                <xsl:if test="dc:date">
                     <field name="publishDate">
-                        <xsl:value-of select="substring(//dc:date, 1, 4)"/>
+                        <xsl:value-of select="substring(dc:date, 1, 4)"/>
                     </field>
                     <field name="publishDateSort">
-                        <xsl:value-of select="substring(//dc:date, 1, 4)"/>
+                        <xsl:value-of select="substring(dc:date, 1, 4)"/>
                     </field>
                 </xsl:if>
 
                 <!-- GEO -->
                 <xsl:if test="$geographic = 'true'">
-                    <xsl:for-each select="//dc:coverage">
+                    <xsl:for-each select="dc:coverage">
                         <xsl:if test="string-length(php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))) > 0">
                             <field name="long_lat">
                                 <xsl:value-of select="php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))" />
@@ -165,7 +179,7 @@
                 </xsl:if>
 
                 <!-- URL -->
-                <xsl:for-each select="//dc:identifier">
+                <xsl:for-each select="dc:identifier">
                     <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
                         <field name="url">
                             <xsl:value-of select="." />
@@ -174,7 +188,7 @@
                 </xsl:for-each>
 
                 <!-- Work Keys -->
-                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //dc:title[normalize-space()], php:function('VuFind::stripArticles', string(//dc:title[normalize-space()])), //dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', dc:title[normalize-space()], php:function('VuFind::stripArticles', string(dc:title[normalize-space()])), dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
                     <field name="work_keys_str_mv">
                         <xsl:value-of select="." />
                     </field>

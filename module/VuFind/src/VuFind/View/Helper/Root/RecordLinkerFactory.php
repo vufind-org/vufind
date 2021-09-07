@@ -1,6 +1,6 @@
 <?php
 /**
- * RecordLink helper factory.
+ * RecordLinker helper factory.
  *
  * PHP version 7
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * RecordLink helper factory.
+ * RecordLinker helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,7 +42,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordLinkFactory implements FactoryInterface
+class RecordLinkerFactory implements FactoryInterface
 {
     /**
      * Create an object

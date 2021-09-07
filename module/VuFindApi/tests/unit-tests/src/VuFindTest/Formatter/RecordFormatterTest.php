@@ -82,11 +82,11 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $hm = new \Laminas\View\HelperPluginManager($container);
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
-        $mockRecordLink
-            = $container->get(\VuFind\View\Helper\Root\RecordLink::class);
-        $mockRecordLink->expects($this->any())->method('getUrl')
+        $mockRecordLinker
+            = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
+        $mockRecordLinker->expects($this->any())->method('getUrl')
             ->will($this->returnValue('http://record'));
-        $hm->setService('recordLink', $mockRecordLink);
+        $hm->setService('recordLinker', $mockRecordLinker);
         return $hm;
     }
 

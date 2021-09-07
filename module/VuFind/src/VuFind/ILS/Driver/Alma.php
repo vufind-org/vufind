@@ -47,7 +47,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
-    use CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use TranslatorAwareTrait;
 
     /**
