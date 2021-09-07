@@ -173,6 +173,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getUrl', 'getTimeout', 'setTimeout', 'write'])
             ->getMock();
         $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));
+        $mockBackend->expects($this->any())->method('getIdentifier')->will($this->returnValue('Solr'));
         $mockConnector->expects($this->any())->method('getTimeout')->will($this->returnValue(30));
         $mockConnector->expects($this->any())->method('getUrl')->will($this->returnValue('http://localhost:8983/solr/biblio'));
         $sm->setService('Solr', $mockBackend);
