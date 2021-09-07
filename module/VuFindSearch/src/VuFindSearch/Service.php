@@ -112,14 +112,15 @@ class Service
 
         $backendInstance = $this->resolve($command->getTargetIdentifier(), $args);
 
-        $this->triggerPre($command, $args);
+        $this->triggerPre($this, $args);
         try {
             $command->execute($backendInstance);
         } catch (BackendException $e) {
-            $this->triggerError($e, $args);
+            $args['error'] = $e;
+            $this->triggerError($this, $args);
             throw $e;
         }
-        $this->triggerPost($command, $args);
+        $this->triggerPost($this, $args);
 
         return $command;
     }
@@ -326,6 +327,7 @@ class Service
         try {
             $response = $command->execute($backendInstance)->getResult();
         } catch (BackendException $e) {
+            $args['error'] = $e;
             $this->triggerError($e, $args);
             throw $e;
         }
@@ -380,20 +382,21 @@ class Service
     /**
      * Trigger the error event.
      *
-     * @param BackendException $exception Error exception
-     * @param array            $args      Event arguments
+     * @param mixed $target Service instance, or error exception for deprecated
+     *                      legacy events
+     * @param array $args   Event arguments
      *
      * @return void
      */
-    public function triggerError(BackendException $exception, $args)
+    public function triggerError($target, $args)
     {
-        $this->getEventManager()->trigger(self::EVENT_ERROR, $exception, $args);
+        $this->getEventManager()->trigger(self::EVENT_ERROR, $target, $args);
     }
 
     /**
      * Trigger the pre event.
      *
-     * @param mixed $target Command object, or backend instance for deprecated
+     * @param mixed $target Service instance, or backend instance for deprecated
      *                      legacy events
      * @param array $args   Event arguments
      *
@@ -407,7 +410,7 @@ class Service
     /**
      * Trigger the post event.
      *
-     * @param mixed $target Command object, or backend response for deprecated
+     * @param mixed $target Service instance, or backend response for deprecated
      *                      legacy events
      * @param array $args   Event arguments
      *
