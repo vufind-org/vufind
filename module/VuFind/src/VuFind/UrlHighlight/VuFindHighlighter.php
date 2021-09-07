@@ -1,6 +1,6 @@
 <?php
 /**
- * Provide url formatted as HTML and prefixed with proxy if applicable
+ * Provide URL formatted as HTML and prefixed with proxy if applicable
  *
  * PHP version 7
  *
@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  UrlHighlight
  * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -32,10 +32,10 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
- * Provide url formatted as HTML and prefixed with proxy if applicable
+ * Provide URL formatted as HTML and prefixed with proxy if applicable
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  UrlHighlight
  * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -49,7 +49,7 @@ class VuFindHighlighter extends HtmlHighlighter
      *
      * @var ProxyUrl
      */
-    private $_proxyUrl;
+    protected $proxyUrl;
 
     /**
      * Constructor
@@ -58,7 +58,7 @@ class VuFindHighlighter extends HtmlHighlighter
      */
     public function __construct(ProxyUrl $proxyUrl)
     {
-        $this->_proxyUrl = $proxyUrl;
+        $this->proxyUrl = $proxyUrl;
         parent::__construct(self::DEFAULT_SCHEME);
     }
 
@@ -72,6 +72,6 @@ class VuFindHighlighter extends HtmlHighlighter
     protected function getLink(UrlMatch $match): string
     {
         $link = parent::getLink($match);
-        return $this->_proxyUrl->__invoke($link);
+        return ($this->proxyUrl)($link);
     }
 }
