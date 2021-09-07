@@ -243,6 +243,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0) {
             if ($canonLawRangeStart['pars1'] != $canonLawRangeEnd['pars1']) {
                 $displayString .= ', §§' . $canonLawRangeStart['pars1'] . '-' . $canonLawRangeEnd['pars1'];
+            }  else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'] . ' n. ' . $canonLawRangeStart['pars2'] . '-' . $canonLawRangeEnd['pars2'];
             } else {
                 $displayString .= ', §' . $canonLawRangeStart['pars1'];
                 if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2']) {
