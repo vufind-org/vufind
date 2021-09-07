@@ -1,6 +1,6 @@
 <?php
 /**
- * Linkify a string so that the links become clickable HTML
+ * Linkify helper factory
  *
  * PHP version 7
  *
@@ -21,54 +21,55 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
 use VStelmakh\UrlHighlight\UrlHighlight;
+use VuFind\UrlHighlight\VuFindHighlighter;
 
 /**
- * Linkify a string so that the links become clickable HTML
+ * Linkify helper factory
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Linkify extends AbstractHelper
+class LinkifyFactory implements FactoryInterface
 {
     /**
-     * Url highlighter
+     * Create an object
      *
-     * @var UrlHighlight
+     * @param ContainerInterface $container     Service Manager
+     * @param string             $requestedName Service being created
+     * @param array|null         $options       Extra options (optional)
+     *
+     * @return object|Linkify
+     *
+     * @throws \Exception
      */
-    protected $urlHighlight;
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
 
-    /**
-     * Constructor
-     *
-     * @param UrlHighlight $urlHighlight Url highlighter
-     */
-    public function __construct(UrlHighlight $urlHighlight)
-    {
-        $this->urlHighlight = $urlHighlight;
-    }
+        $proxyUrl = $container->get('ViewHelperManager')->get('proxyUrl');
 
-    /**
-     * Replace urls and emails by html tags
-     *
-     * @param string $string String to linkify (must be HTML-escaped)
-     *
-     * @return string
-     */
-    public function __invoke(string $string): string
-    {
-        return $this->urlHighlight->highlightUrls($string);
+        $highlighter = new VuFindHighlighter($proxyUrl);
+        $encoder = new HtmlSpecialcharsEncoder();
+        $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
+
+        return new Linkify($urlHighlight);
     }
 }

@@ -34,7 +34,7 @@ return [
             'VuFind\View\Helper\Root\Ils' => 'VuFind\View\Helper\Root\IlsFactory',
             'VuFind\View\Helper\Root\JsTranslations' => 'VuFind\View\Helper\Root\JsTranslationsFactory',
             'VuFind\View\Helper\Root\KeepAlive' => 'VuFind\View\Helper\Root\KeepAliveFactory',
-            'VuFind\View\Helper\Root\Linkify' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Root\Linkify' => 'VuFind\View\Helper\Root\LinkifyFactory',
             'VuFind\View\Helper\Root\LocalizedNumber' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Markdown' => 'VuFind\View\Helper\Root\MarkdownFactory',
             'VuFind\View\Helper\Root\Matomo' => 'VuFind\View\Helper\Root\MatomoFactory',
