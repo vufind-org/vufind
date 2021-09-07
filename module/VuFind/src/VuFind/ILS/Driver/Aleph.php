@@ -491,6 +491,14 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $languages = [];
 
     /**
+     * Regex for extracting position in queue from status in holdings.
+     *
+     * @var string
+     */
+    protected $queuePositionRegex = "/Waiting in position "
+        . "(?<position>[0-9]+) in queue;/";
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
@@ -583,6 +591,9 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         }
         if (isset($this->config['Catalog']['default_patron_id'])) {
             $this->defaultPatronId = $this->config['Catalog']['default_patron_id'];
+        }
+        if (isset($this->config['Catalog']['queue_position_regex'])) {
+            $this->queuePositionRegex = $this->config['Catalog']['queue_position_regex'];
         }
         if (isset($this->config['Languages'])) {
             foreach ($this->config['Languages'] as $locale => $lang) {
@@ -1284,52 +1295,53 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $delete = $item->xpath('@delete');
             $href = $item->xpath('@href');
             $item_id = substr($href[0], strrpos($href[0], '/') + 1);
-            if ((string)$z37->{'z37-request-type'} == "Hold Request" || true) {
-                $type = "hold";
-                //$docno = (string) $z37->{'z37-doc-number'};
-                //$itemseq = (string) $z37->{'z37-item-sequence'};
-                $seq = (string)$z37->{'z37-sequence'};
-                $location = (string)$z37->{'z37-pickup-location'};
-                $reqnum = (string)$z37->{'z37-doc-number'}
-                    . (string)$z37->{'z37-item-sequence'}
-                    . (string)$z37->{'z37-sequence'};
-                $expire = (string)$z37->{'z37-end-request-date'};
-                $create = (string)$z37->{'z37-open-date'};
-                $holddate = (string)$z37->{'z37-hold-date'};
-                $title = (string)$z13->{'z13-title'};
-                $author = (string)$z13->{'z13-author'};
-                $isbn = (string)$z13->{'z13-isbn-issn'};
-                $barcode = (string)$z30->{'z30-barcode'};
-                $status = (string)$z37->{'z37-status'};
-                if ($holddate == "00000000") {
-                    $holddate = null;
-                } else {
-                    $holddate = $this->parseDate($holddate);
-                }
-                $delete = ($delete[0] == "Y");
-                // Secondary, Aleph-specific identifier that may be useful for
-                // local customizations
-                $adm_id = (string)$z30->{'z30-doc-number'};
-
-                $holdList[] = [
-                    'type' => $type,
-                    'item_id' => $item_id,
-                    'adm_id'   => $adm_id,
-                    'location' => $location,
-                    'title' => $title,
-                    'author' => $author,
-                    'isbn' => $isbn,
-                    'reqnum' => $reqnum,
-                    'barcode' => $barcode,
-                    'id' => $this->barcodeToID($barcode),
-                    'expire' => $this->parseDate($expire),
-                    'holddate' => $holddate,
-                    'delete' => $delete,
-                    'create' => $this->parseDate($create),
-                    'status' => $status,
-                    'position' => ltrim($seq, '0')
-                ];
+            $type = "hold";
+            $location = (string)$z37->{'z37-pickup-location'};
+            $reqnum = (string)$z37->{'z37-doc-number'}
+                . (string)$z37->{'z37-item-sequence'}
+                . (string)$z37->{'z37-sequence'};
+            $expire = (string)$z37->{'z37-end-request-date'};
+            $create = (string)$z37->{'z37-open-date'};
+            $holddate = (string)$z37->{'z37-hold-date'};
+            $title = (string)$z13->{'z13-title'};
+            $author = (string)$z13->{'z13-author'};
+            $isbn = (string)$z13->{'z13-isbn-issn'};
+            $barcode = (string)$z30->{'z30-barcode'};
+            // remove superfluous spaces in status
+            $status = preg_replace("/\s[\s]+/", " ", $item->status);
+            $position = null;
+            // Extract position in the hold queue from item status
+            if (preg_match($this->queuePositionRegex, $status, $matches)) {
+                $position = $matches['position'];
             }
+            if ($holddate == "00000000") {
+                $holddate = null;
+            } else {
+                $holddate = $this->parseDate($holddate);
+            }
+            $delete = ($delete[0] == "Y");
+            // Secondary, Aleph-specific identifier that may be useful for
+            // local customizations
+            $adm_id = (string)$z30->{'z30-doc-number'};
+
+            $holdList[] = [
+                'type' => $type,
+                'item_id' => $item_id,
+                'adm_id'   => $adm_id,
+                'location' => $location,
+                'title' => $title,
+                'author' => $author,
+                'isbn' => $isbn,
+                'reqnum' => $reqnum,
+                'barcode' => $barcode,
+                'id' => $this->barcodeToID($barcode),
+                'expire' => $this->parseDate($expire),
+                'holddate' => $holddate,
+                'delete' => $delete,
+                'create' => $this->parseDate($create),
+                'status' => $status,
+                'position' => $position,
+            ];
         }
         return $holdList;
     }
