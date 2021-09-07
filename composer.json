@@ -25,6 +25,7 @@
         "laminas/laminas-cache": "2.13.0",
         "laminas/laminas-cache-storage-adapter-blackhole": "^1.0",
         "laminas/laminas-cache-storage-adapter-filesystem": "^1.0",
+        "laminas/laminas-cache-storage-adapter-memory": "^1.0",
         "laminas/laminas-captcha": "2.10.0",
         "laminas/laminas-code": "3.5.1",
         "laminas/laminas-config": "3.5.0",

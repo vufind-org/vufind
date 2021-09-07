@@ -73,14 +73,19 @@ class TermsIdFetcher extends AbstractIdFetcher
      * @param string $backend      Search backend ID
      * @param string $lastTerm     String representing progress through set
      * @param int    $countPerPage Page size
+     * @param array  $filters      Filters to apply to the search
      *
      * @return array
      */
     public function getIdsFromBackend(
         string $backend,
         string $lastTerm,
-        int $countPerPage
+        int $countPerPage,
+        array $filters
     ): array {
+        if (!empty($filters)) {
+            throw new \Exception('extraFilters[] option incompatible with terms');
+        }
         $getKeyCommand = new GetUniqueKeyCommand($backend, []);
         $key = $this->searchService->invoke($getKeyCommand)->getResult();
         $termsCommand = new TermsCommand($backend, $key, $lastTerm, $countPerPage);

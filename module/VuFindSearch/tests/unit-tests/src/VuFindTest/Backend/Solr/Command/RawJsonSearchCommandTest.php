@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for GetUniqueKeyCommand.
+ * Unit tests for RawJsonSearchCommand.
  *
  * PHP version 7
  *
@@ -26,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindTest\Command;
+namespace VuFindTest\Backend\Solr\Command;
 
 use PHPUnit\Framework\TestCase;
-use VuFindSearch\Command\GetUniqueKeyCommand;
+use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
+use VuFindSearch\Query\Query;
 
 /**
- * Unit tests for GetUniqueKeyCommand.
+ * Unit tests for RawJsonSearchCommand.
  *
  * @category VuFind
  * @package  Search
@@ -40,7 +41,7 @@ use VuFindSearch\Command\GetUniqueKeyCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetUniqueKeyCommandTest extends TestCase
+class RawJsonSearchCommandTest extends TestCase
 {
     /**
      * Test that an error is thrown for unsupported backends.
@@ -49,31 +50,13 @@ class GetUniqueKeyCommandTest extends TestCase
      */
     public function testUnsupportedBackend(): void
     {
-        $command = new GetUniqueKeyCommand('foo', []);
-        $this->expectExceptionMessage('Unsupported backend');
+        $command = new RawJsonSearchCommand('foo', new Query());
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue('foo'));
-        $command->execute($backend);
-    }
-
-    /**
-     * Test that an error is thrown for mismatched backend IDs.
-     *
-     * @return void
-     */
-    public function testMismatchedBackendId(): void
-    {
-        $command = new GetUniqueKeyCommand('foo', []);
-        $this
-            ->expectExceptionMessage('Expected backend instance foo instead of bar');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+        $this->expectExceptionMessage('foo does not support rawJsonSearch()');
         $command->execute($backend);
     }
 
@@ -84,19 +67,16 @@ class GetUniqueKeyCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->once())->method('getUniqueKey')
-            ->will($this->returnValue('foo'));
+        $query = new Query();
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
-        $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
-        $command = new GetUniqueKeyCommand('bar', []);
-        $this->assertEquals('foo', $command->execute($backend)->getResult());
+            ->will($this->returnValue('Solr'));
+        $backend->expects($this->once())->method('rawJsonSearch')
+            ->with($this->equalTo($query), $this->equalTo(0), $this->equalTo(100))
+            ->will($this->returnValue('[1, 2, 3]'));
+        $command = new RawJsonSearchCommand('Solr', $query, 0, 100);
+        $this->assertEquals([1, 2, 3], $command->execute($backend)->getResult());
     }
 }

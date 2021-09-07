@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for GetUniqueKeyCommand.
+ * Unit tests for GetLuceneHelperCommand.
  *
  * PHP version 7
  *
@@ -29,10 +29,10 @@
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
-use VuFindSearch\Command\GetUniqueKeyCommand;
+use VuFindSearch\Command\GetLuceneHelperCommand;
 
 /**
- * Unit tests for GetUniqueKeyCommand.
+ * Unit tests for GetLuceneHelperCommand.
  *
  * @category VuFind
  * @package  Search
@@ -40,7 +40,7 @@ use VuFindSearch\Command\GetUniqueKeyCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetUniqueKeyCommandTest extends TestCase
+class GetLuceneHelperCommandTest extends TestCase
 {
     /**
      * Test that an error is thrown for unsupported backends.
@@ -49,14 +49,13 @@ class GetUniqueKeyCommandTest extends TestCase
      */
     public function testUnsupportedBackend(): void
     {
-        $command = new GetUniqueKeyCommand('foo', []);
-        $this->expectExceptionMessage('Unsupported backend');
+        $command = new GetLuceneHelperCommand('foo');
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue('foo'));
-        $command->execute($backend);
+        $this->assertFalse($command->execute($backend)->getResult());
     }
 
     /**
@@ -66,7 +65,7 @@ class GetUniqueKeyCommandTest extends TestCase
      */
     public function testMismatchedBackendId(): void
     {
-        $command = new GetUniqueKeyCommand('foo', []);
+        $command = new GetLuceneHelperCommand('foo');
         $this
             ->expectExceptionMessage('Expected backend instance foo instead of bar');
         $backend = $this
@@ -84,19 +83,22 @@ class GetUniqueKeyCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
+        $helper = $this
+            ->getMockBuilder(\VuFindSearch\Backend\Solr\LuceneSyntaxHelper::class)
             ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->once())->method('getUniqueKey')
-            ->will($this->returnValue('foo'));
+        $qb = $this
+            ->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
+            ->disableOriginalConstructor()->getMock();
+        $qb->expects($this->once())->method('GetLuceneHelper')
+            ->will($this->returnValue($helper));
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue('bar'));
-        $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
-        $command = new GetUniqueKeyCommand('bar', []);
-        $this->assertEquals('foo', $command->execute($backend)->getResult());
+        $backend->expects($this->once())->method('getQueryBuilder')
+            ->will($this->returnValue($qb));
+        $command = new GetLuceneHelperCommand('bar', []);
+        $this->assertEquals($helper, $command->execute($backend)->getResult());
     }
 }

@@ -1,10 +1,10 @@
 <?php
 /**
- * Solr Hierarchy tree data source plugin factory.
+ * Icon helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,36 +20,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  HierarchyTree_DataSource
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Hierarchy\TreeDataSource;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Solr Hierarchy tree data source plugin factory.
+ * Icon helper factory.
  *
  * @category VuFind
- * @package  HierarchyTree_DataSource
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class IconFactory implements FactoryInterface
 {
-    /**
-     * Search backend identifier.
-     *
-     * @var string
-     */
-    protected $backendId = 'Solr';
-
     /**
      * Create an object
      *
@@ -69,29 +65,19 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
-            ->getCacheDir(false);
-        $hierarchyFilters = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('HierarchyDefault');
-        $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
-          ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
-          : [];
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $batchSize = $config->Index->cursor_batch_size ?? 1000;
-        $searchService = $container->get(\VuFindSearch\Service::class);
-        $formatterManager = $container
-            ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
+        $config = $container->get(\VuFindTheme\ThemeInfo::class)
+            ->getMergedConfig('icons', true);
+        $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+            ->createFromArrayConfiguration(['name' => 'memory', 'options' => []]);
+        $helpers = $container->get('ViewHelperManager');
         return new $requestedName(
-            $searchService,
-            $this->backendId,
-            $formatterManager,
-            rtrim($cacheDir, '/') . '/hierarchy',
-            $filters,
-            $batchSize
+            $config,
+            $cache,
+            $helpers->get('escapeHtmlAttr'),
+            $helpers->get('headLink')
         );
     }
 }

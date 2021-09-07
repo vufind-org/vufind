@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Get the backend's unique search key field (currently only supported by Solr)
+ * Command to fetch a Lucene helper object from a search backend.
  *
  * PHP version 7
  *
@@ -29,9 +29,10 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 
 /**
- * Get the backend's unique search key field (currently only supported by Solr)
+ * Command to fetch a Lucene helper object from a search backend.
  *
  * @category VuFind
  * @package  Search
@@ -39,8 +40,18 @@ use VuFindSearch\Backend\BackendInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetUniqueKeyCommand extends AbstractBase
+class GetLuceneHelperCommand extends \VuFindSearch\Command\AbstractBase
 {
+    /**
+     * Constructor.
+     *
+     * @param string $backend Search backend identifier
+     */
+    public function __construct(string $backend)
+    {
+        parent::__construct($backend, []);
+    }
+
     /**
      * Execute command on backend.
      *
@@ -51,12 +62,12 @@ class GetUniqueKeyCommand extends AbstractBase
     public function execute(BackendInterface $backend): CommandInterface
     {
         $this->validateBackend($backend);
-        if (is_callable([$backend, 'getConnector'])) {
-            $connector = $backend->getConnector();
-            if (is_callable([$connector, 'getUniqueKey'])) {
-                return $this->finalizeExecution($connector->getUniqueKey());
-            }
-        }
-        throw new \Exception('Unsupported backend.');
+        $qb = is_callable([$backend, 'getQueryBuilder'])
+            ? $backend->getQueryBuilder() : false;
+        $result = $qb && is_callable([$qb, 'getLuceneHelper'])
+            ? $qb->getLuceneHelper() : false;
+        return $this->finalizeExecution(
+            $result instanceof LuceneSyntaxHelper ? $result : false
+        );
     }
 }

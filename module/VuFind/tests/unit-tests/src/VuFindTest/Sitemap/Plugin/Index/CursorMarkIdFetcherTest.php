@@ -138,25 +138,32 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a function to test that a GetIdsCommand is as expected.
      *
-     * @param string $expectedCursorMark Expected cursor mark
+     * @param string   $expectedCursorMark Expected cursor mark
+     * @param string[] $expectedFq         Expected filter query
      *
      * @return callable
      */
-    protected function getIdsExpectation(string $expectedCursorMark)
-    {
-        return function ($command) use ($expectedCursorMark) {
-            $expectedParams = new \VuFindSearch\ParamBag(
-                [
-                    'q' => '*:*',
-                    'rows' => $this->countPerPage,
-                    'start' => 0,
-                    'wt' => 'json',
-                    'sort' => $this->uniqueKey . ' asc',
-                    'timeAllowed' => -1,
-                    'cursorMark' => $expectedCursorMark,
-                ]
+    protected function getIdsExpectation(
+        string $expectedCursorMark,
+        array $expectedFq = []
+    ) {
+        return function ($command) use ($expectedCursorMark, $expectedFq) {
+            $expectedParams = [
+                'q' => '*:*',
+                'rows' => $this->countPerPage,
+                'start' => 0,
+                'wt' => 'json',
+                'sort' => $this->uniqueKey . ' asc',
+                'timeAllowed' => -1,
+                'cursorMark' => $expectedCursorMark,
+            ];
+            if (!empty($expectedFq)) {
+                $expectedParams['fq'] = $expectedFq;
+            }
+            $this->assertEquals(
+                new \VuFindSearch\ParamBag($expectedParams),
+                $command->getSearchParameters()
             );
-            $this->assertEquals($expectedParams, $command->getSearchParameters());
             $this->assertInstanceOf(GetIdsCommand::class, $command);
             return true;
         };
@@ -196,7 +203,8 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             $fetcher->getIdsFromBackend(
                 $this->backendId,
                 $fetcher->getInitialOffset(),
-                $this->countPerPage
+                $this->countPerPage,
+                []
             )
         );
         // Second iteration
@@ -205,7 +213,8 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             $fetcher->getIdsFromBackend(
                 $this->backendId,
                 'nextCursor',
-                $this->countPerPage
+                $this->countPerPage,
+                []
             )
         );
         // If we send the same cursor mark a second time, we should get no results...
@@ -214,7 +223,40 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             $fetcher->getIdsFromBackend(
                 $this->backendId,
                 'nextCursor',
-                $this->countPerPage
+                $this->countPerPage,
+                []
+            )
+        );
+    }
+
+    /**
+     * Test passing filters.
+     *
+     * @return void
+     */
+    public function testWithFilters(): void
+    {
+        $records = new RecordCollection(['nextCursorMark' => 'nextCursor']);
+        $expectedIds = $this->addRecordsToCollection($records);
+        $service = $this->getMockService();
+        $fq = ['format:Book'];
+
+        // Set up all the expected commands...
+        $service->expects($this->once())->method('invoke')
+            ->with($this->isInstanceOf(GetUniqueKeyCommand::class))
+            ->will($this->returnValue($this->getMockKeyCommand()));
+        $service->expects($this->once())->method('legacyInvoke')
+            ->with($this->callback($this->getIdsExpectation('*', $fq)))
+            ->will($this->returnValue($records));
+        $fetcher = new CursorMarkIdFetcher($service);
+        // Initial iteration
+        $this->assertEquals(
+            ['ids' => $expectedIds, 'nextOffset' => 'nextCursor'],
+            $fetcher->getIdsFromBackend(
+                $this->backendId,
+                $fetcher->getInitialOffset(),
+                $this->countPerPage,
+                $fq
             )
         );
     }
