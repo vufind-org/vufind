@@ -28,7 +28,7 @@
  */
 namespace VuFind\Recommend;
 
-use VuFindSearch\Backend\Solr\Command\GetLuceneHelperCommand;
+use VuFindSearch\Command\GetLuceneHelperCommand;
 use VuFindSearch\Service;
 
 /**

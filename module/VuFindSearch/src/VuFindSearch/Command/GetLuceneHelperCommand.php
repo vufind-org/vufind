@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Command to fetch a Lucene helper object from the Solr backend.
+ * Command to fetch a Lucene helper object from a search backend.
  *
  * PHP version 7
  *
@@ -26,13 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Backend\Solr\Command;
+namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Command\CommandInterface;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 
 /**
- * Command to fetch a Lucene helper object from the Solr backend.
+ * Command to fetch a Lucene helper object from a search backend.
  *
  * @category VuFind
  * @package  Search
@@ -61,10 +61,13 @@ class GetLuceneHelperCommand extends \VuFindSearch\Command\AbstractBase
      */
     public function execute(BackendInterface $backend): CommandInterface
     {
+        $this->validateBackend($backend);
         $qb = is_callable([$backend, 'getQueryBuilder'])
             ? $backend->getQueryBuilder() : false;
         $result = $qb && is_callable([$qb, 'getLuceneHelper'])
             ? $qb->getLuceneHelper() : false;
-        return $this->finalizeExecution($result);
+        return $this->finalizeExecution(
+            $result instanceof LuceneSyntaxHelper ? $result : false
+        );
     }
 }

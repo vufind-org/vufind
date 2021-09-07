@@ -218,6 +218,8 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($helper));
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->any())->method('getIdentifier')
+            ->will($this->returnValue('Solr'));
         $backend->expects($this->any())->method('getQueryBuilder')
             ->will($this->returnValue($queryBuilder));
         $container = new \VuFindTest\Container\MockContainer($this);
