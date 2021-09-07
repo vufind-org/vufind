@@ -48,7 +48,7 @@ class Linkify extends AbstractHelper
      *
      * @var UrlHighlight
      */
-    private $_urlHighlight;
+    protected $urlHighlight;
 
     /**
      * Constructor
@@ -57,7 +57,7 @@ class Linkify extends AbstractHelper
      */
     public function __construct(UrlHighlight $urlHighlight)
     {
-        $this->_urlHighlight = $urlHighlight;
+        $this->urlHighlight = $urlHighlight;
     }
 
     /**
@@ -69,6 +69,6 @@ class Linkify extends AbstractHelper
      */
     public function __invoke(string $string): string
     {
-        return $this->_urlHighlight->highlightUrls($string);
+        return $this->urlHighlight->highlightUrls($string);
     }
 }
