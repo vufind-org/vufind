@@ -33,6 +33,7 @@ use Laminas\Http\Response;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\ParamBag;
@@ -373,6 +374,36 @@ class BackendTest extends TestCase
         $back->expects($this->once())->method('search')
             ->will($this->returnValue('dummy'));
         $this->assertEquals('dummy', $back->random(new Query('foo'), 1, $params));
+    }
+
+    /**
+     * Test writeDocument
+     *
+     * @return void
+     */
+    public function testWriteDocument()
+    {
+        $doc = new CommitDocument();
+        $connector = $this->getConnectorMock(
+            ['write', 'getUrl', 'getTimeout', 'setTimeout']
+        );
+        $connector->expects($this->once())->method('write')
+            ->with(
+                $this->equalTo($doc),
+                $this->equalTo('update'),
+                $this->isNull()
+            );
+        $connector->expects($this->once())->method('getUrl')
+            ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
+        $connector->expects($this->once())->method('getTimeout')
+            ->will($this->returnValue(30));
+        $connector->expects($this->exactly(2))->method('setTimeout')
+            ->withConsecutive([60], [30]);
+        $backend = new Backend($connector);
+        $this->assertEquals(
+            ['core' => 'biblio'],
+            $backend->writeDocument($doc, 60)
+        );
     }
 
     /// Internal API

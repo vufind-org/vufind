@@ -83,6 +83,13 @@ trait MarcAdvancedTrait
     ];
 
     /**
+     * Type to export in getXML().
+     *
+     * @var string
+     */
+    protected $xmlType = 'Bibliographic';
+
+    /**
      * Get access restriction notes for the record.
      *
      * @return array
@@ -889,7 +896,7 @@ trait MarcAdvancedTrait
                 'http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd',
                 'http://www.w3.org/2001/XMLSchema-instance'
             );
-            $xml->record->addAttribute('type', 'Bibliographic');
+            $xml->record->addAttribute('type', $this->xmlType);
             return $xml->record->asXML();
         }
 

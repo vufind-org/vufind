@@ -212,6 +212,16 @@ class Server
     protected $deleteLifetime = null;
 
     /**
+     * Should we use cursorMarks for Solr retrieval? Normally this is the best
+     * option, but it is incompatible with some other Solr features and may need
+     * to be disabled in rare circumstances (e.g. when using field collapsing/
+     * result grouping).
+     *
+     * @var bool
+     */
+    protected $useCursorMark = true;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -712,6 +722,12 @@ class Server
         if (isset($config->OAI->delete_lifetime)) {
             $this->deleteLifetime = intval($config->OAI->delete_lifetime);
         }
+
+        // Change cursormark behavior if necessary:
+        $cursor = $config->OAI->use_cursor ?? true;
+        if (!$cursor || strtolower($cursor) === 'false') {
+            $this->useCursorMark = false;
+        }
     }
 
     /**
@@ -816,7 +832,15 @@ class Server
 
         // Figure out how many non-deleted records we need to display:
         $recordLimit = ($params['cursor'] + $this->pageSize) - $currentCursor;
-        $cursorMark = $params['cursorMark'] ?? '';
+        // Depending on cursormark mode, we either need to get the latest mark or
+        // else calculate a Solr offset.
+        if ($this->useCursorMark) {
+            $offset = $cursorMark = $params['cursorMark'] ?? '';
+        } else {
+            $cursorMark = ''; // always empty for checks below
+            $offset = ($currentCursor >= $deletedCount)
+                ? $currentCursor - $deletedCount : 0;
+        }
         $format = $params['metadataPrefix'];
 
         // Get non-deleted records from the Solr index:
@@ -824,7 +848,7 @@ class Server
         $result = $this->listRecordsGetNonDeleted(
             $from,
             $until,
-            $cursorMark,
+            $offset,
             $recordLimit,
             $format,
             $set
@@ -968,19 +992,20 @@ class Server
     /**
      * Get an array of information on non-deleted records in the specified range.
      *
-     * @param int    $from       Start date.
-     * @param int    $until      End date.
-     * @param string $cursorMark cursorMark for the position in the full result list.
-     * @param int    $limit      Max number of full records to return.
-     * @param string $format     Requested record format
-     * @param string $set        Set to limit to (empty string for none).
+     * @param int    $from   Start date.
+     * @param int    $until  End date.
+     * @param mixed  $offset Solr offset, or cursorMark for the position in the full
+     * result list (depending on settings).
+     * @param int    $limit  Max number of full records to return.
+     * @param string $format Requested record format
+     * @param string $set    Set to limit to (empty string for none).
      *
      * @return \VuFind\Search\Base\Results Search result object.
      */
     protected function listRecordsGetNonDeleted(
         $from,
         $until,
-        $cursorMark,
+        $offset,
         $limit,
         $format,
         $set = ''
@@ -1021,8 +1046,12 @@ class Server
         }
 
         // Perform a Solr search:
-        $results->overrideStartRecord(1);
-        $results->setCursorMark($cursorMark);
+        if ($this->useCursorMark) {
+            $results->overrideStartRecord(1);
+            $results->setCursorMark($offset);
+        } else {
+            $results->overrideStartRecord($offset + 1);
+        }
 
         // Return our results:
         return $results;

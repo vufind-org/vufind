@@ -67,8 +67,6 @@ class SwitchQueryFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class)
-        );
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }
