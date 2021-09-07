@@ -56,7 +56,7 @@ class WriteDocumentCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue('foo'));
-        $this->expectExceptionMessage('Connector not found');
+        $this->expectExceptionMessage('foo does not support writeDocument()');
         $command->execute($backend);
     }
 
@@ -68,28 +68,14 @@ class WriteDocumentCommandTest extends TestCase
     public function testSupportedBackend(): void
     {
         $doc = new CommitDocument();
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->once())->method('write')
-            ->with(
-                $this->equalTo($doc),
-                $this->equalTo('update'),
-                $this->equalTo(new \VuFindSearch\ParamBag([]))
-            );
-        $connector->expects($this->once())->method('getUrl')
-            ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
-        $connector->expects($this->once())->method('getTimeout')
-            ->will($this->returnValue(30));
-        $connector->expects($this->exactly(2))->method('setTimeout')
-            ->withConsecutive([60], [30]);
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue('Solr'));
-        $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
+        $backend->expects($this->once())->method('writeDocument')
+            ->with($this->equalTo($doc), $this->equalTo(60), $this->equalTo('update'))
+            ->will($this->returnValue(['core' => 'biblio']));
         $command = new WriteDocumentCommand('Solr', $doc, 60);
         $this->assertEquals(
             ['core' => 'biblio'],
