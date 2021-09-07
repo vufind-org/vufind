@@ -167,6 +167,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $pm = new BackendManager($sm);
         $mockBackend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()
+            ->onlyMethods(['getConnector', 'getIdentifier'])
             ->getMock();
         $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->disableOriginalConstructor()
