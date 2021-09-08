@@ -22,7 +22,6 @@
  * @category VuFind
  * @package  Theme
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -72,7 +71,6 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
                 return strtolower(substr($name, strlen($prefix)));
             }
         }
-
-        return parent::inflectName($name);
+        return strtolower($name);
     }
 }
