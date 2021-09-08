@@ -46,21 +46,21 @@ class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
     /**
      * Constructor.
      *
-     * @param string            $backend Search backend identifier
-     * @param DocumentInterface $doc     Document to write
-     * @param ?int              $timeout Timeout value (null for default)
-     * @param string            $handler Handler to use
-     * @param ?ParamBag         $params  Search backend parameters
+     * @param string            $backendId Search backend identifier
+     * @param DocumentInterface $doc       Document to write
+     * @param ?int              $timeout   Timeout value (null for default)
+     * @param string            $handler   Handler to use
+     * @param ?ParamBag         $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         DocumentInterface $doc,
         int $timeout = null,
         string $handler = 'update',
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'writeDocument',
             [$doc, $timeout, $handler],

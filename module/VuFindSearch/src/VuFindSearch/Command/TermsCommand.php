@@ -45,21 +45,21 @@ class TermsCommand extends CallMethodCommand
     /**
      * Constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param string    $field   Index field
-     * @param string    $start   Starting term (blank for beginning of list)
-     * @param int       $limit   Maximum number of terms
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param string    $field     Index field
+     * @param string    $start     Starting term (blank for beginning of list)
+     * @param int       $limit     Maximum number of terms
+     * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         string $field,
         string $start,
         int $limit,
         ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class, // we should define interface, if needed in more places
             'terms',
             [$field, $start, $limit],

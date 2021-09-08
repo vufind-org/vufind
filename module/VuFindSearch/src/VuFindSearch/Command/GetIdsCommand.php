@@ -50,21 +50,21 @@ class GetIdsCommand extends CallMethodCommand
     /**
      * GetIdsCommand constructor.
      *
-     * @param string         $backend Search backend identifier
-     * @param QueryInterface $query   Search query
-     * @param int            $offset  Search offset
-     * @param int            $limit   Search limit
-     * @param ?ParamBag      $params  Search backend parameters
+     * @param string         $backendId Search backend identifier
+     * @param QueryInterface $query     Search query
+     * @param int            $offset    Search offset
+     * @param int            $limit     Search limit
+     * @param ?ParamBag      $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         QueryInterface $query,
         int $offset = 0,
         int $limit = 20,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             GetIdsInterface::class,
             'getIds',
             [$query, $offset, $limit],
@@ -77,16 +77,16 @@ class GetIdsCommand extends CallMethodCommand
     /**
      * Execute command on backend.
      *
-     * @param BackendInterface $backendInstance Backend instance
+     * @param BackendInterface $backend Backend
      *
      * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance): CommandInterface
+    public function execute(BackendInterface $backend): CommandInterface
     {
-        if (!($backendInstance instanceof GetIdsInterface)) {
+        if (!($backend instanceof GetIdsInterface)) {
             $this->interface = BackendInterface::class;
             $this->method = 'search';
         }
-        return parent::execute($backendInstance);
+        return parent::execute($backend);
     }
 }

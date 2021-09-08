@@ -781,7 +781,7 @@ class SearchServiceMock extends \VuFindSearch\Service
      *
      * @return Service
      */
-    protected function resolve($backend, $args)
+    protected function resolve($backendId, $args)
     {
         return $this->backend;
     }

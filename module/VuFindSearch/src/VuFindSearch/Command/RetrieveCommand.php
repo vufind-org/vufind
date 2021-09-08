@@ -48,17 +48,17 @@ class RetrieveCommand extends CallMethodCommand
     /**
      * RetrieveCommand constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param string    $id      Record identifier
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param string    $id        Record identifier
+     * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         string $id,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             BackendInterface::class,
             'retrieve',
             [$id],

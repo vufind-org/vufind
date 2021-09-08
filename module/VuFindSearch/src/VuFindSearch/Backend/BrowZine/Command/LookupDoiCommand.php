@@ -44,13 +44,13 @@ class LookupDoiCommand extends \VuFindSearch\Command\CallMethodCommand
     /**
      * Constructor
      *
-     * @param string $backend Search backend identifier
-     * @param string $doi     DOI to look up
+     * @param string $backendId Search backend identifier
+     * @param string $doi       DOI to look up
      */
-    public function __construct(string $backend, string $doi)
+    public function __construct(string $backendId, string $doi)
     {
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'lookupDoi',
             [$doi],
