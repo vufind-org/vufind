@@ -41,6 +41,9 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
             if (isset($parameters['deathYear']))
                 $filters['P570'] = ['value' => $parameters['deathYear'], 'type' => 'year'];
 
+            if (count($filters) == 0)
+                throw new \Exception('No suitable image found (at least one additional filter must be given!)');
+
             foreach ($searches as $search) {
                 try {
                     $entities = $this->wikidata()->searchAndGetEntities($search, $language);
