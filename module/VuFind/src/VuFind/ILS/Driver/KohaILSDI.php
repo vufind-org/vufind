@@ -50,7 +50,7 @@ use VuFind\Exception\ILS as ILSException;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
-    use \VuFind\Cache\CacheTrait {
+    use CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -1119,15 +1119,16 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $row = $sql = $sqlStmt = '';
         try {
             $id = $patron['id'];
-            $sql = "SELECT al.amount*100 as amount, " .
-                   "al.amountoutstanding*100 as balance, al.accounttype as fine, " .
-                   "al.date as createdat, items.biblionumber as id, " .
-                   "al.description as title, issues.date_due as duedate, " .
-                   "issues.issuedate as issuedate " .
-                   "FROM `accountlines` al " .
-                   "LEFT JOIN items USING (itemnumber) " .
-                   "LEFT JOIN issues USING (issue_id) " .
-                   "WHERE al.borrowernumber = :id ";
+            $sql = "SELECT al.amount*100 as amount, "
+                . "al.amountoutstanding*100 as balance, "
+                . "COALESCE(al.credit_type_code, al.debit_type_code) as fine, "
+                . "al.date as createdat, items.biblionumber as id, "
+                . "al.description as title, issues.date_due as duedate, "
+                . "issues.issuedate as issuedate "
+                . "FROM `accountlines` al "
+                . "LEFT JOIN items USING (itemnumber) "
+                . "LEFT JOIN issues USING (issue_id) "
+                . "WHERE al.borrowernumber = :id ";
             if (!$this->db) {
                 $this->initDB();
             }
@@ -1135,62 +1136,71 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 switch ($row['fine']) {
-                case 'A':
-                    $fineValue = "Account Management Fee";
+                case 'ACCOUNT':
+                    $fineValue = 'Account creation fee';
                     break;
-                case 'C':
-                    $fineValue = "Credit";
+                case 'ACCOUNT_RENEW':
+                    $fineValue = 'Account renewal fee';
                     break;
-                case "CR":
-                    $fineValue = "Credit for Returning Lost Book";
+                case 'LOST':
+                    $fineValue = 'Lost item';
                     break;
-                case "Copie":
-                    $fineValue = "Copier Fee";
+                case 'MANUAL':
+                    $fineValue = 'Manual fee';
                     break;
-                case 'F':
-                    $fineValue = "Overdue Fine";
+                case 'NEW_CARD':
+                    $fineValue = 'New card';
                     break;
-                case "FFOR":
-                    $fineValue = "Forgiven Overdue Fine";
+                case 'OVERDUE':
+                    $fineValue = 'Fine';
                     break;
-                case "FOR":
-                    $fineValue = "Forgiven";
+                case 'PROCESSING':
+                    $fineValue = 'Lost item processing fee';
                     break;
-                case "FU":
-                    $fineValue = "Overdue Fine";
+                case 'RENT':
+                    $fineValue = 'Rental fee';
                     break;
-                case 'L':
-                    $fineValue = "Lost Item";
+                case 'RENT_DAILY':
+                    $fineValue = 'Daily rental fee';
                     break;
-                case "LR":
-                    $fineValue = "Lost and Returned";
+                case 'RENT_RENEW':
+                    $fineValue = 'Renewal of rental item';
                     break;
-                case 'M':
-                    $fineValue = "Sundry";
+                case 'RENT_DAILY_RENEW':
+                    $fineValue = 'Renewal of daily rental item';
                     break;
-                case 'N':
-                    $fineValue = "New Card";
+                case 'RESERVE':
+                    $fineValue = 'Hold fee';
                     break;
-                case 'O':
-                    $fineValue = "Overdue Fine";
+                case 'RESERVE_EXPIRED':
+                    $fineValue = 'Hold waiting too long';
                     break;
-                case "Pay":
-                    $fineValue = "Payment";
+                case 'Payout':
+                    $fineValue = 'Payout';
                     break;
-                case "REF":
-                    $fineValue = "Refund";
+                case 'PAYMENT':
+                    $fineValue = 'Payment';
                     break;
-                case "Rent":
-                    $fineValue = "Rental Fee";
+                case 'WRITEOFF':
+                    $fineValue = 'Writeoff';
                     break;
-                case "Rep":
-                    $fineValue = "Replacement";
+                case 'FORGIVEN':
+                    $fineValue = 'Forgiven';
                     break;
-                case "Res":
-                    $fineValue = "Reserve Charge";
+                case 'CREDIT':
+                    $fineValue = 'Credit';
                     break;
-                case 'W':
-                    $fineValue = "Charge Written Off";
+                case 'LOST_FOUND':
+                    $fineValue = 'Lost item fee refund';
+                    break;
+                case 'OVERPAYMENT':
+                    $fineValue = 'Overpayment refund';
+                    break;
+                case 'REFUND':
+                    $fineValue = 'Refund';
+                    break;
+                case 'CANCELLATION':
+                    $fineValue = 'Cancelled charge';
                     break;
                 default:
                     $fineValue = "Unknown Charge";
