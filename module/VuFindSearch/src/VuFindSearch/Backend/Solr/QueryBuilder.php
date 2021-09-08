@@ -71,11 +71,11 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
-     * Extra Solr query parameters
+     * Global extra Solr query parameters
      *
      * @var array
      */
-    protected $extraParams = [];
+    protected $globalExtraParams = [];
 
     /**
      * Solr fields to highlight. Also serves as a flag for whether to perform
@@ -161,12 +161,10 @@ class QueryBuilder implements QueryBuilderInterface
                     $oldString = $string;
                     $string = $handler->createBoostQueryString($string);
 
-                    if ($string !== $oldString) {
-                        // If a boost was added, we don't want to highlight based on
-                        // the boost query, so we should use the non-boosted version:
-                        if ($highlight) {
-                            $params->set('hl.q', $oldString);
-                        }
+                    // If a boost was added, we don't want to highlight based on
+                    // the boost query, so we should use the non-boosted version:
+                    if ($highlight && $oldString != $string) {
+                        $params->set('hl.q', $oldString);
                     }
                 }
             } elseif ($handler->hasDismax()) {
@@ -190,7 +188,7 @@ class QueryBuilder implements QueryBuilderInterface
         $params->set('q', $string);
 
         // Handle any extra parameters:
-        foreach ($this->extraParams as $extraParam) {
+        foreach ($this->globalExtraParams as $extraParam) {
             if (empty($extraParam['param']) || empty($extraParam['value'])) {
                 continue;
             }
@@ -224,52 +222,38 @@ class QueryBuilder implements QueryBuilderInterface
         $searchTypes = $this->getSearchTypes($query);
         $searchTypeOk = null;
         foreach ($conditions as $condition) {
-            if (is_array($condition)) {
-                $values = reset($condition);
-                $condition = key($condition);
-                switch ($condition) {
-                case 'SearchTypeIn':
-                    if (null === $searchTypeOk) {
-                        $searchTypeOk = !empty(
-                            array_intersect((array)$values, $searchTypes)
-                        );
-                        if (!$searchTypeOk) {
-                            return false;
-                        }
+            if (!is_array($condition)) {
+                continue;
+            }
+            $values = reset($condition);
+            $condition = key($condition);
+            switch ($condition) {
+            case 'SearchTypeIn':
+                if (null === $searchTypeOk) {
+                    $searchTypeOk = !empty(
+                        array_intersect((array)$values, $searchTypes)
+                    );
+                    if (!$searchTypeOk) {
+                        return false;
                     }
-                    break;
-                case 'SearchTypeNotIn':
-                    if (null === $searchTypeOk) {
-                        if (!empty(array_intersect((array)$values, $searchTypes))) {
-                            return false;
-                        }
-                    }
-                    break;
-                default:
-                    throw new \Exception("Unknown parameter condition: $condition");
                 }
-            } else {
-                switch ($condition) {
-                case 'NoBoost':
-                    if ($this->hasDismaxParamsField($searchTypes, 'bf')
-                        || $this->hasDismaxParamsField($searchTypes, 'bq')
-                    ) {
+                break;
+            case 'SearchTypeNotIn':
+                if (null === $searchTypeOk) {
+                    if (!empty(array_intersect((array)$values, $searchTypes))) {
                         return false;
                     }
-                    break;
-                case 'NoBoostFunction':
-                    if ($this->hasDismaxParamsField($searchTypes, 'bf')) {
-                        return false;
-                    }
-                    break;
-                case 'NoBoostQuery':
-                    if ($this->hasDismaxParamsField($searchTypes, 'bq')) {
-                        return false;
-                    }
-                    break;
-                default:
-                    throw new \Exception("Unknown parameter condition: $condition");
                 }
+                break;
+            case 'NoDismaxParams':
+                foreach ((array)$values as $value) {
+                    if ($this->hasDismaxParamsField($searchTypes, $value)) {
+                        return false;
+                    }
+                }
+                break;
+            default:
+                throw new \Exception("Unknown parameter condition: $condition");
             }
         }
         return null !== $searchTypeOk ? $searchTypeOk : true;
@@ -377,8 +361,8 @@ class QueryBuilder implements QueryBuilderInterface
     public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
-            if ('ExtraParams' === $handler) {
-                $this->extraParams = $spec;
+            if ('GlobalExtraParams' === $handler) {
+                $this->globalExtraParams = $spec;
                 continue;
             }
             if (isset($spec['ExactSettings'])) {

@@ -70,16 +70,16 @@
 #
 # ...etc.
 #
-# ExtraParams allows extra parameters to be (conditionally) added to the Solr search
-# request:
+# GlobalExtraParams allows extra parameters to be (conditionally) added to the Solr
+# search request:
 #
-# ExtraParams:
+# GlobalExtraParams:
 #   - param: bf
 #     value: "recip(rord(publishDateSort),1,1000,1000)"
 #     conditions:
-#       - NoBoost
-#       - NoBoostQuery
-#       - NoBoostFunction
+#       - NoDismaxParams
+#         - bf
+#         - bq
 #       - SearchTypeIn:
 #         - AllFields
 #         - Title
@@ -91,10 +91,7 @@
 #
 # Available conditions:
 #
-# - NoBoost: None of the search types specifies a boost of their own in DismaxParams
-# - NoBoostQuery: None of the search types specifies a boost query of their own in
-#   DismaxParams
-# - NoBoostFunction: None of the search types specifies a boost function of their own
+# - NoDismaxParams: None of the search types specifies any of the listed parameters
 #   in DismaxParams
 # - SearchTypeIn: One of the search types must be in the given list
 # - SearchTypeNotIn: None of the search types must be in the given list
@@ -103,21 +100,24 @@
 # skipped if a previous match for has been found with SearchTypeIn, and vice versa.
 #
 # Example: Boost more recent material if any of the search fields is of type
-# "AllFields" or "Title":
+# "AllFields" or "Title" unless there's a search type specific boost:
 #
-# ExtraParams:
+# GlobalExtraParams:
 #   - param: bf
 #     value: "recip(ms(NOW/DAY,publishDateSort),1,1000,1000)"
 #     conditions:
 #       - SearchTypeIn:
 #         - AllFields
 #         - Title
+#       - NoDismaxParams:
+#         - bf
+#         - bq
 #
 #
 # Example: Boost material in English if any of the search fields is of type
 # "AllFields" unless any of the search fields is of type "year":
 #
-# ExtraParams:
+# GlobalExtraParams:
 #   - param: bq
 #     value: "language:English^100"
 #     conditions:

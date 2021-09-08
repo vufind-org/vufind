@@ -583,16 +583,21 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with ExtraParams
+     * Test generation with GlobalExtraParams
      *
      * @return void
      */
-    public function testQueryHandlerWithExtraParams()
+    public function testQueryHandlerWithGlobalExtraParams()
     {
         $testSets = [
+            /*[
+                'description' => 'Single value, no extra params',
+                'expected1' => [],
+                'expected2' => [],
+            ],
             [
                 'description' => 'Single value',
-                'ExtraParams' => [
+                'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo'
@@ -607,7 +612,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 'description' => 'Two values',
-                'ExtraParams' => [
+                'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => [
@@ -631,7 +636,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 'description' => 'Value with SearchTypeIn condition',
-                'ExtraParams' => [
+                'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -653,7 +658,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 'description' => 'Value with SearchTypeNotIn condition',
-                'ExtraParams' => [
+                'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -672,15 +677,17 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'expected2' => [
                     'bq' => ['a:foo']
                 ],
-            ],
+            ],*/
             [
-                'description' => 'Value with NoBoostFunction condition',
-                'ExtraParams' => [
+                'description' => 'Value with NoDisMaxParams = [bf] condition',
+                'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
                         'conditions' => [
-                            'NoBoostFunction'
+                            [
+                                'NoDismaxParams' => ['bf']
+                            ]
                         ]
                     ]
                 ],
@@ -697,17 +704,19 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $q2 = new Query('q', 'test2');
 
         foreach ($testSets as $testSet) {
-            $qb = new QueryBuilder(
-                [
-                    'test' => [
-                        'DismaxFields' => ['a'],
-                        'DismaxParams' => [
-                            ['bf', 'a:filter']
-                        ]
-                    ],
-                    'ExtraParams' => $testSet['ExtraParams']
-                ]
-            );
+            $specs = [
+                'test' => [
+                    'DismaxFields' => ['a'],
+                    'DismaxParams' => [
+                        ['bf', 'a:filter']
+                    ]
+                ],
+            ];
+            if (!empty($testSet['GlobalExtraParams'])) {
+                $specs['GlobalExtraParams'] = $testSet['GlobalExtraParams'];
+            }
+
+            $qb = new QueryBuilder($specs);
             $response = $qb->build($q1);
             foreach ($testSet['expected1'] as $field => $expected) {
                 $values = $response->get($field);
