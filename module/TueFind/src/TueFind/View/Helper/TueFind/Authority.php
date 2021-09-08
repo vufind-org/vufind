@@ -221,7 +221,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParams($driver) . '"', 'AllFields'),
+                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParams($driver), 'AllFields'),
                                                  $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
@@ -298,15 +298,17 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $queryString;
     }
 
-    protected function getTitlesByQueryParams(&$author): string
+    protected function getTitlesByQueryParams(&$author, $fuzzy=false): string
     {
         if ($author instanceof AuthorityRecordDriver) {
             $queryString = 'author_id:"' . $author->getUniqueId() . '"';
             $queryString .= ' OR author2_id:"' . $author->getUniqueId() . '"';
             $queryString .= ' OR author_corporate_id:"' . $author->getUniqueId() . '"';
-            $queryString .= ' OR author:"' . $author->getTitle() . '"';
-            $queryString .= ' OR author2:"' . $author->getTitle() . '"';
-            $queryString .= ' OR author_corporate:"' . $author->getTitle() . '"';
+            if ($fuzzy) {
+                $queryString .= ' OR author:"' . $author->getTitle() . '"';
+                $queryString .= ' OR author2:"' . $author->getTitle() . '"';
+                $queryString .= ' OR author_corporate:"' . $author->getTitle() . '"';
+            }
         } else {
             $queryString = 'author:"' . $author . '"';
             $queryString .= ' OR author2:"' . $author . '"';
