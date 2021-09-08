@@ -79,7 +79,6 @@ class Connector extends Base implements LoggerAwareInterface
             [
                 'timeout' => $settings['timeout'] ?? 120,
                 'sslverifypeer' => false,
-
             ]
         );
     }
