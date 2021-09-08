@@ -1,10 +1,10 @@
 <?php
 /**
- * Solr writer factory.
+ * Linkify helper factory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,43 +20,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Solr;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
+use VStelmakh\UrlHighlight\UrlHighlight;
+use VuFind\UrlHighlight\VuFindHighlighter;
 
 /**
- * Solr writer factory.
+ * Linkify helper factory
  *
  * @category VuFind
- * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class WriterFactory implements FactoryInterface
+class LinkifyFactory implements FactoryInterface
 {
     /**
      * Create an object
      *
-     * @param ContainerInterface $container     Service manager
+     * @param ContainerInterface $container     Service Manager
      * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * @param array|null         $options       Extra options (optional)
      *
-     * @return object
+     * @return object|Linkify
      *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
+     * @throws \Exception
      */
     public function __invoke(
         ContainerInterface $container,
@@ -66,11 +63,13 @@ class WriterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $changeTracker = $container->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('changetracker');
-        return new $requestedName(
-            $container->get(\VuFindSearch\Service::class),
-            $changeTracker
-        );
+
+        $proxyUrl = $container->get('ViewHelperManager')->get('proxyUrl');
+
+        $highlighter = new VuFindHighlighter($proxyUrl);
+        $encoder = new HtmlSpecialcharsEncoder();
+        $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
+
+        return new Linkify($urlHighlight);
     }
 }

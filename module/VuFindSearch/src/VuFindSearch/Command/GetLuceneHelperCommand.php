@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Set the backend's record collection factory.
+ * Command to fetch a Lucene helper object from a search backend.
  *
  * PHP version 7
  *
@@ -28,11 +28,11 @@
  */
 namespace VuFindSearch\Command;
 
-use VuFindSearch\Backend\AbstractBackend;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 
 /**
- * Perform a search and return record collection command.
+ * Command to fetch a Lucene helper object from a search backend.
  *
  * @category VuFind
  * @package  Search
@@ -40,25 +40,34 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SetRecordCollectionFactoryCommand extends CallMethodCommand
+class GetLuceneHelperCommand extends \VuFindSearch\Command\AbstractBase
 {
     /**
      * Constructor.
      *
-     * @param string                           $backendId Search backend identifier
-     * @param RecordCollectionFactoryInterface $factory   Factory to set
+     * @param string $backendId Search backend identifier
      */
-    public function __construct(
-        string $backendId,
-        RecordCollectionFactoryInterface $factory
-    ) {
-        parent::__construct(
-            $backendId,
-            AbstractBackend::class,
-            'setRecordCollectionFactory',
-            [$factory],
-            null,
-            false
+    public function __construct(string $backendId)
+    {
+        parent::__construct($backendId, []);
+    }
+
+    /**
+     * Execute command on backend.
+     *
+     * @param BackendInterface $backend Backend
+     *
+     * @return CommandInterface Command instance for method chaining
+     */
+    public function execute(BackendInterface $backend): CommandInterface
+    {
+        $this->validateBackend($backend);
+        $qb = is_callable([$backend, 'getQueryBuilder'])
+            ? $backend->getQueryBuilder() : false;
+        $result = $qb && is_callable([$qb, 'getLuceneHelper'])
+            ? $qb->getLuceneHelper() : false;
+        return $this->finalizeExecution(
+            $result instanceof LuceneSyntaxHelper ? $result : false
         );
     }
 }

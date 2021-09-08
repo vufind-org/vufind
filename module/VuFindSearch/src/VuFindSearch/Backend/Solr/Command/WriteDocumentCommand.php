@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Perform a search and return record collection command.
+ * Command to write a document object to Solr.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2021.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,50 +22,48 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Command;
+namespace VuFindSearch\Backend\Solr\Command;
 
-use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\ParamBag;
-use VuFindSearch\Query\QueryInterface;
 
 /**
- * Perform a search and return record collection command.
+ * Command to write a document object to Solr.
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchCommand extends CallMethodCommand
+class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
-     * SearchCommand constructor.
+     * Constructor.
      *
-     * @param string         $backendId Search backend identifier
-     * @param QueryInterface $query     Search query
-     * @param int            $offset    Search offset
-     * @param int            $limit     Search limit
-     * @param ?ParamBag      $params    Search backend parameters
+     * @param string            $backendId Search backend identifier
+     * @param DocumentInterface $doc       Document to write
+     * @param ?int              $timeout   Timeout value (null for default)
+     * @param string            $handler   Handler to use
+     * @param ?ParamBag         $params    Search backend parameters
      */
     public function __construct(
         string $backendId,
-        QueryInterface $query,
-        int $offset = 0,
-        int $limit = 20,
+        DocumentInterface $doc,
+        int $timeout = null,
+        string $handler = 'update',
         ?ParamBag $params = null
     ) {
         parent::__construct(
             $backendId,
-            BackendInterface::class,
-            'search',
-            [$query, $offset, $limit],
+            Backend::class,
+            'writeDocument',
+            [$doc, $timeout, $handler],
             $params
         );
     }

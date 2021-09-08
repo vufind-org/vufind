@@ -74,7 +74,7 @@ abstract class CallMethodCommand extends AbstractBase
     /**
      * CallMethodCommand constructor.
      *
-     * @param string    $backend         Search backend identifier
+     * @param string    $backendId       Search backend identifier
      * @param string    $interface       Search backend interface
      * @param string    $method          Search backend interface method
      * @param array     $args            Search backend interface method arguments,
@@ -87,7 +87,7 @@ abstract class CallMethodCommand extends AbstractBase
      *                                   context.
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         string $interface,
         string $method,
         array $args,
@@ -95,7 +95,11 @@ abstract class CallMethodCommand extends AbstractBase
         bool $addParamsToArgs = true,
         $context = null
     ) {
-        parent::__construct($backend, $context ?: $method, $params);
+        parent::__construct(
+            $backendId,
+            $context ?: $method,
+            $params
+        );
         $this->interface = $interface;
         $this->method = $method;
         $this->args = $args;
@@ -105,18 +109,18 @@ abstract class CallMethodCommand extends AbstractBase
     /**
      * Execute command on backend.
      *
-     * @param BackendInterface $backendInstance Backend instance
+     * @param BackendInterface $backend Backend
      *
-     * @return CommandInterface
+     * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance): CommandInterface
+    public function execute(BackendInterface $backend): CommandInterface
     {
-        $this->validateBackend($backendInstance);
-        if (!($backendInstance instanceof $this->interface)
+        $this->validateBackend($backend);
+        if (!($backend instanceof $this->interface)
             || !method_exists($this->interface, $this->method)
         ) {
             throw new BackendException(
-                "$this->backend does not support $this->method()"
+                "$this->backendId does not support $this->method()"
             );
         }
         $callArgs = $this->args;
@@ -124,7 +128,7 @@ abstract class CallMethodCommand extends AbstractBase
             $callArgs[] = $this->params;
         }
         return $this->finalizeExecution(
-            call_user_func([$backendInstance, $this->method], ...$callArgs)
+            call_user_func([$backend, $this->method], ...$callArgs)
         );
     }
 

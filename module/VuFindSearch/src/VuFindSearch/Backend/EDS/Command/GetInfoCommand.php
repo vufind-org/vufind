@@ -46,15 +46,15 @@ class GetInfoCommand extends CallMethodCommand
     /**
      * Constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
-        string $backend = 'EDS',
+        string $backendId = 'EDS',
         ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'getInfo',
             [],

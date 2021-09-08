@@ -49,21 +49,21 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
     /**
      * Constructor
      *
-     * @param string        $backend Search backend identifier
-     * @param AbstractQuery $query   Search query string
-     * @param int           $offset  Search offset
-     * @param int           $limit   Search limit
-     * @param ?ParamBag     $params  Search backend parameters
+     * @param string        $backendId Search backend identifier
+     * @param AbstractQuery $query     Search query string
+     * @param int           $offset    Search offset
+     * @param int           $limit     Search limit
+     * @param ?ParamBag     $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         AbstractQuery $query,
         int $offset = 0,
         int $limit = 100,
         ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'rawJsonSearch',
             [$query, $offset, $limit],

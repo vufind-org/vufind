@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Set the backend's record collection factory.
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
  * PHP version 7
  *
@@ -21,44 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindSearch\Command;
-
-use VuFindSearch\Backend\AbstractBackend;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
+namespace VuFindTheme\View\Helper;
 
 /**
- * Perform a search and return record collection command.
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
  * @category VuFind
- * @package  Search
+ * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class SetRecordCollectionFactoryCommand extends CallMethodCommand
+class FootScript extends HeadScript
 {
-    /**
-     * Constructor.
-     *
-     * @param string                           $backendId Search backend identifier
-     * @param RecordCollectionFactoryInterface $factory   Factory to set
-     */
-    public function __construct(
-        string $backendId,
-        RecordCollectionFactoryInterface $factory
-    ) {
-        parent::__construct(
-            $backendId,
-            AbstractBackend::class,
-            'setRecordCollectionFactory',
-            [$factory],
-            null,
-            false
-        );
-    }
+    // pass
 }

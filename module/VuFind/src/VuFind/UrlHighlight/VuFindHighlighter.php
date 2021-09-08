@@ -1,6 +1,6 @@
 <?php
 /**
- * Linkify a string so that the links become clickable HTML
+ * Provide URL formatted as HTML and prefixed with proxy if applicable
  *
  * PHP version 7
  *
@@ -20,55 +20,58 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  UrlHighlight
  * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\UrlHighlight;
 
-use Laminas\View\Helper\AbstractHelper;
-use VStelmakh\UrlHighlight\UrlHighlight;
+use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
- * Linkify a string so that the links become clickable HTML
+ * Provide URL formatted as HTML and prefixed with proxy if applicable
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  UrlHighlight
  * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Linkify extends AbstractHelper
+class VuFindHighlighter extends HtmlHighlighter
 {
+    public const DEFAULT_SCHEME = 'http';
+
     /**
-     * Url highlighter
+     * Proxy url helper
      *
-     * @var UrlHighlight
+     * @var ProxyUrl
      */
-    protected $urlHighlight;
+    protected $proxyUrl;
 
     /**
      * Constructor
      *
-     * @param UrlHighlight $urlHighlight Url highlighter
+     * @param ProxyUrl $proxyUrl Proxy url helper
      */
-    public function __construct(UrlHighlight $urlHighlight)
+    public function __construct(ProxyUrl $proxyUrl)
     {
-        $this->urlHighlight = $urlHighlight;
+        $this->proxyUrl = $proxyUrl;
+        parent::__construct(self::DEFAULT_SCHEME);
     }
 
     /**
-     * Replace urls and emails by html tags
+     * Return url with proxy
      *
-     * @param string $string String to linkify (must be HTML-escaped)
+     * @param UrlMatch $match url highlight match
      *
      * @return string
      */
-    public function __invoke(string $string): string
+    protected function getLink(UrlMatch $match): string
     {
-        return $this->urlHighlight->highlightUrls($string);
+        $link = parent::getLink($match);
+        return ($this->proxyUrl)($link);
     }
 }
