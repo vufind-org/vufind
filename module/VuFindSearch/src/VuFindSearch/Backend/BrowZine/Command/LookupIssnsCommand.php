@@ -44,13 +44,13 @@ class LookupIssnsCommand extends \VuFindSearch\Command\CallMethodCommand
     /**
      * Constructor
      *
-     * @param string          $backend Search backend identifier
-     * @param string|string[] $issns   ISSNs to look up
+     * @param string          $backendId Search backend identifier
+     * @param string|string[] $issns     ISSNs to look up
      */
-    public function __construct(string $backend, $issns)
+    public function __construct(string $backendId, $issns)
     {
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'lookupIssns',
             [$issns],

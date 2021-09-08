@@ -45,26 +45,26 @@ class AlphabeticBrowseCommand extends CallMethodCommand
     /**
      * Constructor.
      *
-     * @param string   $backend     Search backend identifier
-     * @param string   $source      Name of index to search
-     * @param string   $from        Starting point for browse results
-     * @param int      $page        Result page to return (starts at 0)
-     * @param int      $limit       Number of results to return on each page
-     * @param ParamBag $params      Additional parameters
-     * @param int      $offsetDelta Delta to use when calculating page
+     * @param string    $backendId   Search backend identifier
+     * @param string    $source      Name of index to search
+     * @param string    $from        Starting point for browse results
+     * @param int       $page        Result page to return (starts at 0)
+     * @param int       $limit       Number of results to return on each page
+     * @param ?ParamBag $params      Additional parameters
+     * @param int       $offsetDelta Delta to use when calculating page
      * offset (useful for showing a few results above the highlighted row)
      */
     public function __construct(
-        string $backend,
-        $source,
-        $from,
-        $page,
-        $limit = 20,
-        $params = null,
-        $offsetDelta = 0
+        string $backendId,
+        string $source,
+        string $from,
+        int $page,
+        int $limit = 20,
+        ParamBag $params = null,
+        int $offsetDelta = 0
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class, // we should define interface, if needed in more places
             'alphabeticBrowse',
             [$source, $from, $page, $limit, $params, $offsetDelta],

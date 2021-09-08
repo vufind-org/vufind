@@ -50,19 +50,19 @@ class RandomCommand extends CallMethodCommand
     /**
      * RandomCommand constructor.
      *
-     * @param string         $backend Search backend identifier
-     * @param QueryInterface $query   Search query
-     * @param int            $limit   Search limit
-     * @param ?ParamBag      $params  Search backend parameters
+     * @param string         $backendId Search backend identifier
+     * @param QueryInterface $query     Search query
+     * @param int            $limit     Search limit
+     * @param ?ParamBag      $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         QueryInterface $query,
         int $limit,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             RandomInterface::class,
             'random',
             [$query, $limit],
@@ -73,16 +73,16 @@ class RandomCommand extends CallMethodCommand
     /**
      * Execute command on backend.
      *
-     * @param BackendInterface $backendInstance Backend instance
+     * @param BackendInterface $backend Backend
      *
-     * @return CommandInterface
+     * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance): CommandInterface
+    public function execute(BackendInterface $backend): CommandInterface
     {
         // If the backend implements the RetrieveRandomInterface, we can load
         // all the records at once.
-        if ($backendInstance instanceof RandomInterface) {
-            return parent::execute($backendInstance);
+        if ($backend instanceof RandomInterface) {
+            return parent::execute($backend);
         }
 
         // Otherwise, we need to load them one at a time and aggregate them.
@@ -91,7 +91,7 @@ class RandomCommand extends CallMethodCommand
         $limit = $this->args[1];
 
         // offset/limit of 0 - we don't need records, just count
-        $results = $backendInstance->search($query, 0, 0, $this->params);
+        $results = $backend->search($query, 0, 0, $this->params);
         $total_records = $results->getTotal();
 
         if (0 === $total_records) {
@@ -99,7 +99,7 @@ class RandomCommand extends CallMethodCommand
             $response = $results;
         } elseif ($total_records < $limit) {
             // Result set smaller than limit? Get everything and shuffle:
-            $response = $backendInstance->search($query, 0, $limit, $this->params);
+            $response = $backend->search($query, 0, $limit, $this->params);
             $response->shuffle();
         } else {
             // Default case: retrieve n random records:
@@ -112,7 +112,7 @@ class RandomCommand extends CallMethodCommand
                     $nextIndex = rand(0, $total_records - 1);
                 }
                 $retrievedIndexes[] = $nextIndex;
-                $currentBatch = $backendInstance->search(
+                $currentBatch = $backend->search(
                     $query,
                     $nextIndex,
                     1,

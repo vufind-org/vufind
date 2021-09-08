@@ -42,13 +42,13 @@ class GetHoldingsCommand extends \VuFindSearch\Command\CallMethodCommand
     /**
      * Constructor
      *
-     * @param string $backend Search backend identifier
-     * @param string $id      WorldCat record ID
+     * @param string $backendId Search backend identifier
+     * @param string $id        WorldCat record ID
      */
-    public function __construct(string $backend, string $id)
+    public function __construct(string $backendId, string $id)
     {
         parent::__construct(
-            $backend,
+            $backendId,
             \VuFindSearch\Backend\WorldCat\Backend::class,
             'getHoldings',
             [$id],

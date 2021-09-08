@@ -49,17 +49,17 @@ class RetrieveBatchCommand extends CallMethodCommand
     /**
      * RetrieveBatchCommand constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param array     $ids     Record identifiers
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param array     $ids       Record identifiers
+     * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         array $ids,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             RetrieveBatchInterface::class,
             'retrieveBatch',
             [$ids],
@@ -70,16 +70,16 @@ class RetrieveBatchCommand extends CallMethodCommand
     /**
      * Execute command on backend.
      *
-     * @param BackendInterface $backendInstance Backend instance
+     * @param BackendInterface $backend Backend
      *
      * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance): CommandInterface
+    public function execute(BackendInterface $backend): CommandInterface
     {
         // If the backend implements the RetrieveBatchInterface, we can load
         // all the records at once.
-        if ($backendInstance instanceof RetrieveBatchInterface) {
-            return parent::execute($backendInstance);
+        if ($backend instanceof RetrieveBatchInterface) {
+            return parent::execute($backend);
         }
 
         // Otherwise, we need to load them one at a time and aggregate them.
@@ -88,7 +88,7 @@ class RetrieveBatchCommand extends CallMethodCommand
 
         $response = false;
         foreach ($ids as $id) {
-            $next = $backendInstance->retrieve($id, $this->params);
+            $next = $backend->retrieve($id, $this->params);
             if (!$response) {
                 $response = $next;
             } elseif ($record = $next->first()) {

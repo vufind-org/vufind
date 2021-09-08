@@ -45,15 +45,15 @@ class SetRecordCollectionFactoryCommand extends CallMethodCommand
     /**
      * Constructor.
      *
-     * @param string                           $backend Search backend identifier
-     * @param RecordCollectionFactoryInterface $factory Factory to set
+     * @param string                           $backendId Search backend identifier
+     * @param RecordCollectionFactoryInterface $factory   Factory to set
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         RecordCollectionFactoryInterface $factory
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             AbstractBackend::class,
             'setRecordCollectionFactory',
             [$factory],

@@ -49,21 +49,21 @@ class SearchCommand extends CallMethodCommand
     /**
      * SearchCommand constructor.
      *
-     * @param string         $backend Search backend identifier
-     * @param QueryInterface $query   Search query
-     * @param int            $offset  Search offset
-     * @param int            $limit   Search limit
-     * @param ?ParamBag      $params  Search backend parameters
+     * @param string         $backendId Search backend identifier
+     * @param QueryInterface $query     Search query
+     * @param int            $offset    Search offset
+     * @param int            $limit     Search limit
+     * @param ?ParamBag      $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         QueryInterface $query,
         int $offset = 0,
         int $limit = 20,
         ?ParamBag $params = null
     ) {
         parent::__construct(
-            $backend,
+            $backendId,
             BackendInterface::class,
             'search',
             [$query, $offset, $limit],
