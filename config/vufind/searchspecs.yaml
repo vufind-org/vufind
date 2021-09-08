@@ -93,11 +93,13 @@
 #
 # - NoDismaxParams: None of the search types specifies any of the listed parameters
 #   in DismaxParams
-# - SearchTypeIn: One of the search types must be in the given list
-# - SearchTypeNotIn: None of the search types must be in the given list
+# - SearchTypeIn      At least one of the search types must be in the given list
+# - AllSearchTypesIn  All of the search types must be in the given list
+# - SearchTypeNotIn   None of the search types must be in the given list
 #
 # Note that conditions are processed in the order of occurrence. SearchTypeNotIn is
-# skipped if a previous match for has been found with SearchTypeIn, and vice versa.
+# skipped if a previous match has been found with SearchTypeIn, but if
+# SearchTypeNotIn comes first, it will rule.
 #
 # Example: Boost more recent material if any of the search fields is of type
 # "AllFields" or "Title" unless there's a search type specific boost:

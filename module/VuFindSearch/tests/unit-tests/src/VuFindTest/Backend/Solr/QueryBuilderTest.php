@@ -590,7 +590,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     public function testQueryHandlerWithGlobalExtraParams()
     {
         $testSets = [
-            /*[
+            [
                 'description' => 'Single value, no extra params',
                 'expected1' => [],
                 'expected2' => [],
@@ -677,7 +677,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'expected2' => [
                     'bq' => ['a:foo']
                 ],
-            ],*/
+            ],
             [
                 'description' => 'Value with NoDisMaxParams = [bf] condition',
                 'GlobalExtraParams' => [
@@ -700,6 +700,76 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
+        $groupTestSets = [
+            [
+                'description' => 'Search type in [test]',
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SearchTypeIn' => ['test']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+            [
+                'description' => 'All search types in [test, test2]',
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'AllSearchTypesIn' => ['test', 'test2']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+            [
+                'description' => 'All search types in [test, no]',
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'AllSearchTypesIn' => ['test', 'no']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => null
+                ],
+            ],
+            [
+                'description' => 'All search types in [test, test2, no]',
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'AllSearchTypesIn' => ['test', 'test2', 'no']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+        ];
         $q1 = new Query('q', 'test');
         $q2 = new Query('q', 'test2');
 
@@ -733,6 +803,32 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     $expected,
                     $values,
                     $testSet['description'] . ' - query 2'
+                );
+            }
+        }
+
+        $group = new QueryGroup('AND', [$q1, $q2]);
+        foreach ($groupTestSets as $testSet) {
+            $specs = [
+                'test' => [
+                    'DismaxFields' => ['a'],
+                    'DismaxParams' => [
+                        ['bf', 'a:filter']
+                    ]
+                ],
+            ];
+            if (!empty($testSet['GlobalExtraParams'])) {
+                $specs['GlobalExtraParams'] = $testSet['GlobalExtraParams'];
+            }
+
+            $qb = new QueryBuilder($specs);
+            $response = $qb->build($group);
+            foreach ($testSet['expected'] as $field => $expected) {
+                $values = $response->get($field);
+                $this->assertEquals(
+                    $expected,
+                    $values,
+                    $testSet['description']
                 );
             }
         }

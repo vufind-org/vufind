@@ -220,7 +220,6 @@ class QueryBuilder implements QueryBuilderInterface
             return true;
         }
         $searchTypes = $this->getSearchTypes($query);
-        $searchTypeOk = null;
         foreach ($conditions as $condition) {
             if (!is_array($condition)) {
                 continue;
@@ -229,20 +228,18 @@ class QueryBuilder implements QueryBuilderInterface
             $condition = key($condition);
             switch ($condition) {
             case 'SearchTypeIn':
-                if (null === $searchTypeOk) {
-                    $searchTypeOk = !empty(
-                        array_intersect((array)$values, $searchTypes)
-                    );
-                    if (!$searchTypeOk) {
-                        return false;
-                    }
+                if (empty(array_intersect((array)$values, $searchTypes))) {
+                    return false;
+                }
+                break;
+            case 'AllSearchTypesIn':
+                if (array_diff($searchTypes, (array)$values)) {
+                    return false;
                 }
                 break;
             case 'SearchTypeNotIn':
-                if (null === $searchTypeOk) {
-                    if (!empty(array_intersect((array)$values, $searchTypes))) {
-                        return false;
-                    }
+                if (!empty(array_intersect((array)$values, $searchTypes))) {
+                    return false;
                 }
                 break;
             case 'NoDismaxParams':
@@ -256,7 +253,7 @@ class QueryBuilder implements QueryBuilderInterface
                 throw new \Exception("Unknown parameter condition: $condition");
             }
         }
-        return null !== $searchTypeOk ? $searchTypeOk : true;
+        return true;
     }
 
     /**
