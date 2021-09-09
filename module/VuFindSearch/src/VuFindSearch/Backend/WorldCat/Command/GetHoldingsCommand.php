@@ -28,6 +28,8 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Command;
 
+use VuFindSearch\Command\Feature\RecordIdentifierTrait;
+
 /**
  * Command to fetch holdings from the WorldCat backend.
  *
@@ -39,21 +41,31 @@ namespace VuFindSearch\Backend\WorldCat\Command;
  */
 class GetHoldingsCommand extends \VuFindSearch\Command\CallMethodCommand
 {
+    use RecordIdentifierTrait;
+
     /**
      * Constructor
      *
-     * @param string $backend Search backend identifier
-     * @param string $id      WorldCat record ID
+     * @param string $backendId Search backend identifier
+     * @param string $id        WorldCat record identifier
      */
-    public function __construct(string $backend, string $id)
+    public function __construct(string $backendId, string $id)
     {
+        $this->id = $id;
         parent::__construct(
-            $backend,
+            $backendId,
             \VuFindSearch\Backend\WorldCat\Backend::class,
-            'getHoldings',
-            [$id],
-            null,
-            false
+            'getHoldings'
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [$this->getRecordIdentifier()];
     }
 }
