@@ -92,7 +92,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $form = new Form(
             new YamlReader(),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $defaults
+            ['Feedback' => $defaults]
         );
         $this->assertEquals(
             [['name' => 'me', 'email' => 'me@example.com']],

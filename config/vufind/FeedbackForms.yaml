@@ -20,6 +20,11 @@
 #                         value from config.ini [Feedback] section, or 'VuFind Feedback')
 #                         The subject may contain placeholders (for example %%receiver%%)
 #                         that are replaced with submitted form values.
+#   emailFrom (address in email envelope, separate from user's email)
+#     name (string)  Sender name (default = sender_name setting from config.ini
+#                    [Feedback] section)
+#     email (string) Sender email (default = sender_email setting from
+#                    config.ini [Feedback] section)
 #   recipient
 #     name (string)  Recipient name (default = recipient_name setting from config.ini
 #                    [Feedback] section)
