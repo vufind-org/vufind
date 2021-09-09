@@ -55,11 +55,13 @@ class InjectTemplateListenerFactory
         // we assume that - by default - modules try loading templates from
         // their own namespace, thus all loaded modules are included for inflection
         $modules = $container->get('ModuleManager')->getModules();
-        $modules = str_replace('\\','/',$modules);
-        array_walk($modules, function(&$elem) {
-            $elem  .= '/';
-        });
-        $prefixes = array_merge($prefixes,$modules);
+        $modules = str_replace('\\', '/', $modules);
+        array_walk(
+            $modules, function (&$elem) {
+                $elem  .= '/';
+            }
+        );
+        $prefixes = array_merge($prefixes, $modules);
 
         return new InjectTemplateListener(array_unique($prefixes));
     }
