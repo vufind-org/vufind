@@ -47,6 +47,8 @@ use VuFindSearch\Query\QueryInterface;
  */
 class GetIdsCommand extends CallMethodCommand
 {
+    use QueryOffsetLimitTrait;
+
     /**
      * GetIdsCommand constructor.
      *
@@ -63,15 +65,31 @@ class GetIdsCommand extends CallMethodCommand
         int $limit = 20,
         ?ParamBag $params = null
     ) {
+        $this->query = $query;
+        $this->offset = $offset;
+        $this->limit = $limit;
         parent::__construct(
             $backendId,
             GetIdsInterface::class,
             'getIds',
-            [$query, $offset, $limit],
             $params,
-            true,
             'getids'
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getQuery(),
+            $this->getOffset(),
+            $this->getLimit(),
+            $this->getSearchParameters()
+        ];
     }
 
     /**

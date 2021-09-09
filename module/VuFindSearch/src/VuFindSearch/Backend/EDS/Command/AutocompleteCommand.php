@@ -44,6 +44,20 @@ use VuFindSearch\ParamBag;
 class AutocompleteCommand extends CallMethodCommand
 {
     /**
+     * Simple query string.
+     *
+     * @var string
+     */
+    protected $query;
+
+    /**
+     * Autocomplete type.
+     *
+     * @var string
+     */
+    protected $domain;
+
+    /**
      * Constructor.
      *
      * @param string    $backendId Search backend identifier
@@ -57,13 +71,46 @@ class AutocompleteCommand extends CallMethodCommand
         string $domain,
         ParamBag $params = null
     ) {
+        $this->query = $query;
+        $this->domain = $domain;
         parent::__construct(
             $backendId,
             Backend::class,
             'autocomplete',
-            [$query, $domain],
-            $params,
-            false
+            $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getQuery(),
+            $this->getDomain()
+        ];
+    }
+
+    /**
+     * Return simple query string.
+     *
+     * @return string
+     */
+    public function getQuery(): string
+    {
+        return $this->query;
+    }
+
+    /**
+     * Return autocomplete type.
+     *
+     * @return string
+     */
+    public function getDomain(): string
+    {
+        return $this->domain;
     }
 }

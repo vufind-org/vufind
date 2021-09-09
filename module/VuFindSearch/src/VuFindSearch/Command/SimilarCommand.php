@@ -45,11 +45,13 @@ use VuFindSearch\ParamBag;
  */
 class SimilarCommand extends CallMethodCommand
 {
+    use RecordIdentifierTrait;
+
     /**
      * SimilarCommand constructor.
      *
      * @param string    $backendId Search backend identifier
-     * @param string    $id        Id of record to compare with
+     * @param string    $id        Identifier of record to compare with
      * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
@@ -57,12 +59,25 @@ class SimilarCommand extends CallMethodCommand
         string $id,
         ?ParamBag $params = null
     ) {
+        $this->id = $id;
         parent::__construct(
             $backendId,
             SimilarInterface::class,
             'similar',
-            [$id],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getRecordIdentifier(),
+            $this->getSearchParameters()
+        ];
     }
 }
