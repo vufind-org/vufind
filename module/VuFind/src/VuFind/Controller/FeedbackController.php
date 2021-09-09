@@ -64,9 +64,11 @@ class FeedbackController extends AbstractBase
 
         $form = $this->serviceLocator->get($this->formClass);
         $params = [];
-        if ($refererHeader = $this->getRequest()->getHeader('Referer')
-        ) {
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
             $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        if ($userAgentHeader = $this->getRequest()->getHeader('User-Agent')) {
+            $params['userAgent'] = $userAgentHeader->getFieldValue();
         }
         $form->setFormId($formId, $params);
 

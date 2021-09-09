@@ -12,7 +12,8 @@
 #   useCaptcha (boolean) Should the form use Captcha validation? Requires the "feedback"
 #                        option to be turned on in the config.ini [Captcha] form setting.
 #                        (default = true, if Captcha turned on for feedback overall).
-#   reportReferrer (boolean) Should the form report the page from which it was invoked?
+#   reportReferrer (boolean) Should the form report the page from which it was invoked
+#   reportUserAgent (boolean) Should the form report the browser's user agent string
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
@@ -124,6 +125,7 @@ forms:
     enabled: true
     useCaptcha: true
     reportReferrer: false
+    reportUserAgent: true
     #emailFrom:
     #  name: Your Library - Site Feedback
     #recipient:
