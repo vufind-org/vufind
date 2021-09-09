@@ -712,9 +712,12 @@ class Form extends \Laminas\Form\Form implements
     protected function getFormElementSettingFields()
     {
         return [
+            'format',
             'group',
             'help',
             'inputType',
+            'maxValue',
+            'minValue',
             'placeholder',
             'required',
             'requireOne',
@@ -798,6 +801,14 @@ class Form extends \Laminas\Form\Form implements
             }
             $conf['options'] = ['value_options' => $optionElements];
             break;
+        case 'date':
+            if (isset($el['minValue'])) {
+                $attributes['min'] = date('Y-m-d', strtotime($el['minValue']));
+            }
+            if (isset($el['maxValue'])) {
+                $attributes['max'] = date('Y-m-d', strtotime($el['maxValue']));
+            }
+            break;
         case 'radio':
             $options = [];
             if (isset($el['options'])) {
@@ -848,6 +859,7 @@ class Form extends \Laminas\Form\Form implements
     {
         $map = [
             'checkbox' => '\Laminas\Form\Element\MultiCheckbox',
+            'date' => '\Laminas\Form\Element\Date',
             'email' => '\Laminas\Form\Element\Email',
             'hidden' => '\Laminas\Form\Element\Hidden',
             'radio' => '\Laminas\Form\Element\Radio',

@@ -59,7 +59,7 @@
 #     requireOne (boolean) Require at least one checkbox option to be selected.
 #     settings (array)     HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)        Element type (text|textarea|email|url|select|radio|checkbox|hidden)
+#     type (string)        Element type (text|textarea|date|email|url|select|radio|checkbox|hidden)
 #
 #     help (string)        Element help text (translation key) that is displayed before the element.
 #                          To include HTML formatting, use a translation key ending
@@ -71,6 +71,16 @@
 #      pre (string)      Like above.
 #      post (string)     Like above but the help text is displayed after the element.
 #
+#
+#     Additional settings for date element:
+#
+#     format             Date format to use in the resulting message  (default is
+#                        displayDateFormat in config.ini). Format of the actual field
+#                        displayed on the form is controlled by user's browser.
+#     minValue           Minimum acceptable date. A string that PHP's strtotime can
+#                        parse (e.g. 'now' or '2021-09-09').
+#     maxValue           Maximum acceptable date. A string that PHP's strtotime can
+#                        parse (e.g. 'now' or '2021-09-09').
 #
 #     Additional settings for select, radio and checkbox elements:
 #
@@ -114,6 +124,8 @@ forms:
     enabled: true
     useCaptcha: true
     reportReferrer: false
+    #emailFrom:
+    #  name: Your Library - Site Feedback
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
@@ -192,6 +204,13 @@ forms:
         type: text
         label: Format
         required: true
+
+      - name: last_interest_date
+        type: date
+        label: Last interest date
+        required: false
+        min: now
+        max: 'now + 1 year'
 
       - name: boolean
         type: radio
