@@ -204,6 +204,16 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
+     * Check if the form should report browser's user agent
+     *
+     * @return bool
+     */
+    public function reportUserAgent()
+    {
+        return (bool)($this->formConfig['reportUserAgent'] ?? false);
+    }
+
+    /**
      * Check if form is available only for logged users.
      *
      * @return bool
@@ -670,7 +680,18 @@ class Form extends \Laminas\Form\Form implements
             }
         }
 
-        $elements[]= [
+        if ($this->reportUserAgent()) {
+            if ($userAgent = ($params['userAgent'] ?? false)) {
+                $elements[] = [
+                    'type' => 'hidden',
+                    'name' => 'useragent',
+                    'settings' => ['value' => $userAgent],
+                    'label' => $this->translate('User Agent'),
+                ];
+            }
+        }
+
+        $elements[] = [
             'type' => 'submit',
             'name' => 'submit',
             'label' => $this->translate('Send')
@@ -694,6 +715,7 @@ class Form extends \Laminas\Form\Form implements
             'onlyForLoggedUsers',
             'recipient',
             'reportReferrer',
+            'reportUserAgent',
             'response',
             'senderEmailRequired',
             'senderInfoRequired',
