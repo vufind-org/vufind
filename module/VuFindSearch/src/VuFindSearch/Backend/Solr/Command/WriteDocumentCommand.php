@@ -44,27 +44,95 @@ use VuFindSearch\ParamBag;
 class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
+     * Document to write.
+     *
+     * @var DocumentInterface
+     */
+    protected $doc;
+
+    /**
+     * Timeout value.
+     *
+     * @var ?int
+     */
+    protected $timeout;
+
+    /**
+     * Handler to use.
+     *
+     * @var string
+     */
+    protected $handler;
+
+    /**
      * Constructor.
      *
-     * @param string            $backend Search backend identifier
-     * @param DocumentInterface $doc     Document to write
-     * @param ?int              $timeout Timeout value (null for default)
-     * @param string            $handler Handler to use
-     * @param ?ParamBag         $params  Search backend parameters
+     * @param string            $backendId Search backend identifier
+     * @param DocumentInterface $doc       Document to write
+     * @param ?int              $timeout   Timeout value (null for default)
+     * @param string            $handler   Handler to use
+     * @param ?ParamBag         $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         DocumentInterface $doc,
         int $timeout = null,
         string $handler = 'update',
         ?ParamBag $params = null
     ) {
+        $this->doc = $doc;
+        $this->timeout = $timeout;
+        $this->handler = $handler;
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'writeDocument',
-            [$doc, $timeout, $handler],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getDocument(),
+            $this->getTimeout(),
+            $this->getHandler(),
+            $this->getSearchParameters()
+        ];
+    }
+
+    /**
+     * Return document to write.
+     *
+     * @return DocumentInterface
+     */
+    public function getDocument(): DocumentInterface
+    {
+        return $this->doc;
+    }
+
+    /**
+     * Return timeout value.
+     *
+     * @return int|null
+     */
+    public function getTimeout(): ?int
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * Return handler to use.
+     *
+     * @return string
+     */
+    public function getHandler(): string
+    {
+        return $this->handler;
     }
 }

@@ -31,6 +31,7 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Command\Feature\QueryOffsetLimitTrait;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\QueryInterface;
 
@@ -46,28 +47,47 @@ use VuFindSearch\Query\QueryInterface;
  */
 class SearchCommand extends CallMethodCommand
 {
+    use QueryOffsetLimitTrait;
+
     /**
      * SearchCommand constructor.
      *
-     * @param string         $backend Search backend identifier
-     * @param QueryInterface $query   Search query
-     * @param int            $offset  Search offset
-     * @param int            $limit   Search limit
-     * @param ?ParamBag      $params  Search backend parameters
+     * @param string         $backendId Search backend identifier
+     * @param QueryInterface $query     Search query
+     * @param int            $offset    Search offset
+     * @param int            $limit     Search limit
+     * @param ?ParamBag      $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         QueryInterface $query,
         int $offset = 0,
         int $limit = 20,
         ?ParamBag $params = null
     ) {
+        $this->query = $query;
+        $this->offset = $offset;
+        $this->limit = $limit;
         parent::__construct(
-            $backend,
+            $backendId,
             BackendInterface::class,
             'search',
-            [$query, $offset, $limit],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getQuery(),
+            $this->getOffset(),
+            $this->getLimit(),
+            $this->getSearchParameters()
+        ];
     }
 }

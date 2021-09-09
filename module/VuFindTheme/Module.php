@@ -58,6 +58,38 @@ class Module
     }
 
     /**
+     * Return generic configuration
+     *
+     * @return array
+     */
+    public function getConfig()
+    {
+        return [
+            'vufind' => [
+                // VuFind's theme system overrides the default Laminas template
+                // loading behavior based on template name prefixes, which usually
+                // correspond to module names. By default, VuFind will apply the
+                // theme system to all loaded modules. If you need to apply theming
+                // to a controller whose namespace does not directly correspond to a
+                // loaded module, you will need to add it as a prefix in
+                // extra_theme_prefixes (e.g. 'MyNamespace/').  Conversely, if you
+                // are loading a Laminas module that includes templates and does not
+                // follow VuFind's theme conventions, you should add that module name
+                // as a prefix in excluded_theme_prefixes to allow the default
+                // behavior to take effect.
+                //
+                // By default, VuFind assumes that any modules loaded from the
+                // Laminas ecosystem use default Laminas template inflection, and
+                // all other modules follow VuFind conventions. If you need different
+                // behavior, just override the below settings in your local module's
+                // module.config.php configuration.
+                'excluded_theme_prefixes' => ['Laminas'],
+                'extra_theme_prefixes' => [],
+            ]
+        ];
+    }
+
+    /**
      * Return service configuration.
      *
      * @return array
@@ -69,7 +101,8 @@ class Module
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
-                InjectTemplateListener::class => InvokableFactory::class,
+                InjectTemplateListener::class =>
+                    InjectTemplateListenerFactory::class,
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
                 ResourceContainer::class => InvokableFactory::class,

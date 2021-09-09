@@ -598,17 +598,6 @@
   </target>
 
   <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- Fix for PHP 8 incompatibility in phing 2.16.4: -->
-    <reflexive>
-      <fileset dir="vendor/phing/phing/classes/phing/tasks/system">
-        <include pattern="ChmodTask.php" />
-      </fileset>
-      <filterchain>
-        <replaceregexp>
-          <regexp pattern="vsprintf\([&quot;']%o[&quot;'], \$mode\)" replace="vsprintf('%o', [\$mode])" />
-        </replaceregexp>
-      </filterchain>
-    </reflexive>
     <!-- Fix for PHP 8 incompatibility in chrome-mink-driver 2.8.0: -->
     <reflexive>
       <fileset dir="vendor/dmore/chrome-mink-driver/src">

@@ -31,6 +31,7 @@ namespace VuFindSearch\Backend\Solr\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Command\CommandInterface;
+use VuFindSearch\Command\Feature\QueryOffsetLimitTrait;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 
@@ -46,29 +47,48 @@ use VuFindSearch\Query\AbstractQuery;
  */
 class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
 {
+    use QueryOffsetLimitTrait;
+
     /**
      * Constructor
      *
-     * @param string        $backend Search backend identifier
-     * @param AbstractQuery $query   Search query string
-     * @param int           $offset  Search offset
-     * @param int           $limit   Search limit
-     * @param ?ParamBag     $params  Search backend parameters
+     * @param string        $backendId Search backend identifier
+     * @param AbstractQuery $query     Search query string
+     * @param int           $offset    Search offset
+     * @param int           $limit     Search limit
+     * @param ?ParamBag     $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         AbstractQuery $query,
         int $offset = 0,
         int $limit = 100,
         ParamBag $params = null
     ) {
+        $this->query = $query;
+        $this->offset = $offset;
+        $this->limit = $limit;
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'rawJsonSearch',
-            [$query, $offset, $limit],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getQuery(),
+            $this->getOffset(),
+            $this->getLimit(),
+            $this->getSearchParameters()
+        ];
     }
 
     /**
