@@ -50,11 +50,21 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
     /**
      * InjectTemplateListener constructor.
      *
-     * @param array $prefixes List of prefixes for theme files
+     * @param string[] $prefixes List of prefixes for theme files
      */
     public function __construct(array $prefixes)
     {
         $this->prefixes = $prefixes;
+    }
+
+    /**
+     * Get the prefixes recognized by the listener.
+     *
+     * @return string[]
+     */
+    public function getPrefixes(): array
+    {
+        return $this->prefixes;
     }
 
     /**
