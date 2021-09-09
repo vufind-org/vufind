@@ -287,15 +287,11 @@ class QueryBuilder implements QueryBuilderInterface
      */
     protected function getSearchTypes(AbstractQuery $query): array
     {
-        $types = [];
         if ($query instanceof QueryGroup) {
-            foreach ($query->getQueries() as $innerQuery) {
-                $types = array_merge(
-                    $types,
-                    $this->getSearchTypes($innerQuery)
-                );
-            }
-            return array_unique($types);
+            $callback = function ($carry, $item) {
+                return array_merge($carry, $this->getSearchTypes($item));
+            };
+            return array_unique(array_reduce($query->getQueries(), $callback, []));
         }
         return [$query->getHandler()];
     }
