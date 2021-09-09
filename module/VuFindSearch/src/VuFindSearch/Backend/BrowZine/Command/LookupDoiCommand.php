@@ -42,6 +42,13 @@ use VuFindSearch\Backend\BrowZine\Backend;
 class LookupDoiCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
+     * DOI to look up.
+     *
+     * @var string
+     */
+    protected $doi;
+
+    /**
      * Constructor
      *
      * @param string $backendId Search backend identifier
@@ -49,13 +56,31 @@ class LookupDoiCommand extends \VuFindSearch\Command\CallMethodCommand
      */
     public function __construct(string $backendId, string $doi)
     {
+        $this->doi = $doi;
         parent::__construct(
             $backendId,
             Backend::class,
-            'lookupDoi',
-            [$doi],
-            null,
-            false
+            'lookupDoi'
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [$this->getDoi()];
+    }
+
+    /**
+     * Return DOI to look up.
+     *
+     * @return string
+     */
+    public function getDoi(): string
+    {
+        return $this->doi;
     }
 }

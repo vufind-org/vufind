@@ -30,6 +30,7 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Command\Feature\RecordIdentifierTrait;
 use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 
@@ -45,11 +46,20 @@ use VuFindSearch\ParamBag;
  */
 class WorkExpressionsCommand extends CallMethodCommand
 {
+    use RecordIdentifierTrait;
+
+    /**
+     * Work identification keys.
+     *
+     * @var ?array
+     */
+    protected $workKeys;
+
     /**
      * WorkExpressionsCommand constructor.
      *
      * @param string    $backendId Search backend identifier
-     * @param string    $id        Id of record to compare with
+     * @param string    $id        Identifier of record to compare with
      * @param ?array    $workKeys  Work identification keys (optional; retrieved from
      *                             the record to compare with if not specified)
      * @param ?ParamBag $params    Search backend parameters
@@ -60,13 +70,28 @@ class WorkExpressionsCommand extends CallMethodCommand
         ?array $workKeys,
         ?ParamBag $params = null
     ) {
+        $this->id = $id;
+        $this->workKeys = $workKeys;
         parent::__construct(
             $backendId,
             WorkExpressionsInterface::class,
             'workExpressions',
-            [$id, $workKeys],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getRecordIdentifier(),
+            $this->getWorkKeys(),
+            $this->getSearchParameters()
+        ];
     }
 
     /**
@@ -78,17 +103,27 @@ class WorkExpressionsCommand extends CallMethodCommand
      */
     public function execute(BackendInterface $backend): CommandInterface
     {
-        $id = $this->args[0];
-        $workKeys = $this->args[1];
+        $id = $this->getRecordIdentifier();
+        $workKeys = $this->getWorkKeys();
 
         if (empty($workKeys)) {
             $records = $backend->retrieve($id)->getRecords();
             if (!empty($records[0])) {
                 $fields = $records[0]->getRawData();
-                $this->args[1] = $fields['work_keys_str_mv'] ?? [];
+                $this->workKeys = $fields['work_keys_str_mv'] ?? [];
             }
         }
 
         return parent::execute($backend);
+    }
+
+    /**
+     * Return work identification keys.
+     *
+     * @return array|null
+     */
+    public function getWorkKeys(): ?array
+    {
+        return $this->workKeys;
     }
 }

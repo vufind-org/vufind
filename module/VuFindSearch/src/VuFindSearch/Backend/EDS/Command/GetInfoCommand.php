@@ -57,9 +57,17 @@ class GetInfoCommand extends CallMethodCommand
             $backendId,
             Backend::class,
             'getInfo',
-            [],
-            $params,
-            false
+            $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [];
     }
 }

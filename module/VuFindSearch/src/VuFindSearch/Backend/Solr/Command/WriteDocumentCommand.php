@@ -44,6 +44,27 @@ use VuFindSearch\ParamBag;
 class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
+     * Document to write.
+     *
+     * @var DocumentInterface
+     */
+    protected $doc;
+
+    /**
+     * Timeout value.
+     *
+     * @var ?int
+     */
+    protected $timeout;
+
+    /**
+     * Handler to use.
+     *
+     * @var string
+     */
+    protected $handler;
+
+    /**
      * Constructor.
      *
      * @param string            $backendId Search backend identifier
@@ -59,12 +80,59 @@ class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
         string $handler = 'update',
         ?ParamBag $params = null
     ) {
+        $this->doc = $doc;
+        $this->timeout = $timeout;
+        $this->handler = $handler;
         parent::__construct(
             $backendId,
             Backend::class,
             'writeDocument',
-            [$doc, $timeout, $handler],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getDocument(),
+            $this->getTimeout(),
+            $this->getHandler(),
+            $this->getSearchParameters()
+        ];
+    }
+
+    /**
+     * Return document to write.
+     *
+     * @return DocumentInterface
+     */
+    public function getDocument(): DocumentInterface
+    {
+        return $this->doc;
+    }
+
+    /**
+     * Return timeout value.
+     *
+     * @return int|null
+     */
+    public function getTimeout(): ?int
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * Return handler to use.
+     *
+     * @return string
+     */
+    public function getHandler(): string
+    {
+        return $this->handler;
     }
 }

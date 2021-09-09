@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Command to fetch holdings from the WorldCat backend.
+ * Trait for commands with a record identifier argument.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,50 +22,37 @@
  *
  * @category VuFind
  * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Backend\WorldCat\Command;
-
-use VuFindSearch\Command\Feature\RecordIdentifierTrait;
+namespace VuFindSearch\Command\Feature;
 
 /**
- * Command to fetch holdings from the WorldCat backend.
+ * Trait for commands with a record identifier argument.
  *
  * @category VuFind
  * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetHoldingsCommand extends \VuFindSearch\Command\CallMethodCommand
+trait RecordIdentifierTrait
 {
-    use RecordIdentifierTrait;
+    /**
+     * Record identifier.
+     *
+     * @var string
+     */
+    protected $id;
 
     /**
-     * Constructor
+     * Return record identifier.
      *
-     * @param string $backendId Search backend identifier
-     * @param string $id        WorldCat record identifier
+     * @return string
      */
-    public function __construct(string $backendId, string $id)
+    public function getRecordIdentifier(): string
     {
-        $this->id = $id;
-        parent::__construct(
-            $backendId,
-            \VuFindSearch\Backend\WorldCat\Backend::class,
-            'getHoldings'
-        );
-    }
-
-    /**
-     * Return search backend interface method arguments.
-     *
-     * @return array
-     */
-    public function getArguments(): array
-    {
-        return [$this->getRecordIdentifier()];
+        return $this->id;
     }
 }
