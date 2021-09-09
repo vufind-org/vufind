@@ -61,7 +61,17 @@ class InjectTemplateListenerFactory
             },
             $container->get('ModuleManager')->getModules()
         );
-        $prefixes = array_diff(array_merge($prefixes, $modules), $exclude);
+        $prefixes = array_filter(
+            array_merge($prefixes, $modules),
+            function ($prefix) use ($exclude) {
+                foreach ($exclude as $current) {
+                    if (strpos($prefix, $current) === 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        );
 
         return new InjectTemplateListener(array_unique($prefixes));
     }

@@ -549,18 +549,6 @@ $config = [
     'vufind' => [
         // The config reader is a special service manager for loading .ini files:
         'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
-        // VuFind's theme system overrides the default Laminas template loading
-        // behavior based on template name prefixes, which usually correspond to
-        // module names. By default, VuFind will apply the theme system to all
-        // loaded modules. If you need to apply theming to a controller whose
-        // namespace does not directly correspond to a loaded module, you will
-        // need to add it as a prefix in extra_theme_prefixes (e.g. 'MyNamespace/').
-        // Conversely, if you are loading a Laminas module that includes templates
-        // and does not follow VuFind's theme conventions, you should add that
-        // module name as a prefix in excluded_theme_prefixes to allow the default
-        // behavior to take effect.
-        'excluded_theme_prefixes' => [],
-        'extra_theme_prefixes' => [],
         // PostgreSQL sequence mapping
         'pgsql_seq_mapping'  => [
             'auth_hash'        => ['id', 'auth_hash_id_seq'],
