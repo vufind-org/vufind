@@ -71,7 +71,9 @@
 # ...etc.
 #
 # GlobalExtraParams allows extra parameters to be (conditionally) added to the Solr
-# search request:
+# search request.
+#
+# Example showcasing all the available conditions:
 #
 # GlobalExtraParams:
 #   - param: bf
@@ -96,10 +98,6 @@
 # - SearchTypeIn      At least one of the search types must be in the given list
 # - AllSearchTypesIn  All of the search types must be in the given list
 # - SearchTypeNotIn   None of the search types must be in the given list
-#
-# Note that conditions are processed in the order of occurrence. SearchTypeNotIn is
-# skipped if a previous match has been found with SearchTypeIn, but if
-# SearchTypeNotIn comes first, it will rule.
 #
 # Example: Boost more recent material if any of the search fields is of type
 # "AllFields" or "Title" unless there's a search type specific boost:
