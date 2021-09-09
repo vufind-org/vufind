@@ -288,10 +288,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return implode(' AND ', $parts);
     }
 
-    protected function getTitlesAboutQueryParams(&$author): string
+    protected function getTitlesAboutQueryParams(&$author, $fuzzy=false): string
     {
         if ($author instanceof AuthorityRecordDriver) {
-            $queryString = 'topic_all:"' . $author->getTitle() . '"';
+            $queryString = 'topic_id:"' . $author->getUniqueId() . '"';
+            if ($fuzzy) {
+                $queryString = 'OR topic_all:"' . $author->getTitle() . '"';
+            }
         } else {
             $queryString = 'topic_all:"' . $author . '"';
         }
