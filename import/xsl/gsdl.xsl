@@ -10,6 +10,9 @@
     <xsl:param name="institution">My Institute</xsl:param>
     <xsl:param name="collection">DEMO</xsl:param>
     <xsl:param name="gsdlurl">http://greenstone.org</xsl:param>
+    <xsl:param name="id_tag_name">identifier</xsl:param>
+    <xsl:param name="change_tracking_core">biblio</xsl:param>
+    <xsl:param name="change_tracking_date_tag_name"></xsl:param>
     <xsl:param name="workKey_include_regEx"></xsl:param>
     <xsl:param name="workKey_exclude_regEx"></xsl:param>
     <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
@@ -33,7 +36,7 @@
                 <!-- ID -->
                 <!-- Important: This relies on an <identifier> tag being injected by the OAI-PMH harvester. -->
                 <field name="id">
-                    <xsl:value-of select="identifier"/>
+                    <xsl:value-of select="*[name()=$id_tag_name]"/>
                 </field>
                 <!-- RECORD FORMAT -->
                 <field name="record_format">gsdl</field>
@@ -162,6 +165,16 @@
                         <xsl:value-of select="." />
                     </field>
                 </xsl:for-each>
+
+                <!-- Change Tracking (note that the identifier selected below must match the id field above)-->
+                <xsl:if test="$change_tracking_date_tag_name">
+                    <field name="first_indexed">
+                        <xsl:value-of select="php:function('VuFind::getFirstIndexed', $change_tracking_core, normalize-space(string(*[name()=$id_tag_name])), normalize-space(*[name()=$change_tracking_date_tag_name]))" />
+                    </field>
+                    <field name="last_indexed">
+                        <xsl:value-of select="php:function('VuFind::getLastIndexed', $change_tracking_core, normalize-space(string(*[name()=$id_tag_name])), normalize-space(*[name()=$change_tracking_date_tag_name]))" />
+                    </field>
+                </xsl:if>
             </doc>
         </add>
     </xsl:template>
