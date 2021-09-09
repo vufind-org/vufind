@@ -57,8 +57,9 @@ class InjectTemplateListenerFactory
         $modules = $container->get('ModuleManager')->getModules();
         $modules = str_replace('\\', '/', $modules);
         array_walk(
-            $modules, function (&$elem) {
-                $elem  .= '/';
+            $modules,
+            function (&$elem) {
+                $elem .= '/';
             }
         );
         $prefixes = array_merge($prefixes, $modules);
