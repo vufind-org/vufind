@@ -30,6 +30,7 @@
  */
 namespace VuFindSearch\Command;
 
+use VuFindSearch\Command\Feature\RecordIdentifierTrait;
 use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\ParamBag;
 

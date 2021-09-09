@@ -31,7 +31,7 @@ namespace VuFindSearch\Backend\Solr\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Command\CommandInterface;
-use VuFindSearch\Command\QueryOffsetLimitTrait;
+use VuFindSearch\Command\Feature\QueryOffsetLimitTrait;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 

@@ -28,7 +28,7 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Command;
 
-use VuFindSearch\Command\RecordIdentifierTrait;
+use VuFindSearch\Command\Feature\RecordIdentifierTrait;
 
 /**
  * Command to fetch holdings from the WorldCat backend.

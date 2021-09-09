@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait for commands with a record identifier argument.
+ * Trait for commands with search query, offset and limit arguments.
  *
  * PHP version 7
  *
@@ -26,10 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Command;
+namespace VuFindSearch\Command\Feature;
+
+use VuFindSearch\Query\QueryInterface;
 
 /**
- * Trait for commands with a record identifier argument.
+ * Trait for commands with search query, offset and limit arguments.
  *
  * @category VuFind
  * @package  Search
@@ -37,22 +39,56 @@ namespace VuFindSearch\Command;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-trait RecordIdentifierTrait
+trait QueryOffsetLimitTrait
 {
     /**
-     * Record identifier.
+     * Search query.
      *
-     * @var string
+     * @var QueryInterface
      */
-    protected $id;
+    protected $query;
 
     /**
-     * Return record identifier.
+     * Search offset.
      *
-     * @return string
+     * @var int
      */
-    public function getRecordIdentifier(): string
+    protected $offset;
+
+    /**
+     * Search limit.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
+     * Return search query.
+     *
+     * @return QueryInterface
+     */
+    public function getQuery(): QueryInterface
     {
-        return $this->id;
+        return $this->query;
+    }
+
+    /**
+     * Return search offset.
+     *
+     * @return int
+     */
+    public function getOffset(): int
+    {
+        return $this->offset;
+    }
+
+    /**
+     * Return search limit.
+     *
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
     }
 }

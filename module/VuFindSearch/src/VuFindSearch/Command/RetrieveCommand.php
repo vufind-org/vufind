@@ -31,6 +31,7 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Command\Feature\RecordIdentifierTrait;
 use VuFindSearch\ParamBag;
 
 /**

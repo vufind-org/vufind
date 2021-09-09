@@ -31,6 +31,7 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Command\Feature\QueryOffsetLimitTrait;
 use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\QueryInterface;
