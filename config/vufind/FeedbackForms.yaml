@@ -43,7 +43,7 @@
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
 #     post (string) Help text displayed at the end of the form (translation key)
 #
-#   Help texts may contain HTML-formatting.
+#     Help texts may contain HTML-formatting.
 #
 #   fields (array) List of form elements with the following options:
 #
@@ -67,8 +67,8 @@
 #      post (string)     Like above but the help text is displayed after the element.
 #
 #
-#     And for select, radio and checkbox elements:
-# 
+#     Additional settings for select, radio and checkbox elements:
+#
 #     options (array) List of select values (translation keys)
 #                     or a list of options with 'value' and 'label' (translation) keys.
 #                       Examples:
@@ -84,7 +84,7 @@
 #                           - value: value-2
 #                             label: label-2
 #
-#     or for select elements alternatively:
+#     Alternative settings for select elements:
 #
 #     optionGroups (array) List of option groups with keys:
 #       label (string) Group label (translation key)
