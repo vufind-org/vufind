@@ -583,20 +583,19 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with GlobalExtraParams
+     * Data provider for testIndividualQueryHandlerWithGlobalExtraParams().
      *
-     * @return void
+     * @return array
      */
-    public function testQueryHandlerWithGlobalExtraParams()
+    public function globalExtraParamsIndividualQueryDataProvider(): array
     {
-        $testSets = [
-            [
-                'description' => 'Single value, no extra params',
+        return [
+            'Single value, no extra params' => [
+                null,
                 'expected1' => [],
                 'expected2' => [],
             ],
-            [
-                'description' => 'Single value',
+            'Single value' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -610,8 +609,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'bq' => ['a:foo']
                 ],
             ],
-            [
-                'description' => 'Two values',
+            'Two values' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -634,8 +632,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     ]
                 ],
             ],
-            [
-                'description' => 'Value with SearchTypeIn condition',
+            'Value with SearchTypeIn condition' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -656,8 +653,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'bq' => null
                 ]
             ],
-            [
-                'description' => 'Value with SearchTypeNotIn condition',
+            'Value with SearchTypeNotIn condition' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -678,8 +674,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'bq' => ['a:foo']
                 ],
             ],
-            [
-                'description' => 'Value with NoDisMaxParams = [bf] condition',
+            'Value with NoDisMaxParams = [bf] condition' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -699,10 +694,64 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+    }
 
-        $groupTestSets = [
-            [
-                'description' => 'Search type in [test]',
+    /**
+     * Test generation with GlobalExtraParams using individual queries.
+     *
+     * @return void
+     * @dataProvider globalExtraParamsIndividualQueryDataProvider
+     */
+    public function testIndividualQueryHandlerWithGlobalExtraParams(
+        $globalExtraParams,
+        $expected1,
+        $expected2
+    ) {
+        $q1 = new Query('q', 'test');
+        $q2 = new Query('q', 'test2');
+
+        $specs = [
+            'test' => [
+                'DismaxFields' => ['a'],
+                'DismaxParams' => [
+                    ['bf', 'a:filter']
+                ]
+            ],
+        ];
+        if (!empty($globalExtraParams)) {
+            $specs['GlobalExtraParams'] = $globalExtraParams;
+        }
+
+        $qb = new QueryBuilder($specs);
+        $response = $qb->build($q1);
+        foreach ($expected1 as $field => $expected) {
+            $values = $response->get($field);
+            $this->assertEquals(
+                $expected,
+                $values,
+                'query 1'
+            );
+        }
+        $response = $qb->build($q2);
+        foreach ($expected2 as $field => $expected) {
+            $values = $response->get($field);
+            $this->assertEquals(
+                $expected,
+                $values,
+                'query 2'
+            );
+        }
+    }
+
+    /**
+     * Data provider for testGroupedQueryHandlerWithGlobalExtraParams().
+     *
+     * @return array
+     */
+    public function globalExtraParamsGroupedQueryDataProvider(): array
+    {
+        return [
+            'Search type in [test]' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -718,8 +767,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'bq' => ['a:foo']
                 ],
             ],
-            [
-                'description' => 'All search types in [test, test2]',
+            'All search types in [test, test2]' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -735,8 +783,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'bq' => ['a:foo']
                 ],
             ],
-            [
-                'description' => 'All search types in [test, no]',
+            'All search types in [test, no]' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -752,8 +799,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'bq' => null
                 ],
             ],
-            [
-                'description' => 'All search types in [test, test2, no]',
+            'All search types in [test, test2, no]' => [
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
@@ -770,67 +816,41 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * Test generation with GlobalExtraParams using a grouped query.
+     *
+     * @return void
+     * @dataProvider globalExtraParamsIndividualQueryDataProvider
+     */
+    public function testGroupedQueryHandlerWithGlobalExtraParams(
+        $globalExtraParams,
+        $expectedFields
+    ) {
         $q1 = new Query('q', 'test');
         $q2 = new Query('q', 'test2');
-
-        foreach ($testSets as $testSet) {
-            $specs = [
-                'test' => [
-                    'DismaxFields' => ['a'],
-                    'DismaxParams' => [
-                        ['bf', 'a:filter']
-                    ]
-                ],
-            ];
-            if (!empty($testSet['GlobalExtraParams'])) {
-                $specs['GlobalExtraParams'] = $testSet['GlobalExtraParams'];
-            }
-
-            $qb = new QueryBuilder($specs);
-            $response = $qb->build($q1);
-            foreach ($testSet['expected1'] as $field => $expected) {
-                $values = $response->get($field);
-                $this->assertEquals(
-                    $expected,
-                    $values,
-                    $testSet['description'] . ' - query 1'
-                );
-            }
-            $response = $qb->build($q2);
-            foreach ($testSet['expected2'] as $field => $expected) {
-                $values = $response->get($field);
-                $this->assertEquals(
-                    $expected,
-                    $values,
-                    $testSet['description'] . ' - query 2'
-                );
-            }
+        $group = new QueryGroup('AND', [$q1, $q2]);
+        $specs = [
+            'test' => [
+                'DismaxFields' => ['a'],
+                'DismaxParams' => [
+                    ['bf', 'a:filter']
+                ]
+            ],
+        ];
+        if (!empty($globalExtraParams)) {
+            $specs['GlobalExtraParams'] = $globalExtraParams;
         }
 
-        $group = new QueryGroup('AND', [$q1, $q2]);
-        foreach ($groupTestSets as $testSet) {
-            $specs = [
-                'test' => [
-                    'DismaxFields' => ['a'],
-                    'DismaxParams' => [
-                        ['bf', 'a:filter']
-                    ]
-                ],
-            ];
-            if (!empty($testSet['GlobalExtraParams'])) {
-                $specs['GlobalExtraParams'] = $testSet['GlobalExtraParams'];
-            }
-
-            $qb = new QueryBuilder($specs);
-            $response = $qb->build($group);
-            foreach ($testSet['expected'] as $field => $expected) {
-                $values = $response->get($field);
-                $this->assertEquals(
-                    $expected,
-                    $values,
-                    $testSet['description']
-                );
-            }
+        $qb = new QueryBuilder($specs);
+        $response = $qb->build($group);
+        foreach ($expectedFields as $field => $expected) {
+            $values = $response->get($field);
+            $this->assertEquals(
+                $expected,
+                $values
+            );
         }
     }
 }
