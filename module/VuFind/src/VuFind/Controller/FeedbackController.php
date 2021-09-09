@@ -101,7 +101,7 @@ class FeedbackController extends AbstractBase
             ['fields' => $messageParams]
         );
 
-        [$senderName, $senderEmail] = $this->getSender();
+        [$senderName, $senderEmail] = $this->getSender($form);
 
         $replyToName = $params->fromPost(
             'name',
@@ -234,13 +234,17 @@ class FeedbackController extends AbstractBase
     /**
      * Return email sender from configuration.
      *
+     * @param Form $form Form
+     *
      * @return array with name, email
      */
-    protected function getSender()
+    protected function getSender(Form $form)
     {
         $config = $this->getConfig()->Feedback;
-        $email = $config->sender_email ?? 'noreply@vufind.org';
-        $name = $config->sender_name ?? 'VuFind Feedback';
+        $email = $form->getEmailFromAddress()
+            ?: $config->sender_email ?? 'noreply@vufind.org';
+        $name = $form->getEmailFromName()
+            ?: $config->sender_name ?? 'VuFind Feedback';
 
         return [$name, $email];
     }

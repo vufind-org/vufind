@@ -70,6 +70,13 @@ class Form extends \Laminas\Form\Form implements
     ];
 
     /**
+     * VuFind main configuration
+     *
+     * @var array
+     */
+    protected $vufindConfig;
+
+    /**
      * Default form configuration (from config.ini > Feedback)
      *
      * @var array
@@ -109,7 +116,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
-     * @param array               $defaultConfig     Default Feedback configuration
+     * @param array               $config            VuFind main configuration
      * (optional)
      *
      * @throws \Exception
@@ -117,11 +124,12 @@ class Form extends \Laminas\Form\Form implements
     public function __construct(
         YamlReader $yamlReader,
         HelperPluginManager $viewHelperManager,
-        array $defaultConfig = null
+        array $config = null
     ) {
         parent::__construct();
 
-        $this->defaultFormConfig = $defaultConfig;
+        $this->vufindConfig = $config;
+        $this->defaultFormConfig = $config['Feedback'] ?? null;
         $this->yamlReader = $yamlReader;
         $this->viewHelperManager = $viewHelperManager;
     }
@@ -302,6 +310,30 @@ class Form extends \Laminas\Form\Form implements
         return !empty($this->formConfig['response'])
             ? $this->formConfig['response']
             : 'Thank you for your feedback.';
+    }
+
+    /**
+     * Return email from address
+     *
+     * @return string
+     */
+    public function getEmailFromAddress(): string
+    {
+        return !empty($this->formConfig['emailFrom']['email'])
+            ? $this->formConfig['emailFrom']['email']
+            : '';
+    }
+
+    /**
+     * Return email from name
+     *
+     * @return string
+     */
+    public function getEmailFromName(): string
+    {
+        return !empty($this->formConfig['emailFrom']['name'])
+            ? $this->formConfig['emailFrom']['name']
+            : '';
     }
 
     /**
@@ -655,6 +687,7 @@ class Form extends \Laminas\Form\Form implements
     protected function getFormSettingFields()
     {
         return [
+            'emailFrom',
             'emailSubject',
             'enabled',
             'help',
