@@ -7,9 +7,9 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">OJS</xsl:param>
-    <xsl:param name="id_selector">identifier</xsl:param>
+    <xsl:param name="id_tag_name">identifier</xsl:param>
     <xsl:param name="change_tracking_core">biblio</xsl:param>
-    <xsl:param name="change_tracking_date_selector"></xsl:param>
+    <xsl:param name="change_tracking_date_tag_name"></xsl:param>
     <xsl:param name="workKey_include_regEx"></xsl:param>
     <xsl:param name="workKey_exclude_regEx"></xsl:param>
     <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
@@ -33,7 +33,7 @@
                 <!-- ID -->
                 <!-- Important: This relies on an <identifier> tag being injected by the OAI-PMH harvester. -->
                 <field name="id">
-                    <xsl:value-of select="*[local-name()=$id_selector]"/>
+                    <xsl:value-of select="*[name()=$id_tag_name]"/>
                 </field>
 
                 <!-- RECORD FORMAT -->
@@ -147,12 +147,12 @@
                 </xsl:for-each>
 
                 <!-- Change Tracking (note that the identifier selected below must match the id field above)-->
-                <xsl:if test="$change_tracking_date_selector">
+                <xsl:if test="$change_tracking_date_tag_name">
                     <field name="first_indexed">
-                        <xsl:value-of select="php:function('VuFind::getFirstIndexed', $change_tracking_core, normalize-space(string(identifier)), normalize-space(*[local-name()=$change_tracking_date_selector]))" />
+                        <xsl:value-of select="php:function('VuFind::getFirstIndexed', $change_tracking_core, normalize-space(string(*[name()=$id_tag_name])), normalize-space(*[name()=$change_tracking_date_tag_name]))" />
                     </field>
                     <field name="last_indexed">
-                        <xsl:value-of select="php:function('VuFind::getLastIndexed', $change_tracking_core, normalize-space(string(*[local-name()=$id_selector])), normalize-space(*[local-name()=$change_tracking_date_selector]))" />
+                        <xsl:value-of select="php:function('VuFind::getLastIndexed', $change_tracking_core, normalize-space(string(*[name()=$id_tag_name])), normalize-space(*[name()=$change_tracking_date_tag_name]))" />
                     </field>
                 </xsl:if>
             </doc>
