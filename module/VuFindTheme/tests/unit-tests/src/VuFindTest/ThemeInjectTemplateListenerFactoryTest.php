@@ -1,10 +1,10 @@
 <?php
 /**
- * InjectTemplateListener Test Class
+ * InjectTemplateListenerFactory Test Class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,10 +27,13 @@
  */
 namespace VuFindTest;
 
+use Laminas\ModuleManager\ModuleManager;
+use PHPUnit\Framework\TestCase;
 use VuFindTheme\InjectTemplateListener;
+use VuFindTheme\InjectTemplateListenerFactory;
 
 /**
- * InjectTemplateListener Test Class
+ * InjectTemplateListenerFactory Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -38,41 +41,36 @@ use VuFindTheme\InjectTemplateListener;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
+class ThemeInjectTemplateListenerFactoryTest extends TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Test prefix stripping.
+     * Test that the factory correctly processes prefix configuration.
      *
      * @return void
      */
-    public function testPrefixStripping()
+    public function testFactoryPrefixProcessing()
     {
-        $l = new InjectTemplateListener(['VuFind/']);
-        // We should strip a registered prefix:
+        $factory = new InjectTemplateListenerFactory();
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $testConfig = [
+            'vufind' => [
+                'extra_theme_prefixes' => ['Extra/'],
+                'excluded_theme_prefixes' => ['Laminas'],
+            ]
+        ];
+        $container->set('config', $testConfig);
+        $modules = ['Laminas\Foo', 'LaminasBar', 'VuFind\Foo', 'VuFind'];
+        $mockModuleManager = $this->getMockBuilder(ModuleManager::class)
+            ->disableOriginalConstructor()->getMock();
+        $mockModuleManager->expects($this->once())->method('getModules')
+            ->will($this->returnValue($modules));
+        $container->set('ModuleManager', $mockModuleManager);
+        $listener = $factory($container, InjectTemplateListener::class);
         $this->assertEquals(
-            'search',
-            $l->mapController(\VuFind\Controller\SearchController::class)
-        );
-        // We should NOT strip an unregistered prefix:
-        $this->assertEquals(
-            'vufindadmin/admin',
-            $l->mapController(\VuFindAdmin\Controller\AdminController::class)
-        );
-    }
-
-    /**
-     * Test camelcase handling.
-     *
-     * @return void
-     */
-    public function testCamelCaseToLowerCase()
-    {
-        $l = new InjectTemplateListener(['VuFind/']);
-        $this->assertEquals(
-            'testcase',
-            $this->callMethod($l, 'inflectName', ['VuFind/testCase'])
+            ['Extra/', 'VuFind/Foo/', 'VuFind/'],
+            array_values($listener->getPrefixes())
         );
     }
 }
