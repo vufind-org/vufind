@@ -50,19 +50,18 @@ class InjectTemplateListenerFactory
     public function __invoke(ContainerInterface $container)
     {
         $config = $container->get('config');
-        $prefixes = $config['vufind']['template_injection'] ?? [];
+        $prefixes = $config['vufind']['extra_theme_prefixes'] ?? [];
+        $exclude = $config['vufind']['excluded_theme_prefixes'] ?? [];
 
         // we assume that - by default - modules try loading templates from
         // their own namespace, thus all loaded modules are included for inflection
-        $modules = $container->get('ModuleManager')->getModules();
-        $modules = str_replace('\\', '/', $modules);
-        array_walk(
-            $modules,
-            function (&$elem) {
-                $elem .= '/';
-            }
+        $modules = array_map(
+            function ($module) {
+                return str_replace('\\', '/', $module) . '/';
+            },
+            $container->get('ModuleManager')->getModules()
         );
-        $prefixes = array_merge($prefixes, $modules);
+        $prefixes = array_diff(array_merge($prefixes, $modules), $exclude);
 
         return new InjectTemplateListener(array_unique($prefixes));
     }
