@@ -44,26 +44,73 @@ use VuFindSearch\ParamBag;
 class AutocompleteCommand extends CallMethodCommand
 {
     /**
+     * Simple query string.
+     *
+     * @var string
+     */
+    protected $query;
+
+    /**
+     * Autocomplete type.
+     *
+     * @var string
+     */
+    protected $domain;
+
+    /**
      * Constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param string    $query   Simple query string
-     * @param string    $domain  Autocomplete type (e.g. 'rawqueries' or 'holdings')
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param string    $query     Simple query string
+     * @param string    $domain    Autocomplete type, e.g. 'rawqueries' or 'holdings'
+     * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         string $query,
         string $domain,
         ParamBag $params = null
     ) {
+        $this->query = $query;
+        $this->domain = $domain;
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
             'autocomplete',
-            [$query, $domain],
-            $params,
-            false
+            $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getQuery(),
+            $this->getDomain()
+        ];
+    }
+
+    /**
+     * Return simple query string.
+     *
+     * @return string
+     */
+    public function getQuery(): string
+    {
+        return $this->query;
+    }
+
+    /**
+     * Return autocomplete type.
+     *
+     * @return string
+     */
+    public function getDomain(): string
+    {
+        return $this->domain;
     }
 }

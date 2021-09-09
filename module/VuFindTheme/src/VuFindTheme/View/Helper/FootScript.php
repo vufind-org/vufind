@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Command to fetch holdings from the WorldCat backend.
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
  * PHP version 7
  *
@@ -21,51 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindSearch\Backend\WorldCat\Command;
-
-use VuFindSearch\Command\Feature\RecordIdentifierTrait;
+namespace VuFindTheme\View\Helper;
 
 /**
- * Command to fetch holdings from the WorldCat backend.
+ * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
  * @category VuFind
- * @package  Search
+ * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class GetHoldingsCommand extends \VuFindSearch\Command\CallMethodCommand
+class FootScript extends HeadScript
 {
-    use RecordIdentifierTrait;
-
-    /**
-     * Constructor
-     *
-     * @param string $backendId Search backend identifier
-     * @param string $id        WorldCat record identifier
-     */
-    public function __construct(string $backendId, string $id)
-    {
-        $this->id = $id;
-        parent::__construct(
-            $backendId,
-            \VuFindSearch\Backend\WorldCat\Backend::class,
-            'getHoldings'
-        );
-    }
-
-    /**
-     * Return search backend interface method arguments.
-     *
-     * @return array
-     */
-    public function getArguments(): array
-    {
-        return [$this->getRecordIdentifier()];
-    }
+    // pass
 }

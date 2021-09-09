@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "133507c74441d4fec920cbaa4b886c8e",
+    "content-hash": "0c2df0935f7cce60be25fd4c38b3d58f",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2522,58 +2522,62 @@
         },
         {
             "name": "laminas/laminas-form",
-            "version": "2.16.3",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-form.git",
-                "reference": "76fe85b3f126183fe965d60e32e2bf6c7c108d61"
+                "reference": "2cb637d246d44fcb2a55aa6735df6769c5c0f0cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/76fe85b3f126183fe965d60e32e2bf6c7c108d61",
-                "reference": "76fe85b3f126183fe965d60e32e2bf6c7c108d61",
+                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/2cb637d246d44fcb2a55aa6735df6769c5c0f0cb",
+                "reference": "2cb637d246d44fcb2a55aa6735df6769c5c0f0cb",
                 "shasum": ""
             },
             "require": {
-                "laminas/laminas-hydrator": "^3.2 || ^4.0",
-                "laminas/laminas-inputfilter": "^2.10",
-                "laminas/laminas-stdlib": "^3.3",
-                "laminas/laminas-zendframework-bridge": "^1.1",
+                "laminas/laminas-hydrator": "^4.1.0",
+                "laminas/laminas-inputfilter": "^2.12.0",
+                "laminas/laminas-stdlib": "^3.3.1",
                 "php": "^7.3 || ~8.0.0"
             },
             "conflict": {
-                "laminas/laminas-code": "<3.5.0 || >=4.0.0"
-            },
-            "replace": {
-                "zendframework/zend-form": "^2.14.3"
+                "doctrine/annotations": "<1.12.0",
+                "laminas/laminas-captcha": "<2.10.0",
+                "laminas/laminas-eventmanager": "<3.3.0",
+                "laminas/laminas-i18n": "<2.11.0",
+                "laminas/laminas-recaptcha": "<3.3.0",
+                "laminas/laminas-servicemanager": "<3.6.0",
+                "laminas/laminas-view": "<2.12.0"
             },
             "require-dev": {
-                "doctrine/annotations": "^1.10.4",
-                "laminas/laminas-cache": "^2.9.0",
-                "laminas/laminas-captcha": "^2.9.0",
-                "laminas/laminas-code": "^3.5.0",
-                "laminas/laminas-coding-standard": "^1.0.0",
-                "laminas/laminas-escaper": "^2.6.1",
-                "laminas/laminas-eventmanager": "^3.3.0",
-                "laminas/laminas-filter": "^2.9.4",
-                "laminas/laminas-i18n": "^2.10.3",
-                "laminas/laminas-recaptcha": "^3.2.0",
-                "laminas/laminas-servicemanager": "^3.4.1",
-                "laminas/laminas-session": "^2.9.3",
-                "laminas/laminas-text": "^2.7.1",
-                "laminas/laminas-validator": "^2.13.4",
-                "laminas/laminas-view": "^2.11.4",
-                "phpspec/prophecy-phpunit": "^2.0",
-                "phpunit/phpunit": "^9.4.2"
+                "doctrine/annotations": "^1.12.0",
+                "ext-intl": "*",
+                "laminas/laminas-captcha": "^2.10.0",
+                "laminas/laminas-coding-standard": "^2.3.0",
+                "laminas/laminas-escaper": "^2.7.0",
+                "laminas/laminas-eventmanager": "^3.3.1",
+                "laminas/laminas-filter": "^2.11.0",
+                "laminas/laminas-i18n": "^2.11.1",
+                "laminas/laminas-modulemanager": "^2.10.2",
+                "laminas/laminas-recaptcha": "^3.3.0",
+                "laminas/laminas-servicemanager": "^3.6.4",
+                "laminas/laminas-session": "^2.10.0",
+                "laminas/laminas-text": "^2.8.1",
+                "laminas/laminas-validator": "^2.14.4",
+                "laminas/laminas-view": "^2.12.0",
+                "phpspec/prophecy-phpunit": "^2.0.1",
+                "phpunit/phpunit": "^9.5.5",
+                "psalm/plugin-phpunit": "^0.16.0",
+                "vimeo/psalm": "^4.7.3"
             },
             "suggest": {
-                "laminas/laminas-captcha": "^2.9, required for using CAPTCHA form elements",
-                "laminas/laminas-code": "^3.5, required to use laminas-form annotations support",
+                "doctrine/annotations": "^1.12, required to use laminas-form annotations support",
+                "laminas/laminas-captcha": "^2.10, required for using CAPTCHA form elements",
                 "laminas/laminas-eventmanager": "^3.3, reuired for laminas-form annotations support",
-                "laminas/laminas-i18n": "^2.10, required when using laminas-form view helpers",
-                "laminas/laminas-recaptcha": "^3.2, in order to use the ReCaptcha form element",
-                "laminas/laminas-servicemanager": "^3.4.1, required to use the form factories or provide services",
-                "laminas/laminas-view": "^2.11.4, required for using the laminas-form view helpers"
+                "laminas/laminas-i18n": "^2.11, required when using laminas-form view helpers",
+                "laminas/laminas-recaptcha": "^3.3, in order to use the ReCaptcha form element",
+                "laminas/laminas-servicemanager": "^3.6, required to use the form factories or provide services",
+                "laminas/laminas-view": "^2.12, required for using the laminas-form view helpers"
             },
             "type": "library",
             "extra": {
@@ -2611,7 +2615,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-04-07T06:22:41+00:00"
+            "time": "2021-06-23T05:46:05+00:00"
         },
         {
             "name": "laminas/laminas-http",
@@ -2681,26 +2685,25 @@
         },
         {
             "name": "laminas/laminas-hydrator",
-            "version": "4.2.2",
+            "version": "4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-hydrator.git",
-                "reference": "ed5d9cacc551a37b552cb44e1bbf315512612248"
+                "reference": "cc5ea6b42d318dbac872d94e8dca2d3013a37ab5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-hydrator/zipball/ed5d9cacc551a37b552cb44e1bbf315512612248",
-                "reference": "ed5d9cacc551a37b552cb44e1bbf315512612248",
+                "url": "https://api.github.com/repos/laminas/laminas-hydrator/zipball/cc5ea6b42d318dbac872d94e8dca2d3013a37ab5",
+                "reference": "cc5ea6b42d318dbac872d94e8dca2d3013a37ab5",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-stdlib": "^3.3",
-                "laminas/laminas-zendframework-bridge": "^1.0",
-                "php": "^7.3 || ~8.0.0",
+                "php": "^7.3 || ~8.0.0 || ~8.1.0",
                 "webmozart/assert": "^1.10"
             },
-            "replace": {
-                "zendframework/zend-hydrator": "^3.0.2"
+            "conflict": {
+                "zendframework/zend-hydrator": "*"
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~2.3.0",
@@ -2708,8 +2711,10 @@
                 "laminas/laminas-modulemanager": "^2.8",
                 "laminas/laminas-serializer": "^2.9",
                 "laminas/laminas-servicemanager": "^3.3.2",
-                "phpunit/phpunit": "~9.3.0",
+                "phpbench/phpbench": "^1.0",
+                "phpunit/phpunit": "~9.5.5",
                 "psalm/plugin-phpunit": "^0.16.1",
+                "psr/cache": "1.0.1",
                 "vimeo/psalm": "^4.8.1"
             },
             "suggest": {
@@ -2753,7 +2758,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-08-02T15:28:57+00:00"
+            "time": "2021-09-09T09:55:00+00:00"
         },
         {
             "name": "laminas/laminas-i18n",
@@ -5715,16 +5720,16 @@
         },
         {
             "name": "phing/phing",
-            "version": "2.16.4",
+            "version": "2.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phingofficial/phing.git",
-                "reference": "30831b22fc6bab57003f1893842668c44b7f65ae"
+                "reference": "c0a3bce822c088d60b30a577c25debb42325d0f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phingofficial/phing/zipball/30831b22fc6bab57003f1893842668c44b7f65ae",
-                "reference": "30831b22fc6bab57003f1893842668c44b7f65ae",
+                "url": "https://api.github.com/repos/phingofficial/phing/zipball/c0a3bce822c088d60b30a577c25debb42325d0f8",
+                "reference": "c0a3bce822c088d60b30a577c25debb42325d0f8",
                 "shasum": ""
             },
             "require": {
@@ -5807,7 +5812,7 @@
             "support": {
                 "irc": "irc://irc.freenode.net/phing",
                 "issues": "https://www.phing.info/trac/report",
-                "source": "https://github.com/phingofficial/phing/tree/2.16.4"
+                "source": "https://github.com/phingofficial/phing/tree/2.17.0"
             },
             "funding": [
                 {
@@ -5823,7 +5828,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2021-01-29T14:00:54+00:00"
+            "time": "2021-08-31T13:33:01+00:00"
         },
         {
             "name": "ppito/laminas-whoops",

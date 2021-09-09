@@ -44,11 +44,11 @@ class GetQueryBuilderCommand extends AbstractBase
     /**
      * Constructor.
      *
-     * @param string $backend Search backend identifier
+     * @param string $backendId Search backend identifier
      */
-    public function __construct(string $backend)
+    public function __construct(string $backendId)
     {
-        parent::__construct($backend, []);
+        parent::__construct($backendId, []);
     }
 
     /**

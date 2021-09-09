@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for HeadThemeResources view helper.
+ * Factory for SetupThemeResources view helper.
  *
  * PHP version 7
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for HeadThemeResources view helper.
+ * Factory for SetupThemeResources view helper.
  *
  * @category VuFind
  * @package  Theme
@@ -42,7 +42,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HeadThemeResourcesFactory implements FactoryInterface
+class SetupThemeResourcesFactory implements FactoryInterface
 {
     /**
      * Create an object

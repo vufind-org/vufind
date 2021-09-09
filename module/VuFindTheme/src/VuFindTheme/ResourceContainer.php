@@ -189,6 +189,10 @@ class ResourceContainer
      */
     protected function addJsArrayEntry($jsEntry)
     {
+        if (!isset($jsEntry['position'])) {
+            $jsEntry['position'] = 'header';
+        }
+
         if (isset($jsEntry['priority']) && isset($jsEntry['load_after'])) {
             throw new \Exception(
                 'Using "priority" as well as "load_after" in the same entry '
@@ -278,11 +282,23 @@ class ResourceContainer
     /**
      * Get Javascript files.
      *
+     * @param string $position Position where the files should be inserted
+     * (allowed values are 'header' or 'footer').
+     *
      * @return array
      */
-    public function getJs()
+    public function getJs(string $position = null)
     {
-        return $this->js;
+        if (!isset($position)) {
+            return $this->js;
+        } else {
+            return array_filter(
+                $this->js,
+                function ($jsFile) use ($position) {
+                    return $jsFile['position'] == $position;
+                }
+            );
+        }
     }
 
     /**

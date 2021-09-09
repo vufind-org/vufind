@@ -42,20 +42,45 @@ use VuFindSearch\Backend\BrowZine\Backend;
 class LookupIssnsCommand extends \VuFindSearch\Command\CallMethodCommand
 {
     /**
+     * ISSNs to look up.
+     *
+     * @var string|string[]
+     */
+    protected $issns;
+
+    /**
      * Constructor
      *
-     * @param string          $backend Search backend identifier
-     * @param string|string[] $issns   ISSNs to look up
+     * @param string          $backendId Search backend identifier
+     * @param string|string[] $issns     ISSNs to look up
      */
-    public function __construct(string $backend, $issns)
+    public function __construct(string $backendId, $issns)
     {
+        $this->issns = $issns;
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class,
-            'lookupIssns',
-            [$issns],
-            null,
-            false
+            'lookupIssns'
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [$this->getIssns()];
+    }
+
+    /**
+     * Return ISSNs to look up.
+     *
+     * @return string|string[]
+     */
+    public function getIssns()
+    {
+        return $this->issns;
     }
 }

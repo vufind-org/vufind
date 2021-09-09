@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Command to fetch holdings from the WorldCat backend.
+ * Trait for commands with search query, offset and limit arguments.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,50 +22,73 @@
  *
  * @category VuFind
  * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Backend\WorldCat\Command;
+namespace VuFindSearch\Command\Feature;
 
-use VuFindSearch\Command\Feature\RecordIdentifierTrait;
+use VuFindSearch\Query\QueryInterface;
 
 /**
- * Command to fetch holdings from the WorldCat backend.
+ * Trait for commands with search query, offset and limit arguments.
  *
  * @category VuFind
  * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetHoldingsCommand extends \VuFindSearch\Command\CallMethodCommand
+trait QueryOffsetLimitTrait
 {
-    use RecordIdentifierTrait;
+    /**
+     * Search query.
+     *
+     * @var QueryInterface
+     */
+    protected $query;
 
     /**
-     * Constructor
+     * Search offset.
      *
-     * @param string $backendId Search backend identifier
-     * @param string $id        WorldCat record identifier
+     * @var int
      */
-    public function __construct(string $backendId, string $id)
+    protected $offset;
+
+    /**
+     * Search limit.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
+     * Return search query.
+     *
+     * @return QueryInterface
+     */
+    public function getQuery(): QueryInterface
     {
-        $this->id = $id;
-        parent::__construct(
-            $backendId,
-            \VuFindSearch\Backend\WorldCat\Backend::class,
-            'getHoldings'
-        );
+        return $this->query;
     }
 
     /**
-     * Return search backend interface method arguments.
+     * Return search offset.
      *
-     * @return array
+     * @return int
      */
-    public function getArguments(): array
+    public function getOffset(): int
     {
-        return [$this->getRecordIdentifier()];
+        return $this->offset;
+    }
+
+    /**
+     * Return search limit.
+     *
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
     }
 }
