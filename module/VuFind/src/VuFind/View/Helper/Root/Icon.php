@@ -185,8 +185,8 @@ class Icon extends AbstractHelper
     /**
      * Returns inline HTML for icon
      *
-     * @param string $name  Which icon?
-     * @param array  $attrs Additional HTML attributes
+     * @param string       $name  Which icon?
+     * @param array|string $attrs Additional HTML attributes
      *
      * @return string
      */
@@ -197,14 +197,16 @@ class Icon extends AbstractHelper
             $this->styleAppended = true;
         }
 
+        // Class name shortcut
+        if (is_string($attrs)) {
+            $attrs = ['class' => $attrs];
+        }
+
         $cacheKey = $this->cacheKey($name, $attrs);
         $cached = $this->cache->getItem($cacheKey);
 
         if ($cached == null) {
             [$icon, $set, $template] = $this->mapIcon($name);
-
-            // Compile additional HTML attributes
-            $attrs = $this->compileAttrs($attrs);
 
             // Surface set config and add icon and attrs
             $cached = $this->getView()->render(
@@ -213,7 +215,7 @@ class Icon extends AbstractHelper
                     $this->config['sets'][$set] ?? [],
                     [
                         'icon' => ($this->esc)($icon),
-                        'attrs' => $attrs,
+                        'attrs' => $this->compileAttrs($attrs),
                         'extra' => $attrs
                     ]
                 )
