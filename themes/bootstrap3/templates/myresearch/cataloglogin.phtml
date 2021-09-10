@@ -31,12 +31,11 @@
     <div class="form-group">
       <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
         <label class="control-label password-login" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
-        <input id="profile_cat_username" type="text" name="cat_username" value="" class="form-control" autocomplete="username"/>
       <?php endif; ?>
       <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
         <label class="control-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
-        <input id="profile_cat_username" type="email" name="cat_username" value="" class="form-control" autocomplete="email"/>
       <?php endif; ?>
+      <input id="profile_cat_username" type="<?='email' === $this->loginMethod ? 'email' : 'text'?>" name="cat_username" value="" class="form-control" autocomplete="<?='email' === $this->loginMethod ? 'email' : 'username'?>"/>
     </div>
     <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
       <div class="form-group">

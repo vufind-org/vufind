@@ -48,7 +48,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmptyConfigs(): void
     {
-        $plugin = new Index([], $this->getMockIdFetcher(), 100);
+        $plugin = new Index([], $this->getMockIdFetcher(), 100, []);
         $this->assertEmpty(iterator_to_array($plugin->getUrls()));
     }
 
@@ -61,6 +61,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
     {
         $backendId = 'bar';
         $countPerPage = 2;
+        $fq = ['format:Book'];
         $fetcher = $this->getMockIdFetcher();
         $fetcher->expects($this->once())->method('getInitialOffset')
             ->will($this->returnValue('*'));
@@ -68,8 +69,8 @@ class IndexTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($backendId));
         $fetcher->expects($this->exactly(2))->method('getIdsFromBackend')
             ->withConsecutive(
-                [$backendId, '*', $countPerPage],
-                [$backendId, 'offset', $countPerPage]
+                [$backendId, '*', $countPerPage, $fq],
+                [$backendId, 'offset', $countPerPage, $fq]
             )->willReturnOnConsecutiveCalls(
                 ['ids' => [1, 2], 'nextOffset' => 'offset'],
                 ['ids' => [3]]
@@ -77,7 +78,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
         $config = [
             ['url' => 'http://foo/', 'id' => $backendId],
         ];
-        $plugin = new Index($config, $fetcher, $countPerPage);
+        $plugin = new Index($config, $fetcher, $countPerPage, $fq);
         $this->assertEquals(
             ['http://foo/1', 'http://foo/2', 'http://foo/3'],
             iterator_to_array($plugin->getUrls())

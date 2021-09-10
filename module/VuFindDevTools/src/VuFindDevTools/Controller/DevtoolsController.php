@@ -55,15 +55,14 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function getQueryBuilder($id)
     {
+        $command = new \VuFindSearch\Command\GetQueryBuilderCommand($id);
         try {
-            $backend = $this->serviceLocator
-                ->get(\VuFind\Search\BackendManager::class)
-                ->get($id);
+            $this->serviceLocator->get(\VuFindSearch\Service::class)
+                ->invoke($command);
         } catch (\Exception $e) {
             return null;
         }
-        return is_callable([$backend, 'getQueryBuilder'])
-            ? $backend->getQueryBuilder() : null;
+        return $command->getResult();
     }
 
     /**

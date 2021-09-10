@@ -30,7 +30,7 @@
  */
 namespace VuFind\RecordDriver\Feature;
 
-use VuFind\View\Helper\Root\RecordLink;
+use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
@@ -81,6 +81,13 @@ trait MarcAdvancedTrait
         '5' => 'cash',
         '6' => 'rvm'
     ];
+
+    /**
+     * Type to export in getXML().
+     *
+     * @var string
+     */
+    protected $xmlType = 'Bibliographic';
 
     /**
      * Get access restriction notes for the record.
@@ -853,16 +860,16 @@ trait MarcAdvancedTrait
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
-     * @param string     $format     Name of format to use (corresponds with OAI-PMH
-     * metadataPrefix parameter).
-     * @param string     $baseUrl    Base URL of host containing VuFind (optional;
+     * @param string       $format  Name of format to use (corresponds with
+     * OAI-PMH metadataPrefix parameter).
+     * @param string       $baseUrl Base URL of host containing VuFind (optional;
      * may be used to inject record URLs into XML when appropriate).
-     * @param RecordLink $recordLink Record link helper (optional; may be used to
+     * @param RecordLinker $linker  Record linker helper (optional; may be used to
      * inject record URLs into XML when appropriate).
      *
-     * @return mixed         XML, or false if format unsupported.
+     * @return mixed XML, or false if format unsupported.
      */
-    public function getXML($format, $baseUrl = null, $recordLink = null)
+    public function getXML($format, $baseUrl = null, $linker = null)
     {
         // Special case for MARC:
         if ($format == 'marc21') {
@@ -889,12 +896,12 @@ trait MarcAdvancedTrait
                 'http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd',
                 'http://www.w3.org/2001/XMLSchema-instance'
             );
-            $xml->record->addAttribute('type', 'Bibliographic');
+            $xml->record->addAttribute('type', $this->xmlType);
             return $xml->record->asXML();
         }
 
         // Try the parent method:
-        return parent::getXML($format, $baseUrl, $recordLink);
+        return parent::getXML($format, $baseUrl, $linker);
     }
 
     /**

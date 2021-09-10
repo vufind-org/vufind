@@ -581,4 +581,292 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $processedQ = $response->get('q');
         $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "foo\"bar"))', $processedQ[0]);
     }
+
+    /**
+     * Data provider for testIndividualQueryHandlerWithGlobalExtraParams().
+     *
+     * @return array
+     */
+    public function globalExtraParamsIndividualQueryDataProvider(): array
+    {
+        return [
+            'Single value, no extra params' => [
+                null,
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => null,
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => null,
+                ],
+            ],
+            'Single value' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo'
+                    ]
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => ['a:foo']
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => ['a:foo']
+                ],
+            ],
+            'Two values' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => [
+                            'a:foo',
+                            'a:bar'
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => [
+                        'a:foo',
+                        'a:bar'
+                    ]
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => [
+                        'a:foo',
+                        'a:bar'
+                    ]
+                ],
+            ],
+            'Value with SearchTypeIn condition' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SearchTypeIn' => [
+                                    'test'
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => ['a:foo']
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => null
+                ]
+            ],
+            'Value with SearchTypeNotIn condition' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SearchTypeNotIn' => [
+                                    'test'
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => null
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => ['a:foo']
+                ],
+            ],
+            'Value with NoDisMaxParams = [bf] condition' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'NoDismaxParams' => ['bf']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => null
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => ['a:foo']
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test generation with GlobalExtraParams using individual queries.
+     *
+     * @return void
+     * @dataProvider globalExtraParamsIndividualQueryDataProvider
+     */
+    public function testIndividualQueryHandlerWithGlobalExtraParams(
+        $globalExtraParams,
+        $expected1,
+        $expected2
+    ) {
+        $q1 = new Query('q', 'test');
+        $q2 = new Query('q', 'test2');
+
+        $specs = [
+            'test' => [
+                'DismaxFields' => ['a'],
+                'DismaxParams' => [
+                    ['bf', 'a:filter']
+                ]
+            ],
+        ];
+        if (!empty($globalExtraParams)) {
+            $specs['GlobalExtraParams'] = $globalExtraParams;
+        }
+
+        $qb = new QueryBuilder($specs);
+        $response = $qb->build($q1);
+        foreach ($expected1 as $field => $expected) {
+            $values = $response->get($field);
+            $this->assertEquals(
+                $expected,
+                $values,
+                'query 1'
+            );
+        }
+        $response = $qb->build($q2);
+        foreach ($expected2 as $field => $expected) {
+            $values = $response->get($field);
+            $this->assertEquals(
+                $expected,
+                $values,
+                'query 2'
+            );
+        }
+    }
+
+    /**
+     * Data provider for testGroupedQueryHandlerWithGlobalExtraParams().
+     *
+     * @return array
+     */
+    public function globalExtraParamsGroupedQueryDataProvider(): array
+    {
+        return [
+            'Search type in [test]' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SearchTypeIn' => ['test']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+            'All search types in [test, test2]' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'AllSearchTypesIn' => ['test', 'test2']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+            'All search types in [test, no]' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'AllSearchTypesIn' => ['test', 'no']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => null
+                ],
+            ],
+            'All search types in [test, test2, no]' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'AllSearchTypesIn' => ['test', 'test2', 'no']
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => [
+                    'bq' => ['a:foo']
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test generation with GlobalExtraParams using a grouped query.
+     *
+     * @return void
+     * @dataProvider globalExtraParamsGroupedQueryDataProvider
+     */
+    public function testGroupedQueryHandlerWithGlobalExtraParams(
+        $globalExtraParams,
+        $expectedFields
+    ) {
+        $q1 = new Query('q', 'test');
+        $q2 = new Query('q', 'test2');
+        $group = new QueryGroup('AND', [$q1, $q2]);
+        $specs = [
+            'test' => [
+                'DismaxFields' => ['a'],
+                'DismaxParams' => [
+                    ['bf', 'a:filter']
+                ]
+            ],
+        ];
+        if (!empty($globalExtraParams)) {
+            $specs['GlobalExtraParams'] = $globalExtraParams;
+        }
+
+        $qb = new QueryBuilder($specs);
+        $response = $qb->build($group);
+        foreach ($expectedFields as $field => $expected) {
+            $values = $response->get($field);
+            $this->assertEquals(
+                $expected,
+                $values
+            );
+        }
+    }
 }

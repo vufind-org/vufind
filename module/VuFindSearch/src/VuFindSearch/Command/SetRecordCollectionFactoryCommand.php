@@ -43,22 +43,47 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 class SetRecordCollectionFactoryCommand extends CallMethodCommand
 {
     /**
+     * Factory to set.
+     *
+     * @var RecordCollectionFactoryInterface
+     */
+    protected $factory;
+
+    /**
      * Constructor.
      *
-     * @param string                           $backend Search backend identifier
-     * @param RecordCollectionFactoryInterface $factory Factory to set
+     * @param string                           $backendId Search backend identifier
+     * @param RecordCollectionFactoryInterface $factory   Factory to set
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         RecordCollectionFactoryInterface $factory
     ) {
+        $this->factory = $factory;
         parent::__construct(
-            $backend,
+            $backendId,
             AbstractBackend::class,
-            'setRecordCollectionFactory',
-            [$factory],
-            null,
-            false
+            'setRecordCollectionFactory'
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [$this->getFactory()];
+    }
+
+    /**
+     * Return factory to set.
+     *
+     * @return RecordCollectionFactoryInterface
+     */
+    public function getFactory(): RecordCollectionFactoryInterface
+    {
+        return $this->factory;
     }
 }

@@ -82,12 +82,12 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $batchSize = $config->Index->cursor_batch_size ?? 1000;
-        $solr = $container->get(\VuFind\Search\BackendManager::class)
-            ->get($this->backendId)->getConnector();
+        $searchService = $container->get(\VuFindSearch\Service::class);
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
         return new $requestedName(
-            $solr,
+            $searchService,
+            $this->backendId,
             $formatterManager,
             rtrim($cacheDir, '/') . '/hierarchy',
             $filters,

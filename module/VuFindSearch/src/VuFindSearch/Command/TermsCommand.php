@@ -43,27 +43,95 @@ use VuFindSearch\ParamBag;
 class TermsCommand extends CallMethodCommand
 {
     /**
+     * Index field.
+     *
+     * @var string
+     */
+    protected $field;
+
+    /**
+     * Starting term.
+     *
+     * @var string
+     */
+    protected $start;
+
+    /**
+     * Maximum number of terms.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
      * Constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param string    $field   Index field
-     * @param string    $start   Starting term (blank for beginning of list)
-     * @param int       $limit   Maximum number of terms
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param string    $field     Index field
+     * @param string    $start     Starting term (blank for beginning of list)
+     * @param int       $limit     Maximum number of terms
+     * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         string $field,
         string $start,
         int $limit,
         ParamBag $params = null
     ) {
+        $this->field = $field;
+        $this->start = $start;
+        $this->limit = $limit;
         parent::__construct(
-            $backend,
+            $backendId,
             Backend::class, // we should define interface, if needed in more places
             'terms',
-            [$field, $start, $limit],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getField(),
+            $this->getStart(),
+            $this->getLimit(),
+            $this->getSearchParameters()
+        ];
+    }
+
+    /**
+     * Return index field.
+     *
+     * @return string
+     */
+    public function getField(): string
+    {
+        return $this->field;
+    }
+
+    /**
+     * Return starting term.
+     *
+     * @return string
+     */
+    public function getStart(): string
+    {
+        return $this->start;
+    }
+
+    /**
+     * Return maximum number of terms.
+     *
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
     }
 }

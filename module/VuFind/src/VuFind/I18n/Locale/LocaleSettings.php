@@ -86,7 +86,8 @@ class LocaleSettings
      */
     public function __construct(Config $config)
     {
-        $this->enabledLocales = $config->Languages->toArray();
+        $this->enabledLocales = $config->Languages ? $config->Languages->toArray()
+            : [];
         $this->defaultLocale = $this->parseDefaultLocale($config);
         $this->fallbackLocales = $this->parseFallbackLocales($config);
         $this->rightToLeftLocales = $this->parseRightToLeftLocales($config);
@@ -169,7 +170,10 @@ class LocaleSettings
      */
     protected function parseDefaultLocale(Config $config): string
     {
-        $locale = $config->Site->language;
+        $locale = $config->Site->language ?? null;
+        if (empty($locale)) {
+            throw new \Exception('Default locale not configured!');
+        }
         if (!array_key_exists($locale, $this->enabledLocales)) {
             throw new \Exception("Configured default locale '$locale' not enabled!");
         }

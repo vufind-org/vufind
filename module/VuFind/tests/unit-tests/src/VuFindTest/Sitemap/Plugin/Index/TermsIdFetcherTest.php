@@ -92,7 +92,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         return function ($command) use ($expectedCursorMark) {
             $this->assertEquals(
                 [$this->uniqueKey, $expectedCursorMark, $this->countPerPage],
-                $command->getArguments()
+                array_slice($command->getArguments(), 0, 3)
             );
             $this->assertInstanceOf(TermsCommand::class, $command);
             return true;
@@ -142,6 +142,23 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that filters are unsupported.
+     *
+     * @return void
+     */
+    public function testFilters(): void
+    {
+        $this->expectExceptionMessage('extraFilters[] option incompatible with terms');
+        $fetcher = new TermsIdFetcher($this->getMockService());
+        $fetcher->getIdsFromBackend(
+            'foo',
+            0,
+            $this->countPerPage,
+            ['format:Book']
+        );
+    }
+
+    /**
      * Test the terms retrieval process.
      *
      * @return void
@@ -175,7 +192,8 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
             $fetcher->getIdsFromBackend(
                 'foo',
                 $fetcher->getInitialOffset(),
-                $this->countPerPage
+                $this->countPerPage,
+                []
             )
         );
         $this->assertEquals(
@@ -183,7 +201,8 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
             $fetcher->getIdsFromBackend(
                 'foo',
                 99,
-                $this->countPerPage
+                $this->countPerPage,
+                []
             )
         );
     }
