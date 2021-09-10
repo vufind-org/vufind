@@ -592,8 +592,14 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         return [
             'Single value, no extra params' => [
                 null,
-                'expected1' => [],
-                'expected2' => [],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => null,
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => null,
+                ],
             ],
             'Single value' => [
                 'GlobalExtraParams' => [
@@ -603,9 +609,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     ]
                 ],
                 'expected1' => [
+                    'bf' => ['a:filter'],
                     'bq' => ['a:foo']
                 ],
                 'expected2' => [
+                    'bf' => null,
                     'bq' => ['a:foo']
                 ],
             ],
@@ -620,12 +628,14 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     ]
                 ],
                 'expected1' => [
+                    'bf' => ['a:filter'],
                     'bq' => [
                         'a:foo',
                         'a:bar'
                     ]
                 ],
                 'expected2' => [
+                    'bf' => null,
                     'bq' => [
                         'a:foo',
                         'a:bar'
@@ -647,9 +657,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     ]
                 ],
                 'expected1' => [
+                    'bf' => ['a:filter'],
                     'bq' => ['a:foo']
                 ],
                 'expected2' => [
+                    'bf' => null,
                     'bq' => null
                 ]
             ],
@@ -668,9 +680,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     ]
                 ],
                 'expected1' => [
+                    'bf' => ['a:filter'],
                     'bq' => null
                 ],
                 'expected2' => [
+                    'bf' => null,
                     'bq' => ['a:foo']
                 ],
             ],
@@ -687,9 +701,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     ]
                 ],
                 'expected1' => [
+                    'bf' => ['a:filter'],
                     'bq' => null
                 ],
                 'expected2' => [
+                    'bf' => null,
                     'bq' => ['a:foo']
                 ],
             ],
@@ -822,7 +838,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      * Test generation with GlobalExtraParams using a grouped query.
      *
      * @return void
-     * @dataProvider globalExtraParamsIndividualQueryDataProvider
+     * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
     public function testGroupedQueryHandlerWithGlobalExtraParams(
         $globalExtraParams,
