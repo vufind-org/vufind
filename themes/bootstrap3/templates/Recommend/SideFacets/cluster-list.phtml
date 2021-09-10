@@ -4,7 +4,10 @@
 <?php endif; ?>
 
 <?php
-  $truncateSettings = [
+  // If we always use the lightbox, we don't want to turn on truncation.
+  $facetLightbox = $this->options->getFacetListAction();
+  $alwaysUseLightbox = ($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox;
+  $truncateSettings = $alwaysUseLightbox ? false : [
     'rows' => $this->facets_before_more,
     'btn-class' => 'facet',
     'more-label' => $this->transEsc('more') . ' ...',
@@ -13,15 +16,15 @@
     'wrapper-tagname' => 'div',
   ];
 ?>
-<div class="truncate-facets" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>">
+<div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
     <?php if ($i == $this->facets_before_more): ?>
-      <?php if ($facetLightbox = $this->options->getFacetListAction()): ?>
-        <?php $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0); ?>
-      <?php else: ?>
-        <?php $moreUrl = '#'; ?>
-      <?php endif; ?>
-      <?php if (($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox): ?>
+      <?php
+        $moreUrl = $facetLightbox
+          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0)
+          : '#';
+      ?>
+      <?php if ($alwaysUseLightbox): ?>
         <a class="facet narrow-toggle more-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
           <span class="text"><?=$this->transEsc('more')?> ...</span>
         </a>
@@ -46,7 +49,7 @@
           $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
         }
       ?>
-      <a class="facet narrow-toggle <?=$moreClass ?? '' ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+      <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
         <span class="text"><?=$this->transEsc('see all')?> ...</span>
       </a>
     <?php endif; ?>
