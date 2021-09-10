@@ -415,6 +415,7 @@ class Form extends \Laminas\Form\Form implements
             ]
         ];
 
+        $elementObjects = parent::getElements();
         foreach ($this->getElements() as $el) {
             $isCheckbox = $el['type'] === 'checkbox';
             $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
@@ -457,6 +458,14 @@ class Form extends \Laminas\Form\Form implements
 
             if ($el['type'] === 'email') {
                 $fieldValidators[] = $validators['email'];
+            }
+
+            if (in_array($el['type'], ['checkbox', 'radio', 'select'])) {
+                // Add InArray validator from element object instance
+                $elementObject = $elementObjects[$el['name']];
+                $elementSpec = $elementObject->getInputSpecification();
+                $fieldValidators
+                    = array_merge($fieldValidators, $elementSpec['validators']);
             }
 
             $inputFilter->add(
