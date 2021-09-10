@@ -84,6 +84,8 @@
       <?=$this->context($this)->renderInContext('Related/AuthorityTitlesBy', ['driver' => $this->driver])?>
       <?=$this->context($this)->renderInContext('Related/AuthorityTitlesAbout', ['driver' => $this->driver])?>
       <?=$this->context($this)->renderInContext('Related/AuthorityAuthors', ['driver' => $this->driver])?>
+      <?=$this->context($this)->renderInContext('Related/AuthorityTopics', ['driver' => $this->driver])?>
+      <?=$this->context($this)->renderInContext('Related/AuthorityTimeline', ['driver' => $this->driver])?>
     </div>
     <?php if ($this->driver->getType() == 'person' && !in_array('Familie', $this->driver->getPersonalTitles())): ?>
       <div class="col-sm-4">

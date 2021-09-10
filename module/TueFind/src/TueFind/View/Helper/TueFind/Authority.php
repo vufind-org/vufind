@@ -334,6 +334,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesByQueryParams($driver)]]);
     }
 
+
+    public function getChartData(AuthorityRecordDriver &$driver): string
+    {
+        return '';
+    }
+
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
     {
         $userAuthorities = $this->dbTableManager->get('user_authority')->getByUserId($user->id);
