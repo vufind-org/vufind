@@ -30,7 +30,6 @@ namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Exception\RuntimeException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -59,77 +58,58 @@ abstract class CallMethodCommand extends AbstractBase
     protected $method;
 
     /**
-     * Search backend interface method arguments
-     *
-     * @var array
-     */
-    protected $args;
-
-    /**
-     * Should the search backend parameters be added as the last method argument?
-     *
-     * @var bool
-     */
-    protected $addParamsToArgs;
-
-    /**
      * CallMethodCommand constructor.
      *
-     * @param string    $backend         Search backend identifier
-     * @param string    $interface       Search backend interface
-     * @param string    $method          Search backend interface method
-     * @param array     $args            Search backend interface method arguments,
-     *                                   excluding search backend parameters
-     * @param ?ParamBag $params          Search backend parameters
-     * @param bool      $addParamsToArgs Should the search backend parameters be
-     *                                   added as the last method argument?
-     * @param mixed     $context         Command context. Optional, if left out the
-     *                                   search interface method is used as the
-     *                                   context.
+     * @param string    $backendId Search backend identifier
+     * @param string    $interface Search backend interface
+     * @param string    $method    Search backend interface method
+     * @param ?ParamBag $params    Search backend parameters
+     * @param mixed     $context   Command context. Optional, if left out the search
+     * interface method is used as the context.
      */
     public function __construct(
-        string $backend,
+        string $backendId,
         string $interface,
         string $method,
-        array $args,
         ?ParamBag $params = null,
-        bool $addParamsToArgs = true,
         $context = null
     ) {
-        parent::__construct($backend, $context ?: $method, $params);
+        parent::__construct(
+            $backendId,
+            $context ?: $method,
+            $params
+        );
         $this->interface = $interface;
         $this->method = $method;
-        $this->args = $args;
-        $this->addParamsToArgs = $addParamsToArgs;
     }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    abstract public function getArguments(): array;
 
     /**
      * Execute command on backend.
      *
-     * @param BackendInterface $backendInstance Backend instance
+     * @param BackendInterface $backend Backend
      *
-     * @return CommandInterface
+     * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance): CommandInterface
+    public function execute(BackendInterface $backend): CommandInterface
     {
-        if (($backend = $backendInstance->getIdentifier()) !== $this->backend) {
-            throw new RuntimeException(
-                "Excpected backend instance $this->backend instead of $backend"
-            );
-        }
-        if (!($backendInstance instanceof $this->interface)
+        $this->validateBackend($backend);
+        if (!($backend instanceof $this->interface)
             || !method_exists($this->interface, $this->method)
         ) {
             throw new BackendException(
-                "$this->backend does not support $this->method()"
+                "$this->backendId does not support $this->method()"
             );
         }
-        $callArgs = $this->args;
-        if ($this->addParamsToArgs) {
-            $callArgs[] = $this->params;
-        }
+        $args = $this->getArguments();
         return $this->finalizeExecution(
-            call_user_func([$backendInstance, $this->method], ...$callArgs)
+            call_user_func([$backend, $this->method], ...$args)
         );
     }
 }

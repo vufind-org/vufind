@@ -44,6 +44,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 
+    protected $mockTestFormYamlReader = null;
+
     /**
      * Test defaults with no configuration.
      *
@@ -58,7 +60,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
-        $this->assertEquals([], $form->getElements());
+        $this->assertEquals([], $form->getFormElementConfig());
         $this->assertEquals(
             [['email' => null, 'name' => null]],
             $form->getRecipient()
@@ -92,7 +94,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $form = new Form(
             new YamlReader(),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $defaults
+            ['Feedback' => $defaults]
         );
         $this->assertEquals(
             [['name' => 'me', 'email' => 'me@example.com']],
@@ -163,7 +165,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'label' => 'Send',
                 ],
             ],
-            $form->getElements()
+            $form->getFormElementConfig()
         );
 
         $this->assertEquals(
@@ -222,26 +224,52 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get a mock YamlReader object.
+     *
+     * @return YamlReader
+     */
+    protected function getMockTestFormYamlReader()
+    {
+        if (!isset($this->mockTestFormYamlReader)) {
+            $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
+            $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
+                ->disableOriginalConstructor()
+                ->onlyMethods(['get'])
+                ->getMock();
+            $mock->expects($this->any())->method('get')
+                ->with($this->equalTo('FeedbackForms.yaml'))
+                ->will($this->returnValue($config));
+            $this->mockTestFormYamlReader = $mock;
+        }
+        return $this->mockTestFormYamlReader;
+    }
+
+    /**
+     * Get a mock Form object.
+     *
+     * @param string $formId Form identifier
+     *
+     * @return Form
+     * @throws \Exception
+     */
+    protected function getMockTestForm($formId)
+    {
+        $form = new Form(
+            $this->getMockTestFormYamlReader(),
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId($formId);
+        return $form;
+    }
+
+    /**
      * Test element options (select, radio, checkbox).
      *
      * @return void
      */
     public function testElementOptions()
     {
-        $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
-        $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['get'])
-            ->getMock();
-        $mock->expects($this->any())->method('get')
-            ->with($this->equalTo('FeedbackForms.yaml'))
-            ->will($this->returnValue($config));
-
-        $form = new Form(
-            $mock,
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
-        );
-        $form->setFormId('TestElementOptions');
+        $form = $this->getMockTestForm('TestElementOptions');
 
         $getElement = function ($name, $elements) {
             foreach ($elements as $el) {
@@ -252,7 +280,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             return null;
         };
 
-        $elements = $form->getElements();
+        $elements = $form->getFormElementConfig();
 
         // Select element optionGroup: options with labels and values
         $el = $getElement('select', $elements);
@@ -314,21 +342,86 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test checkbox element validators.
+     * Test element option value validators (select, radio, checkbox).
      *
      * @return void
      */
-    public function testCheckboxValidators()
+    public function testElementOptionValueValidators()
     {
-        $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
-        $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['get'])
-            ->getMock();
-        $mock->expects($this->any())->method('get')
-            ->with($this->equalTo('FeedbackForms.yaml'))
-            ->will($this->returnValue($config));
+        $form = $this->getMockTestForm('TestElementOptions');
 
+        // Select element optionGroup: options with labels and values
+        // Valid option value
+        $form->setData(['select' => 'value-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['select' => 'invalid-value']);
+        $this->assertFalse($form->isValid());
+
+        // Select element optionGroup: options with values
+        // Valid option value
+        $form->setData(['select2' => 'option-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['select2' => 'invalid-option']);
+        $this->assertFalse($form->isValid());
+
+        // Select element options with labels and values
+        // Valid option value
+        $form->setData(['select3' => 'value-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['select3' => 'invalid-value']);
+        $this->assertFalse($form->isValid());
+
+        // Select element options with values
+        // Valid option value
+        $form->setData(['select4' => 'option-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['select4' => 'invalid-option']);
+        $this->assertFalse($form->isValid());
+
+        // Radio element options with labels and values
+        // Valid option value
+        $form->setData(['radio' => 'value-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['radio' => 'invalid-value']);
+        $this->assertFalse($form->isValid());
+
+        // Radio element options with values
+        // Valid option value
+        $form->setData(['radio2' => 'option-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['radio2' => 'invalid-option']);
+        $this->assertFalse($form->isValid());
+
+        // Checkbox element options with labels and values
+        // Valid option value
+        $form->setData(['checkbox' => 'value-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['checkbox' => 'invalid-value']);
+        $this->assertFalse($form->isValid());
+
+        // Checkbox element options with values
+        // Valid option value
+        $form->setData(['checkbox2' => 'option-1']);
+        $this->assertTrue($form->isValid());
+        // Invalid option value
+        $form->setData(['checkbox2' => 'invalid-option']);
+        $this->assertFalse($form->isValid());
+    }
+
+    /**
+     * Test checkbox element 'required' and 'requireOne' option validators.
+     *
+     * @return void
+     */
+    public function testCheckboxRequiredValidators()
+    {
         // Test checkbox with all options required
         $ids = [
             'TestCheckboxWithAllOptionsRequired',  // options with value
@@ -336,11 +429,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         ];
 
         foreach ($ids as $id) {
-            $form = new Form(
-                $mock,
-                $this->createMock(\Laminas\View\HelperPluginManager::class)
-            );
-            $form->setFormId($id);
+            $form = $this->getMockTestForm($id);
 
             // No options
             $form->setData(['checkbox' => []]);
@@ -370,11 +459,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         ];
 
         foreach ($ids as $id) {
-            $form = new Form(
-                $mock,
-                $this->createMock(\Laminas\View\HelperPluginManager::class)
-            );
-            $form->setFormId($id);
+            $form = $this->getMockTestForm($id);
 
             // No options
             $form->setData(['checkbox' => []]);
@@ -388,7 +473,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->setData(['checkbox' => ['option-1']]);
             $this->assertTrue($form->isValid());
 
-            // One OK options
+            // One OK option
             $form->setData(['checkbox' => ['option-2']]);
             $this->assertTrue($form->isValid());
 
@@ -398,10 +483,10 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
             // One OK and one invalid option
             $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
-            $this->assertTrue($form->isValid());
+            $this->assertFalse($form->isValid());
         }
 
-        // Test checkbox with a single options that is required
+        // Test checkbox with a single option that is required
         $ids = [
             // options with value
             'TestCheckboxWithOneOptionThatIsRequired',
@@ -410,11 +495,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         ];
 
         foreach ($ids as $id) {
-            $form = new Form(
-                $mock,
-                $this->createMock(\Laminas\View\HelperPluginManager::class)
-            );
-            $form->setFormId($id);
+            $form = $this->getMockTestForm($id);
 
             // No options
             $form->setData(['checkbox' => []]);
@@ -433,7 +514,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($form->isValid());
         }
 
-        // Test checkbox with a single options that is required,
+        // Test checkbox with a single option that is required,
         // configured with requireOne
         $ids = [
             // options with value
@@ -443,11 +524,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         ];
 
         foreach ($ids as $id) {
-            $form = new Form(
-                $mock,
-                $this->createMock(\Laminas\View\HelperPluginManager::class)
-            );
-            $form->setFormId($id);
+            $form = $this->getMockTestForm($id);
 
             // No options
             $form->setData(['checkbox' => []]);
@@ -463,7 +540,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
             // One OK and one invalid option
             $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
-            $this->assertTrue($form->isValid());
+            $this->assertFalse($form->isValid());
         }
     }
 }

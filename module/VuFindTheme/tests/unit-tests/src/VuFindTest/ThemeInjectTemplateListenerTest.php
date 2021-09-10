@@ -43,16 +43,22 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Test namespace stripping.
+     * Test prefix stripping.
      *
      * @return void
      */
-    public function testNamespaceStripping()
+    public function testPrefixStripping()
     {
-        $l = new InjectTemplateListener();
+        $l = new InjectTemplateListener(['VuFind/']);
+        // We should strip a registered prefix:
         $this->assertEquals(
             'search',
             $l->mapController(\VuFind\Controller\SearchController::class)
+        );
+        // We should NOT strip an unregistered prefix:
+        $this->assertEquals(
+            'vufindadmin/admin',
+            $l->mapController(\VuFindAdmin\Controller\AdminController::class)
         );
     }
 
@@ -63,10 +69,10 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testCamelCaseToLowerCase()
     {
-        $l = new InjectTemplateListener();
+        $l = new InjectTemplateListener(['VuFind/']);
         $this->assertEquals(
             'testcase',
-            $this->callMethod($l, 'inflectName', ['testCase'])
+            $this->callMethod($l, 'inflectName', ['VuFind/testCase'])
         );
     }
 }

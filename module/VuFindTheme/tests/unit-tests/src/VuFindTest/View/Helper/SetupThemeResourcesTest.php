@@ -1,6 +1,6 @@
 <?php
 /**
- * HeadThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class
  *
  * PHP version 7
  *
@@ -28,10 +28,10 @@
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\ResourceContainer;
-use VuFindTheme\View\Helper\HeadThemeResources;
+use VuFindTheme\View\Helper\SetupThemeResources;
 
 /**
- * HeadThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -39,7 +39,7 @@ use VuFindTheme\View\Helper\HeadThemeResources;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HeadThemeResourcesTest extends \PHPUnit\Framework\TestCase
+class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 
@@ -50,9 +50,28 @@ class HeadThemeResourcesTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelper()
     {
-        $helper = new HeadThemeResources($this->getResourceContainer());
+        $helper = new SetupThemeResources($this->getResourceContainer());
         $helper->setView($this->getMockView());
         $helper();
+    }
+
+    /**
+     * Test configuration parsing.
+     *
+     * @return void
+     */
+    public function testConfigParsing()
+    {
+        $tests = [
+            'foo:bar:baz' => ['foo', 'bar', 'baz'],
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+        ];
+        foreach ($tests as $test => $expected) {
+            $this->assertEquals(
+                $expected,
+                $this->callMethod($this->getResourceContainer(), 'parseSetting', [$test])
+            );
+        }
     }
 
     /**

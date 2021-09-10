@@ -73,7 +73,7 @@ trait MockSearchCommandTrait
             $command->expects($this->any())->method('getResult')
                 ->will($this->returnValue($result));
         }
-        $command->expects($this->any())->method('getTargetBackendName')
+        $command->expects($this->any())->method('getTargetIdentifier')
             ->will($this->returnValue($backendId));
         return $command;
     }

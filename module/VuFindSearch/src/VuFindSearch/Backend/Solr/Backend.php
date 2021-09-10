@@ -32,6 +32,7 @@ use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 
+use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Feature\GetIdsInterface;
@@ -43,7 +44,6 @@ use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 
-use VuFindSearch\Query\Query;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Response\RecordCollectionInterface;
@@ -130,17 +130,36 @@ class Backend extends AbstractBackend
         $limit,
         ParamBag $params = null
     ) {
+        $json = $this->rawJsonSearch($query, $offset, $limit, $params);
+        $collection = $this->createRecordCollection($json);
+        $this->injectSourceIdentifier($collection);
+
+        return $collection;
+    }
+
+    /**
+     * Perform a search and return a raw response.
+     *
+     * @param AbstractQuery $query  Search query
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
+     * @param ParamBag      $params Search backend parameters
+     *
+     * @return string
+     */
+    public function rawJsonSearch(
+        AbstractQuery $query,
+        $offset,
+        $limit,
+        ParamBag $params = null
+    ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
         $params->set('rows', $limit);
         $params->set('start', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query));
-        $response   = $this->connector->search($params);
-        $collection = $this->createRecordCollection($response);
-        $this->injectSourceIdentifier($collection);
-
-        return $collection;
+        return $this->connector->search($params);
     }
 
     /**
@@ -338,7 +357,6 @@ class Backend extends AbstractBackend
      * @param int      $page        Result page to return (starts at 0)
      * @param int      $limit       Number of results to return on each page
      * @param ParamBag $params      Additional parameters
-     * POST)
      * @param int      $offsetDelta Delta to use when calculating page
      * offset (useful for showing a few results above the highlighted row)
      *
@@ -402,6 +420,44 @@ class Backend extends AbstractBackend
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
+    }
+
+    /**
+     * Write a document to Solr. Return an array of details about the updated index.
+     *
+     * @param DocumentInterface $doc     Document to write
+     * @param ?int              $timeout Timeout value (null for default)
+     * @param string            $handler Handler to use
+     * @param ?ParamBag         $params  Search backend parameters
+     *
+     * @return array
+     */
+    public function writeDocument(
+        DocumentInterface $doc,
+        int $timeout = null,
+        string $handler = 'update',
+        ?ParamBag $params = null
+    ) {
+        $connector = $this->getConnector();
+
+        // If we have a custom timeout, remember the old timeout value and then
+        // override it with a different one:
+        $oldTimeout = null;
+        if (is_int($timeout ?? null)) {
+            $oldTimeout = $connector->getTimeout();
+            $connector->setTimeout($timeout);
+        }
+
+        // Write!
+        $connector->write($doc, $handler ?? 'update', $params);
+
+        // Restore previous timeout value, if necessary:
+        if (null !== $oldTimeout) {
+            $connector->setTimeout($oldTimeout);
+        }
+
+        // Save the core name in the results in case the caller needs it.
+        return ['core' => $connector->getCore()];
     }
 
     /**

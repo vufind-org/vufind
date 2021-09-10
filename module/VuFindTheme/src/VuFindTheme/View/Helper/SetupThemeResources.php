@@ -1,6 +1,6 @@
 <?php
 /**
- * View helper for loading theme-related resources in the header.
+ * View helper for loading theme-related resources.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFindTheme\View\Helper;
 
 /**
- * View helper for loading theme-related resources in the header.
+ * View helper for loading theme-related resources.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,7 +36,7 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
+class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Theme resource container
@@ -56,13 +56,12 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Set up header items based on contents of theme resource container.
+     * Set up items based on contents of theme resource container.
      *
      * @return void
      */
     public function __invoke()
     {
-        // Add various types of content to the header:
         $this->addMetaTags();
         $this->addLinks();
         $this->addScripts();
@@ -141,21 +140,34 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Add scripts to header.
+     * Add scripts to header or footer.
      *
      * @return void
      */
     protected function addScripts()
     {
+        $legalHelpers = ['footScript', 'headScript'];
+
         // Load Javascript (same ordering considerations as CSS, above):
         $js = array_reverse($this->container->getJs());
-        $headScript = $this->getView()->plugin('headScript');
+
         foreach ($js as $current) {
-            $headScript()->forcePrependFile(
-                $current['file'],
-                'text/javascript',
-                $current['attributes'] ?? []
-            );
+            $position = $current['position'] ?? 'header';
+            $helper = substr($position, 0, 4) . 'Script';
+            if (!in_array($helper, $legalHelpers)) {
+                throw new \Exception(
+                    'Invalid script position for '
+                    . $current['file'] . ': ' . $position . '.'
+                );
+            }
+
+            $this->getView()
+                ->plugin($helper)
+                ->forcePrependFile(
+                    $current['file'],
+                    'text/javascript',
+                    $current['attributes'] ?? []
+                );
         }
     }
 }

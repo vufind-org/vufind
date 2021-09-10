@@ -368,18 +368,25 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
   $(searchPrefix + 'target').change(function onChangeLoginTarget() {
     var target = $(this).val();
-    var $usernameGroup = $(searchPrefix + 'username').closest('.form-group');
+    var $username = $(searchPrefix + 'username');
+    var $usernameGroup = $username.closest('.form-group');
     var $password = $(searchPrefix + 'password');
     if (loginMethods[target] === 'email') {
+      $username.attr('type', 'email').attr('autocomplete', 'email');
       $usernameGroup.find('label.password-login').addClass('hidden');
       $usernameGroup.find('label.email-login').removeClass('hidden');
       $password.closest('.form-group').addClass('hidden');
       // Set password to a dummy value so that any checks for username+password work
       $password.val('****');
     } else {
+      $username.attr('type', 'text').attr('autocomplete', 'username');
       $usernameGroup.find('label.password-login').removeClass('hidden');
       $usernameGroup.find('label.email-login').addClass('hidden');
       $password.closest('.form-group').removeClass('hidden');
+      // Reset password from the dummy value in email login
+      if ($password.val() === '****') {
+        $password.val('');
+      }
     }
   }).change();
 }
