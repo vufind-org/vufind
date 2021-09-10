@@ -335,9 +335,53 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     }
 
 
-    public function getChartData(AuthorityRecordDriver &$driver): string
+    public function getChartData(AuthorityRecordDriver &$driver): array
     {
-        return '';
+        $params = ["facet.field"=>"publishDate",
+                   "facet.mincount"=>"1",
+                   "facet"=>"on",
+                   "facet.sort"=>"count"];
+
+        $identifier = 'Solr';
+        $publishingData = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
+                                                 0, 0, new \VuFindSearch\ParamBag($params));
+        $allFacets = $publishingData->getFacets();
+        $publishFacet = $allFacets->getFieldFacets();
+        $publishArray = $publishFacet['publishDate']->toArray();
+        $publishDates = array_keys($publishArray);
+
+        $aboutData = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParams($driver) . '"', 'AllFields'),
+                                                 0, 0, new \VuFindSearch\ParamBag($params));
+
+        $allFacetsAbout = $aboutData->getFacets();
+        $aboutFacet = $allFacetsAbout->getFieldFacets();
+        $aboutArray = $aboutFacet['publishDate']->toArray();
+        $aboutDates = array_keys($aboutArray);
+
+        $allDates = array_merge($publishDates, $aboutDates);
+        $allDates = array_unique($allDates);
+
+        $allDatesKeys = array_values($allDates);
+        asort($allDatesKeys);
+
+        $chartData = [];
+        foreach($allDatesKeys as $oneDate){
+            if(!empty($oneDate)){
+                $by = '';
+                $about = '';
+                if (array_key_exists($oneDate, $publishArray)) {
+                    $by = $publishArray[$oneDate];
+                }
+                if (array_key_exists($oneDate, $aboutArray)) {
+                    $about = $aboutArray[$oneDate];
+                }
+                $chartData[] = array($oneDate,$by,$about);
+            }
+        }
+
+        return $chartData;
     }
 
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
