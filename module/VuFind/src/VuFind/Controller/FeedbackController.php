@@ -49,7 +49,7 @@ class FeedbackController extends AbstractBase
 
     /**
      * Handles rendering and submit of dynamic forms.
-     * Form configurations are specified in FeedbackForms.json
+     * Form configurations are specified in FeedbackForms.yaml.
      *
      * @return mixed
      */

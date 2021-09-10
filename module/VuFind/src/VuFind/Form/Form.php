@@ -271,9 +271,9 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return form help text.
+     * Return form help texts.
      *
-     * @return string|null
+     * @return array|null
      */
     public function getHelp()
     {
