@@ -599,6 +599,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         if (isset($this->config['Catalog']['default_patron_id'])) {
             $this->defaultPatronId = $this->config['Catalog']['default_patron_id'];
         }
+
         $this->addressMappings = $this->getDefaultAddressMappings();
 
         if (isset($this->config['AddressMappings'])) {
