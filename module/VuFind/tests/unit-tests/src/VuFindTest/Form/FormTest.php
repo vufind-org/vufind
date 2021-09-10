@@ -60,7 +60,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
-        $this->assertEquals([], $form->getElements());
+        $this->assertEquals([], $form->getFormElementConfig());
         $this->assertEquals(
             [['email' => null, 'name' => null]],
             $form->getRecipient()
@@ -165,7 +165,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'label' => 'Send',
                 ],
             ],
-            $form->getElements()
+            $form->getFormElementConfig()
         );
 
         $this->assertEquals(
@@ -280,7 +280,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             return null;
         };
 
-        $elements = $form->getElements();
+        $elements = $form->getFormElementConfig();
 
         // Select element optionGroup: options with labels and values
         $el = $getElement('select', $elements);
