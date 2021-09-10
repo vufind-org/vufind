@@ -415,7 +415,11 @@ class Form extends \Laminas\Form\Form implements
             ]
         ];
 
+        // Get instantiated element objects by calling parent class method since the
+        // overridden method in this class does not return them.
+        // TODO: Refactor to avoid having to do this.
         $elementObjects = parent::getElements();
+
         foreach ($this->getElements() as $el) {
             $isCheckbox = $el['type'] === 'checkbox';
             $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
