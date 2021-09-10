@@ -228,7 +228,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array
      */
-    public function getElements(): array
+    public function getFormElementConfig(): array
     {
         return $this->formElementConfig;
     }
@@ -356,7 +356,7 @@ class Form extends \Laminas\Form\Form implements
     public function formatEmailMessage(array $requestParams = [])
     {
         $params = [];
-        foreach ($this->getElements() as $el) {
+        foreach ($this->getFormElementConfig() as $el) {
             $type = $el['type'];
             $name = $el['name'];
             if ($type === 'submit') {
@@ -415,12 +415,8 @@ class Form extends \Laminas\Form\Form implements
             ]
         ];
 
-        // Get instantiated element objects by calling parent class method since the
-        // overridden method in this class does not return them.
-        // TODO: Refactor to avoid having to do this.
-        $elementObjects = parent::getElements();
-
-        foreach ($this->getElements() as $el) {
+        $elementObjects = $this->getElements();
+        foreach ($this->getFormElementConfig() as $el) {
             $isCheckbox = $el['type'] === 'checkbox';
             $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
             $required = $el['required'] ?? $requireOne;
