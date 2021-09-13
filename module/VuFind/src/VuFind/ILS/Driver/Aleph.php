@@ -1040,96 +1040,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyTransactionHistory($user, $params = null)
     {
-        $userId = $user['id'];
-        $historicLoans = [];
-        $requestParams = [
-            "view" => "full",
-            "type" => "history",
-        ];
-
-        $xml = $this->doRestDLFRequest(
-            ['patron', $userId, 'circulationActions', 'loans'],
-            $requestParams
-        );
-
-        foreach ($xml->xpath('//loan') as $item) {
-            $z36h = $item->z36h;
-            $z13 = $item->z13;
-            $z30 = $item->z30;
-            $group = $item->xpath('@href');
-            $group = substr(strrchr($group[0], "/"), 1);
-            $location = (string)$z36h->{'z36_pickup_location'};
-            $reqnum = (string)$z36h->{'z36-doc-number'}
-                . (string)$z36h->{'z36-item-sequence'}
-                . (string)$z36h->{'z36-sequence'};
-
-            $due = (string)$z36h->{'z36h-due-date'};
-            $returned = (string)$z36h->{'z36h-returned-date'};
-            $issued = (string)$z36h->{'z36h-loan-date'};
-            $title = (string)$z13->{'z13-title'};
-            $author = (string)$z13->{'z13-author'};
-            $isbn = (string)$z13->{'z13-isbn-issn'};
-            $barcode = (string)$z30->{'z30-barcode'};
-
-            $historicLoans[] = [
-                'id' => (string)$z30->{'z30-doc-number'},
-                'item_id' => $group,
-                'location' => $location,
-                'title' => $title,
-                'author' => $author,
-                'isbn' => $isbn,
-                'reqnum' => $reqnum,
-                'barcode' => $barcode,
-                'checkoutDate' => $this->parseDate($issued),
-                'dueDate' => $this->parseDate($due),
-                'returnDate' => $this->parseDate($returned),
-                '_checkoutDate' => $issued,
-                '_dueDate' => $due,
-                '_returnDate' => $returned,
-            ];
-        }
-
-        if (isset($params['sort'])) {
-            switch ($params['sort']) {
-            case 'checkout asc':
-                $sorter = function ($a, $b) {
-                    return strcmp($a['_checkoutDate'], $b['_checkoutDate']);
-                };
-                break;
-            case 'return desc':
-                $sorter = function ($a, $b) {
-                    return strcmp($b['_returnDate'], $a['_returnDate']);
-                };
-                break;
-            case 'return asc':
-                $sorter = function ($a, $b) {
-                    return strcmp($a['_returnDate'], $b['_returnDate']);
-                };
-                break;
-            case 'due desc':
-                $sorter = function ($a, $b) {
-                    return strcmp($b['_dueDate'], $a['_dueDate']);
-                };
-                break;
-            case 'due asc':
-                $sorter = function ($a, $b) {
-                    return strcmp($a['_dueDate'], $b['_dueDate']);
-                };
-                break;
-            default:
-                $sorter = function ($a, $b) {
-                    return strcmp($b['_checkoutDate'], $a['_checkoutDate']);
-                };
-                break;
-            }
-
-            usort($historicLoans, $sorter);
-        }
-
-        return [
-            'count' => count($historicLoans),
-            'transactions' => $historicLoans,
-        ];
+        return $this->getMyTransactions($user, $params, true);
     }
 
     /**
@@ -1138,40 +1049,60 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array $user The patron array from patronLogin
+     * @param array   $user    The patron array from patronLogin
+     * @param array   $params  Parameters
+     * @param boolean $history History
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($user)
+    public function getMyTransactions($user, $params = [], $history = false)
     {
         $userId = $user['id'];
-        $transList = [];
-        $params = ["view" => "full"];
-        $xml = $this->doRestDLFRequest(
-            ['patron', $userId, 'circulationActions', 'loans'],
-            $params
+
+        $alephParams = [];
+        if ($history) {
+            $alephParams['type'] = 'history';
+        }
+
+        $totalCount = count(
+            $this->doRestDLFRequest(
+                ['patron', $userId, 'circulationActions', 'loans'],
+                $alephParams
+            )->xpath('//loan')
         );
 
+        $pageSize = $params['limit'] ?? 50;
+        $alephParams += [
+            'view' => 'full',
+            'startPos' => isset($params['page'])
+                ? ($params['page'] - 1) * $pageSize : 0,
+            'noItems' => $pageSize,
+        ];
+
+        $xml = $this->doRestDLFRequest(
+            ['patron', $userId, 'circulationActions', 'loans'],
+            $alephParams
+        );
+
+        $transList = [];
         foreach ($xml->xpath('//loan') as $item) {
-            $z36 = $item->z36;
+            $z36 = ($history) ? $item->z36h : $item->z36;
+            $prefix = ($history) ? 'z36h-' : 'z36-';
             $z13 = $item->z13;
             $z30 = $item->z30;
             $group = $item->xpath('@href');
             $group = substr(strrchr($group[0], "/"), 1);
             $renew = $item->xpath('@renew');
-            //$docno = (string) $z36->{'z36-doc-number'};
-            //$itemseq = (string) $z36->{'z36-item-sequence'};
-            //$seq = (string) $z36->{'z36-sequence'};
 
-            $location = (string)$z36->{'z36_pickup_location'};
-            $reqnum = (string)$z36->{'z36-doc-number'}
-                . (string)$z36->{'z36-item-sequence'}
-                . (string)$z36->{'z36-sequence'};
+            $location = (string)$z36->{$prefix . 'pickup_location'};
+            $reqnum = (string)$z36->{$prefix . 'doc-number'}
+                . (string)$z36->{$prefix . 'item-sequence'}
+                . (string)$z36->{$prefix . 'sequence'};
 
-            $due = (string)$z36->{'z36-due-date'};
-            $issued = (string)$z36->{'z36-loan-date'};
+            $due = (string)$z36->{$prefix . 'due-date'};
+            $issued = (string)$z36->{$prefix . 'loan-date'};
             $title = (string)$z13->{'z13-title'};
             $author = (string)$z13->{'z13-author'};
             $isbn = (string)$z13->{'z13-isbn-issn'};
@@ -1181,7 +1112,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $adm_id = (string)$z30->{'z30-doc-number'};
 
             $transList[] = [
-                //'type' => $type,
                 'id' => $this->barcodeToID($barcode),
                 'adm_id'   => $adm_id,
                 'item_id' => $group,
@@ -1193,14 +1123,16 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 'barcode' => $barcode,
                 'issuedate' => $this->parseDate($issued),
                 'duedate' => $this->parseDate($due),
-                //'holddate' => $holddate,
-                //'delete' => $delete,
                 'renewable' => $renew[0] == "Y",
-                //'create' => $this->parseDate($create)
             ];
         }
 
-        return $transList;
+        $key = ($history) ? 'transactions' : 'records';
+
+        return [
+            'count' => $totalCount,
+            $key => $transList
+        ];
     }
 
     /**
