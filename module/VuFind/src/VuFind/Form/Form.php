@@ -358,11 +358,10 @@ class Form extends \Laminas\Form\Form implements
         $params = [];
         foreach ($this->getFormElementConfig() as $el) {
             $type = $el['type'];
-            $name = $el['name'];
             if ($type === 'submit') {
                 continue;
             }
-            $value = $requestParams[$name] ?? null;
+            $value = $requestParams[$el['name']] ?? null;
 
             if (in_array($type, ['radio', 'select'])) {
                 $value = $this->translate($value);
@@ -377,9 +376,10 @@ class Form extends \Laminas\Form\Form implements
                     ?? $this->vufindConfig['Site']['displayDateFormat'] ?? 'Y-m-d';
                 $value = date($format, strtotime($value));
             }
-
-            $label = isset($el['label']) ? $this->translate($el['label']) : null;
-            $params[] = ['type' => $type, 'value' => $value, 'label' => $label];
+            $el['value'] = $value;
+            $el['label'] = isset($el['label']) ? $this->translate($el['label'])
+                : null;
+            $params[] = $el;
         }
 
         return [$params, 'Email/form.phtml'];
