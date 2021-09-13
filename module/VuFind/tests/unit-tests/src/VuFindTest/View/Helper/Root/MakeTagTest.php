@@ -82,4 +82,42 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
             $helper('i', '', 'fa fa-awesome')
         );
     }
+
+    /**
+     * Test escapeContent
+     *
+     * @return void
+     */
+    public function testOptionEscape()
+    {
+        $helper = $this->getHelper();
+
+        $this->assertEquals(
+            '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
+            $helper(
+                'button',
+                'This link is <strong>important</strong>',
+            )
+        );
+
+        $this->assertEquals(
+            '<button>This link is <strong>important</strong></button>',
+            $helper(
+                'button',
+                'This link is <strong>important</strong>',
+                [],
+                ['escapeContent' => false]
+            )
+        );
+
+        $this->assertEquals(
+            '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
+            $helper(
+                'button',
+                'This link is <strong>important</strong>',
+                [],
+                ['escapeContent' => true]
+            )
+        );
+    }
 }

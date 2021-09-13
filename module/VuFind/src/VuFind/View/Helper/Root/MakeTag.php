@@ -48,34 +48,50 @@ class MakeTag extends AbstractHelper
      * > MakeTag('div', 'Success!', 'alert alert-success')
      * > MakeTag('div', 'Success!', ['class => 'alert alert-success'])
      *
+     * Additional options
+     * - escapeContent: Default true, set to false to skip escaping (like for HTML).
+     *
      * @param string       $tagName  Element tag name
      * @param string       $contents Element contents (must be properly-formed HTML)
      * @param string|array $attrs    Tag attributes (associative array or class name)
+     * @param array        $options  Additional options
      *
      * @return string HTML for an anchor tag
      */
-    public function __invoke(string $tagName, string $contents, $attrs = [])
-    {
+    public function __invoke(
+        string $tagName,
+        string $contents,
+        $attrs = [],
+        $options = []
+    ) {
         // $attrs not an object, interpret as class name
         if (!is_array($attrs)) {
             $attrs = !empty($attrs) ? ['class' => $attrs] : [];
         }
 
         // Compile attributes
-        return $this->compileTag($tagName, $contents, $attrs);
+        return $this->compileTag($tagName, $contents, $attrs, $options);
     }
 
     /**
      * Turn associative array into a string of attributes in an anchor
      *
+     * Additional options
+     * - escapeContent: Default true, set to false to skip escaping (like for HTML).
+     *
      * @param string $tagName   HTML tag name
      * @param string $innerHTML InnerHTML
      * @param array  $attrs     Tag attributes (associative array)
+     * @param array  $options   Additional options
      *
      * @return string
      */
-    protected function compileTag(string $tagName, string $innerHTML, array $attrs)
-    {
+    protected function compileTag(
+        string $tagName,
+        string $innerHTML,
+        array $attrs,
+        $options = []
+    ) {
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
 
         $anchor = '<' . $tagName;
@@ -86,7 +102,14 @@ class MakeTag extends AbstractHelper
             }
         }
 
-        $anchor .= '>' . $innerHTML . '</' . $tagName . '>';
+        // Special option: escape content
+        $escapeContent = $options['escapeContent'] ?? true;
+
+        $escHTML = $escapeContent
+            ? $this->getView()->plugin('escapeHtml')
+            : function ($str) { return $str; }; // no-op
+
+        $anchor .= '>' . $escHTML($innerHTML) . '</' . $tagName . '>';
         return $anchor;
     }
 }

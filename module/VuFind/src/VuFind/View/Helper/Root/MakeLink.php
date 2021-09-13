@@ -50,6 +50,10 @@ class MakeLink extends MakeTag
      * If $attrs is a string, will be treated like a class
      * > makeLink('text', $href, 'btn-link')
      *
+     * Additional options
+     * - proxyUrl: proxy url prefix before href
+     * - escapeContent: Default true, set to false to skip escaping (like for HTML).
+     *
      * @param string       $text    Link contents (must be properly-formed HTML)
      * @param string|array $href    Link destination (null to skip)
      * @param array        $attrs   Link attributes (associative array)
@@ -76,15 +80,15 @@ class MakeLink extends MakeTag
 
         // Span instead of anchor when no href present
         if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
-            return $this->compileTag('span', $text, $mergedAttrs);
+            return $this->compileTag('span', $text, $mergedAttrs, $options);
         }
 
-        // Special options
+        // Special option: proxy prefixing
         if ($options['proxyUrl'] ?? false) {
             $mergedAttrs['href'] = $options['proxyUrl'] . $mergedAttrs['href'];
         }
 
         // Compile attributes
-        return $this->compileTag('a', $text, $mergedAttrs);
+        return $this->compileTag('a', $text, $mergedAttrs, $options);
     }
 }

@@ -94,9 +94,6 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('<span>text</span>', $helper('text', null, ''));
         $this->assertEquals('<span>text</span>', $helper('text', '', ''));
         $this->assertEquals('<span>text</span>', $helper('text', false, []));
-        // Test no escape
-        $this->assertEquals('<span>text&</span>', $helper('text&', null, null));
-        $this->assertEquals('<span>text<</span>', $helper('text<', false, false));
     }
 
     /**
@@ -153,7 +150,7 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEscaping()
+    public function testOptionEscaping()
     {
         $helper = $this->getHelper();
 
@@ -163,15 +160,26 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
             $helper('recordLink', '/Record/foo')
         );
 
-        // Confirm that HTML inside the text contents is NOT escaped, but
-        // HTML attributes ARE:
+        // Confirm that attributes and HTML contents are escaped
+        $this->assertEquals(
+            '<a data-foo="this&amp;that" '
+            . 'href="/Record/foo%2Fbar?checkRoute=1">contains &lt;b&gt;bold&lt;/b&gt;</a>',
+            $helper(
+                'contains <b>bold</b>',
+                '/Record/foo%2Fbar?checkRoute=1',
+                ['data-foo' => 'this&that']
+            )
+        );
+
+        // Confirm that HTML is NOT escaped when asked politely
         $this->assertEquals(
             '<a data-foo="this&amp;that" '
             . 'href="/Record/foo%2Fbar?checkRoute=1">contains <b>bold</b></a>',
             $helper(
                 'contains <b>bold</b>',
                 '/Record/foo%2Fbar?checkRoute=1',
-                ['data-foo' => 'this&that']
+                ['data-foo' => 'this&that'],
+                ['escapeContent' => false]
             )
         );
     }
@@ -181,7 +189,7 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testProxy()
+    public function testOptionProxy()
     {
         $helper = $this->getHelper();
 
