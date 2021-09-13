@@ -376,10 +376,8 @@ class Form extends \Laminas\Form\Form implements
                     ?? $this->vufindConfig['Site']['displayDateFormat'] ?? 'Y-m-d';
                 $value = date($format, strtotime($value));
             }
-            $el['value'] = $value;
-            $el['label'] = isset($el['label']) ? $this->translate($el['label'])
-                : null;
-            $params[] = $el;
+            $label = isset($el['label']) ? $this->translate($el['label']) : null;
+            $params[] = $el + compact('value', 'label');
         }
 
         return [$params, 'Email/form.phtml'];
