@@ -296,7 +296,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMergedConfigMixinWitHFlattening()
+    public function testGetMergedConfigMixinWithFlattening()
     {
         // Theme using a mixin
         $ti = $this->getThemeInfo();
