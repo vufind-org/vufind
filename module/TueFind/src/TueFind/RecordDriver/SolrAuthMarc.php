@@ -69,9 +69,15 @@ class SolrAuthMarc extends SolrAuthDefault {
 
                 $urlSubfield = $field->getSubfield('u');
 
-                if ($nameSubfield !== false && $urlSubfield !== false)
-                    $references[] = ['title' => $nameSubfield->getData(),
-                                     'url' => $urlSubfield->getData()];
+                if ($nameSubfield !== false && $urlSubfield !== false) {
+                    $url = $urlSubfield->getData();
+                    $title = $nameSubfield->getData();
+                    if ($title == 'Wikipedia')
+                        $url = preg_replace('"&(oldid|diff)=[^&]+"', '', $url);
+
+                    $references[] = ['title' => $title,
+                                     'url' => $url];
+                }
             }
         }
         $references = array_merge($references, $this->getBeaconReferences());
@@ -359,5 +365,18 @@ class SolrAuthMarc extends SolrAuthDefault {
         }
 
         return $relations;
+    }
+
+    public function isFamily(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('v');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'pif')
+                    return true;
+            }
+        }
+        return false;
     }
 }

@@ -27,7 +27,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
      * see also: https://dzone.com/articles/concurrenthashmap-isnt-always-enough
      *
      */
-    static protected Map<String, String[]> relatorConfigCache = new ConcurrentHashMap();
+    static protected Map<String, String[]> relatorConfigCache = new ConcurrentHashMap<>();
 
     protected String[] loadRelatorConfig(String setting){
         return relatorConfigCache.computeIfAbsent(setting, s -> super.loadRelatorConfig(setting));
@@ -135,7 +135,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
      * maxSize should not be too small (to avoid concurrency between the threads),
      * but not be too high either so lookups stay efficient.
      */
-    static protected ConcurrentLimitedHashMap<String, ConcurrentHashMap<String, List<String>>> authorIdsCache = new ConcurrentLimitedHashMap(/* maxSize */100);
+    static protected ConcurrentLimitedHashMap<String, ConcurrentHashMap<String, List<String>>> authorIdsCache = new ConcurrentLimitedHashMap<>(/* maxSize */100);
 
     /**
      * This function is similar to VuFind's own ...byRelator functions.
