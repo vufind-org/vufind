@@ -94,7 +94,7 @@ return [
              * for a strong inheritance safety net but this is not required.
              */
             // UI
-            'spinner' => 'FontAwesome:spinner',
+            'spinner' => 'FontAwesome:spinner fa-spin',
         ],
     ],
 ];
