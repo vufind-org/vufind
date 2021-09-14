@@ -4,7 +4,6 @@ return [
     'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
-        //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
@@ -64,5 +63,41 @@ return [
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         ]
-    ]
+    ],
+    'icons' => [
+        'defaultSet' => 'FontAwesome',
+        'sets' => [
+            /**
+             * Define icon sets here.
+             *
+             * All sets need:
+             * - 'template': which template the icon renders with
+             * - 'src': the location of the relevant resource (font, css, images)
+             * - 'prefix': prefix to place before each icon name for convenience
+             *             (ie. fa fa- for FontAwesome, default "")
+             */
+            'FontAwesome' => [
+                'template' => 'font',
+                'prefix' => 'fa fa-',
+                'src' => 'vendor/font-awesome.min.css',
+            ],
+            'Collapse' => [
+                'template' => 'collapse',
+            ],
+            /* For an example of an images set, see Bootprint's theme.config.php. */
+        ],
+        'aliases' => [
+            /**
+             * Icons can be assigned or overriden here
+             *
+             * Format: 'icon' => [set:]icon
+             * Icons assigned without set will use the defaultSet.
+             *
+             * All of the items below have been specified with FontAwesome to allow
+             * for a strong inheritance safety net but this is not required.
+             */
+            // UI
+            'spinner' => 'FontAwesome:spinner',
+        ],
+    ],
 ];
