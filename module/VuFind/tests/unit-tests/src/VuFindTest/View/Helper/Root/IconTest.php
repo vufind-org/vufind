@@ -75,6 +75,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'bar-rtl' => 'Fugue:zab.png',
                 'ltronly' => 'Fugue:ltronly.png',
                 'xyzzy' => 'FakeSprite:sprite',
+                'classy' => 'FontAwesome:spinner:extraClass',
             ],
         ];
     }
@@ -150,6 +151,19 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $expected = '<span class="icon--font fa&#x20;fa-foo" '
             . 'role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('foo')));
+    }
+
+    /**
+     * Test that we can generate a font-based icon with an extra class.
+     *
+     * @return void
+     */
+    public function testFontIconWithExtraClass(): void
+    {
+        $helper = $this->getIconHelper();
+        $expected = '<span class="icon--font fa&#x20;fa-spinner extraClass" '
+            . 'role="img" aria-hidden="true"></span>';
+        $this->assertEquals($expected, trim($helper('classy')));
     }
 
     /**
