@@ -82,7 +82,6 @@ return [
                 'prefix' => 'fa fa-',
                 'src' => 'vendor/font-awesome.min.css',
             ],
-            /* For an example of an images set, see Bootprint's theme.config.php. */
         ],
         'aliases' => [
             /**
