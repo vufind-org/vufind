@@ -76,6 +76,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'ltronly' => 'Fugue:ltronly.png',
                 'xyzzy' => 'FakeSprite:sprite',
                 'classy' => 'FontAwesome:spinner:extraClass',
+                'extraClassy' => 'Fugue:zzz.png:weird:class foo'
             ],
         ];
     }
@@ -225,6 +226,20 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper(null, null, null, $plugins);
         $expected = '<img class="icon--img" src="baz.png" aria-hidden="true"/>';
         $this->assertEquals($expected, trim($helper('bar')));
+    }
+
+    /**
+     * Test that we can generate an image-based icon with extra classes in the
+     * configuration (including a class name with a colon in it).
+     *
+     * @return void
+     */
+    public function testImageIconWithExtraClasses(): void
+    {
+        $plugins = ['imageLink' => $this->getMockImageLink('icons/zzz.png')];
+        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $expected = '<img class="icon--img weird:class foo" src="zzz.png" aria-hidden="true"/>';
+        $this->assertEquals($expected, trim($helper('extraClassy')));
     }
 
     /**
