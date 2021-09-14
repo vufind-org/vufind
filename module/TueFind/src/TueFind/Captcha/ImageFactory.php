@@ -46,7 +46,7 @@ class ImageFactory extends \VuFind\Captcha\ImageFactory
         return new $requestedName(
             new \Laminas\Captcha\Image($imageOptions),
             $container->get('ViewHelperManager')->get('url')->__invoke('home')
-                . 'cache/' . basename(getenv('VUFIND_LOCAL_DIR')) . '/'
+                . 'cache/'
         );
     }
 }
