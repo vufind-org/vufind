@@ -4,6 +4,7 @@ return [
     'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
+        //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
@@ -80,9 +81,6 @@ return [
                 'template' => 'font',
                 'prefix' => 'fa fa-',
                 'src' => 'vendor/font-awesome.min.css',
-            ],
-            'Collapse' => [
-                'template' => 'collapse',
             ],
             /* For an example of an images set, see Bootprint's theme.config.php. */
         ],
