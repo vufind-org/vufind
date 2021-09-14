@@ -145,10 +145,14 @@ class Icon extends AbstractHelper
         $rtl = $this->rtl ? '-rtl' : '';
         $icon = $this->iconMap[$name . $rtl] ?? $this->iconMap[$name] ?? $name;
         $set = $this->defaultSet;
+        $class = null;
 
         // Override set from config (ie. FontAwesome:icon)
         if (strpos($icon, ':') !== false) {
-            [$set, $icon] = explode(':', $icon, 2);
+            $parts = explode(':', $icon, 3);
+            $set = $parts[0];
+            $icon = $parts[1];
+            $class = $parts[2] ?? null;
         }
 
         // Find set in theme.config.php
@@ -156,7 +160,7 @@ class Icon extends AbstractHelper
         $template = $setConfig['template'] ?? $this->defaultTemplate;
         $prefix = $setConfig['prefix'] ?? '';
 
-        return [$prefix . $icon, $set, $template];
+        return [$prefix . $icon, $set, $template, $class];
     }
 
     /**
@@ -221,7 +225,8 @@ class Icon extends AbstractHelper
         $cached = $this->cache->getItem($cacheKey);
 
         if ($cached == null) {
-            [$icon, $set, $template] = $this->mapIcon($name);
+            [$icon, $set, $template, $class] = $this->mapIcon($name);
+            $attrs['class'] = trim(($attrs['class'] ?? '') . ' ' . $class);
 
             // Surface set config and add icon and attrs
             $cached = $this->getView()->render(
