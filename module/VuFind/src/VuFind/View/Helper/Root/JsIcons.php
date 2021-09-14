@@ -1,10 +1,10 @@
 <?php
 /**
- * JsTranslations helper for passing translation text to Javascript
+ * JsIcons helper for passing icon HTML to Javascript
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,63 +28,50 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * JsTranslations helper for passing translation text to Javascript
+ * JsIcons helper for passing icon HTML to Javascript
  *
  * @category VuFind
  * @package  View_Helpers
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class JsTranslations extends AbstractJsStrings
+class JsIcons extends AbstractJsStrings
 {
     /**
-     * Translate helper
+     * Icon helper
      *
-     * @var Translate
+     * @var Icon
      */
-    protected $translate;
-
-    /**
-     * Translate + escape helper
-     *
-     * @var TransEsc
-     */
-    protected $transEsc;
+    protected $iconHelper;
 
     /**
      * Constructor
      *
-     * @param Translate $translate Translate helper
-     * @param TransEsc  $transEsc  Translate + escape helper
-     * @param string    $varName   Variable name to store translations
+     * @param Icon   $iconHelper Icon helper
+     * @param string $varName    Variable name to store icons
      */
     public function __construct(
-        Translate $translate,
-        TransEsc $transEsc,
-        $varName = 'vufindString'
+        Icon $iconHelper,
+        $varName = 'vufindIconString'
     ) {
         parent::__construct($varName);
-        $this->translate = $translate;
-        $this->transEsc = $transEsc;
+        $this->iconHelper = $iconHelper;
     }
 
     /**
-     * Translate string
+     * Generate Icon from string
      *
-     * @param string|array $translation String to translate
-     * @param string       $key         JSON object key
+     * @param string $icon String to transform
+     * @param string $key  JSON object key
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function mapValue($translation, string $key): string
+    protected function mapValue($icon, string $key): string
     {
-        $translateFunc
-            = substr($key, -5) === '_html' || substr($key, -10) === '_unescaped'
-            ? $this->translate : $this->transEsc;
-
-        // $translation could be a string or an array of parameters; this code
-        // normalizes it into a parameter list for the translator.
-        return ($translateFunc)(...((array)$translation));
+        return ($this->iconHelper)($icon);
     }
 }
