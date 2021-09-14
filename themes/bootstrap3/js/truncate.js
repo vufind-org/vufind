@@ -42,6 +42,7 @@ VuFind.register('truncate', function Truncate() {
       var parent, numRows, shouldTruncate, truncatedHeight;
       var wrapperClass = settings['wrapper-class'];
       var wrapperTagName = settings['wrapper-tagname'];
+      var toggleElements = [];
 
       if (element) {
         // Element-based truncation
@@ -64,6 +65,7 @@ VuFind.register('truncate', function Truncate() {
             if (i >= rowCount) {
               $(this).hide();
               $(this).addClass('truncate-toggle');
+              toggleElements.push(this);
             }
           });
         }
@@ -129,7 +131,9 @@ VuFind.register('truncate', function Truncate() {
           }
           btnWrapperBtm.find('.more-btn').show();
           if (element) {
-            container.find('.truncate-toggle').toggle();
+            toggleElements.forEach(function hideToggles(element) {
+              $(element).toggle();
+            })
           } else if (truncatedHeight === 0) {
             container.hide();
           } else {
@@ -152,7 +156,9 @@ VuFind.register('truncate', function Truncate() {
             btnWrapperBtm.find('.less-btn').focus();
           }
           if (element) {
-            container.find('.truncate-toggle').toggle();
+            toggleElements.forEach(function showToggles(element) {
+              $(element).toggle();
+            })
           } else if (truncatedHeight === 0) {
             container.show();
           } else {
