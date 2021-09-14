@@ -4,6 +4,6 @@
     . "\$('#SummonDeferredBestBets').load(url);";
 ?>
 <div id="SummonDeferredBestBets">
-  <p><?=$this->transEsc("Loading")?>... <?=$this->icon('spinner') ?></p>
+  <p><?=$this->transEsc("Loading")?>... <?=$this->icon('spinner', 'icon--spin') ?></p>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>
