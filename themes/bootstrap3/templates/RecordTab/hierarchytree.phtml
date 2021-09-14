@@ -44,7 +44,7 @@
           <option value="Title"><?=$this->transEsc('Title')?></option>
         </select>
         <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Search') ?>"/>
-        <?=$this->icon('spinner', ['class' => 'hidden', 'id' => 'treeSearchLoadingImg']) ?>
+        <?=$this->icon('spinner', ['class' => 'icon--spin hidden', 'id' => 'treeSearchLoadingImg']) ?>
       </div>
       <div id="treeSearchNoResults" class="alert alert-danger hidden"><?=$this->transEsc('nohit_heading')?></div>
       <div id="treeSearchLimitReached" class="alert alert-danger hidden"><?=$this->translate('tree_search_limit_reached_html', ['%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()])?></div>
