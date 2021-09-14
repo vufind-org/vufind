@@ -131,9 +131,9 @@ VuFind.register('truncate', function Truncate() {
           }
           btnWrapperBtm.find('.more-btn').show();
           if (element) {
-            toggleElements.forEach(function hideToggles(element) {
-              $(element).toggle();
-            })
+            toggleElements.forEach(function hideToggles(toggleElement) {
+              $(toggleElement).toggle();
+            });
           } else if (truncatedHeight === 0) {
             container.hide();
           } else {
@@ -156,9 +156,9 @@ VuFind.register('truncate', function Truncate() {
             btnWrapperBtm.find('.less-btn').focus();
           }
           if (element) {
-            toggleElements.forEach(function showToggles(element) {
-              $(element).toggle();
-            })
+            toggleElements.forEach(function showToggles(toggleElement) {
+              $(toggleElement).toggle();
+            });
           } else if (truncatedHeight === 0) {
             container.show();
           } else {
