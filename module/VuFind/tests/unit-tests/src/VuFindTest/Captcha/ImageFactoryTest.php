@@ -64,32 +64,30 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
      * Helper function to execute a single test and manipulate the
      * cache base path if necessary.
      *
-     * @param string $cacheBasePath
+     * @param string $homeUrl Home URL
      */
-    protected function testFactoryHelper($cacheBasePath=null)
+    protected function testFactoryHelper($homeUrl = null)
     {
         // Set up mock services expected by factory:
         $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
         $container = new \VuFindTest\Container\MockContainer($this);
         $storage = $container->get(\Laminas\Cache\Storage\StorageInterface::class);
-        $storage->expects($this->atLeast(1))->method('getOptions')
+        $storage->expects($this->once())->method('getOptions')
             ->will($this->returnValue($options));
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $cacheManager->expects($this->atLeast(1))->method('getCache')
+        $cacheManager->expects($this->once())->method('getCache')
             ->with($this->equalTo('public'))
             ->will($this->returnValue($storage));
 
         $url = $container->get(\VuFind\View\Helper\Root\Url::class);
+        $url->expects($this->once())->method('__invoke')
+            ->with($this->equalTo('home'))
+            ->will($this->returnValue($homeUrl));
+
         $manager = $container->get('ViewHelperManager');
 
-        if ($cacheBasePath === null) {
-            $manager->expects($this->atLeast(1))->method('get')
-                ->with($this->equalTo('url'))->will($this->returnValue($url));
-        } else {
-            self::$cacheBasePath = $cacheBasePath;
-            $manager->expects($this->atLeast(1))->method('get')
-                ->with($this->equalTo('url'))->willReturn('VuFindTest\Captcha\ImageFactoryTest::getCacheBasePath');
-        }
+        $manager->expects($this->once())->method('get')
+            ->with($this->equalTo('url'))->will($this->returnValue($url));
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class {
