@@ -110,7 +110,7 @@ var VuFind = (function VuFind() {
   };
   var loading = function loading(text = null, extraClass = "") {
     let className = ("loading-spinner " + extraClass).trim();
-    let string = translate(text ?? "loading");
+    let string = translate(text === null ? "loading" : text);
     return '<span class="' + className + '">' + icon('spinner') + string + '...</span>';
   };
 
