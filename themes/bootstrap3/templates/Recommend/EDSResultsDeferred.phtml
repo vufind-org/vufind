@@ -4,6 +4,6 @@
         . "\$('#edsResultsDeferredRecommend').load(url);";
 ?>
 <div id="edsResultsDeferredRecommend">
-    <p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p>
+    <p><?=$this->icon('spinner') ?> <?=$this->transEsc("Loading")?>...</p>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>
