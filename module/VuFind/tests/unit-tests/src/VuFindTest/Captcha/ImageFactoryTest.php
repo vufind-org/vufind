@@ -44,10 +44,10 @@ namespace VuFindTest\Captcha;
 class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Helper function to execute a single test and manipulate the
-     * cache base path if necessary.
+     * Test that the factory behaves correctly.
      *
-     * @param string $homeUrl Home URL
+     * @param string $homeUrl       Home URL (returned by url helper)
+     * @param string $expectedCache Expected cache path
      *
      * @dataProvider factoryDataProvider
      */
