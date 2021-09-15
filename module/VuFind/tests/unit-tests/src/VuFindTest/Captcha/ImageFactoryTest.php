@@ -44,23 +44,6 @@ namespace VuFindTest\Captcha;
 class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Internal workaround variable regarding willReturn().
-     *
-     * @var string
-     */
-    protected static $cacheBasePath;
-
-    /**
-     * Getter for internal workaround variable regarding willReturn().
-     *
-     * @return string
-     */
-    public static function getCacheBasePath()
-    {
-        return self::$cacheBasePath;
-    }
-
-    /**
      * Helper function to execute a single test and manipulate the
      * cache base path if necessary.
      *
