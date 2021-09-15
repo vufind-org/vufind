@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class PunctuationContainer
 {
-   private static ThreadLocal<PunctuationContainer> containerCache =
+    private static ThreadLocal<PunctuationContainer> containerCache =
         new ThreadLocal<PunctuationContainer>()
         {
             @Override
@@ -48,8 +48,10 @@ public class PunctuationContainer
         if (punctuationRegEx.size() == 0) {
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationRegExToStrip");
             punctuationRegEx = new LinkedHashSet<Pattern>();
-            for (String pattern : all.values()) {
-                punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
+            if (all != null) {
+                for (String pattern : all.values()) {
+                    punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
+                }
             }
         }
         return punctuationRegEx;
@@ -60,7 +62,9 @@ public class PunctuationContainer
         // Populate set if empty:
         if (punctuationPairs.size() == 0) {
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationMatchedChars");
-            punctuationPairs = new LinkedHashSet<String>(all.values());
+            if (all != null) {
+                punctuationPairs = new LinkedHashSet<String>(all.values());
+            }
         }
         return punctuationPairs;
     }
@@ -70,7 +74,9 @@ public class PunctuationContainer
         // Populate set if empty:
         if (untrimmedAbbreviations.size() == 0) {
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationUntrimmedAbbreviations");
-            untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
+            if (all != null) {
+                untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
+            }
         }
         return untrimmedAbbreviations;
     }
