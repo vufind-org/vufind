@@ -48,14 +48,14 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    static protected $cacheBasePath;
+    protected static $cacheBasePath;
 
     /**
      * Getter for internal workaround variable regarding willReturn().
      *
      * @return string
      */
-    static public function getCacheBasePath()
+    public static function getCacheBasePath()
     {
         return self::$cacheBasePath;
     }
