@@ -483,12 +483,27 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $defaultPatronId;
 
     /**
+     * Mapping of z304 address elements in Aleph to getMyProfile attributes
+     *
+     * @var array
+     */
+    protected $addressMappings = null;
+
+    /**
      * ISO 3166-1 alpha-2 to ISO 3166-1 alpha-3 mapping for
      * translation in REST DLF API.
      *
      * @var array
      */
     protected $languages = [];
+
+    /**
+     * Regex for extracting position in queue from status in holdings.
+     *
+     * @var string
+     */
+    protected $queuePositionRegex = "/Waiting in position "
+        . "(?<position>[0-9]+) in queue;/";
 
     /**
      * Constructor
@@ -584,11 +599,44 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         if (isset($this->config['Catalog']['default_patron_id'])) {
             $this->defaultPatronId = $this->config['Catalog']['default_patron_id'];
         }
+
+        $this->addressMappings = $this->getDefaultAddressMappings();
+
+        if (isset($this->config['AddressMappings'])) {
+            foreach ($this->config['AddressMappings'] as $key => $val) {
+                $this->addressMappings[$key] = $val;
+            }
+        }
+
+        if (isset($this->config['Catalog']['queue_position_regex'])) {
+            $this->queuePositionRegex
+                = $this->config['Catalog']['queue_position_regex'];
+        }
+
         if (isset($this->config['Languages'])) {
             foreach ($this->config['Languages'] as $locale => $lang) {
                 $this->languages[$locale] = $lang;
             }
         }
+    }
+
+    /**
+     * Return default mapping of z304 address elements in Aleph
+     * to getMyProfile attributes.
+     *
+     * @return array
+     */
+    protected function getDefaultAddressMappings()
+    {
+        return [
+            'fullname' => 'z304-address-1',
+            'address1' => 'z304-address-2',
+            'address2' => 'z304-address-3',
+            'city'     => 'z304-address-4',
+            'zip'      => 'z304-zip',
+            'email'    => 'z304-email-address',
+            'phone'    => 'z304-telephone-1',
+        ];
     }
 
     /**
@@ -1284,52 +1332,53 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $delete = $item->xpath('@delete');
             $href = $item->xpath('@href');
             $item_id = substr($href[0], strrpos($href[0], '/') + 1);
-            if ((string)$z37->{'z37-request-type'} == "Hold Request" || true) {
-                $type = "hold";
-                //$docno = (string) $z37->{'z37-doc-number'};
-                //$itemseq = (string) $z37->{'z37-item-sequence'};
-                $seq = (string)$z37->{'z37-sequence'};
-                $location = (string)$z37->{'z37-pickup-location'};
-                $reqnum = (string)$z37->{'z37-doc-number'}
-                    . (string)$z37->{'z37-item-sequence'}
-                    . (string)$z37->{'z37-sequence'};
-                $expire = (string)$z37->{'z37-end-request-date'};
-                $create = (string)$z37->{'z37-open-date'};
-                $holddate = (string)$z37->{'z37-hold-date'};
-                $title = (string)$z13->{'z13-title'};
-                $author = (string)$z13->{'z13-author'};
-                $isbn = (string)$z13->{'z13-isbn-issn'};
-                $barcode = (string)$z30->{'z30-barcode'};
-                $status = (string)$z37->{'z37-status'};
-                if ($holddate == "00000000") {
-                    $holddate = null;
-                } else {
-                    $holddate = $this->parseDate($holddate);
-                }
-                $delete = ($delete[0] == "Y");
-                // Secondary, Aleph-specific identifier that may be useful for
-                // local customizations
-                $adm_id = (string)$z30->{'z30-doc-number'};
-
-                $holdList[] = [
-                    'type' => $type,
-                    'item_id' => $item_id,
-                    'adm_id'   => $adm_id,
-                    'location' => $location,
-                    'title' => $title,
-                    'author' => $author,
-                    'isbn' => $isbn,
-                    'reqnum' => $reqnum,
-                    'barcode' => $barcode,
-                    'id' => $this->barcodeToID($barcode),
-                    'expire' => $this->parseDate($expire),
-                    'holddate' => $holddate,
-                    'delete' => $delete,
-                    'create' => $this->parseDate($create),
-                    'status' => $status,
-                    'position' => ltrim($seq, '0')
-                ];
+            $type = "hold";
+            $location = (string)$z37->{'z37-pickup-location'};
+            $reqnum = (string)$z37->{'z37-doc-number'}
+                . (string)$z37->{'z37-item-sequence'}
+                . (string)$z37->{'z37-sequence'};
+            $expire = (string)$z37->{'z37-end-request-date'};
+            $create = (string)$z37->{'z37-open-date'};
+            $holddate = (string)$z37->{'z37-hold-date'};
+            $title = (string)$z13->{'z13-title'};
+            $author = (string)$z13->{'z13-author'};
+            $isbn = (string)$z13->{'z13-isbn-issn'};
+            $barcode = (string)$z30->{'z30-barcode'};
+            // remove superfluous spaces in status
+            $status = preg_replace("/\s[\s]+/", " ", $item->status);
+            $position = null;
+            // Extract position in the hold queue from item status
+            if (preg_match($this->queuePositionRegex, $status, $matches)) {
+                $position = $matches['position'];
             }
+            if ($holddate == "00000000") {
+                $holddate = null;
+            } else {
+                $holddate = $this->parseDate($holddate);
+            }
+            $delete = ($delete[0] == "Y");
+            // Secondary, Aleph-specific identifier that may be useful for
+            // local customizations
+            $adm_id = (string)$z30->{'z30-doc-number'};
+
+            $holdList[] = [
+                'type' => $type,
+                'item_id' => $item_id,
+                'adm_id'   => $adm_id,
+                'location' => $location,
+                'title' => $title,
+                'author' => $author,
+                'isbn' => $isbn,
+                'reqnum' => $reqnum,
+                'barcode' => $barcode,
+                'id' => $this->barcodeToID($barcode),
+                'expire' => $this->parseDate($expire),
+                'holddate' => $holddate,
+                'delete' => $delete,
+                'create' => $this->parseDate($create),
+                'status' => $status,
+                'position' => $position,
+            ];
         }
         return $holdList;
     }
@@ -1567,42 +1616,31 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
-        $address = $xml->xpath('//address-information');
-        $address = $address[0];
-        $address1 = (string)$address->{'z304-address-1'};
-        $address2 = (string)$address->{'z304-address-2'};
-        $address3 = (string)$address->{'z304-address-3'};
-        //$address4 = (string)$address->{'z304-address-4'};
-        //$address5 = (string)$address->{'z304-address-5'};
-        $zip = (string)$address->{'z304-zip'};
-        $phone = (string)$address->{'z304-telephone-1'};
-        $email = (string)$address->{'z404-email-address'};
-        $dateFrom = (string)$address->{'z304-date-from'};
-        $dateTo = (string)$address->{'z304-date-to'};
-        if (strpos($address2, ",") === false) {
-            $recordList['lastname'] = $address2;
-            $recordList['firstname'] = "";
-        } else {
-            [$recordList['lastname'], $recordList['firstname']]
-                = explode(",", $address2);
+        $profile = [];
+        $profile['id'] = $user['id'];
+        $profile['cat_username'] = $user['id'];
+        $address = $xml->xpath('//address-information')[0];
+        foreach ($this->addressMappings as $key => $value) {
+            if (!empty($value)) {
+                $profile[$key] = (string)$address->{$value};
+            }
         }
-        $recordList['address1'] = $address2;
-        $recordList['address2'] = $address3;
-        $recordList['barcode'] = $address1;
-        $recordList['zip'] = $zip;
-        $recordList['phone'] = $phone;
-        $recordList['email'] = $email;
-        $recordList['dateFrom'] = $dateFrom;
-        $recordList['dateTo'] = $dateTo;
-        $recordList['id'] = $user['id'];
+        $fullName = $profile['fullname'];
+        if (strpos($fullName, ",") === false) {
+            $profile['lastname'] = $fullName;
+            $profile['firstname'] = "";
+        } else {
+            [$profile['lastname'], $profile['firstname']]
+                = explode(",", $fullName);
+        }
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronStatus', 'registration']
         );
         $status = $xml->xpath("//institution/z305-bor-status");
         $expiry = $xml->xpath("//institution/z305-expiry-date");
-        $recordList['expire'] = $this->parseDate($expiry[0]);
-        $recordList['group'] = $status[0];
-        return $recordList;
+        $profile['expiration_date'] = $this->parseDate($expiry[0]);
+        $profile['group'] = $status[0];
+        return $profile;
     }
 
     /**

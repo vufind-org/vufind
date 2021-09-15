@@ -64,7 +64,6 @@ VuFind.register('truncate', function Truncate() {
             }
             if (i >= rowCount) {
               $(this).hide();
-              $(this).addClass('truncate-toggle');
               toggleElements.push(this);
             }
           });
@@ -76,8 +75,11 @@ VuFind.register('truncate', function Truncate() {
         if (container.children().length > 0) {
           // Use first child as the height element if available
           var heightElem = container.children().first();
-          if (heightElem.is('div')) {
-            rowHeight = parseFloat(heightElem.height());
+          var display = heightElem.css('display');
+          if ((heightElem.is('div') || heightElem.is('span'))
+            && (display === 'block' || display === 'inline-block')
+          ) {
+            rowHeight = parseFloat(heightElem.outerHeight());
           } else {
             rowHeight = parseFloat(heightElem.css('line-height').replace('px', ''));
           }

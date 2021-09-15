@@ -183,9 +183,30 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 [
-                    ['type' => 'textarea', 'value' => 'x', 'label' => 'Comments'],
-                    ['type' => 'text', 'value' => 'y', 'label' => 'feedback_name'],
-                    ['type' => 'email', 'value' => 'z@foo.com', 'label' => 'feedback_email'],
+                    [
+                        'type' => 'textarea',
+                        'value' => 'x',
+                        'label' => 'Comments',
+                        'name' => 'message',
+                        'required' => true,
+                        'settings' => ['cols' => 50, 'rows' => 8],
+                    ],
+                    [
+                        'type' => 'text',
+                        'value' => 'y',
+                        'name' => 'name',
+                        'group' => '__sender__',
+                        'label' => 'feedback_name',
+                        'settings' => ['size' => 50],
+                    ],
+                    [
+                        'type' => 'email',
+                        'value' => 'z@foo.com',
+                        'name' => 'email',
+                        'group' => '__sender__',
+                        'label' => 'feedback_email',
+                        'settings' => ['size' => 50],
+                    ],
                 ],
                 'Email/form.phtml'
             ],

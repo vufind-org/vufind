@@ -72,7 +72,11 @@ class IconTest extends \PHPUnit\Framework\TestCase
             ],
             'aliases' => [
                 'bar' => 'Fugue:baz.png',
+                'bar-rtl' => 'Fugue:zab.png',
+                'ltronly' => 'Fugue:ltronly.png',
                 'xyzzy' => 'FakeSprite:sprite',
+                'classy' => 'FontAwesome:spinner:extraClass',
+                'extraClassy' => 'Fugue:zzz.png:weird:class foo'
             ],
         ];
     }
@@ -123,13 +127,15 @@ class IconTest extends \PHPUnit\Framework\TestCase
         array $config = null,
         StorageInterface $cache = null,
         HeadLink $headLink = null,
-        array $plugins = []
+        array $plugins = [],
+        $rtl = false
     ): Icon {
         $icon = new Icon(
             $config ?? $this->getDefaultTestConfig(),
             $cache ?? new BlackHole(),
             new EscapeHtmlAttr(),
-            $headLink ?? $this->getMockHeadLink()
+            $headLink ?? $this->getMockHeadLink(),
+            $rtl
         );
         $icon->setView($this->getPhpRenderer($plugins));
         return $icon;
@@ -143,9 +149,22 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testFontIcon(): void
     {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon--font fa&amp;&#x23;x20&#x3B;fa-foo" '
+        $expected = '<span class="icon--font fa&#x20;fa-foo" '
             . 'role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('foo')));
+    }
+
+    /**
+     * Test that we can generate a font-based icon with an extra class.
+     *
+     * @return void
+     */
+    public function testFontIconWithExtraClass(): void
+    {
+        $helper = $this->getIconHelper();
+        $expected = '<span class="icon--font fa&#x20;fa-spinner extraClass" '
+            . 'role="img" aria-hidden="true"></span>';
+        $this->assertEquals($expected, trim($helper('classy')));
     }
 
     /**
@@ -156,9 +175,16 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testFontIconWithExtras(): void
     {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon--font fa&amp;&#x23;x20&#x3B;fa-foo" '
+        $expected = '<span class="icon--font fa&#x20;fa-foo" '
             . 'bar="baz" role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('foo', ['bar' => 'baz'])));
+
+        // Add class to class
+        $expected = '<span class="icon--font fa&#x20;fa-foo foo-bar" role="img" aria-hidden="true"></span>';
+        $this->assertEquals($expected, trim($helper('foo', ['class' => 'foo-bar'])));
+
+        // Shortcut
+        $this->assertEquals($expected, trim($helper('foo', 'foo-bar')));
     }
 
     /**
@@ -168,7 +194,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
      */
     public function testCaching(): void
     {
-        $expected = '<span class="icon--font fa&amp;&#x23;x20&#x3B;fa-foo" '
+        $expected = '<span class="icon--font fa&#x20;fa-foo" '
             . 'bar="baz" role="img" aria-hidden="true"></span>' . "\n";
         $key = 'foo+c0dc783820069fb9337be7366f7945bf';
 
@@ -203,6 +229,56 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that we can generate an image-based icon with extra classes in the
+     * configuration (including a class name with a colon in it).
+     *
+     * @return void
+     */
+    public function testImageIconWithExtraClasses(): void
+    {
+        $plugins = ['imageLink' => $this->getMockImageLink('icons/zzz.png')];
+        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $expected = '<img class="icon--img weird:class foo" src="zzz.png" aria-hidden="true"/>';
+        $this->assertEquals($expected, trim($helper('extraClassy')));
+    }
+
+    /**
+     * Test that we can generate an image-based icon with extras.
+     *
+     * @return void
+     */
+    public function testImageIconWithExtras(): void
+    {
+        $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
+        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $expected
+            = '<img class="icon--img myclass" src="baz.png" aria-hidden="true"/>';
+        // Send a string, validating the shortcut where strings are treated as
+        // classes, in addition to confirming that extras work for image icons.
+        $this->assertEquals($expected, trim($helper('bar', 'myclass')));
+    }
+
+    /**
+     * Test RTL
+     *
+     * @return void
+     */
+    public function testRTL(): void
+    {
+        // RTL exists
+        $plugins = ['imageLink' => $this->getMockImageLink('icons/zab.png')];
+        $helper = $this->getIconHelper(null, null, null, $plugins, true);
+        $expected = '<img class="icon--img" src="zab.png" aria-hidden="true"/>';
+        $this->assertEquals($expected, trim($helper('bar')));
+
+        // RTL does not exist
+        $plugins = ['imageLink' => $this->getMockImageLink('icons/ltronly.png')];
+        $helper = $this->getIconHelper(null, null, null, $plugins, true);
+        $expected = '<img class="icon--img" src="ltronly.png" aria-hidden="true"/>';
+        $this->assertEquals($expected, trim($helper('ltronly')));
+    }
+
+    /**
      * Test that we can generate an SVG icon.
      *
      * @return void
@@ -217,5 +293,25 @@ class IconTest extends \PHPUnit\Framework\TestCase
 </svg>
 EXPECTED;
         $this->assertEquals($expected, trim($helper('xyzzy')));
+    }
+
+    /**
+     * Test that we can generate an SVG icon with extras.
+     *
+     * @return void
+     */
+    public function testSvgIconWithExtras(): void
+    {
+        $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
+        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $expected = <<<EXPECTED
+<svg class="icon--svg myclass" data-foo="bar" aria-hidden="true">
+    <use xlink:href="mysprites.svg#sprite"></use>
+</svg>
+EXPECTED;
+        $this->assertEquals(
+            $expected,
+            trim($helper('xyzzy', ['class' => 'myclass', 'data-foo' => 'bar']))
+        );
     }
 }

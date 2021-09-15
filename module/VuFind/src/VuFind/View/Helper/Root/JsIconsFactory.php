@@ -1,10 +1,10 @@
 <?php
 /**
- * Icon helper factory.
+ * JsIcons helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,6 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -35,16 +34,15 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Icon helper factory.
+ * JsIcons helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IconFactory implements FactoryInterface
+class JsIconsFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,17 +66,9 @@ class IconFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFindTheme\ThemeInfo::class)
-            ->getMergedConfig('icons', true);
-        $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
-            ->createFromArrayConfiguration(['name' => 'memory', 'options' => []]);
         $helpers = $container->get('ViewHelperManager');
         return new $requestedName(
-            $config,
-            $cache,
-            $helpers->get('escapeHtmlAttr'),
-            $helpers->get('headLink'),
-            $container->get('ViewManager')->getViewModel()->rtl
+            $helpers->get('icon')
         );
     }
 }

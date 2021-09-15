@@ -93,6 +93,13 @@ class Icon extends AbstractHelper
     protected $headLink;
 
     /**
+     * Are we in right to left text mode?
+     *
+     * @var boolean
+     */
+    protected $rtl;
+
+    /**
      * Prevent extra work by only appending the stylesheet once
      *
      * @var boolean
@@ -106,12 +113,14 @@ class Icon extends AbstractHelper
      * @param StorageInterface $cache    Cache instance
      * @param EscapeHtmlAttr   $escAttr  EscapeHtmlAttr view helper
      * @param HeadLink         $headLink HeadLink view helper
+     * @param bool             $rtl      Are we in right to left text mode?
      */
     public function __construct(
         array $config,
         StorageInterface $cache,
         EscapeHtmlAttr $escAttr,
-        HeadLink $headLink
+        HeadLink $headLink,
+        bool $rtl = false
     ) {
         $this->config = $config;
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
@@ -120,6 +129,7 @@ class Icon extends AbstractHelper
         $this->cache = $cache;
         $this->esc = $escAttr;
         $this->headLink = $headLink;
+        $this->rtl = $rtl;
     }
 
     /**
@@ -132,12 +142,17 @@ class Icon extends AbstractHelper
      */
     protected function mapIcon(string $name): array
     {
-        $icon = $this->iconMap[$name] ?? $name;
+        $rtl = $this->rtl ? '-rtl' : '';
+        $icon = $this->iconMap[$name . $rtl] ?? $this->iconMap[$name] ?? $name;
         $set = $this->defaultSet;
+        $class = null;
 
         // Override set from config (ie. FontAwesome:icon)
         if (strpos($icon, ':') !== false) {
-            [$set, $icon] = explode(':', $icon, 2);
+            $parts = explode(':', $icon, 3);
+            $set = $parts[0];
+            $icon = $parts[1];
+            $class = $parts[2] ?? null;
         }
 
         // Find set in theme.config.php
@@ -145,7 +160,7 @@ class Icon extends AbstractHelper
         $template = $setConfig['template'] ?? $this->defaultTemplate;
         $prefix = $setConfig['prefix'] ?? '';
 
-        return [$prefix . $icon, $set, $template];
+        return [$prefix . $icon, $set, $template, $class];
     }
 
     /**
@@ -160,6 +175,10 @@ class Icon extends AbstractHelper
     {
         $attrStr = '';
         foreach ($attrs as $key => $val) {
+            // class gets special handling in the template; don't use it now:
+            if ($key == 'class') {
+                continue;
+            }
             $attrStr .= ' ' . $key . '="' . ($this->esc)($val) . '"';
         }
         return $attrStr;
@@ -185,8 +204,8 @@ class Icon extends AbstractHelper
     /**
      * Returns inline HTML for icon
      *
-     * @param string $name  Which icon?
-     * @param array  $attrs Additional HTML attributes
+     * @param string       $name  Which icon?
+     * @param array|string $attrs Additional HTML attributes
      *
      * @return string
      */
@@ -197,14 +216,17 @@ class Icon extends AbstractHelper
             $this->styleAppended = true;
         }
 
+        // Class name shortcut
+        if (is_string($attrs)) {
+            $attrs = ['class' => $attrs];
+        }
+
         $cacheKey = $this->cacheKey($name, $attrs);
         $cached = $this->cache->getItem($cacheKey);
 
         if ($cached == null) {
-            [$icon, $set, $template] = $this->mapIcon($name);
-
-            // Compile additional HTML attributes
-            $attrs = $this->compileAttrs($attrs);
+            [$icon, $set, $template, $class] = $this->mapIcon($name);
+            $attrs['class'] = trim(($attrs['class'] ?? '') . ' ' . $class);
 
             // Surface set config and add icon and attrs
             $cached = $this->getView()->render(
@@ -213,8 +235,8 @@ class Icon extends AbstractHelper
                     $this->config['sets'][$set] ?? [],
                     [
                         'icon' => ($this->esc)($icon),
-                        'attrs' => $attrs,
-                        'extra' => $attrs
+                        'attrs' => $this->compileAttrs($attrs),
+                        'extra' => $attrs,
                     ]
                 )
             );
