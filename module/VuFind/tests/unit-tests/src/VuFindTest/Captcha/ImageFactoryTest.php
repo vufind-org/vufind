@@ -72,7 +72,6 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($homeUrl));
 
         $manager = $container->get('ViewHelperManager');
-
         $manager->expects($this->once())->method('get')
             ->with($this->equalTo('url'))->will($this->returnValue($url));
 
