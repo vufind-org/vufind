@@ -48,10 +48,8 @@ public class PunctuationContainer
         if (punctuationRegEx.size() == 0) {
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationRegExToStrip");
             punctuationRegEx = new LinkedHashSet<Pattern>();
-            if (all != null) {
-                for (String pattern : all.values()) {
-                    punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
-                }
+            for (String pattern : all.values()) {
+                punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
             }
         }
         return punctuationRegEx;
@@ -62,9 +60,7 @@ public class PunctuationContainer
         // Populate set if empty:
         if (punctuationPairs.size() == 0) {
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationMatchedChars");
-            if (all != null) {
-                punctuationPairs = new LinkedHashSet<String>(all.values());
-            }
+            punctuationPairs = new LinkedHashSet<String>(all.values());
         }
         return punctuationPairs;
     }
@@ -74,9 +70,7 @@ public class PunctuationContainer
         // Populate set if empty:
         if (untrimmedAbbreviations.size() == 0) {
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationUntrimmedAbbreviations");
-            if (all != null) {
-                untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
-            }
+            untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
         }
         return untrimmedAbbreviations;
     }

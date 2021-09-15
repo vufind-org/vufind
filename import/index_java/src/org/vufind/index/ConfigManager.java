@@ -169,12 +169,12 @@ public class ConfigManager
     public Map<String, String> getSanitizedConfigSection(String filename, String section)
     {
         Map<String, String> retVal = getConfigSection(filename, section);
-        if (retVal != null) {
-            for (String key : retVal.keySet()) {
-                retVal.put(key, sanitizeConfigSetting(retVal.get(key)));
-            }
-        } else {
+        if (retVal == null) {
             logger.warn(section + " section missing from " + filename);
+            return new ConcurrentHashMap<String, String>();
+        }
+        for (String key : retVal.keySet()) {
+            retVal.put(key, sanitizeConfigSetting(retVal.get(key)));
         }
         return retVal;
     }
