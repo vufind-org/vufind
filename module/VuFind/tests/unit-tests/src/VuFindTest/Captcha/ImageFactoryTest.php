@@ -48,8 +48,10 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
      * cache base path if necessary.
      *
      * @param string $homeUrl Home URL
+     *
+     * @dataProvider factoryDataProvider
      */
-    protected function testFactoryHelper($homeUrl = null)
+    public function testFactory($homeUrl = null, $expectedCache = '/cache/')
     {
         // Set up mock services expected by factory:
         $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
@@ -98,26 +100,21 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             'imgDir' => $options->getCacheDir()
         ];
         $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
-        $this->assertEquals('/cache/', $result->constructorArgs[1]);
+        $this->assertEquals($expectedCache, $result->constructorArgs[1]);
     }
 
     /**
-     * Test that the factory behaves correctly.
+     * Provide data for testFactory()
      *
      * @return void
      */
-    public function testFactory()
+    public function factoryDataProvider()
     {
-        $this->testFactoryHelper();
-    }
-
-    /**
-     * Test that the factory behaves correctly, if cache base path is "/".
-     *
-     * @return void
-     */
-    public function testFactory2()
-    {
-        $this->testFactoryHelper('/');
+        return [
+            'Empty base path' => [],
+            'Slash as base path' => ['/'],
+            'Directory with trailing slash' => ['/foo/', '/foo/cache/'],
+            'Directory without trailing slash' => ['/foo', '/foo/cache/'],
+        ];
     }
 }
