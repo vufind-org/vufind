@@ -47,6 +47,24 @@
 }
 
 /* --- Look --- */
+.jstree-anchor {
+  padding: 2px;
+  padding-right: 4px;
+}
+
+.jstree-clicked,
+.jstree-clicked:active,
+.jstree-clicked:focus,
+.jstree-clicked:hover {
+  color: $list-group-active-color;
+  background-color: $list-group-active-bg;
+
+  .jstree-themeicon-custom {
+    color: #fff;
+    filter: invert(1);
+  }
+}
+
 .hierarchy-tree,
 .jstree-facet {
   .jstree-container-ul,
@@ -76,14 +94,6 @@
 #hierarchyTree .currentRecord a {
   font-weight: bold;
   color: #000;
-}
-
-.jstree-clicked {
-  color: $list-group-active-color;
-  background-color: $list-group-active-bg;
-  .jstree-icon {
-    color: #fff;
-  }
 }
 
 /* --- Facets --- */
