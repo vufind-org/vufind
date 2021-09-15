@@ -90,7 +90,7 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   var excludeTitle = treeNode.data('exclude-title');
 
   var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, inSidebar);
-  treeNode.find('.fa-spinner').parent().remove();
+  treeNode.find('.loading-spinner').parent().remove();
   if (inSidebar) {
     treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
       treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
@@ -113,9 +113,9 @@ function initFacetTree(treeNode, inSidebar)
   treeNode.data('loaded', true);
 
   if (inSidebar) {
-    treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
+    treeNode.prepend('<li class="list-group-item">' + VuFind.spinner() + '</li>');
   } else {
-    treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
+    treeNode.prepend('<div>' + VuFind.spinner() + '<div>');
   }
   var request = {
     method: "getFacetData",
@@ -154,8 +154,9 @@ VuFind.register('sideFacets', function SideFacets() {
   function showLoadingOverlay(e, data) {
     e.preventDefault();
     var overlay = '<div class="facet-loading-overlay">'
-      + '<span class="facet-loading-overlay-label">' + VuFind.translate('loading')
-      + "...</span></div>";
+      + '<span class="facet-loading-overlay-label">'
+      + VuFind.loading()
+      + "</span></div>";
     $(this).closest(".collapse").append(overlay);
     // This callback operates both as a click handler and a JSTree callback;
     // if the data element is undefined, we assume we are handling a click.

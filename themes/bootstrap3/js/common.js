@@ -9,6 +9,8 @@ var VuFind = (function VuFind() {
   var path = null;
   var _initialized = false;
   var _submodules = [];
+
+  var _icons = {};
   var _translations = {};
 
   // Emit a custom event
@@ -72,7 +74,7 @@ var VuFind = (function VuFind() {
     }
   };
   var translate = function translate(op, _replacements) {
-    var replacements = _replacements || [];
+    var replacements = _replacements || {};
     var translation = _translations[op] || op;
     if (replacements) {
       for (var key in replacements) {
@@ -82,6 +84,34 @@ var VuFind = (function VuFind() {
       }
     }
     return translation;
+  };
+
+  var addIcons = function addIcons(s) {
+    for (var i in s) {
+      if (Object.prototype.hasOwnProperty.call(s, i)) {
+        _icons[i] = s[i];
+      }
+    }
+  };
+  var icon = function icon(name) {
+    if (typeof _icons[name] == "undefined") {
+      console.error("JS icon missing: " + name);
+      return name;
+    }
+
+    var html = _icons[name];
+
+    return html;
+  };
+  // Icon shortcut methods
+  var spinner = function spinner(extraClass = "") {
+    let className = ("loading-spinner " + extraClass).trim();
+    return '<span class="' + className + '">' + icon('spinner') + '</span>';
+  };
+  var loading = function loading(text = null, extraClass = "") {
+    let className = ("loading-spinner " + extraClass).trim();
+    let string = translate(text ?? "loading");
+    return '<span class="' + className + '">' + icon('spinner') + string + '...</span>';
   };
 
   /**
@@ -105,12 +135,16 @@ var VuFind = (function VuFind() {
     defaultSearchBackend: defaultSearchBackend,
     path: path,
 
+    addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    icon: icon,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
+    spinner: spinner,
+    loading: loading,
     translate: translate
   };
 })();

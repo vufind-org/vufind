@@ -66,11 +66,13 @@
 
       $root = rtrim($this->url('home'), '/');
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
+      $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
+VuFind.addIcons({$icons});
 JS;
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 

@@ -48,7 +48,7 @@ VuFind.register('lightbox', function Lightbox() {
   }
   function flashMessage(message, _type) {
     var type = _type || 'info';
-    _modalBody.find('.flash-message,.fa.fa-spinner').remove();
+    _modalBody.find('.flash-message,.loading-spinner').remove();
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
   }
@@ -318,7 +318,7 @@ VuFind.register('lightbox', function Lightbox() {
       }, false);
     }
     // Loading
-    _modalBody.prepend('<i class="modal-loading fa fa-spinner fa-spin" title="' + VuFind.translate('loading') + '"></i>');
+    _modalBody.prepend(VuFind.spinner());
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');
