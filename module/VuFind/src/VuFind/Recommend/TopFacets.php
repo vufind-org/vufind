@@ -80,8 +80,7 @@ class TopFacets extends AbstractFacets
 
         // Load other relevant settings:
         $this->baseSettings = [
-            'rows' => $config->Results_Settings->top_rows,
-            'cols' => $config->Results_Settings->top_cols
+            'rows' => $config->Results_Settings->top_rows
         ];
 
         // Load boolean configurations:

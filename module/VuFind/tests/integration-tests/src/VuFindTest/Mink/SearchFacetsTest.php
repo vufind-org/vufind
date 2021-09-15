@@ -236,8 +236,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
-        // Open the geographic facet
-        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        // Open the genre facet
+        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-facets');
         $genreMore->click();
         $this->facetListProcedure($page, $limit);
         $genreMore->click();
@@ -266,13 +266,13 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
-        // Open the geographic facet
-        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        // Open the genre facet
+        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-btn');
         $genreMore->click();
-        $this->clickCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]');
+        $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
         $this->facetListProcedure($page, $limit);
         $genreMore->click();
-        $this->clickCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]');
+        $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
         $this->clickCss($page, '#modal .js-facet-item.active');
         // remove facet
         $this->snooze();
@@ -299,8 +299,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
-        // Open the geographic facet
-        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        // Open the genre facet
+        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-facets');
         $genreMore->click();
         $this->facetListProcedure($page, $limit, true);
         $this->assertEquals(1, count($page->findAll('css', $this->activeFilterSelector)));

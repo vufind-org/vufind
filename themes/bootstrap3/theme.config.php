@@ -43,6 +43,7 @@ return [
         ['file' => 'lib/autocomplete.js', 'priority' => 220],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
+        ['file' => 'truncate.js', 'priority' => 330],
     ],
     'less' => [
         'active' => false,
