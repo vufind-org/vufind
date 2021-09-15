@@ -44,27 +44,52 @@ namespace VuFindTest\Captcha;
 class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test that the factory behaves correctly.
+     * Internal workaround variable regarding willReturn().
      *
-     * @return void
+     * @var string
      */
-    public function testFactory()
+    static protected $cacheBasePath;
+
+    /**
+     * Getter for internal workaround variable regarding willReturn().
+     *
+     * @return string
+     */
+    static public function getCacheBasePath()
+    {
+        return self::$cacheBasePath;
+    }
+
+    /**
+     * Helper function to execute a single test and manipulate the
+     * cache base path if necessary.
+     *
+     * @param string $cacheBasePath
+     */
+    protected function testFactoryHelper($cacheBasePath=null)
     {
         // Set up mock services expected by factory:
         $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
         $container = new \VuFindTest\Container\MockContainer($this);
         $storage = $container->get(\Laminas\Cache\Storage\StorageInterface::class);
-        $storage->expects($this->once())->method('getOptions')
+        $storage->expects($this->atLeast(1))->method('getOptions')
             ->will($this->returnValue($options));
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $cacheManager->expects($this->once())->method('getCache')
+        $cacheManager->expects($this->atLeast(1))->method('getCache')
             ->with($this->equalTo('public'))
             ->will($this->returnValue($storage));
 
         $url = $container->get(\VuFind\View\Helper\Root\Url::class);
         $manager = $container->get('ViewHelperManager');
-        $manager->expects($this->once())->method('get')
-            ->with($this->equalTo('url'))->will($this->returnValue($url));
+
+        if ($cacheBasePath === null) {
+            $manager->expects($this->atLeast(1))->method('get')
+                ->with($this->equalTo('url'))->will($this->returnValue($url));
+        } else {
+            self::$cacheBasePath = $cacheBasePath;
+            $manager->expects($this->atLeast(1))->method('get')
+                ->with($this->equalTo('url'))->willReturn('VuFindTest\Captcha\ImageFactoryTest::getCacheBasePath');
+        }
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class {
@@ -93,5 +118,25 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
         $this->assertEquals('/cache/', $result->constructorArgs[1]);
+    }
+
+    /**
+     * Test that the factory behaves correctly.
+     *
+     * @return void
+     */
+    public function testFactory()
+    {
+        $this->testFactoryHelper();
+    }
+
+    /**
+     * Test that the factory behaves correctly, if cache base path is "/".
+     *
+     * @return void
+     */
+    public function testFactory2()
+    {
+        $this->testFactoryHelper('/');
     }
 }
