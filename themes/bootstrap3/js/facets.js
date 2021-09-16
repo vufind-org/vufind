@@ -113,9 +113,9 @@ function initFacetTree(treeNode, inSidebar)
   treeNode.data('loaded', true);
 
   if (inSidebar) {
-    treeNode.prepend('<li class="list-group-item">' + VuFind.spinner() + '</li>');
+    treeNode.prepend('<li class="list-group-item">' + VuFind.loading() + '</li>');
   } else {
-    treeNode.prepend('<div>' + VuFind.spinner() + '<div>');
+    treeNode.prepend('<div>' + VuFind.loading() + '<div>');
   }
   var request = {
     method: "getFacetData",
