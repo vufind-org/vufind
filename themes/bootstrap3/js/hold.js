@@ -8,7 +8,7 @@ function setUpHoldRequestForm(recordId) {
       $('#pickUpLocation').attr('disabled', 'disabled');
       return;
     }
-    $('#pickUpLocationLabel .loading-icon').show();
+    $('#pickUpLocationLabel .loading-icon').removeClass('hidden');
     var params = {
       method: 'getRequestGroupPickupLocations',
       id: recordId,
@@ -30,12 +30,11 @@ function setUpHoldRequestForm(recordId) {
           }
           $('#pickUpLocation').append(option);
         });
-
-        $('#pickUpLocationLabel .loading-icon').hide();
+        $('#pickUpLocationLabel .loading-icon').addClass('hidden');
         $('#pickUpLocation').removeAttr('disabled');
       })
       .fail(function holdPickupLocationsFail(/*response*/) {
-        $('#pickUpLocationLabel .loading-icon').hide();
+        $('#pickUpLocationLabel .loading-icon').addClass('hidden');
         $('#pickUpLocation').removeAttr('disabled');
       });
   });
