@@ -26,7 +26,7 @@ VuFind.register('truncate', function Truncate() {
           ? container.find(settings.element)
           : false;
       var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
-      var rowCount = settings.rows;
+      var maxRows = parseFloat(settings.rows);
       var moreLabel, lessLabel;
       moreLabel = lessLabel = settings.label;
       if (moreLabel === null) {
@@ -48,7 +48,7 @@ VuFind.register('truncate', function Truncate() {
         // Element-based truncation
         parent = element.parent();
         numRows = container.find(element).length || 0;
-        shouldTruncate = rowCount < numRows;
+        shouldTruncate = numRows > maxRows;
 
         if (wrapperClass === '') {
           wrapperClass = element.length ? element.prop('class') : '';
@@ -59,10 +59,10 @@ VuFind.register('truncate', function Truncate() {
 
         if (shouldTruncate) {
           element.each(function hideRows(i) {
-            if (i === rowCount) {
+            if (i === maxRows) {
               $(this).addClass('truncate-start');
             }
-            if (i >= rowCount) {
+            if (i >= maxRows) {
               $(this).hide();
               toggleElements.push(this);
             }
@@ -86,11 +86,13 @@ VuFind.register('truncate', function Truncate() {
         } else {
           rowHeight = parseFloat(container.css('line-height').replace('px', ''));
         }
-        numRows = Math.ceil(container.height() / rowHeight);
-        shouldTruncate = rowCount < numRows;
+        numRows = container.height() / rowHeight;
+        // Truncate only if it saves at least 1.5 rows. This accounts for the room
+        // the more button takes as well as any fractional imprecision.
+        shouldTruncate = maxRows === 0 || maxRows !== 0 && numRows > maxRows + 1.5;
 
         if (shouldTruncate) {
-          truncatedHeight = rowCount * rowHeight;
+          truncatedHeight = maxRows * rowHeight;
           container.css('height', truncatedHeight + 'px');
         }
       }
