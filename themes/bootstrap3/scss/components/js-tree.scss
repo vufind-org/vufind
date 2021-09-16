@@ -26,6 +26,7 @@
   cursor: pointer;
   text-decoration: inherit;
   speak: none;
+  padding-right: 1.3rem;
 }
 .jstree-open > .jstree-ocl:before {
   content: "\25BD"; // Unicode white down-pointing triangle
@@ -40,7 +41,7 @@
 
 .jstree-themeicon-custom {
   display: inline-block;
-  width: 1.2em;
+  width: 1.4em;
   height: 1em;
   vertical-align: text-bottom;
   background-repeat: no-repeat;
