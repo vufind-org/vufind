@@ -318,7 +318,12 @@ VuFind.register('lightbox', function Lightbox() {
       }, false);
     }
     // Loading
-    _modalBody.prepend(VuFind.loading());
+    var lightboxHeader = $(_modalBody).find('.lightbox-header');
+    if (lightboxHeader.length > 0) {
+      lightboxHeader.after(VuFind.loading());
+    } else {
+      _modalBody.prepend(VuFind.loading());
+    }
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');
