@@ -13,7 +13,7 @@
   <div class="media-body">
 
     <?php /* TueFind: Get title from custom RecordDriver function */ ?>
-    <h3 property="name"><?=$this->escapeHtml($this->driver->getTitle())?></h3>
+      <h3 property="name" ><?=$this->escapeHtml($this->driver->getTitle())?></h3>
 
     <?php if(!empty($this->extraControls)): ?>
       <?=$this->extraControls['actionControls'] ?? ''?>
@@ -35,8 +35,21 @@
 
     <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
       <?php /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists">
+      <!--<div class="savedLists d-inline-block">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>-->
+        <div class="ix-favorite-list">
+          <li class="dropdown pull-right">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                  <?=$this->transEsc("Saved in")?>:<span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <?php $user = $this->auth()->isLoggedIn(); ?>
+                <?php foreach ($user->getLists() as $list) : ?>
+                    <li><a href="/MyResearch/MyList/<?=$list->id;?>" title="<?=$list->title;?>"><?=$list->title;?></a></li>
+                <?php endforeach;?>
+            </ul>
+          </li>
       </div>
     <?php endif; ?>
 
