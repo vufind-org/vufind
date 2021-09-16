@@ -243,10 +243,10 @@ $(document).ready(function hierarchyTreeReady() {
       },
       types: {
         record: {
-          icon: 'fa fa-file-o'
+          icon: VuFind.path + "/themes/bootstrap3/images/hierarchy-file.svg"
         },
         collection: {
-          icon: 'fa fa-folder'
+          icon: VuFind.path + "/themes/bootstrap3/images/hierarchy-folder.svg"
         }
       }
     });
