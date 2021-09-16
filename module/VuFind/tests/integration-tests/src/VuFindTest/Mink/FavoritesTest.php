@@ -255,6 +255,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) while creating a
      * new account.
      *
+     * @depends       testAddRecordToFavoritesNewAccount
      * @retryCallback removeUsername2
      *
      * @return void
