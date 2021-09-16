@@ -318,7 +318,7 @@ VuFind.register('lightbox', function Lightbox() {
       }, false);
     }
     // Loading
-    _modalBody.prepend(VuFind.spinner());
+    _modalBody.prepend(VuFind.loading());
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');
@@ -469,7 +469,7 @@ VuFind.register('lightbox', function Lightbox() {
   // Element which to focus after modal is closed
   var _beforeOpenElement = null;
   function reset() {
-    _html(VuFind.translate('loading') + '...');
+    _html(VuFind.loading());
     _originalUrl = false;
     _currentUrl = false;
     _lightboxTitle = false;
