@@ -522,6 +522,9 @@ $config = [
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\Csrf',
         ],
+        'shared' => [
+            'VuFind\Form\Form' => false,
+        ],
     ],
     'translator' => [],
     'translator_plugins' => [

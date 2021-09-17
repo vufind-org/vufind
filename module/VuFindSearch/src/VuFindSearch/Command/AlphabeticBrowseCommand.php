@@ -43,6 +43,41 @@ use VuFindSearch\ParamBag;
 class AlphabeticBrowseCommand extends CallMethodCommand
 {
     /**
+     * Name of index to search.
+     *
+     * @var string
+     */
+    protected $source;
+
+    /**
+     * Starting point for browse results.
+     *
+     * @var string
+     */
+    protected $from;
+
+    /**
+     * Result page to return.
+     *
+     * @var int
+     */
+    protected $page;
+
+    /**
+     * Number of results to return on each page.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
+     * Delta to use when calculating page offset.
+     *
+     * @var int
+     */
+    protected $offsetDelta;
+
+    /**
      * Constructor.
      *
      * @param string    $backendId   Search backend identifier
@@ -63,13 +98,83 @@ class AlphabeticBrowseCommand extends CallMethodCommand
         ParamBag $params = null,
         int $offsetDelta = 0
     ) {
+        $this->source = $source;
+        $this->from = $from;
+        $this->page = $page;
+        $this->limit = $limit;
+        $this->offsetDelta = $offsetDelta;
         parent::__construct(
             $backendId,
             Backend::class, // we should define interface, if needed in more places
             'alphabeticBrowse',
-            [$source, $from, $page, $limit, $params, $offsetDelta],
-            $params,
-            false
+            $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getSource(),
+            $this->getFrom(),
+            $this->getPage(),
+            $this->getLimit(),
+            $this->getSearchParameters(),
+            $this->getOffsetDelta()
+        ];
+    }
+
+    /**
+     * Return name of index to search.
+     *
+     * @return string
+     */
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    /**
+     * Return starting point for browse results.
+     *
+     * @return string
+     */
+    public function getFrom(): string
+    {
+        return $this->from;
+    }
+
+    /**
+     * Return result page to return.
+     *
+     * @return int
+     */
+    public function getPage(): int
+    {
+        return $this->page;
+    }
+
+    /**
+     * Return number of results to return on each page.
+     *
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Return delta to use when calculating page offset.
+     *
+     * @return int
+     */
+    public function getOffsetDelta(): int
+    {
+        return $this->offsetDelta;
     }
 }

@@ -48,6 +48,20 @@ use VuFindSearch\Query\QueryInterface;
 class RandomCommand extends CallMethodCommand
 {
     /**
+     * Search query.
+     *
+     * @var QueryInterface
+     */
+    protected $query;
+
+    /**
+     * Search limit.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
      * RandomCommand constructor.
      *
      * @param string         $backendId Search backend identifier
@@ -61,13 +75,28 @@ class RandomCommand extends CallMethodCommand
         int $limit,
         ?ParamBag $params = null
     ) {
+        $this->query = $query;
+        $this->limit = $limit;
         parent::__construct(
             $backendId,
             RandomInterface::class,
             'random',
-            [$query, $limit],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getQuery(),
+            $this->getLimit(),
+            $this->getSearchParameters()
+        ];
     }
 
     /**
@@ -87,8 +116,8 @@ class RandomCommand extends CallMethodCommand
 
         // Otherwise, we need to load them one at a time and aggregate them.
 
-        $query = $this->args[0];
-        $limit = $this->args[1];
+        $query = $this->getQuery();
+        $limit = $this->getLimit();
 
         // offset/limit of 0 - we don't need records, just count
         $results = $backend->search($query, 0, 0, $this->params);
@@ -127,5 +156,25 @@ class RandomCommand extends CallMethodCommand
         }
 
         return $this->finalizeExecution($response);
+    }
+
+    /**
+     * Return search query.
+     *
+     * @return QueryInterface
+     */
+    public function getQuery(): QueryInterface
+    {
+        return $this->query;
+    }
+
+    /**
+     * Return search limit.
+     *
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
     }
 }

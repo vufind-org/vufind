@@ -47,6 +47,13 @@ use VuFindSearch\ParamBag;
 class RetrieveBatchCommand extends CallMethodCommand
 {
     /**
+     * Record identifiers.
+     *
+     * @var array
+     */
+    protected $ids;
+
+    /**
      * RetrieveBatchCommand constructor.
      *
      * @param string    $backendId Search backend identifier
@@ -58,13 +65,26 @@ class RetrieveBatchCommand extends CallMethodCommand
         array $ids,
         ?ParamBag $params = null
     ) {
+        $this->ids = $ids;
         parent::__construct(
             $backendId,
             RetrieveBatchInterface::class,
             'retrieveBatch',
-            [$ids],
             $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getRecordIdentifiers(),
+            $this->getSearchParameters()
+        ];
     }
 
     /**
@@ -84,10 +104,8 @@ class RetrieveBatchCommand extends CallMethodCommand
 
         // Otherwise, we need to load them one at a time and aggregate them.
 
-        $ids = $this->args[0];
-
         $response = false;
-        foreach ($ids as $id) {
+        foreach ($this->getRecordIdentifiers() as $id) {
             $next = $backend->retrieve($id, $this->params);
             if (!$response) {
                 $response = $next;
@@ -97,5 +115,15 @@ class RetrieveBatchCommand extends CallMethodCommand
         }
 
         return $this->finalizeExecution($response);
+    }
+
+    /**
+     * Return record identifiers.
+     *
+     * @return array
+     */
+    public function getRecordIdentifiers(): array
+    {
+        return $this->ids;
     }
 }
