@@ -9,6 +9,7 @@
     '%%total%%' => $this->localizedNumber($this->recordTotal),
     '%%lookfor%%' => $this->escapeHtml($shortLookfor)
   ];
+
   $showingResults = $this->translate(
     isset($this->skipTotalCount) ? 'showing_results_html' : 'showing_results_of_html',
     $transParams
@@ -29,8 +30,8 @@ endif; ?>
 
 <?php $this->layout()->srmessage = $showingResults; ?>
 <?php if ($qtime = $this->results->getQuerySpeed()): ?>
-  <span title="<?=$lookfor; ?>" class="ix-cursor-pointer"><?=$showingResults; ?></span>
+  <span title="<?=$lookfor; ?>" class="tf-cursor-pointer"><?=$showingResults; ?></span>
   <span class="search-query-time">, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?></span>
 <?php else: ?>
-  <span title="<?=$lookfor; ?>" class="ix-cursor-pointer"><?=$showingResults; ?></span>
+  <span title="<?=$lookfor; ?>" class="tf-cursor-pointer"><?=$showingResults; ?></span>
 <?php endif; ?>
