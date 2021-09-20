@@ -41,6 +41,10 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['occupation'] ?? [];
     }
 
+    public function getSubsystems(): array {
+        return $this->fields['subsystem'] ?? [];
+    }
+
     public function getVIAFs(): array {
         $viafs = $this->fields['viaf'] ?? [];
         if (!is_array($viafs))

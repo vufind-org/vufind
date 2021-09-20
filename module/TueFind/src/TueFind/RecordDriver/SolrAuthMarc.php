@@ -84,6 +84,27 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $references;
     }
 
+    public function getExternalSubsystems(): array
+    {
+        $subsystemLinks = [
+            ['title' => 'IxTheo', 'url' => 'https://ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'ixtheo'],
+            ['title' => 'RelBib', 'url' => 'https://relbib.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'relbib'],
+            ['title' => 'BILDI-IxTheo', 'url' => 'https://bible.ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'biblestudies'],
+            ['title' => 'IxTheo / KALDI / DaKaR', 'url' => 'https://canonlaw.ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'canonlaw']
+        ];
+
+        $result = [];
+        foreach ($this->getSubsystems() as $subsystem) {
+            foreach ($subsystemLinks as $subsystemLink) {
+                if ($subsystemLink['label'] == $subsystem) {
+                    $result[] = $subsystemLink;
+                }
+            }
+        }
+
+        return $result;
+    }
+
     protected function getLifeDates()
     {
         $lifeDates = ['birth' => null, 'death' => null];
