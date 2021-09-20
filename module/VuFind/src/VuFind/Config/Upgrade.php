@@ -679,9 +679,9 @@ class Upgrade
         // Eliminate obsolete config override settings:
         unset($newConfig['Extra_Config']);
 
-        // Update generator if it is default value:
+        // Update generator if it contains a version number:
         if (isset($newConfig['Site']['generator'])
-            && $newConfig['Site']['generator'] == 'VuFind ' . $this->from
+            && preg_match('/^VuFind (\d+\.?)+$/', $newConfig['Site']['generator'])
         ) {
             $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
         }
