@@ -80,6 +80,14 @@
               <td><?=$externalReferences?></td>
             </tr>
           <?php endif; ?>
+
+          <?php $externalSubsystems = $this->authority()->getExternalSubsystems($this->driver, $this->tuefind()->getTueFindSubsystem()); ?>
+          <?php if ($externalSubsystems != ''): ?>
+            <tr>
+              <th>Subsystems:</th>
+              <td><?=$externalSubsystems?></td>
+            </tr>
+          <?php endif; ?>
         </tbody>
       </table>
       <?=$this->context($this)->renderInContext('Related/AuthorityTitlesBy', ['driver' => $this->driver])?>

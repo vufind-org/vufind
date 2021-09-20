@@ -107,6 +107,23 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
+    public function getExternalSubsystems(AuthorityRecordDriver &$driver, $currentSubsystem): string
+    {
+        $externalSubsystems = $driver->getExternalSubsystems();
+        usort($externalSubsystems, function($a, $b) { return strcmp($a['title'], $b['title']); });
+
+        $subSystemHTML = '';
+        if(!empty($externalSubsystems) && !empty($currentSubsystem)) {
+            foreach ($externalSubsystems as $system) {
+                if ($system['label'] != $currentSubsystem) {
+                    $subSystemHTML .= '<a href="'.$system['url'].'" target="_blank" property="sameAs">'.htmlspecialchars($system['title']).'</a><br />';
+                }
+            }
+        }
+
+        return $subSystemHTML;
+    }
+
     public function getName(AuthorityRecordDriver &$driver): string
     {
         $name = $driver->getHeadingShort();
