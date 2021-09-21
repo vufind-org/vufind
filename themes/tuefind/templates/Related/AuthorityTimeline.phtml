@@ -1,0 +1,72 @@
+<?php
+    $responseChartData = $this->authority()->getChartData($this->driver); if(!empty($responseChartData)) :
+    $chartJSDates = '';
+    $chartJSby = '';
+    $chartJSabout = '';
+    foreach($responseChartData as $chartData) {
+        $chartJSDates .= $chartData[0].',';
+        $chartJSby .= $chartData[1].',';
+        $chartJSabout .= $chartData[2].',';
+    }
+?>
+<div class="col-md-12" style="padding:20px; margin-bottom: 20px;  border: 1px solid #ddd; border-radius: 4px;">
+    <canvas id="myChart" width="" height=""></canvas>
+</div>
+<?php
+$this->headScript()->appendFile("vendor/chart-JS.js");
+
+$jsSnippet2 = <<<EOD
+$(function () {
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        const labels = [{$chartJSDates}];
+
+        const byData = [{$chartJSby}];
+
+        const aboutData = [{$chartJSabout}];
+
+        const data = {
+          labels: labels,
+          datasets: [
+            {
+              label: 'By',
+              data: byData,
+              backgroundColor: '#265680',
+            },
+            {
+              label: 'About',
+              data: aboutData,
+              backgroundColor: '#089de3',
+            }
+          ]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Publication Timeline'
+                },
+              },
+              responsive: true,
+              scales: {
+                x: {
+                  stacked: true,
+                },
+                y: {
+                  stacked: true
+                }
+              }
+            }
+          };
+
+   var myChart = new Chart(ctx, config);
+
+});
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet2, 'SET')?>
+<?php endif;?>

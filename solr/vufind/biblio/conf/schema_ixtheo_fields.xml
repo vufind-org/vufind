@@ -44,7 +44,6 @@
     <field name="is_canon_law" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_hybrid" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
-    <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_subscribable" type="boolean" indexed="false" stored="true" multiValued="false"/>
     <field name="ixtheo_notation_expanded" type="text" indexed="true" stored="true" multiValued="true" />
