@@ -489,7 +489,7 @@ $(document).ready(function commonDocReady() {
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
-    $(document).ajaxStop(function triggerPrint() {
+    $(document).one('ajaxStop', function triggerPrint() {
       // Print dialogs cause problems during testing, so disable them
       // when the "test mode" cookie is set. This should never happen
       // under normal usage outside of the Phing startup process.
