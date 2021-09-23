@@ -551,7 +551,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemType = (string)($itemType[0] ?? '');
 
         $itemAgencyId = $current->xpath('ns1:ItemId/ns1:AgencyId');
-        $itemAgencyId = (string)($itemAgencyId[0] ?? '');
+        $itemAgencyId = !empty($itemAgencyId) ? ((string)$itemAgencyId[0]) : null;
+        $itemAgencyId = $this->determineToAgencyId($itemAgencyId);
 
         // Pick out the permanent location (TODO: better smarts for dealing with
         // temporary locations and multi-level location names):
@@ -1717,6 +1718,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $password = $details['patron']['cat_password'];
         $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
+        $requestType = $details['holdtype'] ?? $type;
         $pickUpLocation = null;
         if (isset($details['pickUpLocation'])) {
             [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
@@ -1745,7 +1747,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $itemId,
             $details['patron']['patronAgencyId'],
             $details['item_agency_id'],
-            $type,
+            $requestType,
             "Item",
             $lastInterestDateStr,
             $pickUpLocation,
@@ -1772,7 +1774,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * General cancel request method
      *
      * Attempts to Cancel a request on a particular item. The data in
-     * $cancelDetails['details'] is determined by getCancel*Details().
+     * $cancelDetails['details'] is determined by getCancelRequestDetails().
      *
      * @param array  $cancelDetails An array of item and patron data
      * @param string $type          Type of request, could be: 'Hold',
@@ -1791,6 +1793,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $password = $cancelDetails['patron']['cat_password'];
         $patronAgency = $cancelDetails['patron']['patronAgencyId'];
         $details = $cancelDetails['details'];
+        $patronId = $cancelDetails['patron']['id'] ?? null;
         $response = [];
         $failureReturn = [
             'success' => false,
@@ -1810,7 +1813,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemAgencyId,
                 $requestId,
                 $type,
-                $itemId
+                $itemId,
+                $patronId
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
@@ -1862,6 +1866,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelRequestDetails($details)
     {
+        if ($details['available']) {
+            return '';
+        }
         return $details['item_agency_id'] .
             "|" . $details['requestId'] .
             "|" . $details['item_id'];
