@@ -102,11 +102,16 @@ public class TueFindAuth extends TueFind {
         return results;
     }
 
-    protected String getYearRangeOfSubfieldValue(String subfieldData) {
+    public enum YearRangeType {
+        RANGE, BBOX
+    }
+
+    protected String getYearRangeOfSubfieldValue(String subfieldData, YearRangeType rangeType) {
         final Matcher matcher = YEAR_RANGE_PATTERN.matcher(subfieldData);
         if (matcher.matches()) {
             String year1 = matcher.group(2);
             String year2 = matcher.group(4);
+
             Integer year1Int = Integer.parseInt(year1);
             Integer year2Int = Integer.parseInt(year2);
 
@@ -126,20 +131,33 @@ public class TueFindAuth extends TueFind {
             if (year2IsBC)
                 year2 = "-" + year2;
 
-            return "[" + year1 + " TO " + year2 + "]";
+            switch (rangeType) {
+                case RANGE:
+                    return "[" + year1 + " TO " + year2 + "]";
+                case BBOX:
+                    return "ENVELOPE(" + year1 + "," + year2 + ",0,0)";
+            }
         }
         return null;
     }
 
-    public String getYearRange(final Record record) {
+    public String getYearRangeHelper(final Record record, YearRangeType rangeType) {
         List<String> values = getSubfieldValuesMatchingList(record, "400d:548a");
         for (final String value : values) {
-            final String yearRange = getYearRangeOfSubfieldValue(value);
+            final String yearRange = getYearRangeOfSubfieldValue(value, rangeType);
             if (yearRange != null)
                 return yearRange;
         }
 
         return null;
+    }
+
+    public String getYearRange(final Record record) {
+        return getYearRangeHelper(record, YearRangeType.RANGE);
+    }
+
+    public String getYearRangeBBox(final Record record) {
+        return getYearRangeHelper(record, YearRangeType.BBOX);
     }
 
     public String getAuthorityType(final Record record) {
