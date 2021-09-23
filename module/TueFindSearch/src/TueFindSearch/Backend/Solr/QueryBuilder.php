@@ -166,7 +166,14 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
         if ($query->getHandler() == 'YearRangeBBox') {
             $rawRanges = $params->get('q');
-            $parts = explode('-', $rawRanges[0]);
+            $rawRange = $rawRanges[0];
+            if (strpos('-', $rawRange) === false)
+                $rawRange = $rawRange . '-' . $rawRange;
+            $parts = explode('-', $rawRange);
+            if ($parts[0] == '')
+                $parts[0] = '-9999';
+            if ($parts[1] == '')
+                $parts[1] = '9999';
             $q = '{!field f=year_range_bbox score=overlapRatio}Intersects(ENVELOPE(' . $parts[0] . ',' . $parts[1] . ',0,0))';
             $params->set('q', $q);
         }
