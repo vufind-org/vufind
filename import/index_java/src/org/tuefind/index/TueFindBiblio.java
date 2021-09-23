@@ -3212,6 +3212,56 @@ public class TueFindBiblio extends TueFind {
     }
 
 
+    public static List<String> getDateBBoxes(final Record record, final String rangeFieldTag) {
+        final DataField rangeField = (DataField) record.getVariableField(rangeFieldTag);
+        if (rangeField == null)
+            return null;
+
+        final Subfield subfieldA = rangeField.getSubfield('a');
+        if (subfieldA == null)
+            return null;
+
+        final String[] parts = subfieldA.getData().split(",");
+
+        final List<String> ranges = new ArrayList<String>(parts.length);
+        for (final String part : parts) {
+            final String[] range = part.split("_");
+            if (range.length != 2) {
+                System.err.println(part + " is not a valid range! (1)");
+                System.exit(-1);
+            }
+
+            try {
+                long x = Long.parseLong(range[0]);
+                long y = Long.parseLong(range[1]);
+
+                if (rangeFieldTag.equalsIgnoreCase("TIM")) {
+
+                    final long yearOffset = 10000000L;
+                    final long lower = x < y ? x : y;
+                    final long upper = x < y ? y : x;
+
+                    final long yearLower = (lower / 10000) - yearOffset;
+                    final long yearUpper = (upper / 10000) - yearOffset;
+
+                    String monthDayLower = String.format("%04d", lower % 10000);
+                    String monthDayUpper = String.format("%04d", upper % 10000);
+                    String sLower = Math.abs(yearLower) > 9999 ? "-99990101" : yearLower + monthDayLower;
+                    String sUpper = Math.abs(yearUpper) > 9999 ? "99991231" : yearUpper + monthDayUpper;
+
+                    ranges.add("ENVELOPE(" + sLower + "," + sUpper + ",0,0)");
+
+                }
+            } catch (NumberFormatException e) {
+                System.err.println(range + " is not a valid range! (2)");
+                System.exit(-1);
+            }
+        }
+
+        return ranges;
+    }
+
+
     public static List<String> getDateRanges(final Record record, final String rangeFieldTag) {
         final DataField rangeField = (DataField) record.getVariableField(rangeFieldTag);
         if (rangeField == null)
@@ -3232,11 +3282,31 @@ public class TueFindBiblio extends TueFind {
             }
 
             try {
-                final long x = Long.parseLong(range[0]);
-                final long y = Long.parseLong(range[1]);
-                final Instant lower = Instant.ofEpochSecond(x < y ? x : y);
-                final Instant upper = Instant.ofEpochSecond(x < y ? y : x);
-                ranges.add("[" + lower.toString() + " TO " + upper.toString() + "]");
+                long x = Long.parseLong(range[0]);
+                long y = Long.parseLong(range[1]);
+
+                if (rangeFieldTag.equalsIgnoreCase("TIM")) {
+
+                    final long yearOffset = 10000000L;
+                    final long lower = x < y ? x : y;
+                    final long upper = x < y ? y : x;
+
+                    final long yearLower = (lower / 10000) - yearOffset;
+                    final long yearUpper = (upper / 10000) - yearOffset;
+
+                    String monthDayLower = String.format("%04d", lower % 10000);
+                    String monthDayUpper = String.format("%04d", upper % 10000);
+                    String sLower = Math.abs(yearLower) > 5000 ? "*" : yearLower + "-" + monthDayLower.substring(0,2) + "-" + monthDayLower.substring(2);
+                    String sUpper = Math.abs(yearUpper) > 5000 ? "*" : yearUpper + "-" + monthDayUpper.substring(0,2) + "-" + monthDayUpper.substring(2);
+
+                    ranges.add("[" + sLower + " TO " + sUpper + "]");
+
+                }
+                else {
+                    final Instant lower = Instant.ofEpochSecond(x < y ? x : y);
+                    final Instant upper = Instant.ofEpochSecond(x < y ? y : x);
+                    ranges.add("[" + lower.toString() + " TO " + upper.toString() + "]");
+                }
             } catch (NumberFormatException e) {
                 System.err.println(range + " is not a valid range! (2)");
                 System.exit(-1);
