@@ -207,21 +207,59 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling a request.
+     * Test canceling a request with the "cancel selected" button.
      *
      * @param Element $page Page element.
      * @param string  $type Request type being tested.
      *
      * @return void
      */
-    protected function cancelProcedure(Element $page, string $type): void
+    protected function cancelSelectedProcedure(Element $page, string $type): void
     {
+        // First make sure item is there before cancel is pushed:
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+
         // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
         $this->assertNull($page->find('css', '.btn-group.open'));
 
-        // Test "cancel all" button -- first make sure item is there before
-        // cancel is pushed:
+        // Test that control becomes active if we click a checkbox (but don't
+        // actually cancel anything yet).
+        $this->clickCss($page, "#checkbox_testsample1");
+        $this->clickCss($page, '#cancelSelected');
+        $this->clickButtonGroupLink($page, 'No');
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+
+        // Now cancel for real:
+        $this->clickCss($page, '#cancelSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->snooze();
+        $this->assertEquals(
+            '1 request(s) were successfully canceled',
+            $this->findCss($page, '.alert.alert-success')->getText()
+        );
+        $this->assertNull($page->find('css', 'a.title'));
+    }
+
+    /**
+     * Test canceling a request with the "cancel all" button.
+     *
+     * @param Element $page Page element.
+     * @param string  $type Request type being tested.
+     *
+     * @return void
+     */
+    protected function cancelAllProcedure(Element $page, string $type): void
+    {
+        // First make sure item is there before cancel is pushed:
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -371,13 +409,11 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling an ILL request.
+     * Set up a cancel ILL request test.
      *
-     * @depends testProfile
-     *
-     * @return void
+     * @return Element
      */
-    public function testCancelIllRequest(): void
+    protected function setUpCancelIllTest(): Element
     {
         // Turn on "cancel ILL requests" in addition to normal defaults:
         $config = $this->getConfigIniOverrides();
@@ -393,9 +429,33 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecordById();
         $this->snooze();
         $this->illRequestProcedure($page);
+        return $page;
+    }
 
-        // Test canceling the request:
-        $this->cancelProcedure($page, 'interlibrary loan requests');
+    /**
+     * Test canceling an ILL request with "cancel all."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelAllIllRequest(): void
+    {
+        $page = $this->setUpCancelIllTest();
+        $this->cancelAllProcedure($page, 'interlibrary loan requests');
+    }
+
+    /**
+     * Test canceling an ILL request with "cancel selected."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelSelectedIllRequest(): void
+    {
+        $page = $this->setUpCancelIllTest();
+        $this->cancelSelectedProcedure($page, 'interlibrary loan requests');
     }
 
     /**
@@ -425,13 +485,11 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling storage retrieval requests.
+     * Set up a cancel storage retrieval request test.
      *
-     * @depends testProfile
-     *
-     * @return void
+     * @return Element
      */
-    public function testCancelStorageRetrievalRequest(): void
+    protected function setUpCancelStorageRetrievalTest(): Element
     {
         // Turn on "cancel storage requests" in addition to normal defaults:
         $config = $this->getConfigIniOverrides();
@@ -447,9 +505,33 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecordById();
         $this->snooze();
         $this->storageRetrievalRequestProcedure($page);
+        return $page;
+    }
 
-        // Test canceling the request:
-        $this->cancelProcedure($page, 'storage retrieval requests');
+    /**
+     * Test canceling storage retrieval requests with "cancel all."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelAllStorageRetrievalRequest(): void
+    {
+        $page = $this->setUpCancelStorageRetrievalTest();
+        $this->cancelAllProcedure($page, 'storage retrieval requests');
+    }
+
+    /**
+     * Test canceling storage retrieval requests with "cancel selected."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelSelectedStorageRetrievalRequest(): void
+    {
+        $page = $this->setUpCancelStorageRetrievalTest();
+        $this->cancelSelectedProcedure($page, 'storage retrieval requests');
     }
 
     /**
