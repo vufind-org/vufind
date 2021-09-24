@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2014-2020.
+ * Copyright (C) The National Library of Finland 2014-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -390,25 +390,25 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Testing method for methodSupported
+     * Testing method for driverSupportsMethod
      *
      * @return void
      */
-    public function testMethodSupported()
+    public function testDriverSupportsMethod()
     {
         $driver = $this->getDriver();
         $voyager = $this->getMockILS('Voyager', ['init']);
 
         $result = $this->callMethod(
             $driver,
-            'methodSupported',
+            'driverSupportsMethod',
             [$voyager, 'getHolding']
         );
         $this->assertTrue($result);
 
         $result = $this->callMethod(
             $driver,
-            'methodSupported',
+            'driverSupportsMethod',
             [$voyager, 'INVALIDMETHOD']
         );
         $this->assertFalse($result);
@@ -421,7 +421,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         $result = $this->callMethod(
             $driver,
-            'methodSupported',
+            'driverSupportsMethod',
             [$dummy, 'getHolding']
         );
         $this->assertFalse($result);
@@ -769,7 +769,21 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Testing method for getNewItems
+     * Testing method for getNewItems without a default driver
+     *
+     * @return void
+     */
+    public function testGetNewItemsNoDefault()
+    {
+        $driver = $this->getDriver();
+
+        // getNewItems only works with a default driver, so this call fails
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $driver->getNewItems(1, 10, 5, 0);
+    }
+
+    /**
+     * Testing method for getNewItems with a default driver
      *
      * @return void
      */
@@ -791,10 +805,6 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $drivers = ['d1' => 'Voyager'];
         $this->setProperty($driver, 'drivers', $drivers);
 
-        // getNewItems only works with a default driver, so the first calls fails
-        $result = $driver->getNewItems(1, 10, 5, 0);
-        $this->assertEquals([], $result);
-
         $expected = [
             'count' => 2,
             'results' => [['id' => 'd1.1'], ['id' => 'd1.2']]
@@ -805,7 +815,21 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Testing method for getCourses
+     * Testing method for getCourses without a default driver
+     *
+     * @return void
+     */
+    public function testGetCoursesNoDefault()
+    {
+        $driver = $this->getDriver();
+
+        // getCourses only works with a default driver, so this call fails
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $driver->getCourses();
+    }
+
+    /**
+     * Testing method for getCourses with a default driver
      *
      * @return void
      */
@@ -821,13 +845,23 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $expected
         );
 
-        // getCourses  only works with a default driver, so the first calls fails
-        $result = $driver->getCourses();
-        $this->assertEquals([], $result);
-
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getCourses();
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getDepartments without a default driver
+     *
+     * @return void
+     */
+    public function testGetDepartmentsNoDefault()
+    {
+        $driver = $this->getDriver();
+
+        // getDepartments only works with a default driver, so this call fails
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $driver->getDepartments();
     }
 
     /**
@@ -847,13 +881,23 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $expected
         );
 
-        // getCourses  only works with a default driver, so the first calls fails
-        $result = $driver->getDepartments();
-        $this->assertEquals([], $result);
-
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getDepartments();
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getInstructors without a default driver
+     *
+     * @return void
+     */
+    public function testGetInstructorsNoDefault()
+    {
+        $driver = $this->getDriver();
+
+        // getInstructors only works with a default driver, so this call fails
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $driver->getInstructors();
     }
 
     /**
@@ -873,13 +917,23 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $expected
         );
 
-        // getCourses  only works with a default driver, so the first calls fails
-        $result = $driver->getInstructors();
-        $this->assertEquals([], $result);
-
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getInstructors();
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for findReserves without a default driver
+     *
+     * @return void
+     */
+    public function testFindReservesNoDefault()
+    {
+        $driver = $this->getDriver();
+
+        // findReserves only works with a default driver, so this call fails
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $driver->findReserves('course', 'inst', 'dept');
     }
 
     /**
@@ -914,11 +968,6 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver($sm);
         $drivers = ['d1' => 'Voyager'];
         $this->setProperty($driver, 'drivers', $drivers);
-        $id = '123456';
-
-        // findReserves only works with a default driver, so the first calls fails
-        $result = $driver->findReserves('course', 'inst', 'dept');
-        $this->assertEquals([], $result);
 
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $expected = $reservesReturn;
