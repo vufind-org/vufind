@@ -264,5 +264,5 @@
     <!-- https://solr-user.lucene.apache.narkive.com/800K10vX/sorting-on-daterangefield -->
     <!-- https://solr.apache.org/guide/7_0/spatial-search.html#bboxfield -->
     <fieldType name="date_range_bbox_point" class="solr.DoublePointField" docValues="true"/>
-    <fieldType name="date_range_bbox" class="solr.BBoxField" numberType="date_range_bbox_point" geo="false" worldBounds="ENVELOPE(-99999999,99999999,0,0)"/>
+    <fieldType name="date_range_bbox" class="solr.BBoxField" numberType="date_range_bbox_point" geo="false" worldBounds="ENVELOPE(0,199999999999,0,0)"/>
 </types>
