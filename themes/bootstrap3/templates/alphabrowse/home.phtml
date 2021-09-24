@@ -1,5 +1,5 @@
 <?php
-  $this->headTitle($this->translate('Browse the Collection Alphabetically'));
+  $this->headTitle($this->translate('Browse the Collection Alphabetically') . ' | ' . $this->translate("LibraryName"));
   $this->layout()->breadcrumbs = '<a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a>';
   $baseQuery = ['source' => $this->source, 'from' => $this->from];
 

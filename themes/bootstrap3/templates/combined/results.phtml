@@ -3,7 +3,7 @@
   $lookfor = $this->params->getDisplayQuery();
   $headTitle = $this->slot('head-title')
         ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
-  $this->headTitle($headTitle);
+  $this->headTitle($headTitle . ' | ' . $this->translate("LibraryName"));
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(

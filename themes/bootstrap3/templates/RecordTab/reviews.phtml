@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Reviews') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle($this->translate('Reviews') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
 
     // Grab review data:
     $reviews = $this->tab->getContent();

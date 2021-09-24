@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Preview') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle($this->translate('Preview') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
 
     // load the embedded preview javascript file
     $this->headScript()->appendFile('https://www.google.com/books/jsapi.js');

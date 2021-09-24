@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Excerpt') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle($this->translate('Excerpt') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
 
     // Grab excerpt data:
     $excerpts = $this->tab->getContent();

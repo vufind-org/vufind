@@ -1,5 +1,5 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
 ?>
 <?=\VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21'))?>

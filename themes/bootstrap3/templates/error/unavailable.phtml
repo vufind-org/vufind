@@ -1,6 +1,6 @@
 <?php
   // Set page title.
-  $this->headTitle($this->translate('System Unavailable'));
+  $this->headTitle($this->translate('System Unavailable') . ' | ' . $this->translate("LibraryName"));
 
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;

@@ -4,7 +4,7 @@
   if ($this->driver) {
     $title .= ' - ' . $this->driver->getBreadcrumb();
   }
-  $this->slot('head-title')->set($title);
+  $this->slot('head-title')->set($title . ' | ' . $this->translate("LibraryName"));
   $this->slot('search-heading')->set('');
   $this->slot('empty-message')->set(
       $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->transEsc('Versions')])

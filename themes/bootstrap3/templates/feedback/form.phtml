@@ -18,7 +18,7 @@
 ?>
 <?php if (!$this->inLightbox): ?><div class="feedback-content"><?php endif; ?>
   <?php if ($title): ?>
-    <?php $this->headTitle($title); ?>
+    <?php $this->headTitle($title . ' | ' . $this->translate("LibraryName")); ?>
     <?php $headTag = $this->inLightbox ? 'h2' : 'h1'; ?>
     <<?=$headTag?>><?=$title?></<?=$headTag?>>
   <?php endif; ?>

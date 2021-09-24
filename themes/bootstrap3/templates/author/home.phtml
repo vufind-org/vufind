@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Author'));
+    $this->headTitle($this->translate('Author') . ' | ' . $this->translate("LibraryName"));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Author') . '</li>';

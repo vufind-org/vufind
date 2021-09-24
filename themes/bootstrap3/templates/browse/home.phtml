@@ -1,5 +1,5 @@
 <?php
-  $this->headTitle($this->translate('Browse the Catalog'));
+  $this->headTitle($this->translate('Browse the Catalog') . ' | ' . $this->translate("LibraryName"));
   $this->layout()->breadcrumbs = '<a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a>';
 
   $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));

@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
 
     $formatter = $this->recordDataFormatter();
     $mainFields = $formatter->getData($driver, $formatter->getDefaults('description'));

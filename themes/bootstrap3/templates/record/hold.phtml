@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')

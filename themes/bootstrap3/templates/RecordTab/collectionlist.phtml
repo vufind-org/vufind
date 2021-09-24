@@ -1,6 +1,6 @@
 <?php
   // Set page title.
-  $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb());
+  $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
 
   // Get search results
   $results = $this->tab->getResults();

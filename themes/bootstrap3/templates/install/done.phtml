@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('auto_configure_title'));
+    $this->headTitle($this->translate('auto_configure_title') . ' | ' . $this->translate("LibraryName"));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a>';
