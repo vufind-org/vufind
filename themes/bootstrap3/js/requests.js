@@ -22,7 +22,7 @@ $(document).ready(function setupRequests() {
   });
 
   var checkCheckboxes = function CheckCheckboxes() {
-    var checked = $('#update_holds .result .checkbox input[type=checkbox]:checked');
+    var checked = $('form[name="updateForm"] .result .checkbox input[type=checkbox]:checked');
     if (checked.length > 0) {
       $('#update_selected').removeAttr('disabled');
       $('#cancelSelected').removeAttr('disabled');
@@ -31,7 +31,7 @@ $(document).ready(function setupRequests() {
       $('#cancelSelected').attr('disabled', 'disabled');
     }
   };
-  $('#update_holds .result .checkbox input[type=checkbox]').on('change', checkCheckboxes);
+  $('form[name="updateForm"] .result .checkbox input[type=checkbox]').on('change', checkCheckboxes);
   $('#update_selected').removeClass('hidden');
   checkCheckboxes();
 });
