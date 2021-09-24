@@ -151,6 +151,22 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
+    protected function getBBoxQuery(AbstractQuery $query, $params, $field, $rangeMin, $rangeMax)
+    {
+        $rawRanges = $params->get('q');
+        $rawRange = $rawRanges[0];
+        if (strpos('-', $rawRange) === false)
+            $rawRange = $rawRange . '-' . $rawRange;
+        $parts = explode('-', $rawRange);
+        if ($parts[0] == '')
+            $parts[0] = $rangeMin;
+        if ($parts[1] == '')
+            $parts[1] = $rangeMax;
+        $q = '{!field f=' . $field . ' score=overlapRatio}Intersects(ENVELOPE(' . $parts[0] . ',' . $parts[1] . ',0,0))';
+        return $q;
+    }
+
+
     public function build(AbstractQuery $query)
     {
         $params = parent::build($query);
@@ -165,17 +181,10 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
         }
 
         if ($query->getHandler() == 'YearRangeBBox') {
-            $rawRanges = $params->get('q');
-            $rawRange = $rawRanges[0];
-            if (strpos('-', $rawRange) === false)
-                $rawRange = $rawRange . '-' . $rawRange;
-            $parts = explode('-', $rawRange);
-            if ($parts[0] == '')
-                $parts[0] = '-9999';
-            if ($parts[1] == '')
-                $parts[1] = '9999';
-            $q = '{!field f=year_range_bbox score=overlapRatio}Intersects(ENVELOPE(' . $parts[0] . ',' . $parts[1] . ',0,0))';
-            $params->set('q', $q);
+            $params->set('q', $this->getBBoxQuery($query, $params, 'year_range_bbox', '-9999', '9999'));
+        }
+        if ($query->getHandler() == 'TimeRangeBBox') {
+            $params->set('q', $this->getBBoxQuery($query, $params, 'time_aspect_bbox', '-99999999', '99999999'));
         }
 
         return $params;
