@@ -20,9 +20,25 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     const FULLTEXT_TYPE_ABSTRACT = "Abstract";
     const FULLTEXT_TYPE_TOC = "Table of Contents";
     const FULLTEXT_TYPE_SUMMARY = "Summary";
+
+    const TIME_ASPECTS_COMMAND = '/usr/local/bin/time_aspects_to_codes_tool';
+
     protected $includeFulltextSnippets = false;
     protected $selectedFulltextTypes = [];
 
+    protected function getTimeAspectsCommand($searchQuery)
+    {
+        return implode(' ', [
+            self::TIME_ASPECTS_COMMAND,
+            escapeshellarg($searchQuery)
+        ]);
+    }
+
+    protected function getTimeAspects($searchQuery)
+    {
+        exec($this->getTimeAspectsCommand($searchQuery), $output, $returnVal);
+        return explode('_', $output[0]);
+    }
 
     public function setIncludeFulltextSnippets($enable)
     {
@@ -151,7 +167,13 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getBBoxQuery(AbstractQuery $query, $params, $field, $rangeMin, $rangeMax)
+    protected function getBBoxQuery($field, $from, $to): string
+    {
+        return '{!field f=' . $field . ' score=overlapRatio}Intersects(ENVELOPE(' . $from . ',' . $to . ',0,0))';
+    }
+
+
+    protected function getYearRangeQuery(AbstractQuery $query, $params, $field, $rangeMin, $rangeMax)
     {
         $rawRanges = $params->get('q');
         $rawRange = $rawRanges[0];
@@ -162,8 +184,14 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
             $parts[0] = $rangeMin;
         if ($parts[1] == '')
             $parts[1] = $rangeMax;
-        $q = '{!field f=' . $field . ' score=overlapRatio}Intersects(ENVELOPE(' . $parts[0] . ',' . $parts[1] . ',0,0))';
-        return $q;
+
+        return $this->getBBoxQuery($field, $parts[0], $parts[1]);
+    }
+
+
+    protected function getTimeRangeQuery($params, $field) {
+        $timeRange = $this->getTimeAspects($params->get('q')[0]);
+        return $this->getBBoxQuery($field, $timeRange[0], $timeRange[1]);
     }
 
 
@@ -181,10 +209,10 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
         }
 
         if ($query->getHandler() == 'YearRangeBBox') {
-            $params->set('q', $this->getBBoxQuery($query, $params, 'year_range_bbox', '-9999', '9999'));
+            $params->set('q', $this->getYearRangeQuery($query, $params, 'year_range_bbox', '-9999', '9999'));
         }
         if ($query->getHandler() == 'TimeRangeBBox') {
-            $params->set('q', $this->getBBoxQuery($query, $params, 'time_aspect_bbox', '-99999999', '99999999'));
+            $params->set('q', $this->getTimeRangeQuery($params, 'time_aspect_bbox'));
         }
 
         return $params;
