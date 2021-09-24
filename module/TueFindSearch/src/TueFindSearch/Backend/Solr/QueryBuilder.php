@@ -173,7 +173,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getYearRangeQuery(AbstractQuery $query, $params, $field, $rangeMin, $rangeMax)
+    protected function getYearRangeQuery($params, $field, $rangeMin, $rangeMax)
     {
         $rawRanges = $params->get('q');
         $rawRange = $rawRanges[0];
@@ -209,7 +209,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
         }
 
         if ($query->getHandler() == 'YearRangeBBox') {
-            $params->set('q', $this->getYearRangeQuery($query, $params, 'year_range_bbox', '-9999', '9999'));
+            $params->set('q', $this->getYearRangeQuery($params, 'year_range_bbox', '-9999', '9999'));
         }
         if ($query->getHandler() == 'TimeRangeBBox') {
             $params->set('q', $this->getTimeRangeQuery($params, 'time_aspect_bbox'));
