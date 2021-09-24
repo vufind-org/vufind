@@ -21,7 +21,7 @@ import org.marc4j.marc.VariableField;
 public class TueFindAuth extends TueFind {
 
     protected final static Pattern SORTABLE_STRING_REMOVE_PATTERN = Pattern.compile("[^\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{N}]+");
-    protected final static Pattern YEAR_RANGE_PATTERN = Pattern.compile("^([v]?)(\\d+)-([v]?)(\\d+)$");
+    protected final static Pattern YEAR_RANGE_PATTERN = Pattern.compile("^([v]?)(\\d+)-([v]?)(\\d*)$");
 
     /**
      * normalize string due to specification for isni or orcid
@@ -102,44 +102,78 @@ public class TueFindAuth extends TueFind {
         return results;
     }
 
-    protected String getYearRangeOfSubfieldValue(String subfieldData) {
+    public enum YearRangeType {
+        RANGE, BBOX
+    }
+
+    protected String getYearRangeOfSubfieldValue(String subfieldData, YearRangeType rangeType) {
         final Matcher matcher = YEAR_RANGE_PATTERN.matcher(subfieldData);
         if (matcher.matches()) {
             String year1 = matcher.group(2);
             String year2 = matcher.group(4);
-            Integer year1Int = Integer.parseInt(year1);
-            Integer year2Int = Integer.parseInt(year2);
 
             boolean year1IsBC = matcher.group(1).equals("v");
             boolean year2IsBC = matcher.group(3).equals("v");
+
+            if (year1.isEmpty()) {
+                year1 = "9999";
+                year1IsBC = true;
+            }
+            if (year2.isEmpty()) {
+                year2 = "9999";
+                year2IsBC = false;
+            }
+
+            Integer year1Int = Integer.parseInt(year1);
+            Integer year2Int = Integer.parseInt(year2);
             if (!year1IsBC && !year2IsBC && year2Int < year1Int) {
                 year1IsBC = true;
                 year2IsBC = true;
             }
-            if (year1IsBC == year2IsBC && (Math.abs(year1Int - year2Int) > 110))
-                return null;
-            if (year1IsBC != year2IsBC && (year1Int > 110 || year2Int > 110))
-                return null;
 
-            if (year1IsBC)
+            if (year1Int != 9999 && year2Int != 9999) {
+                if (year1IsBC == year2IsBC && (Math.abs(year1Int - year2Int) > 110))
+                    return null;
+                if (year1IsBC != year2IsBC && (year1Int > 110 || year2Int > 110))
+                    return null;
+            }
+
+            // convert int back to string (e.g. -00 => 0)
+            year1 = String.valueOf(year1Int);
+            year2 = String.valueOf(year2Int);
+
+            if (year1IsBC && year1Int != 0)
                 year1 = "-" + year1;
-            if (year2IsBC)
+            if (year2IsBC && year2Int != 0)
                 year2 = "-" + year2;
 
-            return "[" + year1 + " TO " + year2 + "]";
+            switch (rangeType) {
+                case RANGE:
+                    return "[" + year1 + " TO " + year2 + "]";
+                case BBOX:
+                    return "ENVELOPE(" + year1 + "," + year2 + ",0,0)";
+            }
         }
         return null;
     }
 
-    public String getYearRange(final Record record) {
+    public String getYearRangeHelper(final Record record, YearRangeType rangeType) {
         List<String> values = getSubfieldValuesMatchingList(record, "400d:548a");
         for (final String value : values) {
-            final String yearRange = getYearRangeOfSubfieldValue(value);
+            final String yearRange = getYearRangeOfSubfieldValue(value, rangeType);
             if (yearRange != null)
                 return yearRange;
         }
 
         return null;
+    }
+
+    public String getYearRange(final Record record) {
+        return getYearRangeHelper(record, YearRangeType.RANGE);
+    }
+
+    public String getYearRangeBBox(final Record record) {
+        return getYearRangeHelper(record, YearRangeType.BBOX);
     }
 
     public String getAuthorityType(final Record record) {

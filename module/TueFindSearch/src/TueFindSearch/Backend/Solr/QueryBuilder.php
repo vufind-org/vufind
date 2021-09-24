@@ -1,11 +1,7 @@
 <?php
 namespace TueFindSearch\Backend\Solr;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\Query;
-use VuFindSearch\Query\QueryGroup;
-
 
 class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
@@ -34,7 +30,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    public function setSelectedFulltextTypes($selected_fulltext_types) {
+    public function setSelectedFulltextTypes($selected_fulltext_types)
+    {
         $this->selectedFulltextTypes = $selected_fulltext_types;
     }
 
@@ -85,7 +82,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getSynonymsPartialExpressionOrEmpty($search_handler, $query_terms, $previous_expression_empty) {
+    protected function getSynonymsPartialExpressionOrEmpty($search_handler, $query_terms, $previous_expression_empty)
+    {
        $synonyms_expression = "";
        if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes)) {
            $synonyms_expression .=  $this->useSynonyms($search_handler)
@@ -119,7 +117,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getHandler($query) {
+    protected function getHandler($query)
+    {
         if ($query instanceof \VuFindSearch\Query\Query)
             return $query->getHandler();
         if ($query instanceof \VuFindSearch\Query\QueryGroup)
@@ -128,7 +127,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function assembleFulltextTypesQuery($handler, $query_terms) {
+    protected function assembleFulltextTypesQuery($handler, $query_terms)
+    {
          $query_string = "";
          if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes))
              $query_string =  (empty($query_string) ? '' : ' OR ') .
@@ -163,6 +163,21 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                     $params->set('fq', $fulltext_type_query_filter);
             }
         }
+
+        if ($query->getHandler() == 'YearRangeBBox') {
+            $rawRanges = $params->get('q');
+            $rawRange = $rawRanges[0];
+            if (strpos('-', $rawRange) === false)
+                $rawRange = $rawRange . '-' . $rawRange;
+            $parts = explode('-', $rawRange);
+            if ($parts[0] == '')
+                $parts[0] = '-9999';
+            if ($parts[1] == '')
+                $parts[1] = '9999';
+            $q = '{!field f=year_range_bbox score=overlapRatio}Intersects(ENVELOPE(' . $parts[0] . ',' . $parts[1] . ',0,0))';
+            $params->set('q', $q);
+        }
+
         return $params;
     }
 }
