@@ -169,7 +169,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
     protected function getBBoxQuery($field, $from, $to): string
     {
-        return '{!field f=' . $field . ' score=overlapRatio}Intersects(ENVELOPE(' . $from . ',' . $to . ',0,0))';
+        return '{!field f=' . $field . ' score=overlapRatio queryTargetProportion=0.9}Intersects(ENVELOPE(' . $from . ',' . $to . ',1,0))';
     }
 
 
