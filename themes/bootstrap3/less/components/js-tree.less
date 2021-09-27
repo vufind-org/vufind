@@ -36,7 +36,7 @@
 }
 .jstree-leaf > .jstree-ocl:before {
   color: transparent;
-  content: "\2023"; // Unicode triangle bullet
+  content: "\25B8"; // Unicode black right-pointing small triangle
 }
 
 .jstree-themeicon-custom {
@@ -50,7 +50,6 @@
 /* --- Look --- */
 .jstree-anchor {
   padding: 2px;
-  padding-right: 4px;
 }
 
 .jstree-clicked,
@@ -71,6 +70,7 @@
   .jstree-container-ul,
   .jstree-children {
     padding-left: 16px;
+    padding-right: 16px;
   }
   .jstree-initial-node {display: none;}
   .jstree-search a {
@@ -106,6 +106,7 @@
 }
 .jstree-facet .main.applied .fa-check {
   margin-top: 2px;
+  margin-left: 4px;
   margin-right: 4px;
 }
 .jstree-facet .jstree-container-ul { padding: 0; }
@@ -119,6 +120,30 @@ li.jstree-node { list-style: none; }
 li.jstree-facet .badge { cursor: text; }
 li.jstree-facet ul { padding-left: 20px; }
 
-.facet .jstree-node.list-group-item { padding-left: 19px; }
+.facet .jstree-node.list-group-item { padding-left: 20px; }
 .facet .jstree-icon::before { margin-left: -12px; }
 .facet .jstree-facet li span.main { padding: 1px; }
+
+/* RTL */
+body.rtl {
+  li.jstree-facet ul,
+  .facet .jstree-node.list-group-item {
+    padding-left: 0;
+    padding-right: 20px;
+  }
+  .facet .jstree-icon::before {
+    margin-left: 0;
+    margin-right: -12px;
+  }
+  .jstree-ocl::before {
+    float: right;
+    padding-left: 1.3rem;
+    padding-right: 0;
+  }
+  .jstree-closed > .jstree-ocl:before {
+    content: "\25C4"; // Unicode black left-pointing triangle
+  }
+  .jstree-leaf > .jstree-ocl:before {
+    content: "\25C2"; // Unicode black left-pointing small triangle
+  }
+}
