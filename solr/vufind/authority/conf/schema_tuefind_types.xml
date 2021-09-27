@@ -11,5 +11,5 @@
         - https://solr.apache.org/guide/7_0/spatial-search.html#bboxfield
     -->
     <fieldType name="year_range_bbox_point" class="solr.DoublePointField" docValues="true"/>
-    <fieldType name="year_range_bbox" class="solr.BBoxField" numberType="year_range_bbox_point" geo="false" worldBounds="ENVELOPE(-9999,9999,0,0)"/>
+    <fieldType name="year_range_bbox" class="solr.BBoxField" numberType="year_range_bbox_point" geo="false" worldBounds="ENVELOPE(-9999,9999,1,0)"/>
 </types>

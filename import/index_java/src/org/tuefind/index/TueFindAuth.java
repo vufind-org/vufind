@@ -151,7 +151,7 @@ public class TueFindAuth extends TueFind {
                 case RANGE:
                     return "[" + year1 + " TO " + year2 + "]";
                 case BBOX:
-                    return "ENVELOPE(" + year1 + "," + year2 + ",0,0)";
+                    return getBBoxRangeValue(year1, year2);
             }
         }
         return null;

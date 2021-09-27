@@ -3238,7 +3238,7 @@ public class TueFindBiblio extends TueFind {
                 if (rangeFieldTag.equalsIgnoreCase("TIM")) {
                     final long lower = x < y ? x : y;
                     final long upper = x < y ? y : x;
-                    ranges.add("ENVELOPE(" + String.valueOf(lower) + "," + String.valueOf(upper) + ",1,0)");
+                    ranges.add(getBBoxRangeValue(String.valueOf(lower), String.valueOf(upper)));
                 }
             } catch (NumberFormatException e) {
                 System.err.println(range + " is not a valid range! (2)");
