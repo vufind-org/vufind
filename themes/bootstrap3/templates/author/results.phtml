@@ -5,7 +5,7 @@
     // Override some details...
 
     // Set up page title:
-    $this->headTitle($this->translate('Author Search Results') . ' | ' . $this->translate("LibraryName"));
+    $this->headTitle($this->translate('Author Search Results'));
 
     // Set up empty search box (we want Author search boxes to point at the Solr search screen):
     $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', ['searchClassId' => 'Solr']);

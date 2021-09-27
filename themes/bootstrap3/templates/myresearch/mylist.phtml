@@ -3,7 +3,7 @@
   $list = $this->results->getListObject();
 
   // Set up page title:
-  $this->headTitle((isset($list) ? $list->title : $this->translate('Favorites')) . ' | ' . $this->translate("LibraryName"));
+  $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'Favorites';

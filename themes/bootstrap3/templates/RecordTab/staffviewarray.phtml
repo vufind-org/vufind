@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
 <table class="citation table table-striped">
   <?php foreach ($this->driver->getRawData() as $field => $values): ?>

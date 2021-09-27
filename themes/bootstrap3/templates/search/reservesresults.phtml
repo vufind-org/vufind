@@ -1,6 +1,6 @@
 <?php
     // Set some overrides, then call the standard search results action:
-    $this->slot('head-title')->set($this->translate('Reserves Search Results') . ' | ' . $this->translate("LibraryName"));
+    $this->slot('head-title')->set($this->translate('Reserves Search Results'));
     $this->slot('search-heading')->set($this->transEsc('Reserves'));
     $headingParts = [];
     if (isset($this->instructor)) {

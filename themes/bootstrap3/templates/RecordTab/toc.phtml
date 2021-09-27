@@ -1,6 +1,6 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
+    $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb());
 
     $toc = $this->tab->getContent();
     if (empty($toc)) {

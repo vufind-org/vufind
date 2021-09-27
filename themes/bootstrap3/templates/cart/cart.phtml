@@ -1,6 +1,6 @@
 <?php
   // Set page title.
-  $this->headTitle($this->translate('Book Bag') . ' | ' . $this->translate("LibraryName"));
+  $this->headTitle($this->translate('Book Bag'));
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')

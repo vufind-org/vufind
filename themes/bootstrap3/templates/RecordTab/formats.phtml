@@ -1,6 +1,6 @@
 <?php
   // Set page title.
-  $this->headTitle('Formats' . ': ' . $this->driver->getBreadcrumb() . ' | ' . $this->translate("LibraryName"));
+  $this->headTitle('Formats' . ': ' . $this->driver->getBreadcrumb());
 ?>
 <table class="table table-striped">
   <?php foreach ($this->driver->getFormattedDigitalFormats() as $formatkey => $format): ?>

@@ -1,4 +1,4 @@
-<?php $this->headTitle($this->translate('Help') . ' | ' . $this->translate("LibraryName")); ?>
+<?php $this->headTitle($this->translate('Help')); ?>
 <?php if ($help = $this->helpText()->render($topic)): ?>
   <?php foreach ($this->helpText()->getWarnings() as $warning): ?>
     <p class="alert alert-warning"><?=$this->transEsc($warning)?></p>

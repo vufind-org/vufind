@@ -1,7 +1,7 @@
 <?php
   // Set up page title:
   $pageTitle = empty($this->card->id) ? 'Add a Library Card' : 'Edit Library Card';
-  $this->headTitle($this->translate($pageTitle) . ' | ' . $this->translate("LibraryName"));
+  $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
