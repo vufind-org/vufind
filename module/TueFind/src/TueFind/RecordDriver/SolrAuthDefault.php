@@ -19,8 +19,11 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['heading_timespan'] ?? null;
     }
 
-    public function getISNI() {
-        return $this->fields['isni'] ?? null;
+    public function getISNIs(): array {
+        $isnis = $this->fields['isni'] ?? [];
+        if (!is_array($isnis))
+            $isnis = [$isnis];
+        return $isnis;
     }
 
     /**
@@ -33,8 +36,11 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['lccn'][0] ?? null;
     }
 
-    public function getORCID() {
-        return $this->fields['orcid'] ?? null;
+    public function getORCIDs(): array {
+        $orcids = $this->fields['orcid'] ?? [];
+        if (!is_array($orcids))
+            $orcids = [$orcids];
+        return $orcids;
     }
 
     public function getOccupations() {

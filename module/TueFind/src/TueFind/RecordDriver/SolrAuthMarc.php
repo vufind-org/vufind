@@ -34,20 +34,22 @@ class SolrAuthMarc extends SolrAuthDefault {
             $references[] = ['title' => 'GND',
                              'url' => 'http://d-nb.info/gnd/' . urlencode($gndNumber)];
 
-        $isni = $this->getISNI();
-        if ($isni != null)
+        $isnis = $this->getISNIs();
+        foreach ($isnis as $isni) {
             $references[] = ['title' => 'ISNI',
                              'url' => 'https://isni.org/isni/' . urlencode(str_replace(' ', '', $isni))];
+        }
 
         $lccn = $this->getLCCN();
         if ($lccn != null)
             $references[] = ['title' => 'LOC',
                              'url' => 'https://lccn.loc.gov/' . urlencode($lccn)];
 
-        $orcid = $this->getORCID();
-        if ($orcid != null)
+        $orcids = $this->getORCIDs();
+        foreach ($orcids as $orcid) {
             $references[] = ['title' => 'ORCID',
                              'url' => 'https://orcid.org/' . urlencode($orcid)];
+        }
 
         $viafs = $this->getVIAFs();
         foreach ($viafs as $viaf) {

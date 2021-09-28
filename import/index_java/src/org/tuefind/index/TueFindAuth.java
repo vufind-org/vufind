@@ -54,7 +54,7 @@ public class TueFindAuth extends TueFind {
      * @param number2Category isni | orcid
      * @return
      */
-    public String getNormalizedValueByTag2(final Record record, final String tagNumber, final String number2Category) {
+    public Set<String> getNormalizedValuesByTag2(final Record record, final String tagNumber, final String number2Category) {
 
         @SuppressWarnings("unchecked")
         List<DataField> mainFields = (List<DataField>) (List<?>) record.getVariableFields(tagNumber);
@@ -64,22 +64,14 @@ public class TueFindAuth extends TueFind {
 
         if (mainFields.size() == 0) {
             return null;
-        } else if (mainFields.size() == 1) {
-            return normalizeByCategory(mainFields.get(0).getSubfield('a').getData(), number2Category);
         } else {
-            Set<String> differentNormalizedValues = new HashSet<String>();
+            Set<String> normalizedValues = new HashSet<String>();
             for (DataField mainField : mainFields) {
                 final String numberA = mainField.getSubfield('a').getData();
                 String normalizedValue = normalizeByCategory(numberA, number2Category);
-                differentNormalizedValues.add(normalizedValue);
+                normalizedValues.add(normalizedValue);
             }
-            if (differentNormalizedValues.size() == 1) {
-                return differentNormalizedValues.iterator().next();
-            } else {
-                logger.warning("record id " + record.getControlNumber() + " - multiple field with different content " + number2Category);
-                return null;
-            }
-
+            return normalizedValues;
         }
     }
 

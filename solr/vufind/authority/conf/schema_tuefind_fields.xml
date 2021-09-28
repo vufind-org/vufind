@@ -6,8 +6,8 @@
     <field name="heading_short" type="string" indexed="true" stored="true"/>
     <field name="heading_sort" type="string" indexed="true" stored="true"/>
     <field name="heading_timespan" type="string" indexed="true" stored="true"/>
-    <field name="isni" type="string" indexed="true" stored="true"/>
-    <field name="orcid" type="string" indexed="true" stored="true"/>
+    <field name="isni" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="orcid" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="place" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="subsystem" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="type" type="string" indexed="true" stored="true"/>
