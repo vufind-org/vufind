@@ -318,6 +318,17 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $queryString;
     }
 
+
+    protected function getTitlesAboutQueryParamsChartDate(&$author): string
+    {
+        if ($author instanceof AuthorityRecordDriver) {
+            $queryString = 'topic_all:"' . $author->getTitle() . '"';
+        } else {
+            $queryString = 'topic_all:"' . $author . '"';
+        }
+        return $queryString;
+    }
+
     protected function getTitlesByQueryParams(&$author, $fuzzy=false): string
     {
         if ($author instanceof AuthorityRecordDriver) {
@@ -356,6 +367,29 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesByQueryParams($driver)]]);
     }
 
+    public function getTitlesByUrlNameOrID($authorName, $authorId = null): string
+    {
+        $urlHelper = $this->viewHelperManager->get('url');
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesByQueryParamsNameOrID($authorName, $authorId)]]);
+    }
+
+    protected function getTitlesByQueryParamsNameOrID($authorName, $authorId = null): string
+    {
+        if ($authorId != null) {
+            $queryString = 'author_id:"' . $authorId . '"';
+            $queryString .= ' OR author2_id:"' . $authorId . '"';
+            $queryString .= ' OR author_corporate_id:"' . $authorId . '"';
+            $queryString .= ' OR author:"' . $authorName . '"';
+            $queryString .= ' OR author2:"' . $authorName . '"';
+            $queryString .= ' OR author_corporate:"' . $authorName . '"';
+        } else {
+            $queryString = 'author:"' . $authorName . '"';
+            $queryString .= ' OR author2:"' . $authorName . '"';
+            $queryString .= ' OR author_corporate:"' . $authorName . '"';
+        }
+        return $queryString;
+    }
+
     public function getChartData(AuthorityRecordDriver &$driver): array
     {
         $params = ["facet.field"=>"publishDate",
@@ -373,12 +407,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $publishDates = array_keys($publishArray);
 
         $aboutData = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParams($driver) . '"', 'AllFields'),
+                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParamsChartDate($driver) . '"', 'AllFields'),
                                                  0, 0, new \VuFindSearch\ParamBag($params));
 
         $allFacetsAbout = $aboutData->getFacets();
         $aboutFacet = $allFacetsAbout->getFieldFacets();
         $aboutArray = $aboutFacet['publishDate']->toArray();
+
         $aboutDates = array_keys($aboutArray);
 
         $allDates = array_merge($publishDates, $aboutDates);
@@ -402,7 +437,91 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             }
         }
 
+
+
+
         return $chartData;
+    }
+
+    public function getTopicsData(AuthorityRecordDriver &$driver): array
+    {
+
+        $settings = [
+            'maxNumber' => 10,
+            'minNumber' => 2,
+            'firstTopicLength' => 10,
+            'firstTopicWidth' => 10,
+            'maxTopicRows' => 20,
+            'maxTopicWords' => 15
+        ];
+
+        $identifier = 'Solr';
+        $titleRecords = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
+                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
+        $countedTopics = [];
+        foreach ($titleRecords as $titleRecord) {
+            $keywords = $titleRecord->getKeyWordChainBag('en');
+            foreach ($keywords as $keyword) {
+                if (isset($countedTopics[$keyword])) {
+                    ++$countedTopics[$keyword];
+                }else{
+                    $countedTopics[$keyword] = 1;
+                }
+            }
+        }
+
+        arsort($countedTopics);
+
+        $topicsArray = [];
+        $topicI = 1;
+        $wordI = 1;
+        foreach($countedTopics as $topic=>$topicCount) {
+            if($topicI <= $settings['maxTopicRows']){
+                $topicWords = [];
+                $updateString = str_replace([','], '', $topic);
+                if($wordI < $settings['maxTopicWords']) {
+                    $pos = strripos($updateString, ' ');
+                    if ($pos !== false) {
+                        $topicWordsExplode = explode(" ", $updateString);
+                        $fixenWordArray = [];
+                        foreach($topicWordsExplode as $oneWord) {
+                            if(mb_strlen($oneWord) > 2){
+                                $fixenWordArray[] = $oneWord;
+                            }
+                        }
+                        $topicWords = $fixenWordArray;
+                    }else{
+                        $topicWords = [$updateString];
+                    }
+                    $wordI++;
+                }
+                $topicsArray[] = ['topicTitle'=>$topic,'topicCount'=>$topicCount,'topicUpdate'=>$updateString,'topicWords'=>$topicWords];
+            }
+            $topicI++;
+        }
+
+        $mainTopicsArray = [];
+        for($i=0;$i<count($topicsArray);$i++) {
+            if($i == 0) {
+                if(mb_strlen($topicsArray[$i]['topicTitle']) > $settings['firstTopicLength']) {
+                  $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
+                }
+            }
+            $one = $topicsArray[$i];
+            $one['topicNumber'] = $settings['maxNumber'];
+            $mainTopicsArray[] = $one;
+            if(isset($topicsArray[$i-1])) {
+                if($topicsArray[$i]['topicCount'] != $topicsArray[$i-1]['topicCount'] && $settings['maxNumber'] != $settings['minNumber']) {
+                    $settings['maxNumber']--;
+                }
+            }else {
+                $settings['maxNumber']--;
+            }
+
+        }
+
+        return $mainTopicsArray;
     }
 
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool

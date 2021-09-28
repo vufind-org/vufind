@@ -9,11 +9,37 @@
         $chartJSabout .= $chartData[2].',';
     }
 ?>
+<h4>Publication Timeline</h4>
 <div class="col-md-12" style="padding:20px; margin-bottom: 20px;  border: 1px solid #ddd; border-radius: 4px;">
-    <canvas id="myChart" width="" height=""></canvas>
+  <canvas id="myChart" width="" height=""></canvas>
 </div>
 <?php
 $this->headScript()->appendFile("vendor/chart-JS.js");
+
+$currentSystem = $this->tuefind()->getTueFindSubsystem();
+
+$chartByBackgroundColor = '#265680';
+$chartAboutBackgroundColor = '#089de3';
+
+switch($currentSystem){
+  case'ixtheo':
+    $chartByBackgroundColor = '#265680';
+    $chartAboutBackgroundColor = '#089de3';
+  break;
+  case'relbib':
+    $chartByBackgroundColor = '#a51e37';
+    $chartAboutBackgroundColor = '#FF849D';
+  break;
+  case'biblestudies':
+    $chartByBackgroundColor = '#360';
+    $chartAboutBackgroundColor = '#00cc00';
+  break;
+  case'canonlaw':
+    $chartByBackgroundColor = '#ffb30f';
+    $chartAboutBackgroundColor = '#ffef0f';
+  break;
+}
+
 
 $jsSnippet2 = <<<EOD
 $(function () {
@@ -31,12 +57,12 @@ $(function () {
             {
               label: 'By',
               data: byData,
-              backgroundColor: '#265680',
+              backgroundColor: '{$chartByBackgroundColor}',
             },
             {
               label: 'About',
               data: aboutData,
-              backgroundColor: '#089de3',
+              backgroundColor: '{$chartAboutBackgroundColor}',
             }
           ]
         };
@@ -47,7 +73,7 @@ $(function () {
             options: {
               plugins: {
                 title: {
-                  display: true,
+                  display: false,
                   text: 'Publication Timeline'
                 },
               },
