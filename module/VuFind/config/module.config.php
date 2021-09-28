@@ -35,7 +35,7 @@ $config = [
             'content-page' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
-                    'route'    => '/Content/[:page]',
+                    'route'    => '/Content/:page',
                     'constraints' => [
                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ],
