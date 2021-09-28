@@ -304,10 +304,13 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $canonLawRangesStrings;
     }
 
-    public function getKeyWordChainBag()
+    public function getKeyWordChainBag($languageSuffix=null)
     {
-        return isset($this->fields['key_word_chain_bag']) ?
-            $this->fields['key_word_chain_bag'] : '';
+        $key = 'key_word_chain_bag';
+        if (isset($languageSuffix))
+            $key .= '_' . $languageSuffix;
+        return isset($this->fields[$key]) ?
+            $this->fields[$key] : [];
     }
 
     public function getPrefix4KeyWordChainBag()
