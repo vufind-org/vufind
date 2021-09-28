@@ -23,8 +23,11 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
     const TIME_ASPECTS_COMMAND = '/usr/local/bin/time_aspects_to_codes_tool';
 
+    // These range constants should be the same as in the solr config
     const TIME_ASPECTS_RANGE_MIN = 0;
     const TIME_ASPECTS_RANGE_MAX = 199999999999;
+    const YEAR_RANGE_MIN = -9999;
+    const YEAR_RANGE_MAX = 9999;
 
     protected $includeFulltextSnippets = false;
     protected $selectedFulltextTypes = [];
@@ -180,6 +183,9 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     {
         $rawRanges = $params->get('q');
         $rawRange = $rawRanges[0];
+        if ($rawRange == '*:*')
+            return $this->getBBoxQuery($field, self::YEAR_RANGE_MIN, self::YEAR_RANGE_MAX);
+
         if (strpos('-', $rawRange) === false)
             $rawRange = $rawRange . '-' . $rawRange;
         $parts = explode('-', $rawRange);
