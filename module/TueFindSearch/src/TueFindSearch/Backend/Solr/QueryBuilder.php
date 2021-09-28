@@ -23,6 +23,9 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
     const TIME_ASPECTS_COMMAND = '/usr/local/bin/time_aspects_to_codes_tool';
 
+    const TIME_ASPECTS_RANGE_MIN = 0;
+    const TIME_ASPECTS_RANGE_MAX = 199999999999;
+
     protected $includeFulltextSnippets = false;
     protected $selectedFulltextTypes = [];
 
@@ -190,7 +193,10 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
 
     protected function getTimeRangeQuery($params, $field) {
-        $timeRange = $this->getTimeAspects($params->get('q')[0]);
+        $searchString = $params->get('q')[0];
+        if ($searchString == '*:*')
+            return $this->getBBoxQuery($field, self::TIME_ASPECTS_RANGE_MIN, self::TIME_ASPECTS_RANGE_MAX);
+        $timeRange = $this->getTimeAspects($searchString);
         return $this->getBBoxQuery($field, $timeRange[0], $timeRange[1]);
     }
 
