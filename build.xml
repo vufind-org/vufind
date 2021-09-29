@@ -377,6 +377,16 @@
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
+    <!-- Update contentsecuritypolicy.ini to enforce the CSP and disable strict-dynamic that's not supported on all platforms. -->
+    <copy file="${srcdir}/config/vufind/contentsecuritypolicy.ini" tofile="${srcdir}/local/config/vufind/contentsecuritypolicy.ini">
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="(script-src\[\] = &quot;'strict-dynamic'&quot;)" replace=";\1" />
+          <regexp pattern="(enabled\[.+\]) = .*" replace="\1 = true" />
+        </replaceregexp>
+      </filterchain>
+    </copy>
+
     <!-- start Solr (use restart in case of old PID files) -->
     <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
