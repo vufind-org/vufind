@@ -1,0 +1,134 @@
+<?php $account = $this->auth()->getManager(); ?>
+
+<div class="banner container-fluid navbar">
+<div class="container-fluid brow">  
+<div class="container browNav">
+    <div class="logoLock pull-left hidden-xs hidden-sm">
+  <div class="libLogo"></div>
+  <div class="nameBrand"><a href="https://library.tamu.edu/">Texas A&amp;M University Libraries</a></div>
+</div>
+
+<div class="logoLock hidden-md hidden-lg">
+  <div class="libLogo"></div>
+  <div class="nameBrand"><a href="https://library.tamu.edu/">Texas A&amp;M University Libraries</a></div>
+</div>
+
+  <div class="browLinks pull-right hidden-xs hidden-sm">
+    <ul>
+	<li><a href="https://library.tamu.edu/mylibrary/">MyLibrary</a></li>
+    <li><a href="https://askus.library.tamu.edu/">Help</a></li>
+    </ul>
+  </div>
+  <div class="browLinks center-block hidden-md hidden-lg"> 
+    <ul>
+	<li><a href="https://library.tamu.edu/mylibrary/">MyLibrary</a></li>
+    <li><a href="https://askus.library.tamu.edu/">Help</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+<div class="container appTitle">
+  <div class="navbar-header">
+    <h2><a href="/vufind">Libraries Catalog</a></h2> 
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-hidden="true">
+      <i class="fa fa-bars"></i>
+    </button>
+    <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>"></a>
+  </div>
+  <?php if (!isset($this->layout()->renderingError)): ?>
+    <div class="collapse navbar-collapse" id="header-collapse">
+      <nav>
+        <ul class="nav navbar-nav navbar-right languageDrp flip langNav">
+          <?php if ($this->feedback()->tabEnabled()): ?>
+            <li>
+              <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc("Feedback")?></a>
+            </li>
+          <?php endif; ?>
+          <?php $cart = $this->cart(); if ($cart->isActive()): ?>
+            <li id="cartSummary">
+              <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+                <i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?>
+                <span class="full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full') ?>)</span>
+              </a>
+            </li>
+          <?php endif; ?>
+          <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+            <li class="logoutOptions<?php if($account->dropdownEnabled()): ?> with-dropdown<?php endif ?><?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+              <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>"><i id="account-icon" class="fa fa-user-circle" aria-hidden="true"></i> <?=$this->transEsc("Your Account")?></a>
+            </li>
+            <?php if($account->dropdownEnabled()): ?>
+              <li id="login-dropdown" class="dropdown<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+                <a href="#" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>
+                <div class="dropdown-menu">
+                  <?=$this->render('myresearch/menu'); ?>
+                </div>
+              </li>
+            <?php endif; ?>
+            <li class="logoutOptions<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+              <a href="<?=$this->url('myresearch-logout')?>" class="logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></a>
+            </li>
+            <li id="loginOptions"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
+              <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
+              <?php else: ?>
+                <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?></a>
+              <?php endif; ?>
+            </li>
+          <?php endif; ?>
+
+          <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+            <li class="theme dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <?php foreach ($this->layout()->themeOptions as $current): ?>
+                  <li<?=$current['selected'] ? ' class="active"' : ''?>>
+                    <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['ui' => $current['name']])) ?>" rel="nofollow">
+                      <?=$this->transEsc($current['desc']) ?>
+                    </a>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            </li>
+          <?php endif; ?>
+
+          <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+            <li class="languageDrp dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                  <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
+                    <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode])) ?>" rel="nofollow">
+                      <?=$this->displayLanguageOption($langName) ?>
+                    </a>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            </li>
+          <?php endif; ?>
+        </ul>
+      </nav>
+    </div>
+                </div>
+  <?php endif; ?>
+</div>
+<section>
+	<div class="yellowBox">
+		<div>
+			<p>Welcome to our new Libraries Catalog!<br />This site is in beta and still being developed.<br />Please explore and send us your <a href="https://tamu.qualtrics.com/jfe/form/SV_bynABaT7tFRIugu">feedback via this survey</a>.</p>
+		</div>	
+	</div>
+</section>	
+<?php 
+if ( 
+
+(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') === false) && 
+(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') === false) && 
+($this->layout()->searchbox !== false) ): 
+
+?>
+  <div class="search container navbar">
+    <div class="nav searchbox hidden-print" role="search">
+      <?=$this->layout()->searchbox ?>
+    </div>
+  </div>
+<?php endif; ?>

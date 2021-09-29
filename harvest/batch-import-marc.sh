@@ -115,7 +115,7 @@ else
 fi
 
 # Process all the files in the target directory:
-for file in $BASEPATH/*.xml $BASEPATH/*.mrc
+for file in $BASEPATH/*.xml $BASEPATH/*.mrc $BASEPATH/*.json
 do
   if [ -f $file ]
   then
