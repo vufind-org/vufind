@@ -37,9 +37,9 @@ function loadCoverByElement(data, element) {
       img.remove();
       source.remove();
       if (typeof response.data.html !== 'undefined') {
-        container.html(response.data.html);
+        container.html(VuFind.updateCspNonce(response.data.html));
       } else {
-        container.html();
+        container.html('');
       }
     }
     spinner.hide();

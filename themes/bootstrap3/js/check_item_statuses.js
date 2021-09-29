@@ -33,7 +33,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           && $item.find('.callnumAndLocation').length > 0
     ) {
       // Full status mode is on -- display the HTML and hide extraneous junk:
-      $item.find('.callnumAndLocation').empty().append(result.full_status);
+      $item.find('.callnumAndLocation').empty().append(VuFind.updateCspNonce(result.full_status));
       $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
     } else if (typeof(result.missing_data) !== 'undefined'
           && result.missing_data

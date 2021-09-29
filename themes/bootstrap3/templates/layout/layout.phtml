@@ -71,11 +71,13 @@
       $root = rtrim($this->url('home'), '/');
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
+      $cspNonce = $this->cspNonce();
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 VuFind.addIcons({$icons});
+VuFind.setCspNonce('{$cspNonce}');
 JS;
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
