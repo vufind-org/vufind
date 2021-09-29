@@ -6,39 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
-    <?php
-    $config = $this->config()->get('config');
-    ?>
-    <?php if($config->Site->title_in_header): ?>
-      <?php
-        $ver = isset($config->Site->title_in_header_ver)
-          ? $config->Site->title_in_header_ver : '';
-        $sep = isset($config->Site->title_in_header_sep)
-          ? $config->Site->title_in_header_sep : '';
-        $pre = isset($config->Site->title_in_header_pre)
-          ? $config->Site->title_in_header_pre : '';
-        $pos = isset($config->Site->title_in_header_pos)
-          ? $config->Site->title_in_header_pos : '';
-
-        $value = "";
-        switch ($ver) {
-          case "pre":
-            $value = $this->headTitle()->setPrefix($sep . $this->translate($pre));
-            break;
-          case "pos":
-            $value = $this->headTitle()->setPostfix($sep . $this->translate($pos));
-            break;
-          case "both":
-            $value = $this->headTitle()->setPrefix($sep . $this->translate($pre))->setPostfix($sep . $this->translate($pos));
-            break;
-          default:
-            break;
-        }
-      ?>
-      <?=$value?>
-    <?php else: ?>
-      <?=$this->headTitle()?>
-    <?php endif; ?>
+    <?=$this->headtitlewithinfo()->getHeadTitlewithInformation()?>
     <?php
       // Set up OpenSearch link:
       $this->headLink(
