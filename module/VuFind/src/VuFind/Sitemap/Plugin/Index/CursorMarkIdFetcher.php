@@ -50,6 +50,20 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
     protected $prevCursorMark = '';
 
     /**
+     * Default parameters to send to Solr with each request
+     *
+     * @var array
+     */
+    protected $defaultParams = [
+        'q' => '*:*',
+        'start' => 0, // Always 0 when using a cursorMark
+        'wt' => 'json',
+        // Override any default timeAllowed since it cannot be used with
+        // cursorMark
+        'timeAllowed' => -1,
+    ];
+
+    /**
      * Get the initial offset to seed the search process
      *
      * @return string
@@ -114,15 +128,9 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
         $getKeyCommand = new \VuFindSearch\Command\GetUniqueKeyCommand($backend, []);
         $key = $this->searchService->invoke($getKeyCommand)->getResult();
         $params = new ParamBag(
-            [
-                'q' => '*:*',
+            $this->defaultParams + [
                 'rows' => $countPerPage,
-                'start' => 0, // Always 0 when using a cursorMark
-                'wt' => 'json',
                 'sort' => $key . ' asc',
-                // Override any default timeAllowed since it cannot be used with
-                // cursorMark
-                'timeAllowed' => -1,
                 'cursorMark' => $cursorMark
             ]
         );
