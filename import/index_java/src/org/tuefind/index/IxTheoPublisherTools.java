@@ -214,6 +214,28 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
                     break;
             }
         }
+
+        List<VariableField> list773 = record.getVariableFields("773");
+        for (VariableField vf : list773)
+        {
+            DataField df = (DataField) vf;
+            for (Subfield current : df.getSubfields('d')) {
+                String s773d = current.getData().trim();
+                if (s773d.contains(":"))
+                {
+                    s773d = s773d.substring(s773d.indexOf(":") + 1).trim();
+                    if (s773d.contains(","))
+                    {
+                        s773d = s773d.substring(0, s773d.lastIndexOf(",")).trim();
+                        if (s773d.isEmpty() == false)
+                        {
+                            pubNames.add(s773d);
+                        }
+                    }
+                }
+            }
+        }
+
         if (pubNames.size() > 0) {
             publishers.addAll(pubNames);
         } else if (copyNames.size() > 0) {
