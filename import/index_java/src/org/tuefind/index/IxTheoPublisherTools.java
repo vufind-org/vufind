@@ -128,6 +128,8 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
                 // In some cases make sure that we abort after only some part of the rewriting has taken place
                 if (replacementBlackList.contains(publisher))
                     break;
+                if (publisher.equals(placeholderForCopyright) || publisher.equals(placeholderForPublication) || publisher.equals(placeholderForPublisher))
+                    break;
                 publisher = publisher.replaceAll(replacement.getKey(), replacement.getValue()).trim();
             }
 
@@ -163,8 +165,33 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
      */
     public Set<String> getPublishers(final Record record) {
         Set<String> publishers = new LinkedHashSet<String>();
+        boolean publisherFound = false;
+        boolean publicationFound = false;
 
-        // First check old-style 260b name:
+        // First check 773d especially for articles of journals:
+        List<VariableField> list773 = record.getVariableFields("773");
+        for (VariableField vf : list773)
+        {
+            DataField df = (DataField) vf;
+            for (Subfield current : df.getSubfields('d')) {
+                String s773d = current.getData().trim();
+                if (s773d.contains(":"))
+                {
+                    s773d = s773d.substring(s773d.indexOf(":") + 1).trim();
+                    if (s773d.contains(","))
+                    {
+                        s773d = s773d.substring(0, s773d.lastIndexOf(",")).trim();
+                        if (s773d.isEmpty() == false)
+                        {
+                            publishers.add(s773d);
+                            publicationFound = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Second check old-style 260b name:
         List<VariableField> list260 = record.getVariableFields("260");
         for (VariableField vf : list260)
         {
@@ -174,12 +201,14 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
                 currentString = currentString.trim().concat(" " + current.getData()).trim();
             }
 
-            // TueFind: Add placeholder if the subfield is missing
             if (currentString.length() > 0) {
                 publishers.add(currentString);
-            } else {
-                publishers.add(placeholderForPublisher);
             }
+        }
+
+        if (publishers.size() == 0)
+        {
+            publishers.add(placeholderForPublisher);
         }
 
         // Now track down relevant RDA-style 264b names; we only care about
@@ -214,6 +243,14 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
                     break;
             }
         }
+
+        // if publication was set in article field 773d but not in 264b, "not identified" flag not needed here
+        // for copyright flag no correction because we assume that 773d does not refer to copyright entry
+        if (publicationFound == true)
+        {
+            pubNames.remove(placeholderForPublication);
+        }
+
         if (pubNames.size() > 0) {
             publishers.addAll(pubNames);
         } else if (copyNames.size() > 0) {
