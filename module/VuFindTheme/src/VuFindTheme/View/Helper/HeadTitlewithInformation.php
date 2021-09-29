@@ -1,6 +1,6 @@
 <?php
 /**
- * Head link view helper (extended for VuFind's theme system)
+ * Head Title with additional Information View Helper
  *
  * PHP version 7
  *
@@ -21,18 +21,18 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Gregor Gawol <gawol@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
 
 /**
- * Head link view helper (extended for VuFind's theme system)
+ * Head Title with additional Information View Helper
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Gregor Gawol <gawol@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
