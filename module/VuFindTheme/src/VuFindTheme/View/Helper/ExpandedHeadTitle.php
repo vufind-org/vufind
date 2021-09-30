@@ -38,7 +38,6 @@ namespace VuFindTheme\View\Helper;
  */
 class ExpandedHeadTitle extends \Laminas\View\Helper\AbstractHelper
 {
-
     /**
      * Retrieve the Helper
      *
