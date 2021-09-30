@@ -56,13 +56,13 @@ class ExpandedHeadTitle extends \Laminas\View\Helper\AbstractHelper
         $post = $config->Site->expandedHeadTitle_post ?? '';
 
         switch ($style) {
-          case "pre":
-              return $headTitleHelper->setPrefix($translateHelper($pre). $sep);
-          case "post":
-              return $headTitleHelper->setPostfix($sep . $translateHelper($post));
-          case "both":
-              return $headTitleHelper->setPrefix($translateHelper($pre) . $sep)
-                 ->setPostfix($sep . $translateHelper($post));
+        case "pre":
+            return $headTitleHelper->setPrefix($translateHelper($pre). $sep);
+        case "post":
+            return $headTitleHelper->setPostfix($sep . $translateHelper($post));
+        case "both":
+            return $headTitleHelper->setPrefix($translateHelper($pre) . $sep)
+                ->setPostfix($sep . $translateHelper($post));
         }
         return $headTitleHelper;
     }
