@@ -50,7 +50,7 @@ class ExpandedHeadTitle extends \Laminas\View\Helper\AbstractHelper
         $headTitleHelper = $this->getView()->plugin('headTitle');
         $translateHelper = $this->getView()->plugin('translate');
         $config = $configHelper->get('config');
-        // Version of what want to see
+        // Version of what we want to see
         $style = $config->Site->expandedHeadTitle_style ?? '';
         $sep = $config->Site->expandedHeadTitle_sep ?? '';
         $pre = $config->Site->expandedHeadTitle_pre ?? '';
@@ -62,9 +62,9 @@ class ExpandedHeadTitle extends \Laminas\View\Helper\AbstractHelper
           case "post":
               return $headTitleHelper->setPostfix($sep . $translateHelper($post));
           case "both":
-             return $headTitleHelper->setPrefix($translateHelper($pre). $sep)->setPostfix($sep . $translateHelper($post));
-          default:
-              return $headTitleHelper;
+             return $headTitleHelper->setPrefix($translateHelper($pre) . $sep)
+                 ->setPostfix($sep . $translateHelper($post));
         }
+        return $headTitleHelper;
     }
 }
