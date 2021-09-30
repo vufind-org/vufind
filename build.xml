@@ -385,7 +385,6 @@
         <copy file="${srcdir}/config/vufind/contentsecuritypolicy.ini" tofile="${srcdir}/local/config/vufind/contentsecuritypolicy.ini">
           <filterchain>
             <replaceregexp>
-              <regexp pattern="(script-src\[\] = &quot;'strict-dynamic'&quot;)" replace=";\1" />
               <regexp pattern="(enabled\[.+\]) = .*" replace="\1 = true" />
             </replaceregexp>
           </filterchain>
