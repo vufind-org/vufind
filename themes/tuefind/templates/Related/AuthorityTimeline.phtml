@@ -95,7 +95,10 @@ $(function () {
           stacked: true
         },
         y: {
-          stacked: true
+          stacked: false,
+          ticks: {
+            stepSize: 1
+          }
         }
       },
       onClick(e) {
