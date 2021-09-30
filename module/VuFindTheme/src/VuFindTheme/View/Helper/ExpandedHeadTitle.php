@@ -36,53 +36,35 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadTitlewithInformation extends \Laminas\View\Helper\AbstractHelper
+class ExpandedHeadTitle extends \Laminas\View\Helper\AbstractHelper
 {
 
     /**
      * Retrieve the Helper
      *
-     * @return HeadTitlewithInformation
+     * @return ExpandedHeadTitle
      */
     public function __invoke()
-    {
-      return $this;
-    }
-
-    /**
-     * Get the Head title with additional information
-     *
-     * @return string
-     */
-    public function getHeadTitlewithInformation()
     {
         $configHelper = $this->getView()->plugin('config');
         $headTitleHelper = $this->getView()->plugin('headTitle');
         $translateHelper = $this->getView()->plugin('translate');
         $config = $configHelper->get('config');
-        $ver = isset($config->Site->headTitle_ver)
-          ? $config->Site->headTitle_ver : '';
-        $sep = isset($config->Site->headTitle_sep)
-          ? $config->Site->headTitle_sep : '';
-        $pre = isset($config->Site->headTitle_pre)
-          ? $config->Site->headTitle_pre : '';
-        $pos = isset($config->Site->headTitle_pos)
-          ? $config->Site->headTitle_pos : '';
+        // Version of what want to see
+        $style = $config->Site->expandedHeadTitle_style ?? '';
+        $sep = $config->Site->expandedHeadTitle_sep ?? '';
+        $pre = $config->Site->expandedHeadTitle_pre ?? '';
+        $post = $config->Site->expandedHeadTitle_post ?? '';
 
-        switch ($ver) {
-            case "pre":
-                $headTitle = $headTitleHelper->setPrefix($sep . $translateHelper($pre));
-                break;
-            case "pos":
-                $headTitle = $headTitleHelper->setPostfix($sep . $translateHelper($pos));
-                break;
-            case "both":
-                $headTitle = $headTitleHelper->setPrefix($sep . $translateHelper($pre))->setPostfix($sep . $translateHelper($pos));
-                break;
-            default:
-                $headTitle = $headTitleHelper;
-                break;
+        switch ($style) {
+          case "pre":
+              return $headTitleHelper->setPrefix($translateHelper($pre). $sep);
+          case "post":
+              return $headTitleHelper->setPostfix($sep . $translateHelper($post));
+          case "both":
+             return $headTitleHelper->setPrefix($translateHelper($pre). $sep)->setPostfix($sep . $translateHelper($post));
+          default:
+              return $headTitleHelper;
         }
-        return $headTitle;
     }
 }

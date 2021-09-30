@@ -129,7 +129,7 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\HeadScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
-                View\Helper\HeadTitlewithInformation::class => InvokableFactory::class,
+                View\Helper\ExpandedHeadTitle::class => InvokableFactory::class,
                 View\Helper\ParentTemplate::class =>
                     View\Helper\ParentTemplateFactory::class,
                 View\Helper\InlineScript::class =>
@@ -151,7 +151,7 @@ class Module
                     View\Helper\HeadScript::class,
                 \Laminas\View\Helper\InlineScript::class =>
                     View\Helper\InlineScript::class,
-                'headtitlewithinfo' => View\Helper\HeadTitlewithInformation::class,
+                'expandedHeadTitle' => View\Helper\ExpandedHeadTitle::class,
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,
