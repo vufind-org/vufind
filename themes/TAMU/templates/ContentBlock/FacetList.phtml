@@ -8,6 +8,7 @@
 <?php if (!empty($facetList)): ?>
   <div class="search-home-facets">
     <?php foreach ($facetList as $field => $details): ?>
+      <?php $labelHeading = $this->transEsc('home_browse_by_facet', ['%%facet%%' => $this->translate($details['label'])]); ?>
       <?php if ($isHierarchy = in_array($field, $hierarchicalFacets ?? [])):
           $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
           $this->headScript()->appendFile('facets.js');
@@ -21,7 +22,7 @@ JS;
           echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         ?>
         <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
-          <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
+          <h2><?=$labelHeading?></h2>
           <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
               data-source="<?=$this->escapeHtml($this->searchClassId)?>"
               data-facet="<?=$this->escapeHtml($field)?>"
@@ -34,14 +35,14 @@ JS;
         </div>
         <noscript>
           <?php if (!$noJsSupport): ?>
-            <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
+            <h2><?=$labelHeading?></h2>
             <?=$this->transEsc('Please enable JavaScript.')?>
           <?php endif; ?>
       <?php endif; ?>
       <?php if (!$isHierarchy || $noJsSupport): // do we need regular display? ?>
         <?php $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch); ?>
         <div class="home-facet <?=$this->escapeHtmlAttr($field) ?>">
-          <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
+          <h2><?=$labelHeading?></h2>
           <div class="home-facet-container">
             <ul class="home-facet-list">
               <?php
