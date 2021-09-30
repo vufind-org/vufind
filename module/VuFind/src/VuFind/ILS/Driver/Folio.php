@@ -605,7 +605,9 @@ class Folio extends AbstractAPI implements
                 $items[] = $callNumberData + [
                     'id' => $bibId,
                     'item_id' => $item->id,
+                    'item_hrid' => $item->hrid,
                     'holding_id' => $holding->id,
+                    'holding_hrid' => $holding->hrid,
                     'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
@@ -616,9 +618,11 @@ class Folio extends AbstractAPI implements
                     'issues' => $holdingsStatements,
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
+                    'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
+                    'enumeration' => $item->enumeration ?? '',
                     'addLink' => true
                 ];
             }
