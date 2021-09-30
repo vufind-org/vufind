@@ -62,7 +62,7 @@ class ExpandedHeadTitle extends \Laminas\View\Helper\AbstractHelper
           case "post":
               return $headTitleHelper->setPostfix($sep . $translateHelper($post));
           case "both":
-             return $headTitleHelper->setPrefix($translateHelper($pre) . $sep)
+              return $headTitleHelper->setPrefix($translateHelper($pre) . $sep)
                  ->setPostfix($sep . $translateHelper($post));
         }
         return $headTitleHelper;
