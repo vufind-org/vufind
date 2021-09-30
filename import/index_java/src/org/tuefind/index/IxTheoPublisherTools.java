@@ -25,6 +25,11 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
 // insert space after a period if doesn't exists.
         replacements.put("\\.(?!\\s)", ". ");
         replacements.put("\\s-", "-");
+// Substitute double quotes and brackets at beginning and end
+        replacements.put("^\\((.*)\\)$", "$1");
+        replacements.put("^\"(.*)\"$", "$1");
+        replacements.put("^'(.*)'$", "$1");
+
 
 // Replace some abbreviation:
         replacements.put(" und ", " u. ");
@@ -206,11 +211,6 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
             }
         }
 
-        if (publishers.size() == 0)
-        {
-            publishers.add(placeholderForPublisher);
-        }
-
         // Now track down relevant RDA-style 264b names; we only care about
         // copyright and publication names (and ignore copyright names if
         // publication names are present).
@@ -233,6 +233,9 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
                     if (currentString.isEmpty()) {
                         currentString = placeholderForPublication;
                     }
+                    else {
+                        publicationFound = true;
+                    }
                     pubNames.add(currentString);
                     break;
                 case '4':
@@ -249,6 +252,11 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
         if (publicationFound == true)
         {
             pubNames.remove(placeholderForPublication);
+        }
+        else { // assuming that a "full publication (found) does contain a publisher and thus does not need a "publisher not identified"
+            if (publishers.size() == 0) {
+                publishers.add(placeholderForPublisher);
+            }
         }
 
         if (pubNames.size() > 0) {
