@@ -322,7 +322,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     protected function getTitlesAboutQueryParamsChartDate(&$author): string
     {
         if ($author instanceof AuthorityRecordDriver) {
-            $queryString = 'topic_all:"' . $author->getTitle() . '"';
+            $queryString = 'topic_id:"' . $author->getUniqueId() . '"';
         } else {
             $queryString = 'topic_all:"' . $author . '"';
         }
@@ -407,7 +407,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $publishDates = array_keys($publishArray);
 
         $aboutData = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParamsChartDate($driver) . '"', 'AllFields'),
+                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParamsChartDate($driver), 'AllFields'),
                                                  0, 0, new \VuFindSearch\ParamBag($params));
 
         $allFacetsAbout = $aboutData->getFacets();
