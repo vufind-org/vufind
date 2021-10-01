@@ -2097,8 +2097,6 @@ public class TueFindBiblio extends TueFind {
         Map<String, String> separators = parseTopicSeparators(separatorSpec);
         Set<String> genres = new HashSet<String>();
         getCachedTopicsCollector(record, fieldSpecs, separators, genres, lang, _689IsGenreSubject);
-        if (genres.size() == 0)
-            genres.add(UNASSIGNED_STRING);
 
         return genres;
     }
@@ -2109,9 +2107,6 @@ public class TueFindBiblio extends TueFind {
         Set<String> region = new HashSet<String>();
         getCachedTopicsCollector(record, fieldSpecs, separators, region, lang, _689IsRegionSubject);
 
-        if (region.size() == 0)
-            region.add(UNASSIGNED_STRING);
-
         return region;
     }
 
@@ -2120,9 +2115,6 @@ public class TueFindBiblio extends TueFind {
         Map<String, String> separators = parseTopicSeparators(separatorSpec);
         Set<String> time = new HashSet<String>();
         getCachedTopicsCollector(record, fieldSpecs, separators, time, lang, _689IsTimeSubject);
-
-        if (time.size() == 0)
-            time.add(UNASSIGNED_STRING);
 
         return time;
     }
