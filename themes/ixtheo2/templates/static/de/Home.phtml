@@ -1,3 +1,30 @@
+
+<style>
+.cw-card.three-links {
+    background-color: #e0e0e0;
+}
+.cw-card.three-links img{
+    border-radius: 0.4rem;
+}
+.cw-card.three-links a{
+    display: block !important;
+    width: 100% !important;
+    position: relative;
+    z-index: 20;
+    opacity: 0.7;
+    margin: 22px 0;
+    background-color: #000;
+    text-decoration: none;
+}
+.cw-card.three-links a h6{
+    color:#fff;
+    margin-bottom: 42px;
+}
+.three-links .cw-overlay-content {
+    opacity: 1;
+}
+</style>
+
 <div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0; margin-bottom: 0px;">
     <div class="container">
         <!--<div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>-->
@@ -65,7 +92,7 @@
                 }
                 .slick-arrow {
                     display: none !important;
-                }  
+                }
                 </style>
 
                 <div class="slick-slider-single-item" align="center">
@@ -107,7 +134,7 @@ EOD;
                             <div class="ix-news-panel ix-news-panel-1">
                                 <a href="<?=$this->url('content-page', ['page' => 'open_access_journals'])?>">
                                     <div><b>IxTheo Open Journals</b></div>
-                                    <div><small>Open Access Zeitschriften</small></div>
+                                    <div><small>Open Access Zeitschriften Service</small></div>
                                 </a>
                             </div>
                             <div class="ix-news-panel ix-news-panel-2">
@@ -127,8 +154,8 @@ EOD;
                                     <div><b>Lexikonrecherche</b></div>
                                     <div><small>Theologische Lexika durchsuchen</small></div>
                                 </a>
-                            </div>
-                            <div class="ix-news-container-footer">Alle Services</div>
+			    </div>
+			    <div class="ix-news-container-footer">Alle Services</div>
                         </div>
                     </div>
                 </div>
@@ -226,38 +253,16 @@ EOD;
                             <a href="<?=$this->url('content-page', ['page' => 'ixtheo_content']) ?>" class="cw-tile-link"></a>
                             <img src="<?=$this->imageLink('cw/new-york.jpg')?>" alt="Card image" class="cw-bg-image">
                             <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">New York</h6>
-                                <p class="card-text text-sm">The big apple</p>
-                            </div>
-                        </div>
-                    </div>                
-                    <div class="swiper-slide cw-h-auto cw-px-2">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
-                            <a href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>" class="cw-tile-link"></a>
-                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
-                            <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Index Biblicus</h6>
-                                <p class="card-text text-sm">The big apple</p>
-                            </div>
-                        </div>
-                    </div>                
-                    <div class="swiper-slide cw-h-auto cw-px-2">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
-                            <a href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>" class="cw-tile-link"></a>
-                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
-                            <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Kirchenrecht</h6>
-                                <p class="card-text text-sm">The big apple</p>
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">FID-Content</h6>
                             </div>
                         </div>
                     </div>
                     <div class="swiper-slide cw-h-auto cw-px-2">
                         <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
-                            <a href="<?=$this->url('content-page', ['page' => 'collections_internal']) ?>" class="cw-tile-link"></a>
-                            <img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <a href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
                             <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">RelBib</h6>
-                                <p class="card-text text-sm">The big apple</p>
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Digitale Quellen</h6>
                             </div>
                         </div>
                     </div>
@@ -267,8 +272,39 @@ EOD;
                             <img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">
                             <div class="cw-card-body cw-overlay-content">
                                 <h6 class="cw-card-title text-cw-shadow text-uppercase">Theologie Digital</h6>
-                                <p class="card-text text-sm">The big apple</p>
                             </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
+                            <a href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Historische Drucke</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-hover-animate cw-mb-4 cw-mb-lg-0 three-links">
+                            <!--<img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">-->
+                            <a href="https://relbib.de" class="">
+                                <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">RelBib</h6>
+                                <!--<p class="card-text text-sm">&nbsp;</p>-->
+                            </div>
+                            </a>
+                            <a href="https://bible.ixtheo.de/" class="">
+                               <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Index Biblicus</h6>
+                                <!--<p class="card-text text-sm">&nbsp;</p>-->
+                            </div>
+                            </a>
+                            <a href="https://churchlaw.ixtheo.de/" class="">
+                                <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Kirchenrecht</h6>
+                                <!--<p class="card-text text-sm">&nbsp;</p>-->
+                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
