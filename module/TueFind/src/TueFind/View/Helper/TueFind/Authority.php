@@ -461,7 +461,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                  0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
-            $keywords = $titleRecord->getKeyWordChainBag($language);
+            $keywords = $titleRecord->getTopics($language);
             foreach ($keywords as $keyword) {
                 if (isset($countedTopics[$keyword])) {
                     ++$countedTopics[$keyword];
@@ -476,7 +476,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $topicsArray = [];
         $topicI = 1;
         $wordI = 1;
-        foreach($countedTopics as $topic=>$topicCount) {
+        foreach($countedTopics as $topic => $topicCount) {
             if($topicI <= $settings['maxTopicRows']){
                 $topicWords = [];
                 $updateString = str_replace([','], '', $topic);
