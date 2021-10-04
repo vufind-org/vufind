@@ -2011,20 +2011,6 @@ public class TueFindBiblio extends TueFind {
         return Boolean.toString(sprField.getSubfield('a') != null);
     }
 
-    public Set<String> getSubsystemsForSuperiorWork(final Record record) {
-        final DataField sprField = (DataField) record.getVariableField("SPR");
-        if (sprField == null)
-            return null;
-
-        final Set<String> subsystems = new TreeSet<String>();
-        for (final Subfield subfield : sprField.getSubfields()) {
-            if (subfield.getCode() == 't')
-                subsystems.add(subfield.getData());
-        }
-
-        return subsystems;
-    }
-
     public String isSubscribable(final Record record) {
         final DataField sprField = (DataField) record.getVariableField("SPR");
         if (sprField == null)
