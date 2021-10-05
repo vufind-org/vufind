@@ -9,6 +9,7 @@ var VuFind = (function VuFind() {
   var path = null;
   var _initialized = false;
   var _submodules = [];
+  var _cspNonce = '';
 
   var _icons = {};
   var _translations = {};
@@ -130,6 +131,31 @@ var VuFind = (function VuFind() {
     }
   };
 
+  var getCspNonce = function getCspNonce() {
+    return _cspNonce;
+  };
+
+  var setCspNonce = function setCspNonce(nonce) {
+    _cspNonce = nonce;
+  };
+
+  var updateCspNonce = function updateCspNonce(html) {
+    // Fix any inline script nonces
+    return html.replaceAll(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
+  };
+
+  var loadHtml = function loadHtml(_element, url) {
+    var $elem = $(_element);
+    if ($elem.length === 0) {
+      return;
+    }
+    $.get(url, {}, function onComplete(responseText, textStatus) {
+      if ('success' === textStatus || 'notmodified' === textStatus) {
+        $elem.html(updateCspNonce(responseText));
+      }
+    });
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -139,13 +165,17 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    getCspNonce: getCspNonce,
     icon: icon,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
+    setCspNonce: setCspNonce,
     spinner: spinner,
+    loadHtml: loadHtml,
     loading: loading,
-    translate: translate
+    translate: translate,
+    updateCspNonce: updateCspNonce
   };
 })();
 
