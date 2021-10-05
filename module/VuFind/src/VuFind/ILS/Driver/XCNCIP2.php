@@ -209,6 +209,27 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $tokenBasicAuth = false;
 
     /**
+     * If the NCIP need an authorization using HTTP Basic
+     *
+     * @var bool
+     */
+    protected $useHttpBasic = false;
+
+    /**
+     * HTTP Basic username
+     *
+     * @var string
+     */
+    protected $username;
+
+    /**
+     * HTTP Basic password
+     *
+     * @var string
+     */
+    protected $password;
+
+    /**
      * Mapping block messages from NCIP API to VuFind internal values
      *
      * @var array
@@ -279,6 +300,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             && ($this->config['Catalog']['clientId'] ?? false)
             && ($this->config['Catalog']['clientSecret'] ?? false);
         $this->tokenBasicAuth = $this->config['Catalog']['tokenBasicAuth'] ?? false;
+
+        $this->useHttpBasic = ($this->config['Catalog']['httpBasicAuth'] ?? false)
+            && ($this->config['Catalog']['username'] ?? false)
+            && ($this->config['Catalog']['password'] ?? false);
+
+        $this->username = $this->config['Catalog']['username'] ?? '';
+        $this->password = $this->config['Catalog']['password'] ?? '';
 
         if (isset($this->config['Catalog']['translationDomain'])) {
             $this->translationDomain
@@ -379,11 +407,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function sendRequest($xml)
     {
-        $this->debug('Sendig NCIP request: ' . $xml);
+        $this->debug('Sending NCIP request: ' . $xml);
         $client = $this->httpService->createClient($this->url);
         if ($this->useOAuth2) {
             $client->getRequest()->getHeaders()
                 ->addHeaderLine('Authorization', $this->getOAuth2Token());
+        } elseif ($this->useHttpBasic) {
+            $client->setAuth($this->username, $this->password);
         }
         // Set timeout value
         $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
