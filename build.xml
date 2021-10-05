@@ -381,7 +381,7 @@
     <if>
       <not><istrue value="${disable_csp}" /></not>
       <then>
-        <!-- Update contentsecuritypolicy.ini to enforce the CSP and disable strict-dynamic that's not supported on all platforms. -->
+        <!-- Update contentsecuritypolicy.ini to enforce the CSP. -->
         <copy file="${srcdir}/config/vufind/contentsecuritypolicy.ini" tofile="${srcdir}/local/config/vufind/contentsecuritypolicy.ini">
           <filterchain>
             <replaceregexp>
