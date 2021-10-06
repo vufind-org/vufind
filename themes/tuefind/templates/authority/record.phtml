@@ -132,9 +132,44 @@
 <?php
   // Pick a tab to display -- Details if available, otherwise first option (if any):
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
-?>
+  if(!empty($this->tabs)): ?>
+    <h4>Details</h4>
+    <div class="col-md-12 tf-cloud-block">
+    <div>
+        <ul class="nav nav-tabs" role="tablist">
+          <?php $activTab = 0; foreach ($this->tabs as $tab => $obj): ?>
+          <?php
+            $desc = $obj->getDescription();
+            $tabName = preg_replace("/\W/", "-", strtolower($tab));
+            $activ = '';
+            if($activTab == 0) {
+              $activ = ' active ';
+            }
+          ?>
+          <li role="presentation" class="<?=$activ;?>">
+            <a href="#<?=$tabName?>" role="tab" data-toggle="tab"><?=$this->transEsc($desc)?></a>
+          </li>
+        <?php $activTab++; endforeach; ?>
+        </ul>
+        <div class="tab-content tf-p-0">
+          <?php $activTab2 = 0; foreach ($this->tabs as $tab => $obj): ?>
+            <?php // add current tab to breadcrumbs if applicable:
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $activ = '';
+              if($activTab2 == 0) {
+                $activ = 'active';
+              }
+            ?>
+            <div role="tabpanel" class="tab-pane <?=$activ;?>" id="<?=$tabName?>">
+                <?php echo $this->record($this->driver)->getTab($obj)?>
+            </div>
+          <?php $activTab2++; endforeach; ?>
+        </div>
+      </div>
+    </div>
+<?php endif;?>
 
-<?php /* TueFind: Use similar tab logic as for title data (without AJAX!)*/?>
+<?php /* TueFind: Use similar tab logic as for title data (without AJAX!)*/ /*?>
 <div class="record-tabs">
   <ul class="nav nav-tabs">
     <?php foreach ($this->tabs as $tab => $obj): ?>
@@ -158,7 +193,7 @@
         if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
       ?>
       <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-        <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>"><?=$this->transEsc($desc)?></a>
       </li>
     <?php endforeach; ?>
   </ul>
@@ -171,6 +206,7 @@
     <?php endif; ?>
   </div>
 </div>
+ */?>
 
 <?php
   // TueFind:
