@@ -806,12 +806,17 @@ oclc_num:
       - [oclc_num, ~]
 
 Keywordchains:
-   DismaxFields:
-      - key_word_chains_sorted
-   QueryFields:
-     key_word_chain_sorted:
-      - [and, ~]
-   DismaxParams:
-       - ["defType", "multiLanguageQueryParser"]
-       - ["mm", "100%"]
+  DismaxFields:
+    - key_word_chains_sorted
+  QueryFields:
+    key_word_chain_sorted:
+    - [and, ~]
+  DismaxParams:
+    - ["defType", "multiLanguageQueryParser"]
+    - ["mm", "100%"]
 
+Beacon:
+  DismaxFields:
+    - author_gnd
+    - author2_gnd
+    - author_corporate_gnd

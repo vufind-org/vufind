@@ -599,3 +599,8 @@ Fulltext:
     fulltext:
       - [or, ~]
 
+Beacon:
+  DismaxFields:
+    - author_gnd
+    - author2_gnd
+    - author_corporate_gnd
