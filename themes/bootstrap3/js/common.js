@@ -144,14 +144,17 @@ var VuFind = (function VuFind() {
     return html.replaceAll(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  var loadHtml = function loadHtml(_element, url) {
+  var loadHtml = function loadHtml(_element, url, data, success) {
     var $elem = $(_element);
     if ($elem.length === 0) {
       return;
     }
-    $.get(url, {}, function onComplete(responseText, textStatus) {
+    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
       if ('success' === textStatus || 'notmodified' === textStatus) {
         $elem.html(updateCspNonce(responseText));
+      }
+      if (typeof success !== 'undefined') {
+        success(responseText, textStatus, jqXhr);
       }
     });
   };
