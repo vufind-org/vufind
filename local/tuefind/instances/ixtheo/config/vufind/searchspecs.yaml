@@ -820,3 +820,4 @@ Beacon:
     - author_gnd
     - author2_gnd
     - author_corporate_gnd
+    - topic_gnd
