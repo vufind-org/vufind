@@ -599,3 +599,9 @@ Fulltext:
     fulltext:
       - [or, ~]
 
+GND:
+  DismaxFields:
+    - author_gnd^200
+    - author2_gnd^100
+    - author_corporate_gnd
+    - topic_gnd
