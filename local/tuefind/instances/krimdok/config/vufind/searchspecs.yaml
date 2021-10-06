@@ -601,7 +601,7 @@ Fulltext:
 
 Beacon:
   DismaxFields:
-    - author_gnd
-    - author2_gnd
-    - author_corporate_gnd
+    - author_gnd^10
+    - author2_gnd^5
+    - author_corporate_gnd^2
     - topic_gnd
