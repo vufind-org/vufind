@@ -817,7 +817,7 @@ Keywordchains:
 
 GND:
   DismaxFields:
-    - author_gnd^10
-    - author2_gnd^5
-    - author_corporate_gnd^2
+    - author_gnd^200
+    - author2_gnd^100
+    - author_corporate_gnd
     - topic_gnd
