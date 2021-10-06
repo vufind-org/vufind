@@ -29,6 +29,7 @@
  */
 namespace VuFindTest\ILS\Driver;
 
+use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
 
 /**
@@ -61,6 +62,94 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $this->getMockSM($this->never())
         );
         $test->init();
+    }
+
+    /**
+     * Test that driver handles missing ILS driver configuration properly.
+     *
+     * @return void
+     */
+    public function testMissingILSConfiguration()
+    {
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockPM->expects($this->any())
+            ->method('get')
+            ->will(
+                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
+            );
+        $driver = new MultiBackend(
+            $mockPM,
+            $this->getMockILSAuthenticator(),
+            $this->getMockSM()
+        );
+        $driver->setConfig(['Drivers' => ['d1' => 'Voyager']]);
+        $driver->init();
+
+        $result = $driver->getStatus('d1.123');
+        $this->assertEquals([], $result);
+    }
+
+    /**
+     * Test that driver handles ILS driver configuration loading properly when
+     * drivers_config_path is not defined.
+     *
+     * @return void
+     */
+    public function testILSConfigurationPathWithoutDriverConfigPath()
+    {
+        $configData = ['config' => 'values'];
+        $config = new \Laminas\Config\Config($configData);
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockPM->expects($this->once())
+            ->method('get')
+            ->with('d1')
+            ->will(
+                $this->returnValue($config)
+            );
+        $ils = $this->getMockILS('Voyager');
+        $driver = new MultiBackend(
+            $mockPM,
+            $this->getMockILSAuthenticator(),
+            $this->getMockSM(null, 'Voyager', $ils)
+        );
+        $driver->setConfig(['Drivers' => ['d1' => 'Voyager']]);
+        $driver->init();
+
+        $driver->getStatus('d1.123');
+    }
+
+    /**
+     * Test that driver handles ILS driver configuration loading properly when
+     * drivers_config_path is not defined.
+     *
+     * @return void
+     */
+    public function testILSConfigurationPathWithDriverConfigPath()
+    {
+        $configData = ['config' => 'values'];
+        $config = new \Laminas\Config\Config($configData);
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockPM->expects($this->once())
+            ->method('get')
+            ->with('configpath/d1')
+            ->will(
+                $this->returnValue($config)
+            );
+        $ils = $this->getMockILS('Voyager');
+        $driver = new MultiBackend(
+            $mockPM,
+            $this->getMockILSAuthenticator(),
+            $this->getMockSM(null, 'Voyager', $ils)
+        );
+        $driver->setConfig(
+            [
+                'General' => ['drivers_config_path' => 'configpath'],
+                'Drivers' => ['d1' => 'Voyager']
+            ]
+        );
+        $driver->init();
+
+        $driver->getStatus('d1.123');
     }
 
     /**
@@ -128,6 +217,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         $result = $this->callMethod($driver, 'getSourceFromParams', ['']);
         $this->assertEquals('', $result);
+
+        $result = $this->callMethod($driver, 'getSourceFromParams', ['d1.record2']);
+        $this->assertEquals('d1', $result);
 
         $data = [
             'id' => 'record1',
@@ -592,7 +684,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                         } else {
                             $r_arr['status'] = 'out';
                         }
-                        return $r_arr;
+                        return [$r_arr];
                     }
                 )
             );
@@ -603,10 +695,10 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $this->setProperty($driver, 'drivers', $drivers);
 
         $return = $driver->getStatus('d1.123456');
-        $this->assertEquals(['id' => 'd1.123456', 'status' => 'in'], $return);
+        $this->assertEquals([['id' => 'd1.123456', 'status' => 'in']], $return);
 
         $return = $driver->getStatus('d1.654321');
-        $this->assertEquals(['id' => 'd1.654321', 'status' => 'out'], $return);
+        $this->assertEquals([['id' => 'd1.654321', 'status' => 'out']], $return);
 
         $return = $driver->getStatus('invalid.654321');
         $this->assertEquals([], $return);
@@ -620,7 +712,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     public function testGetStatuses()
     {
         $ils1 = $this->getMockILS('Voyager', ['init', 'getStatuses']);
-        $ils1->expects($this->exactly(1))
+        $ils1->expects($this->exactly(2))
             ->method('getStatuses')
             ->with(
                 $this->equalTo(['123456', '098765'])
@@ -629,12 +721,20 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 $this->returnValue(
                     [
                         [
-                            'id' => '123456',
-                            'status' => 'in'
+                            [
+                                'id' => '123456',
+                                'status' => 'in'
+                            ],
+                            [
+                                'id' => '123456',
+                                'status' => 'out'
+                            ],
                         ],
                         [
-                            'id' => '098765',
-                            'status' => 'out'
+                            [
+                                'id' => '098765',
+                                'status' => 'out'
+                            ],
                         ],
                     ]
                 )
@@ -650,15 +750,30 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 $this->returnValue(
                     [
                         [
-                            'id' => '654321',
-                            'status' => 'out'
+                            [
+                                'id' => '654321',
+                                'status' => 'out'
+                            ],
                         ],
                         [
-                            'id' => '567890',
-                            'status' => 'in'
+                            [
+                                'id' => '567890',
+                                'status' => 'in'
+                            ],
                         ],
                     ]
                 )
+            );
+
+        $exception = new \VuFind\Exception\ILS('Simulated exception');
+        $ils3 = $this->getMockILS('Demo', ['init', 'setConfig', 'getStatuses']);
+        $ils3->expects($this->exactly(1))
+            ->method('getStatuses')
+            ->with(
+                $this->equalTo(['654321', '567890'])
+            )
+            ->will(
+                $this->throwException($exception)
             );
 
         $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
@@ -686,10 +801,61 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             'd1.123456', 'd1.098765', 'd2.654321', 'd2.567890'
         ];
         $expectedReturn = [
-            ['id' => "d1.123456", 'status' => 'in'],
-            ['id' => "d1.098765", 'status' => 'out'],
-            ['id' => "d2.654321", 'status' => 'out'],
-            ['id' => "d2.567890", 'status' => 'in']
+            [
+                ['id' => "d1.123456", 'status' => 'in'],
+                ['id' => "d1.123456", 'status' => 'out'],
+            ],
+            [
+                ['id' => "d1.098765", 'status' => 'out'],
+            ],
+            [
+                ['id' => "d2.654321", 'status' => 'out'],
+            ],
+            [
+                ['id' => "d2.567890", 'status' => 'in']
+            ]
+        ];
+        $return = $driver->getStatuses($ids);
+        $this->assertEquals($expectedReturn, $return);
+
+        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
+            ->disableOriginalConstructor()->getMock();
+        $sm->expects($this->exactly(2))
+            ->method('get')
+            ->with(
+                $this->logicalOr('Voyager', 'Demo')
+            )->will(
+                $this->returnCallback(
+                    function ($driver) use ($ils1, $ils3) {
+                        return 'Voyager' === $driver ? $ils1 : $ils3;
+                    }
+                )
+            );
+
+        $driver = $this->getDriver($sm);
+        $drivers = [
+            'd1' => 'Voyager',
+            'd3' => 'Demo',
+        ];
+        $this->setProperty($driver, 'drivers', $drivers);
+
+        $ids = [
+            'd1.123456', 'd1.098765', 'd3.654321', 'd3.567890'
+        ];
+        $expectedReturn = [
+            [
+                ['id' => "d1.123456", 'status' => 'in'],
+                ['id' => "d1.123456", 'status' => 'out'],
+            ],
+            [
+                ['id' => "d1.098765", 'status' => 'out'],
+            ],
+            [
+                ['id' => "d3.654321", 'error' => 'An error has occurred'],
+            ],
+            [
+                ['id' => "d3.567890", 'error' => 'An error has occurred'],
+            ]
         ];
         $return = $driver->getStatuses($ids);
         $this->assertEquals($expectedReturn, $return);
@@ -1186,7 +1352,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Testing method for getMyHolds
+     * Testing method for getHoldLink
      *
      * @return void
      */
@@ -1241,6 +1407,66 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyHolds($this->getPatron('username', 'invalid'));
+    }
+
+    /**
+     * Testing method for getAccountBlocks
+     *
+     * @return void
+     */
+    public function testGetAccountBlocks()
+    {
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getAccountBlocks',
+            [$this->getPatron('username')],
+            ['fine limit exceeded'],
+            ['too many items checked out']
+        );
+
+        $result = $driver->getAccountBlocks($this->getPatron('username', 'd1'));
+        $this->assertEquals(['fine limit exceeded'], $result);
+
+        $result = $driver->getAccountBlocks($this->getPatron('username', 'd2'));
+        $this->assertEquals(['too many items checked out'], $result);
+
+        $result = $driver->getAccountBlocks($this->getPatron('username', 'd3'));
+        $this->assertEquals(false, $result);
+
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage('No suitable backend driver found');
+        $result = $driver->getAccountBlocks($this->getPatron('username', 'invalid'));
+    }
+
+    /**
+     * Testing method for getRequestBlocks
+     *
+     * @return void
+     */
+    public function testGetRequestBlocks()
+    {
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getRequestBlocks',
+            [$this->getPatron('username')],
+            ['too many holds'],
+            ['too many items checked out']
+        );
+
+        $result = $driver->getRequestBlocks($this->getPatron('username', 'd1'));
+        $this->assertEquals(['too many holds'], $result);
+
+        $result = $driver->getRequestBlocks($this->getPatron('username', 'd2'));
+        $this->assertEquals(['too many items checked out'], $result);
+
+        $result = $driver->getRequestBlocks($this->getPatron('username', 'd3'));
+        $this->assertEquals(false, $result);
+
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage('No suitable backend driver found');
+        $result = $driver->getRequestBlocks($this->getPatron('username', 'invalid'));
     }
 
     /**
@@ -2334,6 +2560,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $this->setProperty($driver, 'ilsAuth', $mockAuth);
         $result = $driver->getConfig('Holds');
         $this->assertEquals($expected1, $result);
+
+        $mockAuth = $this->getMockILSAuthenticator(null);
+        $this->setProperty($driver, 'ilsAuth', $mockAuth);
+        $result = $driver->getConfig('Holds');
+        $this->assertEquals([], $result);
     }
 
     /**
@@ -2516,8 +2747,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock ILS authenticator
      *
-     * @param bool $userSource Source id, if the authenticator should emulate a
-     * situation where a user has logged in
+     * @param string $userSource Source id, if the authenticator should emulate a
+     * situation where a user has logged in. Set to null for the attempt to cause an
+     * exception.
      *
      * @return \VuFind\Auth\ILSAuthenticator
      */
@@ -2536,6 +2768,18 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 ->method('getStoredCatalogCredentials')
                 ->will(
                     $this->returnValue($this->getPatron('username', $userSource))
+                );
+        } elseif (null === $userSource) {
+            $e = new ILSException('Simulated exception from ILSAuthenticator');
+            $mockAuth->expects($this->any())
+                ->method('storedCatalogLogin')
+                ->will(
+                    $this->throwException($e)
+                );
+            $mockAuth->expects($this->any())
+                ->method('getStoredCatalogCredentials')
+                ->will(
+                    $this->throwException($e)
                 );
         }
         return $mockAuth;
@@ -2861,7 +3105,18 @@ trait ILSMockTrait
     {
         return [];
     }
+
+    public function getAccountBlocks($patron)
+    {
+        return false;
+    }
+
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
 }
+
 class DemoMock extends \VuFind\ILS\Driver\Demo
 {
     use ILSMockTrait;
