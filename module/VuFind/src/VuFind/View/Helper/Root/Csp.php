@@ -62,7 +62,7 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
      *
      * @return void
      */
-    public function disableCsp()
+    public function disablePolicy()
     {
         if (null === $this->response) {
             return;

@@ -77,7 +77,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(1, $added->count());
 
         $csp = new \VuFind\View\Helper\Root\Csp($response);
-        $csp->disableCsp();
+        $csp->disablePolicy();
         $this->assertFalse($headers->get('Content-Security-Policy'));
     }
 }
