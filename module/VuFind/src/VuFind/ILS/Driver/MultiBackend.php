@@ -130,6 +130,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         'renewMyItems' => 'cat_username',
     ];
 
+    /**
+     * Methods that are supported unconditionally if patron functionality is enabled.
+     *
+     * If a patron can log in or add a library card (i.e. the source is enabled for
+     * login), these methods are used without capability checks.
+     *
+     * @var array
+     */
     protected $alwaysSupportedMethods = [
         'cancelHolds',
         'getCancelHoldDetails',
