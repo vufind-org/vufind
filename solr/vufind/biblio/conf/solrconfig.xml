@@ -478,35 +478,35 @@
     <str name="sources">topic,author,title,lcc,dewey,hierarchy</str>
 
     <lst name="topic">
-      <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/topic_browse.db</str>
+      <str name="DBpath">${solr.solr.home:./solr}/mycores/alphabetical_browse/topic_browse.db</str>
       <str name="field">topic_browse</str>
     </lst>
 
     <lst name="author">
-      <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/author_browse.db</str>
+      <str name="DBpath">${solr.solr.home:./solr}/mycores/alphabetical_browse/author_browse.db</str>
       <str name="field">author_browse</str>
     </lst>
 
     <lst name="title">
-      <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/title_browse.db</str>
+      <str name="DBpath">${solr.solr.home:./solr}/mycores/alphabetical_browse/title_browse.db</str>
       <str name="field">title_fullStr</str>
     </lst>
 
     <lst name="lcc">
-      <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/lcc_browse.db</str>
+      <str name="DBpath">${solr.solr.home:./solr}/mycores/alphabetical_browse/lcc_browse.db</str>
       <str name="field">callnumber-raw</str>
       <str name="normalizer">org.vufind.util.LCCallNormalizer</str>
     </lst>
 
     <lst name="dewey">
-      <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/dewey_browse.db</str>
+      <str name="DBpath">${solr.solr.home:./solr}/mycores/alphabetical_browse/dewey_browse.db</str>
       <str name="field">dewey-raw</str>
       <str name="ignoreDiacritics">yes</str>
       <str name="normalizer">org.vufind.util.DeweyCallNormalizer</str>
     </lst>
 
     <lst name="hierarchy">
-      <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/hierarchy_browse.db</str>
+      <str name="DBpath">${solr.solr.home:./solr}/mycores/alphabetical_browse/hierarchy_browse.db</str>
       <str name="field">hierarchy_browse</str>
     </lst>
   </requestHandler>
