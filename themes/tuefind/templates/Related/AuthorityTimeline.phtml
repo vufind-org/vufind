@@ -9,7 +9,7 @@
         $chartJSabout .= $chartData[2].',';
     }
 ?>
-<h4>Publication Timeline</h4>
+<h4><?=$this->transEsc('Publication Timeline')?></h4>
 <div class="col-md-12" style="padding:20px; margin-bottom: 20px;  border: 1px solid #ddd; border-radius: 4px;">
   <div class="chart-wrapper">
     <canvas id="myChart"></canvas>
@@ -57,12 +57,12 @@ $(function () {
     labels: labels,
     datasets: [
       {
-        label: 'By',
+        label: '{$this->transEsc('publication_timeline_by')}',
         data: byData,
         backgroundColor: '{$chartByBackgroundColor}',
       },
       {
-        label: 'About',
+        label: '{$this->transEsc('publication_timeline_about')}',
         data: aboutData,
         backgroundColor: '{$chartAboutBackgroundColor}',
       }

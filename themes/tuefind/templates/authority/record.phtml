@@ -36,7 +36,7 @@
           <?php $occupations = $this->authority()->getOccupations($this->driver);?>
           <?php if ($occupations != ''): ?>
             <tr>
-              <th>Occupations:</th>
+              <th><?=$this->transEsc('Occupation')?>:</th>
               <td><?=$occupations?></td>
             </tr>
           <?php endif; ?>
@@ -44,7 +44,7 @@
           <?php $birth = $this->authority()->getBirth($this->driver); ?>
           <?php if ($birth != ''): ?>
             <tr>
-              <th>Born:</th>
+              <th><?=$this->transEsc('Born')?>:</th>
               <td><?=$birth?></td>
             </tr>
           <?php endif; ?>
@@ -52,7 +52,7 @@
           <?php $death = $this->authority()->getDeath($this->driver); ?>
           <?php if ($death != ''): ?>
             <tr>
-              <th>Died:</th>
+              <th><?=$this->transEsc('Died')?>:</th>
               <td><?=$death?></td>
             </tr>
           <?php endif; ?>
@@ -60,7 +60,7 @@
           <?php $relations = $this->authority()->getPersonalRelations($this->driver); ?>
           <?php if ($relations != ''): ?>
             <tr>
-              <th>Personal relations:</th>
+              <th><?=$this->transEsc('Personal Relations')?>:</th>
               <td><?=$relations?></td>
             </tr>
           <?php endif; ?>
@@ -68,7 +68,7 @@
           <?php $relations = $this->authority()->getCorporateRelations($this->driver); ?>
           <?php if ($relations != ''): ?>
             <tr>
-              <th>Corporate relations:</th>
+              <th><?=$this->transEsc('Corporate Relations')?>:</th>
               <td><?=$relations?></td>
             </tr>
           <?php endif; ?>
@@ -76,7 +76,7 @@
           <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
           <?php if ($externalReferences != ''): ?>
             <tr>
-              <th>External references:</th>
+              <th><?=$this->transEsc('External References')?>:</th>
               <td><?=$externalReferences?></td>
             </tr>
           <?php endif; ?>
@@ -84,7 +84,7 @@
           <?php $externalSubsystems = $this->authority()->getExternalSubsystems($this->driver, $this->tuefind()->getTueFindSubtype()); ?>
           <?php if ($externalSubsystems != ''): ?>
             <tr>
-              <th>Subsystems:</th>
+              <th><?=$this->transEsc('Subsystems')?>:</th>
               <td><?=$externalSubsystems?></td>
             </tr>
           <?php endif; ?>
