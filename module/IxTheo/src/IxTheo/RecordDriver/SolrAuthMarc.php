@@ -7,7 +7,7 @@ class SolrAuthMarc extends SolrAuthDefault {
     {
         $subsystemLinks = [
             ['title' => 'RelBib', 'url' => 'https://relbib.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'REL'],
-            ['title' => 'BILDI-IxTheo', 'url' => 'https://bible.ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'BIB'],
+            ['title' => 'Index Biblicus', 'url' => 'https://bible.ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'BIB'],
             ['title' => 'IxTheo / KALDI / DaKaR', 'url' => 'https://canonlaw.ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'CAN']
         ];
 
