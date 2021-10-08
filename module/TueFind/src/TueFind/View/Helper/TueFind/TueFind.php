@@ -296,7 +296,7 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
                 'relbib' => 'relbib',
                 'bibstudies' => 'biblestudies',
                 'churchlaw' => 'canonlaw'];
-        return $map[$instance];
+        return $map[$instance] ?? $instance;
     }
 
     /**
