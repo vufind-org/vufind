@@ -5,7 +5,7 @@
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
   ?>
   <tr vocab="http://schema.org/" typeof="Offer">
-    <th class="copy-number"><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?>
+    <th class="copy-number"><?=$this->escapeHtml($holding['enumeration'])?>
       <?php if ($holding['enumchron'] ?? false): ?>
         <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
       <?php endif; ?>

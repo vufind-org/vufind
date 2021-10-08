@@ -89,15 +89,15 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, $ho
 </h3>
 <table class="table table-striped">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
-  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
     <td width="50%">
       <?php foreach ($callNos as $callNo): ?>
         <?php if ($this->callnumberHandler): ?>
-          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo['callnumber']) ?>"><?=$this->escapeHtml($callNo['display'])?></a>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo) ?>"><?=$this->escapeHtml($callNo)?></a>
         <?php else: ?>
-          <?=$this->escapeHtml($callNo['display'])?>
+          <?=$this->escapeHtml($callNo)?>
         <?php endif; ?>
         <br />
       <?php endforeach; ?>
@@ -170,6 +170,11 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, $ho
             );
         }
     ?>
+
+
+
+
+
   <?php endforeach; ?>
   <?php if (!empty($holding['purchase_history'])): ?>
     <tr>

@@ -38,7 +38,7 @@
   <?php if (!isset($this->layout()->renderingError)): ?>
     <div class="collapse navbar-collapse" id="header-collapse">
       <nav>
-        <ul class="nav navbar-nav navbar-right flip">
+        <ul class="nav navbar-nav navbar-right languageDrp flip langNav">
           <?php if ($this->feedback()->tabEnabled()): ?>
             <li>
               <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc("Feedback")?></a>
@@ -46,7 +46,7 @@
           <?php endif; ?>
           <?php $cart = $this->cart(); if ($cart->isActive()): ?>
             <li id="cartSummary">
-              <a id="cartItems" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+              <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
                 <i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?>
                 <span class="full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full') ?>)</span>
               </a>
@@ -92,7 +92,7 @@
           <?php endif; ?>
 
           <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-            <li class="language dropdown">
+            <li class="languageDrp dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
