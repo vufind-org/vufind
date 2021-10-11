@@ -131,27 +131,6 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     ];
 
     /**
-     * Methods that are supported unconditionally if patron functionality is enabled.
-     *
-     * If a patron can log in or add a library card (i.e. the source is enabled for
-     * login), these methods are used without capability checks.
-     *
-     * @var array
-     */
-    protected $alwaysSupportedMethods = [
-        'cancelHolds',
-        'getCancelHoldDetails',
-        'getHoldLink',
-        'getMyFines',
-        'getMyProfile',
-        'getMyTransactionHistory',
-        'getMyTransactions',
-        'getRenewDetails',
-        'patronLogin',
-        'renewMyItems',
-    ];
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
@@ -1449,9 +1428,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 }
                 unset($param);
             }
-            if (in_array($method, $this->alwaysSupportedMethods)
-                || $this->driverSupportsMethod($driver, $method, $params)
-            ) {
+            if ($this->driverSupportsMethod($driver, $method, $params)) {
                 $result = call_user_func_array([$driver, $method], $params);
                 if ($addPrefixes) {
                     $result = $this->addIdPrefixes($result, $source);
