@@ -59,8 +59,8 @@ function locate_index
     eval $targetVar="$indexDir/$subDir"
 }
 
-locate_index "bib_index" "${SOLR_HOME}/mycores/biblio/data"
-locate_index "auth_index" "${SOLR_HOME}/mycores/authority/data"
+locate_index "bib_index" "${SOLR_HOME}/mycores/biblio"
+locate_index "auth_index" "${SOLR_HOME}/mycores/authority"
 index_dir="${SOLR_HOME}/mycores/alphabetical_browse"
 
 mkdir -p "$index_dir"
