@@ -175,11 +175,7 @@ public class TueFindAuth extends TueFind {
                     return "work";
                 }
             }
-            String notIndividualizedSubField = getFirstSubfieldValueWithPrefix(record, "079b","n");
-            if (notIndividualizedSubField != null)
-                return "name";
-            else
-                return "person";
+            return "person";
         }
         if (record.getVariableFields("110").size() > 0)
             return "corporate";
