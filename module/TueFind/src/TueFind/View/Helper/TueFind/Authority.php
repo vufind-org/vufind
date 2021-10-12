@@ -525,7 +525,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         foreach($fullTopicsArray as $oneTopic) {
             if(!empty($oneTopic['topicWords'])) {
                 foreach($oneTopic['topicWords'] as $oneWord) {
-                    $this->clearTopiksWords($mainTopicsArray, $oneWord);
+                    $this->clearTopicsWords($mainTopicsArray, $oneWord);
                 }
             }
         }
@@ -555,18 +555,18 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $loadResult;
     }
 
-    private function clearTopiksWords(&$topiksArray, $clearWord): void
+    private function clearTopicsWords(&$topicsArray, $clearWord): void
     {
         $clearIndexTopic = 0;
         $countSimilar = 0;
-        foreach($topiksArray as $oneTopic) {
+        foreach($topicsArray as $oneTopic) {
             if(!empty($oneTopic['topicWords'])) {
                 $countWords = 0;
                 foreach($oneTopic['topicWords'] as $oneWord) {
                     if(trim($oneWord) == trim($clearWord)) {
                         if($countSimilar > 0) {
-                            if(isset($topiksArray[$clearIndexTopic]['topicWords'][$countWords])) {
-                                unset($topiksArray[$clearIndexTopic]['topicWords'][$countWords]);
+                            if(isset($topicsArray[$clearIndexTopic]['topicWords'][$countWords])) {
+                                unset($topicsArray[$clearIndexTopic]['topicWords'][$countWords]);
                             }
                         }
                         $countSimilar++;
