@@ -1,11 +1,13 @@
 <?php $previewLimit = 5; ?>
-<?php $response = $this->authority()->getRelatedAuthors($this->driver); ?>
-<?php if (count($response) > 0): ?>
+<?php $relatedAuthors = $this->authority()->getRelatedAuthors($this->driver); ?>
+<?php $relatedAuthorsCount = count($relatedAuthors); ?>
+<?php if ($relatedAuthorsCount > 0): ?>
   <h4><?=$this->transEsc('Related Authors')?></h4>
   <ul class="list-group">
     <?php $i=0; ?>
-    <?php foreach ($response as $authorTitle => $authorDetails): ?>
+    <?php foreach ($relatedAuthors as $authorIdAndTitle => $authorDetails): ?>
       <?php if (++$i > $previewLimit) break;?>
+      <?php list($authorId, $authorTitle) = explode(':', $authorIdAndTitle); ?>
       <li class="list-group-item">
         <?=$authorTitle?>
         <?php if (($authorityId = $authorDetails['id'] ?? null) && ($authorityDriver = $this->authority()->recordExists($authorityId))): ?>
@@ -19,9 +21,9 @@
       </li>
     <?php endforeach; ?>
   </ul>
-  <?php if (count($response) > $previewLimit): ?>
+  <?php if ($relatedAuthorsCount > $previewLimit): ?>
     <p>
-      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>"><?=$this->transEsc('see all')?> (<?=count($response)?>)</a>
+      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>"><?=$this->transEsc('see all')?> (<?=$relatedAuthorsCount?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>
