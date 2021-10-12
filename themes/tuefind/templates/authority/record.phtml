@@ -36,7 +36,7 @@
           <?php $occupations = $this->authority()->getOccupations($this->driver);?>
           <?php if ($occupations != ''): ?>
             <tr>
-              <th>Occupations:</th>
+              <th><?=$this->transEsc('Occupation')?>:</th>
               <td><?=$occupations?></td>
             </tr>
           <?php endif; ?>
@@ -44,7 +44,7 @@
           <?php $birth = $this->authority()->getBirth($this->driver); ?>
           <?php if ($birth != ''): ?>
             <tr>
-              <th>Born:</th>
+              <th><?=$this->transEsc('Born')?>:</th>
               <td><?=$birth?></td>
             </tr>
           <?php endif; ?>
@@ -52,7 +52,7 @@
           <?php $death = $this->authority()->getDeath($this->driver); ?>
           <?php if ($death != ''): ?>
             <tr>
-              <th>Died:</th>
+              <th><?=$this->transEsc('Died')?>:</th>
               <td><?=$death?></td>
             </tr>
           <?php endif; ?>
@@ -60,7 +60,7 @@
           <?php $relations = $this->authority()->getPersonalRelations($this->driver); ?>
           <?php if ($relations != ''): ?>
             <tr>
-              <th>Personal relations:</th>
+              <th><?=$this->transEsc('Personal Relations')?>:</th>
               <td><?=$relations?></td>
             </tr>
           <?php endif; ?>
@@ -68,7 +68,7 @@
           <?php $relations = $this->authority()->getCorporateRelations($this->driver); ?>
           <?php if ($relations != ''): ?>
             <tr>
-              <th>Corporate relations:</th>
+              <th><?=$this->transEsc('Corporate Relations')?>:</th>
               <td><?=$relations?></td>
             </tr>
           <?php endif; ?>
@@ -76,15 +76,20 @@
           <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
           <?php if ($externalReferences != ''): ?>
             <tr>
-              <th>External references:</th>
+              <th><?=$this->transEsc('External References')?>:</th>
               <td><?=$externalReferences?></td>
+            </tr>
+          <?php endif; ?>
+
+          <?php $externalSubsystems = $this->authority()->getExternalSubsystems($this->driver, $this->tuefind()->getTueFindSubtype()); ?>
+          <?php if ($externalSubsystems != ''): ?>
+            <tr>
+              <th><?=$this->transEsc('Subsystems')?>:</th>
+              <td><?=$externalSubsystems?></td>
             </tr>
           <?php endif; ?>
         </tbody>
       </table>
-      <?=$this->context($this)->renderInContext('Related/AuthorityTitlesBy', ['driver' => $this->driver])?>
-      <?=$this->context($this)->renderInContext('Related/AuthorityTitlesAbout', ['driver' => $this->driver])?>
-      <?=$this->context($this)->renderInContext('Related/AuthorityAuthors', ['driver' => $this->driver])?>
     </div>
     <?php if ($this->driver->getType() == 'person' && !$this->driver->isFamily()): ?>
       <div class="col-sm-4">
@@ -118,12 +123,53 @@
   </div>
 </div>
 
+<?=$this->context($this)->renderInContext('Related/AuthorityTitlesBy', ['driver' => $this->driver])?>
+<?=$this->context($this)->renderInContext('Related/AuthorityTitlesAbout', ['driver' => $this->driver])?>
+<?=$this->context($this)->renderInContext('Related/AuthorityAuthors', ['driver' => $this->driver])?>
+<?=$this->context($this)->renderInContext('Related/AuthorityTopics', ['driver' => $this->driver])?>
+<?=$this->context($this)->renderInContext('Related/AuthorityTimeline', ['driver' => $this->driver])?>
+
 <?php
   // Pick a tab to display -- Details if available, otherwise first option (if any):
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
-?>
+  if(!empty($this->tabs)): ?>
+    <h4>Details</h4>
+    <div class="col-md-12 tf-cloud-block">
+    <div>
+        <ul class="nav nav-tabs" role="tablist">
+          <?php $activTab = 0; foreach ($this->tabs as $tab => $obj): ?>
+          <?php
+            $desc = $obj->getDescription();
+            $tabName = preg_replace("/\W/", "-", strtolower($tab));
+            $activ = '';
+            if($activTab == 0) {
+              $activ = ' active ';
+            }
+          ?>
+          <li role="presentation" class="<?=$activ;?>">
+            <a href="#<?=$tabName?>" role="tab" data-toggle="tab"><?=$this->transEsc($desc)?></a>
+          </li>
+        <?php $activTab++; endforeach; ?>
+        </ul>
+        <div class="tab-content tf-p-0">
+          <?php $activTab2 = 0; foreach ($this->tabs as $tab => $obj): ?>
+            <?php // add current tab to breadcrumbs if applicable:
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $activ = '';
+              if($activTab2 == 0) {
+                $activ = 'active';
+              }
+            ?>
+            <div role="tabpanel" class="tab-pane <?=$activ;?>" id="<?=$tabName?>">
+                <?php echo $this->record($this->driver)->getTab($obj)?>
+            </div>
+          <?php $activTab2++; endforeach; ?>
+        </div>
+      </div>
+    </div>
+<?php endif;?>
 
-<?php /* TueFind: Use similar tab logic as for title data (without AJAX!)*/?>
+<?php /* TueFind: Use similar tab logic as for title data (without AJAX!)*/ /*?>
 <div class="record-tabs">
   <ul class="nav nav-tabs">
     <?php foreach ($this->tabs as $tab => $obj): ?>
@@ -147,7 +193,7 @@
         if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
       ?>
       <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-        <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>"><?=$this->transEsc($desc)?></a>
       </li>
     <?php endforeach; ?>
   </ul>
@@ -160,6 +206,7 @@
     <?php endif; ?>
   </div>
 </div>
+ */?>
 
 <?php
   // TueFind:

@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CreatorTools extends org.vufind.index.CreatorTools
 {
-    static protected Logger logger = Logger.getLogger(CreatorTools.class.getName());
+    protected static Logger logger = Logger.getLogger(CreatorTools.class.getName());
 
     /**
      * Added cache to certain "getAuthorsFilteredByRelator" queries, because they are very slow
@@ -27,11 +27,13 @@ public class CreatorTools extends org.vufind.index.CreatorTools
      * see also: https://dzone.com/articles/concurrenthashmap-isnt-always-enough
      *
      */
-    static protected Map<String, String[]> relatorConfigCache = new ConcurrentHashMap<>();
+    protected static Map<String, String[]> relatorConfigCache = new ConcurrentHashMap<>();
 
     protected String[] loadRelatorConfig(String setting){
         return relatorConfigCache.computeIfAbsent(setting, s -> super.loadRelatorConfig(setting));
     }
+
+    protected static Map<String, List<String>> normalizedRelatorMap = new ConcurrentHashMap<>();
 
     /**
      * TueFind: Special treatment for iteration logic + 'g' subfield
@@ -112,7 +114,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
             }
         } else {
             // If we got this far, we need to figure out what type of relation they have
-            List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
+            List<String> permittedRoles = normalizedRelatorMap.computeIfAbsent(relatorConfig, relCfg -> normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relCfg))));
             relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             if (Arrays.asList(unknownRelatorAllowed).contains(tag)) {

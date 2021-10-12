@@ -44,7 +44,6 @@
     <field name="is_canon_law" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_hybrid" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
-    <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_subscribable" type="boolean" indexed="false" stored="true" multiValued="false"/>
     <field name="ixtheo_notation_expanded" type="text" indexed="true" stored="true" multiValued="true" />
@@ -89,6 +88,8 @@
     <field name="recording_date" type="date" indexed="true" stored="true" multiValued="false"/>
     <field name="relbib_notation" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="relbib_notation_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="subsystem" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="time_aspect_bbox" type="date_range_bbox" indexed="true" stored="true" multiValued="true"/>
     <field name="time_aspect_date_ranges" type="date_range" indexed="true" stored="true" multiValued="true"/>
     <field name="time_aspect_ranges" type="string" indexed="true" stored="true" />
     <field name="time_range_start" type="string" indexed="true" stored="true" />

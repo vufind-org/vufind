@@ -68,6 +68,22 @@ public class TueFind extends SolrIndexerMixin {
         return  String.join(delimiter, subfields);
     }
 
+    /**
+     * Map 1-Dimensional range to 2-Dimensional BBox.
+     *
+     * ENVELOPE is symbolizing a box. Since we have only a line,
+     * we have to map it to a box with a surface area > 0
+     * for correct overlapping calculation.
+     *
+     * WKT/CQL ENVELOPE syntax:
+     * ENVELOPE(minX, maxX, maxY, minY) => CAREFUL! THIS UNUSUAL ORDER IS CORRECT!
+     *
+     * see also: https://solr.apache.org/guide/7_0/spatial-search.html#bboxfield
+     */
+    public static String getBBoxRangeValue(final String from, final String to) {
+        return "ENVELOPE(" + from + "," + to + ",1,0)";
+    }
+
     protected interface SubfieldMatcher {
         boolean matched(final Subfield subfield);
     }

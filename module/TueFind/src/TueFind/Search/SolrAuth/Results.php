@@ -8,6 +8,16 @@ class Results extends \VuFind\Search\SolrAuth\Results
     {
         $list = parent::getFacetList($filter);
 
+        // Translate "Record Type" facet
+        foreach ($list as $facetKey => $facet) {
+            if (in_array($facetKey, ['type'])) {
+                $prefix = 'authority_type_';
+                foreach ($facet['list'] as $listKey => $listItem) {
+                    $list[$facetKey]['list'][$listKey]['displayText'] = $this->translate($prefix . $listItem['displayText']);
+                }
+            }
+        }
+
         // Normally, VuFind will only display facets with values.
         //
         // The 'year' facet just contains searchable ranges

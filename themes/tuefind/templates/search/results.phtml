@@ -1,6 +1,12 @@
 <?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
+
+  $shortLookfor = $lookfor;
+  if(mb_strwidth($lookfor)> 120) {
+    $shortLookfor = mb_strimwidth($lookfor, 0, 120, "...");
+  }
+
   $headTitle = $this->slot('head-title')
         ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   $this->headTitle($headTitle);
@@ -56,7 +62,7 @@
   <div class="search-header hidden-print">
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
-        <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
+        <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => [$lookfor, $shortLookfor], 'recordTotal' => $recordTotal]) ?>
         <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
           <?=$this->transEsc('Refine Results') ?>
         </a>
