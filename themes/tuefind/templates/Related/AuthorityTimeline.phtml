@@ -73,7 +73,6 @@ $(function () {
     type: 'bar',
     data: data,
     options: {
-      interaction: { mode: 'index' },
       onHover: function (e) {
         const points = this.getElementsAtEventForMode(e,'index', { axis: 'x', intersect: true },false);
         if (points.length) {
@@ -86,20 +85,24 @@ $(function () {
         title: {
           display: false,
           text: 'Publication Timeline'
-        }
+       }
       },
       responsive: true,
       maintainAspectRatio: false,
+      scaleShowValues: true,
       scales: {
-        x: {
-          stacked: true
-        },
-        y: {
-          stacked: false,
+        yAxes: [{
           ticks: {
+            beginAtZero: true,
             stepSize: 1
           }
-        }
+        }],
+        xAxes: [{
+          stacked: true,
+          ticks: {
+            autoSkip: false
+          }
+        }]
       },
       onClick(e) {
         const activePoints = myChart.getElementsAtEventForMode(e, 'nearest', {

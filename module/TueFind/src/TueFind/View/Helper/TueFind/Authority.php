@@ -423,7 +423,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         asort($allDatesKeys);
 
         $chartData = [];
-        foreach($allDatesKeys as $oneDate){
+        foreach($allDatesKeys as $oneDate) {
             if(!empty($oneDate)){
                 $by = '';
                 $about = '';
@@ -477,7 +477,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $topicI = 1;
         $wordI = 1;
         foreach($countedTopics as $topic => $topicCount) {
-            if($topicI <= $settings['maxTopicRows']){
+            if($topicI <= $settings['maxTopicRows']) {
                 $topicWords = [];
                 $updateString = str_replace([','], '', $topic);
                 if($wordI < $settings['maxTopicWords']) {
@@ -487,7 +487,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                         $fixenWordArray = [];
                         foreach($topicWordsExplode as $oneWord) {
                             if(mb_strlen($oneWord) > 2){
-                                $fixenWordArray[] = $oneWord;
+                                $fixenWordArray[] = preg_replace('/[^A-Za-z0-9\-]/', '', $oneWord);
                             }
                         }
                         $topicWords = $fixenWordArray;
@@ -518,7 +518,16 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             }else {
                 $settings['maxNumber']--;
             }
+        }
 
+        $fullTopicsArray = $mainTopicsArray;
+
+        foreach($fullTopicsArray as $oneTopic) {
+            if(!empty($oneTopic['topicWords'])) {
+                foreach($oneTopic['topicWords'] as $oneWord) {
+                    $this->clearTopicsWords($mainTopicsArray, $oneWord);
+                }
+            }
         }
 
         return $mainTopicsArray;
@@ -544,5 +553,28 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             return false;
 
         return $loadResult;
+    }
+
+    private function clearTopicsWords(&$topicsArray, $clearWord): void
+    {
+        $clearIndexTopic = 0;
+        $countSimilar = 0;
+        foreach($topicsArray as $oneTopic) {
+            if(!empty($oneTopic['topicWords'])) {
+                $countWords = 0;
+                foreach($oneTopic['topicWords'] as $oneWord) {
+                    if(trim($oneWord) == trim($clearWord)) {
+                        if($countSimilar > 0) {
+                            if(isset($topicsArray[$clearIndexTopic]['topicWords'][$countWords])) {
+                                unset($topicsArray[$clearIndexTopic]['topicWords'][$countWords]);
+                            }
+                        }
+                        $countSimilar++;
+                    }
+                    $countWords++;
+                }
+            }
+            $clearIndexTopic++;
+        }
     }
 }
