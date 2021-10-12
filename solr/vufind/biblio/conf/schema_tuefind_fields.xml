@@ -32,6 +32,8 @@
     <field name="superior_work_subsystems" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="title_alt_sort" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="title_browse_sort" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_gnd" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="urls_and_material_types" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="volume_sort" type="long" indexed="true" stored="true" multiValued="false"/>

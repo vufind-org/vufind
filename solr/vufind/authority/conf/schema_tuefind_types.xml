@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
     <fieldType name="date_range" class="solr.DateRangeField"/>
+
+    <!--
+        solr.DateRangeField does not provide suitable relevance sort,
+        so we use solr.BBoxField in addition to be able to use score=overlapRatio.
+
+        See also:
+        - https://solr-user.lucene.apache.narkive.com/800K10vX/sorting-on-daterangefield
+        - https://solr.apache.org/guide/7_0/spatial-search.html#bboxfield
+    -->
+    <fieldType name="year_range_bbox_point" class="solr.DoublePointField" docValues="true"/>
+    <fieldType name="year_range_bbox" class="solr.BBoxField" numberType="year_range_bbox_point" geo="false" worldBounds="ENVELOPE(-9999,9999,1,0)"/>
 </types>

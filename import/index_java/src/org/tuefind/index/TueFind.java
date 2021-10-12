@@ -34,31 +34,54 @@ public class TueFind extends SolrIndexerMixin {
 
     protected static final Pattern SORTABLE_STRING_REMOVE_PATTERN = Pattern.compile("[^\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{N}]+");
 
-    protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpecList, char excludeSubfield) {
-        final Set<String> extractedValues = new TreeSet<>();
+    protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpecList, final String excludeSubfields) {
+        final Set<String> extractedValues = new LinkedHashSet<>();
         final String[] fieldSpecs = fieldSpecList.split(":");
         List<Subfield> subfieldsToSearch = new ArrayList<>();
         for (final String fieldSpec : fieldSpecs) {
             final List<VariableField> fieldSpecFields = record.getVariableFields(fieldSpec.substring(0,3));
             for (final VariableField variableField : fieldSpecFields) {
-                 final DataField field = (DataField) variableField;
-                 if (field == null)
-                     continue;
-                 // Differentiate between field and subfield specifications:
-                 if (fieldSpec.length() == 3 + 1)
-                     subfieldsToSearch = field.getSubfields(fieldSpec.charAt(3));
-                 else if (fieldSpec.length() == 3)
-                     subfieldsToSearch = field.getSubfields();
-                 else {
-                     logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
-                     System.exit(1);
-                 }
-                 for (final Subfield subfield : subfieldsToSearch)
-                     if (subfield.getCode() != excludeSubfield)
-                         extractedValues.add(subfield.getData());
+                final DataField field = (DataField) variableField;
+                if (field == null)
+                    continue;
+                // Differentiate between field and subfield specifications:
+                if (fieldSpec.length() == 3 + 1)
+                    subfieldsToSearch = field.getSubfields(fieldSpec.charAt(3));
+                else if (fieldSpec.length() == 3)
+                    subfieldsToSearch = field.getSubfields();
+                else {
+                    logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
+                    System.exit(1);
+                }
+
+                for (final Subfield subfield : subfieldsToSearch) {
+                    if (!excludeSubfields.contains(Character.toString(subfield.getCode())))
+                        extractedValues.add(subfield.getData());
+                }
             }
         }
         return extractedValues;
+    }
+
+    public static String getAllSubfieldsBut(final Record record, final String fieldSpecList, final String excludeSubfields, final String delimiter) {
+        final Set<String> subfields = getAllSubfieldsBut(record, fieldSpecList, excludeSubfields);
+        return  String.join(delimiter, subfields);
+    }
+
+    /**
+     * Map 1-Dimensional range to 2-Dimensional BBox.
+     *
+     * ENVELOPE is symbolizing a box. Since we have only a line,
+     * we have to map it to a box with a surface area > 0
+     * for correct overlapping calculation.
+     *
+     * WKT/CQL ENVELOPE syntax:
+     * ENVELOPE(minX, maxX, maxY, minY) => CAREFUL! THIS UNUSUAL ORDER IS CORRECT!
+     *
+     * see also: https://solr.apache.org/guide/7_0/spatial-search.html#bboxfield
+     */
+    public static String getBBoxRangeValue(final String from, final String to) {
+        return "ENVELOPE(" + from + "," + to + ",1,0)";
     }
 
     protected interface SubfieldMatcher {
@@ -130,7 +153,7 @@ public class TueFind extends SolrIndexerMixin {
         return getSubfieldsMatchingList(record, subfieldList, null);
     }
 
-    protected List<String> getSubfieldValuesMatchlingList(final Record record, final String subfieldList) {
+    protected List<String> getSubfieldValuesMatchingList(final Record record, final String subfieldList) {
         List<Subfield> subfields = getSubfieldsMatchingList(record, subfieldList);
         List<String> values = new ArrayList<>();
         for (final Subfield subfield : subfields) {

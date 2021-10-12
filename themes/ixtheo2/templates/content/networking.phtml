@@ -1,4 +1,4 @@
-<section>
+<section class="cw-p-2">
     <?php $this->headScript()->appendFile('vendor/ol/ol.js');?>
     <?php $this->headScript()->appendFile('vendor/ol/wrapper.js');?>
     <?php $this->headLink()->appendStylesheet('vendor/ol/ol.css');?>
@@ -138,7 +138,7 @@
                 'highlight': '<?=$this->imageLink('ol/marker-tuebingen.png')?>',
                 'tuebingen': '<?=$this->imageLink('ol/marker-tuebingen.png')?>',
                 'cooperation': '<?=$this->imageLink('ol/marker-green.png')?>',
-                'protestant': '<?=$this->imageLink('ol/marker-blue.png')?>',
+                'protestant': '<?=$this->imageLink('ol/marker-purple.png')?>',
                 'catholic': '<?=$this->imageLink('ol/marker-black.png')?>',
             };
 
@@ -170,10 +170,9 @@
         });
     </script>
     <div class="cw-py-2" style="display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between;">
-        <span class="badge badge-pill badge-primary">Primary</span>
         <div style="color: green;" onclick="HighlightMarkerGroup('cooperation')" ><button>Kooperationen</button></div>
         <div style="color: black;" onclick="HighlightMarkerGroup('catholic')"><button>Katholische Fachcommunity</button></div>
-        <div style="color: blue;" onclick="HighlightMarkerGroup('protestant')"><button>Evangelische Fachcommunity</button></div>
+        <div style="color: purple;" onclick="HighlightMarkerGroup('protestant')"><button>Evangelische Fachcommunity</button></div>
         <div style="color: #a51e37;" onclick="HighlightMarkerGroup('tuebingen')"><button>Tübingen</button></div>
     </div>
 </section>

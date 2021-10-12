@@ -313,7 +313,7 @@ public class TueFindBiblio extends TueFind {
      * @return Set of local subjects
      */
     public Set<String> getAllTopics(final Record record) {
-        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a:936a", '0');
+        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a:936a", "0");
         topics.addAll(getLocal689Topics(record));
         return topics;
     }
@@ -327,7 +327,7 @@ public class TueFindBiblio extends TueFind {
      * @return Set "topic_facet"
      */
     public Set<String> getFacetTopics(final Record record) {
-        final Set<String> result = getAllSubfieldsBut(record, "600x:610x:611x:630x:648x:650a:650x:651x:655x", '0');
+        final Set<String> result = getAllSubfieldsBut(record, "600x:610x:611x:630x:648x:650a:650x:651x:655x", "0");
         String topic_string;
         // Check 689 subfield a and d
         final List<VariableField> fields = record.getVariableFields("689");
@@ -2011,20 +2011,6 @@ public class TueFindBiblio extends TueFind {
         return Boolean.toString(sprField.getSubfield('a') != null);
     }
 
-    public Set<String> getSubsystemsForSuperiorWork(final Record record) {
-        final DataField sprField = (DataField) record.getVariableField("SPR");
-        if (sprField == null)
-            return null;
-
-        final Set<String> subsystems = new TreeSet<String>();
-        for (final Subfield subfield : sprField.getSubfields()) {
-            if (subfield.getCode() == 't')
-                subsystems.add(subfield.getData());
-        }
-
-        return subsystems;
-    }
-
     public String isSubscribable(final Record record) {
         final DataField sprField = (DataField) record.getVariableField("SPR");
         if (sprField == null)
@@ -2097,8 +2083,6 @@ public class TueFindBiblio extends TueFind {
         Map<String, String> separators = parseTopicSeparators(separatorSpec);
         Set<String> genres = new HashSet<String>();
         getCachedTopicsCollector(record, fieldSpecs, separators, genres, lang, _689IsGenreSubject);
-        if (genres.size() == 0)
-            genres.add(UNASSIGNED_STRING);
 
         return genres;
     }
@@ -2109,9 +2093,6 @@ public class TueFindBiblio extends TueFind {
         Set<String> region = new HashSet<String>();
         getCachedTopicsCollector(record, fieldSpecs, separators, region, lang, _689IsRegionSubject);
 
-        if (region.size() == 0)
-            region.add(UNASSIGNED_STRING);
-
         return region;
     }
 
@@ -2120,9 +2101,6 @@ public class TueFindBiblio extends TueFind {
         Map<String, String> separators = parseTopicSeparators(separatorSpec);
         Set<String> time = new HashSet<String>();
         getCachedTopicsCollector(record, fieldSpecs, separators, time, lang, _689IsTimeSubject);
-
-        if (time.size() == 0)
-            time.add(UNASSIGNED_STRING);
 
         return time;
     }
@@ -3212,6 +3190,44 @@ public class TueFindBiblio extends TueFind {
     }
 
 
+    public static List<String> getDateBBoxes(final Record record, final String rangeFieldTag) {
+        final DataField rangeField = (DataField) record.getVariableField(rangeFieldTag);
+        if (rangeField == null)
+            return null;
+
+        final Subfield subfieldA = rangeField.getSubfield('a');
+        if (subfieldA == null)
+            return null;
+
+        final String[] parts = subfieldA.getData().split(",");
+
+        final List<String> ranges = new ArrayList<String>(parts.length);
+        for (final String part : parts) {
+            final String[] range = part.split("_");
+            if (range.length != 2) {
+                System.err.println(part + " is not a valid range! (1)");
+                System.exit(-1);
+            }
+
+            try {
+                long x = Long.parseLong(range[0]);
+                long y = Long.parseLong(range[1]);
+
+                if (rangeFieldTag.equalsIgnoreCase("TIM")) {
+                    final long lower = x < y ? x : y;
+                    final long upper = x < y ? y : x;
+                    ranges.add(getBBoxRangeValue(String.valueOf(lower), String.valueOf(upper)));
+                }
+            } catch (NumberFormatException e) {
+                System.err.println(range + " is not a valid range! (2)");
+                System.exit(-1);
+            }
+        }
+
+        return ranges;
+    }
+
+
     public static List<String> getDateRanges(final Record record, final String rangeFieldTag) {
         final DataField rangeField = (DataField) record.getVariableField(rangeFieldTag);
         if (rangeField == null)
@@ -3232,11 +3248,31 @@ public class TueFindBiblio extends TueFind {
             }
 
             try {
-                final long x = Long.parseLong(range[0]);
-                final long y = Long.parseLong(range[1]);
-                final Instant lower = Instant.ofEpochSecond(x < y ? x : y);
-                final Instant upper = Instant.ofEpochSecond(x < y ? y : x);
-                ranges.add("[" + lower.toString() + " TO " + upper.toString() + "]");
+                long x = Long.parseLong(range[0]);
+                long y = Long.parseLong(range[1]);
+
+                if (rangeFieldTag.equalsIgnoreCase("TIM")) {
+
+                    final long yearOffset = 10000000L;
+                    final long lower = x < y ? x : y;
+                    final long upper = x < y ? y : x;
+
+                    final long yearLower = (lower / 10000) - yearOffset;
+                    final long yearUpper = (upper / 10000) - yearOffset;
+
+                    String monthDayLower = String.format("%04d", lower % 10000);
+                    String monthDayUpper = String.format("%04d", upper % 10000);
+                    String sLower = Math.abs(yearLower) > 5000 ? "*" : yearLower + "-" + monthDayLower.substring(0,2) + "-" + monthDayLower.substring(2);
+                    String sUpper = Math.abs(yearUpper) > 5000 ? "*" : yearUpper + "-" + monthDayUpper.substring(0,2) + "-" + monthDayUpper.substring(2);
+
+                    ranges.add("[" + sLower + " TO " + sUpper + "]");
+
+                }
+                else {
+                    final Instant lower = Instant.ofEpochSecond(x < y ? x : y);
+                    final Instant upper = Instant.ofEpochSecond(x < y ? y : x);
+                    ranges.add("[" + lower.toString() + " TO " + upper.toString() + "]");
+                }
             } catch (NumberFormatException e) {
                 System.err.println(range + " is not a valid range! (2)");
                 System.exit(-1);
