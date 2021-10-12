@@ -375,6 +375,24 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $relations;
     }
 
+    /**
+     * This function is used to detect "Tn"-sets, which are similar to persons.
+     *
+     * @return bool
+     */
+    public function isName(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('b');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'n')
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public function isFamily(): bool
     {
         $fields = $this->getMarcRecord()->getFields('079');
