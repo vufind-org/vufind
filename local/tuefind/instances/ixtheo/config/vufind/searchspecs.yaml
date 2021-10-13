@@ -185,6 +185,7 @@ Author:
     - author_fuller^50
     - author2
     - author_additional
+    - author_corporate
     - corporation
   QueryFields:
     author:
@@ -204,6 +205,10 @@ Author:
       - [and, 50]
       - [or, ~]
     author_additional:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author_corporate:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
