@@ -6,13 +6,7 @@ $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
 
 $jsData = '';
 foreach($responseTopicsData as $topic) {
-    $fixCount = $topic['topicNumber'];
-    $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$fixCount.', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: "'.$this->url('search-results').'?lookfor='.$this->driver->getHeadingShort().'&type=AllFields&filter[]=topic_facet:'.$topic['topicUpdate'].'", target: "_blank"}},';
-    foreach($topic['topicWords'] as $word) {
-        if($word != $topic['topicTitle']){
-            $jsData .= '{text: "'.$word.'", weight: '.rand(1, 3).', html: {title: "'.$word.'", "class": "custom-class"}, link: {href: "'.$this->url('search-results').'?lookfor='.$this->driver->getHeadingShort().'&type=AllFields&filter[]=genre_facet:'.$word.'", target: "_blank"}},';
-        }
-    }
+    $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: "'.$this->url('search-results').'?lookfor='.$this->driver->getHeadingShort().'&type=AllFields&filter[]=topic_facet:'.$topic['topicUpdate'].'", target: "_blank"}},';
 }
 
 $ascSortingTopicsData = $responseTopicsData;
