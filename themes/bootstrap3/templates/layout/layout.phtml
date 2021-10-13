@@ -8,11 +8,13 @@
     <?=$this->headMeta()?>
     <?php
       // Format the page title using the translation system:
+      $siteConfig = $this->config()->get('config')->Site;
       $fullTitle = $this->translate(
           'title_wrapper',
           [
             '%%pageTitle%%' => $this->headTitle()->renderTitle(),
-            '%%siteTitle%%' => $this->config()->Site->title
+            '%%siteTitle%%' => $siteConfig->title,
+            '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::'
           ]
       );
       echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
