@@ -452,7 +452,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicLength' => 10,
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
-            'maxTopicWords' => 15
+            'minWeight' => 0
         ];
 
         $identifier = 'Solr';
@@ -480,54 +480,26 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if($topicI <= $settings['maxTopicRows']) {
                 $topicWords = [];
                 $updateString = str_replace([','], '', $topic);
-                if($wordI < $settings['maxTopicWords']) {
-                    $pos = strripos($updateString, ' ');
-                    if ($pos !== false) {
-                        $topicWordsExplode = explode(" ", $updateString);
-                        $fixenWordArray = [];
-                        foreach($topicWordsExplode as $oneWord) {
-                            if(mb_strlen($oneWord) > 2){
-                                $fixenWordArray[] = preg_replace('/[^A-Za-z0-9\-]/', '', $oneWord);
-                            }
-                        }
-                        $topicWords = $fixenWordArray;
-                    }else{
-                        $topicWords = [$updateString];
-                    }
-                    $wordI++;
-                }
-                $topicsArray[] = ['topicTitle'=>$topic,'topicCount'=>$topicCount,'topicUpdate'=>$updateString,'topicWords'=>$topicWords];
+                $topicsArray[] = ['topicTitle'=>$topic,'topicCount'=>$topicCount,'topicUpdate'=>$updateString];
             }
             $topicI++;
         }
 
         $mainTopicsArray = [];
+        $maxNumber = $settings['maxNumber'];
         for($i=0;$i<count($topicsArray);$i++) {
             if($i == 0) {
                 if(mb_strlen($topicsArray[$i]['topicTitle']) > $settings['firstTopicLength']) {
-                  $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
+                    $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
                 }
             }
             $one = $topicsArray[$i];
-            $one['topicNumber'] = $settings['maxNumber'];
+            $one['topicNumber'] = $maxNumber;
             $mainTopicsArray[] = $one;
-            if(isset($topicsArray[$i-1])) {
-                if($topicsArray[$i]['topicCount'] != $topicsArray[$i-1]['topicCount'] && $settings['maxNumber'] != $settings['minNumber']) {
-                    $settings['maxNumber']--;
-                }
-            }else {
-                $settings['maxNumber']--;
+            if($maxNumber <= $settings['minWeight']) {
+                $maxNumber = $settings['maxNumber'];
             }
-        }
-
-        $fullTopicsArray = $mainTopicsArray;
-
-        foreach($fullTopicsArray as $oneTopic) {
-            if(!empty($oneTopic['topicWords'])) {
-                foreach($oneTopic['topicWords'] as $oneWord) {
-                    $this->clearTopicsWords($mainTopicsArray, $oneWord);
-                }
-            }
+            $maxNumber--;
         }
 
         return $mainTopicsArray;
@@ -555,26 +527,4 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $loadResult;
     }
 
-    private function clearTopicsWords(&$topicsArray, $clearWord): void
-    {
-        $clearIndexTopic = 0;
-        $countSimilar = 0;
-        foreach($topicsArray as $oneTopic) {
-            if(!empty($oneTopic['topicWords'])) {
-                $countWords = 0;
-                foreach($oneTopic['topicWords'] as $oneWord) {
-                    if(trim($oneWord) == trim($clearWord)) {
-                        if($countSimilar > 0) {
-                            if(isset($topicsArray[$clearIndexTopic]['topicWords'][$countWords])) {
-                                unset($topicsArray[$clearIndexTopic]['topicWords'][$countWords]);
-                            }
-                        }
-                        $countSimilar++;
-                    }
-                    $countWords++;
-                }
-            }
-            $clearIndexTopic++;
-        }
-    }
 }
