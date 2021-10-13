@@ -456,6 +456,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
             'minWeight' => 0
+
         ];
 
         $identifier = 'Solr';
@@ -483,13 +484,14 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if($topicI <= $settings['maxTopicRows']) {
                 $topicWords = [];
                 $updateString = str_replace([','], '', $topic);
-                $topicsArray[] = ['topicTitle'=>$topic,'topicCount'=>$topicCount,'topicUpdate'=>$updateString];
+                $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString];
             }
             $topicI++;
         }
 
         $mainTopicsArray = [];
-        $maxNumber = $settings['maxNumber'];
+        $topWeight = $settings['maxNumber'];
+        $firstWeight = $topicsArray[0]['topicCount'];
         for($i=0;$i<count($topicsArray);$i++) {
             if($i == 0) {
                 if(mb_strlen($topicsArray[$i]['topicTitle']) > $settings['firstTopicLength']) {
@@ -497,12 +499,17 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 }
             }
             $one = $topicsArray[$i];
-            $one['topicNumber'] = $maxNumber;
-            $mainTopicsArray[] = $one;
-            if($maxNumber <= $settings['minWeight']) {
-                $maxNumber = $settings['maxNumber'];
+            if($firstWeight != $topicsArray[$i]['topicCount']) {
+                $firstWeight = $topicsArray[$i]['topicCount'];
+                if($topWeight != $settings['minWeight']) {
+                    $topWeight--;
+                }else{
+                    $topWeight = $settings['minWeight'];
+                }
+
             }
-            $maxNumber--;
+            $one['topicNumber'] = $topWeight;
+            $mainTopicsArray[] = $one;
         }
 
         return $mainTopicsArray;
