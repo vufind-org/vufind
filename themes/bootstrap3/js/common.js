@@ -9,6 +9,7 @@ var VuFind = (function VuFind() {
   var path = null;
   var _initialized = false;
   var _submodules = [];
+  var _cspNonce = '';
 
   var _icons = {};
   var _translations = {};
@@ -130,6 +131,34 @@ var VuFind = (function VuFind() {
     }
   };
 
+  var getCspNonce = function getCspNonce() {
+    return _cspNonce;
+  };
+
+  var setCspNonce = function setCspNonce(nonce) {
+    _cspNonce = nonce;
+  };
+
+  var updateCspNonce = function updateCspNonce(html) {
+    // Fix any inline script nonces
+    return html.replaceAll(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
+  };
+
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var $elem = $(_element);
+    if ($elem.length === 0) {
+      return;
+    }
+    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
+      if ('success' === textStatus || 'notmodified' === textStatus) {
+        $elem.html(updateCspNonce(responseText));
+      }
+      if (typeof success !== 'undefined') {
+        success(responseText, textStatus, jqXhr);
+      }
+    });
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -139,13 +168,17 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    getCspNonce: getCspNonce,
     icon: icon,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
+    setCspNonce: setCspNonce,
     spinner: spinner,
+    loadHtml: loadHtml,
     loading: loading,
-    translate: translate
+    translate: translate,
+    updateCspNonce: updateCspNonce
   };
 })();
 
@@ -495,7 +528,10 @@ $(document).ready(function commonDocReady() {
       // under normal usage outside of the Phing startup process.
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
         window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
-        window.print();
+        // Trigger print after a minimal timeout. This is done to avoid
+        // problems with some browsers, which might not fully update
+        // ajax loaded page content before showing the print dialog.
+        setTimeout(function doPrint() { window.print(); }, 10);
       } else {
         console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
       }

@@ -20,6 +20,7 @@
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
+  <property name="disable_csp" value="false" /> <!-- set value to "true" to disable Content Security Policy -->
   <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" /><!-- if you have issues with segfaults during code coverage generation, try adding -dzend.enable_gc=0 to this (but this fix was probably only needed in PHP 5) -->
   <property name="phpunit_extra_params" value="" />
   <property name="composer_version" value="2.1.6" />
@@ -376,6 +377,20 @@
     </copy>
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
+
+    <if>
+      <not><istrue value="${disable_csp}" /></not>
+      <then>
+        <!-- Update contentsecuritypolicy.ini to enforce the CSP. -->
+        <copy file="${srcdir}/config/vufind/contentsecuritypolicy.ini" tofile="${srcdir}/local/config/vufind/contentsecuritypolicy.ini">
+          <filterchain>
+            <replaceregexp>
+              <regexp pattern="(enabled\[.+\]) = .*" replace="\1 = true" />
+            </replaceregexp>
+          </filterchain>
+        </copy>
+      </then>
+    </if>
 
     <!-- start Solr (use restart in case of old PID files) -->
     <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />

@@ -13,7 +13,7 @@ VuFind.register('lightbox', function Lightbox() {
     _clickedButton = this;
   }
   function _html(content) {
-    _modalBody.html(content);
+    _modalBody.html(VuFind.updateCspNonce(content));
     // Set or update title if we have one
     var $h2 = _modalBody.find("h2:first-of-type");
     if (_lightboxTitle && $h2) {
@@ -70,8 +70,8 @@ VuFind.register('lightbox', function Lightbox() {
     if (typeof content !== "string") {
       return;
     }
-    // Isolate successes
-    var htmlDiv = $('<div/>').html(content);
+    // Isolate successes.
+    var htmlDiv = $('<div/>').html(VuFind.updateCspNonce(content));
     var alerts = htmlDiv.find('.flash-message.alert-success:not([data-lightbox-ignore])');
     if (alerts.length > 0) {
       var msgs = alerts.toArray().map(function getSuccessHtml(el) {
