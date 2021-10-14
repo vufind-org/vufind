@@ -481,27 +481,30 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         }
 
         $mainTopicsArray = [];
-        $topWeight = $settings['maxNumber'];
-        $firstWeight = $topicsArray[0]['topicCount'];
-        for($i=0;$i<count($topicsArray);$i++) {
-            if($i == 0) {
-                if(mb_strlen($topicsArray[$i]['topicTitle']) > $settings['firstTopicLength']) {
-                    $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
+        if(!empty($topicsArray)){
+            $topWeight = $settings['maxNumber'];
+            $firstWeight = $topicsArray[0]['topicCount'];
+            for($i=0;$i<count($topicsArray);$i++) {
+                if($i == 0) {
+                    if(mb_strlen($topicsArray[$i]['topicTitle']) > $settings['firstTopicLength']) {
+                        $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
+                    }
                 }
-            }
-            $one = $topicsArray[$i];
-            if($firstWeight != $topicsArray[$i]['topicCount']) {
-                $firstWeight = $topicsArray[$i]['topicCount'];
-                if($topWeight != $settings['minWeight']) {
-                    $topWeight--;
-                }else{
-                    $topWeight = $settings['minWeight'];
-                }
+                $one = $topicsArray[$i];
+                if($firstWeight != $topicsArray[$i]['topicCount']) {
+                    $firstWeight = $topicsArray[$i]['topicCount'];
+                    if($topWeight != $settings['minWeight']) {
+                        $topWeight--;
+                    }else{
+                        $topWeight = $settings['minWeight'];
+                    }
 
+                }
+                $one['topicNumber'] = $topWeight;
+                $mainTopicsArray[] = $one;
             }
-            $one['topicNumber'] = $topWeight;
-            $mainTopicsArray[] = $one;
         }
+
 
         return [$mainTopicsArray,$settings];
     }
