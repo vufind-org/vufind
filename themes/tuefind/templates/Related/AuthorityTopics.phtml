@@ -1,5 +1,5 @@
 <?php
-$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsDataAndSettings)) :
+$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsDataAndSettings[0])) :
 
 $this->headLink()->appendStylesheet('vendor/jqcloud.css');
 $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
@@ -17,9 +17,12 @@ foreach($responseTopicsData as $topic) {
 }
 
 $ascSortingTopicsData = $responseTopicsData;
-uasort($ascSortingTopicsData, function($a, $b){
-  return strnatcmp($a['topicTitle'], $b['topicTitle']);
-});
+$toptitle = array();
+foreach ($ascSortingTopicsData as $key => $row) {
+    $toptitle[$key]  = $row['topicTitle'];
+}
+array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
+
 
 $countSortingTopicsData = $responseTopicsData;
 array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);
