@@ -1,5 +1,6 @@
 package org.tuefind.index;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -231,5 +232,36 @@ public class TueFindAuth extends TueFind {
             externalReferences.add("Wikipedia");
 
         return externalReferences;
+    }
+
+    public Set<String> getOccupations(final Record record, String langAbbrev) {
+        Set<String> occupations = new TreeSet<>();
+        Set<String> retOccupations = new TreeSet<>();
+
+        for (final VariableField variableField : record.getVariableFields("374")) {
+            final DataField field = (DataField) variableField;
+            final Subfield subfield_a = field.getSubfield('a');
+            if (subfield_a == null)
+                continue;
+            String occ = subfield_a.getData();
+            occupations.add(occ);
+        }
+
+        for (final VariableField variableField : record.getVariableFields("550")) {
+            final DataField field = (DataField) variableField;
+            final Subfield subfield_a = field.getSubfield('a');
+            final Subfield subfield_4 = field.getSubfield('4');
+            if (subfield_a == null || subfield_4 == null)
+                continue;
+            String sub_4 = subfield_4.getData();
+            if (sub_4 == null || !(sub_4.equalsIgnoreCase("berc") || sub_4.equalsIgnoreCase("beru")))
+                continue;
+            String occ = subfield_a.getData();
+            occupations.add(occ);
+        }
+        for (String elem : occupations)
+            retOccupations.add(getTranslation(elem, langAbbrev));
+
+        return retOccupations;
     }
 }
