@@ -149,7 +149,10 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function translateWithPrefix($prefix, $target, $tokens = [],
+    public function translateWithPrefix(
+        $prefix,
+        $target,
+        $tokens = [],
         $default = null
     ) {
         if (is_string($target)) {
@@ -172,7 +175,10 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    protected function translateString($str, $tokens = [], $default = null,
+    protected function translateString(
+        $str,
+        $tokens = [],
+        $default = null,
         $domain = 'default'
     ) {
         $msg = (null === $this->translator)
@@ -219,7 +225,9 @@ trait TranslatorAwareTrait
             if ($target instanceof \VuFind\I18n\TranslatableStringInterface) {
                 $class = get_class($target);
                 $parts[1] = new $class(
-                    $parts[1], $target->getDisplayString(), $target->isTranslatable()
+                    $parts[1],
+                    $target->getDisplayString(),
+                    $target->isTranslatable()
                 );
             }
             return $parts;

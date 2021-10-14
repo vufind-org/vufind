@@ -57,7 +57,9 @@ class UserListFactory extends RowGatewayFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -66,7 +68,8 @@ class UserListFactory extends RowGatewayFactory
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new \Laminas\Session\Container('List', $sessionManager);
         return parent::__invoke(
-            $container, $requestedName,
+            $container,
+            $requestedName,
             [$container->get(\VuFind\Tags::class), $session]
         );
     }

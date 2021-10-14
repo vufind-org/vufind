@@ -94,7 +94,9 @@ class HideFacetValueListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
         );
     }
 
@@ -109,7 +111,7 @@ class HideFacetValueListener
     {
         $command = $event->getParam('command');
 
-        if ($command->getTargetBackendName() !== $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
         $context = $command->getContext();

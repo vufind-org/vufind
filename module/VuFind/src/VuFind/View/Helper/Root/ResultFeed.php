@@ -81,14 +81,16 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
         );
         $manager->setInvokableClass(
-            'DublinCore\Entry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
+            'DublinCore\Entry',
+            'VuFind\Feed\Writer\Extension\DublinCore\Entry'
         );
         $manager->setInvokableClass(
             'OpenSearch\Renderer\Feed',
             'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
         );
         $manager->setInvokableClass(
-            'OpenSearch\Feed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+            'OpenSearch\Feed',
+            'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
         );
         FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
@@ -238,9 +240,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             empty($title) ? $this->translate('Title not available') : $title
         );
         $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordLink');
+        $recordLinker = $this->getView()->plugin('recordLinker');
         try {
-            $url = $serverUrl($recordLink->getUrl($record));
+            $url = $serverUrl($recordLinker->getUrl($record));
         } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.

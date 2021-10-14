@@ -173,7 +173,9 @@ abstract class Results
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
      */
-    public function __construct(Params $params, SearchService $searchService,
+    public function __construct(
+        Params $params,
+        SearchService $searchService,
         Loader $recordLoader
     ) {
         $this->setParams($params);
@@ -247,7 +249,8 @@ abstract class Results
         if (!isset($this->helpers['urlQuery'])) {
             $factory = $this->getUrlQueryHelperFactory();
             $this->helpers['urlQuery'] = $factory->fromParams(
-                $this->getParams(), $this->getUrlQueryHelperOptions()
+                $this->getParams(),
+                $this->getUrlQueryHelperOptions()
             );
         }
         return $this->helpers['urlQuery'];
@@ -615,7 +618,8 @@ abstract class Results
     public function translate()
     {
         return call_user_func_array(
-            [$this->getOptions(), 'translate'], func_get_args()
+            [$this->getOptions(), 'translate'],
+            func_get_args()
         );
     }
 
@@ -657,8 +661,11 @@ abstract class Results
      *
      * @return array an array with the facet values for each index field
      */
-    public function getFullFieldFacets($facetfields, $removeFilter = true,
-        $limit = -1, $facetSort = null
+    public function getFullFieldFacets(
+        $facetfields,
+        $removeFilter = true,
+        $limit = -1,
+        $facetSort = null
     ) {
         if (!method_exists($this, 'getPartialFieldFacets')) {
             throw new \Exception('getPartialFieldFacets not implemented');
@@ -667,7 +674,11 @@ abstract class Results
         $facets = [];
         do {
             $facetpage = $this->getPartialFieldFacets(
-                $facetfields, $removeFilter, $limit, $facetSort, $page
+                $facetfields,
+                $removeFilter,
+                $limit,
+                $facetSort,
+                $page
             );
             $nextfields = [];
             foreach ($facetfields as $field) {

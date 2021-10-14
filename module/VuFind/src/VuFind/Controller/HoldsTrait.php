@@ -74,7 +74,9 @@ trait HoldsTrait
 
         // Block invalid requests:
         $validRequest = $catalog->checkRequestIsValid(
-            $driver->getUniqueID(), $gatheredDetails, $patron
+            $driver->getUniqueID(),
+            $gatheredDetails,
+            $patron
         );
         if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
             $this->flashMessenger()->addErrorMessage(
@@ -86,9 +88,12 @@ trait HoldsTrait
 
         // Send various values to the view so we can build the form:
         $requestGroups = $catalog->checkCapability(
-            'getRequestGroups', [$driver->getUniqueID(), $patron, $gatheredDetails]
+            'getRequestGroups',
+            [$driver->getUniqueID(), $patron, $gatheredDetails]
         ) ? $catalog->getRequestGroups(
-            $driver->getUniqueID(), $patron, $gatheredDetails
+            $driver->getUniqueID(),
+            $patron,
+            $gatheredDetails
         ) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : [];
@@ -114,11 +119,14 @@ trait HoldsTrait
             // If the form contained a pickup location, request group, start date or
             // required by date, make sure they are valid:
             $validGroup = $this->holds()->validateRequestGroupInput(
-                $gatheredDetails, $extraHoldFields, $requestGroups
+                $gatheredDetails,
+                $extraHoldFields,
+                $requestGroups
             );
             $validPickup = $validGroup && $this->holds()->validatePickUpInput(
                 $gatheredDetails['pickUpLocation'] ?? null,
-                $extraHoldFields, $pickup
+                $extraHoldFields,
+                $pickup
             );
             $dateValidationResults = $this->holds()->validateDates(
                 $gatheredDetails['startDate'] ?? null,
@@ -219,14 +227,23 @@ trait HoldsTrait
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
             ? $this->getUser()->home_library : '';
-        $helpText = $checkHolds['helpText'] ?? null;
+        // helpText is only for backward compatibility:
+        $helpText = $helpTextHtml = $checkHolds['helpText'];
 
         $view = $this->createViewModel(
             compact(
-                'gatheredDetails', 'pickup', 'defaultPickup', 'homeLibrary',
-                'extraHoldFields', 'defaultStartDate', 'defaultRequiredDate',
-                'requestGroups', 'defaultRequestGroup', 'requestGroupNeeded',
-                'helpText'
+                'gatheredDetails',
+                'pickup',
+                'defaultPickup',
+                'homeLibrary',
+                'extraHoldFields',
+                'defaultStartDate',
+                'defaultRequiredDate',
+                'requestGroups',
+                'defaultRequestGroup',
+                'requestGroupNeeded',
+                'helpText',
+                'helpTextHtml'
             )
         );
         $view->setTemplate('record/hold');

@@ -71,7 +71,8 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function __construct(Connector $connector,
+    public function __construct(
+        Connector $connector,
         RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
@@ -90,7 +91,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
@@ -186,6 +190,31 @@ class Backend extends AbstractBackend
     public function getConnector()
     {
         return $this->connector;
+    }
+
+    /**
+     * Perform a DOI lookup
+     *
+     * @param string $doi            DOI
+     * @param bool   $includeJournal Include journal data in response?
+     *
+     * @return mixed
+     */
+    public function lookupDoi($doi, $includeJournal = false)
+    {
+        return $this->getConnector()->lookupDoi($doi, $includeJournal);
+    }
+
+    /**
+     * Perform an ISSN lookup.
+     *
+     * @param string|array $issns ISSN(s) to look up.
+     *
+     * @return mixed
+     */
+    public function lookupIssns($issns)
+    {
+        return $this->getConnector()->lookupIssns($issns);
     }
 
     /// Internal API

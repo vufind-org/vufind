@@ -45,6 +45,8 @@ use VuFindSearch\Service;
  */
 class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Test attaching listener.
      *
@@ -88,9 +90,10 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
 
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $command = new MockCommandForFilterFieldConversionListenerTest($params);
+        $command = $this->getMockSearchCommand($params);
         $event = new Event(
-            Service::EVENT_PRE, $backend,
+            Service::EVENT_PRE,
+            $backend,
             ['params' => $params, 'command' => $command]
         );
         $listener->onSearchPre($event);
@@ -105,14 +108,5 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
             '(bar:value)',
         ];
         $this->assertEquals($expected, $fq);
-    }
-}
-
-class MockCommandForFilterFieldConversionListenerTest
-    extends \VuFindSearch\Command\AbstractBase
-{
-    public function __construct(ParamBag $params)
-    {
-        parent::__construct('foo', 'foo', $params);
     }
 }

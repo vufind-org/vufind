@@ -150,8 +150,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @return array          An array of query results
      */
-    public function sruSearch($query, $start = 1, $limit = null, $sortBy = null,
-        $schema = 'marcxml', $process = true
+    public function sruSearch(
+        $query,
+        $start = 1,
+        $limit = null,
+        $sortBy = null,
+        $schema = 'marcxml',
+        $process = true
     ) {
         $this->debug('Query: ' . print_r($query, true));
 

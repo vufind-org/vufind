@@ -52,7 +52,9 @@ class MetadataFactory implements FactoryInterface
      *
      * @throws \Exception (options not allowed in this implementation)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

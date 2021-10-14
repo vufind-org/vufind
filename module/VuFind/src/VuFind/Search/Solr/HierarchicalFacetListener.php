@@ -160,7 +160,9 @@ class HierarchicalFacetListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
         );
     }
 
@@ -175,7 +177,7 @@ class HierarchicalFacetListener
     {
         $command = $event->getParam('command');
 
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
         $context = $command->getContext();
@@ -214,7 +216,8 @@ class HierarchicalFacetListener
                         // level available
                         if (!$allLevels
                             || $this->facetHelper->isDeepestFacetLevel(
-                                $fields[$facetName], $value
+                                $fields[$facetName],
+                                $value
                             )
                         ) {
                             $value = $this->formatFacetField($facetName, $value);

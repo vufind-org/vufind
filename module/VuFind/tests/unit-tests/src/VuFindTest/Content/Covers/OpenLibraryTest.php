@@ -53,7 +53,9 @@ class OpenLibraryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'http://covers.openlibrary.org/b/isbn/9780739313121-S.jpg?default=false',
             $ol->getUrl(
-                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
+                'mykey',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }

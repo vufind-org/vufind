@@ -42,6 +42,8 @@ use VuFindSearch\Query\Query;
  */
 class CollectionsController extends AbstractBase
 {
+    use Feature\AlphaBrowseTrait;
+
     /**
      * VuFind configuration
      *
@@ -114,15 +116,13 @@ class CollectionsController extends AbstractBase
         $limit = $this->getBrowseLimit();
 
         // Load Solr data or die trying:
-        $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
-            ->get('Solr');
-        $result = $db->alphabeticBrowse($source, $from, $page, $limit);
+        $result = $this->alphabeticBrowse($source, $from, $page, $limit);
 
         // No results?  Try the previous page just in case we've gone past the
         // end of the list....
         if ($result['Browse']['totalCount'] == 0) {
             $page--;
-            $result = $db->alphabeticBrowse($source, $from, $page, $limit);
+            $result = $this->alphabeticBrowse($source, $from, $page, $limit);
         }
 
         // Begin building view model:
@@ -179,7 +179,10 @@ class CollectionsController extends AbstractBase
 
         // Only grab 150,000 facet values to avoid out-of-memory errors:
         $result = $searchObject->getFullFieldFacets(
-            [$browseField], false, 150000, 'index'
+            [$browseField],
+            false,
+            150000,
+            'index'
         );
         $result = $result[$browseField]['data']['list'] ?? [];
 
@@ -217,7 +220,9 @@ class CollectionsController extends AbstractBase
 
         // Select just the records to display
         $result = array_slice(
-            $result, $key, count($result) > $key + $limit ? $limit : null
+            $result,
+            $key,
+            count($result) > $key + $limit ? $limit : null
         );
 
         // Send other relevant values to the template:

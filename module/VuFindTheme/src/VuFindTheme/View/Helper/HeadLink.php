@@ -73,7 +73,10 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
      * @param string      $nonce         Nonce from nonce generator
      * @param int         $maxImportSize Maximum imported (inlined) file size
      */
-    public function __construct(ThemeInfo $themeInfo, $plconfig = false, $nonce = '',
+    public function __construct(
+        ThemeInfo $themeInfo,
+        $plconfig = false,
+        $nonce = '',
         $maxImportSize = null
     ) {
         parent::__construct();
@@ -174,8 +177,11 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
      *
      * @return void
      */
-    public function forcePrependStylesheet($href, $media = 'screen',
-        $conditionalStylesheet = '', $extras = []
+    public function forcePrependStylesheet(
+        $href,
+        $media = 'screen',
+        $conditionalStylesheet = '',
+        $extras = []
     ) {
         // Look for existing entry and remove it if found. Comparison method
         // copied from isDuplicate().

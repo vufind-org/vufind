@@ -81,7 +81,7 @@
           <?php endif; ?>
 
           <?php
-            $coverDetails = $this->record($resource)->getCoverDetails('holds', 'small', $this->recordLink()->getUrl($resource));
+            $coverDetails = $this->record($resource)->getCoverDetails('holds', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
             $thumbnail = false;
             $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
@@ -103,7 +103,7 @@
                 if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                   $title = $resource->getTitle();
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-                  echo '<a href="' . $this->recordLink()->getUrl($resource)
+                  echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource))
                     . '" class="title">' . $title . '</a>';
                 } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
@@ -196,10 +196,9 @@
               <?php if (isset($ilsDetails['cancel_link'])): ?>
                 <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
               <?php endif; ?>
-              <?php if (isset($ilsDetails['updateDetails'])): ?>
+              <?php if (!empty($ilsDetails['updateDetails'])): ?>
                 <p><a class="hold-edit" href="<?=$this->escapeHtmlAttr($this->url('holds-edit', [], ['query' => ['selectedIDS[]' => $ilsDetails['updateDetails']]])) ?>" data-lightbox><?=$this->transEsc('Edit') ?></a></p>
               <?php endif; ?>
-
               <?php if (isset($this->cancelResults['items'])): ?>
                 <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
                   <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>

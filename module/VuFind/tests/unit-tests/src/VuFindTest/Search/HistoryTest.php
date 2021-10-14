@@ -133,7 +133,8 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
         );
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals(
-            [1 => 'One', 2 => 'Two'], $history->getScheduleOptions()
+            [1 => 'One', 2 => 'Two'],
+            $history->getScheduleOptions()
         );
     }
 
@@ -162,8 +163,10 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return History
      */
-    protected function getHistory(SearchTable $searchTable = null,
-        ResultsManager $resultsManager = null, \Laminas\Config\Config $config = null
+    protected function getHistory(
+        SearchTable $searchTable = null,
+        ResultsManager $resultsManager = null,
+        \Laminas\Config\Config $config = null
     ): History {
         return new History(
             $searchTable ?: $this->getMockBuilder(\VuFind\Db\Table\Search::class)

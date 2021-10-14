@@ -75,7 +75,9 @@ class IpRange implements PermissionProviderInterface
      * @param IpAddressUtils   $ipUtils      IpAddressUtils object
      * @param UserIpReader     $userIpReader User IP address reader
      */
-    public function __construct(RequestInterface $request, IpAddressUtils $ipUtils,
+    public function __construct(
+        RequestInterface $request,
+        IpAddressUtils $ipUtils,
         UserIpReader $userIpReader
     ) {
         $this->request = $request;

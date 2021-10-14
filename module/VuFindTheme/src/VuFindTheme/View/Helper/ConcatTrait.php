@@ -369,7 +369,10 @@ trait ConcatTrait
         foreach ($this->groups as $group) {
             if (isset($group['other'])) {
                 $output[] = $this->itemToString(
-                    $group['item'], $indent, $escapeStart, $escapeEnd
+                    $group['item'],
+                    $indent,
+                    $escapeStart,
+                    $escapeEnd
                 );
             } else {
                 // Note that we  use parent::itemToString() below instead of
@@ -380,13 +383,17 @@ trait ConcatTrait
                 $item = $this->setResourceFilePath($group['items'][0], $path);
                 $this->addNonce($item);
                 $output[] = parent::itemToString(
-                    $item, $indent, $escapeStart, $escapeEnd
+                    $item,
+                    $indent,
+                    $escapeStart,
+                    $escapeEnd
                 );
             }
         }
 
         return $indent . implode(
-            $this->escape($this->getSeparator()) . $indent, $output
+            $this->escape($this->getSeparator()) . $indent,
+            $output
         );
     }
 

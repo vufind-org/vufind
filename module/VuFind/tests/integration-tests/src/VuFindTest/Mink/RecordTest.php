@@ -131,7 +131,8 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         // plus signs in route segments!
         $this->tryRecordTabsOnId('theplus+andtheminus-', false);
         $this->tryLoadingTabHashAndReturningToDefault(
-            'theplus+andtheminus-', false
+            'theplus+andtheminus-',
+            false
         );
     }
 

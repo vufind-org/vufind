@@ -58,7 +58,9 @@ class GeneratorFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -70,8 +72,6 @@ class GeneratorFactory implements FactoryInterface
                 ->getEnabledLocales()
         );
         return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class),
-            $container->get(\VuFindSearch\Service::class),
             $configLoader->get('config')->Site->url ?? '',
             $configLoader->get('sitemap'),
             $enabledLocales,

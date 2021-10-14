@@ -73,7 +73,9 @@ class GatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         $adapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
@@ -82,7 +84,11 @@ class GatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $rowPrototype = $this->getRowPrototype($container, $requestedName);
         $args = $options ? $options : [];
         return new $requestedName(
-            $adapter, $tm, $config, $rowPrototype, ...$args
+            $adapter,
+            $tm,
+            $config,
+            $rowPrototype,
+            ...$args
         );
     }
 }

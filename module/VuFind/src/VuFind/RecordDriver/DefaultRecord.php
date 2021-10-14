@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordDriver;
 
-use VuFind\View\Helper\Root\RecordLink;
+use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
 /**
@@ -60,7 +60,9 @@ class DefaultRecord extends AbstractBase
      * @param \Laminas\Config\Config $searchSettings Search-specific configuration
      * file
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
@@ -490,7 +492,9 @@ class DefaultRecord extends AbstractBase
         // Create a map of de-highlighted valeus => highlighted values.
         foreach ($this->getRawAuthorHighlights() as $current) {
             $dehighlighted = str_replace(
-                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $current
+                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+                '',
+                $current
             );
             $highlights[$dehighlighted] = $current;
         }
@@ -1422,16 +1426,16 @@ class DefaultRecord extends AbstractBase
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
-     * @param string     $format     Name of format to use (corresponds with OAI-PMH
-     * metadataPrefix parameter).
-     * @param string     $baseUrl    Base URL of host containing VuFind (optional;
+     * @param string       $format  Name of format to use (corresponds with
+     * OAI-PMH metadataPrefix parameter).
+     * @param string       $baseUrl Base URL of host containing VuFind (optional;
      * may be used to inject record URLs into XML when appropriate).
-     * @param RecordLink $recordLink Record link helper (optional; may be used to
+     * @param RecordLinker $linker  Record linker helper (optional; may be used to
      * inject record URLs into XML when appropriate).
      *
-     * @return mixed         XML, or false if format unsupported.
+     * @return mixed XML, or false if format unsupported.
      */
-    public function getXML($format, $baseUrl = null, $recordLink = null)
+    public function getXML($format, $baseUrl = null, $linker = null)
     {
         // For OAI-PMH Dublin Core, produce the necessary XML:
         if ($format == 'oai_dc') {
@@ -1462,11 +1466,13 @@ class DefaultRecord extends AbstractBase
             }
             foreach ($this->getAllSubjectHeadings() as $subj) {
                 $xml->addChild(
-                    'subject', htmlspecialchars(implode(' -- ', $subj)), $dc
+                    'subject',
+                    htmlspecialchars(implode(' -- ', $subj)),
+                    $dc
                 );
             }
-            if (null !== $baseUrl && null !== $recordLink) {
-                $url = $baseUrl . $recordLink->getUrl($this);
+            if (null !== $baseUrl && null !== $linker) {
+                $url = $baseUrl . $linker->getUrl($this);
                 $xml->addChild('identifier', $url, $dc);
             }
 

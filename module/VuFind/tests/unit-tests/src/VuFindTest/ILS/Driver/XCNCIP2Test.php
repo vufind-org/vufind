@@ -563,7 +563,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => '123456',
                     'bib_id' => 'MZK01000062021',
                     'item_id' => 'MZK01000062021-MZK50000062021000010',
-                    'item_agency_id' => '',
+                    'item_agency_id' => 'Test agency',
                     'duedate' => '12-08-2019',
                     'volume' => '',
                     'number' => '',
@@ -584,7 +584,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => '123456',
                     'item_id' => 'MZK01000000425-MZK50000000425000020',
                     'bib_id' => 'MZK01000000425',
-                    'item_agency_id' => '',
+                    'item_agency_id' => 'Test agency',
                     'duedate' => '',
                     'volume' => '',
                     'number' => '',
@@ -607,7 +607,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'use_unknown_message' => true,
                     'item_id' => 'MZK01000000425-MZK50000000425000030',
                     'bib_id' => 'MZK01000000425',
-                    'item_agency_id' => '',
+                    'item_agency_id' => 'Test agency',
                     'duedate' => '09-14-2020',
                     'volume' => '',
                     'number' => '',
@@ -983,7 +983,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'id' => "patron_id",
             ]);
             $this->assertEquals(
-                $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
+                $test['result'],
+                $transactions,
+                'Fixture file: ' . implode(', ', (array)$test['file'])
             );
         }
     }
@@ -1015,7 +1017,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'id' => "patron_id",
             ]);
             $this->assertEquals(
-                $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
+                $test['result'],
+                $transactions,
+                'Fixture file: ' . implode(', ', (array)$test['file'])
             );
         }
         foreach ($this->renewMyItemsWithDisabledRenewals as $test) {
@@ -1046,7 +1050,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'id' => "patron_id",
             ]);
             $this->assertEquals(
-                $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
+                $test['result'],
+                $transactions,
+                'Fixture file: ' . implode(', ', (array)$test['file'])
             );
         }
     }
@@ -1313,6 +1319,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
                         'patronAgencyId' => 'Test agency',
+                        'id' => '123'
                     ],
                     'details' => [
                         'My University|Request1|Item1',
@@ -1339,6 +1346,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
                         'patronAgencyId' => 'Test agency',
+                        'id' => '123'
                     ],
                     'details' => [
                         'My University|Request1|Item1',

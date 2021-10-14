@@ -21,10 +21,8 @@
       <?php if ($this->paginator): ?>
         <div class="search-stats">
           <?php
-            $end = min(
-              $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage()),
-              $this->paginator->getTotalItemCount()
-            );
+            $abs = $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage());
+            $end = min($abs, $this->paginator->getTotalItemCount());
             $transParams = [
               '%%start%%' => $this->localizedNumber($this->paginator->getAbsoluteItemNumber(1)),
               '%%end%%' => $this->localizedNumber($end),
@@ -44,7 +42,7 @@
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
           <?php
-            $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource));
+            $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
             $thumbnail = false;
             $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
@@ -66,7 +64,7 @@
                 if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                   $title = $resource->getTitle();
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-                  echo '<a href="' . $this->recordLink()->getUrl($resource) .
+                  echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource)) .
                     '" class="title">' . $title . '</a>';
                 } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
