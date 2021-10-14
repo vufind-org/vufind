@@ -4,6 +4,8 @@ namespace TueFind\RecordDriver;
 
 class SolrAuthMarc extends SolrAuthDefault {
 
+    const EXTERNAL_REFERENCES_DATABASES = ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata', 'Wikipedia'];
+
     /**
      * Get List of all beacon references.
      * @return [['title', 'url']]
@@ -23,6 +25,36 @@ class SolrAuthMarc extends SolrAuthDefault {
             }
         }
         return $beacon_references;
+    }
+
+    protected function getExternalReferencesFiltered(array $blacklist=[], array $whitelist=[]): array
+    {
+        $references = [];
+
+        $fields = $this->getMarcRecord()->getFields('670');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $nameSubfield = $field->getSubfield('a');
+                if ($nameSubfield === false)
+                    continue;
+
+                $name = $nameSubfield->getData();
+                if (in_array($name, $blacklist) || (count($whitelist) > 0 && !in_array($nameSubfield->getData(), $whitelist)))
+                    continue;
+
+                $urlSubfield = $field->getSubfield('u');
+                if ($urlSubfield !== false) {
+                    $url = $urlSubfield->getData();
+                    if ($name == 'Wikipedia')
+                        $url = preg_replace('"&(oldid|diff)=[^&]+"', '', $url);
+
+                    $references[] = ['title' => $name,
+                                     'url' => $url];
+                }
+            }
+        }
+
+        return $references;
     }
 
     public function getExternalReferences(): array
@@ -62,26 +94,13 @@ class SolrAuthMarc extends SolrAuthDefault {
             $references[] = ['title' => 'Wikidata',
                              'url' => 'https:////www.wikidata.org/wiki/' . urlencode($wikidataId)];
 
-        $fields = $this->getMarcRecord()->getFields('670');
-        if (is_array($fields)) {
-            foreach ($fields as $field) {
-                $nameSubfield = $field->getSubfield('a');
-                if ($nameSubfield === false || in_array($nameSubfield->getData(), ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata']))
-                    continue;
+        $references = array_merge($references, $this->getExternalReferencesFiltered(/*blacklist=*/[], /*whitelist=*/['Wikipedia']));
+        return $references;
+    }
 
-                $urlSubfield = $field->getSubfield('u');
-
-                if ($nameSubfield !== false && $urlSubfield !== false) {
-                    $url = $urlSubfield->getData();
-                    $title = $nameSubfield->getData();
-                    if ($title == 'Wikipedia')
-                        $url = preg_replace('"&(oldid|diff)=[^&]+"', '', $url);
-
-                    $references[] = ['title' => $title,
-                                     'url' => $url];
-                }
-            }
-        }
+    public function getExternalResources(): array
+    {
+        $references = $this->getExternalReferencesFiltered(/*blacklist=*/['Wikipedia'], /*whitelist=*/[]);
         $references = array_merge($references, $this->getBeaconReferences());
         return $references;
     }

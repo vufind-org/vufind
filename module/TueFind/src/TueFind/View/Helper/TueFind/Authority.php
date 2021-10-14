@@ -107,6 +107,21 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
+    public function getExternalResources(AuthorityRecordDriver &$driver): string
+    {
+        $references = $driver->getExternalResources();
+        if (count($references) == 0)
+            return '';
+
+        usort($references, function($a, $b) { return strcmp($a['title'], $b['title']); });
+
+        $display = '';
+        foreach ($references as $reference)
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($reference['title']) . '</a><br>';
+
+        return $display;
+    }
+
     public function getExternalSubsystems(AuthorityRecordDriver &$driver, $currentSubsystem): string
     {
         $externalSubsystems = $driver->getExternalSubsystems();
