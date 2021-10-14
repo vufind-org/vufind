@@ -1,12 +1,19 @@
 <?php
-$responseTopicsData = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsData)) :
+$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsDataAndSettings)) :
 
 $this->headLink()->appendStylesheet('vendor/jqcloud.css');
 $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
 
+$responseTopicsData = $responseTopicsDataAndSettings[0];
+$responseTopicsSettings = $responseTopicsDataAndSettings[1];
+
 $jsData = '';
+$itopic = 1;
 foreach($responseTopicsData as $topic) {
-    $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: "'.$this->url('search-results').'?lookfor='.$this->driver->getHeadingShort().'&type=AllFields&filter[]=topic_facet:'.$topic['topicUpdate'].'", target: "_blank"}},';
+    if($itopic <= $responseTopicsSettings['maxTopicRows']) {
+        $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: "'.$this->url('search-results').'?lookfor='.$this->driver->getHeadingShort().'&type=AllFields&filter[]=topic_facet:'.$topic['topicUpdate'].'", target: "_blank"}},';
+    }
+    $itopic++;
 }
 
 $ascSortingTopicsData = $responseTopicsData;

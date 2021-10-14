@@ -478,15 +478,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         arsort($countedTopics);
 
         $topicsArray = [];
-        $topicI = 1;
-        $wordI = 1;
         foreach($countedTopics as $topic => $topicCount) {
-            if($topicI <= $settings['maxTopicRows']) {
-                $topicWords = [];
-                $updateString = str_replace([','], '', $topic);
-                $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString];
-            }
-            $topicI++;
+            $updateString = str_replace([','], '', $topic);
+            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString];
         }
 
         $mainTopicsArray = [];
@@ -512,7 +506,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $mainTopicsArray[] = $one;
         }
 
-        return $mainTopicsArray;
+        return [$mainTopicsArray,$settings];
     }
 
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
