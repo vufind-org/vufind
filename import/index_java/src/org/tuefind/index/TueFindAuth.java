@@ -235,7 +235,8 @@ public class TueFindAuth extends TueFind {
     }
 
     public Set<String> getOccupations(final Record record, String langAbbrev) {
-        final Set<String> occupations = new TreeSet<>();
+        Set<String> occupations = new TreeSet<>();
+        Set<String> retOccupations = new TreeSet<>();
 
         for (final VariableField variableField : record.getVariableFields("374")) {
             final DataField field = (DataField) variableField;
@@ -243,7 +244,7 @@ public class TueFindAuth extends TueFind {
             if (subfield_a == null)
                 continue;
             String occ = subfield_a.getData();
-            occupations.add(occ + " - " + langAbbrev);
+            occupations.add(occ);
         }
 
         for (final VariableField variableField : record.getVariableFields("550")) {
@@ -256,8 +257,11 @@ public class TueFindAuth extends TueFind {
             if (sub_4 == null || !(sub_4.equalsIgnoreCase("berc") || sub_4.equalsIgnoreCase("beru")))
                 continue;
             String occ = subfield_a.getData();
-            occupations.add(occ + " - " + langAbbrev);
+            occupations.add(occ);
         }
-        return occupations;
+        for (String elem : occupations)
+            retOccupations.add(getTranslation(elem, langAbbrev));
+
+        return retOccupations;
     }
 }
