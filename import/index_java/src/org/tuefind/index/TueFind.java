@@ -341,31 +341,29 @@ public class TueFind extends SolrIndexerMixin {
             throw new IllegalArgumentException("Invalid language shortcut: " + langAbbrev);
         }
 
+        
+        final String dir = "/usr/local/ub_tools/bsz_daten/";
+        final String ext = "txt";
+        final String basename = "normdata_translations";
+        String translationsFilename = dir + basename + "_" + langAbbrev + "." + ext;
+
         // Only read the data from file if necessary
-        if (translation_map.isEmpty())  {
+        if (translation_map.isEmpty() && (new File(translationsFilename).length() != 0)) {
+            try {
+                BufferedReader in = new BufferedReader(new FileReader(translationsFilename));
+                String line;
 
-            final String dir = "/usr/local/ub_tools/bsz_daten/";
-            final String ext = "txt";
-            final String basename = "normdata_translations";
-            String translationsFilename = dir + basename + "_" + langAbbrev + "." + ext;
-
-            if ((new File(translationsFilename).length() != 0)) {
-                try {
-                    BufferedReader in = new BufferedReader(new FileReader(translationsFilename));
-                    String line;
-
-                    while ((line = in.readLine()) != null) {
-                        // We now also have synonyms in the translation files
-                        // These are not relevant in this context and are thus discarded
-                        line = line.replaceAll(Pattern.quote("||") + ".*", "");
-                        final String[] translations = line.split("\\|");
-                        if (!translations[0].isEmpty() && !translations[1].isEmpty())
-                            translation_map.put(translations[0], translations[1]);
-                    }
-                } catch (IOException e) {
-                    logger.severe("Could not open file: " + e.toString());
-                    System.exit(1);
+                while ((line = in.readLine()) != null) {
+                    // We now also have synonyms in the translation files
+                    // These are not relevant in this context and are thus discarded
+                    line = line.replaceAll(Pattern.quote("||") + ".*", "");
+                    final String[] translations = line.split("\\|");
+                    if (!translations[0].isEmpty() && !translations[1].isEmpty())
+                        translation_map.put(translations[0], translations[1]);
                 }
+            } catch (IOException e) {
+                logger.severe("Could not open file: " + e.toString());
+                System.exit(1);
             }
         }
 
