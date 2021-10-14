@@ -346,26 +346,30 @@ class SolrAuthMarc extends SolrAuthDefault {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
                 if ($nameSubfield !== false) {
-                    $name = $nameSubfield->getData();
+                    $relation = ['name' => $nameSubfield->getData()];
 
                     $addSubfield = $field->getSubfield('b');
                     if ($addSubfield !== false)
-                        $name .= ', ' . $addSubfield->getData();
+                        $relation['institution'] = $addSubfield->getData();
 
-                    $relation = ['name' => $name];
+                    $locationSubfield = $field->getSubfield('g');
+                    if ($locationSubfield !== false)
+                        $relation['location'] = $locationSubfield->getData();
 
                     $idPrefixPattern = '/^\(DE-627\)/';
                     $idSubfield = $field->getSubfield('0', $idPrefixPattern);
                     if ($idSubfield !== false)
                         $relation['id'] = preg_replace($idPrefixPattern, '', $idSubfield->getData());
 
-                    $typeSubfield = $field->getSubfield('i');
-                    if ($typeSubfield !== false)
-                        $relation['type'] = $typeSubfield->getData();
-
-                    $timespanSubfield = $field->getSubfield('9');
-                    if ($timespanSubfield !== false && preg_match('"^(Z:)(.+)"', $timespanSubfield->getData(), $matches))
-                        $relation['timespan'] = $matches[2];
+                    $localSubfields = $field->getSubfields('9');
+                    foreach ($localSubfields as $localSubfield) {
+                        if (preg_match('"^(.):(.+)"', $localSubfield->getData(), $matches)) {
+                            if ($matches[1] == 'Z')
+                                $relation['timespan'] = $matches[2];
+                            else if ($matches[1] == 'v')
+                                $relation['type'] = $matches[2];
+                        }
+                    }
 
                     $relations[] = $relation;
                 }
