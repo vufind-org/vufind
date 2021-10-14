@@ -1,18 +1,12 @@
 <?php
-$responseTopicsData = $this->authority()->getTopicsData($this->driver); if(!empty($responseTopicsData)) :
+$responseTopicsData = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsData)) :
 
 $this->headLink()->appendStylesheet('vendor/jqcloud.css');
 $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
 
 $jsData = '';
 foreach($responseTopicsData as $topic) {
-    $fixCount = $topic['topicNumber'];
-    $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$fixCount.', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: "", target: "_blank"}},';
-    foreach($topic['topicWords'] as $word) {
-        if($word != $topic['topicTitle']){
-            $jsData .= '{text: "'.$word.'", weight: '.rand(1, 3).', html: {title: "'.$word.'", "class": "custom-class"}, link: {href: "", target: "_blank"}},';
-        }
-    }
+    $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: "'.$this->url('search-results').'?lookfor='.$this->driver->getHeadingShort().'&type=AllFields&filter[]=topic_facet:'.$topic['topicUpdate'].'", target: "_blank"}},';
 }
 
 $ascSortingTopicsData = $responseTopicsData;
@@ -38,7 +32,7 @@ EOD;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
 
-<h4>Topics</h4>
+<h4><?=$this->transEsc('Suggested Topics')?></h4>
 <div class="col-md-12 tf-cloud-block" style="">
   <div>
     <!-- Nav tabs -->
@@ -56,7 +50,7 @@ EOD;
         <div class="lightbox-scroll full-facets" style="max-height: 350px;">
           <div class="facet-group" id="facet-list-count">
             <?php foreach($ascSortingTopicsData as $topic): ?>
-            <a href="#" class="facet js-facet-item facetAND">
+            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=topic_facet:<?=$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
               <span class="text">
                 <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
               </span>
@@ -70,7 +64,7 @@ EOD;
         <div class="lightbox-scroll full-facets" style="max-height: 350px;">
           <div class="facet-group" id="facet-list-count">
             <?php foreach($countSortingTopicsData as $topic): ?>
-            <a href="#" class="facet js-facet-item facetAND">
+            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=topic_facet:<?=$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
               <span class="text">
                 <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
               </span>

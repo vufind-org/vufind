@@ -319,6 +319,11 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             $this->fields['prefix4_key_word_chain_bag'] : '';
     }
 
+    public function getTopics($language=null): array
+    {
+        return $this->getKeyWordChainBag($language);
+    }
+
     /**
      * Check whether there are fulltexts associated with this record
      * @return bool

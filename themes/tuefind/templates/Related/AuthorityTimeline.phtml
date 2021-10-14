@@ -9,9 +9,11 @@
         $chartJSabout .= $chartData[2].',';
     }
 ?>
-<h4>Publication Timeline</h4>
+<h4><?=$this->transEsc('Publication Timeline')?></h4>
 <div class="col-md-12" style="padding:20px; margin-bottom: 20px;  border: 1px solid #ddd; border-radius: 4px;">
-  <canvas id="myChart" width="" height=""></canvas>
+  <div class="chart-wrapper">
+    <canvas id="myChart"></canvas>
+  </div>
 </div>
 <?php
 $this->headScript()->appendFile("vendor/chart-JS.js");
@@ -43,54 +45,107 @@ switch($currentSystem){
 
 $jsSnippet2 = <<<EOD
 $(function () {
-        var ctx = document.getElementById('myChart').getContext('2d');
+  var ctx = document.getElementById('myChart').getContext('2d');
 
-        const labels = [{$chartJSDates}];
+  const labels = [{$chartJSDates}];
 
-        const byData = [{$chartJSby}];
+  const byData = [{$chartJSby}];
 
-        const aboutData = [{$chartJSabout}];
+  const aboutData = [{$chartJSabout}];
 
-        const data = {
-          labels: labels,
-          datasets: [
-            {
-              label: 'By',
-              data: byData,
-              backgroundColor: '{$chartByBackgroundColor}',
-            },
-            {
-              label: 'About',
-              data: aboutData,
-              backgroundColor: '{$chartAboutBackgroundColor}',
-            }
-          ]
-        };
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: '{$this->transEsc('publication_timeline_by')}',
+        data: byData,
+        backgroundColor: '{$chartByBackgroundColor}',
+      },
+      {
+        label: '{$this->transEsc('publication_timeline_about')}',
+        data: aboutData,
+        backgroundColor: '{$chartAboutBackgroundColor}',
+      }
+    ]
+  };
 
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-              plugins: {
-                title: {
-                  display: false,
-                  text: 'Publication Timeline'
-                },
-              },
-              responsive: true,
-              scales: {
-                x: {
-                  stacked: true,
-                },
-                y: {
-                  stacked: true
-                }
-              }
-            }
-          };
+  const config = {
+    type: 'bar',
+    data: data,
+    options: {
+      onHover: function (e) {
+        const points = this.getElementsAtEventForMode(e,'index', { axis: 'x', intersect: true },false);
+        if (points.length) {
+          e.native.target.style.cursor = 'pointer';
+        }else{
+          e.native.target.style.cursor = 'default';
+        }
+      },
+      plugins: {
+        title: {
+          display: false,
+          text: 'Publication Timeline'
+       }
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      scaleShowValues: true,
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+            stepSize: 1
+          }
+        }],
+        xAxes: [{
+          stacked: true,
+          ticks: {
+            autoSkip: false
+          }
+        }]
+      },
+      onClick(e) {
+        const activePoints = myChart.getElementsAtEventForMode(e, 'nearest', {
+          intersect: true
+        }, false)
+        if(activePoints.length != 0) {
+          console.log(activePoints);
+          const [{index}] = activePoints;
+          let year = data.labels[index];
+          const [{datasetIndex}] = activePoints;
+          let URL = '';
+          if(datasetIndex == 0){
+            //by
+            URL = "{$this->url('search-results')}?lookfor=author_id:{$this->driver->getUniqueId()} OR author2_id:{$this->driver->getUniqueId()} OR author_corporate_id:{$this->driver->getUniqueId()}&type=AllFields&daterange[]=publishDate&publishDatefrom="+year+"&publishDateto="+year;
+          }else{
+            //about
+            URL = "{$this->url('search-results')}?lookfor=topic_id:{$this->driver->getUniqueId()}&type=AllFields&daterange[]=publishDate&publishDatefrom="+year+"&publishDateto="+year;
+          }
+          if(URL.length > 0){
+            location.href = URL;
+          }
+        }
+      }
+    }
+  };
 
-   var myChart = new Chart(ctx, config);
+  var myChart = new Chart(ctx, config);
 
+  myChart.canvas.parentNode.style.height = '500px';
+  switch (labels.length) {
+    case 1:
+      myChart.canvas.parentNode.style.width = '25%';
+    break;
+    case 2:
+      myChart.canvas.parentNode.style.width = '50%';
+    break;
+    case 3:
+      myChart.canvas.parentNode.style.width = '75%';
+    break;
+    default:
+      myChart.canvas.parentNode.style.width = '100%';
+    break;
+  }
 });
 EOD;
 ?>

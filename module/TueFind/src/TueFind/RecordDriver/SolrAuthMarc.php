@@ -88,23 +88,8 @@ class SolrAuthMarc extends SolrAuthDefault {
 
     public function getExternalSubsystems(): array
     {
-        $subsystemLinks = [
-            ['title' => 'IxTheo', 'url' => 'https://ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'ixtheo'],
-            ['title' => 'RelBib', 'url' => 'https://relbib.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'relbib'],
-            ['title' => 'BILDI-IxTheo', 'url' => 'https://bible.ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'biblestudies'],
-            ['title' => 'IxTheo / KALDI / DaKaR', 'url' => 'https://canonlaw.ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'canonlaw']
-        ];
-
-        $result = [];
-        foreach ($this->getSubsystems() as $subsystem) {
-            foreach ($subsystemLinks as $subsystemLink) {
-                if ($subsystemLink['label'] == $subsystem) {
-                    $result[] = $subsystemLink;
-                }
-            }
-        }
-
-        return $result;
+        // This needs to be overridden in IxTheo/KrimDok if subsystems are present
+        return [];
     }
 
     protected function getLifeDates()
@@ -388,6 +373,24 @@ class SolrAuthMarc extends SolrAuthDefault {
         }
 
         return $relations;
+    }
+
+    /**
+     * This function is used to detect "Tn"-sets, which are similar to persons.
+     *
+     * @return bool
+     */
+    public function isName(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('b');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'n')
+                    return true;
+            }
+        }
+        return false;
     }
 
     public function isFamily(): bool

@@ -255,39 +255,42 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $response;
     }
 
-    public function getRelatedAuthors(AuthorityRecordDriver &$driver): array
+    public function getRelatedAuthors(AuthorityRecordDriver &$driver)
     {
+        $params = new \VuFindSearch\ParamBag();
+        $params->set('fl', 'facet_counts');
+        $params->set('facet', 'true');
+        $params->set('facet.pivot', 'author_and_id_facet');
+        $params->set('facet.limit', 9999);
+
+        // Make sure we set offset+limit to 0, because we only want the facet counts
+        // and not the rows itself for performance reasons.
+        // (This could get very slow, e.g. Martin Luther where we have thousands of related datasets.)
         $titleRecords = $this->searchService->search('Solr',
                                                      new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
-                                                     0, 9999);
+                                                     0, 0, $params);
 
-        $referenceAuthorName = $driver->getTitle();
+        $relatedAuthors = $titleRecords->getFacets()->getPivotFacets();
+        $referenceAuthorKey = $driver->getUniqueID() . ':' . $driver->getTitle();
 
-        $relatedAuthors = [];
-        foreach ($titleRecords as $titleRecord) {
-            $titleAuthors = $titleRecord->getDeduplicatedAuthors();
-            foreach ($titleAuthors as $category => $categoryAuthors) {
-                foreach ($categoryAuthors as $titleAuthorName => $titleAuthorDetails) {
-                    if ($titleAuthorName == $referenceAuthorName)
-                        continue;
+        // This is not an array but an ArrayObject, so unset() will cause an error
+        // if the index does not exist => we need to check it with isset first.
+        if (isset($relatedAuthors[$referenceAuthorKey]))
+            unset($relatedAuthors[$referenceAuthorKey]);
 
-                    $titleAuthorId = $titleAuthorDetails['id'][0] ?? null;
-                    if ($titleAuthorId && $titleAuthorId == $driver->getUniqueID())
-                        continue;
-
-                    if (!isset($relatedAuthors[$titleAuthorName]))
-                        $relatedAuthors[$titleAuthorName] = ['count' => 1];
-                    else
-                        ++$relatedAuthors[$titleAuthorName]['count'];
-                    if (isset($titleAuthorId))
-                        $relatedAuthors[$titleAuthorName]['id'] = $titleAuthorId;
-                }
+        // custom sort, since solr can only sort by count but not alphabetically,
+        // since the value starts with an id instead of a name.
+        $relatedAuthors->uasort(function($a, $b) {
+            $diff = $b['count'] - $a['count'];
+            if ($diff != 0)
+                return $diff;
+            else {
+                list($aId, $aTitle) = explode(':', $a['value']);
+                list($aId, $bTitle) = explode(':', $b['value']);
+                return strcmp($aTitle, $bTitle);
             }
-        }
-
-        uasort($relatedAuthors, function($a, $b) {
-            return $b['count'] - $a['count'];
         });
+
         return $relatedAuthors;
     }
 
@@ -322,7 +325,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     protected function getTitlesAboutQueryParamsChartDate(&$author): string
     {
         if ($author instanceof AuthorityRecordDriver) {
-            $queryString = 'topic_all:"' . $author->getTitle() . '"';
+            $queryString = 'topic_id:"' . $author->getUniqueId() . '"';
         } else {
             $queryString = 'topic_all:"' . $author . '"';
         }
@@ -407,7 +410,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $publishDates = array_keys($publishArray);
 
         $aboutData = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParamsChartDate($driver) . '"', 'AllFields'),
+                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParamsChartDate($driver), 'AllFields'),
                                                  0, 0, new \VuFindSearch\ParamBag($params));
 
         $allFacetsAbout = $aboutData->getFacets();
@@ -423,7 +426,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         asort($allDatesKeys);
 
         $chartData = [];
-        foreach($allDatesKeys as $oneDate){
+        foreach($allDatesKeys as $oneDate) {
             if(!empty($oneDate)){
                 $by = '';
                 $about = '';
@@ -443,7 +446,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $chartData;
     }
 
-    public function getTopicsData(AuthorityRecordDriver &$driver): array
+    public function getTopicsData(AuthorityRecordDriver &$driver, $language='en'): array
     {
 
         $settings = [
@@ -452,7 +455,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicLength' => 10,
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
-            'maxTopicWords' => 15
+            'minWeight' => 0
+
         ];
 
         $identifier = 'Solr';
@@ -461,11 +465,11 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                  0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
-            $keywords = $titleRecord->getKeyWordChainBag('en');
+            $keywords = $titleRecord->getTopics($language);
             foreach ($keywords as $keyword) {
                 if (isset($countedTopics[$keyword])) {
                     ++$countedTopics[$keyword];
-                }else{
+                } else {
                     $countedTopics[$keyword] = 1;
                 }
             }
@@ -476,49 +480,36 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $topicsArray = [];
         $topicI = 1;
         $wordI = 1;
-        foreach($countedTopics as $topic=>$topicCount) {
-            if($topicI <= $settings['maxTopicRows']){
+        foreach($countedTopics as $topic => $topicCount) {
+            if($topicI <= $settings['maxTopicRows']) {
                 $topicWords = [];
                 $updateString = str_replace([','], '', $topic);
-                if($wordI < $settings['maxTopicWords']) {
-                    $pos = strripos($updateString, ' ');
-                    if ($pos !== false) {
-                        $topicWordsExplode = explode(" ", $updateString);
-                        $fixenWordArray = [];
-                        foreach($topicWordsExplode as $oneWord) {
-                            if(mb_strlen($oneWord) > 2){
-                                $fixenWordArray[] = $oneWord;
-                            }
-                        }
-                        $topicWords = $fixenWordArray;
-                    }else{
-                        $topicWords = [$updateString];
-                    }
-                    $wordI++;
-                }
-                $topicsArray[] = ['topicTitle'=>$topic,'topicCount'=>$topicCount,'topicUpdate'=>$updateString,'topicWords'=>$topicWords];
+                $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString];
             }
             $topicI++;
         }
 
         $mainTopicsArray = [];
+        $topWeight = $settings['maxNumber'];
+        $firstWeight = $topicsArray[0]['topicCount'];
         for($i=0;$i<count($topicsArray);$i++) {
             if($i == 0) {
                 if(mb_strlen($topicsArray[$i]['topicTitle']) > $settings['firstTopicLength']) {
-                  $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
+                    $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
                 }
             }
             $one = $topicsArray[$i];
-            $one['topicNumber'] = $settings['maxNumber'];
-            $mainTopicsArray[] = $one;
-            if(isset($topicsArray[$i-1])) {
-                if($topicsArray[$i]['topicCount'] != $topicsArray[$i-1]['topicCount'] && $settings['maxNumber'] != $settings['minNumber']) {
-                    $settings['maxNumber']--;
+            if($firstWeight != $topicsArray[$i]['topicCount']) {
+                $firstWeight = $topicsArray[$i]['topicCount'];
+                if($topWeight != $settings['minWeight']) {
+                    $topWeight--;
+                }else{
+                    $topWeight = $settings['minWeight'];
                 }
-            }else {
-                $settings['maxNumber']--;
-            }
 
+            }
+            $one['topicNumber'] = $topWeight;
+            $mainTopicsArray[] = $one;
         }
 
         return $mainTopicsArray;
@@ -545,4 +536,5 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         return $loadResult;
     }
+
 }

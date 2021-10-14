@@ -266,8 +266,6 @@ var TueFind = {
         }, 'fast');
         let searchForm_fulltext = $('#searchForm_fulltext');
         searchForm_fulltext.val(fulltextquery);
-        $('#itemFTSearchScope').val(fulltextscope);
-        searchForm_fulltext.submit();
     },
 
     WildcardHandler : function(query_text) {
@@ -290,6 +288,23 @@ var TueFind = {
                  return this.WildcardHandler($("#searchForm_lookfor").val());
         }
         return true;
+    },
+
+    ItemFullTextSearch: function(home_url, record_id, fulltext_types) {
+        $(document).ready(function(){
+            TueFind.HandlePassedFulltextQuery();
+            $("#ItemFulltextSearchForm").submit(function(){
+                TueFind.GetFulltextSnippets(home_url,
+                                            record_id,
+                                            $("#searchForm_fulltext").val(),
+                                            true,
+                                            $("#itemFTSearchScope").val(),
+                                            $("#itemFTTextTypeScope").val() == "All Types" ? fulltext_types : $("#itemFTTextTypeScope").val())
+                TueFind.CheckWildcards("ItemFulltextSearchForm");
+                return false;
+            });
+            $("#ItemFulltextSearchForm").submit();
+        });
     }
 };
 
@@ -309,16 +324,17 @@ $(document).ready(function () {
     } else if (window.location.pathname.match(/\/Alphabrowse/i)) {
         TueFind.SetFocus('#alphaBrowseForm_from');
     }
-    
+
     $('.tuefind-event-resetsearchhandlers').click(function(){
-        TueFind.ResetSearchHandlers(); 
+        TueFind.ResetSearchHandlers();
         return TueFind.CheckWildcards(event);
     });
-    
+
     $('.tuefind-event-searchForm-on-submit').submit(function(){
         return TueFind.CheckWildcards(event);
     });
 
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
+
 });

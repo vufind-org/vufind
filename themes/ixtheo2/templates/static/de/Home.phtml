@@ -1,3 +1,30 @@
+
+<style>
+.cw-card.three-links {
+    background-color: #e0e0e0;
+}
+.cw-card.three-links img{
+    border-radius: 0.4rem;
+}
+.cw-card.three-links a{
+    display: block !important;
+    width: 100% !important;
+    position: relative;
+    z-index: 20;
+    opacity: 0.7;
+    margin: 22px 0;
+    background-color: #000;
+    text-decoration: none;
+}
+.cw-card.three-links a h6{
+    color:#fff;
+    margin-bottom: 42px;
+}
+.three-links .cw-overlay-content {
+    opacity: 1;
+}
+</style>
+
 <div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0; margin-bottom: 0px;">
     <div class="container">
         <!--<div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>-->
@@ -65,7 +92,7 @@
                 }
                 .slick-arrow {
                     display: none !important;
-                }  
+                }
                 </style>
 
                 <div class="slick-slider-single-item" align="center">
@@ -107,7 +134,7 @@ EOD;
                             <div class="ix-news-panel ix-news-panel-1">
                                 <a href="<?=$this->url('content-page', ['page' => 'open_access_journals'])?>">
                                     <div><b>IxTheo Open Journals</b></div>
-                                    <div><small>Open Access Zeitschriften</small></div>
+                                    <div><small>Open Access Zeitschriften Service</small></div>
                                 </a>
                             </div>
                             <div class="ix-news-panel ix-news-panel-2">
@@ -127,8 +154,8 @@ EOD;
                                     <div><b>Lexikonrecherche</b></div>
                                     <div><small>Theologische Lexika durchsuchen</small></div>
                                 </a>
-                            </div>
-                            <div class="ix-news-container-footer">Alle Services</div>
+			    </div>
+			    <div class="ix-news-container-footer">Alle Services</div>
                         </div>
                     </div>
                 </div>
@@ -138,6 +165,7 @@ EOD;
 </section>
 
 <!-- IxTheo entdecken -->
+
 <section class="cw-py-5 cw-bg-gray-100">
     <div class="container">
         <div class="text-center cw-pb-lg-4">
@@ -149,16 +177,7 @@ EOD;
                 <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
                     <div class="cw-px-0 cw-px-lg-3">
                         <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
-                            <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
-                            <use xlink:href="#destination-map-1">
-                            <symbol viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" id="destination-map-1">
-                                <title>Destination Map</title>
-                                <desc>A line styled icon from Orion Icon Library.</desc>
-                                <path d="M43.1 17l9.9 9.9M43 27l9.9-9.9m-19.5 7.6a10 10 0 0 1 6.8-2.7M29.7 35.2a10 10 0 0 0 .5-2.9V32a10 10 0 0 1 .9-4.3M21.2 42a10 10 0 0 0 6.6-3.5M9.8 42h7.6M2 42h4" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer2" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
-                                <path d="M62 10v50l-22-6-16 6-22-6V4l22 6 16-6 22 6z" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer1" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
-                            </symbol>
-                            </use>
-                            </svg>
+                            <i class="fa fa-search"></i>
                         </div>
                         <h3 class="cw-h5">Suchen und Browsen</h3>
                         <div><small>Bibelstellen | CIC | Zeiträume | VerfasserInnen</small></div>
@@ -169,17 +188,7 @@ EOD;
                 <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
                     <div class="cw-px-0 cw-px-lg-3">
                         <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
-                            <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
-                            <use xlink:href="#pay-by-cw-card-1">
-                            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="pay-by-cw-card-1">
-                                <title>Pay by Card</title>
-                                <desc>A line styled icon from Orion Icon Library.</desc>
-                                <path data-name="layer1" d="M40 20l8.8 8.7C51.2 31.1 52 34.2 52 40c0 8.6-.1 22-.1 22M22 44a20 20 0 0 0 3.3 11.5C28.1 60 28 61.3 28 62" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
-                                <path data-name="layer2" d="M29.8 44H14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h24a2 2 0 0 1 2 2v31M30 2v23" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
-                                <path data-name="layer1" d="M44.1 39.1L28.4 23.5a5 5 0 0 0-7 0 5 5 0 0 0 0 7l8.6 8.6s-2.6 8 6 14.9" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
-                            </symbol>
-                            </use>
-                            </svg>
+                            <i class="fa fa-user-plus"></i>
                         </div>
                         <h3 class="cw-h5">IxTheo Account</h3>
                         <div><small>Suchanfragen speichern | Favoriten speichern</small></div>
@@ -190,15 +199,7 @@ EOD;
                 <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
                     <div class="cw-px-0 cw-px-lg-3">
                         <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
-                            <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
-                            <use xlink:href="#heart-1">
-                            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="heart-1">
-                                <title>digitalisierung</title>
-                                <desc>A line styled icon from Orion Icon Library.</desc>
-                                <path data-name="layer1" d="M47 5c-6.5 0-12.9 4.2-15 10-2.1-5.8-8.5-10-15-10A15 15 0 0 0 2 20c0 13 11 26 30 39 19-13 30-26 30-39A15 15 0 0 0 47 5z" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
-                            </symbol>
-                            </use>
-                            </svg>
+                            <i class="fa fa-bell"></i>
                         </div>
                         <h3 class="cw-h5">Alerting</h3>
                         <div><small>Benachrichtigungen von Neuerscheinungen</small></div>
@@ -226,38 +227,16 @@ EOD;
                             <a href="<?=$this->url('content-page', ['page' => 'ixtheo_content']) ?>" class="cw-tile-link"></a>
                             <img src="<?=$this->imageLink('cw/new-york.jpg')?>" alt="Card image" class="cw-bg-image">
                             <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">New York</h6>
-                                <p class="card-text text-sm">The big apple</p>
-                            </div>
-                        </div>
-                    </div>                
-                    <div class="swiper-slide cw-h-auto cw-px-2">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
-                            <a href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>" class="cw-tile-link"></a>
-                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
-                            <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Index Biblicus</h6>
-                                <p class="card-text text-sm">The big apple</p>
-                            </div>
-                        </div>
-                    </div>                
-                    <div class="swiper-slide cw-h-auto cw-px-2">
-                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
-                            <a href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>" class="cw-tile-link"></a>
-                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
-                            <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Kirchenrecht</h6>
-                                <p class="card-text text-sm">The big apple</p>
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">FID-Content</h6>
                             </div>
                         </div>
                     </div>
                     <div class="swiper-slide cw-h-auto cw-px-2">
                         <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
-                            <a href="<?=$this->url('content-page', ['page' => 'collections_internal']) ?>" class="cw-tile-link"></a>
-                            <img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <a href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
                             <div class="cw-card-body cw-overlay-content">
-                                <h6 class="cw-card-title text-cw-shadow text-uppercase">RelBib</h6>
-                                <p class="card-text text-sm">The big apple</p>
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Digitale Quellen</h6>
                             </div>
                         </div>
                     </div>
@@ -267,8 +246,39 @@ EOD;
                             <img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">
                             <div class="cw-card-body cw-overlay-content">
                                 <h6 class="cw-card-title text-cw-shadow text-uppercase">Theologie Digital</h6>
-                                <p class="card-text text-sm">The big apple</p>
                             </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-card-poster cw-gradient-overlay cw-hover-animate cw-mb-4 cw-mb-lg-0">
+                            <a href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>" class="cw-tile-link"></a>
+                            <img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="cw-bg-image">
+                            <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Historische Drucke</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cw-h-auto cw-px-2">
+                        <div class="cw-card cw-hover-animate cw-mb-4 cw-mb-lg-0 three-links">
+                            <!--<img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">-->
+                            <a href="https://relbib.de" class="">
+                                <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">RelBib</h6>
+                                <!--<p class="card-text text-sm">&nbsp;</p>-->
+                            </div>
+                            </a>
+                            <a href="https://bible.ixtheo.de/" class="">
+                               <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Index Biblicus</h6>
+                                <!--<p class="card-text text-sm">&nbsp;</p>-->
+                            </div>
+                            </a>
+                            <a href="https://churchlaw.ixtheo.de/" class="">
+                                <div class="cw-card-body cw-overlay-content">
+                                <h6 class="cw-card-title text-cw-shadow text-uppercase">Kirchenrecht</h6>
+                                <!--<p class="card-text text-sm">&nbsp;</p>-->
+                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
