@@ -157,8 +157,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if ($relationsDisplay != '')
                 $relationsDisplay .= '<br>';
 
-            $type = $relation['type'] == 'Veranstalter' ? 'organizer' : 'contributor';
-            $relationsDisplay .= '<span property="' . $type . '" typeof="Organization">';
+            $relationsDisplay .= '<span property="affiliation" typeof="Organization">';
 
             $recordExists = isset($relation['id']) && $this->recordExists($relation['id']);
             if ($recordExists) {
@@ -166,19 +165,20 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
 
-            $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
-
-            $additionalValuesConfig = ['type', 'timespan'];
-            $additionalValuesString = '';
-            foreach ($additionalValuesConfig as $additionalValue) {
-                if (isset($relation[$additionalValue])) {
-                    if ($additionalValuesString != '')
-                        $additionalValuesString .= ', ';
-                    $additionalValuesString .= htmlspecialchars($relation[$additionalValue]);
-                }
+            $relationsDisplay .= '<span property="name">' . htmlspecialchars($relation['name']) . '</span>';
+            if (isset($relation['location'])) {
+                $relationsDisplay .= ' (<span property="location">' . htmlspecialchars($relation['location']) . '</span>)';
+            } else if (isset($relation['institution'])) {
+                $relationsDisplay .= '. <span property="department">' . htmlspecialchars($relation['institution']) . '</span>';
             }
-            if ($additionalValuesString != '')
-                $relationsDisplay .= ' (' . $additionalValuesString . ')';
+
+            if (isset($relation['type']) || isset($relation['timespan'])) {
+                $relationsDisplay .= ':';
+                if (isset($relation['type']))
+                    $relationsDisplay .= ' ' . $relation['type'];
+                if (isset($relation['timespan']))
+                    $relationsDisplay .= ' ' . $relation['timespan'];
+            }
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
