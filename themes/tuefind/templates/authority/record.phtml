@@ -81,6 +81,14 @@
             </tr>
           <?php endif; ?>
 
+          <?php $externalResources = $this->authority()->getExternalResources($this->driver); ?>
+          <?php if ($externalResources != ''): ?>
+            <tr>
+              <th><?=$this->transEsc('External Resources')?>:</th>
+              <td><?=$externalResources?></td>
+            </tr>
+          <?php endif; ?>
+
           <?php $externalSubsystems = $this->authority()->getExternalSubsystems($this->driver, $this->tuefind()->getTueFindSubtype()); ?>
           <?php if ($externalSubsystems != ''): ?>
             <tr>
