@@ -20,6 +20,7 @@
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.12.1",
         "composer/package-versions-deprecated": "1.11.99.2",
+        "composer/semver": "3.2.5",
         "endroid/qr-code": "4.2.2",
         "jasig/phpcas": "1.4.0",
         "laminas/laminas-cache": "2.13.0",
