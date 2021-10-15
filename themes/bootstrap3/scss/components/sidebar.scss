@@ -119,12 +119,9 @@
   background-color: $list-group-active-bg;
   color: #fff;
 
-  .jstree-icon,
   a { color: #fff; }
 }
-.facet.active .badge,
-.jstree-node.active .badge,
-.jstree-node.active .badge .fa {
+.facet.active .badge {
   background-color: #fff;
   color: $brand-primary;
 }
@@ -152,24 +149,6 @@
   margin-left: 0.5rem;
 }
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
-
-.jstree-node {
-  .facet {
-    padding: 0 0.5rem 0 0;
-    border: none;
-  }
-}
-.jstree-facet {
-  .jstree-anchor {
-    padding: 0;
-  }
-  .list-group-item {
-    padding-left: 0.5rem;
-    padding-right: 0;
-    border: 0;
-    border-bottom: 1px solid $list-group-border;
-  }
-}
 
 .truncate-done {
   overflow: hidden;
