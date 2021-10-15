@@ -116,8 +116,15 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         usort($references, function($a, $b) { return strcmp($a['title'], $b['title']); });
 
         $display = '';
-        foreach ($references as $reference)
-            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($reference['title']) . '</a><br>';
+        foreach ($references as $reference) {
+            $title = $reference['title'];
+            if (preg_match('"Kalliope"', $title))
+                $title = $this->translate('Archived Material') . ' (Kalliope)';
+            elseif (preg_match('"Archivportal-D"', $title))
+                $title = $this->translate('Archived Material') . ' (Archivportal-D)';
+
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($title) . '</a><br>';
+        }
 
         return $display;
     }
