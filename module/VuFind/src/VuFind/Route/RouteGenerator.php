@@ -107,15 +107,15 @@ class RouteGenerator
     /**
      * Add non tab record action & re-register all record routes to support it.
      *
-     * @param array  $config     Configuration array to update
-     * @param string $action     Action to add
+     * @param array  $config    Configuration array to update
+     * @param string $action    Action to add
+     *
+     * @return void
      */
     public function addNonTabRecordAction(& $config, $action)
     {
-        // Explicitly use RouteGenerator:: here, so even children will
-        // use the parent's variable.
-        RouteGenerator::$nonTabRecordActions[] = $action;
-        foreach (RouteGenerator::$recordRoutes as $recordRoute) {
+        self::$nonTabRecordActions[] = $action;
+        foreach (self::$recordRoutes as $recordRoute) {
             $this->addRecordRoute(
                 $config,
                 $recordRoute['routeBase'],
@@ -127,8 +127,8 @@ class RouteGenerator
     /**
      * Add non tab record actions & re-register all record routes to support it.
      *
-     * @param array $config     Configuration array to update
-     * @param array $actions    Action to add
+     * @param array $config  Configuration array to update
+     * @param array $actions Action to add
      */
     public function addNonTabRecordActions(& $config, $actions)
     {
@@ -184,7 +184,7 @@ class RouteGenerator
 
         // Store the added route in case we need to add
         // more nonTabRecordActions later
-        RouteGenerator::$recordRoutes[] = [
+        self::$recordRoutes[] = [
             'routeBase' => $routeBase,
             'controller' => $controller,
         ];
