@@ -474,10 +474,23 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         arsort($countedTopics);
 
+        $urlHelper = $this->viewHelperManager->get('url');
+        $tuefindHelper = $this->viewHelperManager->get('tuefind');
+
+        $searchType = 'AllFields';
+        $topicsFacet = 'topic_facet';
+        $lookfor = $this->getTitlesByQueryParams($driver);
+
+        if ($tuefindHelper->getTueFindFlavour() == 'ixtheo') {
+            $topicsFacet = 'key_word_chain_bag';
+        }
+        
+        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$searchType.'&filter[]='.$topicsFacet.':';
+
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {
             $updateString = str_replace([','], '', $topic);
-            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString];
+            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString, 'topicLink'=>$topicLink.$topic];
         }
 
         $mainTopicsArray = [];

@@ -283,6 +283,18 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Implemented as a workaround, because getenv('TUEFIND_FLAVOUR')
+     * does not work in apache environment.
+     */
+    public function getTueFindFlavour(): string {
+        if ($this->getTueFindSubtype() == 'KRI')
+            return 'krimdok';
+        else
+            return 'ixtheo';
+    }
+
+
+    /**
       * Get TueFind Instance as defined by VUFIND_LOCAL_DIR variable
       * @return string
       */
