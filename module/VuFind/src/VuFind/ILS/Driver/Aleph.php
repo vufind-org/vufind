@@ -1124,11 +1124,12 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
 
         // with full details and paging
         $pageSize = $params['limit'] ?? 50;
+        $itemsNoKey = $history ? 'no_loans' : 'noItems';
         $alephParams += [
             'view' => 'full',
             'startPos' => isset($params['page'])
                 ? ($params['page'] - 1) * $pageSize : 0,
-            'noItems' => $pageSize,
+            $itemsNoKey => $pageSize,
         ];
 
         $xml = $this->doRestDLFRequest(
