@@ -107,8 +107,8 @@ class RouteGenerator
     /**
      * Add non tab record action & re-register all record routes to support it.
      *
-     * @param array  $config    Configuration array to update
-     * @param string $action    Action to add
+     * @param array  $config Configuration array to update
+     * @param string $action Action to add
      *
      * @return void
      */
@@ -129,6 +129,8 @@ class RouteGenerator
      *
      * @param array $config  Configuration array to update
      * @param array $actions Action to add
+     *
+     * @return void
      */
     public function addNonTabRecordActions(& $config, $actions)
     {
