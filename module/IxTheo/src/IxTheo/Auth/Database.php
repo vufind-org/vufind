@@ -42,9 +42,9 @@ class Database extends \TueFind\Auth\Database
     protected function createUserFromParams($params, $table)
     {
         $user = parent::createUserFromParams($params, $table);
-        $user->ixtheo_appellation = in_array($params['appellation'], Database::$appellations) ? $params['appellation'] : $user->ixtheo_appellation;
-        $user->ixtheo_title = in_array($params['title'], Database::$titles) ? $params['title'] : $user->ixtheo_title;
-        $user->ixtheo_country = in_array($params['country'], Database::$countries) ? $params['country'] : $user->ixtheo_country;
+        $user->ixtheo_appellation = in_array($params['ixtheo_appellation'], Database::$appellations) ? $params['ixtheo_appellation'] : $user->ixtheo_appellation;
+        $user->ixtheo_title = in_array($params['ixtheo_title'], Database::$titles) ? $params['ixtheo_title'] : $user->ixtheo_title;
+        $user->ixtheo_country = in_array($params['ixtheo_country'], Database::$countries) ? $params['ixtheo_country'] : $user->ixtheo_country;
         $user->ixtheo_language = $params['ixtheo_language'];
         $user->ixtheo_user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
         $user->save();
