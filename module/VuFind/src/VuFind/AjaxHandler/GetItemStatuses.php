@@ -454,26 +454,6 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Render full item status.
-     *
-     * @param array $record Record
-     * @param array $values Additional values for the template
-     *
-     * @return string
-     */
-    protected function renderFullStatus($record, array $values = [])
-    {
-        $values = array_merge(
-            [
-                'statusItems' => $record,
-                'callnumberHandler' => $this->getCallnumberHandler()
-            ],
-            $values
-        );
-        return $this->renderer->render('ajax/status-full.phtml', $values);
-    }
-
-    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller
@@ -555,7 +535,13 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 // If a full status display has been requested and no errors were
                 // encountered, append the HTML:
                 if ($showFullStatus && empty($record[0]['error'])) {
-                    $current['full_status'] = $this->renderFullStatus($record);
+                    $current['full_status'] = $this->renderer->render(
+                        'ajax/status-full.phtml',
+                        [
+                            'statusItems' => $record,
+                            'callnumberHandler' => $this->getCallnumberHandler()
+                        ]
+                    );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
                 $statuses[] = $current;
