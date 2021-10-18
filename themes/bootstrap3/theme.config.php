@@ -81,11 +81,11 @@ return [
             'FontAwesome' => [
                 'template' => 'font',
                 'prefix' => 'fa fa-',
-                // Right now, FontAwesome is bundled into custom.css; when we no
+                // Right now, FontAwesome is bundled into compiled.css; when we no
                 // longer globally rely on FA (by managing all icons through the
                 // helper), we should change this to 'vendor/font-awesome.min.css'
                 // so it only loads conditionally when icons are used.
-                'src' => 'custom.css',
+                'src' => 'compiled.css',
             ],
         ],
         'aliases' => [

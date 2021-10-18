@@ -287,7 +287,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             }
             // Store call number/location info:
             $callNumbers[] = $this->formatCallNo(
-                $info['callnumber_prefix'],
+                $info['callnumber_prefix'] ?? '',
                 $info['callnumber']
             );
 

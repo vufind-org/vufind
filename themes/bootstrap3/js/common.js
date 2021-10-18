@@ -495,7 +495,10 @@ $(document).ready(function commonDocReady() {
       // under normal usage outside of the Phing startup process.
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
         window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
-        window.print();
+        // Trigger print after a minimal timeout. This is done to avoid
+        // problems with some browsers, which might not fully update
+        // ajax loaded page content before showing the print dialog.
+        setTimeout(function doPrint() { window.print(); }, 10);
       } else {
         console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
       }
