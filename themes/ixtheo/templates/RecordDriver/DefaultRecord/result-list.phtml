@@ -24,6 +24,7 @@
           <?php /* Saved lists */ ?>
           <div class="savedLists hidden">
             <strong><?=$this->transEsc("Saved in")?>:</strong>
+            <a href='/MyResearch/MyList' data-lightbox class="favoritesListModal tf-d-none" >&nbsp;</a>
           </div>
         <?php endif; ?>
         <?php $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
