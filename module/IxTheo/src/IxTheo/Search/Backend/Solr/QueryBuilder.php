@@ -13,7 +13,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
 {
     const BIBLE_REFERENCE_COMMAND = '/usr/local/bin/bib_ref_to_codes_tool';
     const CANONES_REFERENCE_COMMAND = '/usr/local/bin/canon_law_ref_to_codes_tool';
-    const TIME_ASPECTS_COMMAND = '/usr/local/bin/time_aspects_to_codes_tool';
+    // TIME_ASPECTS_COMMAND see parent
     const BIBLE_REFERENCE_COMMAND_PARAMETERS = _BIB_REF_CMD_PARAMS_;
     const BIBLE_RANGE_HANDLER = 'BibleRangeSearch';
     const CANONES_RANGE_HANDLER = 'CanonesRangeSearch';
@@ -57,7 +57,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     }
 
 
-    private function getManipulatedQueryString($handler, AbstractQuery $query)
+    protected function getManipulatedQueryString($handler, AbstractQuery $query)
     {
         $rangeReferences = '';
         if ($handler == self::BIBLE_RANGE_HANDLER)
@@ -70,7 +70,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     }
 
 
-    private function translateToSearchString($rangeReferences)
+    protected function translateToSearchString($rangeReferences)
     {
         if (empty($rangeReferences)) {
             // if no references were found for given query, search for a range which doesn't exist to get no result.
@@ -81,7 +81,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     }
 
 
-    private function getBibleReferenceCommand($searchQuery)
+    protected function getBibleReferenceCommand($searchQuery)
     {
         setlocale(LC_CTYPE, "de_DE.UTF-8");
         return implode(' ', [
@@ -93,7 +93,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     }
 
 
-    private function getCanonesReferenceCommand($searchQuery) {
+    protected function getCanonesReferenceCommand($searchQuery) {
         return implode(' ', [
             self::CANONES_REFERENCE_COMMAND,
             "--query",
@@ -102,15 +102,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     }
 
 
-    private function getTimeAspectsCommand($searchQuery) {
-        return implode(' ', [
-            self::TIME_ASPECTS_COMMAND,
-            escapeshellarg($searchQuery)
-        ]);
-    }
-
-
-    private function parseBibleReference(AbstractQuery $query)
+    protected function parseBibleReference(AbstractQuery $query)
     {
         $searchQuery = $query->getString();
         if (!empty($searchQuery)) {
@@ -122,7 +114,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     }
 
 
-    private function parseCanonesReference(AbstractQuery $query)
+    protected function parseCanonesReference(AbstractQuery $query)
     {
         $searchQuery = $query->getString();
         if (!empty($searchQuery)) {
@@ -133,8 +125,8 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
         return [];
     }
 
-
-    private function parseTimeAspect(AbstractQuery $query) {
+    protected function parseTimeAspect(AbstractQuery $query)
+    {
         $searchQuery = $query->getString();
         if (!empty($searchQuery)) {
             $cmd = $this->getTimeAspectsCommand($searchQuery);

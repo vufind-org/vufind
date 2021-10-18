@@ -4,7 +4,7 @@ namespace IxTheo\Search\Params;
 
 use VuFind\Search\Solr\ParamsFactory;
 
-class PluginManager extends \VuFind\Search\Params\PluginManager {
+class PluginManager extends \TueFind\Search\Params\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {

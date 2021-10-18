@@ -1,7 +1,7 @@
 <?php
 namespace TueFind\Search\Search2;
 
-class Results extends \IxTheo\Search\Solr\Results
+class Results extends \VuFind\Search\Search2\Results
 {
-    protected $backendId = 'Search2';
+
 }

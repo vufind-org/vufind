@@ -1,0 +1,90 @@
+<?php
+$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsDataAndSettings[0])) :
+
+$this->headLink()->appendStylesheet('vendor/jqcloud.css');
+$this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
+
+$responseTopicsData = $responseTopicsDataAndSettings[0];
+$responseTopicsSettings = $responseTopicsDataAndSettings[1];
+
+$jsData = '';
+$itopic = 1;
+foreach($responseTopicsData as $topic) {
+    if($itopic <= $responseTopicsSettings['maxTopicRows']) {
+        $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: "'.$this->url('search-results').'?lookfor='.$this->driver->getHeadingShort().'&type=AllFields&filter[]=topic_facet:'.$topic['topicUpdate'].'", target: "_blank"}},';
+    }
+    $itopic++;
+}
+
+$ascSortingTopicsData = $responseTopicsData;
+$toptitle = array();
+foreach ($ascSortingTopicsData as $key => $row) {
+    $toptitle[$key]  = $row['topicTitle'];
+}
+array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
+
+
+$countSortingTopicsData = $responseTopicsData;
+array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);
+
+$jsSnippetTags = <<<EOD
+$(function () {
+    let word_list = [
+        $jsData
+    ];
+    $("#topic_cloud").jQCloud(word_list);
+    $(window).on('resize',function(){
+      $('#topic_cloud').css("width", "100%");
+      $('#topic_cloud').empty().jQCloud(word_list);
+    });
+});
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
+
+<h4><?=$this->transEsc('Suggested Topics')?></h4>
+<div class="col-md-12 tf-cloud-block" style="">
+  <div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#authorityCloudFirst" aria-controls="home" role="tab" data-toggle="tab">Cloud</a></li>
+      <li role="presentation"><a href="#authorityCloudSecond" aria-controls="profile" role="tab" data-toggle="tab"><?=$this->transEsc('By Alphabetical')?></a></li>
+      <li role="presentation"><a href="#authorityCloudThird" aria-controls="messages" role="tab" data-toggle="tab"><?=$this->transEsc('By Popularity')?></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content tf-p-0">
+      <div role="tabpanel" class="tab-pane active" id="authorityCloudFirst">
+        <div id="topic_cloud" class="tf-cloud-block-background"></div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="authorityCloudSecond">
+        <div class="lightbox-scroll full-facets" style="max-height: 350px;">
+          <div class="facet-group" id="facet-list-count">
+            <?php foreach($ascSortingTopicsData as $topic): ?>
+            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=topic_facet:<?=$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
+              <span class="text">
+                <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
+              </span>
+              <span class="badge"><?php echo $topic['topicCount'];?></span>
+            </a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="authorityCloudThird">
+        <div class="lightbox-scroll full-facets" style="max-height: 350px;">
+          <div class="facet-group" id="facet-list-count">
+            <?php foreach($countSortingTopicsData as $topic): ?>
+            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=topic_facet:<?=$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
+              <span class="text">
+                <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
+              </span>
+              <span class="badge"><?php echo $topic['topicCount'];?></span>
+            </a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif;?>

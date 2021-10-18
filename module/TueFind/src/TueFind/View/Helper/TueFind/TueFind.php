@@ -290,6 +290,15 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         return basename(getenv('VUFIND_LOCAL_DIR'));
     }
 
+    public function getTueFindSubsystem(): string {
+        $instance = $this->getTueFindInstance();
+        $map = ['ixtheo' => 'ixtheo',
+                'relbib' => 'relbib',
+                'bibstudies' => 'biblestudies',
+                'churchlaw' => 'canonlaw'];
+        return $map[$instance] ?? $instance;
+    }
+
     /**
       * Derive textual description of TueFind (Subsystems of IxTheo return IxTheo)
       * @return string or false of no matching value could be found

@@ -185,6 +185,7 @@ Author:
     - author_fuller^50
     - author2
     - author_additional
+    - author_corporate
     - corporation
   QueryFields:
     author:
@@ -204,6 +205,10 @@ Author:
       - [and, 50]
       - [or, ~]
     author_additional:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author_corporate:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
@@ -806,12 +811,18 @@ oclc_num:
       - [oclc_num, ~]
 
 Keywordchains:
-   DismaxFields:
-      - key_word_chains_sorted
-   QueryFields:
-     key_word_chain_sorted:
-      - [and, ~]
-   DismaxParams:
-       - ["defType", "multiLanguageQueryParser"]
-       - ["mm", "100%"]
+  DismaxFields:
+    - key_word_chains_sorted
+  QueryFields:
+    key_word_chain_sorted:
+    - [and, ~]
+  DismaxParams:
+    - ["defType", "multiLanguageQueryParser"]
+    - ["mm", "100%"]
 
+GND:
+  DismaxFields:
+    - author_gnd^200
+    - author2_gnd^100
+    - author_corporate_gnd
+    - topic_gnd

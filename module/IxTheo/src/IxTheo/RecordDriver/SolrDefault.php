@@ -241,11 +241,19 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         $displayString .= ' can. ' . $canonLawRangeStart['canon'];
 
         if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0) {
-            $displayString .= ', §' . $canonLawRangeStart['pars1'];
-            if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2'])
-                $displayString .=  ' n. ' . $canonLawRangeStart['pars2'];
-            else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2'])
-                $displayString .= '-' . $canonLawRangeStart['pars2'];
+            if ($canonLawRangeStart['pars1'] != $canonLawRangeEnd['pars1']) {
+                $displayString .= ', §§' . $canonLawRangeStart['pars1'] . '-' . $canonLawRangeEnd['pars1'];
+            }  else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'] . ' n. ' . $canonLawRangeStart['pars2'] . '-' . $canonLawRangeEnd['pars2'];
+            } else {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'];
+                if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2']) {
+                    $displayString .= ' n. ' . $canonLawRangeStart['pars2'];
+                }
+                else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                    $displayString .= '-' . $canonLawRangeStart['pars2'];
+                }
+            }
         }
 
         if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon']) {
@@ -296,16 +304,24 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $canonLawRangesStrings;
     }
 
-    public function getKeyWordChainBag()
+    public function getKeyWordChainBag($languageSuffix=null)
     {
-        return isset($this->fields['key_word_chain_bag']) ?
-            $this->fields['key_word_chain_bag'] : '';
+        $key = 'key_word_chain_bag';
+        if (isset($languageSuffix))
+            $key .= '_' . $languageSuffix;
+        return isset($this->fields[$key]) ?
+            $this->fields[$key] : [];
     }
 
     public function getPrefix4KeyWordChainBag()
     {
         return isset($this->fields['prefix4_key_word_chain_bag']) ?
             $this->fields['prefix4_key_word_chain_bag'] : '';
+    }
+
+    public function getTopics($language=null): array
+    {
+        return $this->getKeyWordChainBag($language);
     }
 
     /**

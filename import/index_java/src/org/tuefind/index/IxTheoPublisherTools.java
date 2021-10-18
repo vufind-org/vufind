@@ -6,9 +6,14 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 
-public class IxTheoPublisher extends TueFind {
-    private final static Map<String, String> replacements = new LinkedHashMap<>(128);
-    private final static Set<String> replacementBlackList = new HashSet<>();
+public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
+    protected final static Map<String, String> replacements = new LinkedHashMap<>(128);
+    protected final static Set<String> replacementBlackList = new HashSet<>();
+
+    // Placeholder values inspired by https://www.loc.gov/marc/bibliographic/concise/bd264.html
+    protected final static String placeholderForCopyright = "[copyright not identified]";
+    protected final static String placeholderForPublication = "[publication not identified]";
+    protected final static String placeholderForPublisher = "[publisher not identified]";
 
     static {
 // delete commas at the end
@@ -20,6 +25,11 @@ public class IxTheoPublisher extends TueFind {
 // insert space after a period if doesn't exists.
         replacements.put("\\.(?!\\s)", ". ");
         replacements.put("\\s-", "-");
+// Substitute double quotes and brackets at beginning and end
+        replacements.put("^\\((.*)\\)$", "$1");
+        replacements.put("^\"(.*)\"$", "$1");
+        replacements.put("^'(.*)'$", "$1");
+
 
 // Replace some abbreviation:
         replacements.put(" und ", " u. ");
@@ -115,7 +125,7 @@ public class IxTheoPublisher extends TueFind {
      */
     public Set<String> getNormalizedPublishers(final Record record) {
         Set<String> publishers = new LinkedHashSet<>();
-        final Set<String> rawPublishers = getRawPublishers(record);
+        final Set<String> rawPublishers = getPublishers(record);
 
         for (String publisher : rawPublishers) {
             publisher = publisher.trim();
@@ -123,11 +133,15 @@ public class IxTheoPublisher extends TueFind {
                 // In some cases make sure that we abort after only some part of the rewriting has taken place
                 if (replacementBlackList.contains(publisher))
                     break;
+                if (publisher.equals(placeholderForCopyright) || publisher.equals(placeholderForPublication) || publisher.equals(placeholderForPublisher))
+                    break;
                 publisher = publisher.replaceAll(replacement.getKey(), replacement.getValue()).trim();
             }
 
             if (!publisher.isEmpty()) {
                 publishers.add(publisher);
+            } else {
+                publishers.add(placeholderForPublisher);
             }
         }
         return publishers;
@@ -141,43 +155,113 @@ public class IxTheoPublisher extends TueFind {
         return publishers;
     }
 
-    public Set<String> getRawPublishers(final Record record) {
-        final Set<String> publishers = new LinkedHashSet<>();
+    /**
+     * We need to override this parent function to store placeholder values if no subfield is found.
+     * This is necessary to keep the publishers field in sync with other fields
+     * which will be combined on PHP side.
+     *
+     * See also:
+     * - VuFind\RecordDriver\DefaultRecord::getPublicationDetails()
+     * - Issue #1339
+     *
+     * @param record
+     *
+     * @return
+     */
+    public Set<String> getPublishers(final Record record) {
+        Set<String> publishers = new LinkedHashSet<String>();
+        boolean publisherFound = false;
+        boolean publicationFound = false;
 
-        // First check old-style 260b name:
-        final List<VariableField> list260 = record.getVariableFields("260");
-        for (final VariableField vf : list260) {
-            final DataField df = (DataField) vf;
-            final Subfield current = df.getSubfield('b');
-            if (current != null) {
-                publishers.add(current.getData());
+        // First check 773d especially for articles of journals:
+        List<VariableField> list773 = record.getVariableFields("773");
+        for (VariableField vf : list773)
+        {
+            DataField df = (DataField) vf;
+            for (Subfield current : df.getSubfields('d')) {
+                String s773d = current.getData().trim();
+                if (s773d.contains(":"))
+                {
+                    s773d = s773d.substring(s773d.indexOf(":") + 1).trim();
+                    if (s773d.contains(","))
+                    {
+                        s773d = s773d.substring(0, s773d.lastIndexOf(",")).trim();
+                        if (s773d.isEmpty() == false)
+                        {
+                            publishers.add(s773d);
+                            publicationFound = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Second check old-style 260b name:
+        List<VariableField> list260 = record.getVariableFields("260");
+        for (VariableField vf : list260)
+        {
+            DataField df = (DataField) vf;
+            String currentString = "";
+            for (Subfield current : df.getSubfields('b')) {
+                currentString = currentString.trim().concat(" " + current.getData()).trim();
+            }
+
+            if (currentString.length() > 0) {
+                publishers.add(currentString);
             }
         }
 
         // Now track down relevant RDA-style 264b names; we only care about
         // copyright and publication names (and ignore copyright names if
         // publication names are present).
-        final Set<String> pubNames = new LinkedHashSet<>();
-        final Set<String> copyNames = new LinkedHashSet<>();
-        final List<VariableField> list264 = record.getVariableFields("264");
-        for (final VariableField vf : list264) {
-            final DataField df = (DataField) vf;
-            final Subfield currentName = df.getSubfield('b');
-            if (currentName != null) {
-                final char ind2 = df.getIndicator2();
-                switch (ind2) {
-                    case '1':
-                        pubNames.add(currentName.getData());
-                        break;
-                    case '4':
-                        copyNames.add(currentName.getData());
-                        break;
-                }
+        Set<String> pubNames = new LinkedHashSet<String>();
+        Set<String> copyNames = new LinkedHashSet<String>();
+        List<VariableField> list264 = record.getVariableFields("264");
+        for (VariableField vf : list264)
+        {
+            DataField df = (DataField) vf;
+            String currentString = "";
+            for (Subfield current : df.getSubfields('b')) {
+                currentString = currentString.trim().concat(" " + current.getData()).trim();
+            }
+
+            // TueFind: Add placeholder if the subfield is missing
+            char ind2 = df.getIndicator2();
+            switch (ind2)
+            {
+                case '1':
+                    if (currentString.isEmpty()) {
+                        currentString = placeholderForPublication;
+                    }
+                    else {
+                        publicationFound = true;
+                    }
+                    pubNames.add(currentString);
+                    break;
+                case '4':
+                    if (currentString.isEmpty()) {
+                        currentString = placeholderForCopyright;
+                    }
+                    copyNames.add(currentString);
+                    break;
             }
         }
-        if (!pubNames.isEmpty()) {
+
+        // if publication was set in article field 773d but not in 264b, "not identified" flag not needed here
+        // for copyright flag no correction because we assume that 773d does not refer to copyright entry
+        if (publicationFound == true)
+        {
+            pubNames.remove(placeholderForPublication);
+        }
+        else { // assuming that a "full publication (found) does contain a publisher and thus does not need a "publisher not identified"
+            if (publishers.size() == 0) {
+                publishers.add(placeholderForPublisher);
+            }
+        }
+
+        if (pubNames.size() > 0) {
             publishers.addAll(pubNames);
-        } else if (!copyNames.isEmpty()) {
+        } else if (copyNames.size() > 0) {
             publishers.addAll(copyNames);
         }
 

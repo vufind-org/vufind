@@ -193,6 +193,7 @@ Author:
     - author_fuller^50
     - author2
     - author_additional
+    - author_corporate
   QueryFields:
     author:
       - [onephrase, 350]
@@ -207,6 +208,10 @@ Author:
       - [and, 50]
       - [or, ~]
     author_additional:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author_corporate:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
@@ -599,3 +604,9 @@ Fulltext:
     fulltext:
       - [or, ~]
 
+GND:
+  DismaxFields:
+    - author_gnd^200
+    - author2_gnd^100
+    - author_corporate_gnd
+    - topic_gnd

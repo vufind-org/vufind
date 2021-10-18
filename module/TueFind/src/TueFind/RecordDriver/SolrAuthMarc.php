@@ -4,6 +4,8 @@ namespace TueFind\RecordDriver;
 
 class SolrAuthMarc extends SolrAuthDefault {
 
+    const EXTERNAL_REFERENCES_DATABASES = ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata', 'Wikipedia'];
+
     /**
      * Get List of all beacon references.
      * @return [['title', 'url']]
@@ -25,6 +27,36 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $beacon_references;
     }
 
+    protected function getExternalReferencesFiltered(array $blacklist=[], array $whitelist=[]): array
+    {
+        $references = [];
+
+        $fields = $this->getMarcRecord()->getFields('670');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $nameSubfield = $field->getSubfield('a');
+                if ($nameSubfield === false)
+                    continue;
+
+                $name = $nameSubfield->getData();
+                if (in_array($name, $blacklist) || (count($whitelist) > 0 && !in_array($nameSubfield->getData(), $whitelist)))
+                    continue;
+
+                $urlSubfield = $field->getSubfield('u');
+                if ($urlSubfield !== false) {
+                    $url = $urlSubfield->getData();
+                    if ($name == 'Wikipedia')
+                        $url = preg_replace('"&(oldid|diff)=[^&]+"', '', $url);
+
+                    $references[] = ['title' => $name,
+                                     'url' => $url];
+                }
+            }
+        }
+
+        return $references;
+    }
+
     public function getExternalReferences(): array
     {
         $references = [];
@@ -34,20 +66,22 @@ class SolrAuthMarc extends SolrAuthDefault {
             $references[] = ['title' => 'GND',
                              'url' => 'http://d-nb.info/gnd/' . urlencode($gndNumber)];
 
-        $isni = $this->getISNI();
-        if ($isni != null)
+        $isnis = $this->getISNIs();
+        foreach ($isnis as $isni) {
             $references[] = ['title' => 'ISNI',
                              'url' => 'https://isni.org/isni/' . urlencode(str_replace(' ', '', $isni))];
+        }
 
         $lccn = $this->getLCCN();
         if ($lccn != null)
             $references[] = ['title' => 'LOC',
                              'url' => 'https://lccn.loc.gov/' . urlencode($lccn)];
 
-        $orcid = $this->getORCID();
-        if ($orcid != null)
+        $orcids = $this->getORCIDs();
+        foreach ($orcids as $orcid) {
             $references[] = ['title' => 'ORCID',
                              'url' => 'https://orcid.org/' . urlencode($orcid)];
+        }
 
         $viafs = $this->getVIAFs();
         foreach ($viafs as $viaf) {
@@ -60,22 +94,21 @@ class SolrAuthMarc extends SolrAuthDefault {
             $references[] = ['title' => 'Wikidata',
                              'url' => 'https:////www.wikidata.org/wiki/' . urlencode($wikidataId)];
 
-        $fields = $this->getMarcRecord()->getFields('670');
-        if (is_array($fields)) {
-            foreach ($fields as $field) {
-                $nameSubfield = $field->getSubfield('a');
-                if ($nameSubfield === false || in_array($nameSubfield->getData(), ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata']))
-                    continue;
+        $references = array_merge($references, $this->getExternalReferencesFiltered(/*blacklist=*/[], /*whitelist=*/['Wikipedia']));
+        return $references;
+    }
 
-                $urlSubfield = $field->getSubfield('u');
-
-                if ($nameSubfield !== false && $urlSubfield !== false)
-                    $references[] = ['title' => $nameSubfield->getData(),
-                                     'url' => $urlSubfield->getData()];
-            }
-        }
+    public function getExternalResources(): array
+    {
+        $references = $this->getExternalReferencesFiltered(/*blacklist=*/['Wikipedia'], /*whitelist=*/[]);
         $references = array_merge($references, $this->getBeaconReferences());
         return $references;
+    }
+
+    public function getExternalSubsystems(): array
+    {
+        // This needs to be overridden in IxTheo/KrimDok if subsystems are present
+        return [];
     }
 
     protected function getLifeDates()
@@ -332,26 +365,30 @@ class SolrAuthMarc extends SolrAuthDefault {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
                 if ($nameSubfield !== false) {
-                    $name = $nameSubfield->getData();
+                    $relation = ['name' => $nameSubfield->getData()];
 
                     $addSubfield = $field->getSubfield('b');
                     if ($addSubfield !== false)
-                        $name .= ', ' . $addSubfield->getData();
+                        $relation['institution'] = $addSubfield->getData();
 
-                    $relation = ['name' => $name];
+                    $locationSubfield = $field->getSubfield('g');
+                    if ($locationSubfield !== false)
+                        $relation['location'] = $locationSubfield->getData();
 
                     $idPrefixPattern = '/^\(DE-627\)/';
                     $idSubfield = $field->getSubfield('0', $idPrefixPattern);
                     if ($idSubfield !== false)
                         $relation['id'] = preg_replace($idPrefixPattern, '', $idSubfield->getData());
 
-                    $typeSubfield = $field->getSubfield('i');
-                    if ($typeSubfield !== false)
-                        $relation['type'] = $typeSubfield->getData();
-
-                    $timespanSubfield = $field->getSubfield('9');
-                    if ($timespanSubfield !== false && preg_match('"^(Z:)(.+)"', $timespanSubfield->getData(), $matches))
-                        $relation['timespan'] = $matches[2];
+                    $localSubfields = $field->getSubfields('9');
+                    foreach ($localSubfields as $localSubfield) {
+                        if (preg_match('"^(.):(.+)"', $localSubfield->getData(), $matches)) {
+                            if ($matches[1] == 'Z')
+                                $relation['timespan'] = $matches[2];
+                            else if ($matches[1] == 'v')
+                                $relation['type'] = $matches[2];
+                        }
+                    }
 
                     $relations[] = $relation;
                 }
@@ -359,5 +396,36 @@ class SolrAuthMarc extends SolrAuthDefault {
         }
 
         return $relations;
+    }
+
+    /**
+     * This function is used to detect "Tn"-sets, which are similar to persons.
+     *
+     * @return bool
+     */
+    public function isName(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('b');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'n')
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public function isFamily(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('v');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'pif')
+                    return true;
+            }
+        }
+        return false;
     }
 }
