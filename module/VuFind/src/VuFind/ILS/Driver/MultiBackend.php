@@ -1417,6 +1417,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         bool $stripPrefixes = true,
         bool $addPrefixes = true
     ) {
+        if (empty($params) && null === $source) {
+            return null;
+        }
         if (null === $source) {
             $source = $this->getSourceForMethod($method, $params);
         }
