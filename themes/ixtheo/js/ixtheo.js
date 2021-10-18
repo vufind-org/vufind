@@ -68,26 +68,26 @@ var IxTheo = {
     },
 
     ShowMoreButtonFavoriteList: function() {
-	let maxElements = 3;
-        let countListItems = 0;
-	let showMoreButton = false;
-	let mainBlock = $('.savedLists:first');
-	setTimeout(function() {
-	    mainBlock.find('li').each(function() {
-		countListItems++;
-		if(countListItems > maxElements) {
-		    $(this).hide();
-		    showMoreButton = true;
-		}
-	    })
-	    if(showMoreButton === true) {
-		$('<span class="favoritesListMoreButton">more</span>').insertAfter(mainBlock.find('ul'));
-	    }
-	    mainBlock.removeClass('tf-d-none');
-	    $('.favoritesListMoreButton').click(function() {
-		$('.favoritesListModal').click();
-	    })
-	}, 500);
+      let maxElements = 3;
+      let countListItems = 0;
+      let showMoreButton = false;
+      let mainBlock = $('.savedLists:first');
+      setTimeout(function() {
+	  mainBlock.find('li').each(function() {
+	      countListItems++;
+	      if(countListItems > maxElements) {
+		  $(this).hide();
+		  showMoreButton = true;
+	      }
+	  })
+	  if(showMoreButton === true) {
+	      $('<span class="ix-favoritesListMoreButton">more</span>').insertAfter(mainBlock.find('ul'));
+	  }
+	  mainBlock.removeClass('tf-d-none');
+	  $('.ix-favoritesListMoreButton').click(function() {
+	      $('.ix-favoritesListModal').click();
+	  })
+      }, 500);
     }
 };
 
