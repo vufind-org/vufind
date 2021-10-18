@@ -211,6 +211,10 @@ class MyResearchController extends \TueFind\Controller\MyResearchController
             $user->$param = $request->getPost()->get($param, $default);
         }
         $user->save();
+
+        // Update the TAD access flag:
+        exec("/usr/local/bin/set_tad_access_flag.sh " . $user->id);
+
         $this->getAuthManager()->updateSession($user);
     }
 
