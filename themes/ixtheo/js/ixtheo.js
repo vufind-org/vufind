@@ -70,22 +70,23 @@ var IxTheo = {
     let maxElements = 3;
     let countListItems = 0;
     let showMoreButton = false;
-    let mainBlock = $('.savedLists:first');
     setTimeout(function() {
-      mainBlock.find('li').each(function() {
-	countListItems++;
-	if (countListItems > maxElements) {
-	  $(this).hide();
-	  showMoreButton = true;
-	}
-      })
-      if (showMoreButton === true) {
-	$('<span class="ix-favoritesListMoreButton">' + VuFind.translate('more') + '</span>').insertAfter(mainBlock.find('ul'));
-      }
-      mainBlock.removeClass('tf-d-none');
-      $('.ix-favoritesListMoreButton').click(function() {
-	$('.ix-favoritesListModal').click();
-      })
+      $('.savedLists.loaded').each(function() {
+        $(this).find('li').each(function() {
+	  countListItems++;
+	  if (countListItems > maxElements) {
+	    $(this).hide();
+	    showMoreButton = true;
+	  }
+        });
+        if (showMoreButton === true) {
+          $('<span class="ix-favoritesListMoreButton">' + VuFind.translate('more') + '</span>').insertAfter($(this).find('ul'));
+        }
+        $(this).removeClass('tf-d-none');
+        $('.ix-favoritesListMoreButton').click(function() {
+          $('.ix-favoritesListModal').click();
+        });
+      });
     }, 500);
   }
 };
