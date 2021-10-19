@@ -50,10 +50,10 @@
     <div class="search-controls">
       <?php if (isset($list)): ?>
         <?php if ($list->editAllowed($account->isLoggedIn())): ?>
-          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
+          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i>&nbsp;<?=$this->transEsc("edit_list")?></a>
           <div class="btn-group">
             <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
-              <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc("delete_list")?>
+              <i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;<?=$this->transEsc("delete_list")?>
             </a>
             <ul class="dropdown-menu">
               <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
