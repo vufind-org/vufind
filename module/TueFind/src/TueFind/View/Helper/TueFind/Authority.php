@@ -107,6 +107,28 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
+    public function getExternalResources(AuthorityRecordDriver &$driver): string
+    {
+        $references = $driver->getExternalResources();
+        if (count($references) == 0)
+            return '';
+
+        usort($references, function($a, $b) { return strcmp($a['title'], $b['title']); });
+
+        $display = '';
+        foreach ($references as $reference) {
+            $title = $reference['title'];
+            if (preg_match('"Kalliope"', $title))
+                $title = $this->translate('Archived Material') . ' (Kalliope)';
+            elseif (preg_match('"Archivportal-D"', $title))
+                $title = $this->translate('Archived Material') . ' (Archivportal-D)';
+
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($title) . '</a><br>';
+        }
+
+        return $display;
+    }
+
     public function getExternalSubsystems(AuthorityRecordDriver &$driver, $currentSubsystem): string
     {
         $externalSubsystems = $driver->getExternalSubsystems();
@@ -157,8 +179,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if ($relationsDisplay != '')
                 $relationsDisplay .= '<br>';
 
-            $type = $relation['type'] == 'Veranstalter' ? 'organizer' : 'contributor';
-            $relationsDisplay .= '<span property="' . $type . '" typeof="Organization">';
+            $relationsDisplay .= '<span property="affiliation" typeof="Organization">';
 
             $recordExists = isset($relation['id']) && $this->recordExists($relation['id']);
             if ($recordExists) {
@@ -166,19 +187,20 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
 
-            $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
-
-            $additionalValuesConfig = ['type', 'timespan'];
-            $additionalValuesString = '';
-            foreach ($additionalValuesConfig as $additionalValue) {
-                if (isset($relation[$additionalValue])) {
-                    if ($additionalValuesString != '')
-                        $additionalValuesString .= ', ';
-                    $additionalValuesString .= htmlspecialchars($relation[$additionalValue]);
-                }
+            $relationsDisplay .= '<span property="name">' . htmlspecialchars($relation['name']) . '</span>';
+            if (isset($relation['location'])) {
+                $relationsDisplay .= ' (<span property="location">' . htmlspecialchars($relation['location']) . '</span>)';
+            } else if (isset($relation['institution'])) {
+                $relationsDisplay .= '. <span property="department">' . htmlspecialchars($relation['institution']) . '</span>';
             }
-            if ($additionalValuesString != '')
-                $relationsDisplay .= ' (' . $additionalValuesString . ')';
+
+            if (isset($relation['type']) || isset($relation['timespan'])) {
+                $relationsDisplay .= ':';
+                if (isset($relation['type']))
+                    $relationsDisplay .= ' ' . $relation['type'];
+                if (isset($relation['timespan']))
+                    $relationsDisplay .= ' ' . $relation['timespan'];
+            }
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
@@ -255,39 +277,42 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $response;
     }
 
-    public function getRelatedAuthors(AuthorityRecordDriver &$driver): array
+    public function getRelatedAuthors(AuthorityRecordDriver &$driver)
     {
+        $params = new \VuFindSearch\ParamBag();
+        $params->set('fl', 'facet_counts');
+        $params->set('facet', 'true');
+        $params->set('facet.pivot', 'author_and_id_facet');
+        $params->set('facet.limit', 9999);
+
+        // Make sure we set offset+limit to 0, because we only want the facet counts
+        // and not the rows itself for performance reasons.
+        // (This could get very slow, e.g. Martin Luther where we have thousands of related datasets.)
         $titleRecords = $this->searchService->search('Solr',
                                                      new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
-                                                     0, 9999);
+                                                     0, 0, $params);
 
-        $referenceAuthorName = $driver->getTitle();
+        $relatedAuthors = $titleRecords->getFacets()->getPivotFacets();
+        $referenceAuthorKey = $driver->getUniqueID() . ':' . $driver->getTitle();
 
-        $relatedAuthors = [];
-        foreach ($titleRecords as $titleRecord) {
-            $titleAuthors = $titleRecord->getDeduplicatedAuthors();
-            foreach ($titleAuthors as $category => $categoryAuthors) {
-                foreach ($categoryAuthors as $titleAuthorName => $titleAuthorDetails) {
-                    if ($titleAuthorName == $referenceAuthorName)
-                        continue;
+        // This is not an array but an ArrayObject, so unset() will cause an error
+        // if the index does not exist => we need to check it with isset first.
+        if (isset($relatedAuthors[$referenceAuthorKey]))
+            unset($relatedAuthors[$referenceAuthorKey]);
 
-                    $titleAuthorId = $titleAuthorDetails['id'][0] ?? null;
-                    if ($titleAuthorId && $titleAuthorId == $driver->getUniqueID())
-                        continue;
-
-                    if (!isset($relatedAuthors[$titleAuthorName]))
-                        $relatedAuthors[$titleAuthorName] = ['count' => 1];
-                    else
-                        ++$relatedAuthors[$titleAuthorName]['count'];
-                    if (isset($titleAuthorId))
-                        $relatedAuthors[$titleAuthorName]['id'] = $titleAuthorId;
-                }
+        // custom sort, since solr can only sort by count but not alphabetically,
+        // since the value starts with an id instead of a name.
+        $relatedAuthors->uasort(function($a, $b) {
+            $diff = $b['count'] - $a['count'];
+            if ($diff != 0)
+                return $diff;
+            else {
+                list($aId, $aTitle) = explode(':', $a['value']);
+                list($aId, $bTitle) = explode(':', $b['value']);
+                return strcmp($aTitle, $bTitle);
             }
-        }
-
-        uasort($relatedAuthors, function($a, $b) {
-            return $b['count'] - $a['count'];
         });
+
         return $relatedAuthors;
     }
 

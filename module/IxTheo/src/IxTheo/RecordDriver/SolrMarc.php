@@ -9,7 +9,7 @@ class SolrMarc extends SolrDefault
     public function canUseTAD($userId)
     {
         $formats_tad_allowed = array('Article');
-        $user_allowed = $this->getDbTable('IxTheoUser')->canUseTAD($userId);
+        $user_allowed = $this->getDbTable('user')->canUseTAD($userId);
         if(!$user_allowed) {
             return false;
         }

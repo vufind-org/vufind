@@ -220,10 +220,10 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
             }
         }
 
-        if ($query->getHandler() == 'YearRangeBBox') {
+        if (method_exists($query, 'getHandler') && $query->getHandler() == 'YearRangeBBox') {
             $params->set('q', $this->getYearRangeQuery($params, 'year_range_bbox', '-9999', '9999'));
         }
-        if ($query->getHandler() == 'TimeRangeBBox') {
+        if (method_exists($query, 'getHandler') && $query->getHandler() == 'TimeRangeBBox') {
             $params->set('q', $this->getTimeRangeQuery($params, 'time_aspect_bbox'));
         }
 

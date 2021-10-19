@@ -20,11 +20,9 @@ class PluginManager extends \TueFind\Db\Table\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addOverride('aliases', 'IxTheoUser', IxTheoUser::class);
         $this->addOverride('aliases', 'pdasubscription', PDASubscription::class);
         $this->addOverride('aliases', 'subscription', Subscription::class);
         $this->addOverride('aliases', 'user', User::class);
-        $this->addOverride('factories', IxTheoUser::class, GatewayFactory::class);
         $this->addOverride('factories', PDASubscription::class, GatewayFactory::class);
         $this->addOverride('factories', Subscription::class, GatewayFactory::class);
         $this->addOverride('factories', User::class, \VuFind\Db\Table\UserFactory::class);

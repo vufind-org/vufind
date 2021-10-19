@@ -12,7 +12,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         ];
 
         $result = [];
-        $result[] = ['title' => 'IxTheo', 'url' => 'https://ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'IXT'];
+        $result[] = ['title' => 'Index Theologicus', 'url' => 'https://ixtheo.de/Authority/' . urlencode($this->getUniqueID()), 'label' => 'IXT'];
         foreach ($this->getSubsystems() as $subsystem) {
             foreach ($subsystemLinks as $subsystemLink) {
                 if ($subsystemLink['label'] == $subsystem) {

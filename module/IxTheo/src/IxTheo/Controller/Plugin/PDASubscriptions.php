@@ -70,17 +70,13 @@ class PDASubscriptions extends AbstractPlugin
     function getUserData($userId) {
        $userTable = $this->dbTableManager->get('User');
        $select = $userTable->getSql()->select()->where(['id' => $userId]);
-
        $userRow = $userTable->selectWith($select)->current();
-       $ixtheoUserTable = $this->dbTableManager->get('IxTheoUser');
-       $ixtheoSelect = $ixtheoUserTable->getSql()->select()->where(['id' => $userId]);
-       $ixtheoUserRow = $ixtheoUserTable->selectWith($ixtheoSelect)->current();
-       $userData = [ 'title' => $ixtheoUserRow->title != "Other" ? $ixtheoUserRow->title . " " : "",
+       $userData = [ 'title' => $userRow->ixtheo_title != "Other" ? $userRow->ixtheo_title . " " : "",
                      'firstname' => $userRow->firstname,
                      'lastname' =>  $userRow->lastname,
                      'email' => $userRow->email,
-                     'country' => $ixtheoUserRow->country,
-                     'user_type' => $ixtheoUserRow->user_type ];
+                     'country' => $userRow->ixtheo_country,
+                     'user_type' => $userRow->ixtheo_user_type ];
        return $userData;
     }
 
