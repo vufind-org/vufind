@@ -29,6 +29,9 @@
 <?php /* Record details */ ?>
 <div vocab="http://schema.org/" typeof="<?=$schemaOrgType?>">
   <h3><?=$this->authority()->getName($this->driver)?></h3>
+  <?php if ($this->driver->isName()): ?>
+    <p><?=$this->transEsc('authority_note_name_record')?></p>
+  <?php endif; ?>
   <div class="row">
     <div class="col-sm-8">
       <table class="table table-striped">
