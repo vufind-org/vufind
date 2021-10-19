@@ -110,15 +110,6 @@
         "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
-<<<<<<< Updated upstream
-        "qa" : [
-            "phing eslint",
-            "phing phpunitfast",
-            "phing phpcs-console",
-            "phing php-cs-fixer-dryrun"
-        ]
-=======
         "qa": "phing eslint phpunitfast phpcs-console php-cs-fixer-dryrun"
->>>>>>> Stashed changes
     }
 }
