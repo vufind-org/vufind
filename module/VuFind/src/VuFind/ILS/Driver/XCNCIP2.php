@@ -1990,7 +1990,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $renewDetails['patron']['cat_password'],
                 $itemId,
                 $agencyId,
-                $renewDetails['patron']['patronAgencyId']
+                $renewDetails['patron']['patronAgencyId'],
+                $renewDetails['patron']['cat_username']
             );
             $response = $this->sendRequest($request);
             $dueDateXml = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
@@ -2157,6 +2158,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $patronAgencyId,
         $patronId = null
     ) {
+        $itemAgencyId = $this->determineToAgencyId($itemAgencyId);
         return $this->getNCIPMessageStart() .
             '<ns1:RenewItem>' .
             $this->getInitiationHeaderXml($patronAgencyId) .
@@ -2322,6 +2324,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getItemIdXml($agency, $itemId, $idType = null)
     {
+        $agency = $this->determineToAgencyId($agency);
         $ret = '<ns1:ItemId>' . $this->element('AgencyId', $agency);
         if ($idType !== null) {
             $ret .= $this->element('ItemIdentifierType', $idType);
@@ -2569,7 +2572,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // FIXME: We are using the first defined agency, it will probably not work in
         // consortium scenario
-        if (null === $agency) {
+        if (empty($agency)) {
             $keys = array_keys($this->agency);
             $agency = $keys[0];
         }
