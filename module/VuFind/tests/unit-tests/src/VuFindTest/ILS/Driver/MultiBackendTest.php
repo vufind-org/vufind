@@ -2622,6 +2622,19 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($methodReturn);
         $methodReturn = $driver->supportsMethod('getDefaultLoginDriver', null);
         $this->assertTrue($methodReturn);
+
+        //Case: loginIsHidden is supported when default driver is set and supports
+        //it
+        //Result: A return of true
+        $this->setProperty($driver, 'defaultDriver', 'testing3');
+        $methodReturn = $driver->supportsMethod('loginIsHidden', null);
+        $this->assertTrue($methodReturn);
+
+        //Case: loginIsHidden is not supported without a default driver
+        //Result: A return of false
+        $this->setProperty($driver, 'defaultDriver', null);
+        $methodReturn = $driver->supportsMethod('loginIsHidden', null);
+        $this->assertFalse($methodReturn);
     }
 
     /**
@@ -3087,6 +3100,11 @@ trait ILSMockTrait
     public function getRequestGroups($bibId = null, $patron = null, $holdDetails = null)
     {
         return [];
+    }
+
+    public function loginIsHidden()
+    {
+        return false;
     }
 
     public function placeHold($holdDetails)
