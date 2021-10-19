@@ -67,7 +67,6 @@ var IxTheo = {
   },
 
   ShowMoreButtonFavoriteList: function() {
-
     let maxElements = 3;
     let countListItems = 0;
     let showMoreButton = false;
