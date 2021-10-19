@@ -29,11 +29,8 @@
 </div>
 <div class="container appTitle">
   <div class="navbar-header">
-    <h2><a href="/vufind">Libraries Catalog</a></h2> 
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-hidden="true">
-      <i class="fa fa-bars"></i>
-    </button>
-    <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>"></a>
+    <h2><a href="<?=$this->url('home')?>">Libraries Catalog</a></h2> 
+
   </div>
   <?php if (!isset($this->layout()->renderingError)): ?>
     <div class="collapse navbar-collapse" id="header-collapse">
