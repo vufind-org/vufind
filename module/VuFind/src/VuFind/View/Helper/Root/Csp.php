@@ -72,8 +72,12 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
             as $field
         ) {
             if ($cspHeaders = $headers->get($field)) {
-                foreach ((array)$cspHeaders as $header) {
-                    $headers->removeHeader($header);
+                if ($cspHeaders instanceof \ArrayIterator) {
+                    foreach ($cspHeaders as $header) {
+                        $headers->removeHeader($header);
+                    }
+                } else {
+                    $headers->removeHeader($cspHeaders);
                 }
             }
         }
