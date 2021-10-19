@@ -111,6 +111,7 @@
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
         "qa" : [
+            "phing eslint",
             "phing phpunitfast",
             "phing phpcs-console",
             "phing php-cs-fixer-dryrun"
