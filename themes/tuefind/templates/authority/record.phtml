@@ -106,7 +106,7 @@
       <div class="col-sm-4">
         <?php
           // Image (partially rendered by JS)
-          $imgUrl = '/wikidataproxy/load';
+          $imgUrl = $this->url('wikidataproxy-load');
           $wikidataId = $this->driver->getWikidataId();
           if ($wikidataId != null) {
             $imgUrl .= '?id=' . $wikidataId;
@@ -143,7 +143,7 @@
 </div>
 <div class="sidebar right hidden-print">
   <!-- BEACON (Findbuch) references over API proxy -->
-  <div class="tf-findbuch-references" data-url="/findbuchproxy/load?gnd=<?=$this->driver->getGNDNumber()?>"></div>
+  <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>"></div>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetBeaconReferencesFromFindbuch();', 'SET')?>
 </div>
 
