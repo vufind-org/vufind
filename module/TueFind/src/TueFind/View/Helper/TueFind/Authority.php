@@ -535,7 +535,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                     }else{
                         $topWeight = $settings['minWeight'];
                     }
-
                 }
                 $one['topicNumber'] = $topWeight;
                 $mainTopicsArray[] = $one;
