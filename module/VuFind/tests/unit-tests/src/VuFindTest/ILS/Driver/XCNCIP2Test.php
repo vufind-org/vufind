@@ -1536,7 +1536,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $method->setAccessible(true);
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No identifiers for CancelRequest');
-        $request = $method->invokeArgs($this->driver,['username', 'password', 'patron agency', 'item agency', '', 'Hold', null, '12345']);
+        $request = $method->invokeArgs($this->driver, ['username', 'password', 'patron agency', 'item agency', '', 'Hold', null, '12345']);
     }
 
     /**
