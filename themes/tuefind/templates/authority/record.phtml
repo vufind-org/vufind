@@ -56,7 +56,7 @@
 
   <div class="sidebar right hidden-print">
     <!-- BEACON (Findbuch) references over API proxy -->
-    <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>" data-headline="<?=$this->transEsc('External References')?>"></div>
+    <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>" data-headline="<?=$this->transEsc('External Resources')?>"></div>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetBeaconReferencesFromFindbuch();', 'SET')?>
   </div>
 </div>
