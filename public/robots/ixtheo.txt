@@ -19,7 +19,7 @@ Disallow: /Authority
 Disallow: /Browse
 Disallow: /Combined
 Disallow: /Feedback
-Disallow: /findbuchproxy
+Disallow: /FindbuchProxy
 Disallow: /fulltextsnippetproxy
 Disallow: /Keywordchainsearch
 Disallow: /pdaproxy
@@ -30,5 +30,5 @@ Disallow: /Search/Results
 Disallow: /Search2
 Disallow: /Summon
 Disallow: /SummonRecord
-Disallow: /wikidataproxy
+Disallow: /WikidataProxy
 Sitemap: https://ixtheo.de/sitemaps/ixtheo/sitemapIndex.xml

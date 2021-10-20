@@ -19,7 +19,7 @@ Disallow: /Authority
 Disallow: /Browse
 Disallow: /Combined
 Disallow: /Feedback
-Disallow: /findbuchproxy
+Disallow: /FindbuchProxy
 Disallow: /fulltextsnippetproxy
 Disallow: /pdaproxy
 Disallow: /proxy
@@ -29,5 +29,5 @@ Disallow: /Search/Results
 Disallow: /Search2
 Disallow: /Summon
 Disallow: /SummonRecord
-Disallow: /wikidataproxy
+Disallow: /WikidataProxy
 Sitemap: https://krimdok.uni-tuebingen.de/sitemaps/krimdok/sitemapIndex.xml
