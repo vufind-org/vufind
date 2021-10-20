@@ -64,32 +64,6 @@ var IxTheo = {
 	}
       }
     });
-  },
-
-  ShowMoreButtonFavoriteList: function() {
-    let maxElements = 3;
-    let countListItems = 0;
-    let showMoreButton = false;
-    $('.savedLists.loaded').each(function() {
-      if (!$(this).hasClass('tf-loaded-custom')) {
-	$(this).find('li').each(function() {
-	  countListItems++;
-	  if (countListItems > maxElements) {
-	    $(this).hide();
-	    showMoreButton = true;
-	  }
-	});
-	if (showMoreButton === true) {
-	  $('<span class="ix-favoritesListMoreButton">' + VuFind.translate('more') + '</span>').insertAfter($(this).find('ul'));
-	}
-	$(this).removeClass('tf-d-none');
-	$('.ix-favoritesListMoreButton').click(function() {
-	  $('.ix-favoritesListModal').click();
-	});
-	$(this).addClass('tf-loaded-custom');
-	console.log('tf-loaded-custom');
-      }
-    });
   }
 };
 
@@ -109,7 +83,4 @@ $(document).ready(function() {
       return false;
     }
   });
-
-  setInterval(IxTheo.ShowMoreButtonFavoriteList, 1000);
-
 });
