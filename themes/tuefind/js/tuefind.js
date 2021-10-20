@@ -305,6 +305,32 @@ var TueFind = {
             });
             $("#ItemFulltextSearchForm").submit();
         });
+    },
+
+    ShowMoreButtonFavoriteList: function() {
+      let maxElements = 3;
+      let countListItems = 0;
+      let showMoreButton = false;
+      $('.savedLists.loaded').each(function() {
+	if (!$(this).hasClass('tf-loaded-custom')) {
+	  $(this).find('li').each(function() {
+	    countListItems++;
+	    if (countListItems > maxElements) {
+	      $(this).hide();
+	      showMoreButton = true;
+	    }
+	  });
+	  if (showMoreButton === true) {
+	    $('<span class="tf-favoritesListMoreButton">' + VuFind.translate('more') + '</span>').insertAfter($(this).find('ul'));
+	  }
+	  $(this).removeClass('tf-d-none');
+	  $('.tf-favoritesListMoreButton').click(function() {
+	    $('.tf-favoritesListModal').click();
+	  });
+	  $(this).addClass('tf-loaded-custom');
+	  console.log('tf-loaded-custom');
+	}
+      });
     }
 };
 
@@ -336,5 +362,6 @@ $(document).ready(function () {
 
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
+    setInterval(TueFind.ShowMoreButtonFavoriteList, 1000);
 
 });
