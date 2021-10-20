@@ -33,7 +33,7 @@
     <p><?=$this->transEsc('authority_note_name_record')?></p>
   <?php endif; ?>
 
-  <!-- Here sidebar-right is before mainbody-left, because we want to show the image before the details in responsive behaviour-->
+  <!-- Here sidebar-right is before mainbody-left, because we want to show the image before the details in responsive behaviour -->
   <div class="sidebar right hidden-print">
     <?php if ($this->driver->getType() == 'person' && !$this->driver->isFamily()): ?>
       <?=$this->context($this)->renderInContext('authority/record/image', ['driver' => $this->driver])?>
@@ -56,7 +56,7 @@
 
   <div class="sidebar right hidden-print">
     <!-- BEACON (Findbuch) references over API proxy -->
-    <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>"></div>
+    <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>" data-headline="<?=$this->transEsc('External References')?>"></div>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetBeaconReferencesFromFindbuch();', 'SET')?>
   </div>
 </div>

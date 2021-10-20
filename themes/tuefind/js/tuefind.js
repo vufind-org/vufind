@@ -142,6 +142,7 @@ var TueFind = {
         $('.tf-findbuch-references').each(function() {
             var container = this;
             var proxyUrl = this.getAttribute('data-url');
+            var headline = this.getAttribute('data-headline');
 
             $.ajax({
                 type: 'GET',
@@ -172,7 +173,7 @@ var TueFind = {
                         });
 
                         // render HTML
-                        let html = '<h2>More External References</h2>';
+                        let html = '<h2>' + headline + '</h2>';
                         html += '<ul class="list-group">';
                         references.forEach(function(reference) {
                             html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + reference.description + '" target="_blank">' + reference.label + '</a></li>';
