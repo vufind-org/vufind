@@ -7,12 +7,10 @@ namespace TueFind\Controller;
  * - Sample API call: https://beacon.findbuch.de/seealso/pnd-aks?format=seealso&id=100001718
  * - API documentation: https://beacon.findbuch.de/seealso/pnd-aks
  */
-class FindbuchProxyController extends \VuFind\Controller\AbstractBase
-                              implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class FindbuchProxyController extends AbstractProxyController
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
     const API_URL = 'http://beacon.findbuch.de/seealso/pnd-aks?format=seealso&id=';
+    const CACHE_DIR = '/tmp/proxycache/findbuch';
 
     public function loadAction()
     {
@@ -30,7 +28,7 @@ class FindbuchProxyController extends \VuFind\Controller\AbstractBase
     protected function callAPI($gndNumber)
     {
         $url = self::API_URL . urlencode($gndNumber);
-        $response = file_get_contents($url);
+        $response = $this->getCachedUrlContents($url);
         return $response;
     }
 

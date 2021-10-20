@@ -200,12 +200,7 @@ $config = [
         ],
     ],
     'controller_plugins' => [
-        'factories' => [
-            'TueFind\Controller\Plugin\Wikidata' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-        ],
-        'aliases' => [
-            'wikidata' => 'TueFind\Controller\Plugin\Wikidata',
-        ],
+
     ],
     'service_manager' => [
         'allow_override' => true,
