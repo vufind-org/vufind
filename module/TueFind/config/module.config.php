@@ -24,6 +24,16 @@ $config = [
                     ],
                 ],
             ],
+            'findbuchproxy-load' => [
+                'type'    => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/FindbuchProxy/Load',
+                    'defaults' => [
+                        'controller' => 'FindbuchProxy',
+                        'action'     => 'Load',
+                    ],
+                ],
+            ],
             'fulltextsnippetproxy-load' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -148,6 +158,7 @@ $config = [
             'TueFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\FindbuchProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
             'TueFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -169,6 +180,8 @@ $config = [
             'cart' => 'TueFind\Controller\CartController',
             'Feedback' => 'TueFind\Controller\FeedbackController',
             'feedback' => 'TueFind\Controller\FeedbackController',
+            'FindbuchProxy' => 'TueFind\Controller\FindbuchProxyController',
+            'findbuchproxy' => 'TueFind\Controller\FindbuchProxyController',
             'fulltextsnippetproxy' => 'TueFind\Controller\FulltextSnippetProxyController',
             'MyResearch' => 'TueFind\Controller\MyResearchController',
             'myresearch' => 'TueFind\Controller\MyResearchController',
@@ -182,16 +195,12 @@ $config = [
             'RssFeed' => 'TueFind\Controller\RssFeedController',
             'rssfeed' => 'TueFind\Controller\RssFeedController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
+            'WikidataProxy' => 'TueFind\Controller\WikidataProxyController',
             'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],
     ],
     'controller_plugins' => [
-        'factories' => [
-            'TueFind\Controller\Plugin\Wikidata' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-        ],
-        'aliases' => [
-            'wikidata' => 'TueFind\Controller\Plugin\Wikidata',
-        ],
+
     ],
     'service_manager' => [
         'allow_override' => true,
