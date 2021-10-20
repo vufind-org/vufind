@@ -176,7 +176,7 @@ var TueFind = {
                         let html = '<h2>' + headline + '</h2>';
                         html += '<ul class="list-group">';
                         references.forEach(function(reference) {
-                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + reference.description + '" target="_blank">' + reference.label + '</a></li>';
+                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
                         });
                         html += '</ul>';
                         $(container).append(html);
