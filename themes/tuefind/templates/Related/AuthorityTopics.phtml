@@ -60,7 +60,7 @@ EOD;
         <div class="lightbox-scroll full-facets" style="max-height: 350px;">
           <div class="facet-group" id="facet-list-count">
             <?php foreach($ascSortingTopicsData as $topic): ?>
-            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=topic_facet:<?=$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
+            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=<?=$responseTopicsSettings['filter'].':'.$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
               <span class="text">
                 <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
               </span>
@@ -74,7 +74,7 @@ EOD;
         <div class="lightbox-scroll full-facets" style="max-height: 350px;">
           <div class="facet-group" id="facet-list-count">
             <?php foreach($countSortingTopicsData as $topic): ?>
-            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=topic_facet:<?=$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
+            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=<?=$responseTopicsSettings['filter'].':'.$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
               <span class="text">
                 <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
               </span>
