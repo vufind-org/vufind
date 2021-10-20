@@ -477,8 +477,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicLength' => 10,
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
-            'minWeight' => 0
-
+            'minWeight' => 0,
+            'filter' => 'topic_facet'
         ];
 
         $identifier = 'Solr';
@@ -503,14 +503,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $tuefindHelper = $this->viewHelperManager->get('tuefind');
 
         $searchType = 'AllFields';
-        $topicsFacet = 'topic_facet';
         $lookfor = $this->getTitlesByQueryParams($driver);
 
         if ($tuefindHelper->getTueFindFlavour() == 'ixtheo') {
-            $topicsFacet = 'key_word_chain_bag';
+            $settings['filter'] = 'key_word_chain_bag';
         }
-        
-        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$searchType.'&filter[]='.$topicsFacet.':';
+
+        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$searchType.'&filter[]='.$settings['filter'].':';
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {
@@ -542,7 +541,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $mainTopicsArray[] = $one;
             }
         }
-
 
         return [$mainTopicsArray,$settings];
     }
