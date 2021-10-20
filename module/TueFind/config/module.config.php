@@ -24,6 +24,16 @@ $config = [
                     ],
                 ],
             ],
+            'findbuchproxy-load' => [
+                'type'    => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/FindbuchProxy/Load',
+                    'defaults' => [
+                        'controller' => 'FindbuchProxy',
+                        'action'     => 'Load',
+                    ],
+                ],
+            ],
             'fulltextsnippetproxy-load' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -148,6 +158,7 @@ $config = [
             'TueFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\FindbuchProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
             'TueFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -169,6 +180,7 @@ $config = [
             'cart' => 'TueFind\Controller\CartController',
             'Feedback' => 'TueFind\Controller\FeedbackController',
             'feedback' => 'TueFind\Controller\FeedbackController',
+            'findbuchproxy' => 'TueFind\Controller\FindbuchProxyController',
             'fulltextsnippetproxy' => 'TueFind\Controller\FulltextSnippetProxyController',
             'MyResearch' => 'TueFind\Controller\MyResearchController',
             'myresearch' => 'TueFind\Controller\MyResearchController',

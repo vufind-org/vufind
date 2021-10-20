@@ -138,6 +138,33 @@ var TueFind = {
         });
     },
 
+    GetBeaconReferencesFromFindbuch: function() {
+        $('.tf-findbuch-references').each(function() {
+            var container = this;
+            var proxyUrl = this.getAttribute('data-url');
+
+            $.ajax({
+                type: 'GET',
+                url: proxyUrl,
+                success: function(json, textStatus, request) {
+                    if (json[1] !== undefined && json[1].length > 0) {
+                        let html = '<h2>More External References</h2>';
+                        html += '<ul class="list-group">';
+                        for (let i=0; i<json[1].length; ++i) {
+                            platformLabel = json[1][i];
+                            platformDescription = json[2][i];
+                            platformUrl = json[3][i];
+
+                            html += '<li class="list-group-item"><a href="' + platformUrl + '" title="' + platformDescription + '" target="_blank">' + platformLabel + '</a></li>';
+                        }
+                        html += '</ul>';
+                        $(container).append(html);
+                    }
+                }
+            });
+        });
+    },
+
     GetImagesFromWikidata: function() {
         $('.tf-wikidata-image').each(function() {
             var placeholder = this;

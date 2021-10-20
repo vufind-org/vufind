@@ -19,6 +19,7 @@ Disallow: /Authority
 Disallow: /Browse
 Disallow: /Combined
 Disallow: /Feedback
+Disallow: /findbuchproxy
 Disallow: /fulltextsnippetproxy
 Disallow: /Keywordchainsearch
 Disallow: /pdaproxy
