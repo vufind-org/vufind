@@ -2063,9 +2063,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemId,
         $patronId = null
     ) {
-        if ($requestId === null && $itemId === null) {
+        if (empty($requestId) && empty($itemId)) {
             throw new ILSException('No identifiers for CancelRequest');
         }
+        $itemAgencyId = $this->determineToAgencyId($itemAgencyId);
         $ret = $this->getNCIPMessageStart() .
             '<ns1:CancelRequestItem>' .
             $this->getInitiationHeaderXml($patronAgency) .
@@ -2073,14 +2074,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $ret .= $this->getUserIdXml($patronAgency, $patronId);
 
-        if ($requestId !== null) {
+        if (!empty($requestId)) {
             $ret .=
                 '<ns1:RequestId>' .
                     $this->element('AgencyId', $itemAgencyId) .
                     $this->element('RequestIdentifierValue', $requestId) .
                 '</ns1:RequestId>';
         }
-        if ($itemId !== null) {
+        if (!empty($itemId)) {
             $ret .= $this->getItemIdXml($itemAgencyId, $itemId);
         }
         $ret .= $this->getRequestTypeXml($type) .

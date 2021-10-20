@@ -1419,10 +1419,45 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'params' => ['username', 'password', 'patron agency', 'item agency', 'rq1', 'Hold', 'item1', '12345'],
             'result' => 'CancelRequestItemRequestAuthInput.xml'
         ],
+        '4.1' => [
+            'method' => 'getCancelRequest',
+            'config' => [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => ['default agency'],
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'fromAgency' => 'My portal',
+                ],
+                'NCIP' => [],
+            ],
+            'params' => ['username', 'password', 'patron agency', '', 'rq1', 'Hold', 'item1', '12345'],
+            'result' => 'CancelRequestDefaultItemAgencyRequest.xml'
+        ],
         '5' => [
             'method' => 'getRenewRequest',
             'params' => ['username', 'password', 'item1', 'item agency', 'patron agency'],
             'result' => 'RenewItemRequest.xml'
+        ],
+        '5.1' => [
+            'method' => 'getRenewRequest',
+            'config' => [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => ['default agency'],
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'fromAgency' => 'My portal',
+                ],
+                'NCIP' => [],
+            ],
+            'params' => ['username', 'password', 'item1', '', 'patron agency'],
+            'result' => 'RenewItemDefaultAgencyRequest.xml'
+        ],
+        '5.2' => [
+            'method' => 'getRenewRequest',
+            'params' => ['username', 'password', 'item1', 'item agency', 'patron agency', 'username'],
+            'result' => 'RenewItemWithUserIdRequest.xml'
         ],
         '6' => [
             'method' => 'getRequest',
@@ -1486,6 +1521,22 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $expected = file_get_contents($file);
             $this->assertEquals($expected, $request, 'Test identifier: ' . $id);
         }
+    }
+
+    /**
+     * Test that getCancelRequest throws exception without mandatory parameters
+     * (itemId or requestId)
+     *
+     * @return void
+     */
+    public function testGetCancelRequestException()
+    {
+        $this->configureDriver();
+        $method = new \ReflectionMethod('\VuFind\ILS\Driver\XCNCIP2', 'getCancelRequest');
+        $method->setAccessible(true);
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage('No identifiers for CancelRequest');
+        $request = $method->invokeArgs($this->driver,['username', 'password', 'patron agency', 'item agency', '', 'Hold', null, '12345']);
     }
 
     /**
