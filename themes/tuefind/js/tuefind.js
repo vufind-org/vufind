@@ -138,6 +138,54 @@ var TueFind = {
         });
     },
 
+    GetBeaconReferencesFromFindbuch: function() {
+        $('.tf-findbuch-references').each(function() {
+            var container = this;
+            var proxyUrl = this.getAttribute('data-url');
+            var headline = this.getAttribute('data-headline');
+
+            $.ajax({
+                type: 'GET',
+                url: proxyUrl,
+                success: function(json, textStatus, request) {
+                    if (json[1] !== undefined && json[1].length > 0) {
+
+                        // Build different array structure (prepare sort)
+                        let references = [];
+                        let countRegex = /\((\d+)\)$/;
+                        for (let i=0; i<json[1].length; ++i) {
+                            let matchCount = json[1][i].match(countRegex);
+                            let count = 1;
+                            if (matchCount != null)
+                                count = parseInt(matchCount[1]);
+
+                            references.push({ label: json[1][i], description: json[2][i], url: json[3][i], count: count });
+                        }
+
+                        // sort by count DESC, then alphabetically ASC
+                        references.sort(function(a, b) {
+                            if (a.count < b.count)
+                                return 1;
+                            if (a.count > b.count)
+                                return -1;
+
+                            return a.label.localeCompare(b.label);
+                        });
+
+                        // render HTML
+                        let html = '<h2>' + headline + '</h2>';
+                        html += '<ul class="list-group">';
+                        references.forEach(function(reference) {
+                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
+                        });
+                        html += '</ul>';
+                        $(container).append(html);
+                    }
+                }
+            });
+        });
+    },
+
     GetImagesFromWikidata: function() {
         $('.tf-wikidata-image').each(function() {
             var placeholder = this;
