@@ -39,15 +39,13 @@
     $max = !empty($cleanValues[1]) ? max($future, $cleanValues[1]) : $future;
     $low = !empty($cleanValues[0]) ? $cleanValues[0] : $min;
     $high = !empty($cleanValues[1]) ? $cleanValues[1] : $max;
-    $sliderOptions = json_encode(
-      [
-        'min' => (int)$min,
-        'max' => (int)$max,
-        'handle' => 'square',
-        'tooltip' => 'hide',
-        'value' => [(int)$low, (int)$high],
-      ]
-    );
+    $sliderOptions = [
+      'min' => (int)$min,
+      'max' => (int)$max,
+      'handle' => 'square',
+      'tooltip' => 'hide',
+      'value' => [(int)$low, (int)$high],
+    ];
     $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -56,7 +54,7 @@ $(document).ready(function() {
     $('#{$this->escapeHtmlAttr($this->title)}to').val(v[1]);
   };
   var {$this->escapeHtmlAttr($this->title)}dateSlider = $('#{$this->escapeHtmlAttr($this->title)}dateSlider')
-    .slider($sliderOptions)
+    .slider({json_encode($sliderOptions)})
     .on('change', fillTexts)
     .data('slider');
 });
