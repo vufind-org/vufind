@@ -96,6 +96,7 @@
   <target name="qa-javascript" description="quality assurance php tasks">
     <phingcall target="eslint"/>
     <phingcall target="jshint"/>
+    <phingcall target="checkLessToSass"/>
   </target>
 
   <!-- Quality Assurance PHP Tasks -->
@@ -103,7 +104,6 @@
     <phingcall target="phpunitfast"/>
     <phingcall target="phpcs-console"/>
     <phingcall target="php-cs-fixer-dryrun"/>
-    <phingcall target="checkLessToSass"/>
     <phingcall target="phpstan-console"/>
   </target>
 
