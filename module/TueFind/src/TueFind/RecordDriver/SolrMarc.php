@@ -296,7 +296,7 @@ class SolrMarc extends SolrDefault
     public function getReferenceInformation(): array
     {
         $references = [];
-        $fields = $this->getMarcRecord()->getFields('770');
+        $fields = $this->getMarcRecord()->getFields('770|772', true);
         foreach ($fields as $field) {
             $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
             $titles = [];
@@ -308,7 +308,6 @@ class SolrMarc extends SolrDefault
             $link_ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
             $references[] = ['id' => $link_ppn, 'description' => $description];
         }
-
         return array_merge($references, $this->getOtherReferences());
     }
 
@@ -316,7 +315,7 @@ class SolrMarc extends SolrDefault
     public function getContainsInformation(): array
     {
         $contains = [];
-        $fields = $this->getMarcRecord()->getFields('772|773', true);
+        $fields = $this->getMarcRecord()->getFields('773');
         foreach ($fields as $field) {
             if ($field->getIndicator(1) != 0)
                 continue;
