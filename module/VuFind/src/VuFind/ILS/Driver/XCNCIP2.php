@@ -254,6 +254,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $translationDomain = 'ILSMessages';
 
     /**
+     * Other than 2xx HTTP status codes, which could be accepted as correct response.
+     * Some NCIP servers could return some 4xx codes similar to REST API (like 404
+     * Not found) altogether with correct XML in response body.
+     *
+     * @var array
+     */
+    protected $otherAcceptedHttpStatusCodes = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -311,6 +320,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (isset($this->config['Catalog']['translationDomain'])) {
             $this->translationDomain
                 = $this->config['Catalog']['translationDomain'];
+        }
+
+        if (isset($this->config['Catalog']['otherAcceptedHttpStatusCodes'])) {
+            $this->otherAcceptedHttpStatusCodes
+                = explode(
+                    ',',
+                    $this->config['Catalog']['otherAcceptedHttpStatusCodes']
+                );
         }
     }
 
@@ -441,7 +458,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         }
 
-        if (!$result->isSuccess()) {
+        if (!$result->isSuccess()
+            && !in_array(
+                $result->getStatusCode(),
+                $this->otherAcceptedHttpStatusCodes
+            )
+        ) {
             throw new ILSException(
                 'HTTP error: ' . $this->parseProblem($result->getBody())
             );
