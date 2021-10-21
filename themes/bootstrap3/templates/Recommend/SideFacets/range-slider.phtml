@@ -46,6 +46,7 @@
       'tooltip' => 'hide',
       'value' => [(int)$low, (int)$high],
     ];
+    $sliderOptionsJson = json_encode($sliderOptions);
     $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -54,7 +55,7 @@ $(document).ready(function() {
     $('#{$this->escapeHtmlAttr($this->title)}to').val(v[1]);
   };
   var {$this->escapeHtmlAttr($this->title)}dateSlider = $('#{$this->escapeHtmlAttr($this->title)}dateSlider')
-    .slider({json_encode($sliderOptions)})
+    .slider($sliderOptionsJson)
     .on('change', fillTexts)
     .data('slider');
 });
