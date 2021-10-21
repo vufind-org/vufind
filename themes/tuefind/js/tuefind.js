@@ -143,6 +143,8 @@ var TueFind = {
             var container = this;
             var proxyUrl = this.getAttribute('data-url');
             var headline = this.getAttribute('data-headline');
+            var excludePattern = this.getAttribute('data-exclude-pattern');
+            var excludeRegex = new RegExp(excludePattern);
 
             $.ajax({
                 type: 'GET',
@@ -154,12 +156,19 @@ var TueFind = {
                         let references = [];
                         let countRegex = /\((\d+)\)$/;
                         for (let i=0; i<json[1].length; ++i) {
-                            let matchCount = json[1][i].match(countRegex);
+                            let label = json[1][i];
+                            let description = json[2][i];
+                            let url = json[3][i];
+
+                            if (excludePattern != '' && label.match(excludeRegex))
+                                continue;
+
+                            let matchCount = label.match(countRegex);
                             let count = 1;
                             if (matchCount != null)
                                 count = parseInt(matchCount[1]);
 
-                            references.push({ label: json[1][i], description: json[2][i], url: json[3][i], count: count });
+                            references.push({ label: label, description: description, url: url, count: count });
                         }
 
                         // sort by count DESC, then alphabetically ASC
