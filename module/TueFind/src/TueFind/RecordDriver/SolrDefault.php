@@ -163,6 +163,21 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $retval;
     }
 
+    public function getCorporateAuthorsGnds(): array
+    {
+        return $this->fields['author2_gnd'] ?? [];
+    }
+
+    public function getCorporateAuthorsIds(): array
+    {
+        return $this->fields['author2_id'] ?? [];
+    }
+
+    public function getDeduplicatedAuthors($dataFields = ['role', 'id', 'gnd'])
+    {
+        return parent::getDeduplicatedAuthors($dataFields);
+    }
+
     public function getFollowingPPNAndTitle()
     {
         $retval = [];
@@ -227,11 +242,55 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $retval;
     }
 
+    public function getPrimaryAuthorsGnds(): array
+    {
+        return $this->fields['author_gnd'] ?? [];
+    }
+
+    public function getPrimaryAuthorsIds(): array
+    {
+        return $this->fields['author_id'] ?? [];
+    }
+
+    /**
+     * Same as the parent, but we want to return not only the author's name,
+     * but also ids and other properties (e.g. to generate links to authority pages).
+     */
+    public function getPrimaryAuthorsWithHighlighting(): array
+    {
+        $highlights = [];
+        // Create a map of de-highlighted valeus => highlighted values.
+        foreach ($this->getRawAuthorHighlights() as $current) {
+            $dehighlighted = str_replace(
+                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $current
+            );
+            $highlights[$dehighlighted] = $current;
+        }
+
+        // replace unhighlighted authors with highlighted versions where
+        // applicable:
+        $authors = [];
+        foreach ($this->getDeduplicatedAuthors()['primary'] ?? [] as $author => $authorProperties) {
+            $author = $highlights[$author] ?? $author;
+            $authors[$author] = $authorProperties;
+        }
+        return $authors;
+    }
+
     public function getRecordDriverByPPN($ppn) {
         $recordLoader = $this->container->get('VuFind\RecordLoader');
         return $recordLoader->load($ppn, 'Solr', false);
     }
 
+    public function getSecondaryAuthorsGnds(): array
+    {
+        return $this->fields['author2_gnd'] ?? [];
+    }
+
+    public function getSecondaryAuthorsIds(): array
+    {
+        return $this->fields['author2_id'] ?? [];
+    }
 
     public function getSuperiorPPN() {
         return isset($this->fields['superior_ppn']) ?
@@ -445,6 +504,15 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         if (array_key_exists($material_type, $translations))
             return $translations[$material_type];
         return $material_type;
+    }
+
+    /**
+     * Return a list of translated topics. Can be used e.g. for chart generation.
+     * (translation handling only possible in IxTheo right now.)
+     */
+    public function getTopics($language=null): array
+    {
+        return $this->fields['topic'] ?? [];
     }
 
 

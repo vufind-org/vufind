@@ -304,19 +304,24 @@ class SolrMarc extends SolrDefault
     public function getReferenceInformation(): array
     {
         $references = [];
-        $fields = $this->getMarcRecord()->getFields('770');
+        $fields = $this->getMarcRecord()->getFields('770|772', true);
         foreach ($fields as $field) {
-            $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
+            $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() . ':' : '';
+            $timeRange = $field->getSubfield('n') ? $field->getSubfield('n')->getData() : '';
+            if ($timeRange != '') {
+                if ($opening != '')
+                    $opening .= ' ';
+                $opening .= '(' . $timeRange . '):';
+            }
             $titles = [];
             $field->getSubfield('a') ? $titles[] = $field->getSubfield('a')->getData() : '';
             $field->getSubfield('d') ? $titles[] = $field->getSubfield('d')->getData() : '';
             $field->getSubfield('h') ? $titles[] = $field->getSubfield('h')->getData() : '';
             $field->getSubfield('t') ? $titles[] = $field->getSubfield('t')->getData() : '';
-            $description = $opening . ': ' .  implode(', ' , array_filter($titles) /*skip empty elements */);
+            $description = $opening . ' ' .  implode(', ' , array_filter($titles) /*skip empty elements */);
             $link_ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
             $references[] = ['id' => $link_ppn, 'description' => $description];
         }
-
         return array_merge($references, $this->getOtherReferences());
     }
 
@@ -324,7 +329,7 @@ class SolrMarc extends SolrDefault
     public function getContainsInformation(): array
     {
         $contains = [];
-        $fields = $this->getMarcRecord()->getFields('772|773', true);
+        $fields = $this->getMarcRecord()->getFields('773');
         foreach ($fields as $field) {
             if ($field->getIndicator(1) != 0)
                 continue;

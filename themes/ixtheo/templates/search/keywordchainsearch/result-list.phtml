@@ -39,7 +39,8 @@
     <?php endif; ?>
     </tbody>
 </table>
-<script>
+<?php
+$jsSnippet = <<< 'EOD'
     $(document).ready(function () {
         $(".kwc_single_term").bind('click keypress', function (event) {
             if (event.shiftKey) {
@@ -64,6 +65,6 @@
             }
         });
     });
-</script>
-
-
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>

@@ -10,14 +10,21 @@ $formatProperty = function ($datafield, $name, $label) {
     return '<span class="author-property-' . $name . '">(' . implode(', ', array_unique(array_map($translate, $datafield))) . ')</span>';
 };
 $formattedAuthors = [];
+$authTabEnabled = $this->tuefind()->isSearchTabEnabled('SolrAuth');
 ?>
 <?php if (!empty($data[$type])): ?>
   <?php foreach ($data[$type] as $author => $dataFields): ?>
     <?php ob_start(); ?>
-    <span class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
-      <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
-        <?=$this->escapeHtml($author)?>
-      </a>
+    <span class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>" typeof="Person">
+      <span property="name">
+        <?php if (!$authTabEnabled): ?>
+          <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+        <?php endif; ?>
+        <?=$this->escapeHtml(rtrim($author, ','))?>
+        <?php if (!$authTabEnabled): ?>
+          </a>
+        <?php endif; ?>
+      </span>
       <?php
         // TueFind: Show all author roles...
         if (!isset($dataFields['role']))
@@ -32,14 +39,24 @@ $formattedAuthors = [];
         // (for example, to render author roles correctly):
         if (!empty($requiredDataFields)) {
           foreach ($requiredDataFields as $field) {
-              $name = $field['name'];
-              $prefix = $field['prefix'] ?? '';
-              if (isset($dataFields[$name])) {
-                  echo $formatProperty($dataFields[$name], $name, $prefix);
-              }
+            $name = $field['name'];
+            $prefix = $field['prefix'] ?? '';
+            if (isset($dataFields[$name])) {
+                echo $formatProperty($dataFields[$name], $name, $prefix);
+            }
           }
         }
       ?>
+
+      <?php if ($authTabEnabled): ?>
+        <?php $authorityId = $dataFields['id'][0] ?? ''; ?>
+        <?php if ($authorityId && $authorityDriver = $this->authority()->recordExists($authorityId)): ?>
+          <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
+          <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
+        <?php else: ?>
+          <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
+        <?php endif; ?>
+      <?php endif; ?>
     </span>
     <?php
       // Strip whitespace before close tags to avoid spaces in front of commas:

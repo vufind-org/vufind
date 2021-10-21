@@ -4,35 +4,11 @@
 <?php $isbns = $this->driver->tryMethod('getISBNs'); ?>
 <?php $isbn = count($isbns) ? $isbns[0] : 0; ?>
 <div style="color:grey" id="pda_place_holder"><?=$this->transEsc("Loading")?>...</div>
-<script type="text/javascript" language="javascript">
-    // Suppress entire field if no isbn is present
-    var isbn = "<?=$isbn?>";
-    if (isbn == "0") {
-      $("#pda_row").remove();
-    }
-    // Try to determine status
-    $.ajax({
-      type: "GET",
-      url: "<?=$this->url('home')?>pdaproxy/load?isbn="+isbn,
-      dataType: "json",
-      success: function(json) {
-        $(document).ready(function() {
-           var received_isbn = json['isbn'];
-           var pda_status = json['pda_status'];
-           $("#pda_place_holder").each(function() {
-              if ((received_isbn == isbn) && (pda_status == "OFFER_PDA")) {
-                $(this).replaceWith('<a href=' + '<?=$this->recordLink()->getActionUrl($this->driver, 'PDASubscribe')?>' + '>'
-                                               + '<?=$this->transEsc("Go to PDA Order")?>' + '</a>');
-              }
-              else
-                $("#pda_row").remove();
-           });
-        });
-      }, // end success
-      error: function (xhr, ajaxOptions, thrownError) {
-          $("#pda_place_holder").each(function() {
-            $(this).replaceWith('Invalid server response!!!!!');
-          })
-      }
-   }); // end ajax
-</script>
+<?php
+  $ajaxUrl = $this->url('home') . 'pdaproxy/load?isbn=' . $isbn;
+  $pdaSubscribeUrl = $this->recordLink()->getActionUrl($this->driver, 'PDASubscribe');
+  $pdaSubscribeText = $this->transEsc("Go to PDA Order");
+  $jsParams = [$isbn, $ajaxUrl, $pdaSubscribeUrl, $pdaSubscribeText];
+  $jsSnippet = "IxTheo.GetPDAInformation('" . implode("','", $jsParams) . "');";
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>

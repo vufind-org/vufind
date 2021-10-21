@@ -187,49 +187,46 @@ class MyResearchController extends \TueFind\Controller\MyResearchController
         if (!$user) {
             return $this->forceLogin();
         }
-        $table = $this->getTable('IxTheoUser');
-        $ixTheoUser = $table->get($user->id);
-        if(!isset($ixTheoUser) || !$ixTheoUser) {
-            $ixTheoUser = $table->getNew($user->id);
-            $ixTheoUser->save();
-        }
 
         if ($this->getRequest()->getPost("submit")) {
-            $this->updateProfile($this->getRequest(), $user, $ixTheoUser);
+            $this->updateProfile($this->getRequest(), $user);
         }
         $view = $this->createViewModel();
         $view->user = $user;
-        $view->ixTheoUser = $ixTheoUser;
-        $view->request = $this->mergePostDataWithUserData($this->getRequest()->getPost(), $user, $ixTheoUser);
+        $view->request = $this->mergePostDataWithUserData($this->getRequest()->getPost(), $user);
         $config = $this->getConfig();
         $view->accountDeletion = !empty($config->Authentication->account_deletion);
         return $view;
     }
 
     private function updateProfile(\Laminas\Http\PhpEnvironment\Request $request,
-                                   \VuFind\Db\Row\User $user,
-                                   \IxTheo\Db\Row\IxTheoUser $ixTheoUser)
+                                   \VuFind\Db\Row\User $user)
     {
         $params = [
             'firstname' => '', 'lastname' => '', 'email' => '',
-            'title' => '', 'institution' => '', 'country' => '',
-            'language' => '', 'appellation' => ''
+            'ixtheo_title' => '', 'ixtheo_institution' => '', 'ixtheo_country' => '',
+            'ixtheo_language' => '', 'ixtheo_appellation' => ''
         ];
         foreach ($params as $param => $default) {
-            $params[$param] = $request->getPost()->get($param, $default);
+            $user->$param = $request->getPost()->get($param, $default);
         }
-        $this->getAuthManager()->updateIxTheoUser($params, $user, $ixTheoUser);
+        $user->save();
+
+        // Update the TAD access flag:
+        exec("/usr/local/bin/set_tad_access_flag.sh " . $user->id);
+
+        $this->getAuthManager()->updateSession($user);
     }
 
-    private function mergePostDataWithUserData($post, $user, $ixTheoUser) {
-        $fields = ['email', 'username', 'appellation', 'title', 'firstname', 'lastname', 'institution', 'country'];
+    private function mergePostDataWithUserData($post, $user) {
+        $fields = ['email', 'username', 'ixtheo_appellation', 'ixtheo_title', 'firstname', 'lastname', 'ixtheo_institution', 'ixtheo_country'];
         foreach ($fields as $field) {
             if (!$post->$field) {
-                $post->$field = $user->offsetExists($field) ? $user->$field : $ixTheoUser->$field;
+                $post->$field = $user->$field;
             }
         }
-        if (!$post->language) {
-            $post->language = $ixTheoUser->language ?: $this->layout()->userLang;
+        if (!$post->ixtheo_language) {
+            $post->ixtheo_language = $user->ixtheo_language ?: $this->layout()->userLang;
         }
         return $post;
     }

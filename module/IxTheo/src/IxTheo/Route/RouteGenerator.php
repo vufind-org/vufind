@@ -1,7 +1,7 @@
 <?php
 namespace IxTheo\Route;
 
-class RouteGenerator extends \VuFind\Route\RouteGenerator
+class RouteGenerator extends \TueFind\Route\RouteGenerator
 {
     /**
      * Constructor

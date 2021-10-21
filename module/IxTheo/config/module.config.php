@@ -62,7 +62,6 @@ $config = [
         'factories' => [
             'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
 
-            'IxTheo\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'IxTheo\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -77,8 +76,6 @@ $config = [
             'IxTheo\RecordTab\ItemFulltextSearch' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
-            'VuFind\AuthManager' => 'IxTheo\Auth\Manager',
-            'VuFind\Auth\Manager' => 'IxTheo\Auth\Manager',
             'VuFind\AuthPluginManager' => 'IxTheo\Auth\PluginManager',
             'VuFind\Auth\PluginManager' => 'IxTheo\Auth\PluginManager',
             'VuFind\Autocomplete\PluginManager' => 'IxTheo\Autocomplete\PluginManager',

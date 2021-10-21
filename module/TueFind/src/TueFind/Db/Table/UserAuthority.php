@@ -25,9 +25,13 @@ class UserAuthority extends \VuFind\Db\Table\Gateway {
         return $this->selectWith($select);
     }
 
-    public function getByUserId($userId): ResultSet
+    public function getByUserId($userId, $accessState=null): ResultSet
     {
-        return $this->select(['user_id' => $userId]);
+        $whereParams = ['user_id' => $userId];
+        if (isset($accessState))
+            $whereParams['access_state'] = $accessState;
+
+        return $this->select($whereParams);
     }
 
     public function getByAuthorityId($authorityId): ?UserAuthorityRow

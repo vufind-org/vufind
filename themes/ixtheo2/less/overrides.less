@@ -66,6 +66,7 @@
     flex-direction: column;
     align-items: flex-end;
     justify-content: center;
+    background-color: #fff;
   }
 }
 
@@ -84,17 +85,46 @@
     height: 400px;
 }
 
-.ix-news-right-row {
+.ix-news-container {
     &:extend(.tf-row);
-    height: 49%;
 }
 
-.ix-news-right-column {
+.ix-news-container-footer {
+    color: white;
+    bottom: 0;
+    background-color: #707070;
+    width: 100%;
+    line-height:26px;
+}
+
+.ix-news-panel {
     &:extend(.tf-col-xs-6);
-    height: 100%;
+    min-height: 100px;
+    height: 187px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
+}
+
+.ix-news-panel-1 { background-color: #EEEEEE; }
+.ix-news-panel-2 { background-color: #CCCCCC; }
+.ix-news-panel-3 { background-color: #CCCCCC; }
+.ix-news-panel-4 { background-color: #EEEEEE; }
+
+@media (max-width: 479px) {
+    .ix-news-panel-1 { background-color: #EEEEEE; }
+    .ix-news-panel-2 { background-color: #CCCCCC; }
+    .ix-news-panel-3 { background-color: #EEEEEE; }
+    .ix-news-panel-4 { background-color: #CCCCCC; }
+}
+
+.ix-result-links-items {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ix-result-list-actions {
+  vertical-align: top;
 }
 
 .ix-footer {
@@ -109,4 +139,24 @@
     h5 {
         color: #a39b94;
     }
+}
+
+.ix-journals-table {
+  width: 100%;
+}
+
+.ix-journals-table h3 {
+  color: black;
+  font-weight: bold;
+}
+
+.ix-journals-table .img-td {
+  width: 25%;
+  vertical-align: top;
+  padding: 10px;
+  text-align: center;
+}
+
+.ix-journals-table .text-td {
+  padding-left: 10px;
 }

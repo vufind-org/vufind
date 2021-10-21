@@ -44,9 +44,7 @@
     <!--  Begin section searchbar -->
     <section class="section-home">
         <div class="panel-home">
-            <script>
-                TueFind2.ChangeSearchboxHeight();
-            </script>
+            <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
 
             <div class="searchbox col-12 mx-auto">
 
@@ -92,8 +90,8 @@
                             <?php if (!empty($tabs)): ?></div><?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <form id="searchForm" class="searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off"
-                            onsubmit="return TueFind.CheckWildcards(event)">
+                        <form id="searchForm" class="searchForm tuefind-event-searchForm-on-submit" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off"
+                            >
                             <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
                             <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
@@ -210,7 +208,7 @@
                               ]
                             );?>
                         </form>
-                        <script type="text/javascript">$(".searchForm_lookfor:visible").focus()</script>
+                        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(".searchForm_lookfor:visible").focus();', 'SET')?>
 
                         <?php //optional extension template, e.g. for RelBib ?>
                         <?=$this->render('search/searchbox/extensions');?>

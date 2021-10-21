@@ -138,6 +138,63 @@ var TueFind = {
         });
     },
 
+    GetBeaconReferencesFromFindbuch: function() {
+        $('.tf-findbuch-references').each(function() {
+            var container = this;
+            var proxyUrl = this.getAttribute('data-url');
+            var headline = this.getAttribute('data-headline');
+            var excludePattern = this.getAttribute('data-exclude-pattern');
+            var excludeRegex = new RegExp(excludePattern);
+
+            $.ajax({
+                type: 'GET',
+                url: proxyUrl,
+                success: function(json, textStatus, request) {
+                    if (json[1] !== undefined && json[1].length > 0) {
+
+                        // Build different array structure (prepare sort)
+                        let references = [];
+                        let countRegex = /\((\d+)\)$/;
+                        for (let i=0; i<json[1].length; ++i) {
+                            let label = json[1][i];
+                            let description = json[2][i];
+                            let url = json[3][i];
+
+                            if (excludePattern != '' && label.match(excludeRegex))
+                                continue;
+
+                            let matchCount = label.match(countRegex);
+                            let count = 1;
+                            if (matchCount != null)
+                                count = parseInt(matchCount[1]);
+
+                            references.push({ label: label, description: description, url: url, count: count });
+                        }
+
+                        // sort by count DESC, then alphabetically ASC
+                        references.sort(function(a, b) {
+                            if (a.count < b.count)
+                                return 1;
+                            if (a.count > b.count)
+                                return -1;
+
+                            return a.label.localeCompare(b.label);
+                        });
+
+                        // render HTML
+                        let html = '<h2>' + headline + '</h2>';
+                        html += '<ul class="list-group">';
+                        references.forEach(function(reference) {
+                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
+                        });
+                        html += '</ul>';
+                        $(container).append(html);
+                    }
+                }
+            });
+        });
+    },
+
     GetImagesFromWikidata: function() {
         $('.tf-wikidata-image').each(function() {
             var placeholder = this;
@@ -266,8 +323,6 @@ var TueFind = {
         }, 'fast');
         let searchForm_fulltext = $('#searchForm_fulltext');
         searchForm_fulltext.val(fulltextquery);
-        $('#itemFTSearchScope').val(fulltextscope);
-        searchForm_fulltext.submit();
     },
 
     WildcardHandler : function(query_text) {
@@ -286,10 +341,53 @@ var TueFind = {
         // Case 2: The submit button was pressed
         // Case 3: The tab nav was chosen
         else if ((event.type == 'submit' && this.GetSearchboxSearchContext() == 'search2') ||
-                 (event.type == 'click' && event.explicitOriginalTarget.href.match('/Search2/')) ) {
+                 (event.type == 'click' && event.view.location.href.match('/Search2/')) ) {
                  return this.WildcardHandler($("#searchForm_lookfor").val());
         }
         return true;
+    },
+
+    ItemFullTextSearch: function(home_url, record_id, fulltext_types) {
+        $(document).ready(function(){
+            TueFind.HandlePassedFulltextQuery();
+            $("#ItemFulltextSearchForm").submit(function(){
+                TueFind.GetFulltextSnippets(home_url,
+                                            record_id,
+                                            $("#searchForm_fulltext").val(),
+                                            true,
+                                            $("#itemFTSearchScope").val(),
+                                            $("#itemFTTextTypeScope").val() == "All Types" ? fulltext_types : $("#itemFTTextTypeScope").val())
+                TueFind.CheckWildcards("ItemFulltextSearchForm");
+                return false;
+            });
+            $("#ItemFulltextSearchForm").submit();
+        });
+    },
+
+    ShowMoreButtonFavoriteList: function() {
+      let maxElements = 3;
+      let countListItems = 0;
+      let showMoreButton = false;
+      $('.savedLists.loaded').each(function() {
+	if (!$(this).hasClass('tf-loaded-custom')) {
+	  $(this).find('li').each(function() {
+	    countListItems++;
+	    if (countListItems > maxElements) {
+	      $(this).hide();
+	      showMoreButton = true;
+	    }
+	  });
+	  if (showMoreButton === true) {
+	    $('<span class="tf-favoritesListMoreButton">' + VuFind.translate('more') + '</span>').insertAfter($(this).find('ul'));
+	  }
+	  $(this).removeClass('tf-d-none');
+	  $('.tf-favoritesListMoreButton').click(function() {
+	    $('.tf-favoritesListModal').click();
+	  });
+	  $(this).addClass('tf-loaded-custom');
+	  console.log('tf-loaded-custom');
+	}
+      });
     }
 };
 
@@ -310,6 +408,17 @@ $(document).ready(function () {
         TueFind.SetFocus('#alphaBrowseForm_from');
     }
 
+    $('.tuefind-event-resetsearchhandlers').click(function(){
+        TueFind.ResetSearchHandlers();
+        return TueFind.CheckWildcards(event);
+    });
+
+    $('.tuefind-event-searchForm-on-submit').submit(function(){
+        return TueFind.CheckWildcards(event);
+    });
+
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
+    setInterval(TueFind.ShowMoreButtonFavoriteList, 1000);
+
 });

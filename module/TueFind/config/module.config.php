@@ -24,6 +24,16 @@ $config = [
                     ],
                 ],
             ],
+            'findbuchproxy-load' => [
+                'type'    => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/FindbuchProxy/Load',
+                    'defaults' => [
+                        'controller' => 'FindbuchProxy',
+                        'action'     => 'Load',
+                    ],
+                ],
+            ],
             'fulltextsnippetproxy-load' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -85,6 +95,19 @@ $config = [
                     ],
                 ],
             ],
+            'myresearch-publish' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/MyResearch/Publish/[:record_id]",
+                    'constraints' => [
+                        'record_id'     => '[0-9A-Z]{8,}',
+                    ],
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'publish',
+                    ],
+                ],
+            ],
             'myresearch-rssfeedraw' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -135,6 +158,7 @@ $config = [
             'TueFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\FindbuchProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
             'TueFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -156,6 +180,8 @@ $config = [
             'cart' => 'TueFind\Controller\CartController',
             'Feedback' => 'TueFind\Controller\FeedbackController',
             'feedback' => 'TueFind\Controller\FeedbackController',
+            'FindbuchProxy' => 'TueFind\Controller\FindbuchProxyController',
+            'findbuchproxy' => 'TueFind\Controller\FindbuchProxyController',
             'fulltextsnippetproxy' => 'TueFind\Controller\FulltextSnippetProxyController',
             'MyResearch' => 'TueFind\Controller\MyResearchController',
             'myresearch' => 'TueFind\Controller\MyResearchController',
@@ -169,20 +195,17 @@ $config = [
             'RssFeed' => 'TueFind\Controller\RssFeedController',
             'rssfeed' => 'TueFind\Controller\RssFeedController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
+            'WikidataProxy' => 'TueFind\Controller\WikidataProxyController',
             'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],
     ],
     'controller_plugins' => [
-        'factories' => [
-            'TueFind\Controller\Plugin\Wikidata' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-        ],
-        'aliases' => [
-            'wikidata' => 'TueFind\Controller\Plugin\Wikidata',
-        ],
+
     ],
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'TueFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Config\AccountCapabilities' => 'TueFind\Config\AccountCapabilitiesFactory',
@@ -199,6 +222,7 @@ $config = [
             'TueFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Service\KfL' => 'TueFind\Service\KfLFactory',
             'TueFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
@@ -209,6 +233,7 @@ $config = [
         ],
         'aliases' => [
             'VuFind\AccountCapabilities' => 'TueFind\Config\AccountCapabilities',
+            'VuFind\AjaxHandler\PluginManager' => 'TueFind\AjaxHandler\PluginManager',
             'VuFind\AuthPluginManager' => 'TueFind\Auth\PluginManager',
             'VuFind\Auth\PluginManager' => 'TueFind\Auth\PluginManager',
             'VuFind\Captcha\PluginManager' => 'TueFind\Captcha\PluginManager',
@@ -234,6 +259,7 @@ $config = [
             'VuFind\RecordTabPluginManager' => 'TueFind\RecordTab\PluginManager',
             'VuFind\RecordTab\PluginManager' => 'TueFind\RecordTab\PluginManager',
             'VuFind\Search' => 'TueFindSearch\Service',
+            'VuFind\Search\Params\PluginManager' => 'TueFind\Search\Params\PluginManager',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
             'VuFindSearch\Service' => 'TueFindSearch\Service',
         ],
@@ -257,9 +283,9 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
+$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
 
-$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator = new \TueFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);

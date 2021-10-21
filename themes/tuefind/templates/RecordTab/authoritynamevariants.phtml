@@ -1,0 +1,10 @@
+<?php $nameVariants = $this->driver->getNameVariants(); ?>
+<?php if (count($nameVariants) == 0): ?>
+  -
+<?php else: ?>
+  <ul>
+    <?php foreach ($nameVariants as $nameVariant): ?>
+      <li><?=$nameVariant?></li>
+    <?php endforeach; ?>
+  </ul>
+<?php endif; ?>

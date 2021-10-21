@@ -2,6 +2,8 @@
 
 namespace IxTheo\RecordDriver;
 
+use VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory;
+
 class PluginManager extends \TueFind\RecordDriver\PluginManager {
     /**
      * Constructor
@@ -15,9 +17,14 @@ class PluginManager extends \TueFind\RecordDriver\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->addOverride('aliases', 'solrauth', SolrAuthMarc::class);
+        $this->addOverride('aliases', 'solrauthdefault', SolrAuthMarc::class);
+        $this->addOverride('aliases', 'solrauthmarc', SolrAuthMarc::class);
         $this->addOverride('aliases', 'solrdefault', SolrDefault::class);
         $this->addOverride('aliases', 'solrmarc', SolrMarc::class);
 
+        $this->addOverride('factories', SolrAuthDefault::class, SolrDefaultWithoutSearchServiceFactory::class);
+        $this->addOverride('factories', SolrAuthMarc::class, SolrDefaultWithoutSearchServiceFactory::class);
         $this->addOverride('factories', SolrDefault::class, \TueFind\RecordDriver\SolrDefaultFactory::class);
         $this->addOverride('factories', SolrMarc::class, \TueFind\RecordDriver\SolrMarcFactory::class);
 

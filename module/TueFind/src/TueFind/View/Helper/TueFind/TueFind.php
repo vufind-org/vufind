@@ -159,42 +159,24 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Appropriately format the roles for authors
-     * @param array roles
-     *
-     * @return string
      */
-    public function formatRoles($roles) {
-
-        if (!isset($roles['role'])) {
+    public function formatRoles(array $roles): string {
+        if (count($roles) == 0) {
             return '';
         }
-        $translate = function ($arr) {
-          $translatedRoles = array();
-          foreach ($arr as $element) {
-              if (!is_array($element)) {
+
+        $translate = function ($element) {
+            $translatedRoles = [];
+            if (!is_array($element)) {
                 $translatedRoles[] = $this->translate('CreatorRoles::' . $element);
-              } else {
+            } else {
                 foreach ($element as $str) {
                     $translatedRoles[] = $this->translate('CreatorRoles::' . $str);
                 }
-              }
-          }
-          return implode(', ', $translatedRoles);
+            }
+            return implode(', ', $translatedRoles);
         };
         return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
-    }
-
-    /**
-     * Analyze a list of facets if at least one of them is chosen
-     * @param facet list array
-     *
-     * @return bool
-     */
-    public function atLeastOneFacetChosen($list) {
-        foreach($list as $i => $thisFacet)
-            if ($thisFacet['isApplied'])
-                return true;
-        return false;
     }
 
     /**
@@ -301,11 +283,32 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Implemented as a workaround, because getenv('TUEFIND_FLAVOUR')
+     * does not work in apache environment.
+     */
+    public function getTueFindFlavour(): string {
+        if ($this->getTueFindSubtype() == 'KRI')
+            return 'krimdok';
+        else
+            return 'ixtheo';
+    }
+
+
+    /**
       * Get TueFind Instance as defined by VUFIND_LOCAL_DIR variable
       * @return string
       */
     public function getTueFindInstance() {
         return basename(getenv('VUFIND_LOCAL_DIR'));
+    }
+
+    public function getTueFindSubsystem(): string {
+        $instance = $this->getTueFindInstance();
+        $map = ['ixtheo' => 'ixtheo',
+                'relbib' => 'relbib',
+                'bibstudies' => 'biblestudies',
+                'churchlaw' => 'canonlaw'];
+        return $map[$instance] ?? $instance;
     }
 
     /**
@@ -408,6 +411,18 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
         return ($user = $manager->isLoggedIn()) ? $user->lastname : "";
+    }
+
+    /**
+     * Check if a searchbox tab is enabled, e.g. "SolrAuth".
+     */
+    public function isSearchTabEnabled($tabId): bool {
+        $tabConfig = $this->getConfig('config')->SearchTabs ?? [];
+        foreach ($tabConfig as $tabKey => $tabText) {
+            if ($tabKey == $tabId)
+                return true;
+        }
+        return false;
     }
 
     /**

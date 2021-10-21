@@ -66,8 +66,7 @@
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
   </div>
 <?php else: ?>
-  <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off"
-   onsubmit="return TueFind.CheckWildcards(event)">
+  <form id="searchForm" class="searchForm navbar-form navbar-left flip tuefind-event-searchForm-on-submit" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'hiddenFilters' => $hiddenFilters]); ?>
     <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
       <section id="searchForm_row">
@@ -118,9 +117,8 @@
             <ul class="dropdown-menu">
                 <li role="button" class="text-center virtual-keyboard-greek"><?=$this->transEsc('Greek')?></li>
                 <li role="button" class="text-center virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></li>
-                <script>$(triggerVirtualKeyboard('<?=$this->transEsc("Accept") . ':' . $this->transEsc("Accept")?>',
-                                                 '<?=$this->transEsc("Enter") . ':' . $this->transEsc("Enter")?>'));
-                </script>
+                <?php $virtualKeyboardSnippet = '$(triggerVirtualKeyboard(\'' . $this->transEsc("Accept") . ':' . $this->transEsc("Accept") . '\', \'' . $this->transEsc("Enter") . ':' . $this->transEsc("Enter") . '\'));'; ?>
+                <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $virtualKeyboardSnippet, 'SET')?>
             </ul>
           </li>
       </ul>

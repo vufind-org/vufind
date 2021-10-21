@@ -3,6 +3,7 @@
 namespace TueFind\View\Helper\TueFind;
 
 use \TueFind\RecordDriver\SolrAuthMarc as AuthorityRecordDriver;
+use \TueFind\RecordDriver\SolrMarc as TitleRecordDriver;
 
 /**
  * View Helper for TueFind, containing functions related to authority data + schema.org
@@ -12,6 +13,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+    protected $dbTableManager;
+
     protected $recordLoader;
 
     protected $searchService;
@@ -20,8 +23,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function __construct(\VuFindSearch\Service $searchService,
                                 \Laminas\View\HelperPluginManager $viewHelperManager,
-                                \VuFind\Record\Loader $recordLoader)
+                                \VuFind\Record\Loader $recordLoader,
+                                \VuFind\Db\Table\PluginManager $dbTableManager)
     {
+        $this->dbTableManager = $dbTableManager;
         $this->recordLoader = $recordLoader;
         $this->searchService = $searchService;
         $this->viewHelperManager = $viewHelperManager;
@@ -102,11 +107,54 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
+    public function getExternalResources(AuthorityRecordDriver &$driver): string
+    {
+        $references = $driver->getExternalResources();
+        if (count($references) == 0)
+            return '';
+
+        usort($references, function($a, $b) { return strcmp($a['title'], $b['title']); });
+
+        $display = '';
+        foreach ($references as $reference) {
+            $title = $reference['title'];
+            if (preg_match('"Kalliope"', $title))
+                $title = $this->translate('Archived Material') . ' (Kalliope)';
+            elseif (preg_match('"Archivportal-D"', $title))
+                $title = $this->translate('Archived Material') . ' (Archivportal-D)';
+
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($title) . '</a><br>';
+        }
+
+        return $display;
+    }
+
+    public function getExternalSubsystems(AuthorityRecordDriver &$driver, $currentSubsystem): string
+    {
+        $externalSubsystems = $driver->getExternalSubsystems();
+        usort($externalSubsystems, function($a, $b) { return strcmp($a['title'], $b['title']); });
+
+        $subSystemHTML = '';
+        if(!empty($externalSubsystems) && !empty($currentSubsystem)) {
+            foreach ($externalSubsystems as $system) {
+                if ($system['label'] != $currentSubsystem) {
+                    $subSystemHTML .= '<a href="'.$system['url'].'" target="_blank" property="sameAs">'.htmlspecialchars($system['title']).'</a><br />';
+                }
+            }
+        }
+
+        return $subSystemHTML;
+    }
+
     public function getName(AuthorityRecordDriver &$driver): string
     {
-        $name = $driver->getTitle();
-        $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
-        return '<span property="name">' . $name . '</span>';
+        $name = $driver->getHeadingShort();
+        $timespan = $driver->getHeadingTimespan();
+
+        $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
+        if ($timespan != null)
+            $heading .= ' ' . htmlspecialchars($timespan);
+        return $heading;
     }
 
     public function getOccupations(AuthorityRecordDriver &$driver): string
@@ -115,8 +163,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
-                $occupationsDisplay .= '/';
-            $occupationsDisplay .= '<span property="hasOccupation">' . $occupation . '</span>';
+                $occupationsDisplay .= ' / ';
+            $occupationsDisplay .= '<span property="hasOccupation">' . htmlspecialchars($occupation) . '</span>';
         }
         return $occupationsDisplay;
     }
@@ -131,8 +179,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if ($relationsDisplay != '')
                 $relationsDisplay .= '<br>';
 
-            $type = $relation['type'] == 'Veranstalter' ? 'organizer' : 'contributor';
-            $relationsDisplay .= '<span property="' . $type . '" typeof="Organization">';
+            $relationsDisplay .= '<span property="affiliation" typeof="Organization">';
 
             $recordExists = isset($relation['id']) && $this->recordExists($relation['id']);
             if ($recordExists) {
@@ -140,10 +187,20 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
 
-            $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
+            $relationsDisplay .= '<span property="name">' . htmlspecialchars($relation['name']) . '</span>';
+            if (isset($relation['location'])) {
+                $relationsDisplay .= ' (<span property="location">' . htmlspecialchars($relation['location']) . '</span>)';
+            } else if (isset($relation['institution'])) {
+                $relationsDisplay .= '. <span property="department">' . htmlspecialchars($relation['institution']) . '</span>';
+            }
 
-            if (isset($relation['type']))
-                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+            if (isset($relation['type']) || isset($relation['timespan'])) {
+                $relationsDisplay .= ':';
+                if (isset($relation['type']))
+                    $relationsDisplay .= ' ' . $relation['type'];
+                if (isset($relation['timespan']))
+                    $relationsDisplay .= ' ' . $relation['timespan'];
+            }
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
@@ -198,23 +255,315 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         }
     }
 
-    /**
-     * Get titles of this authority to show in a preview box
-     */
-    public function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    public function getNewestTitlesAbout(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
     {
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query('author_id:"' . $driver->getGNDNumber() . '"', 'AllFields'),
-                                                 $offset, $limit);
+                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParams($driver), 'AllFields'),
+                                                 $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
+    }
+
+    public function getNewestTitlesBy(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    {
+        // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
+        $identifier = 'Solr';
+        $response = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
+                                                 $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
+
+        return $response;
+    }
+
+    public function getRelatedAuthors(AuthorityRecordDriver &$driver)
+    {
+        $params = new \VuFindSearch\ParamBag();
+        $params->set('fl', 'facet_counts');
+        $params->set('facet', 'true');
+        $params->set('facet.pivot', 'author_and_id_facet');
+        $params->set('facet.limit', 9999);
+
+        // Make sure we set offset+limit to 0, because we only want the facet counts
+        // and not the rows itself for performance reasons.
+        // (This could get very slow, e.g. Martin Luther where we have thousands of related datasets.)
+        $titleRecords = $this->searchService->search('Solr',
+                                                     new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
+                                                     0, 0, $params);
+
+        $relatedAuthors = $titleRecords->getFacets()->getPivotFacets();
+        $referenceAuthorKey = $driver->getUniqueID() . ':' . $driver->getTitle();
+
+        // This is not an array but an ArrayObject, so unset() will cause an error
+        // if the index does not exist => we need to check it with isset first.
+        if (isset($relatedAuthors[$referenceAuthorKey]))
+            unset($relatedAuthors[$referenceAuthorKey]);
+
+        // custom sort, since solr can only sort by count but not alphabetically,
+        // since the value starts with an id instead of a name.
+        $relatedAuthors->uasort(function($a, $b) {
+            $diff = $b['count'] - $a['count'];
+            if ($diff != 0)
+                return $diff;
+            else {
+                list($aId, $aTitle) = explode(':', $a['value']);
+                list($aId, $bTitle) = explode(':', $b['value']);
+                return strcmp($aTitle, $bTitle);
+            }
+        });
+
+        return $relatedAuthors;
+    }
+
+    /**
+     * Call this number with a variable number of arguments,
+     * each containing either an author name/heading or an authority record driver.
+     * ("..." == PHP splat operator)
+     */
+    public function getRelatedJointQueryParams(...$authors): string
+    {
+        $parts = [];
+        foreach ($authors as $author) {
+            $parts[] = '(' . $this->getTitlesByQueryParams($author) . ')';
+        }
+        return implode(' AND ', $parts);
+    }
+
+    protected function getTitlesAboutQueryParams(&$author, $fuzzy=false): string
+    {
+        if ($author instanceof AuthorityRecordDriver) {
+            $queryString = 'topic_id:"' . $author->getUniqueId() . '"';
+            if ($fuzzy) {
+                $queryString = 'OR topic_all:"' . $author->getTitle() . '"';
+            }
+        } else {
+            $queryString = 'topic_all:"' . $author . '"';
+        }
+        return $queryString;
+    }
+
+
+    protected function getTitlesAboutQueryParamsChartDate(&$author): string
+    {
+        if ($author instanceof AuthorityRecordDriver) {
+            $queryString = 'topic_id:"' . $author->getUniqueId() . '"';
+        } else {
+            $queryString = 'topic_all:"' . $author . '"';
+        }
+        return $queryString;
+    }
+
+    protected function getTitlesByQueryParams(&$author, $fuzzy=false): string
+    {
+        if ($author instanceof AuthorityRecordDriver) {
+            $queryString = 'author_id:"' . $author->getUniqueId() . '"';
+            $queryString .= ' OR author2_id:"' . $author->getUniqueId() . '"';
+            $queryString .= ' OR author_corporate_id:"' . $author->getUniqueId() . '"';
+            if ($fuzzy) {
+                $queryString .= ' OR author:"' . $author->getTitle() . '"';
+                $queryString .= ' OR author2:"' . $author->getTitle() . '"';
+                $queryString .= ' OR author_corporate:"' . $author->getTitle() . '"';
+            }
+        } else {
+            $queryString = 'author:"' . $author . '"';
+            $queryString .= ' OR author2:"' . $author . '"';
+            $queryString .= ' OR author_corporate:"' . $author . '"';
+        }
+        return $queryString;
+    }
+
+    public function getTitlesAboutUrl(AuthorityRecordDriver &$driver): string
+    {
+        $urlHelper = $this->viewHelperManager->get('url');
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesAboutQueryParams($driver)]]);
+    }
+
+    /**
+     * Get URL to search result with all titles for this authority record.
+     * Moved here because it needs to be the same in several locations, e.g.:
+     * - authority page
+     * - biblio result-list
+     * - biblio core (data-authors)
+     */
+    public function getTitlesByUrl(AuthorityRecordDriver &$driver): string
+    {
+        $urlHelper = $this->viewHelperManager->get('url');
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesByQueryParams($driver)]]);
+    }
+
+    public function getTitlesByUrlNameOrID($authorName, $authorId = null): string
+    {
+        $urlHelper = $this->viewHelperManager->get('url');
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesByQueryParamsNameOrID($authorName, $authorId)]]);
+    }
+
+    protected function getTitlesByQueryParamsNameOrID($authorName, $authorId = null): string
+    {
+        if ($authorId != null) {
+            $queryString = 'author_id:"' . $authorId . '"';
+            $queryString .= ' OR author2_id:"' . $authorId . '"';
+            $queryString .= ' OR author_corporate_id:"' . $authorId . '"';
+            $queryString .= ' OR author:"' . $authorName . '"';
+            $queryString .= ' OR author2:"' . $authorName . '"';
+            $queryString .= ' OR author_corporate:"' . $authorName . '"';
+        } else {
+            $queryString = 'author:"' . $authorName . '"';
+            $queryString .= ' OR author2:"' . $authorName . '"';
+            $queryString .= ' OR author_corporate:"' . $authorName . '"';
+        }
+        return $queryString;
+    }
+
+    public function getChartData(AuthorityRecordDriver &$driver): array
+    {
+        $params = ["facet.field"=>"publishDate",
+                   "facet.mincount"=>"1",
+                   "facet"=>"on",
+                   "facet.sort"=>"count"];
+
+        $identifier = 'Solr';
+        $publishingData = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
+                                                 0, 0, new \VuFindSearch\ParamBag($params));
+        $allFacets = $publishingData->getFacets();
+        $publishFacet = $allFacets->getFieldFacets();
+        $publishArray = $publishFacet['publishDate']->toArray();
+        $publishDates = array_keys($publishArray);
+
+        $aboutData = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesAboutQueryParamsChartDate($driver), 'AllFields'),
+                                                 0, 0, new \VuFindSearch\ParamBag($params));
+
+        $allFacetsAbout = $aboutData->getFacets();
+        $aboutFacet = $allFacetsAbout->getFieldFacets();
+        $aboutArray = $aboutFacet['publishDate']->toArray();
+
+        $aboutDates = array_keys($aboutArray);
+
+        $allDates = array_merge($publishDates, $aboutDates);
+        $allDates = array_unique($allDates);
+
+        $allDatesKeys = array_values($allDates);
+        asort($allDatesKeys);
+
+        $chartData = [];
+        foreach($allDatesKeys as $oneDate) {
+            if(!empty($oneDate)){
+                $by = '';
+                $about = '';
+                if (array_key_exists($oneDate, $publishArray)) {
+                    $by = $publishArray[$oneDate];
+                }
+                if (array_key_exists($oneDate, $aboutArray)) {
+                    $about = $aboutArray[$oneDate];
+                }
+                $chartData[] = array($oneDate,$by,$about);
+            }
+        }
+
+
+
+
+        return $chartData;
+    }
+
+    public function getTopicsData(AuthorityRecordDriver &$driver, $language='en'): array
+    {
+
+        $settings = [
+            'maxNumber' => 10,
+            'minNumber' => 2,
+            'firstTopicLength' => 10,
+            'firstTopicWidth' => 10,
+            'maxTopicRows' => 20,
+            'minWeight' => 0,
+            'filter' => 'topic_facet'
+        ];
+
+        $identifier = 'Solr';
+        $titleRecords = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
+                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
+        $countedTopics = [];
+        foreach ($titleRecords as $titleRecord) {
+            $keywords = $titleRecord->getTopics($language);
+            foreach ($keywords as $keyword) {
+                if (isset($countedTopics[$keyword])) {
+                    ++$countedTopics[$keyword];
+                } else {
+                    $countedTopics[$keyword] = 1;
+                }
+            }
+        }
+
+        arsort($countedTopics);
+
+        $urlHelper = $this->viewHelperManager->get('url');
+        $tuefindHelper = $this->viewHelperManager->get('tuefind');
+
+        $searchType = 'AllFields';
+        $lookfor = $this->getTitlesByQueryParams($driver);
+
+        if ($tuefindHelper->getTueFindFlavour() == 'ixtheo') {
+            $settings['filter'] = 'key_word_chain_bag';
+        }
+
+        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$searchType.'&filter[]='.$settings['filter'].':';
+
+        $topicsArray = [];
+        foreach($countedTopics as $topic => $topicCount) {
+            $updateString = str_replace([','], '', $topic);
+            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString, 'topicLink'=>$topicLink.$topic];
+        }
+
+        $mainTopicsArray = [];
+        if(!empty($topicsArray)){
+            $topWeight = $settings['maxNumber'];
+            $firstWeight = $topicsArray[0]['topicCount'];
+            for($i=0;$i<count($topicsArray);$i++) {
+                if($i == 0) {
+                    if(mb_strlen($topicsArray[$i]['topicTitle']) > $settings['firstTopicLength']) {
+                        $topicsArray[$i]['topicTitle'] = mb_strimwidth($topicsArray[$i]['topicTitle'], 0, $settings['firstTopicWidth'] + 3, '...');
+                    }
+                }
+                $one = $topicsArray[$i];
+                if($firstWeight != $topicsArray[$i]['topicCount']) {
+                    $firstWeight = $topicsArray[$i]['topicCount'];
+                    if($topWeight != $settings['minWeight']) {
+                        $topWeight--;
+                    }else{
+                        $topWeight = $settings['minWeight'];
+                    }
+                }
+                $one['topicNumber'] = $topWeight;
+                $mainTopicsArray[] = $one;
+            }
+        }
+
+        return [$mainTopicsArray,$settings];
+    }
+
+    public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
+    {
+        $userAuthorities = $this->dbTableManager->get('user_authority')->getByUserId($user->id);
+        $userAuthorityIds = [];
+        foreach ($userAuthorities as $userAuthority) {
+            $userAuthorityIds[] = $userAuthority->authority_id;
+        }
+
+        $recordAuthorIds = array_merge($titleRecord->getPrimaryAuthorsIds(), $titleRecord->getSecondaryAuthorsIds(), $titleRecord->getCorporateAuthorsIds());
+        $matchingAuthorIds = array_intersect($userAuthorityIds, $recordAuthorIds);
+        return count($matchingAuthorIds) > 0;
     }
 
     public function recordExists($authorityId)
     {
         $loadResult = $this->recordLoader->load($authorityId, 'SolrAuth', /* $tolerate_missing=*/ true);
-        return !($loadResult instanceof \VuFind\RecordDriver\Missing);
+        if ($loadResult instanceof \VuFind\RecordDriver\Missing)
+            return false;
+
+        return $loadResult;
     }
+
 }

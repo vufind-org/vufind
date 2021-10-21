@@ -26,6 +26,16 @@ class AccountCapabilities extends \VuFind\Config\AccountCapabilities
     }
 
     /**
+     * Are users allowed to upload publications for their registered authorities?
+     */
+    public function getPublicationSetting(): string
+    {
+        return isset($this->tuefindConfig->Publication->publications)
+            && $this->tuefindConfig->Publication->publications === 'enabled'
+            ? 'enabled' : 'disabled';
+    }
+
+    /**
      * Are users allowed to request rights on authority datasets?
      */
     public function getRequestAuthorityRightsSetting(): string

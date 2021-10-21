@@ -19,6 +19,7 @@ Disallow: /Authority
 Disallow: /Browse
 Disallow: /Combined
 Disallow: /Feedback
+Disallow: /FindbuchProxy
 Disallow: /fulltextsnippetproxy
 Disallow: /Keywordchainsearch
 Disallow: /pdaproxy
@@ -29,5 +30,5 @@ Disallow: /Search/Results
 Disallow: /Search2
 Disallow: /Summon
 Disallow: /SummonRecord
-Disallow: /wikidataproxy
+Disallow: /WikidataProxy
 Sitemap: https://relbib.de/sitemaps/relbib/sitemapIndex.xml

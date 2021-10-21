@@ -12,4 +12,4 @@ fi
 DIR="$(dirname $(readlink --canonicalize "$0"))"
 
 cat $DIR/marc_tuefind.properties $DIR/marc_${TUEFIND_FLAVOUR}.properties > $DIR/marc_local.properties
-
+git update-index --assume-unchanged $DIR/marc_local.properties

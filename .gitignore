@@ -37,7 +37,6 @@ KeywordChainParser.jar
 MultiLanguageDocTransformerFactory.jar
 MultiLanguageQueryParser.jar
 RangedSearches.jar
-TuelibSolrmarcMixin.jar
 
 # other logs & temporary files
 *.log

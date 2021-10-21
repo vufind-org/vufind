@@ -22,139 +22,6 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get secondary author and its role in a '$'-separated string
-     *
-     * @return array
-     */
-    public function getSecondaryAuthorsAndRole()
-    {
-        return isset($this->fields['author2_and_role']) ?
-            $this->fields['author2_and_role'] : [];
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthors()).
-     *
-     * @return array
-     */
-    public function getSecondaryAuthors()
-    {
-        if (!isset($this->fields['author2_and_role']))
-            return [];
-
-        $authors = [];
-        foreach ($this->fields['author2_and_role'] as $author_and_roles) {
-            $parts = explode('$', $author_and_roles);
-            $authors[] = $parts[0];
-        }
-
-        return $authors;
-    }
-
-    /**
-     * Get an array of all secondary authors roles (complementing
-     * getPrimaryAuthorsRoles()).
-     *
-     * @return array
-     */
-    public function getSecondaryAuthorsRoles()
-    {
-        if (!isset($this->fields['author2_and_role']))
-            return [];
-
-        $authorsRoles = [];
-        foreach ($this->fields['author2_and_role'] as $author_and_roles) {
-            $parts = explode('$', $author_and_roles);
-            $roles = array_slice($parts, 1);
-            $roles = array_filter($roles, function($value) { return $value !== ''; });
-            $authorsRoles[] = $roles;
-        }
-
-        return $authorsRoles;
-    }
-
-    /**
-     * Helper function to restructure author arrays including relators
-     *
-     * @param array $authors Array of authors
-     * @param array $roles   Array with relators of authors
-     *
-     * @return array
-     */
-    protected function getAuthorRolesArray($authors = [], $roles = [])
-    {
-        $authorRolesArray = [];
-
-        if (!empty($authors)) {
-            foreach ($authors as $index => $author) {
-                if (!isset($authorRolesArray[$author])) {
-                    $authorRolesArray[$author] = [];
-                }
-                if (isset($roles[$index]) && !empty($roles[$index])) {
-                    if (is_array($roles[$index]))
-                        $authorRolesArray[$author] = $roles[$index];
-                    else
-                        $authorRolesArray[$author][] = $roles[$index];
-                }
-            }
-        }
-
-        return $authorRolesArray;
-    }
-
-    /**
-     * Get Author Information with Associated Data Fields
-     *
-     * @param string $index      The author index [primary, corporate, or secondary]
-     * used to construct a method name for retrieving author data (e.g.
-     * getPrimaryAuthors).
-     * @param array  $dataFields An array of fields to used to construct method
-     * names for retrieving author-related data (e.g., if you pass 'role' the
-     * data method will be similar to getPrimaryAuthorsRoles). This value will also
-     * be used as a key associated with each author in the resulting data array.
-     *
-     * @return array
-     */
-    public function getAuthorDataFields($index, $dataFields = [])
-    {
-        $data = $dataFieldValues = [];
-
-        // Collect author data
-        $authorMethod = sprintf('get%sAuthors', ucfirst($index));
-        $authors = $this->tryMethod($authorMethod, [], []);
-
-        // Collect attribute data
-        foreach ($dataFields as $field) {
-            $fieldMethod = $authorMethod . ucfirst($field) . 's';
-            $dataFieldValues[$field] = $this->tryMethod($fieldMethod, [], []);
-        }
-
-        // Match up author and attribute data (this assumes that the attribute
-        // arrays have the same indices as the author array; i.e. $author[$i]
-        // has $dataFieldValues[$attribute][$i].
-        foreach ($authors as $i => $author) {
-            if (!isset($data[$author])) {
-                $data[$author] = [];
-            }
-
-            foreach ($dataFieldValues as $field => $dataFieldValue) {
-                if (!empty($dataFieldValue[$i])) {
-                    // IxTheo: Field can have multiple values (e.g. secondary author roles)
-                    if (!isset($data[$author][$field]))
-                        $data[$author][$field] = [];
-                    if (is_array($dataFieldValue[$i])) {
-                        $data[$author][$field] = array_merge($data[$author][$field], $dataFieldValue[$i]);
-                    } else {
-                        $data[$author][$field][] = $dataFieldValue[$i];
-                    }
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
      * Get corporation.
      *
      * @return array
@@ -281,8 +148,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         85 => "",
     );
 
-    private static $CodesToCodexTitles = [  1 => 'CIC1917',
-                                            2 => 'CIC1983',
+    private static $CodesToCodexTitles = [  1 => 'CIC17',
+                                            2 => 'CIC83',
                                             3 => 'CCEO',
     ];
 
@@ -371,17 +238,33 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 
         if ($canonLawRangeStart['canon'] == 0 && $canonLawRangeEnd['canon'] == 9999)
             return $displayString;
-        $displayString .= ' ' . $canonLawRangeStart['canon'];
+        $displayString .= ' can. ' . $canonLawRangeStart['canon'];
 
-        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0)
-            $displayString .= $canonLawRangeStart['pars1'] . ',' . $canonLawRangeStart['pars2'];
+        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0) {
+            if ($canonLawRangeStart['pars1'] != $canonLawRangeEnd['pars1']) {
+                $displayString .= ', §§' . $canonLawRangeStart['pars1'] . '-' . $canonLawRangeEnd['pars1'];
+            }  else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'] . ' n. ' . $canonLawRangeStart['pars2'] . '-' . $canonLawRangeEnd['pars2'];
+            } else {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'];
+                if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2']) {
+                    $displayString .= ' n. ' . $canonLawRangeStart['pars2'];
+                }
+                else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                    $displayString .= '-' . $canonLawRangeStart['pars2'];
+                }
+            }
+        }
 
-        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'] || $canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
-            $displayString .= '-';
-            if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'])
-                $displayString .= $canonLawRangeEnd['canon'];
-            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999)
-                $displayString .= $canonLawRangeEnd['pars1'] . ',' . $canonLawRangeEnd['pars2'];
+        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon']) {
+            $displayString .= '-' . $canonLawRangeEnd['canon'];
+            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
+                $displayString .= ', §' . $canonLawRangeEnd['pars1'];
+                if ($canonLawRangeEnd['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2'])
+                    $displayString .= ' n. ' . $canonLawRangeEnd['pars2'];
+                else if ($canonLawRangeEnd['pars1'] != $canonLawRangeEnd['pars2'])
+                    $displayString .= '-' . $canonLawRangeEnd['pars2'];
+            }
         }
 
         return $displayString;
@@ -421,16 +304,24 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $canonLawRangesStrings;
     }
 
-    public function getKeyWordChainBag()
+    public function getKeyWordChainBag($languageSuffix=null)
     {
-        return isset($this->fields['key_word_chain_bag']) ?
-            $this->fields['key_word_chain_bag'] : '';
+        $key = 'key_word_chain_bag';
+        if (isset($languageSuffix))
+            $key .= '_' . $languageSuffix;
+        return isset($this->fields[$key]) ?
+            $this->fields[$key] : [];
     }
 
     public function getPrefix4KeyWordChainBag()
     {
         return isset($this->fields['prefix4_key_word_chain_bag']) ?
             $this->fields['prefix4_key_word_chain_bag'] : '';
+    }
+
+    public function getTopics($language=null): array
+    {
+        return $this->getKeyWordChainBag($language);
     }
 
     /**
