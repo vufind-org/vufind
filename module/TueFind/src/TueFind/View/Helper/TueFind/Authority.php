@@ -489,6 +489,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         foreach ($titleRecords as $titleRecord) {
             $keywords = $titleRecord->getTopics($language);
             foreach ($keywords as $keyword) {
+                if(strpos($keyword, "\\") !== false) {
+                    $keyword = str_replace("\\", "", $keyword);
+                }
                 if (isset($countedTopics[$keyword])) {
                     ++$countedTopics[$keyword];
                 } else {
@@ -513,10 +516,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {
-            $updateString = str_replace([','], '', $topic);
-            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString, 'topicLink'=>$topicLink.$topic];
+            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicLink'=>$topicLink.$topic];
         }
-
         $mainTopicsArray = [];
         if(!empty($topicsArray)){
             $topWeight = $settings['maxNumber'];
