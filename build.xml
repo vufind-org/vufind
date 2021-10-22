@@ -88,12 +88,12 @@
   <!-- Quality Assurance Tasks -->
   <target name="qa-console" description="quality assurance tasks">
     <!-- Call standard tasks -->
-    <phingcall target="qa-javascript"/>
+    <phingcall target="qa-js-and-less"/>
     <phingcall target="qa-php"/>
   </target>
 
   <!-- Quality Assurance Javascript Tasks -->
-  <target name="qa-javascript" description="quality assurance php tasks">
+  <target name="qa-js-and-less" description="quality assurance js and less tasks">
     <phingcall target="eslint"/>
     <phingcall target="jshint"/>
     <phingcall target="checkLessToSass"/>
