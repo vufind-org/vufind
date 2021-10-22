@@ -167,7 +167,7 @@ class RouteGenerator
             ]
         ];
         // special non-tab actions that each need their own route:
-        foreach ($this->nonTabRecordActions as $action) {
+        foreach (self::$nonTabRecordActions as $action) {
             $config['router']['routes'][$routeBase . '-' . strtolower($action)] = [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
