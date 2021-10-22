@@ -62,7 +62,7 @@ EOD;
             <?php foreach($ascSortingTopicsData as $topic): ?>
             <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
               <span class="text">
-                <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
+                <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
               </span>
               <span class="badge"><?php echo $topic['topicCount'];?></span>
             </a>
@@ -76,7 +76,7 @@ EOD;
             <?php foreach($countSortingTopicsData as $topic): ?>
             <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
               <span class="text">
-                <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
+                <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
               </span>
               <span class="badge"><?php echo $topic['topicCount'];?></span>
             </a>

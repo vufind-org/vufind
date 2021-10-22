@@ -516,7 +516,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {
-            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$topic, 'topicLink'=>$topicLink.$topic];
+            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicLink'=>$topicLink.$topic];
         }
         $mainTopicsArray = [];
         if(!empty($topicsArray)){
