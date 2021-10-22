@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns='http://www.loc.gov/MARC21/slim'>
+
+    <record
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+        xmlns="http://www.loc.gov/MARC21/slim">
+        <leader>00000cam a22000004i 4500</leader>
+        <controlfield tag="001">123</controlfield>
+        <!-- indicator suggests ISMN, but no subfield a: -->
+        <datafield tag="024" ind1="2" ind2=" ">
+        </datafield>
+    </record>
+</collection>

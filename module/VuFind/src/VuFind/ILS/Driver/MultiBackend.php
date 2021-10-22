@@ -131,6 +131,23 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     ];
 
     /**
+     * Methods that don't have parameters that allow the correct source to be
+     * determined. These methods are only supported for the default driver.
+     */
+    protected $methodsWithNoSourceSpecificParameters = [
+        'findReserves',
+        'getCourses',
+        'getDepartments',
+        'getFunds',
+        'getInstructors',
+        'getNewItems',
+        'getOfflineMode',
+        'getSuppressedAuthorityRecords',
+        'getSuppressedRecords',
+        'loginIsHidden',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
@@ -1077,10 +1094,10 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             $source = $this->defaultDriver;
         }
         if (!$source) {
-            // If we can't determine the source, assume we are capable to handle
-            // the request. This might happen e.g. when the user hasn't yet done
-            // a catalog login.
-            return true;
+            // If we can't determine the source, assume we are capable of handling
+            // the request unless the method is one that doesn't have parameters that
+            // allow the correct source to be determined.
+            return !in_array($method, $this->methodsWithNoSourceSpecificParameters);
         }
 
         $driver = $this->getDriver($source);
