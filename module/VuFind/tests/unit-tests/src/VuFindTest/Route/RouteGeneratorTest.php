@@ -140,6 +140,13 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
         $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
         $generator->addRecordRoutes($config, $routeConfig);
         $generator->addNonTabRecordActions($config, ['NonTabAction']);
+        $extendedGenerator = new class extends RouteGenerator {
+        };
+        $extendedGenerator->addNonTabRecordActions(
+            $config,
+            ['NonTabActionExtended']
+        );
+
         $expected = [
             'route1' => [
                 'type' => 'Laminas\Router\Http\Segment',
@@ -170,6 +177,20 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'route1-nontabactionextended' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id]/NonTabActionExtended',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'NonTabActionExtended',
+                    ],
+                ],
+            ],
             'route2' => [
                 'type' => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -196,6 +217,20 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                     'defaults' => [
                         'controller' => 'Controller2',
                         'action' => 'NonTabAction',
+                    ],
+                ],
+            ],
+            'route2-nontabactionextended' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller2/[:id]/NonTabActionExtended',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller2',
+                        'action' => 'NonTabActionExtended',
                     ],
                 ],
             ],
