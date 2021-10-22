@@ -135,10 +135,11 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testAddRecordRoutes(): void
     {
-        $generator = new RouteGenerator(['NonTabAction']);
+        $generator = new RouteGenerator();
         $config = [];
         $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
         $generator->addRecordRoutes($config, $routeConfig);
+        $generator->addNonTabRecordActions($config, ['NonTabAction']);
         $expected = [
             'route1' => [
                 'type' => 'Laminas\Router\Http\Segment',
@@ -199,6 +200,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+
         $this->assertEquals(
             ['router' => ['routes' => $expected]],
             $config
