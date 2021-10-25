@@ -140,6 +140,86 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
         $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
         $generator->addRecordRoutes($config, $routeConfig);
         $generator->addNonTabRecordActions($config, ['NonTabAction']);
+
+        $expected = [
+            'route1' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id[/[:tab]]]',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tab' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'Home',
+                    ],
+                ],
+            ],
+            'route1-nontabaction' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id]/NonTabAction',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'NonTabAction',
+                    ],
+                ],
+            ],
+            'route2' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller2/[:id[/[:tab]]]',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tab' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller2',
+                        'action' => 'Home',
+                    ],
+                ],
+            ],
+            'route2-nontabaction' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller2/[:id]/NonTabAction',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller2',
+                        'action' => 'NonTabAction',
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals(
+            ['router' => ['routes' => $expected]],
+            $config
+        );
+    }
+
+    /**
+     * Test addRecordRoutes() using a subclass
+     *
+     * @return void
+     */
+    public function testAddRecordRoutesWithSubclass(): void
+    {
+        $generator = new RouteGenerator();
+        $config = [];
+        $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
+        $generator->addRecordRoutes($config, $routeConfig);
+        $generator->addNonTabRecordActions($config, ['NonTabAction']);
         $extendedGenerator = new class extends RouteGenerator {
         };
         $extendedGenerator->addNonTabRecordActions(
