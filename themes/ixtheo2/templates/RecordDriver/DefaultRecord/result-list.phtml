@@ -44,10 +44,10 @@
                   <?=$this->escapeHtml($author)?> <?=$this->tuefind()->formatRoles($authorProperties['role'] ?? [])?>
                   <?php $authorityId = $authorProperties['id'][0] ?? '';?>
                   <?php if ($authorityId && $authorityDriver = $this->authority()->recordExists($authorityId)): ?>
-                    <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
-                    <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
+                    <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
+                    <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
                   <?php else: ?>
-                    <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
+                    <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
                   <?php endif; ?>
                 <?php else: ?>
                   <?php /* Simple link to title search by author */ ?>
@@ -235,9 +235,6 @@
       <div class="result-previews">
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
-      <?php $label = str_replace('class="', 'class="badge badge-info ', $this->record($this->driver)->getFormatList())?>
-      <?php /* Remove separator needed for long title view */ ?>
-      <?=str_replace(' | ', '', $label)?>
       </div>
       <div class="result-links hidden-print">
       <?php /* Display qrcode if appropriate: */ ?>
@@ -261,12 +258,18 @@
       <?php endif; ?>
 
         <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
+        <div class="ix-result-links-items">
+          <?php /* Saved lists */ ?>
+          <div class="savedLists tf-d-none">
+            <strong><?=$this->transEsc("Saved in")?>:</strong>
+            <a href="<?=$this->url('myresearch-favorites')?>" data-lightbox class="tf-favoritesListModal tf-d-none">&nbsp;</a>
+          </div>
+          <div class="ix-result-list-actions">
             <?php /* Add to favorites */ ?>
-            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record result-link-label" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>">
-              <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>">
+              <i class="fa fa-fw fa-star"></i>
             </a><br/>
-            <?php if ($this->driver->isSubscribable()):?>
+            <?php if ($this->driver->tryMethod('isSubscribable') && $this->accountCapabilities()->getSubscriptionSetting() === 'enabled'): ?>
               <?php if ($this->IxTheo()->isRecordSubscribed($this->driver) || $this->IxTheo()->isRecordSubscribedViaBundle($this->driver)): ?>
                 <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Unsubscribe')?>">
                   <i class="result-link-icon fa fa-fw fa-bell-slash"></i>
@@ -276,14 +279,8 @@
                   <i class="result-link-icon fa fa-fw fa-bell"></i>
                 </a>
               <?php endif; ?>
-              <br/>
             <?php endif; ?>
-          <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
-            <?=$block?>
-          <?php endif; ?>
-        <?php /* Saved lists */ ?>
-        <div class="savedLists">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+          </div>
         </div>
         <?php endif; ?>
 

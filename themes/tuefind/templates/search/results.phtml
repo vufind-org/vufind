@@ -1,6 +1,12 @@
 <?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
+
+  $shortLookfor = $lookfor;
+  if(mb_strwidth($lookfor)> 120) {
+    $shortLookfor = mb_strimwidth($lookfor, 0, 120, "...");
+  }
+
   $headTitle = $this->slot('head-title')
         ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   $this->headTitle($headTitle);
@@ -18,8 +24,8 @@
         'filterList' => $this->params->getFilterList(true),
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
         'selectedShards' => $this->params->getSelectedShards(),
-        'ignoreHiddenFiltersInRequest' => $this->ignoreHiddenFiltersInRequest ?? false,
-        'ignoreHiddenFilterMemory' => $this->ignoreHiddenFilterMemory ?? false,
+        'ignoreHiddenFiltersInRequest' => isset($this->ignoreHiddenFiltersInRequest) ? $this->ignoreHiddenFiltersInRequest : false,
+        'ignoreHiddenFilterMemory' => isset($this->ignoreHiddenFilterMemory) ? $this->ignoreHiddenFilterMemory : false,
       ]
   );
 
@@ -34,13 +40,16 @@
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
-  $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
-
-  // Load only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption() !== 'full') {
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() != "full") {
     $this->headScript()->appendFile("record.js");
     $this->headScript()->appendFile("embedded_record.js");
   }
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("vendor/hunt.min.js");
+  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
@@ -53,8 +62,8 @@
   <div class="search-header hidden-print">
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
-        <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
-        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
+        <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => [$lookfor, $shortLookfor], 'recordTotal' => $recordTotal]) ?>
+        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
           <?=$this->transEsc('Refine Results') ?>
         </a>
       <?php else: ?>

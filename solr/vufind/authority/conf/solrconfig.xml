@@ -41,7 +41,9 @@
        other than the default ./data under the Solr home.
        If replication is in use, this should match the replication configuration. -->
   <dataDir>${solr.solr.home:./solr}/authority</dataDir>
-
+  <lib dir="../../vendor/contrib/analysis-extras/lib" regex=".*\.jar" />
+  <lib dir="../../vendor/contrib/analysis-extras/lucene-libs" regex=".*\.jar" />
+  <lib dir="../jars" regex=".*\.jar" />
   
   <indexConfig>
   
@@ -554,6 +556,13 @@
 
   <!-- Mitigate CVE-2017-12629 -->
   <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin"/>
+  <queryParser class="de.uni_tuebingen.ub.ixTheo.multiLanguageQuery.MultiLanguageQueryParserPlugin" name="multiLanguageQueryParser" />
+  <transformer class="de.uni_tuebingen.ub.ixTheo.MultiLanguageDocTransformerFactory" name="multiLanguageDocTransformer">
+    <bool name="enabled">true</bool>
+    <str name="fields">occupation</str>
+    <str name="lang_extensions">_de,_en,_fr,_it,_es,_hant,_hans,_pt,_ru,_el</str>
+  </transformer>
+
 
   <!-- config for the admin interface --> 
   <admin>

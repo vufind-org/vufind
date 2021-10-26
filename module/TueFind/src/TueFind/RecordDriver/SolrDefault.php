@@ -506,6 +506,15 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $material_type;
     }
 
+    /**
+     * Return a list of translated topics. Can be used e.g. for chart generation.
+     * (translation handling only possible in IxTheo right now.)
+     */
+    public function getTopics($language=null): array
+    {
+        return $this->fields['topic'] ?? [];
+    }
+
 
     /**
      * Return an associative array of URL's mapped to their material types.

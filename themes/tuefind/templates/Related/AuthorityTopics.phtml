@@ -1,161 +1,91 @@
-<?php
-$this->headLink()->appendStylesheet('vendor/jqcloud.css');
-$this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
+<?php $responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang);
 
-$jsSnippetTags = <<<EOD
-$(function () {
-    let word_list = [
-        {text: "Lorem", weight: 13, link: "https://github.com/DukeLeNoir/jQCloud"},
-        {text: "Ipsum", weight: 10.5, html: {title: "My Title", "class": "custom-class"}, link: {href: "http://jquery.com/", target: "_blank"}},
-        {text: "Dolor", weight: 9.4},
-        {text: "Sit", weight: 8},
-        {text: "Amet", weight: 6.2},
-        {text: "Consectetur", weight: 5},
-        {text: "Adipiscing", weight: 5},
-        {text: "Elit", weight: 5},
-        {text: "Nam et", weight: 5},
-        {text: "Leo", weight: 4},
-        {text: "Sapien", weight: 4},
-        {text: "Pellentesque", weight: 3},
-        {text: "habitant", weight: 3},
-        {text: "morbi", weight: 3},
-        {text: "tristisque", weight: 3},
-        {text: "senectus", weight: 3},
-        {text: "et netus", weight: 3},
-        {text: "et malesuada", weight: 3},
-        {text: "fames", weight: 2},
-        {text: "ac turpis", weight: 2},
-        {text: "egestas", weight: 2},
-        {text: "Aenean", weight: 2},
-        {text: "vestibulum", weight: 2},
-        {text: "elit", weight: 2},
-        {text: "sit amet", weight: 2},
-        {text: "metus", weight: 2},
-        {text: "adipiscing", weight: 2},
-        {text: "ut ultrices", weight: 2},
-        {text: "justo", weight: 1},
-        {text: "dictum", weight: 1},
-        {text: "Ut et leo", weight: 1},
-        {text: "metus", weight: 1},
-        {text: "at molestie", weight: 1},
-        {text: "purus", weight: 1},
-        {text: "Curabitur", weight: 1},
-        {text: "diam", weight: 1},
-        {text: "dui", weight: 1},
-        {text: "ullamcorper", weight: 1},
-        {text: "id vuluptate ut", weight: 1},
-        {text: "mattis", weight: 1},
-        {text: "et nulla", weight: 1},
-        {text: "Sed", weight: 1}
-    ];
-    $("#my_favorite_latin_words").jQCloud(word_list);
-});
-EOD;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
+if(!empty($responseTopicsDataAndSettings[0])) :
 
-<div class="col-md-12" style="padding:20px; margin-bottom: 20px;  border: 1px solid #ddd; border-radius: 4px;">
-    <div id="my_favorite_latin_words" style="width: 708px; height: 350px; border: 1px solid #ccc; background-color:#fafafa; font-family:'Roboto';"></div>
-</div>
+  $this->headLink()->appendStylesheet('vendor/jqcloud.css');
+  $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
 
-<div class="col-md-12" style="padding:20px; margin-bottom: 20px;  border: 1px solid #ddd; border-radius: 4px;">
-    <div class="vis" style="width: 708px; height: 350px; border: 1px solid #ccc; background-color:#fafafa; font-family:'Roboto';"></div>
-</div>
+  $responseTopicsData = $responseTopicsDataAndSettings[0];
+  $responseTopicsSettings = $responseTopicsDataAndSettings[1];
 
-<?php
-$this->headScript()->appendFile("vendor/d3.min.js");
-$this->headScript()->appendFile("vendor/cloud.min.js");
+  $jsData = '';
+  $itopic = 1;
+  foreach($responseTopicsData as $topic) {
+      if($itopic <= $responseTopicsSettings['maxTopicRows']) {
+          $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_blank"}},';
+      }
+      $itopic++;
+  }
 
-$jsSnippetTags = <<<EOD
-$(function () {
-    let  myArray = [{"text":"First","size":15},{"text":"Not","size":29},{"text":"Bird","size":80},{"text":"Hello","size":40},{"text":"Word","size":76},{"text":"Marketplaces","size":75}]
-    let fillColor = d3.scale.category20b();
-    let w = parseInt($('.vis').width());
-    let h = parseInt($('.vis').height());
-
-    let word_list = [
-        {"text": "Lorem", "url": "https://github.com/DukeLeNoir/jQCloud","size":70},
-        {"text": "Ipsum", "url": "http://jquery.com/","size":50.5},
-        {"text": "Dolor", "size":45.4},
-        {"text": "Sit", "size":40},
-        {"text": "Amet", "size":30.2},
-        {"text": "Consectetur", "size":50},
-        {"text": "Adipiscing","size":50},
-        {"text": "Elit","size":50},
-        {"text": "Nam et", "size":50},
-        {"text": "Leo", "size":40},
-        {"text": "Sapien", "size":40},
-        {"text": "Pellentesque", "size":30},
-        {"text": "habitant", "size":30},
-        {"text": "morbi", "size":30},
-        {"text": "tristisque", "size":30},
-        {"text": "senectus", "size":30},
-        {"text": "et netus", "size":30},
-        {"text": "et malesuada", "size":30},
-        {"text": "fames", "size":20},
-        {"text": "ac turpis", "size":20},
-        {"text": "egestas", "size":20},
-        {"text": "Aenean", "size":20},
-        {"text": "vestibulum","size":20},
-        {"text": "elit", "size":20},
-        {"text": "sit amet","size":20},
-        {"text": "metus", "size":20},
-        {"text": "adipiscing", "size":20},
-        {"text": "ut ultrices", "size":20},
-        {"text": "justo","size":10},
-        {"text": "dictum", "size":10},
-        {"text": "Ut et leo", "size":10},
-        {"text": "metus", "size":10},
-        {"text": "at molestie", "size":10},
-        {"text": "purus", "size":10},
-        {"text": "Curabitur", "size":10},
-        {"text": "diam", "size":10},
-        {"text": "dui", "size":10},
-        {"text": "ullamcorper","size":10},
-        {"text": "id vuluptate ut", "size":10},
-        {"text": "mattis", "size":10},
-        {"text": "et nulla", "size":10},
-        {"text": "Sed", "size":10}
-    ];
+  $ascSortingTopicsData = $responseTopicsData;
+  $toptitle = array();
+  foreach ($ascSortingTopicsData as $key => $row) {
+      $toptitle[$key]  = $row['topicTitle'];
+  }
+  array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
 
 
-    d3.layout.cloud().size([w, h])
-        .words(word_list)
-        .padding(5)
-        .rotate(0)
-        .font("Impact")
-        .fontSize(function(d) { return d.size; })
-        .on("end", drawCloud)
-        .start();
+  $countSortingTopicsData = $responseTopicsData;
+  array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);
 
-    function drawCloud(words) {
-        d3.select(".vis").append("svg")
-            .attr("width", w)
-            .attr("height", h)
-            .append("g")
-            .attr("transform", "translate(" + w/2 + "," + h/2 + ")")
-            .selectAll("text")
-            .data(words)
-            .enter().append("text")
-            .style("font-size", function(d) { return (d.size) + "px"; })
-            .style("font-family", "Impact")
-            .style("fill", function(d, i) { return fillColor(i); })
-            .style("cursor", function(d, i) {
-                    if(d.url){
-                        return "pointer";
-                    }
-                })
-            .attr("text-anchor", "middle")
-            .attr("transform", function(d,i) {
-                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                }
-            )
-        .text(function(d) { return d.text; })
-        .on("click", function (d, i){
-            window.open(d.url, "_blank");
-        });
-    }
-});
-EOD;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
+  $jsSnippetTags = <<<EOD
+  $(function () {
+      let word_list = [
+          $jsData
+      ];
+      $("#topic_cloud").jQCloud(word_list);
+      $(window).on('resize',function(){
+        $('#topic_cloud').css("width", "100%");
+        $('#topic_cloud').empty().jQCloud(word_list);
+      });
+  });
+  EOD;
+  ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
+
+  <div class="col-md-12 tf-cloud-block">
+    <h4><?=$this->transEsc('Suggested Topics')?></h4>
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#authorityCloudFirst" aria-controls="home" role="tab" data-toggle="tab">Cloud</a></li>
+        <li role="presentation"><a href="#authorityCloudSecond" aria-controls="profile" role="tab" data-toggle="tab"><?=$this->transEsc('By Alphabetical')?></a></li>
+        <li role="presentation"><a href="#authorityCloudThird" aria-controls="messages" role="tab" data-toggle="tab"><?=$this->transEsc('By Popularity')?></a></li>
+      </ul>
+      <!-- Tab panes -->
+      <div class="tab-content tf-p-0">
+        <div role="tabpanel" class="tab-pane active" id="authorityCloudFirst">
+          <div id="topic_cloud" class="tf-cloud-block-background"></div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="authorityCloudSecond">
+          <div class="lightbox-scroll full-facets" style="max-height: 350px;">
+            <div class="facet-group" id="facet-list-count">
+              <?php foreach($ascSortingTopicsData as $topic): ?>
+              <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
+                <span class="text">
+                  <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
+                </span>
+                <span class="badge"><?php echo $topic['topicCount'];?></span>
+              </a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="authorityCloudThird">
+          <div class="lightbox-scroll full-facets" style="max-height: 350px;">
+            <div class="facet-group" id="facet-list-count">
+              <?php foreach($countSortingTopicsData as $topic): ?>
+              <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
+                <span class="text">
+                  <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
+                </span>
+                <span class="badge"><?php echo $topic['topicCount'];?></span>
+              </a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<?php endif;?>

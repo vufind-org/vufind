@@ -67,31 +67,6 @@ class RecordController extends \TueFind\Controller\RecordController
                                        "infoText" => $infoText]);
     }
 
-    function getUserData($userId) {
-       $userTable = $this->loadRecord()->getDbTable('User');
-       $select = $userTable->getSql()->select()->where(['id' => $userId]);
-
-       $userRow = $userTable->selectWith($select)->current();
-       $ixtheoUserTable = $this->loadRecord()->getDbTable('IxTheoUser');
-       $ixtheoSelect = $ixtheoUserTable->getSql()->select()->where(['id' => $userId]);
-       $ixtheoUserRow = $ixtheoUserTable->selectWith($ixtheoSelect)->current();
-       $userData = [ 'title' => $ixtheoUserRow->title != "Other" ? $ixtheoUserRow->title . " " : "",
-                     'firstname' => $userRow->firstname,
-                     'lastname' =>  $userRow->lastname,
-                     'email' => $userRow->email,
-                     'country' => $ixtheoUserRow->country,
-                     'user_type' => $ixtheoUserRow->user_type ];
-       return $userData;
-    }
-
-
-    function formatUserData($userData) {
-       return [ ($userData['title'] != "" ? $userData['title'] . " " : "") . $userData['firstname'] . " " . $userData['lastname'],
-                $userData['email'],
-                $userData['country']
-              ];
-    }
-
     function processPDASubscribe()
     {
         if (!($user = $this->getUser())) {

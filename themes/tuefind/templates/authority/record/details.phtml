@@ -1,0 +1,67 @@
+<table class="table table-striped">
+  <tbody>
+    <?php $occupations = $this->authority()->getOccupations($this->driver);?>
+    <?php if ($occupations != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('Occupation')?>:</th>
+        <td><?=$occupations?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $birth = $this->authority()->getBirth($this->driver); ?>
+    <?php if ($birth != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('Born')?>:</th>
+        <td><?=$birth?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $death = $this->authority()->getDeath($this->driver); ?>
+    <?php if ($death != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('Died')?>:</th>
+        <td><?=$death?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $relations = $this->authority()->getPersonalRelations($this->driver); ?>
+    <?php if ($relations != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('Personal Relations')?>:</th>
+        <td><?=$relations?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $relations = $this->authority()->getCorporateRelations($this->driver); ?>
+    <?php if ($relations != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('Corporate Relations')?>:</th>
+        <td><?=$relations?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
+    <?php if ($externalReferences != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('External References')?>:</th>
+        <td><?=$externalReferences?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $externalResources = $this->authority()->getExternalResources($this->driver); ?>
+    <?php if ($externalResources != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('External Resources')?>:</th>
+        <td><?=$externalResources?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $externalSubsystems = $this->authority()->getExternalSubsystems($this->driver, $this->tuefind()->getTueFindSubtype()); ?>
+    <?php if ($externalSubsystems != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('Subsystems')?>:</th>
+        <td><?=$externalSubsystems?></td>
+      </tr>
+    <?php endif; ?>
+  </tbody>
+</table>

@@ -1,27 +1,29 @@
 <?php $previewLimit = 5; ?>
-<?php $response = $this->authority()->getRelatedAuthors($this->driver); ?>
-<?php if (count($response) > 0): ?>
-  <h4>Related authors</h4>
+<?php $relatedAuthors = $this->authority()->getRelatedAuthors($this->driver); ?>
+<?php $relatedAuthorsCount = count($relatedAuthors); ?>
+<?php if ($relatedAuthorsCount > 0): ?>
+  <h4><?=$this->transEsc('Related Authors')?></h4>
   <ul class="list-group">
     <?php $i=0; ?>
-    <?php foreach ($response as $authorTitle => $authorDetails): ?>
+    <?php foreach ($relatedAuthors as $authorIdAndTitle => $authorDetails): ?>
       <?php if (++$i > $previewLimit) break;?>
+      <?php list($authorId, $authorTitle) = explode(':', $authorIdAndTitle); ?>
       <li class="list-group-item">
         <?=$authorTitle?>
-        <?php if (($authorityId = $authorDetails['id'] ?? null) && ($authorityDriver = $this->authority()->recordExists($authorityId))): ?>
-          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorityDriver))?>"><i class="fa fa-link" aria-hidden="true" title="Show joint titles for this author"></i></a>
-          <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="Show all titles for this author"></i></a>
-          <a href="<?=$this->record($authorityDriver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
+        <?php if ($authorId != '' && ($authorityDriver = $this->authority()->recordExists($authorId))): ?>
+          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorityDriver))?>"><i class="fa fa-link" aria-hidden="true" title="<?=$this->transEsc('author_joint_titles_tooltip')?>"></i></a>
+          <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
+          <a href="<?=$this->record($authorityDriver)->getLink('authority', $authorId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
         <?php else: ?>
-          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorTitle))?>"><i class="fa fa-link" aria-hidden="true" title="Show joint titles for this author"></i></a>
-          <a href="<?=$this->record($this->driver)->getLink('author', $authorTitle)?>"><i class="fa fa-book" aria-hidden="true" title="Show all titles for this author"></i></a>
+          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorTitle))?>"><i class="fa fa-link" aria-hidden="true" title="<?=$this->transEsc('author_joint_titles_tooltip')?>"></i></a>
+          <a href="<?=$this->url('author-home')?>?author=<?=urlencode($authorTitle)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
         <?php endif; ?>
       </li>
     <?php endforeach; ?>
   </ul>
-  <?php if (count($response) > $previewLimit): ?>
+  <?php if ($relatedAuthorsCount > $previewLimit): ?>
     <p>
-      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>">Show all related authors (<?=count($response)?>)</a>
+      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>"><?=$this->transEsc('see all')?> (<?=$relatedAuthorsCount?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>

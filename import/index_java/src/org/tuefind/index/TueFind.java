@@ -1,5 +1,9 @@
 package org.tuefind.index;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +70,22 @@ public class TueFind extends SolrIndexerMixin {
     public static String getAllSubfieldsBut(final Record record, final String fieldSpecList, final String excludeSubfields, final String delimiter) {
         final Set<String> subfields = getAllSubfieldsBut(record, fieldSpecList, excludeSubfields);
         return  String.join(delimiter, subfields);
+    }
+
+    /**
+     * Map 1-Dimensional range to 2-Dimensional BBox.
+     *
+     * ENVELOPE is symbolizing a box. Since we have only a line,
+     * we have to map it to a box with a surface area > 0
+     * for correct overlapping calculation.
+     *
+     * WKT/CQL ENVELOPE syntax:
+     * ENVELOPE(minX, maxX, maxY, minY) => CAREFUL! THIS UNUSUAL ORDER IS CORRECT!
+     *
+     * see also: https://solr.apache.org/guide/7_0/spatial-search.html#bboxfield
+     */
+    public static String getBBoxRangeValue(final String from, final String to) {
+        return "ENVELOPE(" + from + "," + to + ",1,0)";
     }
 
     protected interface SubfieldMatcher {
@@ -261,5 +281,125 @@ public class TueFind extends SolrIndexerMixin {
         }
 
         return null;
+    }
+
+    /*
+     * translation map cache
+     */
+    protected static Map<String, String> translation_map_en = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_fr = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_it = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_es = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_hant = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_hans = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_pt = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_ru = new HashMap<String, String>();
+    protected static Map<String, String> translation_map_el = new HashMap<String, String>();
+
+    /**
+     * get translation map for normdata translations
+     *
+     * either get from cache or load from file, if cache empty
+     *
+     * @param langAbbrev
+     *
+     * @return Map<String, String>
+     * @throws IllegalArgumentException
+     */
+    public static Map<String, String> getTranslationMap(final String langAbbrev) throws IllegalArgumentException {
+        Map<String, String> translation_map;
+
+        switch (langAbbrev) {
+        case "en":
+            translation_map = translation_map_en;
+            break;
+        case "fr":
+            translation_map = translation_map_fr;
+            break;
+        case "it":
+            translation_map = translation_map_it;
+            break;
+        case "es":
+            translation_map = translation_map_es;
+            break;
+        case "hant":
+            translation_map = translation_map_hant;
+            break;
+        case "hans":
+            translation_map = translation_map_hans;
+            break;
+        case "pt":
+            translation_map = translation_map_pt;
+            break;
+        case "ru":
+            translation_map = translation_map_ru;
+            break;
+        case "el":
+            translation_map = translation_map_el;
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid language shortcut: " + langAbbrev);
+        }
+
+        
+        final String dir = "/usr/local/ub_tools/bsz_daten/";
+        final String ext = "txt";
+        final String basename = "normdata_translations";
+        String translationsFilename = dir + basename + "_" + langAbbrev + "." + ext;
+
+        // Only read the data from file if necessary
+        if (translation_map.isEmpty() && (new File(translationsFilename).length() != 0)) {
+            try {
+                BufferedReader in = new BufferedReader(new FileReader(translationsFilename));
+                String line;
+
+                while ((line = in.readLine()) != null) {
+                    // We now also have synonyms in the translation files
+                    // These are not relevant in this context and are thus discarded
+                    line = line.replaceAll(Pattern.quote("||") + ".*", "");
+                    final String[] translations = line.split("\\|");
+                    if (!translations[0].isEmpty() && !translations[1].isEmpty())
+                        translation_map.put(translations[0], translations[1]);
+                }
+            } catch (IOException e) {
+                logger.severe("Could not open file: " + e.toString());
+                System.exit(1);
+            }
+        }
+
+        return translation_map;
+    }
+
+    /*
+     * try to translate a string
+     *
+     * @param string        string to translate
+     * @param langAbbrev  language code
+     *
+     * @return              translated string if available in a foreign language, null else
+     */
+    public static String getTranslationOrNull(final String string, final String langAbbrev) {
+       if (langAbbrev.equals("de"))
+           return null;
+       final Map<String, String> translationMap = getTranslationMap(langAbbrev);
+       return translationMap.get(string);
+    }
+
+
+    /**
+     * translate a string if available
+     *
+     * @param string        string to translate
+     * @param langAbbrev  language code
+     *
+     * @return              translated string if available, else input string
+     */
+    public static String getTranslation(final String string, final String langAbbrev) {
+        if (langAbbrev.equals("de")) {
+            return string;
+        }
+        final Map<String, String> translationMap = getTranslationMap(langAbbrev);
+        final String translatedString = translationMap.get(string);
+        return (translatedString != null) ? translatedString : string;
     }
 }

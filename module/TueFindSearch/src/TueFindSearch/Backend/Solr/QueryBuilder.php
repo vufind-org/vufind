@@ -1,11 +1,7 @@
 <?php
 namespace TueFindSearch\Backend\Solr;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\Query;
-use VuFindSearch\Query\QueryGroup;
-
 
 class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
@@ -24,9 +20,31 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     const FULLTEXT_TYPE_ABSTRACT = "Abstract";
     const FULLTEXT_TYPE_TOC = "Table of Contents";
     const FULLTEXT_TYPE_SUMMARY = "Summary";
+
+    const TIME_ASPECTS_COMMAND = '/usr/local/bin/time_aspects_to_codes_tool';
+
+    // These range constants should be the same as in the solr config
+    const TIME_ASPECTS_RANGE_MIN = 0;
+    const TIME_ASPECTS_RANGE_MAX = 199999999999;
+    const YEAR_RANGE_MIN = -9999;
+    const YEAR_RANGE_MAX = 9999;
+
     protected $includeFulltextSnippets = false;
     protected $selectedFulltextTypes = [];
 
+    protected function getTimeAspectsCommand($searchQuery)
+    {
+        return implode(' ', [
+            self::TIME_ASPECTS_COMMAND,
+            escapeshellarg($searchQuery)
+        ]);
+    }
+
+    protected function getTimeAspects($searchQuery)
+    {
+        exec($this->getTimeAspectsCommand($searchQuery), $output, $returnVal);
+        return explode('_', $output[0]);
+    }
 
     public function setIncludeFulltextSnippets($enable)
     {
@@ -34,7 +52,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    public function setSelectedFulltextTypes($selected_fulltext_types) {
+    public function setSelectedFulltextTypes($selected_fulltext_types)
+    {
         $this->selectedFulltextTypes = $selected_fulltext_types;
     }
 
@@ -85,7 +104,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getSynonymsPartialExpressionOrEmpty($search_handler, $query_terms, $previous_expression_empty) {
+    protected function getSynonymsPartialExpressionOrEmpty($search_handler, $query_terms, $previous_expression_empty)
+    {
        $synonyms_expression = "";
        if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes)) {
            $synonyms_expression .=  $this->useSynonyms($search_handler)
@@ -119,7 +139,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getHandler($query) {
+    protected function getHandler($query)
+    {
         if ($query instanceof \VuFindSearch\Query\Query)
             return $query->getHandler();
         if ($query instanceof \VuFindSearch\Query\QueryGroup)
@@ -128,7 +149,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function assembleFulltextTypesQuery($handler, $query_terms) {
+    protected function assembleFulltextTypesQuery($handler, $query_terms)
+    {
          $query_string = "";
          if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes))
              $query_string =  (empty($query_string) ? '' : ' OR ') .
@@ -151,6 +173,40 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
+    protected function getBBoxQuery($field, $from, $to): string
+    {
+        return '{!field f=' . $field . ' score=overlapRatio queryTargetProportion=0.3}Intersects(ENVELOPE(' . $from . ',' . $to . ',1,0))';
+    }
+
+
+    protected function getYearRangeQuery($params, $field, $rangeMin, $rangeMax)
+    {
+        $rawRanges = $params->get('q');
+        $rawRange = $rawRanges[0];
+        if ($rawRange == '*:*')
+            return $this->getBBoxQuery($field, self::YEAR_RANGE_MIN, self::YEAR_RANGE_MAX);
+
+        if (strpos('-', $rawRange) === false)
+            $rawRange = $rawRange . '-' . $rawRange;
+        $parts = explode('-', $rawRange);
+        if ($parts[0] == '')
+            $parts[0] = $rangeMin;
+        if ($parts[1] == '')
+            $parts[1] = $rangeMax;
+
+        return $this->getBBoxQuery($field, $parts[0], $parts[1]);
+    }
+
+
+    protected function getTimeRangeQuery($params, $field) {
+        $searchString = $params->get('q')[0];
+        if ($searchString == '*:*')
+            return $this->getBBoxQuery($field, self::TIME_ASPECTS_RANGE_MIN, self::TIME_ASPECTS_RANGE_MAX);
+        $timeRange = $this->getTimeAspects($searchString);
+        return $this->getBBoxQuery($field, $timeRange[0], $timeRange[1]);
+    }
+
+
     public function build(AbstractQuery $query)
     {
         $params = parent::build($query);
@@ -163,6 +219,14 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                     $params->set('fq', $fulltext_type_query_filter);
             }
         }
+
+        if (method_exists($query, 'getHandler') && $query->getHandler() == 'YearRangeBBox') {
+            $params->set('q', $this->getYearRangeQuery($params, 'year_range_bbox', '-9999', '9999'));
+        }
+        if (method_exists($query, 'getHandler') && $query->getHandler() == 'TimeRangeBBox') {
+            $params->set('q', $this->getTimeRangeQuery($params, 'time_aspect_bbox'));
+        }
+
         return $params;
     }
 }

@@ -1,5 +1,8 @@
 <?php $this->metadata()->generateMetatags($this->driver);?>
-<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+<?php /* TueFind: Intentionally omit schema.org type "Product".
+       * For testing: https://search.google.com/test/rich-results
+       */ ?>
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?>">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
@@ -13,15 +16,11 @@
   <div class="media-body">
 
     <?php /* TueFind: Get title from custom RecordDriver function */ ?>
-      <h3 property="name" ><?=$this->escapeHtml($this->driver->getTitle())?></h3>
+    <h3 property="name"><?=$this->escapeHtml($this->driver->getTitle())?></h3>
 
     <?php if(!empty($this->extraControls)): ?>
       <?=$this->extraControls['actionControls'] ?? ''?>
       <?=$this->extraControls['availabilityInfo'] ?? ''?>
-    <?php endif; ?>
-
-    <?php if ($this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
-      <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
     <?php endif; ?>
 
     <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
@@ -35,22 +34,9 @@
 
     <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
       <?php /* Display the lists that this record is saved to */ ?>
-      <?php /* Disabling ajax generation of favorites list from original Vufind functionality */ ?>
-      <!--<div class="savedLists d-inline-block">
+      <div class="savedLists">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
-      </div>-->
-      <div class="tf-favorite-list">
-        <li class="dropdown pull-right">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            <?=$this->transEsc("Saved in")?>:<span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <?php $user = $this->auth()->isLoggedIn(); ?>
-            <?php foreach ($user->getLists() as $list) : ?>
-              <li><a href="/MyResearch/MyList/<?=$list->id;?>" title="<?=$list->title;?>"><?=$list->title;?></a></li>
-            <?php endforeach;?>
-          </ul>
-        </li>
+        <a href="<?=$this->url('myresearch-favorites')?>" data-lightbox class="tf-favoritesListModal tf-d-none">&nbsp;</a>
       </div>
     <?php endif; ?>
 
