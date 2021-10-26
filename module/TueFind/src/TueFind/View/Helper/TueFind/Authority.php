@@ -92,9 +92,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getExternalReferences(AuthorityRecordDriver &$driver): string
+    public function getBibliographicalReferences(AuthorityRecordDriver &$driver): string
     {
-        $references = $driver->getExternalReferences();
+        $references = $driver->getBibliographicalReferences();
         if (count($references) == 0)
             return '';
 
@@ -107,9 +107,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getExternalResources(AuthorityRecordDriver &$driver): string
+    public function getArchivedMaterial(AuthorityRecordDriver &$driver): string
     {
-        $references = $driver->getExternalResources();
+        $references = $driver->getArchivedMaterial();
         if (count($references) == 0)
             return '';
 
@@ -119,9 +119,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         foreach ($references as $reference) {
             $title = $reference['title'];
             if (preg_match('"Kalliope"', $title))
-                $title = $this->translate('Archived Material') . ' (Kalliope)';
+                $title = 'Kalliope';
             elseif (preg_match('"Archivportal-D"', $title))
-                $title = $this->translate('Archived Material') . ' (Archivportal-D)';
+                $title = 'Archivportal-D';
 
             $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($title) . '</a><br>';
         }
