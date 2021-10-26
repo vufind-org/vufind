@@ -143,8 +143,6 @@ var TueFind = {
             var container = this;
             var proxyUrl = this.getAttribute('data-url');
             var headline = this.getAttribute('data-headline');
-            var excludePattern = this.getAttribute('data-exclude-pattern');
-            var excludeRegex = new RegExp(excludePattern);
             var sortBottomPattern = this.getAttribute('data-sort-bottom-pattern');
             var sortBottomRegex = new RegExp(sortBottomPattern);
 
@@ -161,9 +159,6 @@ var TueFind = {
                             let label = json[1][i];
                             let description = json[2][i];
                             let url = json[3][i];
-
-                            if (excludePattern != '' && label.match(excludeRegex))
-                                continue;
 
                             let matchCount = label.match(countRegex);
                             let count = 1;
