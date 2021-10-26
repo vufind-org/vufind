@@ -190,7 +190,12 @@ var TueFind = {
                         // render HTML
                         let html = '<h2>' + headline + '</h2>';
                         html += '<ul class="list-group">';
+                        var previousSortPriority = 1;
                         references.forEach(function(reference) {
+                            if (reference.sortPriority != previousSortPriority) {
+                                html += '</ul><ul class="list-group">';
+                            }
+                            previousSortPriority = reference.sortPriority;
                             html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
                         });
                         html += '</ul>';
