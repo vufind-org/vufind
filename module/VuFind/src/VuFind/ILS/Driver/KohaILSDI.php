@@ -837,10 +837,10 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
             i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON,
-            i.stocknumber as STOCKNUMBER
+            i.stocknumber as STOCKNUMBER,
             (select max(issuedate) from old_issues oi
             where oi.itemnumber = i.itemnumber and oi.borrowernumber = :patronId)
-            as LASTISSUEDATE,
+            as LASTISSUEDATE
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
@@ -870,7 +870,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 [
                     ':id' => $id,
                     ':av_category' => $this->locationAuthorisedValuesCategory,
-                    ':patronId' => $patron['id'],
+                    ':patronId' => $patron['id'] ?? '0',
                 ]
             );
             $sqlStmtReserves = $this->getDb()->prepare($sqlReserves);
