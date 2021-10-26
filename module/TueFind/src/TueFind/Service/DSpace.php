@@ -23,6 +23,8 @@ class DSpace {
     const HEADER_AUTHORIZATION = 'Authorization';
     const HEADER_CSRF_REQUEST = 'X-XSRF-TOKEN';
     const HEADER_CSRF_RESPONSE = 'DSPACE-XSRF-TOKEN';
+    const HEADER_COOKIE_REQUEST = 'Cookie';
+    const HEADER_COOKIE_RESPONSE = 'Set-Cookie';
 
     const METHOD_DELETE = 'DELETE';
     const METHOD_GET = 'GET';
@@ -34,6 +36,21 @@ class DSpace {
     protected $baseUrl;
     protected $username;
     protected $password;
+
+    /**
+     * The authentication bearer, returned in HTTP response after login
+     *
+     * @var string
+     */
+    protected $bearer;
+
+    /**
+     * These cookies will be returned via the API on first call
+     * and need to be sent back to the API on all consecutive requests.
+     *
+     * @var array
+     */
+    protected $cookies = [];
 
     /**
      * This token will be returned via the API on the first call
@@ -79,7 +96,7 @@ class DSpace {
         if (!isset($this->csrfToken))
             throw new \Exception('No csrfToken present yet that we could check against.');
 
-        return $this->call(self::ENDPOINT_AUTH_STATUS, self::METHOD_GET, [], [self::HEADER_AUTHORIZATION => 'Bearer ' . $this->csrfToken]);
+        return $this->call(self::ENDPOINT_AUTH_STATUS, self::METHOD_GET, [], [self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer]);
     }
 
     /**
@@ -94,9 +111,7 @@ class DSpace {
         if (!isset($this->csrfToken))
             $this->hasMetadataSchema(1);
 
-        $response = $this->call(self::ENDPOINT_AUTH_LOGIN, self::METHOD_POST, ['user' => $this->username, 'password' => $this->password]);
-        if (!$response->Authenticated)
-            throw new \Exception('Authentication failed: ' . json_encode($response));
+        return $this->call(self::ENDPOINT_AUTH_LOGIN, self::METHOD_POST, ['user' => $this->username, 'password' => $this->password]);
     }
 
     /**
@@ -114,14 +129,31 @@ class DSpace {
     {
         $fullUrl = $this->baseUrl . $endpoint;
 
-        $opts = ['http' => ['method' => $method]];
+        $opts = ['http' => ['method' => $method, 'header' => '']];
+        if ($method == self::METHOD_POST) {
+            $postData = http_build_query($params);
+            $opts['http']['header'] .= "Content-type: application/x-www-form-urlencoded\r\n";
+            $opts['http']['header'] .= "Content-Length: " . strlen($postData) . "\r\n";
+            $opts['http']['content'] = $postData;
+        }
+
         if (isset($this->csrfToken))
             $headers[self::HEADER_CSRF_REQUEST] = $this->csrfToken;
+
+        if ($this->cookies != []) {
+            $cookiesString = '';
+            foreach ($this->cookies as $cookieId => $cookieValue) {
+                if ($cookiesString != '')
+                    $cookiesString .= '; ';
+                $cookiesString .= $cookieId . '=' . $cookieValue;
+            }
+            $headers[self::HEADER_COOKIE_REQUEST] = $cookiesString;
+        }
         if ($headers != []) {
             $headerString = '';
             foreach ($headers as $headerName => $headerValue)
                 $headerString .= $headerName . ': ' . $headerValue . "\r\n";
-            $opts['http']['header'] = $headerString;
+            $opts['http']['header'] .= $headerString;
         }
 
         $context = stream_context_create($opts);
@@ -133,6 +165,19 @@ class DSpace {
         $responseHeaders = get_headers($fullUrl, true, $context);
         if (isset($responseHeaders[self::HEADER_CSRF_RESPONSE]))
             $this->csrfToken = $responseHeaders[self::HEADER_CSRF_RESPONSE];
+        if (isset($responseHeaders[self::HEADER_COOKIE_RESPONSE])) {
+            $cookies = $responseHeaders[self::HEADER_COOKIE_RESPONSE];
+            if (!is_array($cookies))
+                $cookies = [$cookies];
+            foreach ($cookies as $cookie) {
+                if (preg_match('"^([^=]+)=([^=;]+)"', $cookie, $hits))
+                    $this->cookies[$hits[1]] = $hits[2];
+            }
+        }
+        if (isset($responseHeaders[self::HEADER_AUTHORIZATION])) {
+            if (preg_match('"Bearer (.+)"', $responseHeaders[self::HEADER_AUTHORIZATION], $hits))
+                $this->bearer = $hits[1];
+        }
 
         return json_decode($json);
     }
