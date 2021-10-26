@@ -57,10 +57,9 @@
   <div class="sidebar right hidden-print">
     <!-- BEACON (Findbuch) references over API proxy -->
     <?php
-      $excludePattern = 'IxTheo|RelBib|Kalliope|Archivportal-D';
       $sortBottomPattern = 'Verbund';
     ?>
-    <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>" data-headline="<?=$this->transEsc('External Resources')?>" data-exclude-pattern="<?=htmlspecialchars($excludePattern)?>" data-sort-bottom-pattern="<?=htmlspecialchars($sortBottomPattern)?>"></div>
+    <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>" data-headline="<?=$this->transEsc('External Resources')?>" data-sort-bottom-pattern="<?=htmlspecialchars($sortBottomPattern)?>"></div>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetBeaconReferencesFromFindbuch();', 'SET')?>
   </div>
 </div>

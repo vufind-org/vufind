@@ -9,7 +9,8 @@ namespace TueFind\Controller;
  */
 class FindbuchProxyController extends AbstractProxyController
 {
-    const API_URL = 'http://beacon.findbuch.de/seealso/pnd-aks?format=seealso&id=';
+    // Subsections like "/-ixtheo/" mean that the corresponding BEACON file will be ignored.
+    const API_URL = 'http://beacon.findbuch.de/seealso/pnd-aks/-archivportal/-ixtheo/-kalliope/-pw_imslp/-pw_discogs/-pw_munzinger_pop/-pw_allmusic/-relbib/-wikidata/-cultword/?format=seealso&id=';
     const CACHE_DIR = '/tmp/proxycache/findbuch';
 
     public function loadAction()
