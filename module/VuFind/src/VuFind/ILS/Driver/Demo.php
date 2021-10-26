@@ -448,6 +448,7 @@ class Demo extends AbstractBase
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron ? 'check' : false,
             'services'     => $status == 'Available' ? $this->getFakeServices() : [],
+            'last_issue_date' => rand(0, 9) ? false : "1. 2. 2020",
         ];
 
         switch (rand(1, 5)) {

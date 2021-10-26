@@ -101,6 +101,7 @@ return [
              */
             // UI
             'spinner' => 'FontAwesome:spinner:icon--spin',
+            'history' => 'FontAwesome:history'
         ],
     ],
 ];
