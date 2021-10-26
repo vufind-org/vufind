@@ -57,7 +57,7 @@
   <div class="sidebar right hidden-print">
     <!-- BEACON (Findbuch) references over API proxy -->
     <?php
-      $sortBottomPattern = 'Verbund';
+      $sortBottomPattern = 'Bayerische Staatsbibliothek|HBZ-Verbundkatalog|HeBIS|Nordrhein-Westfälische Bibliographie|Universitätsbibliothek Heidelberg';
     ?>
     <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>" data-headline="<?=$this->transEsc('External Resources')?>" data-sort-bottom-pattern="<?=htmlspecialchars($sortBottomPattern)?>"></div>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetBeaconReferencesFromFindbuch();', 'SET')?>
