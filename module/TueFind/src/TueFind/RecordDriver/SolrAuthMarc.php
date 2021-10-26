@@ -57,7 +57,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $references;
     }
 
-    public function getExternalReferences(): array
+    public function getBibliographicalReferences(): array
     {
         $references = [];
 
@@ -98,7 +98,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $references;
     }
 
-    public function getExternalResources(): array
+    public function getArchivedMaterial(): array
     {
         $references = $this->getExternalReferencesFiltered(/*blacklist=*/['Wikipedia'], /*whitelist=*/[]);
         $references = array_merge($references, $this->getBeaconReferences());

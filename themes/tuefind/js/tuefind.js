@@ -145,6 +145,8 @@ var TueFind = {
             var headline = this.getAttribute('data-headline');
             var excludePattern = this.getAttribute('data-exclude-pattern');
             var excludeRegex = new RegExp(excludePattern);
+            var sortBottomPattern = this.getAttribute('data-sort-bottom-pattern');
+            var sortBottomRegex = new RegExp(sortBottomPattern);
 
             $.ajax({
                 type: 'GET',
@@ -168,15 +170,19 @@ var TueFind = {
                             if (matchCount != null)
                                 count = parseInt(matchCount[1]);
 
-                            references.push({ label: label, description: description, url: url, count: count });
+                            let sortPriority = 1;
+                            if (label.match(sortBottomRegex))
+                                sortPriority = 2;
+
+                            references.push({ label: label, description: description, url: url, count: count, sortPriority: sortPriority });
                         }
 
-                        // sort by count DESC, then alphabetically ASC
+                        // sort by priority, then alphabetically
                         references.sort(function(a, b) {
-                            if (a.count < b.count)
-                                return 1;
-                            if (a.count > b.count)
+                            if (a.sortPriority < b.sortPriority)
                                 return -1;
+                            if (a.sortPriority > b.sortPriority)
+                                return 1;
 
                             return a.label.localeCompare(b.label);
                         });
@@ -184,7 +190,12 @@ var TueFind = {
                         // render HTML
                         let html = '<h2>' + headline + '</h2>';
                         html += '<ul class="list-group">';
+                        var previousSortPriority = 1;
                         references.forEach(function(reference) {
+                            if (reference.sortPriority != previousSortPriority) {
+                                html += '</ul><ul class="list-group">';
+                            }
+                            previousSortPriority = reference.sortPriority;
                             html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
                         });
                         html += '</ul>';

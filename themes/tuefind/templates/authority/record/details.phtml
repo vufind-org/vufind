@@ -40,19 +40,19 @@
       </tr>
     <?php endif; ?>
 
-    <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
-    <?php if ($externalReferences != ''): ?>
+    <?php $bibliographicalReferences = $this->authority()->getBibliographicalReferences($this->driver); ?>
+    <?php if ($bibliographicalReferences != ''): ?>
       <tr>
-        <th><?=$this->transEsc('External References')?>:</th>
-        <td><?=$externalReferences?></td>
+        <th><?=$this->transEsc('Biographical References')?>:</th>
+        <td><?=$bibliographicalReferences?></td>
       </tr>
     <?php endif; ?>
 
-    <?php $externalResources = $this->authority()->getExternalResources($this->driver); ?>
-    <?php if ($externalResources != ''): ?>
+    <?php $archivedMaterial = $this->authority()->getArchivedMaterial($this->driver); ?>
+    <?php if ($archivedMaterial != ''): ?>
       <tr>
-        <th><?=$this->transEsc('External Resources')?>:</th>
-        <td><?=$externalResources?></td>
+        <th><?=$this->transEsc('Archived Material')?>:</th>
+        <td><?=$archivedMaterial?></td>
       </tr>
     <?php endif; ?>
 
