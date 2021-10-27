@@ -295,7 +295,7 @@ class SolrAuthMarc extends SolrAuthDefault {
     public function getNameVariants(): array
     {
         $nameVariants = [];
-        $fields = $this->getMarcRecord()->getFields('400');
+        $fields = $this->getMarcRecord()->getFields('400|410|411', true);
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
