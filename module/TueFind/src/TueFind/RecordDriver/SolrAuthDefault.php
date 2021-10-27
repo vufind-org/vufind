@@ -43,8 +43,8 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $orcids;
     }
 
-    public function getOccupations() {
-        return $this->fields['occupation'] ?? [];
+    public function getOccupations($language='en') {
+        return $this->fields['occupation_' . $language] ?? [];
     }
 
     public function getSubsystems(): array {

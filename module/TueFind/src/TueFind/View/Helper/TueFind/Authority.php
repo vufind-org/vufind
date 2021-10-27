@@ -159,7 +159,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getOccupations(AuthorityRecordDriver &$driver): string
     {
-        $occupations = $driver->getOccupations();
+        $occupations = $driver->getOccupations($this->getTranslatorLocale());
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
@@ -468,7 +468,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $chartData;
     }
 
-    public function getTopicsData(AuthorityRecordDriver &$driver, $language='en'): array
+    public function getTopicsData(AuthorityRecordDriver &$driver): array
     {
 
         $settings = [
@@ -487,7 +487,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                  0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
-            $keywords = $titleRecord->getTopics($language);
+            $keywords = $titleRecord->getTopics($this->getTranslatorLocale());
             foreach ($keywords as $keyword) {
                 if(strpos($keyword, "\\") !== false) {
                     $keyword = str_replace("\\", "", $keyword);

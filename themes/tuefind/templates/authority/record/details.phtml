@@ -1,13 +1,5 @@
 <table class="table table-striped">
   <tbody>
-    <?php $occupations = $this->authority()->getOccupations($this->driver);?>
-    <?php if ($occupations != ''): ?>
-      <tr>
-        <th><?=$this->transEsc('Occupation')?>:</th>
-        <td><?=$occupations?></td>
-      </tr>
-    <?php endif; ?>
-
     <?php $birth = $this->authority()->getBirth($this->driver); ?>
     <?php if ($birth != ''): ?>
       <tr>
@@ -21,6 +13,14 @@
       <tr>
         <th><?=$this->transEsc('Died')?>:</th>
         <td><?=$death?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php $occupations = $this->authority()->getOccupations($this->driver);?>
+    <?php if ($occupations != ''): ?>
+      <tr>
+        <th><?=$this->transEsc('Occupation')?>:</th>
+        <td><?=$occupations?></td>
       </tr>
     <?php endif; ?>
 
