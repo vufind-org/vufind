@@ -159,7 +159,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getOccupations(AuthorityRecordDriver &$driver): string
     {
-        $occupations = $driver->getOccupations();
+        $occupations = $driver->getOccupations($this->getTranslatorLocale());
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
