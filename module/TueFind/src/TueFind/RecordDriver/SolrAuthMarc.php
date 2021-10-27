@@ -237,10 +237,10 @@ class SolrAuthMarc extends SolrAuthDefault {
     }
 
     /**
-     * Get locations from 551
+     * Get geographical relations from 551
      * @return [['name', 'type']]
      */
-    public function getLocations()
+    public function getGeographicalRelations()
     {
         $locations = [];
         $fields = $this->getMarcRecord()->getFields('551');

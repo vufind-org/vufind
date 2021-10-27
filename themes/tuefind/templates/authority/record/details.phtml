@@ -52,6 +52,14 @@
           </td>
         </tr>
       <?php endif; ?>
+
+      <?php $places = $this->authority()->getGeographicalRelations($this->driver); ?>
+      <?php if ($places != ''): ?>
+        <tr>
+          <th><?=$this->transEsc('Geographical Relations')?>:</th>
+          <td><?=$places?></td>
+        </tr>
+      <?php endif; ?>
     <?php endif; ?>
 
     <?php $bibliographicalReferences = $this->authority()->getBibliographicalReferences($this->driver); ?>

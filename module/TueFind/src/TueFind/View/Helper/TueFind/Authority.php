@@ -241,6 +241,18 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $relationsDisplay;
     }
 
+    public function getGeographicalRelations(AuthorityRecordDriver &$driver): string
+    {
+        $placesString = '';
+
+        $places = $driver->getGeographicalRelations();
+        foreach ($places as $place) {
+            $placesString .= htmlentities($this->translate($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
+        }
+
+        return $placesString;
+    }
+
     public function getSchemaOrgType(AuthorityRecordDriver &$driver): string
     {
         switch ($driver->getType()) {
@@ -461,9 +473,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $chartData[] = array($oneDate,$by,$about);
             }
         }
-
-
-
 
         return $chartData;
     }
