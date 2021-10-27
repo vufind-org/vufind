@@ -141,7 +141,7 @@ var VuFind = (function VuFind() {
 
   var updateCspNonce = function updateCspNonce(html) {
     // Fix any inline script nonces
-    return html.replaceAll(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
+    return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
   var loadHtml = function loadHtml(_element, url, data, success) {

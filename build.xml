@@ -85,6 +85,28 @@
     <phingcall target="phpstan-checkstyle"/>
   </target>
 
+  <!-- Quality Assurance Tasks -->
+  <target name="qa-console" description="quality assurance tasks">
+    <!-- Call standard tasks -->
+    <phingcall target="qa-js-and-less"/>
+    <phingcall target="qa-php"/>
+  </target>
+
+  <!-- Quality Assurance Javascript Tasks -->
+  <target name="qa-js-and-less" description="quality assurance js and less tasks">
+    <phingcall target="eslint"/>
+    <phingcall target="jshint"/>
+    <phingcall target="checkLessToSass"/>
+  </target>
+
+  <!-- Quality Assurance PHP Tasks -->
+  <target name="qa-php" description="quality assurance php tasks">
+    <phingcall target="phpunitfast"/>
+    <phingcall target="phpcs-console"/>
+    <phingcall target="php-cs-fixer-dryrun"/>
+    <phingcall target="phpstan-console"/>
+  </target>
+
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
     <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
