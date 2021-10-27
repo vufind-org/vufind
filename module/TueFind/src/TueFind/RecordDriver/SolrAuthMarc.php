@@ -237,16 +237,24 @@ class SolrAuthMarc extends SolrAuthDefault {
     }
 
     /**
-     * Get locations from 551
+     * Get geographical relations from 551
      * @return [['name', 'type']]
      */
-    public function getLocations()
+    public function getGeographicalRelations()
     {
         $locations = [];
         $fields = $this->getMarcRecord()->getFields('551');
         foreach ($fields as $field) {
             $locations[] = ['name' => $field->getSubfield('a')->getData(),
                             'type' => $field->getSubfield('i')->getData()];
+        }
+
+        $fields = $this->getMarcRecord()->getFields('043');
+        foreach ($fields as $field) {
+            foreach ($field->getSubfields('c') as $subfield) {
+                $locations[] = ['name' => $subfield->getData(),
+                                'type' => 'DIN-ISO-3166'];
+            }
         }
         return $locations;
     }
@@ -295,7 +303,7 @@ class SolrAuthMarc extends SolrAuthDefault {
     public function getNameVariants(): array
     {
         $nameVariants = [];
-        $fields = $this->getMarcRecord()->getFields('400');
+        $fields = $this->getMarcRecord()->getFields('400|410|411', true);
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
@@ -396,6 +404,20 @@ class SolrAuthMarc extends SolrAuthDefault {
         }
 
         return $relations;
+    }
+
+    public function getTimespans(): array
+    {
+        $timespans = [];
+        $fields = $this->getMarcRecord()->getFields('548');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $subfield_a = $field->getSubfield('a');
+                if ($subfield_a !== false)
+                    $timespans[] = $subfield_a->getData();
+            }
+        }
+        return $timespans;
     }
 
     /**
