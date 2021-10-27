@@ -247,6 +247,11 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $places = $driver->getGeographicalRelations();
         foreach ($places as $place) {
+            if ($place['type'] == 'DIN-ISO-3166') {
+                $place['type'] = 'Country';
+                $place['name'] = \Locale::getDisplayRegion($place['name'], $this->getTranslatorLocale()) . ' (' . $place['name'] . ')';
+            }
+
             $placesString .= htmlentities($this->translate($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
         }
 
