@@ -10,7 +10,26 @@ namespace TueFind\Controller;
 class FindbuchProxyController extends AbstractProxyController
 {
     // Subsections like "/-ixtheo/" mean that the corresponding BEACON file will be ignored.
-    const API_URL = 'http://beacon.findbuch.de/seealso/pnd-aks/-archivportal/-ixtheo/-kalliope/-pw_imslp/-pw_discogs/-pw_munzinger_pop/-pw_allmusic/-relbib/-wikidata/-cultword/?format=seealso&id=';
+    const API_URL_BASE = 'http://beacon.findbuch.de/seealso/pnd-aks/';
+    const API_URL_PARAMS = '?format=seealso&id=';
+
+    const EXCLUSION_LIST = ['adbreg',
+                            'archivportal',
+                            'bbkl@ap',
+                            'commons@pd',
+                            'cultword',
+                            'gersac_brabis',
+                            'ixtheo',
+                            'kalliope',
+                            'leobw-kglbio',
+                            'orcid@wd',
+                            'pw_imslp',
+                            'pw_discogs',
+                            'pw_munzinger_pop',
+                            'pw_allmusic',
+                            'relbib',
+                            'wikidata'];
+
     const CACHE_DIR = '/tmp/proxycache/findbuch';
 
     public function loadAction()
@@ -28,8 +47,12 @@ class FindbuchProxyController extends AbstractProxyController
 
     protected function callAPI($gndNumber)
     {
-        $url = self::API_URL . urlencode($gndNumber);
-        $response = $this->getCachedUrlContents($url);
+        $apiUrlFull = self::API_URL_BASE;
+        foreach (self::EXCLUSION_LIST as $exclusion)
+            $apiUrlFull .= '-' . $exclusion . '/';
+        $apiUrlFull .= self::API_URL_PARAMS . urlencode($gndNumber);
+
+        $response = $this->getCachedUrlContents($apiUrlFull);
         return $response;
     }
 
