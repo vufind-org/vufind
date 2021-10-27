@@ -398,6 +398,20 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $relations;
     }
 
+    public function getTimespans(): array
+    {
+        $timespans = [];
+        $fields = $this->getMarcRecord()->getFields('548');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $subfield_a = $field->getSubfield('a');
+                if ($subfield_a !== false)
+                    $timespans[] = $subfield_a->getData();
+            }
+        }
+        return $timespans;
+    }
+
     /**
      * This function is used to detect "Tn"-sets, which are similar to persons.
      *

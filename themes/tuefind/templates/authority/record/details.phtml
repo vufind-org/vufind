@@ -40,6 +40,20 @@
       </tr>
     <?php endif; ?>
 
+    <?php if ($driver->getType() == 'meeting'): ?>
+      <?php $timespans = $driver->getTimespans(); ?>
+      <?php if (count($timespans) != ''): ?>
+        <tr>
+          <th><?=$this->transEsc('Time')?></th>
+          <td>
+            <?php foreach ($timespans as $timespan): ?>
+              <?=$timespan . '<br>'?>
+            <?php endforeach; ?>
+          </td>
+        </tr>
+      <?php endif; ?>
+    <?php endif; ?>
+
     <?php $bibliographicalReferences = $this->authority()->getBibliographicalReferences($this->driver); ?>
     <?php if ($bibliographicalReferences != ''): ?>
       <tr>
