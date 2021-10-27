@@ -1,5 +1,5 @@
 <?php
-$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsDataAndSettings[0])) :
+$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver); if(!empty($responseTopicsDataAndSettings[0])) :
 
 $this->headLink()->appendStylesheet('vendor/jqcloud.css');
 $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
