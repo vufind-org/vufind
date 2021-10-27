@@ -7,11 +7,7 @@
         content: 'Riduci';
     }
 </style>
-<div id="breaking_news">
-   <h4 class="text-center" style="color: #343deb ; margin-top: 12px; margin-bottom: 2px">
-      ++ ++ Grande progetto di digitalizzazione approvato dalla DFG ++ Per maggiori informazioni cliccare <a href="/docs/DigiTheo5_it.pdf" class="text-warning" style="color : #343deb" target="_blank"><u>qui</u></a> ++
-   </h4>
-</div>
+<?=$this->HelpText()->render('BreakingNews', null, 'static')?>
 <?php
     $panelId = 0;
     $panelClass = "panel-default";
