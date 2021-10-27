@@ -251,8 +251,10 @@ class SolrAuthMarc extends SolrAuthDefault {
 
         $fields = $this->getMarcRecord()->getFields('043');
         foreach ($fields as $field) {
-            $locations[] = ['name' => $field->getSubfield('c')->getData(),
-                            'type' => 'DIN-ISO-3166'];
+            foreach ($field->getSubfields('c') as $subfield) {
+                $locations[] = ['name' => $subfield->getData(),
+                                'type' => 'DIN-ISO-3166'];
+            }
         }
         return $locations;
     }
