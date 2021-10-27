@@ -44,6 +44,7 @@ return [
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'truncate.js', 'priority' => 330],
+        ['file' => 'trigger_print.js', 'priority' => 340],
     ],
     'less' => [
         'active' => false,
