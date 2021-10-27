@@ -110,16 +110,26 @@ md %BASEPATH%\processed
 
 rem Process all the files in the target directory:
 for %%a in (%BASEPATH%\*.xml %BASEPATH%\*.mrc) do (
-  if "%LOGGING%"=="0" (
-    call %VUFIND_HOME%\import-marc.bat %%a
-  )
-  rem Capture solrmarc output to log
-  if "%LOGGING%"=="1" (
-    call %VUFIND_HOME%\import-marc.bat %%a 2> %BASEPATH%\log\%%~nxa.log
-  )
-  if "%MOVE_DATA%"=="1" (
-    move %%a %BASEPATH%\processed\ > nul
+  call :run_command %%a %BASEPATH%\log\%%~nxa.log
+  if not errorlevel 1 (
+    if "%MOVE_DATA%"=="1" (
+      move %%a %BASEPATH%\processed\ > nul
+    )
   )
 )
+goto :end
+
+rem Subroutine to do the SolrMarc ingest
+:run_command
+if "%LOGGING%"=="0" (
+  call %VUFIND_HOME%\import-marc.bat %1
+  if not errorlevel 1 exit /b 0
+)
+rem Capture solrmarc output to log
+if "%LOGGING%"=="1" (
+  call %VUFIND_HOME%\import-marc.bat %1 2> %2
+  if not errorlevel 1 exit /b 0
+)
+exit /b 1
 
 :end
