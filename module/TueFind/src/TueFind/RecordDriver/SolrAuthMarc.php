@@ -259,6 +259,30 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $locations;
     }
 
+    public function getMeetingName()
+    {
+        foreach ($this->getMarcRecord()->getFields('111') as $field) {
+            $name = $field->getSubfield('a')->getData();
+
+            $subfield_c = $field->getSubfield('c');
+            $subfield_d = $field->getSubfield('d');
+            $subfield_g = $field->getSubfield('g');
+
+            if ($subfield_c != false || $subfield_g != false)
+                $name .= '.';
+            if ($subfield_g != false)
+                $name .= ' ' . $subfield_g->getData();
+            if ($subfield_c != false)
+                $name .= ' ' . $subfield_c->getData();
+            if ($subfield_d != false)
+                $name .= ' (' . $subfield_d->getData() . ')';
+
+            return $name;
+        }
+
+        return '';
+    }
+
     /**
      * Get Name from 100a
      * @return string
