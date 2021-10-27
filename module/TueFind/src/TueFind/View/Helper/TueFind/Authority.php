@@ -148,13 +148,18 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getName(AuthorityRecordDriver &$driver): string
     {
-        $name = $driver->getHeadingShort();
-        $timespan = $driver->getHeadingTimespan();
+        if ($driver->getType() == 'meeting') {
+            return '<span property="name">' . htmlspecialchars($driver->getMeetingName()) . '</span>';
+        } else {
 
-        $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
-        if ($timespan != null)
-            $heading .= ' ' . htmlspecialchars($timespan);
-        return $heading;
+            $name = $driver->getHeadingShort();
+            $timespan = $driver->getHeadingTimespan();
+
+            $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
+            if ($timespan != null)
+                $heading .= ' ' . htmlspecialchars($timespan);
+            return $heading;
+        }
     }
 
     public function getOccupations(AuthorityRecordDriver &$driver): string
