@@ -123,6 +123,7 @@ set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dlog4j.configuration="fi
 echo Now Importing %1 ...
 echo %RUN_CMD%
 %RUN_CMD%
+exit /b %ERRORLEVEL%
 
 :end
 
