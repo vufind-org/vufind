@@ -156,9 +156,11 @@ var TueFind = {
 
                         // Build different array structure (prepare sort)
                         var references = [];
-                        let countRegex = /\((\d+)\)$/;
+                        let countRegex = new RegExp(/\((\d+)\)$/);
                         for (let i=0; i<json[1].length; ++i) {
                             let label = json[1][i];
+                            let groupLabel = label.replace(countRegex, '').trim();
+
                             let description = json[2][i];
                             let url = json[3][i];
 
@@ -171,7 +173,7 @@ var TueFind = {
                             if (label.match(sortBottomRegex))
                                 sortPriority = 2;
 
-                            references.push({ label: label, description: description, url: url, count: count, sortPriority: sortPriority });
+                            references.push({ label: label, groupLabel: groupLabel, description: description, url: url, count: count, sortPriority: sortPriority });
                         }
 
                         // sort by priority, then alphabetically
@@ -186,7 +188,6 @@ var TueFind = {
 
                         // merge links with same label, if exact 1 url contains the correct gnd number
                         if (filterUniquePattern != '') {
-                            let previousLabel = '';
                             let currentGroup = [];
                             let currentGroupStartIndex = 0;
                             var abortCondition = references.length;
@@ -196,7 +197,7 @@ var TueFind = {
                                 currentGroup.push(currentReference);
 
                                 // If we are at the end of the group
-                                if (nextReference == undefined || nextReference.label != currentReference.label) {
+                                if (nextReference == undefined || nextReference.groupLabel != currentReference.groupLabel) {
                                     // Detect how many entries match the GND number
                                     var matchingIndexes = [];
                                     currentGroup.forEach(function (groupedReference, index) {
