@@ -145,6 +145,8 @@ var TueFind = {
             var headline = this.getAttribute('data-headline');
             var sortBottomPattern = this.getAttribute('data-sort-bottom-pattern');
             var sortBottomRegex = new RegExp(sortBottomPattern);
+            var filterUniquePattern = this.getAttribute('data-filter-unique-pattern');
+            var filterUniqueRegex = new RegExp(filterUniquePattern);
 
             $.ajax({
                 type: 'GET',
@@ -153,7 +155,7 @@ var TueFind = {
                     if (json[1] !== undefined && json[1].length > 0) {
 
                         // Build different array structure (prepare sort)
-                        let references = [];
+                        var references = [];
                         let countRegex = /\((\d+)\)$/;
                         for (let i=0; i<json[1].length; ++i) {
                             let label = json[1][i];
@@ -181,6 +183,49 @@ var TueFind = {
 
                             return a.label.localeCompare(b.label);
                         });
+
+                        // merge links with same label, if exact 1 url contains the correct gnd number
+                        if (filterUniquePattern != '') {
+                            let previousLabel = '';
+                            let currentGroup = [];
+                            let currentGroupStartIndex = 0;
+                            var abortCondition = references.length;
+                            for (let i=0; i<abortCondition;++i) {
+                                let currentReference = references[i];
+                                let nextReference = references[i+1];
+                                currentGroup.push(currentReference);
+
+                                // If we are at the end of the group
+                                if (nextReference == undefined || nextReference.label != currentReference.label) {
+                                    // Detect how many entries match the GND number
+                                    var matchingIndexes = [];
+                                    currentGroup.forEach(function (groupedReference, index) {
+                                        if (groupedReference.url.match(filterUniqueRegex)) {
+                                            matchingIndexes.push(index);
+                                        }
+                                    });
+
+                                    // If we have exact 1 regex match & more than 1 entry, remove the invalid ones
+                                    if (currentGroup.length > 1 && matchingIndexes.length == 1) {
+                                        var matchingIndex = matchingIndexes[0];
+                                        var removeOffset = 0;
+                                        currentGroup.forEach(function (groupedReference, index) {
+                                            if (index != matchingIndex) {
+                                                let indexToRemove = index + currentGroupStartIndex - removeOffset;
+                                                references.splice(indexToRemove, 1);
+                                                --abortCondition;
+                                                --i;
+                                                ++removeOffset;
+                                            }
+                                        });
+                                    }
+
+                                    // Reset cached group
+                                    currentGroup = [];
+                                    currentGroupStartIndex = i+1;
+                                }
+                            }
+                        }
 
                         // render HTML
                         let html = '<h2>' + headline + '</h2>';
