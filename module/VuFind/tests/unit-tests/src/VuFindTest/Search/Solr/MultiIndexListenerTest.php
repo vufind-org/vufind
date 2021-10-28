@@ -48,6 +48,7 @@ use VuFindSearch\Service;
  */
 class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -139,17 +140,17 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testStripFacetFields()
     {
-        $params   = new ParamBag(
+        $params = new ParamBag(
             [
                 'facet.field' => ['field_1', 'field_2', 'field_3'],
                 'shards' => [self::$shards['b'], self::$shards['c']],
             ]
         );
-        $command  = new MockCommandForMultiIndexListenerTest($params);
-        $event    = new Event(
+        $command = $this->getMockSearchCommand($params);
+        $event = new Event(
             Service::EVENT_PRE,
             $this->backend,
-            ['params' => $params, 'command' => $command]
+            compact('params', 'command')
         );
         $this->listener->onSearchPre($event);
 
@@ -170,7 +171,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                 'shards' => [self::$shards['b'], self::$shards['c']],
             ]
         );
-        $command  = new MockCommandForMultiIndexListenerTest($params, 'retrieve');
+        $command  = $this->getMockSearchCommand($params, 'retrieve');
         $event    = new Event(
             Service::EVENT_PRE,
             $this->backend,
@@ -264,14 +265,5 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
             ['test' => ['QueryFields' => [], 'FilterQuery' => 'format:Book']],
             $specs
         );
-    }
-}
-
-class MockCommandForMultiIndexListenerTest
-    extends \VuFindSearch\Command\AbstractBase
-{
-    public function __construct(ParamBag $params, $context = 'foo')
-    {
-        parent::__construct('foo', $context, $params);
     }
 }

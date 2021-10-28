@@ -28,7 +28,8 @@
  */
 namespace VuFind\Recommend;
 
-use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
+use VuFindSearch\Service;
 
 /**
  * MapSelection Recommendations Module
@@ -74,13 +75,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $height;
 
     /**
-     * Map Selection configuration options
-     *
-     * @var array
-     */
-    protected $mapSelectionOptions = [];
-
-    /**
      * Selected coordinates
      *
      * @var string
@@ -90,16 +84,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     /**
      * Search parameters
      *
-     * @var string
+     * @var object
      */
     protected $searchParams = null;
-
-    /**
-     * Search object
-     *
-     * @var string
-     */
-    protected $searchObject;
 
     /**
      * Search Results coordinates
@@ -116,25 +103,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $bboxSearchCoords = [];
 
     /**
-     * Solr search backend
+     * Search service
      *
-     * @var Backend
+     * @var Service
      */
-    protected $solr;
-
-    /**
-     * Query Builder object
-     *
-     * @var \VuFindSearch\Backend\Solr\QueryBuilder
-     */
-    protected $queryBuilder;
-
-    /**
-     * Solr connector Object
-     *
-     * @var \VuFindSearch\Backend\Solr\Connector
-     */
-    protected $solrConnector;
+    protected $searchService;
 
     /**
      * Query Object
@@ -153,17 +126,19 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     /**
      * Constructor
      *
-     * @param Backend $solr                Search interface
+     * @param Service $ss                  Search service
      * @param array   $basemapOptions      Basemap Options
      * @param array   $mapSelectionOptions Map Options
      */
-    public function __construct($solr, $basemapOptions, $mapSelectionOptions)
+    public function __construct($ss, $basemapOptions, $mapSelectionOptions)
     {
-        $this->solr = $solr;
-        $this->queryBuilder = $solr->getQueryBuilder();
-        $this->solrConnector = $solr->getConnector();
+        $this->searchService = $ss;
         $this->basemapOptions = $basemapOptions;
-        $this->mapSelectionOptions = $mapSelectionOptions;
+        $this->defaultCoordinates = explode(
+            ',',
+            $mapSelectionOptions['default_coordinates']
+        );
+        $this->height = $mapSelectionOptions['height'];
     }
 
     /**
@@ -177,12 +152,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function setConfig($settings)
     {
-        $mapSelectionOptions = $this->mapSelectionOptions;
-        $this->defaultCoordinates = explode(
-            ',',
-            $mapSelectionOptions['default_coordinates']
-        );
-        $this->height = $mapSelectionOptions['height'];
     }
 
     /**
@@ -328,32 +297,45 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     }
 
     /**
+     * Fetch details from search service
+     *
+     * @return array
+     */
+    public function fetchDataFromSearchService()
+    {
+        $params = $this->searchFilters;
+        $params->set('fl', 'id, ' . $this->geoField . ', title');
+        $command = new RawJsonSearchCommand(
+            'Solr',
+            $this->searchQuery,
+            0,
+            10000000,   // set to return all results
+            $params
+        );
+        $response = $this->searchService->invoke($command)->getResult();
+        $defaultTitle = $this->translate('Title not available');
+        $callback = function ($current) use ($defaultTitle) {
+            return [
+                $current->id,
+                $current->{$this->geoField},
+                $current->title ?? $defaultTitle
+            ];
+        };
+        return array_map($callback, $response->response->docs);
+    }
+
+    /**
      * Get geo field values for all search results
      *
      * @return array
      */
     public function getSearchResultCoordinates()
     {
-        $result = [];
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
         $filters = $params->get('fq');
-        if (!empty($filters) && strpos($filters[0], $this->geoField) !== false) {
-            $params->mergeWith($this->queryBuilder->build($this->searchQuery));
-            $params->set('fl', 'id, ' . $this->geoField . ', title');
-            $params->set('wt', 'json');
-            $params->set('rows', '10000000'); // set to return all results
-            $response = json_decode($this->solrConnector->search($params));
-            foreach ($response->response->docs as $current) {
-                if (!isset($current->title)) {
-                    $current->title = $this->translate('Title not available');
-                }
-                $result[] = [
-                    $current->id, $current->{$this->geoField}, $current->title
-                ];
-            }
-        }
-        return $result;
+        return (!empty($filters) && strpos($filters[0], $this->geoField) !== false)
+            ? $this->fetchDataFromSearchService() : [];
     }
 
     /**

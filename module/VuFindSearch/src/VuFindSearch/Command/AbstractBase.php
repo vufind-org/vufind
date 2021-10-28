@@ -30,6 +30,7 @@ namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Exception\LogicException;
+use VuFindSearch\Exception\RuntimeException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -41,14 +42,14 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class AbstractBase implements CommandInterface
+abstract class AbstractBase implements CommandInterface
 {
     /**
      * Search backend identifier
      *
      * @var string
      */
-    protected $backend;
+    protected $backendId;
 
     /**
      * Command context
@@ -79,40 +80,62 @@ class AbstractBase implements CommandInterface
     protected $result;
 
     /**
-     * CallMethodCommand constructor.
+     * Constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param mixed     $context Command context
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param mixed     $context   Command context
+     * @param ?ParamBag $params    Search backend parameters
      */
-    public function __construct(string $backend, $context, ?ParamBag $params = null)
-    {
-        $this->backend = $backend;
+    public function __construct(
+        string $backendId,
+        $context,
+        ?ParamBag $params = null
+    ) {
+        $this->backendId = $backendId;
         $this->context = $context;
         $this->params = $params ?: new ParamBag();
     }
 
     /**
-     * Return name of target backend.
+     * Return target backend identifier.
      *
      * @return string
      */
-    public function getTargetBackendName(): string
+    public function getTargetIdentifier(): string
     {
-        return $this->backend;
+        return $this->backendId;
     }
 
     /**
-     * Execute command on backend.
+     * Save a result, flag the command as executed, and return the command object;
+     * useful as the final step in execute() implementations.
      *
-     * @param BackendInterface $backend Backend
+     * @param mixed $result Result of execution.
      *
-     * @return CommandInterface Command instance for method chaining
+     * @return CommandInterface
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    protected function finalizeExecution($result): CommandInterface
     {
+        $this->result = $result;
         $this->executed = true;
         return $this;
+    }
+
+    /**
+     * Validate that the provided backend matches the expected target identifier.
+     *
+     * @param BackendInterface $backend Backend instance
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    protected function validateBackend(BackendInterface $backend): void
+    {
+        if (($backendId = $backend->getIdentifier()) !== $this->backendId) {
+            throw new RuntimeException(
+                "Expected backend instance $this->backendId instead of $backendId"
+            );
+        }
     }
 
     /**

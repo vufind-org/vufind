@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for HeadThemeResources view helper.
+ * CSP helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Theme
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindTheme\View\Helper;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
@@ -34,15 +34,15 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for HeadThemeResources view helper.
+ * CSP helper factory.
  *
  * @category VuFind
- * @package  Theme
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadThemeResourcesFactory implements FactoryInterface
+class CspFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -56,7 +56,7 @@ class HeadThemeResourcesFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
+     * @throws ContainerException if any other error occurs
      */
     public function __invoke(
         ContainerInterface $container,
@@ -66,8 +66,6 @@ class HeadThemeResourcesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFindTheme\ResourceContainer::class)
-        );
+        return new $requestedName($container->get('Response'));
     }
 }

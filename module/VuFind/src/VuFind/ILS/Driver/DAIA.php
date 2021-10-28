@@ -51,7 +51,7 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 class DAIA extends AbstractBase implements
     HttpServiceAwareInterface, LoggerAwareInterface
 {
-    use CacheTrait {
+    use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;

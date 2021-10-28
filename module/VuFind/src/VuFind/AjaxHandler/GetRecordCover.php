@@ -29,9 +29,9 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\ILS\Driver\CacheTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
 

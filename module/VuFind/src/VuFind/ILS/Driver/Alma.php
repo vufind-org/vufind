@@ -47,7 +47,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
-    use CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -737,12 +737,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         ];
 
         // Check for patron in Alma
-        $response = $this->makeRequest(
+        [$response, $status] = $this->makeRequest(
             '/users/' . rawurlencode($patronId),
-            $getParams
+            $getParams,
+            [],
+            'GET',
+            null,
+            null,
+            [400],
+            true
         );
 
-        if ($response !== null) {
+        if ($status != 400 && $response !== null) {
             // We may already have some information, so just fill the gaps
             $patron['id'] = (string)$response->primary_id;
             $patron['cat_username'] = trim($username);
@@ -932,8 +938,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param array $cancelDetails An associative array with two keys: patron
      *                             (array returned by the driver's
      *                             patronLogin method) and details (an array
-     *                             of strings eturned by the driver's
-     *                             getCancelHoldDetails method)
+     *                             of strings returned in holds' cancel_details
+     *                             field.
      *
      * @return array                Associative array containing with keys 'count'
      *                                 (number of items successfully cancelled) and

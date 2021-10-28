@@ -103,8 +103,8 @@ class OaiController extends AbstractBase
             );
             $server = $this->serviceLocator->get($serverClass);
             $server->init($config, $baseURL, $params);
-            $server->setRecordLinkHelper(
-                $this->getViewRenderer()->plugin('recordLink')
+            $server->setRecordLinkerHelper(
+                $this->getViewRenderer()->plugin('recordLinker')
             );
             $server->setRecordFormatter(
                 $this->serviceLocator->get(RecordFormatter::class)
