@@ -199,6 +199,7 @@ var TueFind = {
         $('.tf-wikidata-image').each(function() {
             var placeholder = this;
             var imageUrl = this.getAttribute('data-url');
+	    var parentBlock = $(placeholder).parent();
             $.ajax({
                 type: 'GET',
                 url: imageUrl,
@@ -220,7 +221,16 @@ var TueFind = {
                     content += '<figcaption style="text-align: center;">' + title + '</figcaption>';
                     content += '</figure>';
                     $(placeholder).append(content);
-                }
+                },
+		statusCode: {
+		    200: function() {
+			parentBlock.removeClass('tf-d-none');
+			parentBlock.next().removeClass('col-md-auto');
+			parentBlock.next().removeClass('col-lg-auto');
+                        parentBlock.next().addClass('col-md-9');
+			parentBlock.next().addClass('col-lg-9');
+		    }
+		}
             });
         });
     },
