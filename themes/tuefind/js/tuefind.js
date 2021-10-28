@@ -237,7 +237,7 @@ var TueFind = {
                                 html += '</ul><ul class="list-group">';
                             }
                             previousSortPriority = reference.sortPriority;
-                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
+                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank" property="sameAs">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
                         });
                         html += '</ul>';
                         $(container).append(html);
