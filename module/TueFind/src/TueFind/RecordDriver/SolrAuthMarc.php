@@ -451,11 +451,6 @@ class SolrAuthMarc extends SolrAuthDefault {
         return parent::getTitle();
     }
 
-    public function isMeeting(): bool
-    {
-        return $this->getType() == 'meeting';
-    }
-
     public function isFamily(): bool
     {
         $fields = $this->getMarcRecord()->getFields('079');
@@ -467,6 +462,11 @@ class SolrAuthMarc extends SolrAuthDefault {
             }
         }
         return false;
+    }
+
+    public function isMeeting(): bool
+    {
+        return $this->getType() == 'meeting';
     }
 
     /**
