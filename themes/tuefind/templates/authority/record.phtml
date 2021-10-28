@@ -35,7 +35,7 @@
 
   <!-- Here sidebar-right is before mainbody-left, because we want to show the image before the details in responsive behaviour -->
   <div class="sidebar right hidden-print">
-    <?php if ($this->driver->getType() == 'person' && !$this->driver->isFamily()): ?>
+    <?php if ($this->driver->isPerson() && !$this->driver->isFamily()): ?>
       <?=$this->context($this)->renderInContext('authority/record/image', ['driver' => $this->driver])?>
     <?php endif; ?>
   </div>

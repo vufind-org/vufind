@@ -451,6 +451,19 @@ class SolrAuthMarc extends SolrAuthDefault {
         return parent::getTitle();
     }
 
+    public function isFamily(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('v');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'pif')
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public function isMeeting(): bool
     {
         return $this->getType() == 'meeting';
@@ -474,16 +487,14 @@ class SolrAuthMarc extends SolrAuthDefault {
         return false;
     }
 
-    public function isFamily(): bool
+    /**
+     * This just checks whether the main type is "person".
+     * Be careful => if the main type is "person", it can e.g. still be sub-type "name", "family" or others.
+     *
+     * @return bool
+     */
+    public function isPerson(): bool
     {
-        $fields = $this->getMarcRecord()->getFields('079');
-        if (is_array($fields)) {
-            foreach ($fields as $field) {
-                $typeSubfield = $field->getSubfield('v');
-                if ($typeSubfield != false && $typeSubfield->getData() == 'pif')
-                    return true;
-            }
-        }
-        return false;
+        return $this->getType() == 'person';
     }
 }

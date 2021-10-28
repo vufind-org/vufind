@@ -351,6 +351,11 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return implode(' AND ', $parts);
     }
 
+    public function getTimespans(AuthorityRecordDriver &$driver): string
+    {
+        return implode('<br>', $driver->getTimespans());
+    }
+
     protected function getTitlesAboutQueryParams(&$author, $fuzzy=false): string
     {
         if ($author instanceof AuthorityRecordDriver) {
