@@ -148,10 +148,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getName(AuthorityRecordDriver &$driver): string
     {
-        if ($driver->getType() == 'meeting') {
+        if ($driver->isMeeting()) {
             return '<span property="name">' . htmlspecialchars($driver->getMeetingName()) . '</span>';
         } else {
-
             $name = $driver->getHeadingShort();
             $timespan = $driver->getHeadingTimespan();
 
