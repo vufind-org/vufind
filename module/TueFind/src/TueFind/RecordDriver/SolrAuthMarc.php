@@ -444,6 +444,18 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $timespans;
     }
 
+    public function getTitle()
+    {
+        if ($this->isMeeting())
+            return $this->getMeetingName();
+        return parent::getTitle();
+    }
+
+    public function isMeeting(): bool
+    {
+        return $this->getType() == 'meeting';
+    }
+
     /**
      * This function is used to detect "Tn"-sets, which are similar to persons.
      *
