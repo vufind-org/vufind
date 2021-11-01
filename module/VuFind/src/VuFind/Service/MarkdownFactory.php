@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  VuFind\Service
  * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
@@ -30,19 +31,22 @@ namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
 
 /**
- * VuFind HTTP Service factory.
+ * VuFind Markdown Service factory.
  *
  * @category VuFind
  * @package  Service
  * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -87,12 +91,48 @@ class MarkdownFactory implements FactoryInterface
      * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
-        ContainerInterface $container, $requestedName, array $options = null
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
     ) {
         $markdownConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('markdown');
+
+        $environment = $this->getEnvironment($markdownConfig);
+        $this->addExtensions($environment, $markdownConfig);
+
+        return new MarkdownConverter($environment);
+    }
+
+    /**
+     * Get Markdown environment.
+     *
+     * @param $markdownConfig Config VuFind Markdown config
+     *
+     * @return EnvironmentBuilderInterface
+     */
+    protected function getEnvironment(Config $markdownConfig):
+        EnvironmentBuilderInterface
+    {
+        $environment = new Environment();
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->mergeConfig($this->getEnvironmentConfig($markdownConfig));
+
+        return $environment;
+    }
+
+    /**
+     * Get Markdown environment config.
+     *
+     * @param $markdownConfig Config VuFind Markdown config
+     *
+     * @return array
+     */
+    protected function getEnvironmentConfig(Config $markdownConfig): array
+    {
         $mainConfig = $markdownConfig->Markdown;
-        $config = [
+
+        return [
             'html_input' => $mainConfig->html_input ?? 'strip',
             'allow_unsafe_links' => $mainConfig->allow_unsafe_links ?? false,
             'max_nesting_level' => $mainConfig->max_nesting_level ?? \PHP_INT_MAX,
@@ -115,9 +155,21 @@ class MarkdownFactory implements FactoryInterface
                 'soft_break' => $mainConfig->renderer['soft_break'] ?? "\n",
             ],
         ];
+    }
 
-        $environment = new Environment($config);
-        $environment->addExtension(new CommonMarkCoreExtension());
+    /**
+     * Add extensions to Markdown environment.
+     *
+     * @param $environment    EnvironmentBuilderInterface Markdown environment
+     * @param $markdownConfig Config                      VuFind Markdown config
+     *
+     * @return void
+     */
+    protected function addExtensions(
+        EnvironmentBuilderInterface $environment,
+        Config $markdownConfig
+    ): void {
+        $mainConfig = $markdownConfig->Markdown;
         $extensions = isset($mainConfig->extensions)
             ? array_map('trim', explode(',', $mainConfig->extensions))
             : self::$defaultExtensions;
@@ -127,7 +179,9 @@ class MarkdownFactory implements FactoryInterface
                 continue;
             }
             $extClass = sprintf(
-                'League\CommonMark\Extension\%s\%sExtension', $ext, $ext
+                'League\CommonMark\Extension\%s\%sExtension',
+                $ext,
+                $ext
             );
             if (!class_exists($extClass)) {
                 throw new ServiceNotCreatedException(
@@ -136,11 +190,10 @@ class MarkdownFactory implements FactoryInterface
             }
             $environment->addExtension(new $extClass());
             if (isset($markdownConfig[$ext])) {
-                $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();
+                $environment->mergeConfig(
+                    [self::$configKeys[$ext] => $markdownConfig->$ext->toArray()]
+                );
             }
         }
-        $environment->mergeConfig($config);
-
-        return new MarkdownConverter($environment);
     }
 }

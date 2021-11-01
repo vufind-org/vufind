@@ -86,7 +86,8 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(
-            "Successfully imported foo.csv...\n", $commandTester->getDisplay()
+            "Successfully imported foo.csv...\n",
+            $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }

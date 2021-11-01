@@ -87,8 +87,10 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider
      * @param \VuFind\ILS\Connection $ils     ILS connection
      * @param array                  $options Settings (optional)
      */
-    public function __construct(\VuFindSearch\Service $search,
-        \VuFind\ILS\Connection $ils, array $options = []
+    public function __construct(
+        \VuFindSearch\Service $search,
+        \VuFind\ILS\Connection $ils,
+        array $options = []
     ) {
         $this->searchService = $search;
         $this->ils = $ils;

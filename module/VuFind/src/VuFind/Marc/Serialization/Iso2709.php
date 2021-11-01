@@ -96,7 +96,8 @@ class Iso2709 implements SerializationInterface
                     'i2' => $tagData[1] ?? ' '
                 ];
                 $subfields = explode(
-                    self::SUBFIELD_INDICATOR, substr($tagData, 3)
+                    self::SUBFIELD_INDICATOR,
+                    substr($tagData, 3)
                 );
                 foreach ($subfields as $subfield) {
                     if ('' === $subfield) {

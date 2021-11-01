@@ -31,6 +31,7 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Command\Feature\RecordIdentifierTrait;
 use VuFindSearch\ParamBag;
 
 /**
@@ -45,18 +46,39 @@ use VuFindSearch\ParamBag;
  */
 class RetrieveCommand extends CallMethodCommand
 {
+    use RecordIdentifierTrait;
+
     /**
      * RetrieveCommand constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param string    $id      Record identifier
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param string    $id        Record identifier
+     * @param ?ParamBag $params    Search backend parameters
      */
-    public function __construct(string $backend, string $id,
+    public function __construct(
+        string $backendId,
+        string $id,
         ?ParamBag $params = null
     ) {
+        $this->id = $id;
         parent::__construct(
-            $backend, BackendInterface::class, 'retrieve', [$id], $params
+            $backendId,
+            BackendInterface::class,
+            'retrieve',
+            $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getRecordIdentifier(),
+            $this->getSearchParameters()
+        ];
     }
 }

@@ -57,7 +57,9 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -74,7 +76,9 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
         $safeMoneyFormat = $helperManager->has('safeMoneyFormat')
             ? $helperManager->get('safeMoneyFormat') : null;
         return parent::__invoke(
-            $container, $requestedName, [$sessionFactory, $safeMoneyFormat]
+            $container,
+            $requestedName,
+            [$sessionFactory, $safeMoneyFormat]
         );
     }
 }

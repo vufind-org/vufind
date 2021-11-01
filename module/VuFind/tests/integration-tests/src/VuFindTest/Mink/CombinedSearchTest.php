@@ -78,7 +78,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         ];
         foreach ($expectedResults as $container => $title) {
             $this->assertEquals(
-                $title, $this->findCss($page, "$container a.title")->getText()
+                $title,
+                $this->findCss($page, "$container a.title")->getText()
             );
             // Check for sample driver location/call number in output (this will
             // only appear after AJAX returns):
@@ -101,7 +102,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testCombinedSearchResults()
     {
         $this->changeConfigs(
-            ['combined' => $this->getCombinedIniOverrides()], ['combined']
+            ['combined' => $this->getCombinedIniOverrides()],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');
@@ -124,7 +126,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $config['Solr:one']['ajax'] = true;
         $config['Solr:two']['ajax'] = true;
         $this->changeConfigs(
-            ['combined' => $config], ['combined']
+            ['combined' => $config],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');
@@ -146,7 +149,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
         $this->changeConfigs(
-            ['combined' => $config], ['combined']
+            ['combined' => $config],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');

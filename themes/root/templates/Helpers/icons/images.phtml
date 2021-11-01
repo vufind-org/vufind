@@ -1,0 +1,5 @@
+<?php
+    $folder = $this->src ?? '';
+    $className = trim('icon--img ' . ($this->extra['class'] ?? ''));
+?>
+<img class="<?=$className ?>" src="<?=$this->imageLink($folder . '/' . $this->icon) ?>" aria-hidden="true"<?=$this->attrs ?>/>

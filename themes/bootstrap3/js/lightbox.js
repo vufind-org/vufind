@@ -13,7 +13,7 @@ VuFind.register('lightbox', function Lightbox() {
     _clickedButton = this;
   }
   function _html(content) {
-    _modalBody.html(content);
+    _modalBody.html(VuFind.updateCspNonce(content));
     // Set or update title if we have one
     var $h2 = _modalBody.find("h2:first-of-type");
     if (_lightboxTitle && $h2) {
@@ -48,7 +48,7 @@ VuFind.register('lightbox', function Lightbox() {
   }
   function flashMessage(message, _type) {
     var type = _type || 'info';
-    _modalBody.find('.flash-message,.fa.fa-spinner').remove();
+    _modalBody.find('.flash-message,.loading-spinner').remove();
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
   }
@@ -70,8 +70,8 @@ VuFind.register('lightbox', function Lightbox() {
     if (typeof content !== "string") {
       return;
     }
-    // Isolate successes
-    var htmlDiv = $('<div/>').html(content);
+    // Isolate successes.
+    var htmlDiv = $('<div/>').html(VuFind.updateCspNonce(content));
     var alerts = htmlDiv.find('.flash-message.alert-success:not([data-lightbox-ignore])');
     if (alerts.length > 0) {
       var msgs = alerts.toArray().map(function getSuccessHtml(el) {
@@ -318,7 +318,12 @@ VuFind.register('lightbox', function Lightbox() {
       }, false);
     }
     // Loading
-    _modalBody.prepend('<i class="modal-loading fa fa-spinner fa-spin" title="' + VuFind.translate('loading') + '"></i>');
+    var lightboxHeader = $(_modalBody).find('.lightbox-header');
+    if (lightboxHeader.length > 0) {
+      lightboxHeader.after(VuFind.loading());
+    } else {
+      _modalBody.prepend(VuFind.loading());
+    }
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');
@@ -469,7 +474,7 @@ VuFind.register('lightbox', function Lightbox() {
   // Element which to focus after modal is closed
   var _beforeOpenElement = null;
   function reset() {
-    _html(VuFind.translate('loading') + '...');
+    _html(VuFind.loading());
     _originalUrl = false;
     _currentUrl = false;
     _lightboxTitle = false;

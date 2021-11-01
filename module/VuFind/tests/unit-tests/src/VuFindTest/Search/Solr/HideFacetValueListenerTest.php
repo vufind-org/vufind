@@ -45,6 +45,8 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
  */
 class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Get a mock backend
      *
@@ -105,11 +107,14 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return HideFacetValueListener
      */
-    protected function getListener(array $hideFacetValues = [],
+    protected function getListener(
+        array $hideFacetValues = [],
         array $showFacetValues = []
     ): HideFacetValueListener {
         return new HideFacetValueListener(
-            $this->getMockBackend(), $hideFacetValues, $showFacetValues
+            $this->getMockBackend(),
+            $hideFacetValues,
+            $showFacetValues
         );
     }
 
@@ -140,7 +145,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener(['format' => ['Unknown']]);
         $result = $this->getMockResult();
         $facets = $result->getFacets()->getFieldFacets();
-        $command = new MockCommandForHideFacetValueTest($result);
+        $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
@@ -149,7 +154,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPost($event);
         $this->assertEquals(
-            ['Book' => 124, 'Fake' => 3], $facets['format']->toArray()
+            ['Book' => 124, 'Fake' => 3],
+            $facets['format']->toArray()
         );
     }
 
@@ -163,7 +169,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener([], ['format' => ['Book']]);
         $result = $this->getMockResult();
         $facets = $result->getFacets()->getFieldFacets();
-        $command = new MockCommandForHideFacetValueTest($result);
+        $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
@@ -172,7 +178,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPost($event);
         $this->assertEquals(
-            ['Book' => 124], $facets['format']->toArray()
+            ['Book' => 124],
+            $facets['format']->toArray()
         );
     }
 
@@ -186,11 +193,12 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     public function testHideFacetsAndShowFacets(): void
     {
         $listener = $this->getListener(
-            ['format' => ['Fake']], ['format' => ['Book', 'Fake']]
+            ['format' => ['Fake']],
+            ['format' => ['Book', 'Fake']]
         );
         $result = $this->getMockResult();
         $facets = $result->getFacets()->getFieldFacets();
-        $command = new MockCommandForHideFacetValueTest($result);
+        $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
@@ -199,17 +207,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPost($event);
         $this->assertEquals(
-            ['Book' => 124], $facets['format']->toArray()
+            ['Book' => 124],
+            $facets['format']->toArray()
         );
-    }
-}
-
-class MockCommandForHideFacetValueTest extends \VuFindSearch\Command\AbstractBase
-{
-    public function __construct(RecordCollection $result = null)
-    {
-        parent::__construct('Solr', 'search');
-        $this->executed = true;
-        $this->result = $result;
     }
 }

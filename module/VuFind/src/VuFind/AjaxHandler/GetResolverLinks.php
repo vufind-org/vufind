@@ -82,8 +82,11 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
      * @param RendererInterface $renderer View renderer
      * @param Config            $config   Top-level VuFind configuration (config.ini)
      */
-    public function __construct(SessionSettings $ss, ResolverManager $pm,
-        RendererInterface $renderer, Config $config
+    public function __construct(
+        SessionSettings $ss,
+        ResolverManager $pm,
+        RendererInterface $renderer,
+        Config $config
     ) {
         $this->sessionSettings = $ss;
         $this->pluginManager = $pm;

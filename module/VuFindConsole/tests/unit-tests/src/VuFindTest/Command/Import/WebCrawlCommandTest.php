@@ -84,7 +84,8 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(
-            '', $commandTester->getDisplay()
+            '',
+            $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -99,8 +100,10 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return WebCrawlCommand
      */
-    protected function getMockCommand(Importer $importer = null,
-        Writer $solr = null, Config $config = null,
+    protected function getMockCommand(
+        Importer $importer = null,
+        Writer $solr = null,
+        Config $config = null,
         array $methods = ['downloadFile', 'removeTempFile']
     ) {
         return $this->getMockBuilder(WebCrawlCommand::class)

@@ -47,6 +47,8 @@ use VuFindSearch\ParamBag;
  */
 class AlphabrowseController extends AbstractBase
 {
+    use Feature\AlphaBrowseTrait;
+
     /**
      * Default browse types
      *
@@ -112,8 +114,13 @@ class AlphabrowseController extends AbstractBase
      *
      * @return void
      */
-    protected function addResultsToView(ViewModel $view, int $page, int $limit,
-        int $rowsBefore, bool $highlighting, array $extras
+    protected function addResultsToView(
+        ViewModel $view,
+        int $page,
+        int $limit,
+        int $rowsBefore,
+        bool $highlighting,
+        array $extras
     ): void {
         $result = [];
         if ($view->source && $view->from !== false) {
@@ -131,10 +138,12 @@ class AlphabrowseController extends AbstractBase
             }
 
             // Load Solr data or die trying:
-            $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
-                ->get('Solr');
-            $result = $db->alphabeticBrowse(
-                $view->source, $view->from, $page, $limit, $extraParams,
+            $result = $this->alphabeticBrowse(
+                $view->source,
+                $view->from,
+                $page,
+                $limit,
+                $extraParams,
                 0 - $rowsBefore
             );
 
@@ -142,8 +151,13 @@ class AlphabrowseController extends AbstractBase
             // the end of the list....
             if ($result['Browse']['totalCount'] == 0) {
                 $page--;
-                $result = $db->alphabeticBrowse(
-                    $view->source, $view->from, $page, $limit, $extraParams, 0
+                $result = $this->alphabeticBrowse(
+                    $view->source,
+                    $view->from,
+                    $page,
+                    $limit,
+                    $extraParams,
+                    0
                 );
                 if ($highlighting) {
                     $view->highlight_end = true;
@@ -238,7 +252,12 @@ class AlphabrowseController extends AbstractBase
 
         // If required parameters are present, load results:
         $this->addResultsToView(
-            $view, $page, $limit, $rowsBefore, $highlighting, $extras
+            $view,
+            $page,
+            $limit,
+            $rowsBefore,
+            $highlighting,
+            $extras
         );
 
         return $view;

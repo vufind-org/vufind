@@ -85,7 +85,8 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['Old Journal'], $obj->getPreviousTitles());
         $this->assertEquals('2nd ed.', $obj->getEdition());
         $this->assertEquals(
-            ['1 book : colored, 28 cm 1 cd'], $obj->getPhysicalDescriptions()
+            ['1 book : colored, 28 cm 1 cd'],
+            $obj->getPhysicalDescriptions()
         );
     }
 }

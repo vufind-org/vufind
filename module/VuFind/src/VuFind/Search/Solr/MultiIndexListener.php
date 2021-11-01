@@ -83,8 +83,11 @@ class MultiIndexListener
      *
      * @return void
      */
-    public function __construct(BackendInterface $backend, array $shards,
-        array $stripfields, array $specs
+    public function __construct(
+        BackendInterface $backend,
+        array $shards,
+        array $stripfields,
+        array $specs
     ) {
         $this->specs       = $specs;
         $this->backend     = $backend;
@@ -102,7 +105,9 @@ class MultiIndexListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
     }
 
@@ -116,7 +121,7 @@ class MultiIndexListener
     public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $params = $command->getSearchParameters();
             $allShardsContexts = ['retrieve', 'retrieveBatch'];
             if (in_array($command->getContext(), $allShardsContexts)) {
@@ -132,7 +137,8 @@ class MultiIndexListener
                 // an array to prevent invalid argument warnings.
                 $shards = $params->get('shards');
                 $shards = explode(
-                    ',', implode(',', (is_array($shards) ? $shards : []))
+                    ',',
+                    implode(',', (is_array($shards) ? $shards : []))
                 );
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);

@@ -108,7 +108,7 @@ if (!empty($edition)) {
     echo "ED  - $edition\n";
 }
 
-echo "UL  - " . $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+echo "UL  - " . $this->serverUrl($this->recordLinker()->getUrl($this->driver)) . "\n";
 
 $summary = $this->driver->tryMethod('getSummary');
 if (is_array($summary)) {

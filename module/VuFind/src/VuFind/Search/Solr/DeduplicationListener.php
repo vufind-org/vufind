@@ -102,7 +102,9 @@ class DeduplicationListener
     public function __construct(
         Backend $backend,
         ContainerInterface $serviceLocator,
-        $searchConfig, $dataSourceConfig = 'datasources', $enabled = true
+        $searchConfig,
+        $dataSourceConfig = 'datasources',
+        $enabled = true
     ) {
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
@@ -122,10 +124,14 @@ class DeduplicationListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
         );
     }
 
@@ -139,7 +145,7 @@ class DeduplicationListener
     public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $params = $command->getSearchParameters();
             $context = $command->getContext();
             $contexts = ['search', 'similar', 'getids', 'workExpressions'];
@@ -188,7 +194,7 @@ class DeduplicationListener
         // Inject deduplication details into record objects:
         $command = $event->getParam('command');
 
-        if ($command->getTargetBackendName() !== $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
         $context = $command->getContext();
@@ -339,8 +345,11 @@ class DeduplicationListener
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function appendDedupRecordFields($localRecordData, $dedupRecordData,
-        $recordSources, $sourcePriority
+    protected function appendDedupRecordFields(
+        $localRecordData,
+        $dedupRecordData,
+        $recordSources,
+        $sourcePriority
     ) {
         $localRecordData['local_ids_str_mv'] = $dedupRecordData['local_ids_str_mv'];
         return $localRecordData;

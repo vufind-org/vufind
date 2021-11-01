@@ -82,11 +82,11 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $hm = new \Laminas\View\HelperPluginManager($container);
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
-        $mockRecordLink
-            = $container->get(\VuFind\View\Helper\Root\RecordLink::class);
-        $mockRecordLink->expects($this->any())->method('getUrl')
+        $mockRecordLinker
+            = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
+        $mockRecordLinker->expects($this->any())->method('getUrl')
             ->will($this->returnValue('http://record'));
-        $hm->setService('recordLink', $mockRecordLink);
+        $hm->setService('recordLinker', $mockRecordLinker);
         return $hm;
     }
 
@@ -100,7 +100,8 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getFormatter($defs = null)
     {
         return new RecordFormatter(
-            $defs ?: $this->getDefaultDefs(), $this->getHelperPluginManager()
+            $defs ?: $this->getDefaultDefs(),
+            $this->getHelperPluginManager()
         );
     }
 
@@ -145,7 +146,8 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
 
         // Test requesting fields:
         $results = $formatter->format(
-            [$driver], array_keys($this->getDefaultDefs())
+            [$driver],
+            array_keys($this->getDefaultDefs())
         );
         $expectedRaw = $driver->getRawData();
         unset($expectedRaw['spelling']);
@@ -173,7 +175,8 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $filtered = '<filtered></filtered>';
         $driver->setFilteredXML($filtered);
         $results = $formatter->format(
-            [$driver], array_keys($this->getDefaultDefs())
+            [$driver],
+            array_keys($this->getDefaultDefs())
         );
         $expected[0]['fullRecord'] = $filtered;
         $expected[0]['rawData']['FilteredXML'] = $filtered;

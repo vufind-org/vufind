@@ -59,14 +59,14 @@ class MapSelectionFactory implements \Laminas\ServiceManager\Factory\FactoryInte
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backend = $container->get(\VuFind\Search\BackendManager::class);
-        $solr = $backend->get('Solr');
 
         // add basemap options
         $basemapConfig = $container->get(\VuFind\GeoFeatures\BasemapConfig::class);
@@ -77,6 +77,7 @@ class MapSelectionFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             = $container->get(\VuFind\GeoFeatures\MapSelectionConfig::class);
         $mapSelectionOptions = $mapSelectionConfig->getMapSelectionOptions();
 
-        return new $requestedName($solr, $basemapOptions, $mapSelectionOptions);
+        $search = $container->get(\VuFindSearch\Service::class);
+        return new $requestedName($search, $basemapOptions, $mapSelectionOptions);
     }
 }

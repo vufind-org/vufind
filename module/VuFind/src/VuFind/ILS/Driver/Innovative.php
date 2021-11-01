@@ -422,7 +422,8 @@ class Innovative extends AbstractBase implements
             $ret['address1'] = str_replace("$", ", ", $api_data['ADDRESS']);
             $ret['address2'] = str_replace("$", ", ", $api_data['ADDRESS2']);
             preg_match(
-                "/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/", $api_data['ADDRESS'],
+                "/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/",
+                $api_data['ADDRESS'],
                 $zipmatch
             );
             $ret['zip'] = $zipmatch[1]; //retrieve from address

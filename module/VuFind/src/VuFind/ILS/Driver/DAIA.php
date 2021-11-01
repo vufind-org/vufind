@@ -51,7 +51,7 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 class DAIA extends AbstractBase implements
     HttpServiceAwareInterface, LoggerAwareInterface
 {
-    use CacheTrait {
+    use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -467,7 +467,9 @@ class DAIA extends AbstractBase implements
         try {
             $result = $this->httpService->get(
                 $this->baseUrl,
-                $params, $this->daiaTimeout, $http_headers
+                $params,
+                $this->daiaTimeout,
+                $http_headers
             );
         } catch (\Exception $e) {
             $msg = 'HTTP request exited with Exception ' . $e->getMessage() .
@@ -892,7 +894,8 @@ class DAIA extends AbstractBase implements
                     try {
                         $duedate = $this->dateConverter
                             ->convertToDisplayDate(
-                                'Y-m-d', $unavailable['expected']
+                                'Y-m-d',
+                                $unavailable['expected']
                             );
                     } catch (\Exception $e) {
                         $this->debug('Date conversion failed: ' . $e->getMessage());

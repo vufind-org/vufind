@@ -81,7 +81,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
-            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockRecordRouter()),
+            'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($container)),
             'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
@@ -141,7 +141,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $factory = new RecordDataFormatterFactory();
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(
-            \VuFind\Config\PluginManager::class, new \VuFind\Config\PluginManager($container)
+            \VuFind\Config\PluginManager::class,
+            new \VuFind\Config\PluginManager($container)
         );
         $formatter = $factory($container, RecordDataFormatter::class);
 
@@ -337,7 +338,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 $value,
                 trim(
                     preg_replace(
-                        '/\s+/', ' ',
+                        '/\s+/',
+                        ' ',
                         strip_tags($this->findResult($key, $results)['value'])
                     )
                 )
@@ -346,12 +348,14 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         // Check for exact markup in representative example:
         $this->assertEquals(
-            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>', $this->findResult('Language', $results)['value']
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
+            $this->findResult('Language', $results)['value']
         );
 
         // Check for context in Building:
         $this->assertEquals(
-            ['foo' => 1], $this->findResult('Building', $results)['context']
+            ['foo' => 1],
+            $this->findResult('Building', $results)['context']
         );
     }
 }

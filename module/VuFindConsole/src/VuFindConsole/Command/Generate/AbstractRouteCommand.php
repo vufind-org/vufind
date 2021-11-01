@@ -56,7 +56,9 @@ abstract class AbstractRouteCommand extends AbstractCommand
      * @param string|null    $name     The name of the command; passing null
      * means it must be set in configure()
      */
-    public function __construct(GeneratorTools $tools, RouteGenerator $routeGen,
+    public function __construct(
+        GeneratorTools $tools,
+        RouteGenerator $routeGen,
         $name = null
     ) {
         $this->routeGenerator = $routeGen;

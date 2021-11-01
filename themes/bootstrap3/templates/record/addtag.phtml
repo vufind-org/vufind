@@ -4,7 +4,7 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-      . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+      . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
       . '<li class="active">' . $this->transEsc('Add Tag') . '</li>';
 ?>
 <h2><?=$this->transEsc('Add Tags') ?></h2>

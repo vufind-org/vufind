@@ -44,7 +44,7 @@ use SlmLocale\Strategy\AbstractStrategy;
  */
 class LocaleDetectorParamStrategy extends AbstractStrategy
 {
-    const PARAM_NAME = 'mylang';
+    public const PARAM_NAME = 'mylang';
 
     /**
      * Attempt to detect the locale from a POST parameter.

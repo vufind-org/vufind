@@ -27,6 +27,8 @@
  */
 namespace VuFindTest\RecordDriver\Feature;
 
+use VuFind\RecordDriver\SolrMarc;
+
 /**
  * Record Driver Marc Advanced Trait Test Class
  *
@@ -41,21 +43,33 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Get a mock record driver from a MARC fixture.
+     *
+     * @param string $fixture Fixture filename
+     *
+     * @return SolrMarc
+     */
+    protected function getMockDriverFromFixture(string $fixture): SolrMarc
+    {
+        $record = new \VuFind\Marc\MarcReader($this->getFixture($fixture));
+        $obj = $this->getMockBuilder(SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->will($this->returnValue($record));
+        return $obj;
+    }
+
+    /**
      * Test methods in MarcAdvancedTrait.
      *
      * Note that some methods are covered by the other tests.
      *
      * @return void
      */
-    public function testMarcAdvancedTrait()
+    public function testMarcAdvancedTrait(): void
     {
-        $xml = $this->getFixture('marc/marctraits.xml');
-        $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
 
         $this->assertEquals(['Classified.'], $obj->getAccessRestrictions());
         $this->assertEquals(['VuFind Golden Award, 2020'], $obj->getAwards());
@@ -66,21 +80,26 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(['Finding aid available'], $obj->getFindingAids());
         $this->assertEquals(
-            ['General notes here.', 'Translation.'], $obj->getGeneralNotes()
+            ['General notes here.', 'Translation.'],
+            $obj->getGeneralNotes()
         );
         $this->assertEquals(
-            ['2020', '2020'], $obj->getHumanReadablePublicationDates()
+            ['2020', '2020'],
+            $obj->getHumanReadablePublicationDates()
         );
         $this->assertEquals(
-            ['Place :', 'Location :'], $obj->getPlacesOfPublication()
+            ['Place :', 'Location :'],
+            $obj->getPlacesOfPublication()
         );
         $this->assertEquals(['00:20:10', '01:30:55'], $obj->getPlayingTimes());
         $this->assertEquals(['Producer: VuFind'], $obj->getProductionCredits());
         $this->assertEquals(
-            ['Frequency varies, 2020-'], $obj->getPublicationFrequency()
+            ['Frequency varies, 2020-'],
+            $obj->getPublicationFrequency()
         );
         $this->assertEquals(
-            ['Merged with several branches'], $obj->getRelationshipNotes()
+            ['Merged with several branches'],
+            $obj->getRelationshipNotes()
         );
         $this->assertEquals(
             [
@@ -110,7 +129,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['(FOO)123', '(Baz)456'], $obj->getConsortialIDs());
         $this->assertEquals('ismn', $obj->getCleanISMN());
         $this->assertEquals(
-            ['nbn' => 'NBN12', 'source' => 'NB'], $obj->getCleanNBN()
+            ['nbn' => 'NBN12', 'source' => 'NB'],
+            $obj->getCleanNBN()
         );
         $marc21Xml = $obj->getXML('marc21');
         $this->assertStringStartsWith(
@@ -122,7 +142,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertStringContainsString('<leader>', $marc21Xml);
         $this->assertEquals(
-            1, substr_count($marc21Xml, '<leader>00000cam a22000004i 4500</leader>')
+            1,
+            substr_count($marc21Xml, '<leader>00000cam a22000004i 4500</leader>')
         );
         $this->assertEquals(2, substr_count($marc21Xml, '<controlfield '));
         $this->assertEquals(52, substr_count($marc21Xml, '<datafield '));
@@ -145,19 +166,24 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test missing ISMN case.
+     *
+     * @return void
+     */
+    public function testMissingISMN(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/missingismn.xml');
+        $this->assertFalse($obj->getCleanISMN());
+    }
+
+    /**
      * Test alternative script methods in MarcAdvancedTrait.
      *
      * @return void
      */
-    public function testMarcAdvancedTraitAltScript()
+    public function testMarcAdvancedTraitAltScript(): void
     {
-        $xml = $this->getFixture('marc/altscript.xml');
-        $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
+        $obj = $this->getMockDriverFromFixture('marc/altscript.xml');
 
         $this->assertEquals(
             ['Русская народная поэзия : лирическая поэзия /'],

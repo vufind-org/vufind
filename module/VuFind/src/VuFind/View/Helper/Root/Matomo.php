@@ -127,7 +127,8 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      * @param \Laminas\Router\Http\TreeRouteStack  $router  Router
      * @param \Laminas\Http\PhpEnvironment\Request $request Request
      */
-    public function __construct(\Laminas\Config\Config $config,
+    public function __construct(
+        \Laminas\Config\Config $config,
         \Laminas\Router\Http\TreeRouteStack $router,
         \Laminas\Http\PhpEnvironment\Request $request
     ) {
@@ -205,7 +206,9 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string Tracking Code
      */
-    protected function trackCombinedSearch(Results $results, array $combinedResults
+    protected function trackCombinedSearch(
+        Results $results,
+        array $combinedResults
     ): string {
         $customData = 'lightbox' === $this->context
             ? $this->getLightboxCustomData()
@@ -554,7 +557,9 @@ EOT;
      *
      * @return string JavaScript Code Fragment
      */
-    protected function getTrackSearchCode(Results $results, array $customData
+    protected function getTrackSearchCode(
+        Results $results,
+        array $customData
     ): string {
         $escape = $this->getView()->plugin('escapejs');
         $params = $results->getParams();
@@ -578,8 +583,10 @@ EOT;
      *
      * @return string JavaScript Code Fragment
      */
-    protected function getTrackCombinedSearchCode(Results $results,
-        array $combinedResults, array $customData
+    protected function getTrackCombinedSearchCode(
+        Results $results,
+        array $combinedResults,
+        array $customData
     ): string {
         $escape = $this->getView()->plugin('escapejs');
         $params = $results->getParams();

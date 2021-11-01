@@ -112,7 +112,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                 'Catalog' => ['driver' => 'Demo']
             ],
             'Demo' => [
-                'Holdings' => [
+                'StaticHoldings' => [
                     $this->id => json_encode(
                         [
                         ['callnumber' => 'CallNumberOne', 'location' => 'Villanova'],
