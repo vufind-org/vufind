@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "741608e46364c8ef021367b1eb955f0f",
+    "content-hash": "24821ccc310176ff6bef4c6a0eb51bc9",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -5985,21 +5985,25 @@
         },
         {
             "name": "pear/validate",
-            "version": "v0.8.5",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Validate.git",
-                "reference": "d055541ee2d7165329d5e5b8e91907d7fae1cff2"
+                "reference": "157d3f69c1fa8910fc0580da553c0ca42426de31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Validate/zipball/d055541ee2d7165329d5e5b8e91907d7fae1cff2",
-                "reference": "d055541ee2d7165329d5e5b8e91907d7fae1cff2",
+                "url": "https://api.github.com/repos/pear/Validate/zipball/157d3f69c1fa8910fc0580da553c0ca42426de31",
+                "reference": "157d3f69c1fa8910fc0580da553c0ca42426de31",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=7.3.0"
             },
             "suggest": {
                 "pear/date": "Install optionally via your project's composer.json"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -6011,7 +6015,7 @@
                 "./"
             ],
             "license": [
-                "New BSD"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
@@ -6056,7 +6060,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Validate",
                 "source": "https://github.com/pear/Validate"
             },
-            "time": "2015-02-20T09:16:13+00:00"
+            "time": "2021-08-10T23:31:18+00:00"
         },
         {
             "name": "pear/validate_ispn",
@@ -11996,7 +12000,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ahand/mobileesp": 20
+        "ahand/mobileesp": 20,
+        "pear/validate": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
