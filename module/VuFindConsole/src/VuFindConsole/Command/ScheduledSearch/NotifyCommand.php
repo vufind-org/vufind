@@ -167,10 +167,17 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param string|null    $name            The name of the command; passing
      * null means it must be set in configure()
      */
-    public function __construct(HMAC $hmac, PhpRenderer $renderer,
-        ResultsManager $resultsManager, array $scheduleOptions, Config $mainConfig,
-        Mailer $mailer, SearchTable $searchTable, UserTable $userTable,
-        LocaleSettings $localeSettings, $name = null
+    public function __construct(
+        HMAC $hmac,
+        PhpRenderer $renderer,
+        ResultsManager $resultsManager,
+        array $scheduleOptions,
+        Config $mainConfig,
+        Mailer $mailer,
+        SearchTable $searchTable,
+        UserTable $userTable,
+        LocaleSettings $localeSettings,
+        $name = null
     ) {
         $this->hmac = $hmac;
         $this->renderer = $renderer;
@@ -337,7 +344,9 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         }
         $this->translator->setLocale($language);
         $this->addLanguageToTranslator(
-            $this->translator, $this->localeSettings, $language
+            $this->translator,
+            $this->localeSettings,
+            $language
         );
     }
 
@@ -453,7 +462,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                 'url' => $searchUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
                 'checkboxFilters' => array_filter(
-                    $params->getCheckboxFacets(), $selectedCheckboxes
+                    $params->getCheckboxFacets(),
+                    $selectedCheckboxes
                 ),
                 'filters' => $params->getFilterList(true),
                 'userInstitution' => $userInstitution

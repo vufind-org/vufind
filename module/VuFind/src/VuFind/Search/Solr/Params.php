@@ -125,7 +125,9 @@ class Params extends \VuFind\Search\Base\Params
      * @param \VuFind\Config\PluginManager $configLoader Config loader
      * @param HierarchicalFacetHelper      $facetHelper  Hierarchical facet helper
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader,
+    public function __construct(
+        $options,
+        \VuFind\Config\PluginManager $configLoader,
         HierarchicalFacetHelper $facetHelper = null
     ) {
         parent::__construct($options, $configLoader);
@@ -491,7 +493,8 @@ class Params extends \VuFind\Search\Base\Params
 
         // Spellcheck
         $backendParams->set(
-            'spellcheck', $this->getOptions()->spellcheckEnabled() ? 'true' : 'false'
+            'spellcheck',
+            $this->getOptions()->spellcheckEnabled() ? 'true' : 'false'
         );
 
         // Facets
@@ -596,7 +599,10 @@ class Params extends \VuFind\Search\Base\Params
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
         $filter = parent::formatFilterListEntry(
-            $field, $value, $operator, $translate
+            $field,
+            $value,
+            $operator,
+            $translate
         );
 
         $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();

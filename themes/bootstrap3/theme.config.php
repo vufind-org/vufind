@@ -24,6 +24,7 @@ return [
          *          - 1xx => vendor (third-party code)
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
+         * - position: 'header' (default) or 'footer'
          * - conditional: e.g. 'lt IE 10'
          *
          * Entries with neither priority nor load_after will be loaded after all
@@ -42,6 +43,8 @@ return [
         ['file' => 'lib/autocomplete.js', 'priority' => 220],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
+        ['file' => 'truncate.js', 'priority' => 330],
+        ['file' => 'trigger_print.js', 'priority' => 340],
     ],
     'less' => [
         'active' => false,
@@ -63,5 +66,42 @@ return [
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         ]
-    ]
+    ],
+    'icons' => [
+        'defaultSet' => 'FontAwesome',
+        'sets' => [
+            /**
+             * Define icon sets here.
+             *
+             * All sets need:
+             * - 'template': which template the icon renders with
+             * - 'src': the location of the relevant resource (font, css, images)
+             * - 'prefix': prefix to place before each icon name for convenience
+             *             (ie. fa fa- for FontAwesome, default "")
+             */
+            'FontAwesome' => [
+                'template' => 'font',
+                'prefix' => 'fa fa-',
+                // Right now, FontAwesome is bundled into compiled.css; when we no
+                // longer globally rely on FA (by managing all icons through the
+                // helper), we should change this to 'vendor/font-awesome.min.css'
+                // so it only loads conditionally when icons are used.
+                'src' => 'compiled.css',
+            ],
+        ],
+        'aliases' => [
+            /**
+             * Icons can be assigned or overriden here
+             *
+             * Format: 'icon' => [set:]icon[:extra_classes]
+             * Icons assigned without set will use the defaultSet.
+             * In order to specify extra CSS classes, you must also specify a set.
+             *
+             * All of the items below have been specified with FontAwesome to allow
+             * for a strong inheritance safety net but this is not required.
+             */
+            // UI
+            'spinner' => 'FontAwesome:spinner:icon--spin',
+        ],
+    ],
 ];

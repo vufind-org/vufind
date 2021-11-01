@@ -255,6 +255,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) while creating a
      * new account.
      *
+     * @depends       testAddRecordToFavoritesNewAccount
      * @retryCallback removeUsername2
      *
      * @return void
@@ -270,7 +271,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'blargasaurus']
+            $page,
+            ['username' => 'username2', 'email' => 'blargasaurus']
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCssAndSetValue($page, '#account_email', 'username2@ignore.com');
@@ -281,7 +283,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#account_firstname');
         // Correct
         $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'username2@ignore.com']
+            $page,
+            ['username' => 'username2', 'email' => 'username2@ignore.com']
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -374,7 +377,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) using an existing
      * account that is already logged in.
      *
-     * @depends testAddSearchItemToFavoritesNewAccount
+     * @depends testAddSearchItemToFavoritesLogin
      *
      * @return void
      */

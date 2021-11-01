@@ -4,7 +4,7 @@
     <?php foreach ($results as $driver): ?>
       <li class="list-group-item catalog-result">
         <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
-        <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
           <?=$this->record($driver)->getTitleHtml()?>
         </a>
         <?php $summDate = $driver->getPublicationDates(); ?>

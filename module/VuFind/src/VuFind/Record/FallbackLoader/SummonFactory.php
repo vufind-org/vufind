@@ -58,16 +58,17 @@ class SummonFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backendManager = $container->get(\VuFind\Search\BackendManager::class);
         return new $requestedName(
             $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
-            $backendManager->get('Summon')
+            $container->get(\VuFindSearch\Service::class)
         );
     }
 }

@@ -9,7 +9,7 @@ VuFind.combinedSearch = (function CombinedSearch() {
   }
 
   function init(container, url) {
-    container.load(url, '', function containerLoad(responseText) {
+    VuFind.loadHtml(container, url, '', function containerLoad(responseText) {
       if (responseText.length === 0) {
         container.hide();
       } else {

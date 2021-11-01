@@ -391,10 +391,10 @@ HERE;
                 $transList[] = ['duedate' => $due_date,
                                      'id' => $row['bib_id']];
             }
-            return $transList;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $transList;
     }
 
     /**
@@ -508,10 +508,10 @@ HERE;
                                     'expire' => $exp_time,
                                     'create' => $req_time];
             }
-            return $holdList;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**
@@ -562,12 +562,11 @@ HERE;
                     'group' => $row['usrgroup']
                 ];
                 return $patron;
-            } else {
-                return null;
             }
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return null;
     }
 
     /**
@@ -690,10 +689,10 @@ HERE;
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $items['results'][]['id'] = $row['id'];
             }
-            return $items;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        return $items;
     }
 
     /**
@@ -706,9 +705,9 @@ HERE;
      */
     public function getFunds()
     {
-        /*
-        $list = array();
+        $list = [];
 
+        /* TODO:
         $sql = "";
 
         try {
@@ -720,9 +719,9 @@ HERE;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
+        */
 
         return $list;
-        */
     }
 
     /**

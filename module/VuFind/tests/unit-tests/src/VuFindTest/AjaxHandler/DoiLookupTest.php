@@ -71,7 +71,10 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return DoiLinkerInterface
      */
-    protected function getMockPlugin($value, $times = 'once', $doi = 'bar',
+    protected function getMockPlugin(
+        $value,
+        $times = 'once',
+        $doi = 'bar',
         $expected = ['bar']
     ) {
         $mockPlugin = $this->container

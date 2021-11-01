@@ -58,7 +58,9 @@ class AlphaBrowseFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
@@ -66,7 +68,6 @@ class AlphaBrowseFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
-            $container->get(\VuFind\Search\BackendManager::class)->get('Solr'),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get(\VuFind\Record\Router::class)
         );

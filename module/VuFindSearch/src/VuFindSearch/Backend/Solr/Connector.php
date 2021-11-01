@@ -118,7 +118,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @param string       $uniqueKey Solr field used to store unique identifier
      * @param HttpClient   $client    HTTP client (optional)
      */
-    public function __construct($url, HandlerMap $map, $uniqueKey = 'id',
+    public function __construct(
+        $url,
+        HandlerMap $map,
+        $uniqueKey = 'id',
         HttpClient $client = null
     ) {
         $this->url = $url;
@@ -239,7 +242,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @return string Response body
      */
-    public function write(DocumentInterface $document, $handler = 'update',
+    public function write(
+        DocumentInterface $document,
+        $handler = 'update',
         ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
@@ -373,7 +378,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
      * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
      */
-    protected function trySolrUrls($method, $urlSuffix, $callback = null,
+    protected function trySolrUrls(
+        $method,
+        $urlSuffix,
+        $callback = null,
         bool $cacheable = false
     ) {
         // This exception should never get thrown; it's just a safety in case
@@ -447,6 +455,18 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Extract the Solr core from the connector's URL.
+     *
+     * @return string
+     */
+    public function getCore(): string
+    {
+        $url = rtrim($this->getUrl(), '/');
+        $parts = explode('/', $url);
+        return array_pop($parts);
+    }
+
+    /**
      * Send request the SOLR and return the response.
      *
      * @param HttpClient $client Prepared HTTP client
@@ -468,9 +488,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         $this->debug(
             sprintf(
-                '<= %s %s', $response->getStatusCode(),
+                '<= %s %s',
+                $response->getStatusCode(),
                 $response->getReasonPhrase()
-            ), ['time' => $time]
+            ),
+            ['time' => $time]
         );
 
         if (!$response->isSuccess()) {

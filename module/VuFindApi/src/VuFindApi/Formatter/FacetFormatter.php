@@ -123,7 +123,8 @@ class FacetFormatter extends BaseFormatter
                     if (!empty($item)) {
                         $resultValue[$key]
                             = $this->buildFacetValues(
-                                $item, $filters
+                                $item,
+                                $filters
                             );
                     }
                 } else {
@@ -174,7 +175,9 @@ class FacetFormatter extends BaseFormatter
             foreach ($facetItems['list'] as &$item) {
                 $href = !$item['isApplied']
                     ? $urlHelper->addFacet(
-                        $facetKey, $item['value'], $item['operator']
+                        $facetKey,
+                        $item['value'],
+                        $item['operator']
                     )->getParams(false) : $urlHelper->getParams(false);
                 $item['href'] = $href;
             }

@@ -2,7 +2,7 @@
 /*exported setUpHoldRequestForm, setupHoldEditForm */
 function setUpHoldRequestForm(recordId) {
   var $select = $('#pickUpLocation');
-  var $icon = $('#pickUpLocationLabel i');
+  var $icon = $('#pickUpLocationLabel .loading-icon');
   var $emptyOption = $("#pickUpLocation option[value='']");
   var $noResults = $('<span/>').text(VuFind.translate('No pickup locations available'));
   $select.parent().append($noResults);

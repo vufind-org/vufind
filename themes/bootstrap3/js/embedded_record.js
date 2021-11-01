@@ -54,9 +54,7 @@ VuFind.register('embedded', function embedded() {
       urlroot = source.charAt(0).toUpperCase() + source.slice(1).toLowerCase() + 'Record';
     }
     if (!$tab.hasClass('loaded')) {
-      $('#' + tabid + '-content').html(
-        '<i class="fa fa-spinner fa-spin"></i> ' + VuFind.translate('loading') + '...'
-      );
+      $('#' + tabid + '-content').html(VuFind.loading());
       var tab = tabid.split('_');
       tab = tab[0];
       $.ajax({
@@ -66,7 +64,7 @@ VuFind.register('embedded', function embedded() {
         success: function ajaxTabSuccess(data) {
           var html = data.trim();
           if (html.length > 0) {
-            $('#' + tabid + '-content').html(html);
+            $('#' + tabid + '-content').html(VuFind.updateCspNonce(html));
             registerTabEvents();
           } else {
             $('#' + tabid + '-content').html(VuFind.translate('collection_empty'));
@@ -105,8 +103,7 @@ VuFind.register('embedded', function embedded() {
       longNode = $('<div class="long-view collapse"></div>');
       // Add loading status
       shortNode
-        .before('<div class="loading hidden"><i class="fa fa-spin fa-spinner"></i> '
-                + VuFind.translate('loading') + '...</div>')
+        .before('<div class="loading hidden">' + VuFind.loading() + '</div>')
         .before(longNode);
       longNode.on('show.bs.collapse', function embeddedExpand() {
         $link.addClass('expanded');
@@ -137,7 +134,7 @@ VuFind.register('embedded', function embedded() {
           }),
           success: function getRecordDetailsSuccess(response) {
             // Insert tabs html
-            longNode.html(response.data.html);
+            longNode.html(VuFind.updateCspNonce(response.data.html));
             // Hide loading
             loadingNode.addClass('hidden');
             longNode.collapse('show');

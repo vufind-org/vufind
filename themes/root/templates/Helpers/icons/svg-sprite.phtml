@@ -1,0 +1,6 @@
+<?php
+    $className = trim('icon--svg ' . ($this->extra['class'] ?? ''));
+?>
+<svg class="<?=$className ?>"<?=$this->attrs ?> aria-hidden="true">
+    <use xlink:href="<?=$this->imageLink($src) ?>#<?=$this->icon ?>"></use>
+</svg>

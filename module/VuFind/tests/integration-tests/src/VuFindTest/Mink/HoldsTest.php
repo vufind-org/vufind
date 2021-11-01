@@ -111,7 +111,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function submitCatalogLoginForm(Element $page, string $username,
+    protected function submitCatalogLoginForm(
+        Element $page,
+        string $username,
         string $password
     ): void {
         $this->findCss($page, '#profile_cat_username')->setValue($username);
@@ -129,7 +131,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function placeHoldAndGoToHoldsScreen(Element $page, array $extras = []
+    protected function placeHoldAndGoToHoldsScreen(
+        Element $page,
+        array $extras = []
     ): void {
         // Open the "place hold" dialog
         $this->clickCss($page, 'a.placehold');
@@ -155,7 +159,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Make sure we arrived where we expected to:
         $this->assertEquals(
-            'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
+            'Your Holds and Recalls',
+            $this->findCss($page, 'h2')->getText()
         );
     }
 
@@ -569,7 +574,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'u2@vufind.org']
+            $page,
+            ['username' => 'username2', 'email' => 'u2@vufind.org']
         );
         $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
@@ -592,7 +598,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Make sure we arrived where we expected to:
         $this->assertEquals(
-            'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
+            'Your Holds and Recalls',
+            $this->findCss($page, 'h2')->getText()
         );
     }
 

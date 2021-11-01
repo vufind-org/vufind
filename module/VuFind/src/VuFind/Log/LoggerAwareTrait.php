@@ -92,7 +92,10 @@ trait LoggerAwareTrait
      *
      * @return void
      */
-    protected function log($level, $message, array $context = [],
+    protected function log(
+        $level,
+        $message,
+        array $context = [],
         $prependClass = false
     ) {
         if ($this->logger) {

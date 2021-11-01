@@ -29,6 +29,7 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Validator\Csrf;
@@ -45,6 +46,8 @@ use VuFind\Validator\Csrf;
  */
 class HoldsController extends AbstractBase
 {
+    use \VuFind\Cache\CacheTrait;
+
     /**
      * CSRF validator
      *
@@ -55,13 +58,20 @@ class HoldsController extends AbstractBase
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm   Service locator
-     * @param Csrf                    $csrf CSRF validator
+     * @param ServiceLocatorInterface $sm    Service locator
+     * @param Csrf                    $csrf  CSRF validator
+     * @param StorageInterface        $cache Cache
      */
-    public function __construct(ServiceLocatorInterface $sm, Csrf $csrf)
-    {
+    public function __construct(
+        ServiceLocatorInterface $sm,
+        Csrf $csrf,
+        StorageInterface $cache
+    ) {
         parent::__construct($sm);
         $this->csrf = $csrf;
+        $this->setCacheStorage($cache);
+        // Cache the data related to holds for up to 10 minutes:
+        $this->cacheLifetime = 600;
     }
 
     /**
@@ -121,7 +131,10 @@ class HoldsController extends AbstractBase
         foreach ($result as $current) {
             // Add cancel details if appropriate:
             $current = $this->holds()->addCancelDetails(
-                $catalog, $current, $cancelStatus, $patron
+                $catalog,
+                $current,
+                $cancelStatus,
+                $patron
             );
             if ($cancelStatus && $cancelStatus['function'] !== 'getCancelHoldLink'
                 && isset($current['cancel_details'])
@@ -131,23 +144,33 @@ class HoldsController extends AbstractBase
             }
 
             // Add update details if appropriate
-            if (empty($holdConfig['updateFields'])) {
-                if (isset($current['updateDetails'])) {
+            if (isset($current['updateDetails'])) {
+                if (empty($holdConfig['updateFields'])
+                    || '' === $current['updateDetails']
+                ) {
                     unset($current['updateDetails']);
+                } else {
+                    $view->updateForm = true;
+                    $this->holds()->rememberValidId($current['updateDetails']);
                 }
-            } elseif (isset($current['updateDetails'])
-                && '' !== $current['updateDetails']
-            ) {
-                $view->updateForm = true;
-                $this->holds()->rememberValidId($current['updateDetails']);
             }
 
             $driversNeeded[] = $current;
         }
+        // Cache the current list of requests for editing:
+        $this->putCachedData(
+            $this->getCacheId($patron, 'holds'),
+            $driversNeeded
+        );
 
         // Get List of PickUp Libraries based on patron's home library
         try {
-            $view->pickup = $catalog->getPickUpLocations($patron);
+            $pickupCacheId = $this->getCacheId($patron, 'pickup');
+            $view->pickup = $this->getCachedData($pickupCacheId);
+            if (null === $view->pickup) {
+                $view->pickup = $catalog->getPickUpLocations($patron);
+                $this->putCachedData($pickupCacheId, $view->pickup);
+            }
         } catch (\Exception $e) {
             // Do nothing; if we're unable to load information about pickup
             // locations, they are not supported and we should ignore them.
@@ -254,6 +277,7 @@ class HoldsController extends AbstractBase
                 'gatheredDetails' => $gatheredDetails,
                 'pickupLocations' => $pickupLocationInfo['pickupLocations'],
                 'conflictingPickupLocations' => $pickupLocationInfo['differences'],
+                'helpTextHtml' => $holdConfig['updateHelpText'],
             ]
         );
 
@@ -272,11 +296,15 @@ class HoldsController extends AbstractBase
      * @return array An array of any common pickup locations and a flag
      * indicating any differences between them.
      */
-    protected function getPickupLocationsForEdit(array $patron, array $selectedIds,
+    protected function getPickupLocationsForEdit(
+        array $patron,
+        array $selectedIds,
         int $checkLimit = 0
     ): ?array {
         $catalog = $this->getILS();
-        $holds = $catalog->getMyHolds($patron);
+        // Get holds from cache if available:
+        $holds = $this->getCachedData($this->getCacheId($patron, 'holds'))
+            ?? $catalog->getMyHolds($patron);
         $checks = 0;
         $pickupLocations = [];
         $differences = false;
@@ -332,8 +360,10 @@ class HoldsController extends AbstractBase
      *
      * @return null|array Array of fields to update or null on validation error
      */
-    protected function getUpdateFieldsFromGatheredDetails(array $holdConfig,
-        array $gatheredDetails, array $pickupLocations
+    protected function getUpdateFieldsFromGatheredDetails(
+        array $holdConfig,
+        array $gatheredDetails,
+        array $pickupLocations
     ): ?array {
         $validPickup = true;
         $selectedPickupLocation = $gatheredDetails['pickUpLocation'] ?? '';
@@ -417,5 +447,19 @@ class HoldsController extends AbstractBase
             'hold_update',
             $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
+    }
+
+    /**
+     * Get a unique cache id for a patron
+     *
+     * @param array  $patron Patron
+     * @param string $type   Type of cached data
+     *
+     * @return string
+     */
+    protected function getCacheId(array $patron, string $type): string
+    {
+        return "$type::" . $patron['id'] . '::'
+            . ($patron['cat_id'] ?? $patron['cat_username'] ?? '');
     }
 }

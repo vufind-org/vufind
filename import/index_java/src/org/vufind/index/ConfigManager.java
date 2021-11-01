@@ -109,9 +109,10 @@ public class ConfigManager
      */
     private String sanitizeConfigSetting(String str)
     {
-        // Drop comments if necessary:
+        // Drop comments if necessary; if the semi-colon is inside quotes, leave
+        // it alone. TODO: handle complex cases with comment AND quoted semi-colon
         int pos = str.indexOf(';');
-        if (pos >= 0) {
+        if (pos >= 0 && !str.matches("\"[^\"]*;[^\"]*\"")) {
             str = str.substring(0, pos).trim();
         }
 
@@ -158,6 +159,24 @@ public class ConfigManager
             }
         }
         return configCache.get(filename);
+    }
+
+    /**
+     * Get a section from a VuFind configuration file and sanitize all the values.
+     * @param filename configuration file name
+     * @param section section name within the file
+     */
+    public Map<String, String> getSanitizedConfigSection(String filename, String section)
+    {
+        Map<String, String> retVal = getConfigSection(filename, section);
+        if (retVal == null) {
+            logger.warn(section + " section missing from " + filename);
+            return new ConcurrentHashMap<String, String>();
+        }
+        for (String key : retVal.keySet()) {
+            retVal.put(key, sanitizeConfigSetting(retVal.get(key)));
+        }
+        return retVal;
     }
 
     /**

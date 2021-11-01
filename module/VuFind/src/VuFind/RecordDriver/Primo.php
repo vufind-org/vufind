@@ -199,7 +199,7 @@ class Primo extends DefaultRecord
     /**
      * Get the language associated with the record.
      *
-     * @return String
+     * @return array
      */
     public function getLanguages()
     {

@@ -65,7 +65,9 @@ class ExtendedIniReader
                     // Trim outermost double quotes off the value if present:
                     if (isset($parts[1])) {
                         $value = preg_replace(
-                            '/^\"?(.*?)\"?$/', '$1', trim($parts[1])
+                            '/^\"?(.*?)\"?$/',
+                            '$1',
+                            trim($parts[1])
                         );
 
                         // Store the key/value pair (allow empty values -- sometimes
@@ -74,7 +76,9 @@ class ExtendedIniReader
                         // with a zero-width non-joiner):
                         if ($convertBlanks && $value === '') {
                             $value = html_entity_decode(
-                                '&#x200C;', ENT_NOQUOTES, 'UTF-8'
+                                '&#x200C;',
+                                ENT_NOQUOTES,
+                                'UTF-8'
                             );
                         }
                         $data[$key] = $value;

@@ -211,8 +211,10 @@ class Initializer
         $selectedUI = null;
         if (isset($request)) {
             $selectedUI = $request->getPost()->get(
-                'ui', $request->getQuery()->get(
-                    'ui', $request->getCookie()->ui ?? null
+                'ui',
+                $request->getQuery()->get(
+                    'ui',
+                    $request->getCookie()->ui ?? null
                 )
             );
         }
@@ -372,7 +374,7 @@ class Initializer
 
         // Inject the path stack generated above into the resolver:
         $resolver = $this->serviceManager->get(TemplatePathStack::class);
-        $resolver->setPaths($templatePathStack);
+        $resolver->addPaths($templatePathStack);
 
         // Add theme specific language files for translation
         $this->updateTranslator($themes);

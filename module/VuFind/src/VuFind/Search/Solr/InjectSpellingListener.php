@@ -93,10 +93,14 @@ class InjectSpellingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
         );
     }
 
@@ -113,7 +117,7 @@ class InjectSpellingListener
         if ($command->getContext() !== 'search') {
             return $event;
         }
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
                 // Set spelling parameters when enabled:
                 $sc = $params->get('spellcheck');
@@ -129,7 +133,8 @@ class InjectSpellingListener
                     reset($this->dictionaries);
                     $params->set('spellcheck', 'true');
                     $params->set(
-                        'spellcheck.dictionary', current($this->dictionaries)
+                        'spellcheck.dictionary',
+                        current($this->dictionaries)
                     );
 
                     // Turn on spellcheck.q generation in query builder:
@@ -158,16 +163,18 @@ class InjectSpellingListener
         }
 
         // Merge spelling details from extra dictionaries:
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $result = $command->getResult();
             $params = $command->getSearchParameters();
             $spellcheckQuery = $params->get('spellcheck.q');
             if (!empty($spellcheckQuery)) {
                 $this->aggregateSpellcheck(
-                    $result->getSpellcheck(), end($spellcheckQuery)
+                    $result->getSpellcheck(),
+                    end($spellcheckQuery)
                 );
             }
         }
+        return $event;
     }
 
     /**

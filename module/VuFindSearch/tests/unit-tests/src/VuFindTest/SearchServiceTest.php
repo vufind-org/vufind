@@ -635,11 +635,36 @@ class SearchServiceTest extends TestCase
         $service = new Service();
         $em->expects($this->any())->method('triggerUntil')
             ->with(
-                $this->anything(), $this->equalTo('resolve'),
+                $this->anything(),
+                $this->equalTo('resolve'),
                 $this->equalTo($service)
             )->will($this->returnValue($mockResponse));
         $service->setEventManager($em);
         $service->retrieve('junk', 'foo');
+    }
+
+    /**
+     * Test a failure to resolve using a command object.
+     *
+     * @return void
+     */
+    public function testFailedResolveWithCommand()
+    {
+        $this->expectException(\VuFindSearch\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Unable to resolve backend: getInfo, EDS');
+
+        $mockResponse = $this->createMock(\Laminas\EventManager\ResponseCollection::class);
+        $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
+        $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $service = new Service();
+        $em->expects($this->any())->method('triggerUntil')
+            ->with(
+                $this->anything(),
+                $this->equalTo('resolve'),
+                $this->equalTo($service)
+            )->will($this->returnValue($mockResponse));
+        $service->setEventManager($em);
+        $service->invoke(new \VuFindSearch\Backend\EDS\Command\GetInfoCommand());
     }
 
     // Internal API
@@ -648,7 +673,8 @@ class SearchServiceTest extends TestCase
      * Create a mock backend.
      */
     protected function createMockBackend(
-        $class = \VuFindSearch\Backend\BackendInterface::class, $identifier = 'foo'
+        $class = \VuFindSearch\Backend\BackendInterface::class,
+        $identifier = 'foo'
     ) {
         $backend = $this->createMock($class);
         $backend->method('getIdentifier')->will($this->returnValue($identifier));
@@ -676,7 +702,12 @@ class SearchServiceTest extends TestCase
     protected function getService()
     {
         $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
-        $service = new SearchServiceMock($this->getBackend());
+        $service = $this->getMockBuilder(Service::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['resolve'])
+            ->getMock();
+        $service->expects($this->any())->method('resolve')
+            ->will($this->returnValue($this->getBackend()));
         $service->setEventManager($em);
         return $service;
     }
@@ -724,39 +755,4 @@ abstract class TestBackendClassForSimilar
 abstract class TestClassForRandomInterface
 implements BackendInterface, RandomInterface
 {
-}
-
-/**
- * Mock class to stub 'resolve'
- */
-class SearchServiceMock extends \VuFindSearch\Service
-{
-    /**
-     * Service backend
-     *
-     * @var Service
-     */
-    protected $backend;
-
-    /**
-     * Constructor.
-     *
-     * @param Service $backendMock Return value for resolve
-     *
-     * @return void
-     */
-    public function __construct($backendMock)
-    {
-        $this->backend = $backendMock;
-    }
-
-    /**
-     * Generate a fake service.
-     *
-     * @return Service
-     */
-    protected function resolve($backend, $args)
-    {
-        return $this->backend;
-    }
 }

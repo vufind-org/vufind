@@ -90,10 +90,14 @@ class InjectHighlightingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
         );
     }
 
@@ -110,7 +114,7 @@ class InjectHighlightingListener
         if ($command->getContext() != 'search') {
             return $event;
         }
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
                 // Set highlighting parameters unless explicitly disabled:
                 $hl = $params->get('hl');
@@ -145,7 +149,7 @@ class InjectHighlightingListener
         }
 
         // Inject highlighting details into record objects:
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $result = $command->getResult();
             $hlDetails = $result->getHighlighting();
             foreach ($result->getRecords() as $record) {
@@ -155,5 +159,6 @@ class InjectHighlightingListener
                 }
             }
         }
+        return $event;
     }
 }

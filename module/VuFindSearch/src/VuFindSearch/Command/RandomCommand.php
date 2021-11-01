@@ -48,43 +48,79 @@ use VuFindSearch\Query\QueryInterface;
 class RandomCommand extends CallMethodCommand
 {
     /**
+     * Search query.
+     *
+     * @var QueryInterface
+     */
+    protected $query;
+
+    /**
+     * Search limit.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
      * RandomCommand constructor.
      *
-     * @param string         $backend Search backend identifier
-     * @param QueryInterface $query   Search query
-     * @param int            $limit   Search limit
-     * @param ?ParamBag      $params  Search backend parameters
+     * @param string         $backendId Search backend identifier
+     * @param QueryInterface $query     Search query
+     * @param int            $limit     Search limit
+     * @param ?ParamBag      $params    Search backend parameters
      */
-    public function __construct(string $backend, QueryInterface $query, int $limit,
+    public function __construct(
+        string $backendId,
+        QueryInterface $query,
+        int $limit,
         ?ParamBag $params = null
     ) {
+        $this->query = $query;
+        $this->limit = $limit;
         parent::__construct(
-            $backend, RandomInterface::class, 'random', [$query, $limit], $params
+            $backendId,
+            RandomInterface::class,
+            'random',
+            $params
         );
+    }
+
+    /**
+     * Return search backend interface method arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [
+            $this->getQuery(),
+            $this->getLimit(),
+            $this->getSearchParameters()
+        ];
     }
 
     /**
      * Execute command on backend.
      *
-     * @param BackendInterface $backendInstance Backend instance
+     * @param BackendInterface $backend Backend
      *
-     * @return CommandInterface
+     * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance): CommandInterface
+    public function execute(BackendInterface $backend): CommandInterface
     {
         // If the backend implements the RetrieveRandomInterface, we can load
         // all the records at once.
-        if ($backendInstance instanceof RandomInterface) {
-            return parent::execute($backendInstance);
+        if ($backend instanceof RandomInterface) {
+            return parent::execute($backend);
         }
 
         // Otherwise, we need to load them one at a time and aggregate them.
 
-        $query = $this->args[0];
-        $limit = $this->args[1];
+        $query = $this->getQuery();
+        $limit = $this->getLimit();
 
         // offset/limit of 0 - we don't need records, just count
-        $results = $backendInstance->search($query, 0, 0, $this->params);
+        $results = $backend->search($query, 0, 0, $this->params);
         $total_records = $results->getTotal();
 
         if (0 === $total_records) {
@@ -92,7 +128,7 @@ class RandomCommand extends CallMethodCommand
             $response = $results;
         } elseif ($total_records < $limit) {
             // Result set smaller than limit? Get everything and shuffle:
-            $response = $backendInstance->search($query, 0, $limit, $this->params);
+            $response = $backend->search($query, 0, $limit, $this->params);
             $response->shuffle();
         } else {
             // Default case: retrieve n random records:
@@ -105,8 +141,11 @@ class RandomCommand extends CallMethodCommand
                     $nextIndex = rand(0, $total_records - 1);
                 }
                 $retrievedIndexes[] = $nextIndex;
-                $currentBatch = $backendInstance->search(
-                    $query, $nextIndex, 1, $this->params
+                $currentBatch = $backend->search(
+                    $query,
+                    $nextIndex,
+                    1,
+                    $this->params
                 );
                 if (!$response) {
                     $response = $currentBatch;
@@ -116,9 +155,26 @@ class RandomCommand extends CallMethodCommand
             }
         }
 
-        $this->result = $response;
+        return $this->finalizeExecution($response);
+    }
 
-        $this->executed = true;
-        return $this;
+    /**
+     * Return search query.
+     *
+     * @return QueryInterface
+     */
+    public function getQuery(): QueryInterface
+    {
+        return $this->query;
+    }
+
+    /**
+     * Return search limit.
+     *
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
     }
 }

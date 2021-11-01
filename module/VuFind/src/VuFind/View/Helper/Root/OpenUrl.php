@@ -90,8 +90,11 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
      * @param PluginManager          $pluginManager Resolver plugin manager
      * @param \Laminas\Config\Config $config        VuFind OpenURL config
      */
-    public function __construct(Context $context, $openUrlRules,
-        PluginManager $pluginManager, $config = null
+    public function __construct(
+        Context $context,
+        $openUrlRules,
+        PluginManager $pluginManager,
+        $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;

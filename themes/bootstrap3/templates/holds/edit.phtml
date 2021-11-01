@@ -8,6 +8,9 @@
     . '<li class="active">' . $this->transEsc('hold_edit_title') . '</li>';
 ?>
 <h2><?=$this->transEsc('hold_edit_title')?></h2>
+<?php if ($this->helpTextHtml): ?>
+  <p class="helptext"><?=$this->helpTextHtml?></p>
+<?php endif; ?>
 
 <form action="<?=$this->url('holds-edit')?>" class="form-edit-holds" method="post" name="editHolds">
   <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">

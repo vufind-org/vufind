@@ -59,14 +59,14 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backend = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('BrowZine');
-        return new $requestedName($backend->getConnector());
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }

@@ -71,7 +71,8 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function __construct(Connector $connector,
+    public function __construct(
+        Connector $connector,
         RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
@@ -91,7 +92,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         if (null === $params) {
@@ -160,6 +164,19 @@ class Backend extends AbstractBackend
             $this->collectionFactory = new Response\XML\RecordCollectionFactory();
         }
         return $this->collectionFactory;
+    }
+
+    /**
+     * Get holdings information for the specified record.
+     *
+     * @param string $id Record to obtain holdings for.
+     *
+     * @throws \Exception
+     * @return \SimpleXMLElement
+     */
+    public function getHoldings($id)
+    {
+        return $this->getConnector()->getHoldings($id);
     }
 
     /**

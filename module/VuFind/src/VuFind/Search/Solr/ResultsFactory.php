@@ -57,7 +57,9 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         $solr = parent::__invoke($container, $requestedName, $options);

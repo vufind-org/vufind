@@ -188,14 +188,14 @@ a:hover .login-dropdown-caret {
 /* --- Sidebar --- */
 .sidebar {
   padding-top: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   font-size: $reduced-font-size;
   background-color: $light-gray;
 
   h1,h2,h3,h4 { margin-top: 0; }
 
   .facet-group {
-    margin-left: 1rem;
-    margin-right: 1rem;
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }
@@ -238,6 +238,11 @@ a:hover .login-dropdown-caret {
     max-height: 15px;
     margin-top: 5px;
   }
+
+  .more-btn, .less-btn {
+    border: 0;
+    padding: 0;
+  }
 }
 
 .facet .badge {
@@ -245,17 +250,6 @@ a:hover .login-dropdown-caret {
   max-height: 19px;
   line-height: .8;
   background-color: $sidebar-item-badge;
-}
-
-.sidebar.left,
-.sidebar.right {
-  padding-left: 0;
-  padding-right: 0;
-}
-.sidebar .checkbox-filter,
-.sidebar > h4 {
-  margin-left: 1rem;
-  margin-right: 1rem;
 }
 
 .jstree-facet {

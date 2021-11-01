@@ -58,7 +58,9 @@ class ManagerFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -66,7 +68,8 @@ class ManagerFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Config\PluginManager::class)->get('searches')
+            $container->get(\VuFind\Config\PluginManager::class)->get('searches'),
+            $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
         );
     }
 }

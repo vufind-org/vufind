@@ -76,7 +76,9 @@ trait StorageRetrievalRequestsTrait
 
         // Block invalid requests:
         $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
-            $driver->getUniqueID(), $gatheredDetails, $patron
+            $driver->getUniqueID(),
+            $gatheredDetails,
+            $patron
         );
         if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
             $this->flashMessenger()->addErrorMessage(
@@ -130,10 +132,11 @@ trait StorageRetrievalRequestsTrait
         }
 
         // Find and format the default required date:
-        $defaultRequired = $this->storageRetrievalRequests()
+        $defaultRequiredDate = $this->storageRetrievalRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequired);
+        $defaultRequiredDate
+            = $this->serviceLocator->get(\VuFind\Date\Converter::class)
+            ->convertToDisplayDate("U", $defaultRequiredDate);
         try {
             $defaultPickup
                 = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
@@ -142,18 +145,22 @@ trait StorageRetrievalRequestsTrait
         }
 
         $config = $this->getConfig();
-        $allowHomeLibrary = $config->Account->set_home_library ?? true;
+        $homeLibrary = ($config->Account->set_home_library ?? true)
+            ? $this->getUser()->home_library : '';
+        // helpText is only for backward compatibility:
+        $helpText = $helpTextHtml = $checkRequests['helpText'];
+
         $view = $this->createViewModel(
-            [
-                'gatheredDetails' => $gatheredDetails,
-                'pickup' => $pickup,
-                'defaultPickup' => $defaultPickup,
-                'homeLibrary' => $allowHomeLibrary
-                    ? $this->getUser()->home_library : '',
-                'extraFields' => $extraFields,
-                'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText'] ?? null
-            ]
+            compact(
+                'gatheredDetails',
+                'pickup',
+                'defaultPickup',
+                'homeLibrary',
+                'extraFields',
+                'defaultRequiredDate',
+                'helpText',
+                'helpTextHtml'
+            )
         );
         $view->setTemplate('record/storageretrievalrequest');
         return $view;
