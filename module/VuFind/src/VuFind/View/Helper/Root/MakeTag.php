@@ -107,7 +107,9 @@ class MakeTag extends AbstractHelper
 
         $escHTML = $escapeContent
             ? $this->getView()->plugin('escapeHtml')
-            : function ($str) { return $str; }; // no-op
+            : function ($str) {
+                return $str;
+            }; // no-op
 
         $anchor .= '>' . $escHTML($innerHTML) . '</' . $tagName . '>';
         return $anchor;
