@@ -26,23 +26,21 @@
 
 /* --- Icons --- */
 .jstree-ocl::before {
-  float: left;
-  width: 20px;
-  margin-top: 0.25rem;
-  padding: 0;
+  display: inline-block;
+  width: 1.5rem;
   font-style: normal;
   text-align: center;
   text-decoration: inherit;
   cursor: pointer;
   speak: none;
 }
-.jstree-open > .jstree-ocl:before {
+.jstree-open > .jstree-ocl::before {
   content: "\25BD"; // Unicode white down-pointing triangle
 }
-.jstree-closed > .jstree-ocl:before {
+.jstree-closed > .jstree-ocl::before {
   content: "\25B6"; // Unicode black right-pointing triangle
 }
-.jstree-leaf > .jstree-ocl:before {
+.jstree-leaf > .jstree-ocl::before {
   color: transparent;
   content: "\25B8"; // Unicode black right-pointing small triangle
 }
@@ -68,28 +66,11 @@
 }
 
 /* --- Look --- */
-.jstree-facet {
+.jstree-children {
   padding: 0;
-
-  .jstree-node.list-group-item {
-    padding: 0.25rem;
-  }
-
-  .jstree-node .facet {
-    padding: 2px 0;
-    border: 0;
-  }
-
-  .active > .jstree-anchor .facet {
-    padding-left: 2px;
-    color: $list-group-active-color;
-    background-color: $list-group-active-bg;
-  }
 }
-
 .jstree-node .jstree-children {
   padding-left: 1rem;
-  padding-right: 0;
 }
 
 .jstree-clicked,
@@ -105,10 +86,32 @@
   }
 }
 
-.jstree-node.active .badge,
-.jstree-node.active .badge .fa {
-  background-color: #fff;
-  color: $brand-primary;
+.jstree-facet {
+  padding: 0;
+
+  .jstree-ocl::before {
+    float: left;
+  }
+
+  .jstree-node.list-group-item {
+    padding: 0.5rem;
+  }
+
+  .jstree-node .facet {
+    padding: 2px 0;
+    border: 0;
+  }
+
+  .active > .jstree-anchor .facet {
+    padding-left: 2px;
+    color: $list-group-active-color;
+    background-color: $list-group-active-bg;
+  }
+  .jstree-node.active .badge,
+  .jstree-node.active .badge .fa {
+    background-color: #fff;
+    color: $brand-primary;
+  }
 }
 
 .hierarchy-tree,
@@ -127,6 +130,10 @@
   border: 0;
   border-bottom: 1px solid $list-group-border;
   border-radius: 0;
+}
+.jstree-node.list-group-item.active:hover,
+.jstree-node.list-group-item.active:focus {
+  border-color: $list-group-border;
 }
 
 /* --- Record --- */
@@ -171,10 +178,10 @@ body.rtl {
   .jstree-ocl::before {
     float: right;
   }
-  .jstree-closed > .jstree-ocl:before {
+  .jstree-closed > .jstree-ocl::before {
     content: "\25C4"; // Unicode black left-pointing triangle
   }
-  .jstree-leaf > .jstree-ocl:before {
+  .jstree-leaf > .jstree-ocl::before {
     content: "\25C2"; // Unicode black left-pointing small triangle
   }
   .jstree-facet .main.applied .fa-check {
