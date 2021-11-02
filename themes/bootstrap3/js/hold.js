@@ -15,7 +15,7 @@ function setUpHoldRequestForm(recordId) {
       $select.attr('disabled', 'disabled');
       return;
     }
-    $icon.addClass("fa fa-spinner fa-spin");
+    $icon.removeClass('hidden');
     var params = {
       method: 'getRequestGroupPickupLocations',
       id: recordId,
@@ -44,11 +44,11 @@ function setUpHoldRequestForm(recordId) {
           $select.hide();
           $noResults.show();
         }
-        $icon.removeClass("fa fa-spinner fa-spin");
+        $icon.addClass('hidden');
         $select.removeAttr('disabled');
       })
       .fail(function holdPickupLocationsFail(/*response*/) {
-        $icon.removeClass("fa fa-spinner fa-spin");
+        $icon.addClass('hidden');
         $select.removeAttr('disabled');
       });
   }).trigger('change');
