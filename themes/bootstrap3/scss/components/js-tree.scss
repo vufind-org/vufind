@@ -179,7 +179,7 @@ body.rtl {
     float: right;
   }
   .jstree-closed > .jstree-ocl::before {
-    content: "\25C4"; // Unicode black left-pointing triangle
+    content: "\25C0"; // Unicode black left-pointing triangle
   }
   .jstree-leaf > .jstree-ocl::before {
     content: "\25C2"; // Unicode black left-pointing small triangle
