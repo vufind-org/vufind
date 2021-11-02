@@ -56,19 +56,33 @@ class ParamsFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         // Replace trailing "Params" with "Options" to get the options service:
         $optionsService = preg_replace('/Params$/', 'Options', $requestedName);
+        // Replace leading namespace with "VuFind" if service is not available:
+        $optionsServiceAvailable = $container
+            ->get(\VuFind\Search\Options\PluginManager::class)->has($optionsService);
+        if (!$optionsServiceAvailable) {
+            $optionsService = preg_replace(
+                '/^[^\\\]+/',
+                'VuFind',
+                $optionsService
+            );
+        }
         $optionsObj = $container->get(\VuFind\Search\Options\PluginManager::class)
             ->get($optionsService);
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
         // Clone the options instance in case caller modifies it:
         return new $requestedName(
-            clone $optionsObj, $configLoader, ...($options ?: [])
+            clone $optionsObj,
+            $configLoader,
+            ...($options ?: [])
         );
     }
 }

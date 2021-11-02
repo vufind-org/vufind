@@ -90,7 +90,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $series = $record->getSeries();
         $this->assertEquals(count($series), 1);
         $this->assertEquals(
-            'Vico, Giambattista, 1668-1744. Works. 1982 ;', $series[0]['name']
+            'Vico, Giambattista, 1668-1744. Works. 1982 ;',
+            $series[0]['name']
         );
         $this->assertEquals('2, pt. 1.', $series[0]['number']);
     }
@@ -115,7 +116,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 [
                     'heading' => ['Matematica', 'Periodici.'],
                     'type' => '',
-                    'source' => ''
+                    'source' => '',
+                    'id' => ''
                 ],
             ],
             $record->getAllSubjectHeadings(true)
@@ -210,110 +212,6 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 ]
             ],
             $record->getFormattedMarcDetails('245', $input)
-        );
-    }
-
-    /**
-     * Test methods in MarcAdvancedTrait.
-     *
-     * Note that some methods are covered by the other tests.
-     *
-     * @return void
-     */
-    public function testMarcAdvancedTrait()
-    {
-        $xml = $this->getFixture('marc/marctraits.xml');
-        $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
-
-        $this->assertEquals(['Classified.'], $obj->getAccessRestrictions());
-        $this->assertEquals(['VuFind Golden Award, 2020'], $obj->getAwards());
-        $this->assertEquals(['Bibliography: p. 122'], $obj->getBibliographyNotes());
-        $this->assertMatchesRegularExpression(
-            '/<collection.*?>.*<record>.*<\/record>.*<\/collection>/s',
-            $obj->getFilteredXML()
-        );
-        $this->assertEquals(['Finding aid available'], $obj->getFindingAids());
-        $this->assertEquals(
-            ['General notes here.', 'Translation.'], $obj->getGeneralNotes()
-        );
-        $this->assertEquals(
-            ['2020', '2020'], $obj->getHumanReadablePublicationDates()
-        );
-        $this->assertEquals(
-            ['Place :', 'Location :'], $obj->getPlacesOfPublication()
-        );
-        $this->assertEquals(['00:20:10', '01:30:55'], $obj->getPlayingTimes());
-        $this->assertEquals(['Producer: VuFind'], $obj->getProductionCredits());
-        $this->assertEquals(
-            ['Frequency varies, 2020-'], $obj->getPublicationFrequency()
-        );
-        $this->assertEquals(
-            ['Merged with several branches'], $obj->getRelationshipNotes()
-        );
-        $this->assertEquals(
-            [
-                ['name' => 'Development Series &\'><"'],
-                ['name' => 'Development', 'number' => 'no. 2']
-            ],
-            $obj->getSeries()
-        );
-        $this->assertEquals(['Summary.'], $obj->getSummary());
-        $this->assertEquals(['Data in UTF-8'], $obj->getSystemDetails());
-        $this->assertEquals(['Developers'], $obj->getTargetAudienceNotes());
-        $this->assertEquals('2. Return', $obj->getTitleSection());
-        $this->assertEquals('Test Author.', $obj->getTitleStatement());
-        $this->assertEquals(
-            ['Zoolandia -- City.', 'Funland -- Funtown.'],
-            $obj->getHierarchicalPlaceNames()
-        );
-        $this->assertEquals(
-            [
-                [
-                    'url' => 'https://vufind.org/vufind/',
-                    'desc' => 'VuFind Home Page'
-                ]
-            ],
-            $obj->getURLs()
-        );
-        $this->assertEquals(['(FOO)123', '(Baz)456'], $obj->getConsortialIDs());
-        $this->assertEquals('ismn', $obj->getCleanISMN());
-        $this->assertEquals(
-            ['nbn' => 'NBN12', 'source' => 'NB'], $obj->getCleanNBN()
-        );
-        $marc21Xml = $obj->getXML('marc21');
-        $this->assertStringStartsWith(
-            '<record xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-            . ' xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="'
-            . 'http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml'
-            . '/schema/MARC21slim.xsd" type="Bibliographic">',
-            $marc21Xml
-        );
-        $this->assertStringContainsString('<leader>', $marc21Xml);
-        $this->assertEquals(
-            1, substr_count($marc21Xml, '<leader>00000cam a22000004i 4500</leader>')
-        );
-        $this->assertEquals(2, substr_count($marc21Xml, '<controlfield '));
-        $this->assertEquals(52, substr_count($marc21Xml, '<datafield '));
-        $this->assertEquals(87, substr_count($marc21Xml, '<subfield '));
-        $rdfXml = $obj->getRDFXML();
-        $this->assertStringContainsString(
-            '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
-            . ' xmlns="http://www.loc.gov/mods/v3">',
-            $rdfXml
-        );
-        $this->assertStringContainsString('<nonSort>The </nonSort>', $rdfXml);
-        $this->assertStringContainsString(
-            '<namePart>Author, Test</namePart>',
-            $rdfXml
-        );
-        $this->assertStringContainsString(
-            '<identifier type="isbn">978-3-16-148410-0</identifier>',
-            $rdfXml
         );
     }
 

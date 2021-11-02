@@ -93,10 +93,14 @@ class InjectSpellingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
         );
     }
 
@@ -109,13 +113,12 @@ class InjectSpellingListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        if ($event->getParam('context') != 'search') {
+        $command = $event->getParam('command');
+        if ($command->getContext() !== 'search') {
             return $event;
         }
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $params = $event->getParam('params');
-            if ($params) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            if ($params = $command->getSearchParameters()) {
                 // Set spelling parameters when enabled:
                 $sc = $params->get('spellcheck');
                 if (isset($sc[0]) && $sc[0] != 'false') {
@@ -130,7 +133,8 @@ class InjectSpellingListener
                     reset($this->dictionaries);
                     $params->set('spellcheck', 'true');
                     $params->set(
-                        'spellcheck.dictionary', current($this->dictionaries)
+                        'spellcheck.dictionary',
+                        current($this->dictionaries)
                     );
 
                     // Turn on spellcheck.q generation in query builder:
@@ -153,22 +157,24 @@ class InjectSpellingListener
     public function onSearchPost(EventInterface $event)
     {
         // Do nothing if spelling is disabled or context is wrong
-        if (!$this->active || $event->getParam('context') != 'search') {
+        $command = $event->getParam('command');
+        if (!$this->active || $command->getContext() !== 'search') {
             return $event;
         }
 
         // Merge spelling details from extra dictionaries:
-        $backend = $event->getParam('backend');
-        if ($backend == $this->backend->getIdentifier()) {
-            $result = $event->getTarget();
-            $params = $event->getParam('params');
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            $result = $command->getResult();
+            $params = $command->getSearchParameters();
             $spellcheckQuery = $params->get('spellcheck.q');
             if (!empty($spellcheckQuery)) {
                 $this->aggregateSpellcheck(
-                    $result->getSpellcheck(), end($spellcheckQuery)
+                    $result->getSpellcheck(),
+                    end($spellcheckQuery)
                 );
             }
         }
+        return $event;
     }
 
     /**

@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Config
+ * @package  Form
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -37,7 +37,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * Factory for configurable forms.
  *
  * @category VuFind
- * @package  Config
+ * @package  Form
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -56,9 +56,11 @@ class FormFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -71,7 +73,9 @@ class FormFactory implements FactoryInterface
         $viewHelperManager = $container->get('ViewHelperManager');
 
         return new $requestedName(
-            $yamlReader, $viewHelperManager, $config['Feedback'] ?? null
+            $yamlReader,
+            $viewHelperManager,
+            $config
         );
     }
 }

@@ -49,7 +49,7 @@ class RouteGenerator
     protected $nonTabRecordActions = [
         'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
         'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
-        'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText',
+        'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink',
     ];
 
     /**
@@ -132,6 +132,7 @@ class RouteGenerator
                 'constraints' => [
                     'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    'tab'        => '[a-zA-Z][a-zA-Z0-9_-]*',
                 ],
                 'defaults' => [
                     'controller' => $controller,

@@ -121,8 +121,10 @@ class ListItems extends AbstractChannelProvider
      */
     public function __construct(
         \VuFind\Db\Table\UserList $userList,
-        \VuFind\Db\Table\ResourceTags $resourceTags, Url $url,
-        \VuFind\Search\Results\PluginManager $resultsManager, array $options = []
+        \VuFind\Db\Table\ResourceTags $resourceTags,
+        Url $url,
+        \VuFind\Search\Results\PluginManager $resultsManager,
+        array $options = []
     ) {
         $this->userList = $userList;
         $this->resourceTags = $resourceTags;
@@ -277,7 +279,10 @@ class ListItems extends AbstractChannelProvider
     {
         // Get public lists by search criteria
         $lists = $this->resourceTags->getListsForTag(
-            $this->tags, $this->ids, true, $this->andTags
+            $this->tags,
+            $this->ids,
+            true,
+            $this->andTags
         );
 
         // Format result set into an array:

@@ -43,12 +43,13 @@
 
 <?php if ($saveSupported): ?>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-    <?=$this->context($this)->renderInContext(
-        "myresearch/menu.phtml",
-        // Only activate search history in account menu if user is logged in.
-        $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
-     );
-     ?>
+    <?=
+      $this->context($this)->renderInContext(
+          "myresearch/menu.phtml",
+          // Only activate search history in account menu if user is logged in.
+          $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
+      );
+    ?>
   </div>
 <?php endif; ?>
 

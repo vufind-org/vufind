@@ -133,8 +133,10 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return AddUsingTemplateCommand
      */
-    protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null,
+    protected function getMockCommand(
+        ExtendedIniNormalizer $normalizer = null,
+        ExtendedIniReader $reader = null,
+        $languageDir = null,
         array $methods = ['writeFileToDisk']
     ) {
         return $this->getMockBuilder(DeleteCommand::class)
@@ -144,7 +146,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
                     $reader ?? $this->getMockReader(),
                     $languageDir ?? $this->languageFixtureDir,
                 ]
-            )->setMethods($methods)
+            )->onlyMethods($methods)
             ->getMock();
     }
 
@@ -157,10 +159,12 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
@@ -174,7 +178,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

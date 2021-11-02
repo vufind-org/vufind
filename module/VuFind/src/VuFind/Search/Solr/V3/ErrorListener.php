@@ -54,15 +54,15 @@ class ErrorListener extends AbstractErrorListener
      */
     public function onSearchError(EventInterface $event)
     {
-        $backend = $event->getParam('backend_instance');
-        if ($this->listenForBackend($backend)) {
-            $error  = $event->getTarget();
+        $command = $event->getParam('command');
+        if ($this->listenForBackend($command->getTargetIdentifier())) {
+            $error = $event->getParam('error');
             if ($error instanceof HttpErrorException) {
                 $reason = $error->getResponse()->getReasonPhrase();
                 if (stristr($reason, 'org.apache.lucene.queryParser.ParseException')
                     || stristr($reason, 'undefined field')
                 ) {
-                    $error->addTag('VuFind\Search\ParserError');
+                    $error->addTag(self::TAG_PARSER_ERROR);
                 }
             }
         }

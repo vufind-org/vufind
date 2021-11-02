@@ -10,19 +10,20 @@
     $user_id = $this->user ? $this->user->id : null;
   }
   // Thumbnail
-  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLink()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLinker()->getUrl($this->driver));
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
-  if ($cover):
+?>
+<li class="result<?php if($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
+  <?php if ($cover):
     ob_start(); ?>
     <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <?=$cover ?>
     </div>
     <?php $thumbnail = ob_get_contents(); ?>
-  <?php ob_end_clean(); ?>
-<?php endif; ?>
-<div class="result<?php if($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
+    <?php ob_end_clean(); ?>
+  <?php endif; ?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource"/>
   <?=$this->record($this->driver)->getCheckbox()?>
@@ -34,9 +35,14 @@
       <div class="result-body">
         <div class="resultItemLine1">
           <?php $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
-          <?php if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><?php endif; ?>
+          <?php if (!$missing): ?><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><?php endif; ?>
             <span class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
           <?php if (!$missing): ?></a><?php endif; ?>
+          <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
+            <div class="title-alt">
+              <?=$this->escapeHtml($altTitle)?>
+            </div>
+          <?php endforeach; ?>
         </div>
 
         <div class="resultItemLine2">
@@ -84,10 +90,12 @@
               }
             } ?>
 
-          <?php $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-              null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
-              $user_id, 'tag'
-             ) : [];
+          <?php
+            $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
+                null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
+                $user_id,
+                'tag'
+            ) : [];
           ?>
           <?php if (count($listTags) > 0): ?>
             <strong><?=$this->transEsc('Your Tags')?>:</strong>
@@ -200,11 +208,10 @@
       <?=$thumbnail ?>
     <?php endif; ?>
   </div>
-</div>
-<?php
-$escId = $this->escapeJs($id);
-$escSource = $this->escapeJs($source);
-$script = <<<JS
+  <?php
+    $escId = $this->escapeJs($id);
+    $escSource = $this->escapeJs($source);
+    $script = <<<JS
 $('#confirm_delete_item_${escId}').click(function(e) {
     e.preventDefault();
     $.post('${deleteUrl}', {
@@ -218,5 +225,6 @@ $('#confirm_delete_item_${escId}').click(function(e) {
         );
 });
 JS;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
+</li>

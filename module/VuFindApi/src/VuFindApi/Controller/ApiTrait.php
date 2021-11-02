@@ -80,7 +80,8 @@ trait ApiTrait
             // Disable session writes
             $this->disableSessionWrites();
             $headers->addHeaderLine(
-                'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+                'Access-Control-Allow-Methods',
+                'GET, POST, OPTIONS'
             );
             $headers->addHeaderLine('Access-Control-Max-Age', '86400');
 
@@ -100,8 +101,12 @@ trait ApiTrait
         $request = $this->getRequest();
         $this->jsonpCallback
             = $request->getQuery('callback', $request->getPost('callback', null));
-        $this->jsonPrettyPrint = $request->getQuery(
-            'prettyPrint', $request->getPost('prettyPrint', false)
+        $this->jsonPrettyPrint = filter_var(
+            $request->getQuery(
+                'prettyPrint',
+                $request->getPost('prettyPrint', false)
+            ),
+            FILTER_VALIDATE_BOOLEAN
         );
         $this->outputMode = empty($this->jsonpCallback) ? 'json' : 'jsonp';
     }
@@ -119,7 +124,10 @@ trait ApiTrait
             ->get(\LmcRbacMvc\Service\AuthorizationService::class);
         if (!$auth->isGranted($permission)) {
             return $this->output(
-                [], ApiInterface::STATUS_ERROR, 403, 'Permission denied'
+                [],
+                ApiInterface::STATUS_ERROR,
+                403,
+                'Permission denied'
             );
         }
         return false;

@@ -133,9 +133,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      * @param CookieManager  $cookieManager  Cookie manager
      * @param Csrf           $csrf           CSRF validator
      */
-    public function __construct(Config $config, UserTable $userTable,
-        SessionManager $sessionManager, PluginManager $pm,
-        CookieManager $cookieManager, Csrf $csrf
+    public function __construct(
+        Config $config,
+        UserTable $userTable,
+        SessionManager $sessionManager,
+        PluginManager $pm,
+        CookieManager $cookieManager,
+        Csrf $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -709,7 +713,8 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         if (!isset($this->auth[$method])) {
             $this->legalAuthOptions = array_unique(
                 array_merge(
-                    $this->legalAuthOptions, $this->getSelectableAuthOptions()
+                    $this->legalAuthOptions,
+                    $this->getSelectableAuthOptions()
                 )
             );
         }

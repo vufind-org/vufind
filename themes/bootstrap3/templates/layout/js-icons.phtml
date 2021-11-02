@@ -1,0 +1,12 @@
+<?php /* Global context icons only */
+
+// Set up icons
+$list = [
+    'spinner',
+];
+
+// To save redundancy: zip list together
+// ala 'icon' => 'icon'
+$this->jsIcons()->addStrings(array_combine($list, $list));
+
+echo $this->jsIcons()->getJSON();

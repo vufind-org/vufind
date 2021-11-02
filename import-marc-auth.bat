@@ -61,5 +61,6 @@ set EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=%MAPPINGS_FILES%"
 
 rem Call the standard script:
 call %VUFIND_HOME%\import-marc.bat %1
+exit /b %ERRORLEVEL%
 
 :end

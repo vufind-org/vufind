@@ -62,11 +62,14 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param \Laminas\Http\Client $client  An HTTP client object
      * @param array                $options Additional config settings
      */
-    public function __construct($wsKey, \Laminas\Http\Client $client,
+    public function __construct(
+        $wsKey,
+        \Laminas\Http\Client $client,
         array $options = []
     ) {
         parent::__construct(
-            'http://www.worldcat.org/webservices/catalog/search/sru', $client
+            'http://www.worldcat.org/webservices/catalog/search/sru',
+            $client
         );
         $this->wskey = $wsKey;
         $this->options = $options;
@@ -78,7 +81,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param string $id Record to obtain holdings for.
      *
      * @throws \Exception
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     public function getHoldings($id)
     {

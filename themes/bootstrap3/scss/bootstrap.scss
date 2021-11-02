@@ -237,6 +237,9 @@ footer {
   padding: 10px 15px;
   &:hover,
   &:focus { background-color: $nav-link-hover-bg; }
+  &.user-list-link i {
+    margin-left: 0.5rem;
+  }
 }
 .myresearch-menu .flex { display: flex; }
 .myresearch-menu a:hover {

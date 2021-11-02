@@ -49,7 +49,7 @@ class FeedbackController extends AbstractBase
 
     /**
      * Handles rendering and submit of dynamic forms.
-     * Form configurations are specified in FeedbackForms.json
+     * Form configurations are specified in FeedbackForms.yaml.
      *
      * @return mixed
      */
@@ -64,9 +64,11 @@ class FeedbackController extends AbstractBase
 
         $form = $this->serviceLocator->get($this->formClass);
         $params = [];
-        if ($refererHeader = $this->getRequest()->getHeader('Referer')
-        ) {
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
             $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        if ($userAgentHeader = $this->getRequest()->getHeader('User-Agent')) {
+            $params['userAgent'] = $userAgentHeader->getFieldValue();
         }
         $form->setFormId($formId, $params);
 
@@ -97,10 +99,11 @@ class FeedbackController extends AbstractBase
         [$messageParams, $template]
             = $form->formatEmailMessage($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
-            $template, ['fields' => $messageParams]
+            $template,
+            ['fields' => $messageParams]
         );
 
-        [$senderName, $senderEmail] = $this->getSender();
+        [$senderName, $senderEmail] = $this->getSender($form);
 
         $replyToName = $params->fromPost(
             'name',
@@ -118,14 +121,23 @@ class FeedbackController extends AbstractBase
         $sendSuccess = true;
         foreach ($recipients as $recipient) {
             [$success, $errorMsg] = $this->sendEmail(
-                $recipient['name'], $recipient['email'], $senderName, $senderEmail,
-                $replyToName, $replyToEmail, $emailSubject, $emailMessage
+                $recipient['name'],
+                $recipient['email'],
+                $senderName,
+                $senderEmail,
+                $replyToName,
+                $replyToEmail,
+                $emailSubject,
+                $emailMessage
             );
 
             $sendSuccess = $sendSuccess && $success;
             if (!$success) {
                 $this->showResponse(
-                    $view, $form, false, $errorMsg
+                    $view,
+                    $form,
+                    false,
+                    $errorMsg
                 );
             }
         }
@@ -173,8 +185,14 @@ class FeedbackController extends AbstractBase
      * @return array with elements success:boolean, errorMessage:string (optional)
      */
     protected function sendEmail(
-        $recipientName, $recipientEmail, $senderName, $senderEmail,
-        $replyToName, $replyToEmail, $emailSubject, $emailMessage
+        $recipientName,
+        $recipientEmail,
+        $senderName,
+        $senderEmail,
+        $replyToName,
+        $replyToEmail,
+        $emailSubject,
+        $emailMessage
     ) {
         try {
             $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
@@ -201,13 +219,14 @@ class FeedbackController extends AbstractBase
      * @param boolean   $success  Was email sent successfully?
      * @param string    $errorMsg Error message (optional)
      *
-     * @return array with name, email
+     * @return void
      */
     protected function showResponse($view, $form, $success, $errorMsg = null)
     {
         if ($success) {
             $this->flashMessenger()->addMessage(
-                $form->getSubmitResponse(), 'success'
+                $form->getSubmitResponse(),
+                'success'
             );
         } else {
             $this->flashMessenger()->addMessage($errorMsg, 'error');
@@ -217,13 +236,17 @@ class FeedbackController extends AbstractBase
     /**
      * Return email sender from configuration.
      *
+     * @param Form $form Form
+     *
      * @return array with name, email
      */
-    protected function getSender()
+    protected function getSender(Form $form)
     {
         $config = $this->getConfig()->Feedback;
-        $email = $config->sender_email ?? 'noreply@vufind.org';
-        $name = $config->sender_name ?? 'VuFind Feedback';
+        $email = $form->getEmailFromAddress()
+            ?: $config->sender_email ?? 'noreply@vufind.org';
+        $name = $form->getEmailFromName()
+            ?: $config->sender_name ?? 'VuFind Feedback';
 
         return [$name, $email];
     }

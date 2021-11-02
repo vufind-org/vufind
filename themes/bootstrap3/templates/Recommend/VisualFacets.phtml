@@ -34,21 +34,18 @@
 <?php if (isset($visualFacetSet)): ?>
   <?php
     $pivotData = json_encode($visualFacetSet);
+    $translations = $this->jsTranslations()->getJSONFromArray(
+        [
+          'More Topics' => 'More Topics',
+          'visual_facet_parent' => 'visual_facet_parent',
+          'items' => 'items',
+          'more_topics_unescaped' => 'more_topics',
+          'on_topic_unescaped' => 'on_topic'
+        ]
+    );
 
-    $translations_escaped = ['More Topics', 'visual_facet_parent', 'items'];
-    $translations = ['more_topics', 'on_topic'];
-
-    $script = "VuFind.addTranslations({\n"
-      . implode(",\n", array_map(function ($translation) {
-          return "'$translation': '" . $this->transEsc($translation) . "'";
-        }, $translations_escaped))
-      . ",\n"
-      . implode(",\n", array_map(function ($translation) {
-          return "'$translation': '" . $this->translate($translation) . "'";
-        }, $translations))
-      . "});\n";
-
-    $script .= <<<JS
+    $script = <<<JS
+  VuFind.addTranslations($translations);
   var pivotdata = $pivotData;
   jQuery(document).ready(function(data) {
       showVisualFacets(pivotdata);

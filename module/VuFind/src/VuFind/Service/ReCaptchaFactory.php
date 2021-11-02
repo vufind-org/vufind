@@ -57,9 +57,11 @@ class ReCaptchaFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -100,7 +102,12 @@ class ReCaptchaFactory implements FactoryInterface
             $rcOptions['theme'] = $recaptchaConfig['recaptcha_theme'];
         }
         return new $requestedName(
-            $siteKey, $secretKey, ['ssl' => true], $rcOptions, null, $httpClient
+            $siteKey,
+            $secretKey,
+            ['ssl' => true],
+            $rcOptions,
+            null,
+            $httpClient
         );
     }
 }

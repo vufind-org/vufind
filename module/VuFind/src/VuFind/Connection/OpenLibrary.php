@@ -75,8 +75,14 @@ class OpenLibrary
      * @return array
      */
     public function getSubjects(
-        $subject, $publishedIn, $subjectTypes, $ebooks = true, $details = false,
-        $limit = 5, $offset = null, $publicFullText = true
+        $subject,
+        $publishedIn,
+        $subjectTypes,
+        $ebooks = true,
+        $details = false,
+        $limit = 5,
+        $offset = null,
+        $publicFullText = true
     ) {
         // empty array to hold the result
         $result = [];

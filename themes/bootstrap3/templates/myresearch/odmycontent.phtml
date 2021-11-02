@@ -27,7 +27,7 @@
       $i = 0; foreach ($this->checkouts as $resource):
       $od_id = $resource['record']->getOverdriveID();
       $rec_id = $resource['record']->getUniqueID();
-      $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource['record']));
+      $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource['record']));
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
@@ -49,7 +49,7 @@
           <div class="media-body">
 
           <h4 property="name">
-            <a href="<?= $this->recordLink()->getUrl($resource['record'])?>" class="title">
+            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($resource['record']))?>" class="title">
              <?=  $this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
             </a>
           </h4>
@@ -84,61 +84,64 @@
 
 
   <h3><?= $this->transEsc('od_holds')?></h3>
-    <?php if($this->holdsUnavailable): ?>
-        <div class="well"> <?= $this->transEsc('od_info_unavail')?></div>
-    <?php elseif(count($this->holds) == 0): ?>
-        <div class="well"> <?= $this->transEsc('od_none_found')?></div>
-    <?php else:
+  <?php if($this->holdsUnavailable): ?>
+      <div class="well"> <?= $this->transEsc('od_info_unavail')?></div>
+  <?php elseif(count($this->holds) == 0): ?>
+      <div class="well"> <?= $this->transEsc('od_none_found')?></div>
+  <?php else: ?>
+    <ul class="record-list">
+      <?php
         $i = 0; foreach ($this->holds as $resource):
           $od_id = $resource['record']->getOverdriveID();
           $rec_id = $resource['record']->getUniqueID();
-          $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource['record']));
+          $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource['record']));
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
-  ?>
-    <div id="record<?=$rec_id?>" class="result">
-        <?php
-          if ($cover):
-            ob_start(); ?>
-            <div class="media-<?= $thumbnailAlignment ?> <?= $this->escapeHtmlAttr($coverDetails['size'])?>">
-              <?= $cover ?>
-            </div>
-            <?php $thumbnail = ob_get_contents(); ?>
-          <?php ob_end_clean(); ?>
-        <?php endif; ?>
-        <div class="media">
-          <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
-            <?= $thumbnail ?>
-          <?php endif ?>
-          <div class="media-body">
+      ?>
+        <li id="record<?=$rec_id?>" class="result">
+          <?php
+            if ($cover):
+              ob_start(); ?>
+              <div class="media-<?= $thumbnailAlignment ?> <?= $this->escapeHtmlAttr($coverDetails['size'])?>">
+                <?= $cover ?>
+              </div>
+              <?php $thumbnail = ob_get_contents(); ?>
+            <?php ob_end_clean(); ?>
+          <?php endif; ?>
+          <div class="media">
+            <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+              <?= $thumbnail ?>
+            <?php endif ?>
+            <div class="media-body">
               <h4 property="name">
-                  <a href="<?= $this->recordLink()->getUrl($resource['record'])?>" class="title">
-                     <?=  $this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
-                  </a>
+                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($resource['record']))?>" class="title">
+                  <?=  $this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
+                </a>
               </h4>
               <?php $listAuthors = $resource['record']->getPrimaryAuthors();
-                 if (!empty($listAuthors)): ?>
+                if (!empty($listAuthors)): ?>
                   <?= $this->transEsc('by')?>:
-                   <a href="<?= $this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?= $this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?= $this->transEsc('more_authors_abbrev')?>
-                 <?php endif; ?><br/>
-                 <?php endif; ?>
+                  <a href="<?= $this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?= $this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?= $this->transEsc('more_authors_abbrev')?>
+                <?php endif; ?><br/>
+                <?php endif; ?>
 
                 <?= $this->transEsc('od_hold_placed_on', ['%%holdPlacedDate%%' => $resource['hold']->holdPlacedDate]);?>
                 <?= $this->transEsc('od_hold_queue', ['%%holdPosition%%' => $resource['hold']->holdListPosition, '%%numberOfHolds%%' => $resource['hold']->numberOfHolds]);?>
                 <?= $this->transEsc('od_hold_email', ['%%holdEmailAddress%%' => $resource['hold']->emailAddress]);?>
 
                 <div class="pull-right">
-                     <a class="btn btn-primary placehold"
+                    <a class="btn btn-primary placehold"
                       data-lightbox title="<?= $this->transEsc('request_place_text')?>"
                       href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"; ?>"><i class="fa fa-minus-circle" aria-hidden="true"></i>
                       <?= $this->transEsc('od_but_cancel_hold')?></a>
                 </div>
-             </div>
-           </div>
-    </div>
-  <?php endforeach;?>
-    <?php endif;?>
+              </div>
+            </div>
+        </li>
+      <?php endforeach;?>
+    </ul>
+  <?php endif;?>
 <!--
   <h3><?= $this->transEsc('od_history')?></h3>
        <div class="alert alert-info"><i class='fa fa-exclamation-triangle'></i>

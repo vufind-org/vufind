@@ -27,8 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * JsTranslations helper for passing translation text to Javascript
  *
@@ -38,8 +36,15 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class JsTranslations extends AbstractHelper
+class JsTranslations extends AbstractJsStrings
 {
+    /**
+     * Translate helper
+     *
+     * @var Translate
+     */
+    protected $translate;
+
     /**
      * Translate + escape helper
      *
@@ -48,74 +53,38 @@ class JsTranslations extends AbstractHelper
     protected $transEsc;
 
     /**
-     * Variable name to store translations
-     *
-     * @var string
-     */
-    protected $varName;
-
-    /**
-     * Strings to translate (key = js key, value = string to translate)
-     *
-     * @var array
-     */
-    protected $strings = [];
-
-    /**
      * Constructor
      *
-     * @param TransEsc $transEsc Translate + escape helper
-     * @param string   $varName  Variable name to store translations
+     * @param Translate $translate Translate helper
+     * @param TransEsc  $transEsc  Translate + escape helper
+     * @param string    $varName   Variable name to store translations
      */
-    public function __construct(TransEsc $transEsc, $varName = 'vufindString')
-    {
+    public function __construct(
+        Translate $translate,
+        TransEsc $transEsc,
+        $varName = 'vufindString'
+    ) {
+        parent::__construct($varName);
+        $this->translate = $translate;
         $this->transEsc = $transEsc;
-        $this->varName = $varName;
     }
 
     /**
-     * Add strings to the internal array.
+     * Translate string
      *
-     * @param array $new Strings to add
-     *
-     * @return void
-     */
-    public function addStrings($new)
-    {
-        foreach ($new as $k => $v) {
-            $this->strings[$k] = $v;
-        }
-    }
-
-    /**
-     * Generate JSON from the internal strings.
+     * @param string|array $translation String to translate
+     * @param string       $key         JSON object key
      *
      * @return string
      */
-    public function getJSON()
+    protected function mapValue($translation, string $key): string
     {
-        $parts = [];
-        foreach ($this->strings as $k => $v) {
-            $translation = is_array($v)
-                ? call_user_func_array([$this->transEsc, '__invoke'], $v)
-                : $this->transEsc->__invoke($v);
-            // Special case: do not escape _html translations:
-            if (substr($k, -5) === '_html') {
-                $translation = html_entity_decode($translation);
-            }
-            $parts[] = '"' . addslashes($k) . '": "'
-                . addslashes($translation) . '"';
-        }
-        return '{' . implode(',', $parts) . '}';
-    }
+        $translateFunc
+            = substr($key, -5) === '_html' || substr($key, -10) === '_unescaped'
+            ? $this->translate : $this->transEsc;
 
-    /**
-     * Assign JSON to a variable.
-     *
-     * @return string
-     */
-    public function getScript()
-    {
-        return $this->varName . ' = ' . $this->getJSON() . ';';
+        // $translation could be a string or an array of parameters; this code
+        // normalizes it into a parameter list for the translator.
+        return ($translateFunc)(...((array)$translation));
     }
 }

@@ -53,7 +53,10 @@ interface GetIdsInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function getIds(AbstractQuery $query, $offset, $limit,
+    public function getIds(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     );
 }

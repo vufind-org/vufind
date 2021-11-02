@@ -1,15 +1,23 @@
 /*global Hunt, VuFind */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
-  function linkCallnumbers(callnumber, callnumber_handler) {
-    if (callnumber_handler) {
-      var cns = callnumber.split(',\t');
-      for (var i = 0; i < cns.length; i++) {
-        cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+  function formatCallnumbers(callnumber, callnumber_handler) {
+    var cns = callnumber.split(',\t');
+    for (var i = 0; i < cns.length; i++) {
+      // If the call number has a special delimiter, it indicates a prefix that
+      // should be used for display but not for sorting/searching.
+      var actualCallNumber = cns[i];
+      var displayCallNumber = cns[i];
+      var parts = cns[i].split('::::');
+      if (parts.length > 1) {
+        displayCallNumber = parts[0] + " " + parts[1];
+        actualCallNumber = parts[1];
       }
-      return cns.join(',\t');
+      cns[i] = callnumber_handler
+        ? '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(actualCallNumber) + '">' + displayCallNumber + '</a>'
+        : displayCallNumber;
     }
-    return callnumber;
+    return cns.join(',\t');
   }
   function displayItemStatus(result, $item) {
     $item.addClass('js-item-done').removeClass('js-item-pending');
@@ -25,7 +33,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           && $item.find('.callnumAndLocation').length > 0
     ) {
       // Full status mode is on -- display the HTML and hide extraneous junk:
-      $item.find('.callnumAndLocation').empty().append(result.full_status);
+      $item.find('.callnumAndLocation').empty().append(VuFind.updateCspNonce(result.full_status));
       $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
     } else if (typeof(result.missing_data) !== 'undefined'
           && result.missing_data
@@ -55,14 +63,14 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         locationListHTML += '</div>';
         locationListHTML += '<div class="groupCallnumber">';
         locationListHTML += (result.locationList[x].callnumbers)
-          ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
+          ? formatCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
         locationListHTML += '</div>';
       }
       $item.find('.locationDetails').removeClass('hidden');
       $item.find('.locationDetails').html(locationListHTML);
     } else {
       // Default case -- load call number and location into appropriate containers:
-      $item.find('.callnumber').empty().append(linkCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
+      $item.find('.callnumber').empty().append(formatCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
       $item.find('.location').empty().append(
         result.reserve === 'true'
           ? result.reserve_message

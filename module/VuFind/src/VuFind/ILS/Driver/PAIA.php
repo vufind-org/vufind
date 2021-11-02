@@ -130,7 +130,8 @@ class PAIA extends DAIA
      * @param \VuFind\Date\Converter          $converter      Date converter
      * @param \Laminas\Session\SessionManager $sessionManager Session Manager
      */
-    public function __construct(\VuFind\Date\Converter $converter,
+    public function __construct(
+        \VuFind\Date\Converter $converter,
         \Laminas\Session\SessionManager $sessionManager
     ) {
         parent::__construct($converter);
@@ -163,7 +164,8 @@ class PAIA extends DAIA
         // SessionContainer not defined yet? Build it now:
         if (null === $this->session) {
             $this->session = new \Laminas\Session\Container(
-                'PAIA', $this->sessionManager
+                'PAIA',
+                $this->sessionManager
             );
         }
         return $this->session;
@@ -270,7 +272,8 @@ class PAIA extends DAIA
 
         try {
             $array_response = $this->paiaPostAsArray(
-                'core/' . $patron['cat_username'] . '/cancel', $post_data
+                'core/' . $patron['cat_username'] . '/cancel',
+                $post_data
             );
         } catch (\Exception $e) {
             $this->debug($e->getMessage());
@@ -354,7 +357,8 @@ class PAIA extends DAIA
 
         try {
             $array_response = $this->paiaPostAsArray(
-                'auth/change', $post_data
+                'auth/change',
+                $post_data
             );
         } catch (AuthException $e) {
             return [
@@ -403,18 +407,20 @@ class PAIA extends DAIA
      * cancelling each hold item. (optional, but required if you
      * implement cancelHolds). Not supported prior to VuFind 1.2
      *
-     * @param array $checkOutDetails One of the individual item arrays returned by
-     *                               the getMyHolds method
+     * @param array $hold   A single hold array from getMyHolds
+     * @param array $patron Patron information from patronLogin
      *
      * @return string  A string to use as the input form value for cancelling
      *                 each hold item; you can pass any data that is needed
      *                 by your ILS to identify the hold – the output of this
      *                 method will be used as part of the input to the
      *                 cancelHolds method.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($checkOutDetails)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
-        return $checkOutDetails['cancel_details'];
+        return $hold['cancel_details'];
     }
 
     /**
@@ -476,10 +482,13 @@ class PAIA extends DAIA
      * value is then extracted by the CancelHolds function.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         // Not yet implemented
         return '';
@@ -599,10 +608,13 @@ class PAIA extends DAIA
      * Get Cancel ILL Request Details
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($details, $patron)
     {
         // Not yet implemented
         return '';
@@ -732,8 +744,10 @@ class PAIA extends DAIA
         if (is_array($patron)) {
             $type = isset($patron['type'])
                 ? implode(
-                    ', ', array_map(
-                        [$this, 'getReadableGroupType'], (array)$patron['type']
+                    ', ',
+                    array_map(
+                        [$this, 'getReadableGroupType'],
+                        (array)$patron['type']
                     )
                 )
                 : null;
@@ -840,12 +854,14 @@ class PAIA extends DAIA
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
-     *                           method.
+     * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
@@ -1095,7 +1111,8 @@ class PAIA extends DAIA
 
         try {
             $array_response = $this->paiaPostAsArray(
-                'core/' . $patron['cat_username'] . '/request', $post_data
+                'core/' . $patron['cat_username'] . '/request',
+                $post_data
             );
         } catch (\Exception $e) {
             $this->debug($e->getMessage());
@@ -1193,7 +1210,8 @@ class PAIA extends DAIA
 
         try {
             $array_response = $this->paiaPostAsArray(
-                'core/' . $patron['cat_username'] . '/renew', $post_data
+                'core/' . $patron['cat_username'] . '/renew',
+                $post_data
             );
         } catch (\Exception $e) {
             $this->debug($e->getMessage());
@@ -1360,13 +1378,8 @@ class PAIA extends DAIA
             $lastname = $nameArr[0];
         } else {
             $nameArr = explode(' ', $username);
-            $firstname = $nameArr[0];
-            $lastname = '';
-            array_shift($nameArr);
-            foreach ($nameArr as $value) {
-                $lastname .= ' ' . $value;
-            }
-            $lastname = trim($lastname);
+            $lastname = array_pop($nameArr);
+            $firstname = trim(implode(' ', $nameArr));
         }
 
         // TODO: implement parsing of user details according to types set
@@ -1676,7 +1689,9 @@ class PAIA extends DAIA
         ];
         $result = $this->httpService->get(
             $this->paiaURL . $file,
-            [], $this->paiaTimeout, $http_headers
+            [],
+            $this->paiaTimeout,
+            $http_headers
         );
         if (!$result->isSuccess()) {
             // log error for debugging
@@ -1822,7 +1837,8 @@ class PAIA extends DAIA
         }
 
         $responseJson = $this->paiaGetRequest(
-            'core/' . $patron, $this->getSession()->access_token
+            'core/' . $patron,
+            $this->getSession()->access_token
         );
         $responseArray = $this->paiaParseJsonAsArray($responseJson);
         return $this->paiaParseUserDetails($patron, $responseArray);
@@ -1959,7 +1975,9 @@ class PAIA extends DAIA
      * @throws ILSException You are not entitled to read notifications
      */
     protected function paiaRemoveSystemMessage(
-        $patron, $messageId, $keepCache = false
+        $patron,
+        $messageId,
+        $keepCache = false
     ) {
         // check if user has appropriate scope
         if (!$this->paiaCheckScope(self::SCOPE_DELETE_NOTIFICATIONS)) {
@@ -2058,7 +2076,7 @@ class PAIA extends DAIA
             $client->setHeaders($http_headers);
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {

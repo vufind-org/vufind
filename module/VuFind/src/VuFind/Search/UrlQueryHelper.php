@@ -79,8 +79,11 @@ class UrlQueryHelper
      * on the contents of $query to $urlParams (true) or are they already there
      * (false)?
      */
-    final public function __construct(array $urlParams, AbstractQuery $query,
-        array $options = [], $regenerateQueryParams = true
+    final public function __construct(
+        array $urlParams,
+        AbstractQuery $query,
+        array $options = [],
+        $regenerateQueryParams = true
     ) {
         $this->config = $options;
         $this->urlParams = $urlParams;
@@ -193,12 +196,11 @@ class UrlQueryHelper
      * @param string $name          Name of parameter
      * @param string $value         Value of parameter
      * @param bool   $forceOverride Force an override of the existing value, even if
-     * it was set in the incoming $urlParams in the constructor (defaults to true for
-     * backward compatibility)
+     * it was set in the incoming $urlParams in the constructor (defaults to false)
      *
      * @return UrlQueryHelper
      */
-    public function setDefaultParameter($name, $value, $forceOverride = true)
+    public function setDefaultParameter($name, $value, $forceOverride = false)
     {
         // Add the new default to the configuration, and apply it to the query
         // if no existing value has already been set in this position (or if an
@@ -400,7 +402,8 @@ class UrlQueryHelper
             return [$field];
         }
         return call_user_func(
-            $this->config['getAliasesForFacetFieldCallback'], $field
+            $this->config['getAliasesForFacetFieldCallback'],
+            $field
         );
     }
 
@@ -488,7 +491,10 @@ class UrlQueryHelper
     public function setSort($s)
     {
         return $this->updateQueryString(
-            'sort', $s, $this->getDefault('sort'), true
+            'sort',
+            $s,
+            $this->getDefault('sort'),
+            true
         );
     }
 
@@ -540,7 +546,10 @@ class UrlQueryHelper
     public function setLimit($l)
     {
         return $this->updateQueryString(
-            'limit', $l, $this->getDefault('limit'), true
+            'limit',
+            $l,
+            $this->getDefault('limit'),
+            true
         );
     }
 
@@ -615,7 +624,10 @@ class UrlQueryHelper
      *
      * @return string
      */
-    protected function updateQueryString($field, $value, $default = null,
+    protected function updateQueryString(
+        $field,
+        $value,
+        $default = null,
         $clearPage = false
     ) {
         $params = $this->urlParams;

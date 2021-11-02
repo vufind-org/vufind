@@ -80,6 +80,19 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that requesting a too small image returns the fail image.
+     *
+     * @return void
+     */
+    public function testDefaultLoadingForTooSmallImage()
+    {
+        $loader = $this->getLoader();
+        $loader->loadQRCode('foofoofoofoofoofoofoofoofoofoofoofoo', ['size' => 1]);
+        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertEquals('483', strlen($loader->getImage()));
+    }
+
+    /**
      * Get a loader object to test.
      *
      * @param array      $config Configuration
@@ -96,7 +109,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(\VuFind\QRCode\Loader::class)
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $theme])
                 ->getMock();
         }

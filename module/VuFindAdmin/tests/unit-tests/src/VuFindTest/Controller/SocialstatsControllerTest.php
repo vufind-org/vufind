@@ -52,15 +52,15 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $container->set(\VuFind\Db\Table\PluginManager::class, $tables);
         $c = new \VuFindAdmin\Controller\SocialstatsController($container);
         $comments = $this->getMockBuilder(\VuFind\Db\Table\Comments::class)
-            ->disableOriginalConstructor()->setMethods(['getStatistics'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
         $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));
         $tables->set('comments', $comments);
         $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
-            ->setMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
+            ->onlyMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
         $tables->set('userresource', $userresource);
         $resourcetags = $this->getMockBuilder(\VuFind\Db\Table\ResourceTags::class)
-            ->disableOriginalConstructor()->setMethods(['getStatistics'])
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
             ->getMock();
         $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));
         $tables->set('resourcetags', $resourcetags);
