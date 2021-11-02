@@ -57,7 +57,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $references;
     }
 
-    public function getExternalReferences(): array
+    public function getBibliographicalReferences(): array
     {
         $references = [];
 
@@ -98,7 +98,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $references;
     }
 
-    public function getExternalResources(): array
+    public function getArchivedMaterial(): array
     {
         $references = $this->getExternalReferencesFiltered(/*blacklist=*/['Wikipedia'], /*whitelist=*/[]);
         $references = array_merge($references, $this->getBeaconReferences());
@@ -237,10 +237,10 @@ class SolrAuthMarc extends SolrAuthDefault {
     }
 
     /**
-     * Get locations from 551
+     * Get geographical relations from 551
      * @return [['name', 'type']]
      */
-    public function getLocations()
+    public function getGeographicalRelations()
     {
         $locations = [];
         $fields = $this->getMarcRecord()->getFields('551');
@@ -248,7 +248,39 @@ class SolrAuthMarc extends SolrAuthDefault {
             $locations[] = ['name' => $field->getSubfield('a')->getData(),
                             'type' => $field->getSubfield('i')->getData()];
         }
+
+        $fields = $this->getMarcRecord()->getFields('043');
+        foreach ($fields as $field) {
+            foreach ($field->getSubfields('c') as $subfield) {
+                $locations[] = ['name' => $subfield->getData(),
+                                'type' => 'DIN-ISO-3166'];
+            }
+        }
         return $locations;
+    }
+
+    public function getMeetingName()
+    {
+        foreach ($this->getMarcRecord()->getFields('111') as $field) {
+            $name = $field->getSubfield('a')->getData();
+
+            $subfield_c = $field->getSubfield('c');
+            $subfield_d = $field->getSubfield('d');
+            $subfield_g = $field->getSubfield('g');
+
+            if ($subfield_c != false || $subfield_g != false)
+                $name .= '.';
+            if ($subfield_g != false)
+                $name .= ' ' . $subfield_g->getData();
+            if ($subfield_c != false)
+                $name .= ' ' . $subfield_c->getData();
+            if ($subfield_d != false)
+                $name .= ' (' . $subfield_d->getData() . ')';
+
+            return $name;
+        }
+
+        return '';
     }
 
     /**
@@ -295,7 +327,7 @@ class SolrAuthMarc extends SolrAuthDefault {
     public function getNameVariants(): array
     {
         $nameVariants = [];
-        $fields = $this->getMarcRecord()->getFields('400');
+        $fields = $this->getMarcRecord()->getFields('400|410|411', true);
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
@@ -398,6 +430,45 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $relations;
     }
 
+    public function getTimespans(): array
+    {
+        $timespans = [];
+        $fields = $this->getMarcRecord()->getFields('548');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $subfield_a = $field->getSubfield('a');
+                if ($subfield_a !== false)
+                    $timespans[] = $subfield_a->getData();
+            }
+        }
+        return $timespans;
+    }
+
+    public function getTitle()
+    {
+        if ($this->isMeeting())
+            return $this->getMeetingName();
+        return parent::getTitle();
+    }
+
+    public function isFamily(): bool
+    {
+        $fields = $this->getMarcRecord()->getFields('079');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $typeSubfield = $field->getSubfield('v');
+                if ($typeSubfield != false && $typeSubfield->getData() == 'pif')
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public function isMeeting(): bool
+    {
+        return $this->getType() == 'meeting';
+    }
+
     /**
      * This function is used to detect "Tn"-sets, which are similar to persons.
      *
@@ -416,16 +487,14 @@ class SolrAuthMarc extends SolrAuthDefault {
         return false;
     }
 
-    public function isFamily(): bool
+    /**
+     * This just checks whether the main type is "person".
+     * Be careful => if the main type is "person", it can e.g. still be sub-type "name", "family" or others.
+     *
+     * @return bool
+     */
+    public function isPerson(): bool
     {
-        $fields = $this->getMarcRecord()->getFields('079');
-        if (is_array($fields)) {
-            foreach ($fields as $field) {
-                $typeSubfield = $field->getSubfield('v');
-                if ($typeSubfield != false && $typeSubfield->getData() == 'pif')
-                    return true;
-            }
-        }
-        return false;
+        return $this->getType() == 'person';
     }
 }
