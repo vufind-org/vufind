@@ -113,6 +113,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec = new SpecBuilder();
         $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
         $spec->setLine('Published', 'getDateSpan');
+        // Item Description (IxTheo-specific)
         $spec->setTemplateLine('Item Description', 'getGeneralNotes', 'data-general-notes.phtml');
         $spec->setLine('Physical Description', 'getPhysicalDescriptions');
         $spec->setLine('Publication Frequency', 'getPublicationFrequency');
