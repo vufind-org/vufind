@@ -235,7 +235,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
 
             if (isset($relation['type']))
-                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+                $relationsDisplay .= ' (' . htmlspecialchars($this->translate($relation['type'])) . ')';
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
