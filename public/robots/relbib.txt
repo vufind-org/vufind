@@ -15,7 +15,6 @@ User-agent: *
 Disallow: /AJAX
 Disallow: /Alphabrowse
 Disallow: /Author
-Disallow: /Authority
 Disallow: /Browse
 Disallow: /Combined
 Disallow: /Feedback
