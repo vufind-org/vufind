@@ -171,28 +171,29 @@ public class TueFindAuth extends TueFind {
         return getYearRangeHelper(record, YearRangeType.BBOX);
     }
 
-    public String getInitDate(final Record record) {
-        String retVal = null;
-        List<String> values = getSubfieldValuesMatchingList(record, "548a:400d:111d");
-        for (String value : values) {
-            if (value.contains("-")) {
-                value = value.split("-")[0].trim();
-            }
-            if (value.length() == value.replaceAll("\\.", "").length() + 2) { //exact date
-                retVal = value;
-                break;
-            }
-            retVal = value;
+    private boolean isInvalidYearNumber(String year, boolean isBc) {
+        if (year.length() > 4) {
+            return true;
         }
-        if (retVal == null) {
-            return null;
+        try
+        {
+            int iYear = Integer.parseInt(year);
+            if (isBc && iYear > 8000) {
+                return true;
+            }
+            else if (!isBc && iYear > 2099) {
+                return true;
+            }
+        } catch (NumberFormatException e) {
         }
+        return false;
+    }
 
-        retVal = retVal.replaceAll("XX\\.", "01.").replaceAll("xx\\.", "01.");
-
-        String bc = "";
+    private String extractDate(String dateStr) {
+        String retVal = dateStr.replaceAll("XX\\.", "01.").replaceAll("xx\\.", "01.");
+        boolean bc = false;
         if (retVal.contains("v")) {
-            bc = "-";
+            bc = true;
             retVal = retVal.replaceAll("v", "");
         }
 
@@ -219,11 +220,39 @@ public class TueFindAuth extends TueFind {
                 day = dateElems[2];
                 year = dateElems[0];
             }
-            return bc + dateElems[2] + "-" + month + "-" + day + "T00:00:00Z";
+            if (isInvalidYearNumber(year, bc)) {
+                return null;
+            } else {
+                return (bc==true?"-":"") + year + "-" + month + "-" + day + "T00:00:00Z";
+            }
         }
         else {
-            return bc + retVal + "-01-01T00:00:00Z"; //Format YYYY-MM-DDThh:mm:ssZ
+            if (isInvalidYearNumber(retVal, bc)) {
+                return null;
+            } else {
+                return (bc==true?"-":"") + retVal + "-01-01T00:00:00Z"; //Format YYYY-MM-DDThh:mm:ssZ
+            }
         }
+    }
+
+    public String getInitDate(final Record record) {
+        String retVal = null;
+        List<String> values = getSubfieldValuesMatchingList(record, "548a:400d:111d");
+        for (String value : values) {
+            if (value.contains("-")) {
+                value = value.split("-")[0].trim();
+            }
+            String extractedDate = extractDate(value);
+            if (value.length() == value.replaceAll("\\.", "").length() + 2) { //exact date
+                if (extractedDate != null) {
+                    return extractedDate;
+                }
+            }
+            if (extractedDate != null) {
+                retVal = extractedDate;
+            }
+        }
+        return retVal;
     }
 
     public String getAuthorityType(final Record record) {
