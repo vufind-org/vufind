@@ -148,13 +148,17 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getName(AuthorityRecordDriver &$driver): string
     {
-        $name = $driver->getHeadingShort();
-        $timespan = $driver->getHeadingTimespan();
+        if ($driver->isMeeting()) {
+            return '<span property="name">' . htmlspecialchars($driver->getMeetingName()) . '</span>';
+        } else {
+            $name = $driver->getHeadingShort();
+            $timespan = $driver->getHeadingTimespan();
 
-        $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
-        if ($timespan != null)
-            $heading .= ' ' . htmlspecialchars($timespan);
-        return $heading;
+            $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
+            if ($timespan != null)
+                $heading .= ' ' . htmlspecialchars($timespan);
+            return $heading;
+        }
     }
 
     public function getOccupations(AuthorityRecordDriver &$driver): string
@@ -239,6 +243,23 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $relationsDisplay .= '</span>';
         }
         return $relationsDisplay;
+    }
+
+    public function getGeographicalRelations(AuthorityRecordDriver &$driver): string
+    {
+        $placesString = '';
+
+        $places = $driver->getGeographicalRelations();
+        foreach ($places as $place) {
+            if ($place['type'] == 'DIN-ISO-3166') {
+                $place['type'] = 'Country';
+                $place['name'] = \Locale::getDisplayRegion($place['name'], $this->getTranslatorLocale()) . ' (' . $place['name'] . ')';
+            }
+
+            $placesString .= htmlentities($this->translate($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
+        }
+
+        return $placesString;
     }
 
     public function getSchemaOrgType(AuthorityRecordDriver &$driver): string
@@ -328,6 +349,11 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $parts[] = '(' . $this->getTitlesByQueryParams($author) . ')';
         }
         return implode(' AND ', $parts);
+    }
+
+    public function getTimespans(AuthorityRecordDriver &$driver): string
+    {
+        return implode('<br>', $driver->getTimespans());
     }
 
     protected function getTitlesAboutQueryParams(&$author, $fuzzy=false): string
@@ -461,9 +487,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $chartData[] = array($oneDate,$by,$about);
             }
         }
-
-
-
 
         return $chartData;
     }

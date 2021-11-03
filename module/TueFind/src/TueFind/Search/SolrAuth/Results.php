@@ -9,6 +9,8 @@ class Results extends \VuFind\Search\SolrAuth\Results
         $list = parent::getFacetList($filter);
 
         // Translate "Record Type" facet
+        // Note that all translations also need to be added to Params::formatFilterListEntry
+        // for the translations of active filters at the top.
         foreach ($list as $facetKey => $facet) {
             if (in_array($facetKey, ['type'])) {
                 $prefix = 'authority_type_';
