@@ -7,6 +7,37 @@ class SolrAuthMarc extends SolrAuthDefault {
     const EXTERNAL_REFERENCES_DATABASES = ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata', 'Wikipedia'];
 
     /**
+     * Our metadata is in german, but VuFind requires english keys for translation.
+     * Since we do not have many of these cases, we map them by hand.
+     */
+    const LABEL_TRANSLATION_MAP = [
+        // Places
+        'Geburtsort'    => 'Place of birth',
+        'Sterbeort'     => 'Place of death',
+
+        // Personal Relations
+        'Ehemann'       => 'Husband',
+        'Ehefrau'       => 'Wife',
+
+        'Sohn'          => 'Son',
+        'Tochter'       => 'Daughter',
+
+        'Vater'         => 'Father',
+        'Mutter'        => 'Mother',
+        'Großvater'     => 'Grandfather',
+        'Großmutter'    => 'Grandmother',
+
+        'Bruder'        => 'Brother',
+        'Schwester'     => 'Sister',
+
+        'Schwager'      => 'Brother-in-law',
+        'Schwägerin'    => 'Sister-in-law',
+
+        'Cousin'        => 'Cousin',
+        'Cousine'       => 'Cousin',
+    ];
+
+    /**
      * Get List of all beacon references.
      * @return [['title', 'url']]
      */
@@ -246,7 +277,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         $fields = $this->getMarcRecord()->getFields('551');
         foreach ($fields as $field) {
             $locations[] = ['name' => $field->getSubfield('a')->getData(),
-                            'type' => $field->getSubfield('i')->getData()];
+                            'type' => $this->translateLabel($field->getSubfield('i')->getData())];
         }
 
         $fields = $this->getMarcRecord()->getFields('043');
@@ -359,7 +390,7 @@ class SolrAuthMarc extends SolrAuthDefault {
 
                     $typeSubfield = $field->getSubfield('9');
                     if ($typeSubfield !== false)
-                        $relation['type'] = preg_replace('/^v:/', '', $typeSubfield->getData());
+                        $relation['type'] = $this->translateLabel(preg_replace('/^v:/', '', $typeSubfield->getData()));
 
                     $relations[] = $relation;
                 }
@@ -496,5 +527,10 @@ class SolrAuthMarc extends SolrAuthDefault {
     public function isPerson(): bool
     {
         return $this->getType() == 'person';
+    }
+
+    protected function translateLabel($label): string
+    {
+        return self::LABEL_TRANSLATION_MAP[$label] ?? $label;
     }
 }
