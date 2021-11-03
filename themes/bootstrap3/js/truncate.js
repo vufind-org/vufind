@@ -1,22 +1,22 @@
 /* global VuFind */
 
 VuFind.register('truncate', function Truncate() {
-  const defaultSettings = {
-    'btn-class': '',
-    'in-place-toggle': false,
-    'label': null,
-    'less-icon': '<i class="fa fa-arrow-up" aria-hidden="true"></i>',
-    'less-label': VuFind.translate('show_less'),
-    'more-icon': '<i class="fa fa-arrow-down" aria-hidden="true"></i>',
-    'more-label': VuFind.translate('show_more'),
-    'rows': 3,
-    'top-toggle': Infinity,
-    'wrapper-class': '', // '' will glean from element, false or null will exclude a class
-    'wrapper-tagname': null, // falsey values will glean from element
-    'label-icons': 'after' // 'after' = icon after label, 'before' = icon before label, false = no icons
-  };
-
   function initTruncate(_container, _element, _fill) {
+    const defaultSettings = {
+      'btn-class': '',
+      'in-place-toggle': false,
+      'label': null,
+      'less-icon': '<i class="fa fa-arrow-up" aria-hidden="true"></i>',
+      'less-label': VuFind.translate('less'),
+      'more-icon': '<i class="fa fa-arrow-down" aria-hidden="true"></i>',
+      'more-label': VuFind.translate('more'),
+      'rows': 3,
+      'top-toggle': Infinity,
+      'wrapper-class': '', // '' will glean from element, false or null will exclude a class
+      'wrapper-tagname': null, // falsey values will glean from element
+      'label-icons': 'after' // 'after' = icon after label, 'before' = icon before label, false = no icons
+    };
+
     var zeroHeightContainers = [];
 
     $(_container).not('.truncate-done').each(function truncate() {
