@@ -5,7 +5,9 @@ VuFind.register('truncate', function Truncate() {
     'btn-class': '',
     'in-place-toggle': false,
     'label': null,
+    'less-icon': '<i class="fa fa-arrow-up" aria-hidden="true"></i>',
     'less-label': VuFind.translate('show_less'),
+    'more-icon': '<i class="fa fa-arrow-down" aria-hidden="true"></i>',
     'more-label': VuFind.translate('show_more'),
     'rows': 3,
     'top-toggle': Infinity,
@@ -100,14 +102,14 @@ VuFind.register('truncate', function Truncate() {
 
       if (shouldTruncate) {
         var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">'
-          + (settings['label-icons'] === 'before' ? '<i class="fa fa-arrow-down" aria-hidden="true"></i> ' : '')
+          + (settings['label-icons'] === 'before' ? settings['more-icon'] + ' ' : '')
           + '<span>' + moreLabel + '</span>'
-          + (settings['label-icons'] === 'after' ? ' <i class="fa fa-arrow-down" aria-hidden="true"></i>' : '')
+          + (settings['label-icons'] === 'after' ? ' '  + settings['more-icon'] : '')
           + '</button>';
         var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">'
-          + (settings['label-icons'] === 'before' ? '<i class="fa fa-arrow-up" aria-hidden="true"></i> ' : '')
+          + (settings['label-icons'] === 'before' ? settings['less-icon'] + ' ' : '')
           + '<span>' + lessLabel + '</span>'
-          + (settings['label-icons'] === 'after' ? ' <i class="fa fa-arrow-up" aria-hidden="true"></i>' : '')
+          + (settings['label-icons'] === 'after' ? ' ' + settings['less-icon'] : '')
           + '</button>';
 
         wrapperClass = wrapperClass ? ' ' + wrapperClass : '';
