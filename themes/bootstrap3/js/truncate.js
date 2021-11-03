@@ -11,6 +11,7 @@ VuFind.register('truncate', function Truncate() {
     'top-toggle': Infinity,
     'wrapper-class': '', // '' will glean from element, false or null will exclude a class
     'wrapper-tagname': null, // falsey values will glean from element
+    'label-icons': 'after' // 'after' = icon after label, 'before' = icon before label, false = no icons
   };
 
   function initTruncate(_container, _element, _fill) {
@@ -98,8 +99,16 @@ VuFind.register('truncate', function Truncate() {
       }
 
       if (shouldTruncate) {
-        var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button>';
-        var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+        var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">'
+          + (settings['label-icons'] === 'before' ? '<i class="fa fa-arrow-down" aria-hidden="true"></i> ' : '')
+          + moreLabel
+          + (settings['label-icons'] === 'after' ? ' <i class="fa fa-arrow-down" aria-hidden="true"></i>' : '')
+          + '</button>';
+        var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">'
+          + (settings['label-icons'] === 'before' ? '<i class="fa fa-arrow-up" aria-hidden="true"></i> ' : '')
+          + lessLabel
+          + (settings['label-icons'] === 'after' ? ' <i class="fa fa-arrow-up" aria-hidden="true"></i>' : '')
+          + '</button>';
 
         wrapperClass = wrapperClass ? ' ' + wrapperClass : '';
         wrapperTagName = wrapperTagName || 'div';

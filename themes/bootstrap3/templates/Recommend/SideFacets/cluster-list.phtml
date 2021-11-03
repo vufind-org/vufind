@@ -14,6 +14,7 @@
     'less-label' => $this->transEsc('less') . ' ...',
     'wrapper-class' => false,
     'wrapper-tagname' => 'div',
+    'label-icons' => 'before'
   ];
 ?>
 <div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
