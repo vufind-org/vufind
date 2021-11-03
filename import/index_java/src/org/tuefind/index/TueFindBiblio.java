@@ -395,9 +395,12 @@ public class TueFindBiblio extends TueFind {
         code_to_material_type_map = Collections.unmodifiableMap(tempMap);
     }
 
+
+
     /**
      * Returns either a Set<String> of parent (URL + colon + material type).
      * URLs are taken from 856$u and material types from 856$3, 856$z or 856$x.
+     * 856 fields with indicators 4 0 or 4 1 are fulltexts
      * For missing type subfields the text "Unbekanntes Material" will be used.
      * Furthermore 024$2 will be checked for "doi". If we find this we generate
      * a URL with a DOI resolver from the DOI in 024$a and set the
@@ -421,10 +424,11 @@ public class TueFindBiblio extends TueFind {
             final Subfield subfield_y = getFirstNonEmptySubfield(field, 'y');
             String materialType;
             String materialLicence = "";
-            if (subfield_3 != null) {
-                materialType =  subfield_3.getData();
-                if (code_to_material_type_map.containsKey(materialType))
-                    materialType = code_to_material_type_map.get(materialType);
+            final char indicator1 = field.getIndicator1();
+            final char indicator2 = field.getIndicator2();
+            // The existence of subfield 3 or Indicators 4 0 or 4 1 means full text (c.f. https://github.com/ubtue/tuefind/issues/1782)
+            if (subfield_3 != null || (indicator1 == '4' && (indicator2 == '0' || indicator2 == '1'))) {
+                    materialType = "Volltext";
                 if (subfield_z != null)
                     materialLicence = subfield_z.getData();
                 else if (subfield_x != null)
