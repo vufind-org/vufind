@@ -101,12 +101,12 @@ VuFind.register('truncate', function Truncate() {
       if (shouldTruncate) {
         var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">'
           + (settings['label-icons'] === 'before' ? '<i class="fa fa-arrow-down" aria-hidden="true"></i> ' : '')
-          + moreLabel
+          + '<span>' + moreLabel + '</span>'
           + (settings['label-icons'] === 'after' ? ' <i class="fa fa-arrow-down" aria-hidden="true"></i>' : '')
           + '</button>';
         var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">'
           + (settings['label-icons'] === 'before' ? '<i class="fa fa-arrow-up" aria-hidden="true"></i> ' : '')
-          + lessLabel
+          + '<span>' + lessLabel + '</span>'
           + (settings['label-icons'] === 'after' ? ' <i class="fa fa-arrow-up" aria-hidden="true"></i>' : '')
           + '</button>';
 
