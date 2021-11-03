@@ -171,14 +171,17 @@ public class TueFindAuth extends TueFind {
         return getYearRangeHelper(record, YearRangeType.BBOX);
     }
 
-    private boolean isInvalidYearNumber(String year, String bc) {
+    private boolean isInvalidYearNumber(String year, boolean isBc) {
+        if (year.length() > 4) {
+            return true;
+        }
         try
         {
             int iYear = Integer.parseInt(year);
-            if (bc.equalsIgnoreCase("-") && iYear > 8000) {
+            if (isBc && iYear > 8000) {
                 return true;
             }
-            else if (bc.isEmpty() && iYear > 2099) {
+            else if (!isBc && iYear > 2099) {
                 return true;
             }
         } catch (NumberFormatException e) {
@@ -188,9 +191,9 @@ public class TueFindAuth extends TueFind {
 
     private String extractDate(String dateStr) {
         String retVal = dateStr.replaceAll("XX\\.", "01.").replaceAll("xx\\.", "01.");
-        String bc = "";
+        boolean bc = false;
         if (retVal.contains("v")) {
-            bc = "-";
+            bc = true;
             retVal = retVal.replaceAll("v", "");
         }
 
@@ -217,17 +220,17 @@ public class TueFindAuth extends TueFind {
                 day = dateElems[2];
                 year = dateElems[0];
             }
-            if (year.length() > 4 || isInvalidYearNumber(year, bc)) {
+            if (isInvalidYearNumber(year, bc)) {
                 return null;
             } else {
-                return bc + year + "-" + month + "-" + day + "T00:00:00Z";
+                return (bc==true?"-":"") + year + "-" + month + "-" + day + "T00:00:00Z";
             }
         }
         else {
-            if (retVal.length() > 4 || isInvalidYearNumber(retVal, bc)) {
+            if (isInvalidYearNumber(retVal, bc)) {
                 return null;
             } else {
-                return bc + retVal + "-01-01T00:00:00Z"; //Format YYYY-MM-DDThh:mm:ssZ
+                return (bc==true?"-":"") + retVal + "-01-01T00:00:00Z"; //Format YYYY-MM-DDThh:mm:ssZ
             }
         }
     }
