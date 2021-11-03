@@ -14,6 +14,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         // Places
         'Geburtsort'    => 'Place of birth',
         'Sterbeort'     => 'Place of death',
+        'Wirkungsort'   => 'Place of activity',
 
         // Personal Relations
         'Ehemann'       => 'Husband',
