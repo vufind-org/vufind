@@ -804,6 +804,10 @@ class DAIA extends AbstractBase implements
                 $result_item['storagehref'] = $this->getItemStorageLink($item);
                 // status and availability will be calculated in own function
                 $status = $this->getItemStatus($item);
+                // chronology provides further information and is an item_note
+                if (isset($item['chronology'])) {
+                    $status['item_notes'][] = $item['chronology']['about'];
+                }
                 // check if this is an electronic holding
                 $isElectronic = $this->serviceIsElectronic($status);
                 // add result_item to the result array: either to electronic_
@@ -960,6 +964,11 @@ class DAIA extends AbstractBase implements
                     }
                 }
             }
+        }
+
+        // gather more information about the provided service
+        if (isset($item['about'])) {
+            $item_notes[] = $item['about'];
         }
 
         // If no useful availability service is found, return only the
