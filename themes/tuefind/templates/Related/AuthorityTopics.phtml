@@ -60,14 +60,12 @@ EOD;
         <div class="lightbox-scroll full-facets" style="max-height: 350px;">
           <div class="facet-group" id="facet-list-count">
             <?php foreach($ascSortingTopicsData as $topic): ?>
-              <span property="knowsAbout" typeof="Text">
-                <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
-                  <span class="text">
-                    <span class="facet-value" ><?php echo $topic['topicTitle'];?></span>
-                  </span>
-                  <span class="badge"><?php echo $topic['topicCount'];?></span>
-                </a>
-              </span>
+              <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
+                <span class="text">
+                  <span class="facet-value" ><?php echo $topic['topicTitle'];?></span>
+                </span>
+                <span class="badge"><?php echo $topic['topicCount'];?></span>
+              </a>
             <?php endforeach; ?>
           </div>
         </div>
