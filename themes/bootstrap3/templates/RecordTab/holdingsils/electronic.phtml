@@ -22,7 +22,7 @@
         <?php else: ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
         <?php endif; ?>
-        <?php if (isset($item['item_notes'])): ?>
+        <?php if (!empty($item['item_notes'])): ?>
           <div class="item-notes">
             <b><?=$this->transEsc("Item Notes")?>:</b>
             <ul>
