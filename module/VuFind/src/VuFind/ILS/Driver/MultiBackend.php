@@ -42,11 +42,13 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
+    TranslatorAwareDriverInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
+    use TranslatorAwareDriverTrait;
 
     /**
      * ID fields in holds
@@ -773,7 +775,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
                 return [
                     'success' => false,
-                    'sysMessage' => 'hold_wrong_user_institution'
+                    'sysMessage' =>
+                        $this->translateIlsMessage('hold_wrong_user_institution')
                 ];
             }
             $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
