@@ -42,13 +42,12 @@ use VuFind\Exception\ILS as ILSException;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
-    \VuFind\I18n\Translator\TranslatorAwareInterface
+    \Laminas\Log\LoggerAwareInterface, TranslatorAwareDriverInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Cache\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use TranslatorAwareDriverTrait;
 
     /**
      * Is this a consortium? Default: false
@@ -245,13 +244,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         'Trap For Message' => 'message_from_library',
         'Trap For Pickup' => 'available_for_pickup_notification',
     ];
-
-    /**
-     * Domain used to translate messages from ILS
-     *
-     * @var string
-     */
-    protected $translationDomain = 'ILSMessages';
 
     /**
      * Other than 2xx HTTP status codes, which could be accepted as correct response.
@@ -2054,7 +2046,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $blocks = $this->getPatronBlocks($patron);
         $blocks = array_map(
             function ($block) {
-                return $this->translateMessage($this->blockCodes[$block] ?? $block);
+                return $this->translateIlsMessage(
+                    $this->blockCodes[$block] ?? $block
+                );
             },
             $blocks
         );
@@ -2774,17 +2768,5 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         }
         return [$location, $collection];
-    }
-
-    /**
-     * Translate a message from ILS
-     *
-     * @param string $message Message to be translated
-     *
-     * @return string
-     */
-    protected function translateMessage(string $message): string
-    {
-        return $this->translate($this->translationDomain . '::' . $message);
     }
 }
