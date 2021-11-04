@@ -505,9 +505,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         ];
 
         $identifier = 'Solr';
+
+        // Note: This query might be critical to peformance. Also set 'fl' parameter
+        //       to reduce the result size and avoid out of memory problems.
+        //       Example: Martin Luther, 133813363
         $titleRecords = $this->searchService->search($identifier,
                                                  new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
-                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
+                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC', 'fl' => 'id,topic,key_word_chain_bag,key_word_chain_bag*']));
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
             $keywords = $titleRecord->getTopics($this->getTranslatorLocale());
@@ -565,7 +569,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             }
         }
 
-        return [$mainTopicsArray,$settings];
+        return [$mainTopicsArray, $settings];
     }
 
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
