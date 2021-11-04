@@ -23,7 +23,7 @@
   </ul>
   <?php if ($relatedAuthorsCount > $previewLimit): ?>
     <p>
-      <a href="<?=$this->url('author-search')?>?author_id=<?=urlencode($authorId)?>"><?=$this->transEsc('see all')?> (<?=$relatedAuthorsCount?>)</a>
+      <a href="<?=$this->url('author-search')?>?author_id=<?=urlencode($this->driver->getUniqueId())?>"><?=$this->transEsc('see all')?> (<?=$relatedAuthorsCount?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>
