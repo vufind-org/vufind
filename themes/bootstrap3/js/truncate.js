@@ -104,7 +104,7 @@ VuFind.register('truncate', function Truncate() {
         var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">'
           + (settings['label-icons'] === 'before' ? settings['more-icon'] + ' ' : '')
           + '<span>' + moreLabel + '</span>'
-          + (settings['label-icons'] === 'after' ? ' '  + settings['more-icon'] : '')
+          + (settings['label-icons'] === 'after' ? ' ' + settings['more-icon'] : '')
           + '</button>';
         var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">'
           + (settings['label-icons'] === 'before' ? settings['less-icon'] + ' ' : '')
