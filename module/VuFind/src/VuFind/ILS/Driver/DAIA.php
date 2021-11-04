@@ -990,8 +990,10 @@ class DAIA extends AbstractBase implements
         // In this DAIA driver implementation addLink and is_holdable are assumed
         // Boolean as patron based availability requires either a patron-id or -type.
         // This should be handled in a custom DAIA driver
-        $return['addLink']     = $this->checkIsRecallable($item);
-        $return['is_holdable'] = $this->checkIsRecallable($item);
+        // For loan an item is either holdable or recallable - not both
+        $addLink = $this->checkIsHoldable($item) ?: $this->checkIsRecallable($item);
+        $return['addLink']     = $addLink;
+        $return['is_holdable'] = $addLink;
         $return['holdtype']    = $this->getHoldType($item);
 
         // Check if we the item is available for storage retrieval request if it is
@@ -1031,6 +1033,37 @@ class DAIA extends AbstractBase implements
     {
         // status cannot be null as this will crash the translator
         return '';
+    }
+
+    /**
+     * Helper function to determine if item is holdable.
+     * If so DAIA provides a link for an available loan service. Therefore this
+     * returns whether an item is holdable based on available services and the
+     * existence of an href 
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return bool
+     */
+    protected function checkIsHoldable($item)
+    {
+        // This basic implementation checks the item for being available for loan
+        // but with an existing href (as a flag for further action).
+        $href = false;
+        if (isset($item['available'])) {
+            // check if item is loanable and has an href
+            foreach ($item['available'] as $available) {
+                if (isset($available['service'])
+                    && $available['service'] == 'loan'
+                    && isset($available['href'])
+                ) {
+                    // attribute href is used to determine whether item is recallable
+                    // or not
+                    $href = true;
+                }
+            }
+        }
+        return $href;
     }
 
     /**
