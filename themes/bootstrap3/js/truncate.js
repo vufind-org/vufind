@@ -14,7 +14,7 @@ VuFind.register('truncate', function Truncate() {
       'top-toggle': Infinity,
       'wrapper-class': '', // '' will glean from element, false or null will exclude a class
       'wrapper-tagname': null, // falsey values will glean from element
-      'label-icons': 'after' // 'after' = icon after label, 'before' = icon before label, false = no icons
+      'label-icons': 'before' // 'after' = icon after label, 'before' = icon before label, false = no icons
     };
 
     var zeroHeightContainers = [];
