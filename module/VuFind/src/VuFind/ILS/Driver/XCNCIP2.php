@@ -1765,7 +1765,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function placeRequest($details, $type = 'Hold')
     {
-        $msgPrefix = ($type == 'Stack Retrieval') ? 'Storage Retrieval ' : '';
+        $msgPrefix = ($type == 'Stack Retrieval') ? 'storage_retrieval_' : 'hold_';
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
         $bibId = $details['bib_id'];
@@ -1785,11 +1785,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lastInterestDateStr = $lastInterestDate->format('c');
         $successReturn = [
             'success' => true,
-            'sysMessage' => $msgPrefix . 'Request Successful.'
+            'sysMessage' =>
+                $this->translateMessage($msgPrefix . 'request_successful'),
         ];
         $failureReturn = [
             'success' => false,
-            'sysMessage' => $msgPrefix . 'Request Not Successful.'
+            'sysMessage' =>
+                $this->translateMessage($msgPrefix . 'request_not_successful'),
         ];
 
         $request = $this->getRequest(
