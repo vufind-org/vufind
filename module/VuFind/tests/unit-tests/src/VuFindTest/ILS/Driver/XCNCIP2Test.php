@@ -471,30 +471,30 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         = [
             [
                 'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
-                'success' => true, 'sysMessage' => 'Request Successful.'
+                'success' => true, 'sysMessage' => 'hold_request_successful'
             ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
-                    'success' => true, 'sysMessage' => 'Request Successful.'
+                    'success' => true, 'sysMessage' => 'hold_request_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDenied.xml', 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
                 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
                 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
                 ],
             ],
         ];
@@ -509,35 +509,35 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
                 'success' => true,
-                'sysMessage' => 'Storage Retrieval Request Successful.'
+                'sysMessage' => 'storage_retrieval_request_successful'
             ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
                     'success' => true,
-                    'sysMessage' => 'Storage Retrieval Request Successful.'
+                    'sysMessage' => 'storage_retrieval_request_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDenied.xml', 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
+                    'sysMessage' => 'storage_retrieval_request_not_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
                 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
+                    'sysMessage' => 'storage_retrieval_request_not_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
                 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
+                    'sysMessage' => 'storage_retrieval_request_not_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
+                    'sysMessage' => 'storage_retrieval_request_not_successful'
                 ],
             ],
         ];
