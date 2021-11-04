@@ -1998,8 +1998,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function renewMyItems($renewDetails)
     {
         $details = [];
+        $username = $renewDetails['patron']['cat_username'];
         foreach ($renewDetails['details'] as $detail) {
-            $username = $renewDetails['patron']['cat_username'];
             [$agencyId, $itemId] = explode("|", $detail);
             $failureReturn = [
                 "success" => false,
