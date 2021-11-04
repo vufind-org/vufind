@@ -139,7 +139,37 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 ],
 
         ],
-        'electronic_holdings' => []
+        'electronic_holdings' => [
+            0 =>
+                [
+                    'status' =>    '',
+                    'availability' => true,
+                    'duedate' => null,
+                    'requests_placed' => '',
+                    'id' => "027586081",
+                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134780",
+                    'ilslink' => "",
+                    'number' => 1,
+                    'barcode' => "1",
+                    'reserve' => "N",
+                    'callnumber' => "JKL 78",
+                    'location' => 'access only from university campus',
+                    'locationid' => '',
+                    'locationhref' => 'https://example-publisher.org/newspaper02/issue12/article04',
+                    'storage' => '',
+                    'storageid' => '',
+                    'storagehref' => '',
+                    'item_notes' => [],
+                    'services' => ['remote'],
+                    'is_holdable' => false,
+                    'addLink' => false,
+                    'holdtype' => null,
+                    'addStorageRetrievalRequestLink' => false,
+                    'customData' => [],
+                    'limitation_types' => [],
+                    'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                ],
+        ],
     ];
 
     /**
