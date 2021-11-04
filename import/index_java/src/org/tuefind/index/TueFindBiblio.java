@@ -427,9 +427,12 @@ public class TueFindBiblio extends TueFind {
             final char indicator1 = field.getIndicator1();
             final char indicator2 = field.getIndicator2();
             // The existence of subfield 3 == Volltext or Indicators 4 0 or 4 1 means full text (c.f. https://github.com/ubtue/tuefind/issues/1782)
-            if ((subfield_3 != null && subfield_3.getData() == "Volltext") ||
-                (indicator1 == '4' && (indicator2 == '0' || indicator2 == '1'))) {
-                    materialType = "Volltext";
+            if (indicator1 == '4' && (indicator2 == '0' || indicator2 == '1'))
+                materialType = "Volltext";
+            else if (subfield_3 != null) {
+                materialType =  subfield_3.getData();
+                if (code_to_material_type_map.containsKey(materialType))
+                    materialType = code_to_material_type_map.get(materialType);
                 if (subfield_z != null)
                     materialLicence = subfield_z.getData();
                 else if (subfield_x != null)
