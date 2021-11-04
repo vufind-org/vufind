@@ -125,6 +125,13 @@ VuFind.register('lightbox', function Lightbox() {
     if (_originalUrl === false) {
       _originalUrl = obj.url;
     }
+    // Loading
+    $(_modalBody).find('.modal-loading-overlay,.loading-spinner').remove();
+    if (_modalBody.children().length > 0) {
+      _modalBody.prepend('<div class="modal-loading-overlay">' + VuFind.loading() + '</div>');
+    } else {
+      _modalBody.prepend(VuFind.loading());
+    }
     // Add lightbox GET parameter
     if (!obj.url.match(/layout=lightbox/)) {
       var parts = obj.url.split('#');
@@ -316,13 +323,6 @@ VuFind.register('lightbox', function Lightbox() {
         this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
         _evalCallback($(form).data('lightboxOnclose'), e, form);
       }, false);
-    }
-    // Loading
-    $(_modalBody).find('.modal-loading-overlay,.loading-spinner').remove();
-    if (_modalBody.children().length > 0) {
-      _modalBody.prepend('<div class="modal-loading-overlay">' + VuFind.loading() + '</div>');
-    } else {
-      _modalBody.prepend(VuFind.loading());
     }
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
