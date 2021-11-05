@@ -7,7 +7,7 @@
     </xi:include>
 
     <!--<fieldType name="textFacetRaw" class="solr.TextField" sortMissingLast="true" omitNorms="true">
-	     <analyzer>
+           <analyzer>
        	         <tokenizer class="solr.KeywordTokenizerFactory"/>
             </analyzer>
         </fieldType>-->
