@@ -82,6 +82,6 @@
 
   <!-- TueFind custom settings, field types and fields -->
   <!-- the following files are not supposed to be in git, need to be symlinks to database description xml on machine -->
-  <xi:include href="schema_tuefind_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
-  <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  <xi:include href="schema_local_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  <xi:include href="schema_local_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 </schema>
