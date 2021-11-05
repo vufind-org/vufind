@@ -581,6 +581,9 @@ abstract class Results
     public function setExtraData(array $data): void
     {
         // Not implemented in the base class
+        if (!empty($data)) {
+            error_log(get_class($this) . ': Extra data passed but not handled');
+        }
     }
 
     /**
