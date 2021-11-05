@@ -165,6 +165,9 @@ li.jstree-node {
 li.jstree-facet .badge {
   cursor: text;
 }
+.jstree-facet .jstree-ocl {
+  float: left;
+}
 
 /* RTL */
 body.rtl {
@@ -177,6 +180,9 @@ body.rtl {
   }
   .jstree-leaf > .jstree-ocl::before {
     content: "\25C2"; // Unicode black left-pointing small triangle
+  }
+  .jstree-facet .jstree-ocl {
+    float: right;
   }
   .jstree-facet .active > .jstree-anchor .facet {
       padding-left: 0;
