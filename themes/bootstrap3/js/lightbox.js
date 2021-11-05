@@ -126,7 +126,7 @@ VuFind.register('lightbox', function Lightbox() {
       _originalUrl = obj.url;
     }
     // Loading
-    $(_modalBody).find('.modal-loading-overlay,.loading-spinner').remove();
+    _modalBody.find('.modal-loading-overlay,.loading-spinner').remove();
     if (_modalBody.children().length > 0) {
       _modalBody.prepend('<div class="modal-loading-overlay">' + VuFind.loading() + '</div>');
     } else {
