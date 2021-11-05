@@ -74,7 +74,7 @@ class Minified
     public $hf = [];
 
     /**
-     * Search ID, start tIme, query Speed, Result total, search TYpe, search CLass id
+     * Search ID
      *
      * @var int
      */
