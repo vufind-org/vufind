@@ -90,10 +90,6 @@
 .jstree-facet {
   padding: 0;
 
-  .jstree-ocl::before {
-    float: left;
-  }
-
   .jstree-node.list-group-item {
     padding: 0.5rem;
   }
@@ -169,6 +165,9 @@ li.jstree-node {
 li.jstree-facet .badge {
   cursor: text;
 }
+.jstree-facet .jstree-ocl {
+  float: left;
+}
 
 /* RTL */
 body.rtl {
@@ -176,17 +175,14 @@ body.rtl {
     padding-left: 0;
     padding-right: 1rem;
   }
-  .jstree-ocl::before {
-    float: right;
-  }
   .jstree-closed > .jstree-ocl::before {
     content: "\25C0"; // Unicode black left-pointing triangle
   }
   .jstree-leaf > .jstree-ocl::before {
     content: "\25C2"; // Unicode black left-pointing small triangle
   }
-  .jstree-facet .main.applied .fa-check {
-    float: left !important;
+  .jstree-facet .jstree-ocl {
+    float: right;
   }
   .jstree-facet .active > .jstree-anchor .facet {
       padding-left: 0;
