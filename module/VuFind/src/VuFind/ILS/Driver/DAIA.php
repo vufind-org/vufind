@@ -624,7 +624,7 @@ class DAIA extends AbstractBase implements
             $docs = json_decode($daiaResponse, true);
         }
 
-        if (count($docs)) {
+        if (!empty($docs) && is_array($docs)) {
             // check for error messages and write those to log
             if (isset($docs['message'])) {
                 $this->logMessages($docs['message'], 'document');
