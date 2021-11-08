@@ -9,6 +9,9 @@
       <?php if ($holding['enumchron'] ?? false): ?>
         <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
       <?php endif; ?>
+      <?php if ($holding['item_chronology'] ?? false): ?>
+        <?=$this->escapeHtml($holding['item_chronology'])?>
+      <?php endif; ?>
     </th>
     <td class="getit" id="getit_<?php echo $holding['item_hrid'];?>">
       <?php if ($holding['reserve'] == "Y"): ?>

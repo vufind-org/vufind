@@ -623,6 +623,7 @@ class Folio extends AbstractAPI implements
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
                     'enumeration' => $item->enumeration ?? '',
+                    'item_chronology' => $item->chronology ?? '',
                     'addLink' => true
                 ];
             }
