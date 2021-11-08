@@ -1,4 +1,4 @@
-<?php if (strlen($holding['barcode'] ?? '') > 0): ?>
+<?php if (strlen($holding['barcode'] ?? '') > 0 || str_contains($holding['location_code'], 'cush')): ?>
   <?php
     $check = $holding['check'] ?? false;
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
