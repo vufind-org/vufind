@@ -160,6 +160,13 @@ class RecordDataFormatterFactory implements FactoryInterface
                            . '<span property="name">',
              'itemSuffix' => '</span></span>']
         );
+        $spec->setLine(
+            'Language Notes',
+            'getLanguageNote',
+            null,
+            ['itemPrefix' => '<span property="notesLanguage">',
+             'itemSuffix' => '</span>']
+        );		
         $spec->setTemplateLine(
             'Published',
             'getPublicationDetails',
@@ -277,6 +284,13 @@ class RecordDataFormatterFactory implements FactoryInterface
             ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
                            . '<span property="name">',
              'itemSuffix' => '</span></span>']
+        );
+        $spec->setLine(
+            'Language Notes',
+            'getLanguageNote',
+            null,
+            ['itemPrefix' => '<span property="notesLanguage">',
+             'itemSuffix' => '</span>']
         );
         $spec->setTemplateLine(
             'Published',
