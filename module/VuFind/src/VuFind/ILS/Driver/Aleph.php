@@ -1412,6 +1412,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $z30 = $item->z30;
             //$delete = $item->xpath('@delete');
             $title = (string)$z13->{'z13-title'};
+            $description = (string)$z31->{'z31-description'};
             $transactiondate = date('d-m-Y', strtotime((string)$z31->{'z31-date'}));
             $transactiontype = (string)$z31->{'z31-credit-debit'};
             $id = (string)$z13->{'z13-doc-number'};
@@ -1434,7 +1435,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     "transactiontype" => $transactiontype,
                     "checkout" => $this->parseDate($checkout),
                     "balance"  => $balance,
-                    "id"  => $id
+                    "id"  => $id,
+                    "fine" => $description,
             ];
         }
         ksort($finesListSort);
@@ -1447,6 +1449,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $transactiontype = $finesListSort[$key]["transactiontype"];
             $balance += $finesListSort[$key]["amount"];
             $id = $finesListSort[$key]["id"];
+            $fine = $finesListSort[$key]["fine"];
             $finesList[] = [
                 "title"   => $title,
                 "barcode"  => $barcode,
@@ -1457,6 +1460,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 "checkout" => $checkout,
                 "id"  => $id,
                 "printLink" => "test",
+                "fine" => $fine,
             ];
         }
         return $finesList;
