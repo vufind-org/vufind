@@ -1,5 +1,5 @@
 <?php
-$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); if(!empty($responseTopicsDataAndSettings[0])) :
+$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver); if(!empty($responseTopicsDataAndSettings[0])) :
 
 $this->headLink()->appendStylesheet('vendor/jqcloud.css');
 $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
@@ -60,12 +60,12 @@ EOD;
         <div class="lightbox-scroll full-facets" style="max-height: 350px;">
           <div class="facet-group" id="facet-list-count">
             <?php foreach($ascSortingTopicsData as $topic): ?>
-            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=<?=$responseTopicsSettings['filter'].':'.$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
-              <span class="text">
-                <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
-              </span>
-              <span class="badge"><?php echo $topic['topicCount'];?></span>
-            </a>
+              <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
+                <span class="text">
+                  <span class="facet-value" ><?php echo $topic['topicTitle'];?></span>
+                </span>
+                <span class="badge"><?php echo $topic['topicCount'];?></span>
+              </a>
             <?php endforeach; ?>
           </div>
         </div>
@@ -74,9 +74,9 @@ EOD;
         <div class="lightbox-scroll full-facets" style="max-height: 350px;">
           <div class="facet-group" id="facet-list-count">
             <?php foreach($countSortingTopicsData as $topic): ?>
-            <a href="<?=$this->url('search-results')?>?lookfor=<?=$this->driver->getHeadingShort()?>&type=AllFields&filter[]=<?=$responseTopicsSettings['filter'].':'.$topic['topicUpdate']?>" class="facet js-facet-item facetAND">
+            <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
               <span class="text">
-                <span class="facet-value"><?php echo $topic['topicUpdate'];?></span>
+                <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
               </span>
               <span class="badge"><?php echo $topic['topicCount'];?></span>
             </a>

@@ -74,9 +74,9 @@
   <?php if ($recordTotal > 0): ?>
     <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
-      <?php foreach ($this->results->getResults() as $i => $current): ?>
-        <?=$this->record($current)->getListEntry($list, $user)?>
-      <?php endforeach; ?>
+      <?php $evenOrOdd = ['panel-gray','panel-body']; $icolor = 0; foreach ($this->results->getResults() as $i => $current): ?>
+        <div class="<?=$evenOrOdd[$icolor];?> tf-nopadding"><?=$this->record($current)->getListEntry($list, $user)?></div>
+      <?php $icolor++; if($icolor==2){ $icolor = 0; } endforeach; ?>
     </form>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
   <?php else: ?>

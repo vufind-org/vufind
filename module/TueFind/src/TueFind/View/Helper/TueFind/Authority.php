@@ -92,9 +92,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getExternalReferences(AuthorityRecordDriver &$driver): string
+    public function getBibliographicalReferences(AuthorityRecordDriver &$driver): string
     {
-        $references = $driver->getExternalReferences();
+        $references = $driver->getBibliographicalReferences();
         if (count($references) == 0)
             return '';
 
@@ -107,9 +107,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getExternalResources(AuthorityRecordDriver &$driver): string
+    public function getArchivedMaterial(AuthorityRecordDriver &$driver): string
     {
-        $references = $driver->getExternalResources();
+        $references = $driver->getArchivedMaterial();
         if (count($references) == 0)
             return '';
 
@@ -119,9 +119,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         foreach ($references as $reference) {
             $title = $reference['title'];
             if (preg_match('"Kalliope"', $title))
-                $title = $this->translate('Archived Material') . ' (Kalliope)';
+                $title = 'Kalliope';
             elseif (preg_match('"Archivportal-D"', $title))
-                $title = $this->translate('Archived Material') . ' (Archivportal-D)';
+                $title = 'Archivportal-D';
 
             $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($title) . '</a><br>';
         }
@@ -148,18 +148,22 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getName(AuthorityRecordDriver &$driver): string
     {
-        $name = $driver->getHeadingShort();
-        $timespan = $driver->getHeadingTimespan();
+        if ($driver->isMeeting()) {
+            return '<span property="name">' . htmlspecialchars($driver->getMeetingName()) . '</span>';
+        } else {
+            $name = $driver->getHeadingShort();
+            $timespan = $driver->getHeadingTimespan();
 
-        $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
-        if ($timespan != null)
-            $heading .= ' ' . htmlspecialchars($timespan);
-        return $heading;
+            $heading = '<span property="name">' . htmlspecialchars($name) . '</span>';
+            if ($timespan != null)
+                $heading .= ' ' . htmlspecialchars($timespan);
+            return $heading;
+        }
     }
 
     public function getOccupations(AuthorityRecordDriver &$driver): string
     {
-        $occupations = $driver->getOccupations();
+        $occupations = $driver->getOccupations($this->getTranslatorLocale());
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
@@ -231,7 +235,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
 
             if (isset($relation['type']))
-                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+                $relationsDisplay .= ' (' . htmlspecialchars($this->translate($relation['type'])) . ')';
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
@@ -239,6 +243,23 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $relationsDisplay .= '</span>';
         }
         return $relationsDisplay;
+    }
+
+    public function getGeographicalRelations(AuthorityRecordDriver &$driver): string
+    {
+        $placesString = '';
+
+        $places = $driver->getGeographicalRelations();
+        foreach ($places as $place) {
+            if ($place['type'] == 'DIN-ISO-3166') {
+                $place['type'] = 'Country';
+                $place['name'] = \Locale::getDisplayRegion($place['name'], $this->getTranslatorLocale()) . ' (' . $place['name'] . ')';
+            }
+
+            $placesString .= htmlentities($this->translate($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
+        }
+
+        return $placesString;
     }
 
     public function getSchemaOrgType(AuthorityRecordDriver &$driver): string
@@ -328,6 +349,11 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $parts[] = '(' . $this->getTitlesByQueryParams($author) . ')';
         }
         return implode(' AND ', $parts);
+    }
+
+    public function getTimespans(AuthorityRecordDriver &$driver): string
+    {
+        return implode('<br>', $driver->getTimespans());
     }
 
     protected function getTitlesAboutQueryParams(&$author, $fuzzy=false): string
@@ -462,13 +488,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             }
         }
 
-
-
-
         return $chartData;
     }
 
-    public function getTopicsData(AuthorityRecordDriver &$driver, $language='en'): array
+    public function getTopicsData(AuthorityRecordDriver &$driver): array
     {
 
         $settings = [
@@ -482,13 +505,20 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         ];
 
         $identifier = 'Solr';
+
+        // Note: This query might be critical to peformance. Also set 'fl' parameter
+        //       to reduce the result size and avoid out of memory problems.
+        //       Example: Martin Luther, 133813363
         $titleRecords = $this->searchService->search($identifier,
                                                  new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
-                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
+                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC', 'fl' => 'id,topic,key_word_chain_bag,key_word_chain_bag*']));
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
-            $keywords = $titleRecord->getTopics($language);
+            $keywords = $titleRecord->getTopics($this->getTranslatorLocale());
             foreach ($keywords as $keyword) {
+                if(strpos($keyword, "\\") !== false) {
+                    $keyword = str_replace("\\", "", $keyword);
+                }
                 if (isset($countedTopics[$keyword])) {
                     ++$countedTopics[$keyword];
                 } else {
@@ -513,10 +543,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {
-            $updateString = str_replace([','], '', $topic);
-            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicUpdate'=>$updateString, 'topicLink'=>$topicLink.$topic];
+            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicLink'=>$topicLink.$topic];
         }
-
         $mainTopicsArray = [];
         if(!empty($topicsArray)){
             $topWeight = $settings['maxNumber'];
@@ -541,7 +569,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             }
         }
 
-        return [$mainTopicsArray,$settings];
+        return [$mainTopicsArray, $settings];
     }
 
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool

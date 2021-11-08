@@ -13,6 +13,7 @@ DIR="$(dirname $(readlink --canonicalize "$0"))"
 echo updating solr configuration...
 $DIR/solr/vufind/biblio/conf/make_symlinks.sh
 $DIR/solr/vufind/biblio/conf/generate_xml.sh
+$DIR/solr/vufind/authority/conf/generate_xml.sh
 $DIR/solr/vufind/biblio/conf/touch_synonyms.sh
 
 echo updating solrmarc configuration...
