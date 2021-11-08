@@ -95,7 +95,7 @@ class DAIA extends AbstractBase implements
         'presentation',
         'remote',
         'openaccess',
-    ]; 
+    ];
 
     /**
      * DAIA response format
@@ -830,7 +830,8 @@ class DAIA extends AbstractBase implements
      *
      * @return bool
      */
-    protected function serviceIsElectronic($status) {
+    protected function serviceIsElectronic($status)
+    {
         if (!empty($status['locationhref'])) {
             if (in_array('openaccess', $status['services'])) {
                 // service openaccess is always electronic
@@ -838,7 +839,7 @@ class DAIA extends AbstractBase implements
             } elseif (in_array('remote', $status['services'])
                 && $status['delay'] == 'PT0S') {
                 // service remote is electronic if there is no delay according
-                // to documentaion. delay is mandatory for this service
+                // to documentation. delay is mandatory for this service
                 return true;
             }
         }
@@ -882,7 +883,7 @@ class DAIA extends AbstractBase implements
                             $location[] = $available['title']
                                 ?? $available['href'];
                         }
-                    } 
+                    }
                     if (!empty($available['delay'])) {
                         // we need this to determine if a remote service is
                         // electronic
@@ -1048,7 +1049,7 @@ class DAIA extends AbstractBase implements
      * Helper function to determine if item is holdable.
      * If so DAIA provides a link for an available loan service. Therefore this
      * returns whether an item is holdable based on available services and the
-     * existence of an href 
+     * existence of an href
      *
      * @param array $item Array with DAIA item data
      *
