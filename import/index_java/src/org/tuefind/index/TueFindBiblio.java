@@ -3076,7 +3076,7 @@ public class TueFindBiblio extends TueFind {
         }
 
         for (Entry<String,String> pair : authorToId.entrySet()){
-            result.add(pair.getValue() + separator + pair.getKey());
+	    result.add(pair.getKey() + separator + pair.getValue());
         }
 
         return result;

@@ -7,7 +7,7 @@
     <?php $i=0; ?>
     <?php foreach ($relatedAuthors as $authorIdAndTitle => $authorDetails): ?>
       <?php if (++$i > $previewLimit) break;?>
-      <?php list($authorId, $authorTitle) = explode(':', $authorIdAndTitle); ?>
+      <?php list($authorTitle,$authorId) = explode(':', $authorIdAndTitle); ?>
       <li class="list-group-item" property="relatedTo" typeof="Person">
         <span property="name"><?=$authorTitle?></span>
         <?php if ($authorId != '' && ($authorityDriver = $this->authority()->recordExists($authorId))): ?>
