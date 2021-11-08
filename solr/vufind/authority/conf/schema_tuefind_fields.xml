@@ -12,10 +12,6 @@
     <field name="orcid" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="place" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="subsystem" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="title_count_ixtheo" type="long" indexed="true" stored="true" multiValued="false"/>
-    <field name="title_count_relbib" type="long" indexed="true" stored="true" multiValued="false"/>
-    <field name="title_count_bibstudies" type="long" indexed="true" stored="true" multiValued="false"/>
-    <field name="title_count_canonlaw" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="type" type="string" indexed="true" stored="true"/>
     <field name="viaf" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="wikidata" type="string" indexed="true" stored="true"/>
