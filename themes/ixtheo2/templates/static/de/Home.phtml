@@ -23,6 +23,22 @@
 .three-links .cw-overlay-content {
     opacity: 1;
 }
+.ix-slick-slider-item {
+    border-radius: 7px;
+}
+.ix-news-panel-1 {
+    background-color: #EEEEEE;
+}
+.ix-news-panel {
+    border-radius: 12px;
+}
+.ix-news-container-footer {
+    margin-top: -24px;
+    border-radius: 5px;
+}
+.ix-slick-slider-item-title {
+    border-radius:0 0 5px 5px;
+}
 </style>
 
 <div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0; margin-bottom: 0px;">
@@ -155,6 +171,7 @@ EOD;
                                     <div><small>Theologische Lexika durchsuchen</small></div>
                                 </a>
 			    </div>
+                            <div style="clear:both;">&nbsp;</div>
 			    <div class="ix-news-container-footer">Alle Services</div>
                         </div>
                     </div>
@@ -321,7 +338,8 @@ EOD;
 
 <section class="cw-py-7 cw-position-relative cw-dark-overlay">
     <a href="<?=$this->url('content-page', ['page' => 'networking']) ?>">
-        <img src="<?=$this->imageLink('cw/photo-1497436072909-60f360e1d4b1.jpg')?>" alt="" class="cw-bg-image">
+        <?php /* <img src="<?=$this->imageLink('cw/photo-1497436072909-60f360e1d4b1.jpg')?>" alt="" class="cw-bg-image"> */ ?>
+        <img src="<?=$this->imageLink('searchbar.jpg')?>" alt="" class="cw-bg-image">
         <div class="container">
             <div class="cw-overlay-content cw-text-white cw-py-lg-5">
                 <h3 class="cw-display-3 cw-font-weight-bold cw-text-serif cw-text-shadow cw-mb-5">Networking</h3>
