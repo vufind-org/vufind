@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fields>
+    <!-- COMMON fields -->
+    <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//field)"/>
+
+    <!-- CUSTOM fields - only KrimDok -->
+    <field name="title_count_krimdok" type="long" indexed="true" stored="true" multiValued="false"/>
+
+    <!-- COMMON copyFields -->
+    <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>
+
+    <!-- CUSTOM copyFields - only IxTheo/RelBib -->
+    <!--<copyField source="topic" dest="topic_browse"/>-->
+</fields>
