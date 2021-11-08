@@ -140,7 +140,7 @@
     );?>
   </form>
   <?php if ($advSearch): ?>
-    <div class="container">
+    <div>
       <ul class="nav nav-pills">
           <li>
             <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced Search")?></a>
@@ -182,6 +182,17 @@
                  </div>
               </div>
             </form>
+          </li>
+          <li class="dropdown pull-right">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                  <?=$this->transEsc('Virtual Keyboard')?> <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li role="button" class="text-center virtual-keyboard-greek"><?=$this->transEsc('Greek')?></li>
+                <li role="button" class="text-center virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></li>
+                <?php $virtualKeyboardSnippet = '$(triggerVirtualKeyboard(\'' . $this->transEsc("Accept") . ':' . $this->transEsc("Accept") . '\', \'' . $this->transEsc("Enter") . ':' . $this->transEsc("Enter") . '\'));'; ?>
+                <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $virtualKeyboardSnippet, 'SET')?>
+            </ul>
           </li>
       </ul>
     <?php endif; ?>
