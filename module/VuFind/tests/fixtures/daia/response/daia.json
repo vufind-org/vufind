@@ -99,6 +99,29 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                      "service" : "interloan"
                   }
                ]
+            },
+            {
+               "department" : {
+                  "href" : "http://www.example-library.edu",
+                  "content" : "Example Library for DAIA Tests",
+                  "id" : "http://uri.gbv.de/organization/isil/DE-000"
+               },
+               "href" : "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+               "label" : "JKL 78",
+               "id" : "http://uri.gbv.de/document/opac-de-000:epn:711134780",
+               "available" : [
+                  {
+                     "service" : "remote"
+                  },
+                  {
+                     "href" : "https://example-publisher.org/newspaper02/issue12/article04"
+                  },
+                  {
+                     "title" : "access only from university campus"
+                  },
+                  {
+                     "delay" : "PT0S"
+                  }
             }
          ],
          "id" : "http://uri.gbv.de/document/opac-de-000:ppn:027586081"
