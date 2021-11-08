@@ -158,7 +158,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'reserve' => "N",
                     'callnumber' => "JKL 78",
                     'location' => ['access only from university campus'],
-                    'locationid' => 'http://uri.gbv.de/document/opac-de-000:epn:711134780',
+                    'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
                     'locationhref' => ['https://example-publisher.org/newspaper02/issue12/article04'],
                     'storage' => 'Unknown',
                     'storageid' => '',
