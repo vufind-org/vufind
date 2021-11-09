@@ -194,6 +194,15 @@ class SolrMarc extends SolrDefault
         return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isTADTagged();
     }
 
+    public function workIsKfLCandidate()
+    {
+        return false;
+        // So far, only available for "Handbuch der Religionen".
+        // Implementation will be changed as soon as
+        // additional information about MARC fields is provided.
+        //return in_array('1677766123', $this->fields['ids']);
+    }
+
     public function suppressDisplayByFormat()
     {
         if (in_array('Weblog', $this->getFormats()))
