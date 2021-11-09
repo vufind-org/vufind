@@ -59,7 +59,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * CSRF Validator
      *
-     * @var \VuFind\Validator\TokenCountingCsrfInterface $csrf CSRF validator
+     * @var TokenCountingCsrfInterface $csrf CSRF validator
      */
     protected $csrf = null;
 
@@ -118,7 +118,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      */
     public function __construct(
         \Laminas\Session\SessionManager $session,
-        \VuFind\Validator\TokenCountingCsrfInterface $csrf,
+        TokenCountingCsrfInterface $csrf,
         \VuFind\Mailer\Mailer $mailer,
         \Laminas\View\Renderer\RendererInterface $viewRenderer,
         RemoteAddress $remoteAddr,
