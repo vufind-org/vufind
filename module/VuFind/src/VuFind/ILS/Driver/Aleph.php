@@ -1425,7 +1425,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 * $mult;
             $cashref = (string)$z31->{'z31-sequence'};
             //$cashdate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
-            $balance = 0;
 
             $finesListSort["$cashref"]  = [
                     "title"   => $title,
@@ -1434,7 +1433,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     "transactiondate" => $transactiondate,
                     "transactiontype" => $transactiontype,
                     "checkout" => $this->parseDate($checkout),
-                    "balance"  => $balance,
                     "id"  => $id,
                     "fine" => $description,
             ];
@@ -1447,7 +1445,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $checkout = $finesListSort[$key]["checkout"];
             $transactiondate = $finesListSort[$key]["transactiondate"];
             $transactiontype = $finesListSort[$key]["transactiontype"];
-            $balance = $finesListSort[$key]["amount"];
             $id = $finesListSort[$key]["id"];
             $fine = $finesListSort[$key]["fine"];
             $finesList[] = [
@@ -1456,7 +1453,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 "amount"   => $amount,
                 "transactiondate" => $transactiondate,
                 "transactiontype" => $transactiontype,
-                "balance"  => $balance,
+                "balance"  => $amount,
                 "checkout" => $checkout,
                 "id"  => $id,
                 "printLink" => "test",
