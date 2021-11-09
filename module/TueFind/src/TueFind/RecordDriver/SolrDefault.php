@@ -512,7 +512,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
      */
     public function getTopics($language=null): array
     {
-        return array_unique($this->fields['topic']) ?? [];
+        return array_unique($this->fields['topic'] ?? []);
     }
 
 
