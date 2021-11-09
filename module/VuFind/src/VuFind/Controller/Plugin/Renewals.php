@@ -28,6 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFind\Validator\TokenCountingCsrfInterface;
 
 /**
  * Action helper to perform renewal-related actions
@@ -75,7 +76,7 @@ class Renewals extends AbstractPlugin
      * @param \Laminas\Stdlib\Parameters $request       Request object
      * @param \VuFind\ILS\Connection     $catalog       ILS connection object
      * @param array                      $patron        Current logged in patron
-     * @param \VuFind\Validator\Csrf     $csrfValidator CSRF validator
+     * @param TokenCountingCsrfInterface $csrfValidator CSRF validator
      *
      * @return array                  The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)

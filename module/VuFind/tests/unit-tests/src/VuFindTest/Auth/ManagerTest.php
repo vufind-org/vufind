@@ -538,7 +538,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $pm = $this->getMockPluginManager();
         }
         $cookies = new \VuFind\Cookie\CookieManager([]);
-        $csrf = new \VuFind\Validator\Csrf(
+        $csrf = new \VuFind\Validator\TokenCountingCsrf(
             [
                 'session' => new \Laminas\Session\Container('csrf', $sessionManager),
                 'salt' => 'csrftest'

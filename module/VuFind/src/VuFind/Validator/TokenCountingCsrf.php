@@ -36,7 +36,8 @@ namespace VuFind\Validator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Csrf extends \Laminas\Validator\Csrf
+class TokenCountingCsrf extends \Laminas\Validator\Csrf
+    implements TokenCountingCsrfInterface
 {
     /**
      * How many tokens are currently stored in the session?
