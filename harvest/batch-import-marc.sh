@@ -124,7 +124,7 @@ do
     $VUFIND_HOME/import-marc.sh $file 2> >(log $file)
     if [ $MOVE_DATA == true ]
     then
-      mv $file $BASEPATH/processed/`basename $file`
+      mv -f $file $BASEPATH/processed/`basename $file`
     fi
   fi
 done
