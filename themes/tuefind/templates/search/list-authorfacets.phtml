@@ -10,7 +10,7 @@
       <tr>
         <td>
           <?php if ($this->tuefind()->isSearchTabEnabled('SolrAuth')): ?>
-            <?php if (stripos($record['value'], ":") !== false): $nameAndId = explode(":", $record['value']); $authorityId = $nameAndId[0]; $authorName = $nameAndId[1]; ?>
+            <?php if (stripos($record['value'], ":") !== false): list($authorName,$authorityId) = explode(":", $record['value']); ?>
               <?=$this->escapeHtml($authorName)?>
               <?php if ($authorityId != '' && ($authorityDriver = $this->authority()->recordExists($authorityId)) && $referenceDriver != null): ?>
                 <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($referenceDriver, $authorityDriver))?>"><i class="fa fa-link" aria-hidden="true" title="<?=$this->transEsc('author_joint_titles_tooltip')?>"></i></a>

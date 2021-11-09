@@ -11,7 +11,7 @@ $jsData = '';
 $itopic = 1;
 foreach($responseTopicsData as $topic) {
     if($itopic <= $responseTopicsSettings['maxTopicRows']) {
-        $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_blank"}},';
+        $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_self"}},';
     }
     $itopic++;
 }
