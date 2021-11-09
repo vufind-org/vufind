@@ -1447,7 +1447,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $checkout = $finesListSort[$key]["checkout"];
             $transactiondate = $finesListSort[$key]["transactiondate"];
             $transactiontype = $finesListSort[$key]["transactiontype"];
-            $balance += $finesListSort[$key]["amount"];
+            $balance = $finesListSort[$key]["amount"];
             $id = $finesListSort[$key]["id"];
             $fine = $finesListSort[$key]["fine"];
             $finesList[] = [
