@@ -837,7 +837,8 @@ class DAIA extends AbstractBase implements
                 // service openaccess is always electronic
                 return true;
             } elseif (in_array('remote', $status['services'])
-                && $status['delay'] == 'PT0S') {
+                && $status['delay'] == 'PT0S'
+            ) {
                 // service remote is electronic if there is no delay according
                 // to documentation. delay is mandatory for this service
                 return true;
@@ -875,7 +876,8 @@ class DAIA extends AbstractBase implements
                             // service
                             $serviceLink = $available['href'];
                         } elseif ($service == 'remote'
-                            || $service == 'openaccess') {
+                            || $service == 'openaccess'
+                        ) {
                             // access-links are provided by $available['href']
                             // and a title-like description of the access by
                             // $available['title']
@@ -975,7 +977,8 @@ class DAIA extends AbstractBase implements
         // If no useful availability service is found, return only the
         // information that the item is not holdable
         if (empty($serviceLink) && empty($duedate)
-            && empty($availableServices)) {
+            && empty($availableServices)
+        ) {
             return ['is_holdable' => false];
         }
 
