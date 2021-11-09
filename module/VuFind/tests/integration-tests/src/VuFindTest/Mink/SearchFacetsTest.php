@@ -351,6 +351,54 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that hierarchy facet exclusion works properly.
+     *
+     * @return void
+     */
+    public function testHierarchicalFacetExclude()
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results' => [
+                        'hierarchical_facet_str_mv' => 'hierarchy'
+                    ],
+                    'SpecialFacets' => [
+                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                    ],
+                    'Results_Settings' => [
+                        'exclude' => 'hierarchical_facet_str_mv',
+                    ]
+                ]
+            ]
+        );
+        $extractCount = function ($str) {
+            $parts = explode(',', $str);
+            return $parts[0];
+        };
+        $page = $this->performSearch('building:"hierarchy.mrc"');
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals(
+            'Showing 1 - 10 results of 10 for search \'building:"hierarchy.mrc"\'',
+            $extractCount($stats->getText())
+        );
+        $this->clickCss($page, '#j1_1.jstree-closed .jstree-icon');
+        $this->snooze();
+        $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
+        $this->clickCss($page, '#j1_2 a.exclude');
+        $this->snooze();
+        $filter = $this->findCss($page, $this->activeFilterSelector);
+        $label = $this->findCss($page, '.filters .filters-title');
+        $this->assertEquals('hierarchy:', $label->getText());
+        $this->assertEquals('level1a/level2a', $filter->getText());
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals(
+            'Showing 1 - 7 results of 7 for search \'building:"hierarchy.mrc"\'',
+            $extractCount($stats->getText())
+        );
+    }
+
+    /**
      * Test that we can persist uncollapsed state of collapsed facets
      *
      * @return void
