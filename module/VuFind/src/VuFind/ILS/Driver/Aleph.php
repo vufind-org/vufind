@@ -1417,7 +1417,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $barcode = (string)$z30->{'z30-barcode'};
             $checkout = (string)$z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
-            $cachetype = strtolower((string)($item->attributes()->{'type'} ?? ''));
+            $cachetype = strtolower((string)($item->attributes()->type ?? ''));
             $mult = $cachetype == 'debit' ? -100 : 100;
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string)$z31->{'z31-sum'}))
