@@ -39,6 +39,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $this->addSubjects($spec);
         $this->addTags($spec);
         $this->addRecordLinks($spec);
+        $this->addLicense($spec); // TueFind specific
 
         return $spec->getArray();
     }
