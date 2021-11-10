@@ -66,6 +66,30 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
         ]);
         $expected = [
             [
+                'title' => '',
+                'barcode' => '2631080653',
+                'amount' => 10300.0,
+                'transactiondate' => '06-08-2015',
+                'transactiontype' => 'K dobru',
+                'balance' => 10300.0,
+                'checkout' => '08-06-2015',
+                'id' => null,
+                'printLink' => 'test',
+                'fine' => 'Ztrata knihy - nahrada',
+            ],
+            [
+                'title' => 'Deštník Studijní a vědecké knihovny Plzeňského kraje : výpůjčka na 14 dní = The Umbrella',
+                'barcode' => '263MD00005',
+                'amount' => 10300.0,
+                'transactiondate' => '21-11-2017',
+                'transactiontype' => 'K dobru',
+                'balance' => 10300.0,
+                'checkout' => '11-21-2017',
+                'id' => null,
+                'printLink' => 'test',
+                'fine' => 'Ztráta deštníku  - náhrada',
+            ],
+            [
                 'title' => 'K přijímačkám s nadhledem : příprava na jednotné přijímací zkoušky z českého jazyka 9.',
                 'barcode' => '2631080653',
                 'amount' => -6000.0,

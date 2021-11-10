@@ -1405,7 +1405,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             ["view" => "full"]
         );
 
-        foreach ($xml->xpath("//cash[@type='debit']") as $item) {
+        foreach ($xml->xpath("//cash") as $item) {
             $z31 = $item->z31;
             $z13 = $item->z13;
             $z30 = $item->z30;
@@ -1417,9 +1417,11 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $barcode = (string)$z30->{'z30-barcode'};
             $checkout = (string)$z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
+            $mult = (string)($item->attributes()->{'type'} ?? '') == 'debit'
+                ? -100 : 100;
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string)$z31->{'z31-sum'}))
-                * -100;
+                * $mult;
             $cashref = (string)$z31->{'z31-sequence'};
 
             $finesList["$cashref"]  = [
