@@ -109,7 +109,7 @@ class WikidataProxyController extends AbstractProxyController
      * @return \DOMElement or null if not found
      */
     protected function getFirstMatchingEntity(&$entities, $filters=[], $mandatoryFields=[]) {
-        foreach ($entities->entities as $entity) {
+        foreach ($entities->entities ?? [] as $entity) {
             $skip = false;
 
             // must have values
