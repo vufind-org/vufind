@@ -521,6 +521,7 @@ $config = [
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\TokenCountingCsrf',
+            'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\TokenCountingCsrf',
             'VuFind\Validator\TokenCountingCsrfInterface' => 'VuFind\Validator\TokenCountingCsrf',
         ],
         'shared' => [

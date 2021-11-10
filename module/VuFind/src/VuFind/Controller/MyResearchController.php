@@ -40,6 +40,7 @@ use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
+use VuFind\Validator\CsrfInterface;
 use VuFind\Validator\TokenCountingCsrfInterface;
 
 /**
@@ -1965,7 +1966,7 @@ class MyResearchController extends AbstractBase
         // Special case: form was submitted:
         if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Do CSRF check
-            $csrf = $this->serviceLocator->get(TokenCountingCsrfInterface::class);
+            $csrf = $this->serviceLocator->get(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
