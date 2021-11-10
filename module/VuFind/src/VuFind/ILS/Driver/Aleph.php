@@ -1405,7 +1405,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             ["view" => "full"]
         );
 
-        foreach ($xml->xpath("//cash") as $item) {
+        foreach ($xml->xpath('//cash') as $item) {
             $z31 = $item->z31;
             $z13 = $item->z13;
             $z30 = $item->z30;
