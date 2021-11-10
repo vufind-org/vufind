@@ -139,6 +139,21 @@ class SolrMarc extends SolrDefault
     }
 
 
+    public function getLicense(): ?array
+    {
+        $licenseFields = $this->getMarcRecord()->getFields('540');
+        foreach ($licenseFields as $licenseField) {
+            $id = $licenseField->getSubfield('f')->getData() ?? null;
+            $url = $licenseField->getSubfield('u')->getData() ?? null;
+
+            if ($id != null && $url != null)
+                return ['id' => $id, 'url' => $url];
+        }
+
+        return null;
+    }
+
+
     public function isTADTagged()
     {
         $ita_fields = $this->getMarcRecord()->getFields('ITA');
