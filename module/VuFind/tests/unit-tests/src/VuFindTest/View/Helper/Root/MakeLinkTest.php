@@ -57,6 +57,7 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
         $view
             ->expects($this->atLeastOnce())
             ->method('plugin')
+            ->with($this->matchesRegularExpression('/^(escapeHtml|escapeHtmlAttr|makeTag)$/'))
             ->willReturnCallback(
                 function($helper) use ($makeTag, $escapeHtml, $escapeHtmlAttr) {
                     return [

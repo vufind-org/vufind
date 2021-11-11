@@ -48,8 +48,21 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
+        $escapeHtmlAttr = new \Laminas\View\Helper\EscapeHtmlAttr();
+
         $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view->method('plugin')->will($this->returnValue($escapeHtml));
+        $view
+            ->expects($this->atLeastOnce())
+            ->method('plugin')
+            ->with($this->stringStartsWith('escapeHtml'))
+            ->willReturnCallback(
+                function($helper) use ($escapeHtml, $escapeHtmlAttr) {
+                    return [
+                        'escapeHtml' => $escapeHtml,
+                        'escapeHtmlAttr' => $escapeHtmlAttr,
+                    ][$helper];
+                }
+            );
 
         $helper = new MakeTag();
         $helper->setView($view);
@@ -78,13 +91,13 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
 
         // Empty text
         $this->assertEquals(
-            '<i class="fa fa-awesome"></i>',
+            '<i class="fa&#x20;fa-awesome"></i>',
             $helper('i', '', 'fa fa-awesome')
         );
 
         // Truthy attribute
         $this->assertEquals(
-            '<a href="/login" data-lightbox>Login</a>',
+            '<a href="&#x2F;login" data-lightbox>Login</a>',
             $helper('a', 'Login', ['href' => '/login', 'data-lightbox' => true])
         );
     }
@@ -147,7 +160,7 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
 
         // Class only
         $this->assertEquals(
-            '<br class="sm:hidden" />',
+            '<br class="sm&#x3A;hidden" />',
             $helper(
                 'br',
                 '',
