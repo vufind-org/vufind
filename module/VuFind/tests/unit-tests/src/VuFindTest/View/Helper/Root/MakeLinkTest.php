@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use VuFind\Record\Router;
 use VuFind\View\Helper\Root\MakeLink;
 use VuFind\View\Helper\Root\MakeTag;
 
@@ -59,7 +58,7 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
             ->method('plugin')
             ->with($this->matchesRegularExpression('/^(escapeHtml|escapeHtmlAttr|makeTag)$/'))
             ->willReturnCallback(
-                function($helper) use ($makeTag, $escapeHtml, $escapeHtmlAttr) {
+                function ($helper) use ($makeTag, $escapeHtml, $escapeHtmlAttr) {
                     return [
                         'makeTag' => $makeTag,
                         'escapeHtml' => $escapeHtml,

@@ -56,7 +56,7 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
             ->method('plugin')
             ->with($this->stringStartsWith('escapeHtml'))
             ->willReturnCallback(
-                function($helper) use ($escapeHtml, $escapeHtmlAttr) {
+                function ($helper) use ($escapeHtml, $escapeHtmlAttr) {
                     return [
                         'escapeHtml' => $escapeHtml,
                         'escapeHtmlAttr' => $escapeHtmlAttr,
