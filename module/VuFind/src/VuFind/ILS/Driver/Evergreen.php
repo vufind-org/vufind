@@ -894,7 +894,9 @@ HERE;
      */
     private function _formatDate($date)
     {
+        if (!$date) {
+            return '';
+        }
         return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
-        //return $date ? (new \DateTime($date))->format('Y-m-d') : '';
     }
 }
