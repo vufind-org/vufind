@@ -217,39 +217,4 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
             $helper('recordLink', '/Record/foo', null, ['proxyUrl' => 'https://super.safe?url='])
         );
     }
-
-    /**
-     * Get a URL helper.
-     *
-     * @return \VuFind\View\Helper\Root\Url
-     */
-    protected function getUrl()
-    {
-        $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->setMethods(['getQuery'])->getMock();
-        $request->expects($this->any())->method('getQuery')
-            ->will($this->returnValue(new \Laminas\Stdlib\Parameters()));
-
-        $url = new \VuFind\View\Helper\Root\Url($request);
-
-        // Create router
-        $router = new \Laminas\Router\Http\TreeRouteStack();
-        $router->setRequestUri(new \Laminas\Uri\Http('http://localhost'));
-        $recordRoute = new \Laminas\Router\Http\Segment(
-            '/Record/[:id[/[:tab]]]',
-            [
-                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-            ],
-            [
-                'controller' => 'Record',
-                'action'     => 'Home',
-            ]
-        );
-
-        $router->addRoute('record', $recordRoute);
-        $url->setRouter($router);
-
-        return $url;
-    }
 }
