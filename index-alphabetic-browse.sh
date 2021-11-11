@@ -35,7 +35,7 @@ set -e
 set -x
 
 cd "`dirname $0`/import"
-CLASSPATH="browse-indexing.jar:/opt/solr/server/solr/jars/*:/opt/solr/server/solr/*:/opt/solr/server/solr/analysis-extras/lib/*:/usr/local/vufind/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
+CLASSPATH="browse-indexing.jar:${SOLR_HOME}/jars/*:/usr/local/vufind/solr/vendor/contrib/analysis-extras/lib/*:/usr/local/vufind/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties

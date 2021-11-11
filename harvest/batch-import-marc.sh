@@ -122,7 +122,7 @@ do
     # Logging output handled by log() function
     # PROPERTIES_FILE passed via environment
     $VUFIND_HOME/import-marc.sh $file 2> >(log $file)
-    if [ $MOVE_DATA == true ]
+    if [ "$?" -eq "0" ] && [ $MOVE_DATA == true ]
     then
       mv -f $file $BASEPATH/processed/`basename $file`
     fi
