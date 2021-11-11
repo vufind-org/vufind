@@ -132,7 +132,7 @@ class SolrAuthMarc extends SolrAuthDefault {
 
     public function getArchivedMaterial(): array
     {
-        $references = $this->getExternalReferencesFiltered(/*blacklist=*/['Wikipedia'], /*whitelist=*/[]);
+        $references = $this->getExternalReferencesFiltered(/*blacklist=*/[], /*whitelist=*/['Archivportal-D', 'Kalliope']);
         $references = array_merge($references, $this->getBeaconReferences());
         return $references;
     }

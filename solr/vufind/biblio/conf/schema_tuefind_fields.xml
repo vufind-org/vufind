@@ -19,6 +19,7 @@
     <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="issue" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="journal_issue" type="textProper" indexed="true" stored="true" multiValued="true"/>
+    <field name="license" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="local_notes_1" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="mediatype" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="oldid" type="string" indexed="true" stored="true"/>
