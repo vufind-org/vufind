@@ -17,9 +17,6 @@
 -->
 
 <config>
-  <lib dir="${user.dir}/../contrib/analysis-extras/lucene-libs/" />
-  <lib dir="${user.dir}/../contrib/analysis-extras/lib/" />
-  
   <!-- Set this to 'false' if you want solr to continue working after it has
        encountered an severe configuration error.  In a production environment,
        you may want solr to keep working even if one handler is mis-configured.
@@ -44,8 +41,7 @@
        other than the default ./data under the Solr home.
        If replication is in use, this should match the replication configuration. -->
   <dataDir>${solr.solr.home:./solr}/biblio</dataDir>
-  <lib dir="/opt/solr/server/solr/analysis-extras" />
-  <lib dir="/opt/solr/server/solr/jars" />
+
   <lib dir="../../vendor/contrib/analysis-extras/lib" regex=".*\.jar" />
   <lib dir="../../vendor/contrib/analysis-extras/lucene-libs" regex=".*\.jar" />
   <lib dir="../jars" regex=".*\.jar" />

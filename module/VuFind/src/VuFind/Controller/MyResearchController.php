@@ -1793,12 +1793,12 @@ class MyResearchController extends AbstractBase
                     $user->saveEmailVerified();
                     $this->setUpAuthenticationFromRequest();
                     $view = $this->createViewModel();
-                    $view->auth_method
-                        = $this->getAuthManager()->getAuthMethod();
+                    $view->auth_method = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
                     $view->username = $user->username;
-                    $view->useCaptcha
-                        = $this->captcha()->active('changePassword');
+                    $view->useCaptcha = $this->captcha()->active('changePassword');
+                    $view->passwordPolicy = $this->getAuthManager()
+                        ->getPasswordPolicy();
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }

@@ -119,7 +119,7 @@ do
   then
     # Logging output handled by log() function
     $VUFIND_HOME/import-marc-auth.sh $file $2 2> >(log $file)
-    if [ $MOVE_DATA == true ]
+    if [ "$?" -eq "0" ] && [ $MOVE_DATA == true ]
     then
       mv $file $BASEPATH/processed/`basename $file`
     fi
