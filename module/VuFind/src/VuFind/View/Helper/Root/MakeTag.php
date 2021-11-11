@@ -80,7 +80,7 @@ class MakeTag extends AbstractHelper
      * - escapeContent: Default true, set to false to skip escaping (like for HTML).
      *
      * @param string $tagName   HTML tag name
-     * @param string $innerHTML InnerHTML
+     * @param string $innerHtml InnerHTML
      * @param array  $attrs     Tag attributes (associative array)
      * @param array  $options   Additional options
      *
@@ -88,17 +88,17 @@ class MakeTag extends AbstractHelper
      */
     protected function compileTag(
         string $tagName,
-        string $innerHTML,
+        string $innerHtml,
         array $attrs,
         $options = []
     ) {
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
 
-        $anchor = '<' . $tagName;
+        $html = '<' . $tagName;
         foreach ($attrs as $key => $val) {
-            $anchor .= ' ' . $key;
+            $html .= ' ' . $key;
             if ($val !== true) {
-                $anchor .= '="' . $escAttr($val) . '"';
+                $html .= '="' . $escAttr($val) . '"';
             }
         }
 
@@ -111,7 +111,7 @@ class MakeTag extends AbstractHelper
                 return $str;
             }; // no-op
 
-        $anchor .= '>' . $escHTML($innerHTML) . '</' . $tagName . '>';
-        return $anchor;
+        $html .= '>' . $escHTML($innerHtml) . '</' . $tagName . '>';
+        return $html;
     }
 }

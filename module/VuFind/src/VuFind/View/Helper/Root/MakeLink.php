@@ -54,15 +54,15 @@ class MakeLink extends MakeTag
      * - proxyUrl: proxy url prefix before href
      * - escapeContent: Default true, set to false to skip escaping (like for HTML).
      *
-     * @param string       $text    Link contents (must be properly-formed HTML)
-     * @param string|array $href    Link destination (null to skip)
-     * @param array        $attrs   Link attributes (associative array)
-     * @param array        $options Additional options
+     * @param string       $innerHtml Link contents (must be properly-formed HTML)
+     * @param string|array $href      Link destination (null to skip)
+     * @param array        $attrs     Link attributes (associative array)
+     * @param array        $options   Additional options
      *
      * @return string HTML for an anchor tag
      */
     public function __invoke(
-        string $text,
+        string $innerHtml,
         string $href = null,
         $attrs = [],
         $options = []
@@ -80,7 +80,7 @@ class MakeLink extends MakeTag
 
         // Span instead of anchor when no href present
         if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
-            return $this->compileTag('span', $text, $mergedAttrs, $options);
+            return $this->compileTag('span', $innerHtml, $mergedAttrs, $options);
         }
 
         // Special option: proxy prefixing
@@ -89,6 +89,6 @@ class MakeLink extends MakeTag
         }
 
         // Compile attributes
-        return $this->compileTag('a', $text, $mergedAttrs, $options);
+        return $this->compileTag('a', $innerHtml, $mergedAttrs, $options);
     }
 }
