@@ -37,8 +37,6 @@ var buildButtons = function() {
               $.each(buttonPresentation.buttons,function(index,button) {
                 let buttonHtml = '<a target="_blank" class="'+button.cssClasses+'" href="https://'+button.linkHref+'">'+button.linkText+'</a>';
                 if (button.itemKey) {
-                  console.log("#getit_"+button.itemKey+" .buttons");
-                  console.log(buttonHtml);
                   $("#getit_"+button.itemKey+" .buttons").append(buttonHtml);
                 } else {
                   $("#getit_purchase .buttons").append(buttonHtml);
