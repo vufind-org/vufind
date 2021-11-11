@@ -22,7 +22,7 @@
  * @category VuFind
  * @package  ILS_Drivers
  * @author   Warren Layton, NRCan Library <warren.layton@gmail.com>
- * @author   Galen Charlton, Equinox Open Library Initiative <gmcharlt@equinoxOLI.org>
+ * @author   Galen Charlton, Equinox <gmcharlt@equinoxOLI.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -61,7 +61,6 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
      * @var string
      */
     protected $dbName;
-
 
     /**
      * Date converter object
@@ -343,7 +342,8 @@ SELECT usr.id, usr.first_given_name as firstName,
 FROM actor.usr usr
     INNER JOIN actor.card ON usr.card = card.id
 WHERE card.active = true
-    AND actor.verify_passwd(usr.id, 'main', MD5(actor.get_salt(usr.id, 'main') || MD5(?)))
+    AND actor.verify_passwd(usr.id, 'main',
+                           MD5(actor.get_salt(usr.id, 'main') || MD5(?)))
 HERE;
         if (is_numeric($barcode)) {
             // A barcode was supplied as ID
@@ -402,10 +402,14 @@ HERE;
                "aou_own.name as owning_library, " .
                "copy.barcode as barcode " .
                "from $this->dbName.action.circulation " .
-               "join $this->dbName.asset.copy ON (circulation.target_copy = copy.id) " .
-               "join $this->dbName.asset.call_number ON (copy.call_number = call_number.id) " .
-               "join $this->dbName.actor.org_unit aou_circ ON (circulation.circ_lib = aou_circ.id) " .
-               "join $this->dbName.actor.org_unit aou_own ON (call_number.owning_lib = aou_own.id) " .
+               "join $this->dbName.asset.copy ON " .
+               " (circulation.target_copy = copy.id) " .
+               "join $this->dbName.asset.call_number ON " .
+               "  (copy.call_number = call_number.id) " .
+               "join $this->dbName.actor.org_unit aou_circ ON " .
+               "  (circulation.circ_lib = aou_circ.id) " .
+               "join $this->dbName.actor.org_unit aou_own ON " .
+               "  (call_number.owning_lib = aou_own.id) " .
                "where circulation.usr = '" . $patron['id'] . "' " .
                "and circulation.checkin_time is null " .
                "and circulation.xact_finish is null";
@@ -415,12 +419,15 @@ HERE;
             $sqlStmt->execute();
 
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $due_date = $this->_format_date($row['due_date']);
+                $due_date = $this->_formatDate($row['due_date']);
                 $_due_time = new \DateTime($row['due_date']);
                 if ($_due_time->format('H:i:s') == "23:59:59") {
                     $dueTime = ""; // don't display due time for non-hourly loans
                 } else {
-                    $dueTime = $this->dateConverter->convertToDisplayTime("Y-m-d H:i", $row['due_date']);
+                    $dueTime = $this->dateConverter->convertToDisplayTime(
+                        "Y-m-d H:i",
+                        $row['due_date']
+                    );
                 }
 
                 $today = new \DateTime();
@@ -432,9 +439,10 @@ HERE;
                 $dueTimeStamp = strtotime($row['due_date']);
                 $dueStatus = false;
                 if (is_numeric($dueTimeStamp)) {
+                    $_dueTimeLessDay = $dueTimeStamp - (1 * 24 * 60 * 60) - 1;
                     if ($now > $dueTimeStamp) {
                         $dueStatus = 'overdue';
-                    } elseif ($end_of_today > $dueTimeStamp - (1 * 24 * 60 * 60) - 1) {
+                    } elseif ($end_of_today > $_dueTimeLessDay) {
                         $dueStatus = 'due';
                     }
                 }
@@ -448,7 +456,8 @@ HERE;
                                     'renewLimit' => $row['renewal_remaining'],
                                     'renewable' => $row['renewal_remaining'] > 1,
                                     'institution_name' => $row['owning_library'],
-                                    'borrowingLocation' => $row['borrowing_location'],
+                                    'borrowingLocation' =>
+                                        $row['borrowing_location'],
                                     'dueStatus' => $dueStatus
                                ];
             }
@@ -485,8 +494,10 @@ HERE;
                "LEFT JOIN $this->dbName.action.billable_circulations " .
                "ON (billable_xact_summary.id = billable_circulations.id " .
                " and billable_circulations.xact_finish is null) " .
-               "LEFT JOIN $this->dbName.asset.copy ON (billable_circulations.target_copy = copy.id) " .
-               "LEFT JOIN $this->dbName.asset.call_number ON (copy.call_number = call_number.id) " .
+               "LEFT JOIN $this->dbName.asset.copy ON " .
+               "  (billable_circulations.target_copy = copy.id) " .
+               "LEFT JOIN $this->dbName.asset.call_number ON " .
+               "  (copy.call_number = call_number.id) " .
                "where billable_xact_summary.usr = '" . $patron['id'] . "' " .
                "and billable_xact_summary.total_owed <> 0 " .
                "and billable_xact_summary.xact_finish is null";
@@ -500,9 +511,9 @@ HERE;
                     'amount' => $row['total_owed'],
                     'fine' => $row['last_billing_type'],
                     'balance' => $row['balance_owed'],
-                    'checkout' => $this->_format_date($row['checkout_time']),
-                    'createdate' => $this->_format_date($row['last_billing_ts']),
-                    'duedate' => $this->_format_date($row['due_date']),
+                    'checkout' => $this->_formatDate($row['checkout_time']),
+                    'createdate' => $this->_formatDate($row['last_billing_ts']),
+                    'duedate' => $this->_formatDate($row['due_date']),
                     'id' => $row['record']
                 ];
             }
@@ -533,9 +544,12 @@ HERE;
                "shelf_time, shelf_expire_time, frozen, thaw_date, " .
                "org_unit.name as lib_name, acp.status as copy_status " .
                "from $this->dbName.action.hold_request ahr " .
-               "join $this->dbName.actor.org_unit on (ahr.pickup_lib = org_unit.id) " .
-               "join $this->dbName.reporter.hold_request_record rhrr on (rhrr.id = ahr.id) " .
-               "left join $this->dbName.asset.copy acp on (acp.id = ahr.current_copy) " .
+               "join $this->dbName.actor.org_unit on " .
+               "  (ahr.pickup_lib = org_unit.id) " .
+               "join $this->dbName.reporter.hold_request_record rhrr on " .
+               "  (rhrr.id = ahr.id) " .
+               "left join $this->dbName.asset.copy acp on " .
+               "  (acp.id = ahr.current_copy) " .
                "where ahr.usr = '" . $patron['id'] . "' " .
                "and ahr.fulfillment_time is null " .
                "and ahr.cancel_time is null";
@@ -549,13 +563,15 @@ HERE;
                     'id' => $row['bib_record'],
                     'reqnum' => $row['hold_id'],
                     'location' => $row['lib_name'],
-                    'expire' => $this->_format_date($row['expire_time']),
-                    'last_pickup_date' => $this->_format_date($row['shelf_expire_time']),
+                    'expire' => $this->_formatDate($row['expire_time']),
+                    'last_pickup_date' =>
+                        $this->_formatDate($row['shelf_expire_time']),
                     'available' => $row['shelf_time'],
                     'frozen' => $row['frozen'],
-                    'frozenThrough' => $this->_format_date($row['thaw_date']),
-                    'create' => $this->_format_date($row['request_time']),
-                    'in_transit' => $row['copy_status'] == self::EVG_ITEM_STATUS_IN_TRANSIT,
+                    'frozenThrough' => $this->_formatDate($row['thaw_date']),
+                    'create' => $this->_formatDate($row['request_time']),
+                    'in_transit' =>
+                        $row['copy_status'] == self::EVG_ITEM_STATUS_IN_TRANSIT,
                 ];
             }
         } catch (PDOException $e) {
@@ -613,7 +629,7 @@ HERE;
                     'country' => $row['country'],
                     'phone' => $phone,
                     'group' => $row['usrgroup'],
-                    'expiration_date' => $this->_format_date($row['expire_date']),
+                    'expiration_date' => $this->_formatDate($row['expire_date']),
                 ];
                 return $patron;
             }
@@ -876,7 +892,7 @@ HERE;
      * @throws ILSException
      * @return string The formatted date
      */
-    private function _format_date($date)
+    private function _formatDate($date)
     {
         return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
         //return $date ? (new \DateTime($date))->format('Y-m-d') : '';
