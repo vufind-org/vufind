@@ -26,7 +26,6 @@
 
     $purchaseFields = $this->driver->getMarcRecord()->getFields("852");
     $fieldCount = count($purchaseFields);
-    $isPurchaseable = false;
     $purchaseDetails = new stdClass();
     $purchaseDetails->isActive = false;
     if (count($holdings['holdings']) == 0 && $fieldCount > 0) {
