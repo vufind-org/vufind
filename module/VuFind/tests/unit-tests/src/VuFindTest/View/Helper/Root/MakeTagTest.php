@@ -126,4 +126,33 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
             )
         );
     }
+
+    /**
+     * Test escapeContent
+     *
+     * @return void
+     */
+    public function testVoidElements()
+    {
+        $helper = $this->getHelper();
+
+        $this->assertEquals(
+            '<img src="book.gif" />',
+            $helper(
+                'img',
+                '',
+                ['src' => 'book.gif']
+            )
+        );
+
+        // Class only
+        $this->assertEquals(
+            '<br class="sm:hidden" />',
+            $helper(
+                'br',
+                '',
+                'sm:hidden'
+            )
+        );
+    }
 }

@@ -39,6 +39,30 @@ namespace VuFind\View\Helper\Root;
 class MakeTag extends \Laminas\View\Helper\AbstractHelper
 {
     /**
+     * List of all void tags (tags that access no innerHTML)
+     *
+     * Source: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+     *
+     * @var string[]
+     */
+    protected $voidElements = [
+        'area',
+        'base',
+        'br',
+        'col',
+        'embed',
+        'hr',
+        'img',
+        'input',
+        'link',
+        'meta',
+        'param',
+        'source',
+        'track',
+        'wbr'
+    ];
+
+    /**
      * Render an HTML tag
      *
      * A string passed into $attrs will be treated like a class.
@@ -109,7 +133,12 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
                 return $str;
             }; // no-op
 
-        $html .= '>' . $escHTML($innerHtml) . '</' . $tagName . '>';
+        if (empty($innerHtml) && in_array($tagName, $this->voidElements)) {
+            $html .= ' />';
+        } else {
+            $html .= '>' . $escHTML($innerHtml) . '</' . $tagName . '>';
+        }
+
         return $html;
     }
 }
