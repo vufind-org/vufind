@@ -81,6 +81,12 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
             '<i class="fa fa-awesome"></i>',
             $helper('i', '', 'fa fa-awesome')
         );
+
+        // Truthy attribute
+        $this->assertEquals(
+            '<a href="/login" data-lightbox>Login</a>',
+            $helper('a', 'Login', ['href' => '/login', 'data-lightbox' => true])
+        );
     }
 
     /**
