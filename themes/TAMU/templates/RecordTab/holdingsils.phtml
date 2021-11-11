@@ -23,6 +23,21 @@
     }
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+
+    $purchaseFields = $this->driver->getMarcRecord()->getFields("852");
+    $fieldCount = count($purchaseFields);
+    $isPurchaseable = false;
+    $purchaseDetails = new stdClass();
+    $purchaseDetails->isActive = false;
+    if (count($holdings['holdings']) == 0 && $fieldCount > 0) {
+      $purchaseCode = $purchaseFields[0]->getSubField("b")->getData();
+      $purchaseText = $purchaseFields[0]->getSubField("z")->getData();
+      if ($purchaseCode && $purchaseText) {
+        $purchaseDetails->isActive = true;
+        $purchaseDetails->code = $purchaseCode;
+        $purchaseDetails->text = $purchaseText;
+      }
+    }
 ?>
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
@@ -70,6 +85,23 @@
     );
   ?>
 <?php endif; ?>
+
+<?php
+  if ($purchaseDetails->isActive) {
+?>
+  <h3>Purchase Details</h3>
+  <table class="table table-striped">
+    <caption class="sr-only">Purchase Details</caption>
+    <tr>
+      <td>
+        <?=$purchaseDetails->text?>
+      </td>
+      <td class="getit" id="getit_purchase"></td>
+    </tr>
+  </table>
+<?php
+  }
+?>
 
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 
