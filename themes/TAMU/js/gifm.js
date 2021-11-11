@@ -33,10 +33,16 @@ var buildButtons = function() {
         } else {
           $(".getit .buttons").html("");
           $.each(data.payload.HashMap,function(mfhd,buttonPresentation) {
-            $.each(buttonPresentation.buttons,function(index,button) {
-              let buttonHtml = '<a target="_blank" class="'+button.cssClasses+'" href="https://'+button.linkHref+'">'+button.linkText+'</a>';
-              $("#getit_"+button.itemKey+" .buttons").append(buttonHtml);
-            });
+            if (buttonPresentation && buttonPresentation.buttons) {
+              $.each(buttonPresentation.buttons,function(index,button) {
+                let buttonHtml = '<a target="_blank" class="'+button.cssClasses+'" href="https://'+button.linkHref+'">'+button.linkText+'</a>';
+                if (button.itemKey) {
+                  $("#getit_"+button.itemKey+" .buttons").append(buttonHtml);
+                } else {
+                  $("#getit_purchase .buttons").append(buttonHtml);
+                }
+              });
+            }
           });
         }
       }).fail(function(xhr,status,error) {
