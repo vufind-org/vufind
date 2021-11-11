@@ -29,6 +29,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use VuFind\Record\Router;
 use VuFind\View\Helper\Root\MakeLink;
+use VuFind\View\Helper\Root\MakeTag;
 
 /**
  * makeLink view helper Test Class
@@ -48,6 +49,7 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
+        $makeTag = new MakeTag();
         $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
         $escapeHtmlAttr = new \Laminas\View\Helper\EscapeHtmlAttr();
 
@@ -55,13 +57,16 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
         $view
             ->expects($this->atLeastOnce())
             ->method('plugin')
-            ->with($this->stringContains('escapeHtml'))
-            ->willReturnCallback(function($helper) use ($escapeHtml, $escapeHtmlAttr) {
-                return [
-                    'escapeHtml' => $escapeHtml,
-                    'escapeHtmlAttr' => $escapeHtmlAttr,
-                ][$helper];
-            });
+            ->willReturnCallback(
+                function($helper) use ($makeTag, $escapeHtml, $escapeHtmlAttr) {
+                    return [
+                        'makeTag' => $makeTag,
+                        'escapeHtml' => $escapeHtml,
+                        'escapeHtmlAttr' => $escapeHtmlAttr,
+                    ][$helper];
+                }
+            );
+        $makeTag->setView($view);
 
         $helper = new MakeLink();
         $helper->setView($view);

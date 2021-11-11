@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MakeLink extends MakeTag
+class MakeLink extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Render an HTML link
@@ -78,9 +78,11 @@ class MakeLink extends MakeTag
             !empty($href) ? ['href' => $href] : []
         );
 
+        $makeTag = $this->getView()->plugin('makeTag');
+
         // Span instead of anchor when no href present
         if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
-            return $this->compileTag('span', $innerHtml, $mergedAttrs, $options);
+            return $makeTag('span', $innerHtml, $mergedAttrs, $options);
         }
 
         // Special option: proxy prefixing
@@ -88,7 +90,7 @@ class MakeLink extends MakeTag
             $mergedAttrs['href'] = $options['proxyUrl'] . $mergedAttrs['href'];
         }
 
-        // Compile attributes
-        return $this->compileTag('a', $innerHtml, $mergedAttrs, $options);
+        // Forward to makeTag helper
+        return $makeTag('a', $innerHtml, $mergedAttrs, $options);
     }
 }

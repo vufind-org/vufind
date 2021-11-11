@@ -27,8 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * Make tag view helper
  *
@@ -38,7 +36,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MakeTag extends AbstractHelper
+class MakeTag extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Render an HTML tag
