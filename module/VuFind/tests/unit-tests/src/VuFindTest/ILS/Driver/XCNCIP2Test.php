@@ -1437,6 +1437,36 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test invalidateResponseCache
+     *
+     * @return void
+     * @throws \ReflectionException
+     */
+    public function testInvalidateResponseCache()
+    {
+        $this->configureDriver();
+        $method = new \ReflectionMethod(
+            '\VuFind\ILS\Driver\XCNCIP2',
+            'invalidateResponseCache'
+        );
+        $method->setAccessible(true);
+        $patron = [
+            'cat_username' => 'my_login', 'cat_password' => 'my_password',
+            'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+        ];
+        $this->mockResponse('lookupUserResponse.xml');
+        $profile = $this->driver->getMyProfile($patron);
+        $this->assertEquals('John', $profile['firstname']);
+
+        // Invalidate response cache
+        $method->invokeArgs($this->driver, ['LookupUser', 'my_login']);
+
+        $this->mockResponse('lookupUserResponse2.xml');
+        $profile = $this->driver->getMyProfile($patron);
+        $this->assertEquals('James', $profile['firstname']);
+    }
+
+    /**
      * Mock fixture as HTTP client response
      *
      * @param string|array|null $fixture Fixture file

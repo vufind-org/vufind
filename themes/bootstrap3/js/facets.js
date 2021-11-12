@@ -37,14 +37,14 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     }
     var description = document.createElement('span');
     description.className = 'facet-value';
-    description.innerHTML = facet.displayText;
+    description.appendChild(document.createTextNode(facet.displayText));
     item.appendChild(description);
     html.appendChild(item);
 
     if (!facet.isApplied && counts) {
       var badge = document.createElement('span');
       badge.className = 'badge';
-      badge.innerHTML = facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator);
+      badge.appendChild(document.createTextNode(facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator)));
       html.appendChild(badge);
       if (allowExclude) {
         var excludeUrl = currentPath + facet.exclude;
