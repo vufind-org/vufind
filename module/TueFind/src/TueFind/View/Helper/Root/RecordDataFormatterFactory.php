@@ -68,7 +68,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
 
     protected function addLicense(&$spec) {
         $spec->setTemplateLine(
-            'License', 'getLicense', 'data-license.phtml'
+            'Rights Information', 'getLicense', 'data-license.phtml'
         );
     }
 
