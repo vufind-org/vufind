@@ -1765,7 +1765,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function placeRequest($details, $type = 'Hold')
     {
-        $msgPrefix = ($type == 'Stack Retrieval') ? 'Storage Retrieval ' : '';
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
         $bibId = $details['bib_id'];
@@ -1783,15 +1782,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lastInterestDate = \DateTime::createFromFormat('U', $convertedDate);
         $lastInterestDate->setTime(23, 59, 59);
         $lastInterestDateStr = $lastInterestDate->format('c');
-        $successReturn = [
-            'success' => true,
-            'sysMessage' => $msgPrefix . 'Request Successful.'
-        ];
-        $failureReturn = [
-            'success' => false,
-            'sysMessage' => $msgPrefix . 'Request Not Successful.'
-        ];
-
         $request = $this->getRequest(
             $username,
             $password,
@@ -1816,10 +1806,21 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         try {
             $this->checkResponseForError($response);
         } catch (ILSException $exception) {
+            $failureReturn = ['success' => false];
+            $problemDescription = $this->getProblemDescription(
+                $response,
+                ['ProblemType'],
+                false
+            );
+            if (!empty($problemDescription)) {
+                $failureReturn['sysMessage']
+                    = $this->translateMessage($problemDescription);
+            }
             return $failureReturn;
         }
+
         $this->invalidateResponseCache('LookupUser', $username);
-        return !empty($success) ? $successReturn : $failureReturn;
+        return !empty($success) ? ['success' => true] : ['success' => false];
     }
 
     /**
@@ -2426,7 +2427,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function checkResponseForError($response)
     {
         $error = $response->xpath(
-            '//ns1:Problem/ns1:ProblemDetail'
+            '//ns1:Problem'
         );
         if (!empty($error)) {
             throw new ILSException($error[0]);
@@ -2690,21 +2691,46 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function parseProblem(string $xmlString): string
     {
         $xml = $this->parseXml($xmlString);
-        $problems = $xml->xpath('ns1:Problem');
+        $problems = $xml->xpath('//ns1:Problem');
         if (empty($problems)) {
             return 'Cannot identify problem in response: ' . $xmlString;
         }
-        $detailElements = [
+        return $this->getProblemDescription($xml);
+    }
+
+    /**
+     * Get problem description as one string
+     *
+     * @param \SimpleXMLElement $xml              XML response
+     * @param array|string[]    $elements         Which of Problem subelements
+     * return in desription - defaulting to full list: ProblemType, ProblemDetail,
+     * ProblemElement and ProblemValue
+     * @param bool              $withElementNames Whether to add element names as
+     * value labels (for example for debug purposes)
+     *
+     * @return string
+     */
+    protected function getProblemDescription(
+        \SimpleXMLElement $xml,
+        array $elements = [
             'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue'
-        ];
+        ],
+        bool $withElementNames = true
+    ): string {
+        $problems = $xml->xpath('//ns1:Problem');
+        if (empty($problems)) {
+            return '';
+        }
         $allProblems = [];
         foreach ($problems as $problem) {
             $this->registerNamespaceFor($problem);
             $oneProblem = [];
-            foreach ($detailElements as $detailElement) {
-                $detail = $problem->xpath('ns1:' . $detailElement);
+            foreach ($elements as $element) {
+                $detail = $problem->xpath('ns1:' . $element);
                 if (!empty($detail)) {
-                    $oneProblem[] = $detailElement . ': ' . (string)$detail[0];
+                    $oneProblem[] = $withElementNames
+                        ? $element . ': ' . (string)$detail[0]
+                        : (string)$detail[0];
                 }
             }
             $allProblems[] = implode(', ', $oneProblem);
