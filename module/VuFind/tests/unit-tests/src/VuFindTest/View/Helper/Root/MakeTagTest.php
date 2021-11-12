@@ -54,8 +54,6 @@ class MakeTagTest extends AbstractMakeTagTest
 
     /**
      * Test that responds to common inputs
-     *
-     * @return void
      */
     public function testAttributes()
     {
@@ -87,8 +85,6 @@ class MakeTagTest extends AbstractMakeTagTest
 
     /**
      * Test escapeContent
-     *
-     * @return void
      */
     public function testOptionEscape()
     {
@@ -125,8 +121,6 @@ class MakeTagTest extends AbstractMakeTagTest
 
     /**
      * Test escapeContent
-     *
-     * @return void
      */
     public function testVoidElements()
     {
@@ -150,5 +144,49 @@ class MakeTagTest extends AbstractMakeTagTest
                 'sm:hidden'
             )
         );
+    }
+
+    /**
+     * Test tag name edge cases
+     */
+    public function testValidTagNames()
+    {
+        $helper = $this->getHelper();
+
+        $helper('CAPITAL', '');
+        $helper('mIxEdCaSe', '');
+        $helper('my-custom', '');
+        $helper('my-long-custom', '');
+        $helper('is---this---ok', '');
+    }
+
+    /*
+     */
+    public function invalidTags()
+    {
+        return [
+            ['n0numbers'],
+            ['-must-start-with-letter'],
+            ['em—dash'],
+            ['?php'],
+            ['sanitycheck'],
+        ];
+    }
+
+    /**
+     * Test exception on bad tag names
+     *
+     * @dataProvider invalidTags
+     */
+    public function testInvalidTagNames($tagName)
+    {
+        $helper = $this->getHelper();
+
+        // Fulfill plugin quota
+        $helper('sanitycheck', 'this is good');
+
+        // Test for exception
+        $this->expectException(\InvalidArgumentException::class);
+        $helper($tagName, '');
     }
 }

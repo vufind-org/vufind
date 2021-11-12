@@ -96,6 +96,24 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Verify HTML tag matches HTML spec:
+     * - starts with letter
+     * - contains only letters and hyphens
+     *
+     * @param string $tagName  Element tag name
+     *
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    protected function verifyTagName(string $tagName)
+    {
+        $validTagPattern = '/^[a-zA-Z][a-zA-Z\-]*$/';
+        if (!preg_match($validTagPattern, $tagName)) {
+            throw new \InvalidArgumentException('Invalid tag name: ' . $tagName);
+        }
+    }
+
+    /**
      * Turn associative array into a string of attributes in an anchor
      *
      * Additional options
@@ -107,13 +125,16 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * @param array  $options   Additional options
      *
      * @return string
+     * @throws InvalidArgumentException
      */
     protected function compileTag(
         string $tagName,
         string $innerHtml,
-        array $attrs,
+        $attrs = [],
         $options = []
     ) {
+        $this->verifyTagName($tagName);
+
         $htmlAttrs = $this->getView()->plugin('htmlAttributes')($attrs);
 
         if (empty($innerHtml) && in_array($tagName, $this->voidElements)) {
