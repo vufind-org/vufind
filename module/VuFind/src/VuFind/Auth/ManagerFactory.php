@@ -91,7 +91,7 @@ class ManagerFactory implements FactoryInterface
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
-        $csrf = $container->get(\VuFind\Validator\TokenCountingCsrfInterface::class);
+        $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(

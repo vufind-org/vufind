@@ -41,7 +41,6 @@ use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
 use VuFind\Validator\CsrfInterface;
-use VuFind\Validator\TokenCountingCsrfInterface;
 
 /**
  * Controller for the user account area.
@@ -1296,7 +1295,7 @@ class MyResearchController extends AbstractBase
                 $this->getRequest()->getPost(),
                 $catalog,
                 $patron,
-                $this->serviceLocator->get(TokenCountingCsrfInterface::class)
+                $this->serviceLocator->get(CsrfInterface::class)
             )
             : [];
 
@@ -2082,7 +2081,7 @@ class MyResearchController extends AbstractBase
 
         $view = $this->createViewModel(['accountDeleted' => false]);
         if ($this->formWasSubmitted('submit')) {
-            $csrf = $this->serviceLocator->get(TokenCountingCsrfInterface::class);
+            $csrf = $this->serviceLocator->get(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'

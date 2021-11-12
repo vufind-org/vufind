@@ -36,19 +36,9 @@ namespace VuFind\Validator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TokenCountingCsrf extends \Laminas\Validator\Csrf
-    implements TokenCountingCsrfInterface
+class SessionCsrf extends \Laminas\Validator\Csrf
+    implements CsrfInterface
 {
-    /**
-     * How many tokens are currently stored in the session?
-     *
-     * @return int
-     */
-    public function getTokenCount()
-    {
-        return count($this->getSession()->tokenList ?? []);
-    }
-
     /**
      * Keep only the most recent N tokens.
      *
@@ -67,5 +57,15 @@ class TokenCountingCsrf extends \Laminas\Validator\Csrf
             $session->tokenList
                 = array_slice($session->tokenList, -1 * $limit, null, true);
         }
+    }
+
+    /**
+     * How many tokens are currently stored in the session?
+     *
+     * @return int
+     */
+    public function getTokenCount()
+    {
+        return count($this->getSession()->tokenList ?? []);
     }
 }

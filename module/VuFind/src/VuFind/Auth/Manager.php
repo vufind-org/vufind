@@ -33,7 +33,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Validator\TokenCountingCsrfInterface as Csrf;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -131,7 +131,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      * @param SessionManager $sessionManager Session manager
      * @param PluginManager  $pm             Authentication plugin manager
      * @param CookieManager  $cookieManager  Cookie manager
-     * @param Csrf           $csrf           CSRF validator
+     * @param CsrfInterface  $csrf           CSRF validator
      */
     public function __construct(
         Config $config,
@@ -139,7 +139,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         SessionManager $sessionManager,
         PluginManager $pm,
         CookieManager $cookieManager,
-        Csrf $csrf
+        CsrfInterface $csrf
     ) {
         // Store dependencies:
         $this->config = $config;

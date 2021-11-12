@@ -47,7 +47,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  *
  * @codeCoverageIgnore
  */
-class TokenCountingCsrfFactory implements FactoryInterface
+class SessionCsrfFactory implements FactoryInterface
 {
     /**
      * Create an object

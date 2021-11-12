@@ -53,4 +53,13 @@ interface CsrfInterface extends ValidatorInterface
      * @return string
      */
     public function getHash($regenerate = false);
+
+    /**
+     * Keep only the most recent N tokens.
+     *
+     * @param int $limit Number of tokens to keep.
+     *
+     * @return void
+     */
+    public function trimTokenList($limit);
 }
