@@ -143,8 +143,17 @@ class SolrMarc extends SolrDefault
     {
         $licenseFields = $this->getMarcRecord()->getFields('540');
         foreach ($licenseFields as $licenseField) {
-            $id = $licenseField->getSubfield('f')->getData() ?? null;
-            $url = $licenseField->getSubfield('u')->getData() ?? null;
+            $licenseField instanceof \File_MARC_Data_Field;
+
+            $id = null;
+            $idSubfield = $licenseField->getSubfield('f');
+            if ($idSubfield != false)
+                $id = $idSubfield->getData();
+
+            $url = null;
+            $urlSubfield = $licenseField->getSubfield('u');
+            if ($urlSubfield != false)
+                $url = $urlSubfield->getData();
 
             if ($id != null && $url != null)
                 return ['id' => $id, 'url' => $url];
