@@ -114,14 +114,10 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         array $attrs,
         $options = []
     ) {
-        $escAttr = $this->getView()->plugin('escapeHtmlAttr');
+        $htmlAttrs = $this->getView()->plugin('htmlAttributes')($attrs);
 
-        $html = '<' . $tagName;
-        foreach ($attrs as $key => $val) {
-            $html .= ' ' . $key;
-            if ($val !== true) {
-                $html .= '="' . $escAttr($val) . '"';
-            }
+        if (empty($innerHtml) && in_array($tagName, $this->voidElements)) {
+            return '<' . $tagName . $htmlAttrs . ' />';
         }
 
         // Special option: escape content
@@ -133,12 +129,8 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
                 return $str;
             }; // no-op
 
-        if (empty($innerHtml) && in_array($tagName, $this->voidElements)) {
-            $html .= ' />';
-        } else {
-            $html .= '>' . $escHTML($innerHtml) . '</' . $tagName . '>';
-        }
-
-        return $html;
+        return '<' . $tagName . $htmlAttrs . '>' .
+            $escHTML($innerHtml) .
+            '</' . $tagName . '>';
     }
 }

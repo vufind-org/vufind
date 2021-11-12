@@ -97,7 +97,7 @@ class MakeTagTest extends \PHPUnit\Framework\TestCase
 
         // Truthy attribute
         $this->assertEquals(
-            '<a href="&#x2F;login" data-lightbox>Login</a>',
+            '<a href="&#x2F;login" data-lightbox="1">Login</a>',
             $helper('a', 'Login', ['href' => '/login', 'data-lightbox' => true])
         );
     }
