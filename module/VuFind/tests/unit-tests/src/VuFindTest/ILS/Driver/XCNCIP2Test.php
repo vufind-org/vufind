@@ -470,31 +470,32 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     protected $placeHoldTests
         = [
             [
-                'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
-                'success' => true, 'sysMessage' => 'hold_request_successful'
-            ],
+                'file' => 'RequestItemResponseAcceptedWithItemId.xml',
+                'result' => [
+                  'success' => true,
+                ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
-                    'success' => true, 'sysMessage' => 'hold_request_successful'
+                    'success' => true,
                 ],
             ], [
                 'file' => 'RequestItemResponseDenied.xml', 'result' => [
-                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
+                    'success' => false, 'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
                 'result' => [
-                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
+                    'success' => false, 'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
                 'result' => [
-                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
+                    'success' => false, 'sysMessage' => 'User Blocked'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
-                    'success' => false, 'sysMessage' => 'hold_request_not_successful'
+                    'success' => false,
                 ],
             ],
         ];
@@ -509,35 +510,32 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
                 'success' => true,
-                'sysMessage' => 'storage_retrieval_request_successful'
             ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
                     'success' => true,
-                    'sysMessage' => 'storage_retrieval_request_successful'
                 ],
             ], [
                 'file' => 'RequestItemResponseDenied.xml', 'result' => [
                     'success' => false,
-                    'sysMessage' => 'storage_retrieval_request_not_successful'
+                    'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
                 'result' => [
                     'success' => false,
-                    'sysMessage' => 'storage_retrieval_request_not_successful'
+                    'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
                 'result' => [
                     'success' => false,
-                    'sysMessage' => 'storage_retrieval_request_not_successful'
+                    'sysMessage' => 'User Blocked'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
                     'success' => false,
-                    'sysMessage' => 'storage_retrieval_request_not_successful'
                 ],
             ],
         ];
