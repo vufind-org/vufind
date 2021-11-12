@@ -143,8 +143,6 @@ class SolrMarc extends SolrDefault
     {
         $licenseFields = $this->getMarcRecord()->getFields('540');
         foreach ($licenseFields as $licenseField) {
-            $licenseField instanceof \File_MARC_Data_Field;
-
             $id = null;
             $idSubfield = $licenseField->getSubfield('f');
             if ($idSubfield != false)
