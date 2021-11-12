@@ -1765,7 +1765,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function placeRequest($details, $type = 'Hold')
     {
-        $msgPrefix = ($type == 'Stack Retrieval') ? 'storage_retrieval_' : 'hold_';
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
         $bibId = $details['bib_id'];
