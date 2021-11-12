@@ -419,7 +419,7 @@ HERE;
             $sqlStmt->execute();
 
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $due_date = $this->_formatDate($row['due_date']);
+                $due_date = $this->formatDate($row['due_date']);
                 $_due_time = new \DateTime($row['due_date']);
                 if ($_due_time->format('H:i:s') == "23:59:59") {
                     $dueTime = ""; // don't display due time for non-hourly loans
@@ -511,9 +511,9 @@ HERE;
                     'amount' => $row['total_owed'],
                     'fine' => $row['last_billing_type'],
                     'balance' => $row['balance_owed'],
-                    'checkout' => $this->_formatDate($row['checkout_time']),
-                    'createdate' => $this->_formatDate($row['last_billing_ts']),
-                    'duedate' => $this->_formatDate($row['due_date']),
+                    'checkout' => $this->formatDate($row['checkout_time']),
+                    'createdate' => $this->formatDate($row['last_billing_ts']),
+                    'duedate' => $this->formatDate($row['due_date']),
                     'id' => $row['record']
                 ];
             }
@@ -563,13 +563,13 @@ HERE;
                     'id' => $row['bib_record'],
                     'reqnum' => $row['hold_id'],
                     'location' => $row['lib_name'],
-                    'expire' => $this->_formatDate($row['expire_time']),
+                    'expire' => $this->formatDate($row['expire_time']),
                     'last_pickup_date' =>
-                        $this->_formatDate($row['shelf_expire_time']),
+                        $this->formatDate($row['shelf_expire_time']),
                     'available' => $row['shelf_time'],
                     'frozen' => $row['frozen'],
-                    'frozenThrough' => $this->_formatDate($row['thaw_date']),
-                    'create' => $this->_formatDate($row['request_time']),
+                    'frozenThrough' => $this->formatDate($row['thaw_date']),
+                    'create' => $this->formatDate($row['request_time']),
                     'in_transit' =>
                         $row['copy_status'] == self::EVG_ITEM_STATUS_IN_TRANSIT,
                 ];
@@ -629,7 +629,7 @@ HERE;
                     'country' => $row['country'],
                     'phone' => $phone,
                     'group' => $row['usrgroup'],
-                    'expiration_date' => $this->_formatDate($row['expire_date']),
+                    'expiration_date' => $this->formatDate($row['expire_date']),
                 ];
                 return $patron;
             }
@@ -892,7 +892,7 @@ HERE;
      * @throws ILSException
      * @return string The formatted date
      */
-    private function _formatDate($date)
+    protected function formatDate($date)
     {
         if (!$date) {
             return '';
