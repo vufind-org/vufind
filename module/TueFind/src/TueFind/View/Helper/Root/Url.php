@@ -10,14 +10,15 @@ class Url extends \VuFind\View\Helper\Root\Url
         $requestQuery = (null !== $this->request)
               ? $this->request->getQuery()->toArray() : [];
 
-        if(isset($requestQuery['id'])) {
+        if (isset($requestQuery['id'])) {
             unset($requestQuery['id']);
         }
-        
+
         $options = [
             'query' => array_merge($requestQuery, $params),
             'normalize_path' => false, // fix for VUFIND-1392
         ];
+        
         return $this->__invoke(null, [], $options, $reuseMatchedParams);
     }
 }
