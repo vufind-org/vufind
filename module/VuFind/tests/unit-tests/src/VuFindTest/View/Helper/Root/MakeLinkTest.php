@@ -39,7 +39,7 @@ use VuFind\View\Helper\Root\MakeTag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MakeLinkTest extends \PHPUnit\Framework\TestCase
+class MakeLinkTest extends AbstractMakeTagTest
 {
     /**
      * Get MakeLink helper with mock view
@@ -48,28 +48,8 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $makeTag = new MakeTag();
-        $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
-        $escapeHtmlAttr = new \Laminas\View\Helper\EscapeHtmlAttr();
-
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view
-            ->expects($this->atLeastOnce())
-            ->method('plugin')
-            ->with($this->matchesRegularExpression('/^(escapeHtml|escapeHtmlAttr|makeTag)$/'))
-            ->willReturnCallback(
-                function ($helper) use ($makeTag, $escapeHtml, $escapeHtmlAttr) {
-                    return [
-                        'makeTag' => $makeTag,
-                        'escapeHtml' => $escapeHtml,
-                        'escapeHtmlAttr' => $escapeHtmlAttr,
-                    ][$helper];
-                }
-            );
-        $makeTag->setView($view);
-
         $helper = new MakeLink();
-        $helper->setView($view);
+        $helper->setView($this->getViewWithHelpers());
         return $helper;
     }
 
