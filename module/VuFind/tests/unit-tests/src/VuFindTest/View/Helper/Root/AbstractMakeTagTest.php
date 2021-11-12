@@ -59,7 +59,7 @@ abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
             ->method('plugin')
             ->with(
                 $this->matchesRegularExpression(
-                    '/^(' . implode('|', $used). ')$/i'
+                    '/^(' . implode('|', $used) . ')$/i'
                 )
             )
             ->willReturnCallback(
@@ -68,7 +68,7 @@ abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
                 }
             );
 
-        foreach($usedMap as $dep) {
+        foreach ($usedMap as $dep) {
             $dep->setView($view);
         }
 

@@ -28,7 +28,6 @@
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\MakeLink;
-use VuFind\View\Helper\Root\MakeTag;
 
 /**
  * makeLink view helper Test Class

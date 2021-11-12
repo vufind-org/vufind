@@ -161,6 +161,7 @@ class MakeTagTest extends AbstractMakeTagTest
     }
 
     /*
+     * Bad tag names for test below
      */
     public function invalidTags()
     {
