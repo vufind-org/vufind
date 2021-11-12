@@ -169,8 +169,8 @@ class MakeTagTest extends AbstractMakeTagTest
             ['n0numbers'],
             ['-must-start-with-letter'],
             ['em—dash'],
+            ['<doubleangles>'],
             ['?php'],
-            ['sanitycheck'],
         ];
     }
 
