@@ -1399,7 +1399,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     public function getMyFines($user)
     {
         $finesList = [];
-        $finesListSort = [];
 
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'circulationActions', 'cash'],
@@ -1410,7 +1409,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $z31 = $item->z31;
             $z13 = $item->z13;
             $z30 = $item->z30;
-            //$delete = $item->xpath('@delete');
             $title = (string)$z13->{'z13-title'};
             $description = (string)$z31->{'z31-description'};
             $transactiondate = date('d-m-Y', strtotime((string)$z31->{'z31-date'}));
@@ -1419,51 +1417,28 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $barcode = (string)$z30->{'z30-barcode'};
             $checkout = (string)$z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
-            $mult = ($transactiontype == "Credit") ? 100 : -100;
+            $cachetype = strtolower((string)($item->attributes()->type ?? ''));
+            $mult = $cachetype == 'debit' ? -100 : 100;
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string)$z31->{'z31-sum'}))
                 * $mult;
             $cashref = (string)$z31->{'z31-sequence'};
-            //$cashdate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
-            $balance = 0;
 
-            $finesListSort["$cashref"]  = [
+            $finesList["$cashref"]  = [
                     "title"   => $title,
                     "barcode" => $barcode,
                     "amount" => $amount,
                     "transactiondate" => $transactiondate,
                     "transactiontype" => $transactiontype,
                     "checkout" => $this->parseDate($checkout),
-                    "balance"  => $balance,
+                    "balance"  => $amount,
                     "id"  => $id,
+                    "printLink" => "test",
                     "fine" => $description,
             ];
         }
-        ksort($finesListSort);
-        foreach (array_keys($finesListSort) as $key) {
-            $title = $finesListSort[$key]["title"];
-            $barcode = $finesListSort[$key]["barcode"];
-            $amount = $finesListSort[$key]["amount"];
-            $checkout = $finesListSort[$key]["checkout"];
-            $transactiondate = $finesListSort[$key]["transactiondate"];
-            $transactiontype = $finesListSort[$key]["transactiontype"];
-            $balance += $finesListSort[$key]["amount"];
-            $id = $finesListSort[$key]["id"];
-            $fine = $finesListSort[$key]["fine"];
-            $finesList[] = [
-                "title"   => $title,
-                "barcode"  => $barcode,
-                "amount"   => $amount,
-                "transactiondate" => $transactiondate,
-                "transactiontype" => $transactiontype,
-                "balance"  => $balance,
-                "checkout" => $checkout,
-                "id"  => $id,
-                "printLink" => "test",
-                "fine" => $fine,
-            ];
-        }
-        return $finesList;
+        ksort($finesList);
+        return array_values($finesList);
     }
 
     /**
