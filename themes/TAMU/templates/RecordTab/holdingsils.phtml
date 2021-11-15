@@ -25,16 +25,34 @@
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 
     $purchaseFields = $this->driver->getMarcRecord()->getFields("852");
-    $fieldCount = count($purchaseFields);
+    $pFieldCount = count($purchaseFields);
     $purchaseDetails = new stdClass();
     $purchaseDetails->isActive = false;
-    if (count($holdings['holdings']) == 0 && $fieldCount > 0) {
-      $purchaseCode = $purchaseFields[0]->getSubField("b")->getData();
-      $purchaseText = $purchaseFields[0]->getSubField("z")->getData();
-      if ($purchaseCode && $purchaseText) {
-        $purchaseDetails->isActive = true;
-        $purchaseDetails->code = $purchaseCode;
-        $purchaseDetails->text = $purchaseText;
+
+    $boundFields = $this->driver->getMarcRecord()->getFields("998");
+    $bFieldCount = count($boundFields);
+    $boundDetails = new stdClass();
+    $boundDetails->isActive = false;
+
+    if (count($holdings['holdings']) == 0) {
+      if ($pFieldCount > 0) {
+        $purchaseCode = $purchaseFields[0]->getSubField("b")->getData();
+        $purchaseText = $purchaseFields[0]->getSubField("z")->getData();
+        if ($purchaseCode && $purchaseText) {
+          $purchaseDetails->isActive = true;
+          $purchaseDetails->code = $purchaseCode;
+          $purchaseDetails->text = $purchaseText;
+        }
+      }
+
+      if ($bFieldCount > 0) {
+        $boundCallNumber = $boundFields[0]->getSubField("a")->getData();
+        $boundLocation = $boundFields[0]->getSubField("l")->getData();
+        if ($boundCallNumber && $boundLocation) {
+          $boundDetails->isActive = true;
+          $boundDetails->callNumber = $boundCallNumber;
+          $boundDetails->location = $boundLocation;
+        }
       }
     }
 ?>
@@ -99,6 +117,29 @@
     </tr>
   </table>
 <?php
+  } else if ($boundDetails->isActive) {
+    ?>
+    <h3><?=$boundDetails->location?></h3>
+    <table class="table table-striped">
+      <caption class="sr-only"><?=$boundDetails->location?></caption>
+      <tr>
+        <th><?=$this->transEsc("Call Number")?>: </th>
+        <td>
+          <?=$boundDetails->callNumber?>
+        </td>
+      </tr>
+      <tr>
+        <th><span>&nbsp;</span></th>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="getit" id="getit_bound-with-item">
+          <span class="text-success">Available<link property="availability" href="http://schema.org/InStock"></span>
+        </td>
+      </tr>
+    </table>
+  <?php
   }
 ?>
 
