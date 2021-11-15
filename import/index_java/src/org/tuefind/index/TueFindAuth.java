@@ -264,10 +264,22 @@ public class TueFindAuth extends TueFind {
             }
             return "person";
         }
-        if (record.getVariableFields("110").size() > 0)
+        if (record.getVariableFields("110").size() > 0) {
+            for (VariableField field110 : record.getVariableFields("110")) {
+                if (((DataField)field110).getSubfield('t') != null) {
+                    return "work";
+                }
+            }
             return "corporate";
-        if (record.getVariableFields("111").size() > 0)
+        }
+        if (record.getVariableFields("111").size() > 0) {
+            for (VariableField field111 : record.getVariableFields("111")) {
+                if (((DataField)field111).getSubfield('t') != null) {
+                    return "work";
+                }
+            }
             return "meeting";
+        }
         if (record.getVariableFields("150").size() > 0)
             return "keyword";
         if (record.getVariableFields("151").size() > 0)
