@@ -84,7 +84,7 @@
                                             foreach ($this->layout()->allLangs as $langCode => $langName): ?>
                                               <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
                                                 <?php $langURL = $this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode]));
-                                                    if($routeParams['controller'] == 'Authority' && $routeParams['action'] == "Home") {
+                                                    if($routeParams['controller'] == "Authority" && $routeParams['action'] == "Home") {
                                                         $langURL = $this->escapeHtmlAttr($this->url()->addQueryParametersToAuthority(['lng' => $langCode]));
                                                     }
                                                 ?>
