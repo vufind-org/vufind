@@ -148,7 +148,7 @@
 <?php
 $sort_holding_id = array_column( $holding['items'], "holding_id" );
 $sort_enumeration_id = array_column( $holding['items'], "enumeration" );
-array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, $holding['items']);
+array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SORT_NATURAL, $holding['items']);
 
 ?>
 <h3>
