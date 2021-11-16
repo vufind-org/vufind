@@ -1,12 +1,12 @@
-<h1>Helpful Searching Tips</h1>
+<h1>Որոնման օգտակար խորհուրդներ</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Wildcard Searches</a></li>
-  <li><a href="#Fuzzy Searches">Fuzzy Searches</a></li>
-  <li><a href="#Proximity Searches">Proximity Searches</a></li>
-  <li><a href="#Range Searches">Range Searches</a></li>
-  <li><a href="#Boosting a Term">Boosting a Term</a></li>
-  <li><a href="#Boolean operators">Boolean Operators</a>
+  <li><a href="#Wildcard Searches">Ներդրված նիշերով Որոնումներ</a></li>
+  <li><a href="#Fuzzy Searches">Անորոշ որոնումներ</a></li>
+  <li><a href="#Proximity Searches">Հարևանության որոնումներ</a></li>
+  <li><a href="#Range Searches">Միջակայքի որոնումներ</a></li>
+  <li><a href="#Boosting a Term">Տերմինի ակտիվացում</a></li>
+  <li><a href="#Boolean operators">Բուլյան օպերատորներ</a>
     <ul>
       <li><a href="#AND">AND</a></li>
       <li><a href="#+">+</a></li>
@@ -18,100 +18,100 @@
 </ul>
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Wildcard Searches</dt>
+  <dt><a name="Wildcard Searches"></a>Ներդրված նիշերով Որոնումներ</dt>
   <dd>
-    <p>To perform a single character wildcard search use the <strong>?</strong> symbol.</p>
-    <p>For example, to search for "woman" or "women" you can use the search:</p>
+    <p>Ըստ մեկ ներդրված նիշի նիշերի որոնում կատարելու համար օգտագործեք <strong>?</strong> նշանը։</p>
+    <p>Օրինակ, փնտրելու համար "woman" կամ "women" կարող եք օգտագործել որոնումը:</p>
     <pre class="code">wom?n</pre>
-    <p>To perform a multiple character, 0 or more, wildcard search use the <strong>*</strong> symbol.</p>
-    <p>For example, to search for test, tests or tester, you can use the search: </p>
+    <p>Բազմանիշ, 0 կամ ավելի, ներդրված նիշերի որոնում կատարելու համար օգտագործեք <strong>*</strong> նշանը։</p>
+    <p>Օրինակ, փնտրելու համար test, tests կամ tester, կարող եք օգտագործել որոնումը: </p>
     <pre class="code">test*</pre>
-    <p>You can also use the wildcard searches in the middle of a term.</p>
+    <p>Դուք կարող եք նաև օգտագործել նիշերի որոնումները տերմինի մեջտեղում:</p>
     <pre class="code">te*t</pre>
-    <p>Note: You cannot use a * or ? symbol as the first character of a search.</p>
+    <p>Նշում: Չեք կարող օգտագործել * կամ ? նիշը որպես որոնման առաջին նիշ:</p>
   </dd>
   
-  <dt><a name="Fuzzy Searches"></a>Fuzzy Searches</dt>
+  <dt><a name="Անորոշ որոնումներ"></a>Անորոշ որոնումներ</dt>
   <dd>
-    <p>Use the tilde <strong>~</strong> symbol at the end of a <strong>Single</strong> word Term. For example, to search for variant spellings of "Tchaikovsky," use the fuzzy search: </p>
+    <p>Օգտագորխեք տիլդան <strong>~</strong> այս բառի վերջում <strong>Միայնակ</strong>։ Օրինակ, որոնել տարբեր ուղղագրությունները "Tchaikovsky," օգտագործեք անորոշ որոնումը։ </p>
     <pre class="code">Tchaikovsky~</pre>
-    <p>An additional parameter can specify the required similarity. The value is between 0 and 1, with a value closer to 1 only terms with a higher similarity will be matched. For example:</p>
+    <p>Լրացուցիչ պարամետրը կարող է սահմանել պահանջվող նմանությունը: Արժեքը 0-ի և 1-ի միջև է, իսկ 1-ին մոտ արժեքի դեպքում կհամընկնեն միայն ավելի մեծ նմանությամբ տերմինները: Օրինակ:</p>
     <pre class="code">Tchaikovsky~0.8</pre>
-    <p>The default that is used if the parameter is not given is 0.5.</p>
+    <p>Լռելյայն, որն օգտագործվում է, եթե պարամետրը տրված չէ, 0.5 է:</p>
   </dd>
   
-  <dt><a name="Proximity Searches"></a>Proximity Searches</dt>
+  <dt><a name="Հարևանության որոնումներ"></a>Հարևանության որոնումներ</dt>
   <dd>
     <p>
-      Use the tilde <strong>~</strong> symbol at the end of a <strong>Multiple</strong> word Term.
-      For example, to search for economics and keynes that are within 10 words apart:
+      Օգտագորխեք տիլդան <strong>~</strong> այս բառի վերջում <strong>Բազմաթիվ</strong>։
+      Օրինակ, որոնել economics և keynes որոնց միջև հեռավորությունը 10 բառի սահմաններում է:
     </p>
     <pre class="code">"economics Keynes"~10</pre>
   </dd>
   
-  <dt><a name="Range Searches"></a>Range Searches</dt>
+  <dt><a name="Միջակայքի որոնումներ"></a>Միջակայքի որոնումներ</dt>
   <dd>
     <p>
-      To perform a range search you can use the <strong>{ }</strong> characters.
-      For example to search for a term that starts with either A, B, or C:
+      Միջակայքի որոնում կատարելու համար կարող եք օգտագործել <strong>{ }</strong> նիշերը։
+      Օրինակ՝ A, B կամ C-ով սկսվող տերմին փնտրելու համար:
     </p>
-    <pre class="code">{A TO C}</pre>
+    <pre class="code">{A ՄԻՆՉԵՒ C}</pre>
     <p>
-      The same can be done with numeric fields such as the Year:
+     Նույնը կարելի է անել թվային դաշտերի հետ, ինչպիսիք է Տարին.
     </p>
-    <pre class="code">[2002 TO 2003]</pre>
+    <pre class="code">[2002 ՄԻՆՉԵՒ 2003]</pre>
   </dd>
   
-  <dt><a name="Boosting a Term"></a>Boosting a Term</dt>
+  <dt><a name="Տերմինի ակտիվացում"></a>Տերմինի ակտիվացում</dt>
   <dd>
     <p>
-      To apply more value to a term, you can use the <strong>^</strong> character.
-      For example, you can try the following search:
+      Տերմինին ավելի մեծ արժեք տալու համար կարող եք օգտագործել <strong>^</strong> նիշը։
+      Օրինակ, կարող եք փորձել հետևյալ որոնումը.
     </p>
     <pre class="code">economics Keynes^5</pre>
-    <p>Which will give more value to the term "Keynes"</p>
+    <p>Ինչն ավելի մեծ արժեք կտա "Keynes" տերմինին</p>
   </dd>
   
-  <dt><a name="Boolean operators"></a>Boolean Operators</dt>
+  <dt><a name="Բուլյան օպերատորներ"></a>Բուլյան օպերատորներ</dt>
   <dd>
     <p>
-      Boolean operators allow terms to be combined with logic operators.
-      The following operators are allowed: <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> and <strong>-</strong>.
+      Բուլյան օպերատորները թույլ են տալիս տերմինները զուգակցել տրամաբանական օպերատորների հետ:
+      Թույլատրվում են հետևյալ օպերատորները. <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> և <strong>-</strong>.
     </p>
-    <p>Note: Boolean operators must be ALL CAPS</p>
+    <p>Նշում. Բուլյան օպերատորները պետք է լինեն ԲՈԼՈՐԸ ՄԵԾԱՏԱՌ</p>
     <dl>
       <dt><a name="AND"></a>AND</dt>
       <dd>
-        <p>The <strong>AND</strong> operator is the default conjunction operator. This means that if there is no Boolean operator between two terms, the AND operator is used. The AND operator matches records where both terms exist anywhere in the field of a record.</p>
-        <p>To search for records that contain "economics" and "Keynes" use the query: </p>
+        <p>Այս <strong>AND</strong> օպերատորը լռելյայն կապի օպերատորն է: Սա նշանակում է, որ եթե երկու տերմինների միջև չկա բուլյան օպերատոր, ապա օգտագործվում է AND օպերատորը: AND օպերատորը համընկնում է այն գրառումներին, որտեղ երկու տերմիններն էլ առկա են գրառման դաշտի ցանկացած վայրում:</p>
+        <p>Այն գրառումները փնտրելու համար, որոնք պարունակում են "economics" և "Keynes" օգտագործեք հարցումը: </p>
         <pre class="code">economics Keynes</pre>
         <p>or</p>
         <pre class="code">economics AND Keynes</pre>
       </dd>
       <dt><a name="+"></a>+</dt>
       <dd>
-        <p>The "+" or required operator requires that the term after the "+" symbol exist somewhere in the field of a record.</p>
-        <p>To search for records that must contain "economics" and may contain "Keynes" use the query:</p>
+        <p>«+» կամ պահանջվող օպերատորը պահանջում է, որ «+» նիշից հետո տերմինը լինի ինչ-որ տեղ գրառման դաշտում:</p>
+        <p>Այն գրառումները փնտրելու համար, որոնք պարունակում են "economics" և կարող է պարունակել "Keynes" օգտագործեք հարցումը:</p>
         <pre class="code">+economics Keynes</pre>
       </dd>
       <dt><a name="OR"></a>OR</dt>
       <dd>
-        <p>The OR operator links two terms and finds a matching record if either of the terms exist in a record.</p>
-        <p>To search for documents that contain either "economics Keynes" or just "Keynes" use the query:</p>
+        <p>OR օպերատորը կապում է երկու տերմին և գտնում է համապատասխան գրառում, եթե տերմիններից որևէ մեկը գոյություն ունի գրառումում:</p>
+        <p>"economics Keynes" կամ պարզապես "Keynes" պարունակող փաստաթղթեր որոնելու համար օգտագործեք հարցումը.</p>
         <pre class="code">"economics Keynes" OR Keynes</pre>
       </dd>
       <dt><a name="NOT"></a>NOT</dt>
       <dd>
-        <p>The NOT operator excludes records that contain the term after NOT.</p>
-        <p>To search for documents that contain "economics" but not "Keynes" use the query: </p>
+        <p>NOT օպերատորը բացառում է այն գրառումները, որոնք պարունակում են NOT-ից հետո տերմինը:</p>
+        <p>"economics" պարունակող, բայց "Keynes" չպարունակող փաստաթղթեր փնտրելու համար օգտագործեք հարցումը. </p>
         <pre class="code">economics NOT Keynes</pre>
-        <p>Note: The NOT operator cannot be used with just one term. For example, the following search will return no results:</p>
+        <p>Նշում: NOT օպերատորը չի կարող օգտագործվել միայն մեկ տերմինով: Օրինակ, հետևյալ որոնումը արդյունք չի տա.</p>
         <pre class="code">NOT economics</pre>
       </dd>
       <dt><a name="-"></a>-</dt>
       <dd>
-        <p>The <strong>-</strong> or prohibit operator excludes documents that contain the term after the "-" symbol.</p>
-        <p>To search for documents that contain "economics" but not "Keynes" use the query: </p>
+        <p>Այս <strong>-</strong> կամ արգելել օպերատորի դեպքում, բացառվում են փաստաթղթերը, որոնք պարունակում են «-» նշանից հետո տերմինը:</p>
+        <p>"economics" պարունակող, բայց "Keynes" չպարունակող փաստաթղթեր փնտրելու համար օգտագործեք հարցումը. </p>
         <pre class="code">economics -Keynes</pre>
       </dd>
     </dl>
