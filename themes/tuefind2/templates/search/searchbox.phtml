@@ -64,8 +64,8 @@
                 <?php endif; ?>
                 <!-- End warnings -->
 
-
-                <div class="clearfix searchbox_home" role="search">
+                <?php $systemName = $this->tuefind()->getTueFindInstance(); ?>
+                <div class="clearfix searchbox_home <?=$systemName;?>-search-block" role="search">
                     <?php if ($this->searchType == 'advanced'): ?>
                         <div class="searchForm navbar-form navbar-left flip">
                             <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
@@ -90,9 +90,8 @@
                             <?php if (!empty($tabs)): ?></div><?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <form id="searchForm" class="searchForm tuefind-event-searchForm-on-submit" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off"
-                            >
-                            <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
+                        <form id="searchForm" class="searchForm tuefind-event-searchForm-on-submit" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
+                            <?=$this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
                             <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
                             <div class="form-group row">
