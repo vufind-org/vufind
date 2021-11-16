@@ -122,7 +122,7 @@ trait LiveDatabaseTrait
         // Fail if the test does not include the LiveDetectionTrait.
         if (!$test->hasLiveDetectionTrait ?? false) {
             self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
+                'Test requires LiveDetectionTrait, but it is not used.'
             );
         }
         // If CI is not running, all tests were skipped, so no work is necessary:
@@ -156,7 +156,7 @@ trait LiveDatabaseTrait
         // Fail if the test does not include the LiveDetectionTrait.
         if (!$test->hasLiveDetectionTrait ?? false) {
             self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
+                'Test requires LiveDetectionTrait, but it is not used.'
             );
         }
         // If CI is not running, all tests were skipped, so no work is necessary:
