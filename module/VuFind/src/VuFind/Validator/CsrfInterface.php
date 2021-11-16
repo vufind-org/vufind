@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Interface for Csrf validator
  *
  * PHP version 7
  *
@@ -22,31 +22,37 @@
  * @category VuFind
  * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Validator;
 
+use Laminas\Validator\ValidatorInterface;
+
 /**
- * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Interface for Csrf validator
  *
  * @category VuFind
- * @package  Solr
+ * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Csrf extends \Laminas\Validator\Csrf
+interface CsrfInterface extends ValidatorInterface
 {
     /**
-     * How many tokens are currently stored in the session?
+     * Retrieve CSRF token
      *
-     * @return int
+     * If no CSRF token currently exists, or should be regenerated,
+     * generates one.
+     *
+     * @param bool $regenerate regenerate hash, default false
+     *
+     * @return string
      */
-    public function getTokenCount()
-    {
-        return count($this->getSession()->tokenList ?? []);
-    }
+    public function getHash($regenerate = false);
 
     /**
      * Keep only the most recent N tokens.
@@ -55,16 +61,5 @@ class Csrf extends \Laminas\Validator\Csrf
      *
      * @return void
      */
-    public function trimTokenList($limit)
-    {
-        $session = $this->getSession();
-        if ($limit < 1) {
-            // Reset the array if necessary:
-            $session->tokenList = [];
-        } elseif ($limit < $this->getTokenCount()) {
-            // Trim the array if necessary:
-            $session->tokenList
-                = array_slice($session->tokenList, -1 * $limit, null, true);
-        }
-    }
+    public function trimTokenList($limit);
 }
