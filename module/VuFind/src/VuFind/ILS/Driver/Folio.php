@@ -546,6 +546,7 @@ class Folio extends AbstractAPI implements
                 . '" NOT discoverySuppress==true)'
         ];
         $items = [];
+
         foreach ($this->getPagedResults(
             'holdingsRecords',
             '/holdings-storage/holdings',
@@ -587,10 +588,18 @@ class Folio extends AbstractAPI implements
 
             $holdingItems = iterator_to_array($this->getPagedResults('items', '/item-storage/items', $query));
 
+            if ($holding->effectiveLocationId) {
+                $fallbackLocationId = $holding->effectiveLocationId;
+            } else if ($holding->permanentLocationId) {
+                $fallbackLocationId = $holding->permanentLocationId;
+            } else {
+                $fallbackLocationId = null;
+            }
+
             //TAMU boundwith workaround
-            if (count($holdingItems) == 0 && $holding->effectiveLocationId) {
+            if (count($holdingItems) == 0 && $fallbackLocationId) {
                 $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk'];
-                $holdingLocationData = $this->getLocationData($holding->effectiveLocationId);
+                $holdingLocationData = $this->getLocationData($fallbackLocationId);
 
                 if (in_array($holdingLocationData['code'], $boundWithLocations)) {
                     $callNumberData = $this->chooseCallNumber(
