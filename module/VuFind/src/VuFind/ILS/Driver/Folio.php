@@ -598,7 +598,7 @@ class Folio extends AbstractAPI implements
 
             //TAMU boundwith workaround
             if (count($holdingItems) == 0 && $fallbackLocationId) {
-                $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk'];
+                $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk','udoc','txdoc'];
                 $holdingLocationData = $this->getLocationData($fallbackLocationId);
 
                 if (in_array($holdingLocationData['code'], $boundWithLocations)) {
