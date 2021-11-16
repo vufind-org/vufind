@@ -4,39 +4,46 @@
   overflow-y: auto;
 }
 @media (min-width: 768px) {
-  .collection-hierarchytree { display: flex; }
+  .collection-hierarchytree {
+    display: flex;
+  }
   .collection-hierarchytree .tree-panel,
   .collection-hierarchytree #tree-preview {
     flex-basis: 50%;
     padding: 1rem;
   }
-  #modal .collection-hierarchytree { display: block; }
+  #modal .collection-hierarchytree {
+    display: block;
+  }
   #modal .tree-panel {
     flex-basis: 100%;
     padding: 0;
   }
-  #modal #tree-preview { display: none; }
+  #modal #tree-preview {
+    display: none;
+  }
 }
 
 /* --- Icons --- */
 .jstree-ocl::before {
-  float: left;
-  width: 1rem;
+  display: inline-block;
+  width: 1.5rem;
+  padding-top: 2px;
   font-style: normal;
-  cursor: pointer;
+  text-align: center;
   text-decoration: inherit;
+  cursor: pointer;
   speak: none;
-  padding-right: 1.3rem;
 }
-.jstree-open > .jstree-ocl:before {
+.jstree-open > .jstree-ocl::before {
   content: "\25BD"; // Unicode white down-pointing triangle
 }
-.jstree-closed > .jstree-ocl:before {
+.jstree-closed > .jstree-ocl::before {
   content: "\25B6"; // Unicode black right-pointing triangle
 }
-.jstree-leaf > .jstree-ocl:before {
+.jstree-leaf > .jstree-ocl::before {
   color: transparent;
-  content: "\2023"; // Unicode triangle bullet
+  content: "\25B8"; // Unicode black right-pointing small triangle
 }
 
 .jstree-themeicon-custom {
@@ -47,10 +54,24 @@
   background-repeat: no-repeat;
 }
 
+/* Reset styles for children of active children */
+.facet-group .jstree-node.active,
+.facet-group .jstree-node.active a {
+  color: $link-color;
+  background-color: transparent;
+}
+
+.facet-group .jstree-facet .jstree-node.active .badge {
+  color: $badge-color;
+  background-color: $badge-bg;
+}
+
 /* --- Look --- */
-.jstree-anchor {
-  padding: 2px;
-  padding-right: 4px;
+.jstree-children {
+  padding: 0;
+}
+.jstree-node .jstree-children {
+  padding-left: 1rem;
 }
 
 .jstree-clicked,
@@ -66,13 +87,35 @@
   }
 }
 
+.jstree-facet {
+  padding: 0;
+
+  .jstree-node.list-group-item {
+    padding: 0.5rem;
+  }
+
+  .jstree-node .facet {
+    padding: 2px 0;
+    border: 0;
+  }
+
+  .active > .jstree-anchor .facet {
+    padding-left: 2px;
+    color: $list-group-active-color;
+    background-color: $list-group-active-bg;
+  }
+  .jstree-node.active .badge,
+  .jstree-node.active .badge .fa {
+    background-color: #fff;
+    color: $brand-primary;
+  }
+}
+
 .hierarchy-tree,
 .jstree-facet {
-  .jstree-container-ul,
-  .jstree-children {
-    padding-left: 16px;
+  .jstree-initial-node {
+    display: none;
   }
-  .jstree-initial-node {display: none;}
   .jstree-search a {
     font-style: italic;
     color: #8b0000;
@@ -84,6 +127,10 @@
   border: 0;
   border-bottom: 1px solid $list-group-border;
   border-radius: 0;
+}
+.jstree-node.list-group-item.active:hover,
+.jstree-node.list-group-item.active:focus {
+  border-color: $list-group-border;
 }
 
 /* --- Record --- */
@@ -105,20 +152,40 @@
   white-space: nowrap;
 }
 .jstree-facet .main.applied .fa-check {
-  margin-top: 2px;
-  margin-right: 4px;
+  margin: 4px;
 }
-.jstree-facet .jstree-container-ul { padding: 0; }
-.jstree-facet .active,
-.jstree-facet .active a.jstree-anchor {
-  background-color: $list-group-active-bg;
-  color: #fff;
+.jstree-facet .jstree-container-ul {
+  padding: 0;
 }
-li.jstree-facet,
-li.jstree-node { list-style: none; }
-li.jstree-facet .badge { cursor: text; }
-li.jstree-facet ul { padding-left: 20px; }
 
-.facet .jstree-node.list-group-item { padding-left: 19px; }
-.facet .jstree-icon::before { margin-left: -12px; }
-.facet .jstree-facet li span.main { padding: 1px; }
+li.jstree-facet,
+li.jstree-node {
+  list-style: none;
+}
+li.jstree-facet .badge {
+  cursor: text;
+}
+.jstree-facet .jstree-ocl {
+  float: left;
+}
+
+/* RTL */
+body.rtl {
+  .jstree-node .jstree-children {
+    padding-left: 0;
+    padding-right: 1rem;
+  }
+  .jstree-closed > .jstree-ocl::before {
+    content: "\25C0"; // Unicode black left-pointing triangle
+  }
+  .jstree-leaf > .jstree-ocl::before {
+    content: "\25C2"; // Unicode black left-pointing small triangle
+  }
+  .jstree-facet .jstree-ocl {
+    float: right;
+  }
+  .jstree-facet .active > .jstree-anchor .facet {
+      padding-left: 0;
+      padding-right: 2px;
+  }
+}

@@ -86,7 +86,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Amicus::class => InvokableFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
         Demo::class => DemoFactory::class,
-        Evergreen::class => InvokableFactory::class,
+        Evergreen::class => DriverWithDateConverterFactory::class,
         Folio::class => FolioFactory::class,
         Horizon::class => DriverWithDateConverterFactory::class,
         HorizonXMLAPI::class => DriverWithDateConverterFactory::class,

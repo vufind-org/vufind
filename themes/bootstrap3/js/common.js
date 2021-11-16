@@ -141,7 +141,7 @@ var VuFind = (function VuFind() {
 
   var updateCspNonce = function updateCspNonce(html) {
     // Fix any inline script nonces
-    return html.replaceAll(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
+    return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
   var loadHtml = function loadHtml(_element, url, data, success) {
@@ -522,22 +522,6 @@ $(document).ready(function commonDocReady() {
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
-    $(document).one('ajaxStop', function triggerPrint() {
-      // Print dialogs cause problems during testing, so disable them
-      // when the "test mode" cookie is set. This should never happen
-      // under normal usage outside of the Phing startup process.
-      if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
-        window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
-        // Trigger print after a minimal timeout. This is done to avoid
-        // problems with some browsers, which might not fully update
-        // ajax loaded page content before showing the print dialog.
-        setTimeout(function doPrint() { window.print(); }, 10);
-      } else {
-        console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
-      }
-    });
-    // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   setupIeSupport();

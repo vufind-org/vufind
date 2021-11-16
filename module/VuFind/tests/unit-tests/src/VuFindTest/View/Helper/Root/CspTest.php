@@ -39,12 +39,11 @@ namespace VuFindTest\View\Helper\Root;
 class CspTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test that the helper works when the $pathPrefix parameter has a trailing
-     * slash.
+     * Test disablePolicy when the CSP is enabled
      *
      * @return void
      */
-    public function testDisableCsp(): void
+    public function testDisablePolicyWithCspEnabled(): void
     {
         $config = new \Laminas\Config\Config(
             [
@@ -79,5 +78,82 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $csp = new \VuFind\View\Helper\Root\Csp($response);
         $csp->disablePolicy();
         $this->assertFalse($headers->get('Content-Security-Policy'));
+    }
+
+    /**
+     * Test disablePolicy when the CSP is in "report only" mode
+     *
+     * @return void
+     */
+    public function testDisablePolicyWithCspReportOnly(): void
+    {
+        $config = new \Laminas\Config\Config(
+            [
+                'CSP' => [
+                    'use_nonce' => true,
+                    'enabled' => [
+                        'testing' => 'report_only'
+                    ]
+                ],
+                'Directives' => [
+                    'script-src' => [
+                        "'unsafe-inline'"
+                    ]
+                ]
+            ]
+        );
+        $nonceGenerator = new \VuFind\Security\NonceGenerator();
+        $cspHeaderGenerator
+            = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
+
+        $response = new \Laminas\Http\Response();
+        $headers = $response->getHeaders();
+        $header = $cspHeaderGenerator->getHeader();
+        $this->assertInstanceOf(
+            \Laminas\Http\Header\ContentSecurityPolicyReportOnly::class,
+            $header
+        );
+        $headers->addHeader($header);
+        $added = $headers->get('Content-Security-Policy-Report-Only');
+        $this->assertFalse(is_iterable($added));
+
+        $csp = new \VuFind\View\Helper\Root\Csp($response);
+        $csp->disablePolicy();
+        $this->assertFalse($headers->get('Content-Security-Policy-Report-Only'));
+    }
+
+    /**
+     * Test disablePolicy when the CSP is disabled
+     *
+     * @return void
+     */
+    public function testDisablePolicyWithCspDisabled(): void
+    {
+        $config = new \Laminas\Config\Config(
+            [
+                'CSP' => [
+                    'use_nonce' => true,
+                    'enabled' => [
+                        'testing' => false
+                    ]
+                ],
+                'Directives' => [
+                    'script-src' => [
+                        "'unsafe-inline'"
+                    ]
+                ]
+            ]
+        );
+        $nonceGenerator = new \VuFind\Security\NonceGenerator();
+        $cspHeaderGenerator
+            = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
+
+        $response = new \Laminas\Http\Response();
+        $headers = $response->getHeaders();
+        $header = $cspHeaderGenerator->getHeader();
+        $this->assertNull($header);
+
+        $csp = new \VuFind\View\Helper\Root\Csp($response);
+        $csp->disablePolicy();
     }
 }

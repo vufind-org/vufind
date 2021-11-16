@@ -16,11 +16,11 @@ jobs:
         # since the results should be the same on all platforms, so we don't need to repeat them.
         include:
           - php-version: 7.3
-            phing_tasks: "phpunitfast phpcs-console php-cs-fixer-dryrun phpstan-console"
+            phing_tasks: "qa-php"
           - php-version: 7.4
-            phing_tasks: "phpunitfast phpcs-console php-cs-fixer-dryrun phpstan-console"
+            phing_tasks: "qa-php"
           - php-version: 8.0
-            phing_tasks: "eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
+            phing_tasks: "qa-console"
 
     steps:
       - name: Setup PHP

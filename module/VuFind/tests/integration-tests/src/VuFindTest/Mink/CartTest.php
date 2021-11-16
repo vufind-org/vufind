@@ -382,11 +382,11 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $add = $this->findCss($page, '.cart-add');
         $remove = $this->findCss($page, '.cart-remove');
         $add->click();
-        $this->assertEquals('1 items (Full)', $cartItems->getText());
+        $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
         $remove->click();
-        $this->assertEquals('0 items', $cartItems->getText());
+        $this->assertEquals('Book Bag: 0 items', $cartItems->getText());
         $add->click();
-        $this->assertEquals('1 items (Full)', $cartItems->getText());
+        $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
 
         // Now move to another page and try to add a second item -- it should
         // not be added due to cart limit:
@@ -394,7 +394,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $cartItems = $this->findCss($page, '#cartItems');
         $add = $this->findCss($page, '.cart-add');
         $add->click();
-        $this->assertEquals('1 items (Full)', $cartItems->getText());
+        $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
     }
 
     /**
@@ -414,7 +414,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             $page = $this->getRecordPage('testsample' . $x);
             $this->clickCss($page, '.cart-add');
             $this->assertEquals(
-                $x . ' items',
+                'Book Bag: ' . $x . ' items',
                 $this->findCss($page, '#cartItems')->getText()
             );
         }
