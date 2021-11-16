@@ -584,11 +584,49 @@ class Folio extends AbstractAPI implements
             );
             $holdingCallNumber = $holding->callNumber ?? '';
             $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
-            foreach ($this->getPagedResults(
-                'items',
-                '/item-storage/items',
-                $query
-            ) as $item) {
+
+            $holdingItems = iterator_to_array($this->getPagedResults('items', '/item-storage/items', $query));
+
+            //TAMU boundwith workaround
+            if (count($holdingItems) == 0 && $holding->effectiveLocationId) {
+                $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk'];
+                $holdingLocationData = $this->getLocationData($holding->effectiveLocationId);
+
+                if (in_array($holdingLocationData['code'], $boundWithLocations)) {
+                    $callNumberData = $this->chooseCallNumber(
+                        $holdingCallNumberPrefix,
+                        $holdingCallNumber,
+                        '',
+                        ''
+                    );
+                    $items[] = $callNumberData + [
+                        'id' => $bibId,
+                        'item_id' => 'bound-with-item',
+                        'item_hrid' => 'bound-with-item',
+                        'holding_id' => $holding->id,
+                        'holding_hrid' => $holding->hrid,
+                        'number' => 0,
+                        'barcode' => 'bound-with-item',
+                        'status' => null,
+                        'availability' => true,
+                        'is_holdable' => $this->isHoldable($holdingLocationData['name']),
+                        'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
+                        'item_notes' => null,
+                        'issues' => $holdingsStatements,
+                        'supplements' => $holdingsSupplements,
+                        'indexes' => $holdingsIndexes,
+                        'callnumber' => $holding->callNumber ?? '',
+                        'location' => $holdingLocationData['name'],
+                        'location_code' => $holdingLocationData['code'],
+                        'reserve' => 'TODO',
+                        'enumeration' => '',
+                        'item_chronology' => '',
+                        'addLink' => true
+                    ];
+                }
+            }
+
+            foreach ($holdingItems as $item) {
                 $itemNotes = array_filter(
                     array_map($notesFormatter, $item->notes ?? [])
                 );
