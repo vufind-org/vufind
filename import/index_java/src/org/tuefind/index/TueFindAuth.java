@@ -256,24 +256,27 @@ public class TueFindAuth extends TueFind {
     }
 
     public String getAuthorityType(final Record record) {
-        if (record.getVariableFields("100").size() > 0) {
-            for (VariableField field100 : record.getVariableFields("100")) {
+        final List<VariableField> fields100 = record.getVariableFields("100");
+        if (fields100.size() > 0) {
+            for (VariableField field100 : fields100) {
                 if (((DataField)field100).getSubfield('t') != null) {
                     return "work";
                 }
             }
             return "person";
         }
-        if (record.getVariableFields("110").size() > 0) {
-            for (VariableField field110 : record.getVariableFields("110")) {
+        final List<VariableField> fields110 = record.getVariableFields("110");
+        if (fields110.size() > 0) {
+            for (VariableField field110 : fields110) {
                 if (((DataField)field110).getSubfield('t') != null) {
                     return "work";
                 }
             }
             return "corporate";
         }
-        if (record.getVariableFields("111").size() > 0) {
-            for (VariableField field111 : record.getVariableFields("111")) {
+        final List<VariableField> fields111 = record.getVariableFields("111");
+        if (fields111.size() > 0) {
+            for (VariableField field111 : fields111) {
                 if (((DataField)field111).getSubfield('t') != null) {
                     return "work";
                 }
