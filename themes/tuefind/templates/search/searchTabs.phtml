@@ -1,7 +1,6 @@
 <?php
-  $instance = $this->tuefind()->getTueFindInstance();
   $routeParams = $this->tuefind()->getRouteParams();
-  if($instance == "krimdok" && $routeParams['controller'] == "Authority" && $routeParams['action'] == "Home") {
+  if($routeParams['controller'] == "Authority" && $routeParams['action'] == "Home") {
     foreach($searchTabs as &$sTabs) {
       if($sTabs['id'] == "SolrAuth") {
         $sTabs['selected'] = 1;
