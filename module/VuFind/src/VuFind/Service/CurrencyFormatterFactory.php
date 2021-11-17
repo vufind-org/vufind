@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for KohaRest ILS driver.
+ * CurrencyFormatter Factory
  *
  * PHP version 7
  *
@@ -20,28 +20,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for KohaRest ILS driver.
+ * CurrencyFormatter Factory
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
+class CurrencyFormatterFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,16 +66,8 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get(\Laminas\Session\SessionManager::class);
-            return new \Laminas\Session\Container("KohaRest_$namespace", $manager);
-        };
-        $currencyFormatter
-            = $container->get(\VuFind\Service\CurrencyFormatter::class);
-        return parent::__invoke(
-            $container,
-            $requestedName,
-            [$sessionFactory, $currencyFormatter]
-        );
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        return new $requestedName($config->Site->defaultCurrency ?? null);
     }
 }

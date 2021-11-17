@@ -33,7 +33,7 @@ namespace VuFind\ILS\Driver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\View\Helper\Root\SafeMoneyFormat;
+use VuFind\Service\CurrencyFormatter;
 
 /**
  * VuFind Driver for Koha, using REST API
@@ -81,11 +81,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sessionFactory;
 
     /**
-     * Money formatting view helper
+     * Currency formatter
      *
-     * @var SafeMoneyFormat
+     * @var CurrencyFormatter
      */
-    protected $safeMoneyFormat;
+    protected $currencyFormatter;
 
     /**
      * Session cache
@@ -216,19 +216,19 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter $dateConverter   Date converter object
-     * @param callable               $sessionFactory  Factory function returning
+     * @param \VuFind\Date\Converter $dateConverter     Date converter object
+     * @param callable               $sessionFactory    Factory function returning
      * SessionContainer object
-     * @param ?SafeMoneyFormat       $safeMoneyFormat Money formatting view helper
+     * @param CurrencyFormatter      $currencyFormatter Currency formatter
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
         $sessionFactory,
-        ?SafeMoneyFormat $safeMoneyFormat
+        currencyFormatter $currencyFormatter
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
-        $this->safeMoneyFormat = $safeMoneyFormat;
+        $this->currencyFormatter = $currencyFormatter;
     }
 
     /**
@@ -2581,15 +2581,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Helper function for formatting currency
      *
-     * @param $amount Number to format
+     * @param float $amount Number to format
      *
      * @return string
      */
     protected function formatMoney($amount)
     {
-        if (null === $this->safeMoneyFormat) {
-            throw new \Exception('SafeMoneyFormat helper not available');
-        }
-        return ($this->safeMoneyFormat)($amount);
+        return $this->currencyFormatter->convertToDisplayFormat($amount);
     }
 }
