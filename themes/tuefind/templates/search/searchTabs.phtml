@@ -1,4 +1,18 @@
-<?php if (isset($searchTabs) && count($searchTabs) > 0): ?>
+<?php
+  $routeParams = $this->tuefind()->getRouteParams();
+  if($routeParams['controller'] == "Authority" && $routeParams['action'] == "Home") {
+    foreach($searchTabs as &$sTabs) {
+      if($sTabs['id'] == "SolrAuth") {
+        $sTabs['selected'] = 1;
+      }else{
+        $sTabs['selected'] = '';
+      }
+      if(empty($sTabs['url'])) {
+        $sTabs['url'] = '/';
+      }
+    }
+  }
+  if (isset($searchTabs) && count($searchTabs) > 0): ?>
   <ul class="nav nav-tabs tuefind-event-resetsearchhandlers" >
     <?php foreach ($searchTabs as $tab): ?>
         <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
