@@ -59,10 +59,11 @@ class ThemeConfig extends AbstractHelper
     /**
      * Constructor
      *
-     * @param ThemeInfo        $config ThemeInfo
-     * @param StorageInterface $cache  StorageInterface
+     * @param ThemeInfo        $themeInfo ThemeInfo
+     * @param StorageInterface $cache     StorageInterface
      */
-    public function __construct(ThemeInfo $themeInfo, StorageInterface $cache) {
+    public function __construct(ThemeInfo $themeInfo, StorageInterface $cache)
+    {
         $this->themeInfo = $themeInfo;
         $this->cache = $cache;
     }
@@ -70,7 +71,12 @@ class ThemeConfig extends AbstractHelper
     /**
      * Returns config by path
      *
-     * @param string|string[] $path
+     * Examples:
+     * - 'less' => all of less section
+     * - ['less'] => same as above
+     * - ['less', 'active'] => would return LESS active status
+     *
+     * @param string|string[] $path Path to return from theme.config.php
      *
      * @return mixed|null
      */
