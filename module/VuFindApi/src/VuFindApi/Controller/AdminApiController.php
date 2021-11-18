@@ -59,7 +59,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
      */
     public function __construct(ServiceLocatorInterface $sm, CacheManager $cm)
     {
-        $this->serviceLocator = $sm;
+        parent::__construct($sm);
         $this->cacheManager = $cm;
     }
 
@@ -95,11 +95,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
             $cacheList = $this->getRequest()->getQuery()->get('id')
                 ?: $this->getDefaultCachesToClear();
             foreach ((array)$cacheList as $id) {
-                $cache = $this->cacheManager->getCache($id);
-                if (!($cache instanceof \Laminas\Cache\Storage\FlushableInterface)) {
-                    throw new \Exception("Cache $id is not flushable");
-                }
-                $cache->flush();
+                $this->cacheManager->getCache($id)->flush();
             }
         } catch (\Exception $e) {
             return $this->output([], self::STATUS_ERROR, 500, $e->getMessage());
@@ -165,9 +161,16 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
      */
     protected function getDefaultCachesToClear(): array
     {
-        return array_diff(
-            $this->cacheManager->getCacheList(),
-            $this->defaultIgnoredCaches
-        );
+        $result = [];
+        foreach ($this->cacheManager->getCacheList() as $id) {
+            if (in_array($id, $this->defaultIgnoredCaches)) {
+                continue;
+            }
+            $cache = $this->cacheManager->getCache($id);
+            if ($cache instanceof \Laminas\Cache\Storage\FlushableInterface) {
+                $result[] = $id;
+            }
+        }
+        return $result;
     }
 }

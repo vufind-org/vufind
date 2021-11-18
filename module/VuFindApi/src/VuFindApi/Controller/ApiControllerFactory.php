@@ -45,18 +45,6 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 class ApiControllerFactory implements FactoryInterface
 {
     /**
-     * API controllers to register
-     *
-     * @var array
-     */
-    protected $apiControllers = [
-        \VuFindApi\Controller\AdminApiController::class,
-        \VuFindApi\Controller\SearchApiController::class,
-        \VuFindApi\Controller\Search2ApiController::class,
-        \VuFindApi\Controller\WebApiController::class,
-    ];
-
-    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
