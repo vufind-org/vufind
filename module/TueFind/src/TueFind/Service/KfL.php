@@ -27,8 +27,8 @@ class KfL
      * @param string $baseUrl           Base URL of the proxy
      * @param string $apiId             API ID
      * @param string $cipher            cipher, e.g. 'aes-256-ecb'
-     * @param string $frontendUserToken An anonymized token representing the frontend user
      * @param string $encryptionKey     Encryption key
+     * @param string $frontendUserToken An anonymized token representing the frontend user
      */
     public function __construct($baseUrl, $apiId, $cipher, $encryptionKey, $frontendUserToken)
     {
@@ -46,7 +46,8 @@ class KfL
      *
      * @return string
      */
-    private function generateUrl(array $requestData): string {
+    protected function generateUrl(array $requestData): string
+    {
         $url = $this->baseUrl;
         $i = 0;
         foreach ($requestData as $key => $value) {
@@ -65,7 +66,8 @@ class KfL
      *
      * @param array $requestData
      */
-    private function call(array $requestData) {
+    protected function call(array $requestData)
+    {
         $url = $this->generateUrl($requestData);
         return file_get_contents($url);
     }
@@ -79,7 +81,8 @@ class KfL
      *
      * @throws Exception
      */
-    private function getSso($entitlement=null): string {
+    protected function getSso($entitlement=null): string
+    {
         $env = [];
         if ($entitlement != null)
             $env[] = ['name' => 'entitlement', 'value' => $entitlement];
@@ -102,7 +105,8 @@ class KfL
      *
      * @return array
      */
-    private function getRequestTemplate($entitlement=null): array {
+    protected function getRequestTemplate($entitlement=null): array
+    {
         $requestData = [];
         $requestData['id'] = $this->apiId;
         $requestData['sso'] = $this->getSso($entitlement);
@@ -110,11 +114,12 @@ class KfL
     }
 
     /**
-     * Try to get the HANID for the given record.
+     * Get the URL to access the given record via the KfL proxy.
      *
      * @param \TueFind\RecordDriver\SolrMarc $record
      */
-    public function getUrl(\TueFind\RecordDriver\SolrMarc $record): string {
+    public function getUrl(\TueFind\RecordDriver\SolrMarc $record): string
+    {
         $requestData = $this->getRequestTemplate($record->getKflEntitlement());
         $requestData['method'] = 'getHANID';
 
