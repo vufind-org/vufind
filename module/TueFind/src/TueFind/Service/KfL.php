@@ -11,27 +11,31 @@ namespace TueFind\Service;
  */
 class KfL
 {
-    private $baseUrl;
-    private $apiUser;
-    private $apiPassword;
-    private $cipher;
-    private $frontendUserToken;
+    protected $baseUrl;
+    protected $apiId;
+    protected $encryptionKey;
+    protected $cipher;
+    protected $frontendUserToken;
+
+    const RETURN_REDIRECT = 0;
+    const RETURN_JSON = 1;
+    const RETURN_TEMPLATE = 2;
 
     /**
      * Constructor
      *
      * @param string $baseUrl           Base URL of the proxy
-     * @param string $apiUser           API username
-     * @param string $apiPassword       API password
+     * @param string $apiId             API ID
      * @param string $cipher            cipher, e.g. 'aes-256-ecb'
      * @param string $frontendUserToken An anonymized token representing the frontend user
+     * @param string $encryptionKey     Encryption key
      */
-    public function __construct($baseUrl, $apiUser, $apiPassword, $cipher, $frontendUserToken)
+    public function __construct($baseUrl, $apiId, $cipher, $encryptionKey, $frontendUserToken)
     {
         $this->baseUrl = $baseUrl;
-        $this->apiUser = $apiUser;
-        $this->apiPassword = $apiPassword;
+        $this->apiId = $apiId;
         $this->cipher = $cipher;
+        $this->encryptionKey = $encryptionKey;
         $this->frontendUserToken = $frontendUserToken;
     }
 
@@ -69,16 +73,22 @@ class KfL
     /**
      * Get encrypted Single Sign On part of the request (including user credentials)
      *
+     * @param string $entitlement   Entitlement (=license) for the given title, mandatory for redirects.
+     *
      * @return string
      *
      * @throws Exception
      */
-    private function getSso(): string {
-        $sso = ['user' => $this->apiUser,
-                'env' => ['frontendUser' => $this->frontendUserToken],
+    private function getSso($entitlement=null): string {
+        $env = [];
+        if ($entitlement != null)
+            $env[] = ['name' => 'entitlement', 'value' => $entitlement];
+
+        $sso = ['user' => $this->frontendUserToken,
+                'env' => $env,
                 'timestamp' => time() + 300];
 
-        $encryptedData = openssl_encrypt(json_encode($sso), $this->cipher, $this->apiPassword, OPENSSL_RAW_DATA);
+        $encryptedData = openssl_encrypt(json_encode($sso), $this->cipher, $this->encryptionKey, OPENSSL_RAW_DATA);
         if ($encryptedData === false)
             throw new Exception('Could not encrypt data!');
         return bin2hex($encryptedData);
@@ -88,12 +98,14 @@ class KfL
      * Get basic request template needed for every request
      * (containing user credentials and so on)
      *
+     * @param string $entitlement   Entitlement (=license) for the given title, mandatory for redirects.
+     *
      * @return array
      */
-    private function getRequestTemplate(): array {
+    private function getRequestTemplate($entitlement=null): array {
         $requestData = [];
-        $requestData['id'] = $this->apiUser;
-        $requestData['sso'] = $this->getSso();
+        $requestData['id'] = $this->apiId;
+        $requestData['sso'] = $this->getSso($entitlement);
         return $requestData;
     }
 
@@ -102,19 +114,25 @@ class KfL
      *
      * @param \TueFind\RecordDriver\SolrMarc $record
      */
-    public function searchItem(\TueFind\RecordDriver\SolrMarc $record) {
-        $requestData = $this->getRequestTemplate();
+    public function getUrl(\TueFind\RecordDriver\SolrMarc $record): string {
+        $requestData = $this->getRequestTemplate($record->getKflEntitlement());
         $requestData['method'] = 'getHANID';
-        $requestData['return'] = 1; // return JSON
 
-        // TODO:
-        // This is just a hardcoded example, use information from RecordDriver instead
-        // as soon as we are provided with additional information about which URL field to use.
-        $requestData['url'] = 'https://handbuch-der-religionen.de/';
+        // Note: We should use RETURN_REDIRECT here, but right now this will return
+        //       a 404 not found error since the redirect doesn't seem to be unlocked yet.
+        $requestData['return'] = self::RETURN_JSON;
+        //$requestData['return'] = self::RETURN_REDIRECT;
+
+        // URL / Title doesnt work with these examples
+        //$requestData['url'] = 'https://handbuch-der-religionen.de/';
         //$requestData['title'] = 'Handbuch der Religionen';
-        //return $this->call($requestData);
-        return '<a href="' . $this->generateUrl($requestData) . '" target="_blank">Handbuch der Religionen</a>';
 
-        // TODO: Parse JSON response to determine if matches have been found, and act accordingly.
+        // Passing the HANID directly seems to work (e.g. 'handbuch-religionen'):
+        $requestData['hanid'] = $record->getKflId();
+
+        if ($requestData['hanid'] == null)
+            throw new \Exception('Han-ID missing for title: ' . $record->getUniqueID());
+
+        return $this->generateUrl($requestData);
     }
 }
