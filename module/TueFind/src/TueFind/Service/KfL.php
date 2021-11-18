@@ -27,8 +27,8 @@ class KfL
      * @param string $baseUrl           Base URL of the proxy
      * @param string $apiId             API ID
      * @param string $cipher            cipher, e.g. 'aes-256-ecb'
-     * @param string $frontendUserToken An anonymized token representing the frontend user
      * @param string $encryptionKey     Encryption key
+     * @param string $frontendUserToken An anonymized token representing the frontend user
      */
     public function __construct($baseUrl, $apiId, $cipher, $encryptionKey, $frontendUserToken)
     {
@@ -114,7 +114,7 @@ class KfL
     }
 
     /**
-     * Try to get the HANID for the given record.
+     * Get the URL to access the given record via the KfL proxy.
      *
      * @param \TueFind\RecordDriver\SolrMarc $record
      */
