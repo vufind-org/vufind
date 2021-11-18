@@ -46,7 +46,8 @@ class KfL
      *
      * @return string
      */
-    protected function generateUrl(array $requestData): string {
+    protected function generateUrl(array $requestData): string
+    {
         $url = $this->baseUrl;
         $i = 0;
         foreach ($requestData as $key => $value) {
@@ -65,7 +66,8 @@ class KfL
      *
      * @param array $requestData
      */
-    protected function call(array $requestData) {
+    protected function call(array $requestData)
+    {
         $url = $this->generateUrl($requestData);
         return file_get_contents($url);
     }
@@ -79,7 +81,8 @@ class KfL
      *
      * @throws Exception
      */
-    protected function getSso($entitlement=null): string {
+    protected function getSso($entitlement=null): string
+    {
         $env = [];
         if ($entitlement != null)
             $env[] = ['name' => 'entitlement', 'value' => $entitlement];
@@ -102,7 +105,8 @@ class KfL
      *
      * @return array
      */
-    protected function getRequestTemplate($entitlement=null): array {
+    protected function getRequestTemplate($entitlement=null): array
+    {
         $requestData = [];
         $requestData['id'] = $this->apiId;
         $requestData['sso'] = $this->getSso($entitlement);
@@ -114,7 +118,8 @@ class KfL
      *
      * @param \TueFind\RecordDriver\SolrMarc $record
      */
-    public function getUrl(\TueFind\RecordDriver\SolrMarc $record): string {
+    public function getUrl(\TueFind\RecordDriver\SolrMarc $record): string
+    {
         $requestData = $this->getRequestTemplate($record->getKflEntitlement());
         $requestData['method'] = 'getHANID';
 
