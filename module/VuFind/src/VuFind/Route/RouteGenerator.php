@@ -114,7 +114,7 @@ class RouteGenerator
      */
     public function addNonTabRecordAction(& $config, $action)
     {
-        self::$nonTabRecordActions[] = $action;
+        self::$nonTabRecordActions[$action] = $action;
         foreach (self::$recordRoutes as $recordRoute) {
             $this->addRecordRoute(
                 $config,
@@ -186,7 +186,7 @@ class RouteGenerator
 
         // Store the added route in case we need to add
         // more nonTabRecordActions later
-        self::$recordRoutes[] = [
+        self::$recordRoutes["$controller::$routeBase"] = [
             'routeBase' => $routeBase,
             'controller' => $controller,
         ];
