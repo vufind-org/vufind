@@ -144,9 +144,8 @@ class SolrMarc extends SolrDefault
         // So far, only available for "Handbuch der Religionen".
         // Implementation will be changed as soon as
         // additional information about MARC fields is provided.
-        if (in_array('1677766123', $this->fields['ids']))
-            return 'handbuch-religionen';
-
+        //if (in_array('1677766123', $this->fields['ids']))
+        //    return 'handbuch-religionen';
         return null;
     }
 
@@ -155,6 +154,7 @@ class SolrMarc extends SolrDefault
         // So far, only available for "Handbuch der Religionen".
         // Implementation will be changed as soon as
         // additional information about MARC fields is provided.
+
         return null;
     }
 
