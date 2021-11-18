@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for ApiController.
+ * Factory for AdminApiController.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2021.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for ApiController.
+ * Factory for AdminApiController.
  *
  * @category VuFind
  * @package  Controller
@@ -42,20 +42,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class ApiControllerFactory implements FactoryInterface
+class AdminApiControllerFactory implements FactoryInterface
 {
-    /**
-     * API controllers to register
-     *
-     * @var array
-     */
-    protected $apiControllers = [
-        \VuFindApi\Controller\AdminApiController::class,
-        \VuFindApi\Controller\SearchApiController::class,
-        \VuFindApi\Controller\Search2ApiController::class,
-        \VuFindApi\Controller\WebApiController::class,
-    ];
-
     /**
      * Create an object
      *
@@ -78,24 +66,9 @@ class ApiControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $controller = new $requestedName($container);
-        $controllerManager = $container->get('ControllerManager');
-        foreach ($this->getApiControllersToRegister($container) as $apiName) {
-            $controller->addApi($controllerManager->get($apiName));
-        }
-        return $controller;
-    }
-
-    /**
-     * Get the API controllers to register with ApiController
-     *
-     * @param ContainerInterface $container Service manager
-     *
-     * @return array
-     */
-    protected function getApiControllersToRegister(ContainerInterface $container)
-    {
-        $config = $container->get('Config');
-        return $config['vufind_api']['register_controllers'];
+        return new $requestedName(
+            $container,
+            $container->get(\VuFind\Cache\Manager::class)
+        );
     }
 }
