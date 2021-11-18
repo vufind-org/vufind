@@ -87,20 +87,9 @@ class CurrencyFormatter
      */
     public function convertToDisplayFormat($number, $currency = null)
     {
-        if (null === $currency) {
-            $currency = $this->defaultCurrency;
-        }
-        // Workaround for a problem in ICU library < 4.9 causing formatCurrency to
-        // fail if locale has comma as a decimal separator.
-        // (see https://bugs.php.net/bug.php?id=54538)
-        $locale = setlocale(LC_NUMERIC, 0);
-        $codes = [
-            'en_us.UTF-8', 'en_us.UTF8', 'en_us', 'en_US.UTF-8', 'en_US.UTF8',
-            'en_US'
-        ];
-        setlocale(LC_NUMERIC, $codes);
-        $result = $this->formatter->formatCurrency((float)$number, $currency);
-        setlocale(LC_NUMERIC, $locale);
-        return $result;
+        return $this->formatter->formatCurrency(
+            (float)$number,
+            $currency ?: $this->defaultCurrency
+        );
     }
 }
