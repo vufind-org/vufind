@@ -88,20 +88,7 @@
             </li>
           <?php endif; ?>
 
-          <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-            <li class="languageDrp dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-                  <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
-                    <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode])) ?>" rel="nofollow">
-                      <?=$this->displayLanguageOption($langName) ?>
-                    </a>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
-            </li>
-          <?php endif; ?>
+
         </ul>
       </nav>
     </div>
