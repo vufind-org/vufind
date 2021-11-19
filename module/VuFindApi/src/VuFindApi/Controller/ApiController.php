@@ -86,27 +86,36 @@ class ApiController extends \VuFind\Controller\AbstractBase
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', 'application/json');
-        $config = $this->getConfig();
-        $params = [
-            'config' => $config,
-            'version' => \VuFind\Config\Version::getBuildVersion(),
-            'specs' => $this->getApiSpecs()
-        ];
-        $json = $this->getViewRenderer()->render('api/swagger', $params);
+        $json = json_encode($this->getApiSpecs(), JSON_PRETTY_PRINT);
         $response->setContent($json);
         return $response;
     }
 
     /**
-     * Get specification fragments from all APIs as JSON
+     * Get Swagger specification JSON fragment for the root nodes
      *
      * @return string
      */
-    protected function getApiSpecs()
+    protected function getSwaggerSpecFragment()
+    {
+        $config = $this->getConfig();
+        $params = [
+            'config' => $config,
+            'version' => \VuFind\Config\Version::getBuildVersion()
+        ];
+        return $this->getViewRenderer()->render('api/swagger', $params);
+    }
+
+    /**
+     * Merge specification fragments from all APIs to an array
+     *
+     * @return array
+     */
+    protected function getApiSpecs(): array
     {
         $results = [];
 
-        foreach ($this->apiControllers as $controller) {
+        foreach (array_merge([$this], $this->apiControllers) as $controller) {
             $api = $controller->getSwaggerSpecFragment();
             $specs = json_decode($api, true);
             if (null === $specs) {
@@ -124,7 +133,6 @@ class ApiController extends \VuFind\Controller\AbstractBase
             }
         }
 
-        // Return the fragment without the enclosing curly brackets
-        return substr(trim(json_encode($results, JSON_PRETTY_PRINT)), 1, -1);
+        return $results;
     }
 }
