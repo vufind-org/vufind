@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "8.0.1",
+  "version": "8.0.2",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
