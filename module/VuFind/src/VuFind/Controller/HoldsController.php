@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Validator\Csrf;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Controller for the user holds area.
@@ -51,7 +51,7 @@ class HoldsController extends AbstractBase
     /**
      * CSRF validator
      *
-     * @var Csrf
+     * @var CsrfInterface
      */
     protected $csrf;
 
@@ -59,12 +59,12 @@ class HoldsController extends AbstractBase
      * Constructor
      *
      * @param ServiceLocatorInterface $sm    Service locator
-     * @param Csrf                    $csrf  CSRF validator
+     * @param CsrfInterface           $csrf  CSRF validator
      * @param StorageInterface        $cache Cache
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Csrf $csrf,
+        CsrfInterface $csrf,
         StorageInterface $cache
     ) {
         parent::__construct($sm);

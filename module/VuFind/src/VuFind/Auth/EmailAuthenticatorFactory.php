@@ -68,7 +68,7 @@ class EmailAuthenticatorFactory
         }
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
-            $container->get(\VuFind\Validator\Csrf::class),
+            $container->get(\VuFind\Validator\CsrfInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
             $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),

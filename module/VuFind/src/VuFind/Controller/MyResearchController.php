@@ -40,6 +40,7 @@ use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Controller for the user account area.
@@ -1294,7 +1295,7 @@ class MyResearchController extends AbstractBase
                 $this->getRequest()->getPost(),
                 $catalog,
                 $patron,
-                $this->serviceLocator->get(\VuFind\Validator\Csrf::class)
+                $this->serviceLocator->get(CsrfInterface::class)
             )
             : [];
 
@@ -1964,7 +1965,7 @@ class MyResearchController extends AbstractBase
         // Special case: form was submitted:
         if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Do CSRF check
-            $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
+            $csrf = $this->serviceLocator->get(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
@@ -2080,7 +2081,7 @@ class MyResearchController extends AbstractBase
 
         $view = $this->createViewModel(['accountDeleted' => false]);
         if ($this->formWasSubmitted('submit')) {
-            $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
+            $csrf = $this->serviceLocator->get(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'

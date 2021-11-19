@@ -28,7 +28,7 @@
 namespace VuFindTest\Validator;
 
 use Laminas\Session\Container;
-use VuFind\Validator\Csrf;
+use VuFind\Validator\SessionCsrf;
 
 /**
  * CSRF Test Class
@@ -39,7 +39,7 @@ use VuFind\Validator\Csrf;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CsrfTest extends \PHPUnit\Framework\TestCase
+class SessionCsrfTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test counting behavior.
@@ -48,7 +48,7 @@ class CsrfTest extends \PHPUnit\Framework\TestCase
      */
     public function testCounting()
     {
-        $csrf = new Csrf(['session' => new Container('csrftest1')]);
+        $csrf = new SessionCsrf(['session' => new Container('csrftest1')]);
         $this->assertEquals(0, $csrf->getTokenCount());
         $csrf->getHash();
         $this->assertEquals(1, $csrf->getTokenCount());
@@ -63,7 +63,7 @@ class CsrfTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrimming()
     {
-        $csrf = new Csrf(['session' => new Container('csrftest2')]);
+        $csrf = new SessionCsrf(['session' => new Container('csrftest2')]);
         // Try trimming an empty list:
         $csrf->trimTokenList(5);
         $this->assertEquals(0, $csrf->getTokenCount());

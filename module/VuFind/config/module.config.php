@@ -442,7 +442,7 @@ $config = [
             'VuFind\Tags' => 'VuFind\TagsFactory',
             'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
-            'VuFind\Validator\Csrf' => 'VuFind\Validator\CsrfFactory',
+            'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
@@ -521,7 +521,9 @@ $config = [
             'VuFind\Translator' => 'Laminas\Mvc\I18n\Translator',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
-            'Laminas\Validator\Csrf' => 'VuFind\Validator\Csrf',
+            'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
         ],
         'shared' => [
             'VuFind\Form\Form' => false,
@@ -653,6 +655,13 @@ $recordRoutes = [
     'search2collectionrecord' => 'Search2Record',
 ];
 
+// Define non tab record actions
+$nonTabRecordActions = [
+    'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
+    'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink',
+];
+
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
     'Feedback' => ['feedback-form' => 'Form/[:id]'],
@@ -721,6 +730,7 @@ $staticRoutes = [
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addNonTabRecordActions($config, $nonTabRecordActions);
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);

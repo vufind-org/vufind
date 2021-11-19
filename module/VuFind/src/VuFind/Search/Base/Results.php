@@ -555,6 +555,38 @@ abstract class Results
     }
 
     /**
+     * Get extra data for the search.
+     *
+     * Extra data can be used to store local implementation-specific information.
+     * Contents must be serializable. It is recommended to make the array as small
+     * as possible.
+     *
+     * @return array
+     */
+    public function getExtraData(): array
+    {
+        // Not implemented in the base class
+        return [];
+    }
+
+    /**
+     * Set extra data for the search.
+     *
+     * @param array $data Extra data
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function setExtraData(array $data): void
+    {
+        // Not implemented in the base class
+        if (!empty($data)) {
+            error_log(get_class($this) . ': Extra data passed but not handled');
+        }
+    }
+
+    /**
      * Restore settings from a minified object found in the database.
      *
      * @param \VuFind\Search\Minified $minified Minified Search Object
@@ -567,6 +599,7 @@ abstract class Results
         $this->queryStartTime = $minified->i;
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
+        $this->setExtraData($minified->ex);
     }
 
     /**
