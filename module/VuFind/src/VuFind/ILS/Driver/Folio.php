@@ -1294,6 +1294,36 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Obtain a list of course resources, creating an id => value associative array.
+     *
+     * @param string $type        Type of resource to retrieve from the API.
+     * @param string $responseKey Key containing useful values in response (defaults
+     * to $type if unspecified)
+     * @param string $valueKey    Key containing value to extract from response
+     * (defaults to 'courseNumber') TAMU Customization
+     *
+     * @return array
+     */
+    protected function getCourseResourceListName(
+        $type,
+        $responseKey = null,
+        $valueKey = 'courseNumber'
+    ) {
+        $retVal = [];
+
+        // Results can be paginated, so let's loop until we've gotten everything:
+        foreach ($this->getPagedResults(
+            $responseKey ?? $type,
+            '/coursereserves/' . $type
+        ) as $item) {
+            $retVal[$item->id] = $item->$valueKey ?? '';
+        }
+
+        return $retVal;
+    }
+
+
+    /**
      * Get Departments
      *
      * Obtain a list of departments for use in limiting the reserves list.
@@ -1336,7 +1366,7 @@ class Folio extends AbstractAPI implements
      */
     public function getCourses()
     {
-        return $this->getCourseResourceList('courses');
+        return $this->getCourseResourceListName('courses');
     }
 
     /**
