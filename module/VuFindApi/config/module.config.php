@@ -20,7 +20,6 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
-            'VuFindApi\ApiPluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFindApi\Formatter\FacetFormatter' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
             'VuFindApi\Formatter\Search2RecordFormatter' => 'VuFindApi\Formatter\Search2RecordFormatterFactory',
