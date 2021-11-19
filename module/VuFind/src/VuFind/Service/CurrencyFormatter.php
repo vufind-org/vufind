@@ -1,6 +1,6 @@
 <?php
 /**
- * Safe money format view helper
+ * Currency formatter
  *
  * PHP version 7
  *
@@ -20,69 +20,76 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Service;
 
-use Laminas\View\Helper\AbstractHelper;
-use Laminas\View\Helper\EscapeHtml;
-use VuFind\Service\CurrencyFormatter;
+use NumberFormatter;
 
 /**
- * Safe money format view helper
+ * Currency formatter
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SafeMoneyFormat extends AbstractHelper
+class CurrencyFormatter
 {
     /**
-     * CurrencyFormatter
+     * Default currency format (ISO 4217) to use.
      *
-     * @var CurrencyFormatter
+     * @var string
      */
-    protected $currencyFormatter;
+    protected $defaultCurrency;
 
     /**
-     * Escape helper
+     * Number formatter.
      *
-     * @var EscapeHtml
+     * @var NumberFormatter
      */
-    protected $escapeHtml;
+    protected $formatter;
 
     /**
      * Constructor
      *
-     * @param CurrencyFormatter $currencyFormatter Currency formatter
-     * @param EscapeHtml        $escapeHtml        Escaper
+     * @param string $defaultCurrency Default currency format (ISO 4217) to use (null
+     * for default from locale)
      */
-    public function __construct(
-        CurrencyFormatter $currencyFormatter,
-        EscapeHtml $escapeHtml
-    ) {
-        $this->currencyFormatter = $currencyFormatter;
-        $this->escapeHtml = $escapeHtml;
+    public function __construct($defaultCurrency = null)
+    {
+        // Initialize number formatter:
+        $locale = setlocale(LC_MONETARY, 0);
+        $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+
+        // Initialize default currency:
+        if (null === $defaultCurrency) {
+            $localeInfo = localeconv();
+            $defaultCurrency = isset($localeInfo['int_curr_symbol'])
+                ? trim($localeInfo['int_curr_symbol']) : '';
+        }
+        $this->defaultCurrency = empty($defaultCurrency) ? 'USD' : $defaultCurrency;
     }
 
     /**
-     * Convert currency to display format and escape the result
+     * Convert currency from float to display format
      *
      * @param float  $number   The number to format
      * @param string $currency Currency format (ISO 4217) to use (null for default)
      *
      * @return string
      */
-    public function __invoke($number, $currency = null)
+    public function convertToDisplayFormat($number, $currency = null)
     {
-        $result = ($this->escapeHtml)(
-            $this->currencyFormatter->convertToDisplayFormat($number, $currency)
+        return $this->formatter->formatCurrency(
+            (float)$number,
+            $currency ?: $this->defaultCurrency
         );
-        return $result;
     }
 }
