@@ -141,7 +141,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
   <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
     <tr>
       <?php // Translation for summary is a special case for backwards-compatibility ?>
-      <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <th colspan="2"><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
       <td>
         <?php foreach ($textFields as $current): ?>
           <?=$this->linkify($this->escapeHtml($current))?><br/>
@@ -214,7 +214,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
   <?php endforeach; ?>
   <?php if (!empty($holding['purchase_history'])): ?>
     <tr>
-      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+      <th colspan="2"><?=$this->transEsc("Most Recent Received Issues")?>:</th>
       <td>
         <?php foreach ($holding['purchase_history'] as $current): ?>
           <?=$this->escapeHtml($current['issue'])?><br/>
