@@ -73,6 +73,20 @@ class KfL
     }
 
     /**
+     * Decode a given SSO string (for debugging)
+     */
+    public function decodeSso(string $ssoHex)
+    {
+        $ssoBin = hex2bin($ssoHex);
+        $ssoJson = openssl_decrypt($ssoBin, $this->cipher, $this->encryptionKey, OPENSSL_RAW_DATA);
+        if ($ssoJson == null)
+            return openssl_error_string();
+
+        $ssoArray = json_decode($ssoJson);
+        return $ssoArray;
+    }
+
+    /**
      * Get encrypted Single Sign On part of the request (including user credentials)
      *
      * @param string $entitlement   Entitlement (=license) for the given title, mandatory for redirects.
