@@ -24,6 +24,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $this->addContainerIdsAndTitles($spec);
         $this->addEdition($spec);
         $this->addOnlineAccess($spec);
+        $this->addLicense($spec); // TueFind specific
         $this->addJOP($spec);
         // Availability in Tübingen (KrimDok-specific)
         $spec->setTemplateLine(

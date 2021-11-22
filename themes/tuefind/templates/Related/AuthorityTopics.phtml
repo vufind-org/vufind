@@ -1,35 +1,36 @@
-<?php $responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang);
+<?php $responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); ?>
+<?php if(!empty($responseTopicsDataAndSettings[0])): ?>
+  <?php
 
-if(!empty($responseTopicsDataAndSettings[0])) :
+    $this->headLink()->appendStylesheet('vendor/jqcloud.css');
+    $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
 
-  $this->headLink()->appendStylesheet('vendor/jqcloud.css');
-  $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
+    $responseTopicsData = $responseTopicsDataAndSettings[0];
+    $responseTopicsSettings = $responseTopicsDataAndSettings[1];
 
-  $responseTopicsData = $responseTopicsDataAndSettings[0];
-  $responseTopicsSettings = $responseTopicsDataAndSettings[1];
 
-  $jsData = '';
-  $itopic = 1;
-  foreach($responseTopicsData as $topic) {
+    $jsData = '';
+    $itopic = 1;
+    foreach($responseTopicsData as $topic) {
       if($itopic <= $responseTopicsSettings['maxTopicRows']) {
-          $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_blank"}},';
+        $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_blank"}},';
       }
       $itopic++;
-  }
+    }
 
-  $ascSortingTopicsData = $responseTopicsData;
-  $toptitle = array();
-  foreach ($ascSortingTopicsData as $key => $row) {
-      $toptitle[$key]  = $row['topicTitle'];
-  }
-  array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
+    $ascSortingTopicsData = $responseTopicsData;
+    $toptitle = array();
+    foreach ($ascSortingTopicsData as $key => $row) {
+        $toptitle[$key]  = $row['topicTitle'];
+    }
+    array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
 
 
-  $countSortingTopicsData = $responseTopicsData;
-  array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);
+    $countSortingTopicsData = $responseTopicsData;
+    array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);
 
-  $jsSnippetTags = <<<EOD
-  $(function () {
+    $jsSnippetTags = <<<EOD
+    $(function () {
       let word_list = [
           $jsData
       ];
@@ -38,8 +39,8 @@ if(!empty($responseTopicsDataAndSettings[0])) :
         $('#topic_cloud').css("width", "100%");
         $('#topic_cloud').empty().jQCloud(word_list);
       });
-  });
-  EOD;
+    });
+EOD;
   ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
 

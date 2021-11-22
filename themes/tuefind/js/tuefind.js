@@ -143,8 +143,12 @@ var TueFind = {
             var container = this;
             var proxyUrl = this.getAttribute('data-url');
             var headline = this.getAttribute('data-headline');
-            var excludePattern = this.getAttribute('data-exclude-pattern');
-            var excludeRegex = new RegExp(excludePattern);
+            var sortBottomPattern = this.getAttribute('data-sort-bottom-pattern');
+            var sortBottomRegex = new RegExp(sortBottomPattern);
+            var filterUniquePattern = this.getAttribute('data-filter-unique-pattern');
+            var filterUniqueRegex = new RegExp(filterUniquePattern);
+            var filterLabelPattern = this.getAttribute('data-filter-label-pattern');
+            var filterLabelRegex = new RegExp(filterLabelPattern);
 
             $.ajax({
                 type: 'GET',
@@ -153,39 +157,90 @@ var TueFind = {
                     if (json[1] !== undefined && json[1].length > 0) {
 
                         // Build different array structure (prepare sort)
-                        let references = [];
-                        let countRegex = /\((\d+)\)$/;
+                        var references = [];
+                        let countRegex = new RegExp(/\((\d+)\)$/);
                         for (let i=0; i<json[1].length; ++i) {
                             let label = json[1][i];
+                            let groupLabel = label.replace(countRegex, '').trim();
+
                             let description = json[2][i];
                             let url = json[3][i];
-
-                            if (excludePattern != '' && label.match(excludeRegex))
-                                continue;
 
                             let matchCount = label.match(countRegex);
                             let count = 1;
                             if (matchCount != null)
                                 count = parseInt(matchCount[1]);
 
-                            references.push({ label: label, description: description, url: url, count: count });
+                            let sortPriority = 1;
+                            if (label.match(sortBottomRegex))
+                                sortPriority = 2;
+
+                            if (filterLabelPattern == '' || !label.match(filterLabelRegex))
+                                references.push({ label: label, groupLabel: groupLabel, description: description, url: url, count: count, sortPriority: sortPriority });
                         }
 
-                        // sort by count DESC, then alphabetically ASC
+                        // sort by priority, then alphabetically
                         references.sort(function(a, b) {
-                            if (a.count < b.count)
-                                return 1;
-                            if (a.count > b.count)
+                            if (a.sortPriority < b.sortPriority)
                                 return -1;
+                            if (a.sortPriority > b.sortPriority)
+                                return 1;
 
                             return a.label.localeCompare(b.label);
                         });
 
+                        // merge links with same label, if exact 1 url contains the correct gnd number
+                        if (filterUniquePattern != '') {
+                            let currentGroup = [];
+                            let currentGroupStartIndex = 0;
+                            var abortCondition = references.length;
+                            for (let i=0; i<abortCondition;++i) {
+                                let currentReference = references[i];
+                                let nextReference = references[i+1];
+                                currentGroup.push(currentReference);
+
+                                // If we are at the end of the group
+                                if (nextReference == undefined || nextReference.groupLabel != currentReference.groupLabel) {
+                                    // Detect how many entries match the GND number
+                                    var matchingIndexes = [];
+                                    currentGroup.forEach(function (groupedReference, index) {
+                                        if (groupedReference.url.match(filterUniqueRegex)) {
+                                            matchingIndexes.push(index);
+                                        }
+                                    });
+
+                                    // If we have exact 1 regex match & more than 1 entry, remove the invalid ones
+                                    if (currentGroup.length > 1 && matchingIndexes.length == 1) {
+                                        var matchingIndex = matchingIndexes[0];
+                                        var removeOffset = 0;
+                                        currentGroup.forEach(function (groupedReference, index) {
+                                            if (index != matchingIndex) {
+                                                let indexToRemove = index + currentGroupStartIndex - removeOffset;
+                                                references.splice(indexToRemove, 1);
+                                                --abortCondition;
+                                                --i;
+                                                ++removeOffset;
+                                            }
+                                        });
+                                    }
+
+                                    // Reset cached group
+                                    currentGroup = [];
+                                    currentGroupStartIndex = i+1;
+                                }
+                            }
+                        }
+
                         // render HTML
                         let html = '<h2>' + headline + '</h2>';
                         html += '<ul class="list-group">';
+                        var previousSortPriority = 1;
                         references.forEach(function(reference) {
-                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
+                            if (reference.sortPriority != previousSortPriority) {
+                                html += '</ul><ul class="list-group">';
+                            }
+                            previousSortPriority = reference.sortPriority;
+                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank" property="sameAs">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
                         });
                         html += '</ul>';
                         $(container).append(html);
@@ -199,6 +254,7 @@ var TueFind = {
         $('.tf-wikidata-image').each(function() {
             var placeholder = this;
             var imageUrl = this.getAttribute('data-url');
+            var parentBlock = $(placeholder).parent();
             $.ajax({
                 type: 'GET',
                 url: imageUrl,
@@ -220,6 +276,15 @@ var TueFind = {
                     content += '<figcaption style="text-align: center;">' + title + '</figcaption>';
                     content += '</figure>';
                     $(placeholder).append(content);
+                },
+                statusCode: {
+                    200: function() {
+                        parentBlock.removeClass('tf-d-none');
+                        parentBlock.next().removeClass('col-md-auto');
+                        parentBlock.next().removeClass('col-lg-auto');
+                        parentBlock.next().addClass('col-md-9');
+                        parentBlock.next().addClass('col-lg-9');
+                    }
                 }
             });
         });

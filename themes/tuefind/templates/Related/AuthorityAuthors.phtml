@@ -7,13 +7,13 @@
     <?php $i=0; ?>
     <?php foreach ($relatedAuthors as $authorIdAndTitle => $authorDetails): ?>
       <?php if (++$i > $previewLimit) break;?>
-      <?php list($authorId, $authorTitle) = explode(':', $authorIdAndTitle); ?>
-      <li class="list-group-item">
-        <?=$authorTitle?>
+      <?php list($authorTitle, $authorId) = explode(':', $authorIdAndTitle); ?>
+      <li class="list-group-item" property="relatedTo" typeof="Person">
+        <span property="name"><?=$authorTitle?></span>
         <?php if ($authorId != '' && ($authorityDriver = $this->authority()->recordExists($authorId))): ?>
           <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorityDriver))?>"><i class="fa fa-link" aria-hidden="true" title="<?=$this->transEsc('author_joint_titles_tooltip')?>"></i></a>
           <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
-          <a href="<?=$this->record($authorityDriver)->getLink('authority', $authorId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
+          <a property="sameAs" href="<?=$this->record($authorityDriver)->getLink('authority', $authorId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
         <?php else: ?>
           <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorTitle))?>"><i class="fa fa-link" aria-hidden="true" title="<?=$this->transEsc('author_joint_titles_tooltip')?>"></i></a>
           <a href="<?=$this->url('author-home')?>?author=<?=urlencode($authorTitle)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
@@ -23,7 +23,7 @@
   </ul>
   <?php if ($relatedAuthorsCount > $previewLimit): ?>
     <p>
-      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>"><?=$this->transEsc('see all')?> (<?=$relatedAuthorsCount?>)</a>
+      <a href="<?=$this->url('author-search')?>?author_id=<?=urlencode($this->driver->getUniqueId())?>"><?=$this->transEsc('see all')?> (<?=$relatedAuthorsCount?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>

@@ -33,36 +33,41 @@
     <p><?=$this->transEsc('authority_note_name_record')?></p>
   <?php endif; ?>
 
-  <!-- Here sidebar-right is before mainbody-left, because we want to show the image before the details in responsive behaviour -->
-  <div class="sidebar right hidden-print">
-    <?php if ($this->driver->getType() == 'person' && !$this->driver->isFamily()): ?>
-      <?=$this->context($this)->renderInContext('authority/record/image', ['driver' => $this->driver])?>
-    <?php endif; ?>
-  </div>
-  <div class="mainbody left">
-    <?=$this->context($this)->renderInContext('authority/record/details', ['driver' => $this->driver])?>
-  </div>
-
-  <div class="mainbody left">
-    <?=$this->context($this)->renderInContext('Related/AuthorityTitlesBy', ['driver' => $this->driver])?>
-    <?=$this->context($this)->renderInContext('Related/AuthorityTitlesAbout', ['driver' => $this->driver])?>
-    <?=$this->context($this)->renderInContext('Related/AuthorityAuthors', ['driver' => $this->driver])?>
-    <!-- Graphs -->
-    <?=$this->context($this)->renderInContext('Related/AuthorityTopics', ['driver' => $this->driver])?>
-    <?=$this->context($this)->renderInContext('Related/AuthorityTimeline', ['driver' => $this->driver])?>
-
-    <?=$this->context($this)->renderInContext('authority/record/tabs', ['driver' => $this->driver])?>
-  </div>
-
-  <div class="sidebar right hidden-print">
-    <!-- BEACON (Findbuch) references over API proxy -->
+  <div class="container">
     <?php
-      $excludePattern = 'IxTheo|RelBib|Kalliope|Archivportal-D';
-      $externalResources = $this->driver->getExternalResources();
+      /*
+        The CSS Here has been optimized for normal & responsive behaviour.
+        Please test very carefully when changing!
+        Also note that some classes will be changed via tuefind.js
+        after the dynamic contents (images, BEACON, etc.) has been loaded!
+       */
     ?>
-    <div class="tf-findbuch-references" data-url="<?=$this->url('findbuchproxy-load')?>?gnd=<?=$this->driver->getGNDNumber()?>" data-headline="<?=$this->transEsc('External Resources')?>" data-exclude-pattern="<?=htmlspecialchars($excludePattern)?>"></div>
-    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetBeaconReferencesFromFindbuch();', 'SET')?>
-  </div>
+    <div class="row">
+      <div class="col-md-12 row">
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 pull-right tf-d-none">
+          <?php if ($this->driver->getType() == 'person' && !$this->driver->isFamily()): ?>
+            <?=$this->context($this)->renderInContext('authority/record/image', ['driver' => $this->driver])?>
+          <?php endif; ?>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-auto col-lg-auto pull-left">
+          <?=$this->context($this)->renderInContext('authority/record/details', ['driver' => $this->driver])?>
+        </div>
+      </div>
+      <div class="col-md-12 row">
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 pull-right">
+          <?=$this->context($this)->renderInContext('authority/record/beacon', ['driver' => $this->driver])?>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 pull-left">
+          <?=$this->context($this)->renderInContext('Related/AuthorityTitlesBy', ['driver' => $this->driver])?>
+          <?=$this->context($this)->renderInContext('Related/AuthorityTitlesAbout', ['driver' => $this->driver])?>
+          <?=$this->context($this)->renderInContext('Related/AuthorityAuthors', ['driver' => $this->driver])?>
+          <!-- Graphs -->
+          <?=$this->context($this)->renderInContext('Related/AuthorityTopics', ['driver' => $this->driver])?>
+          <?=$this->context($this)->renderInContext('Related/AuthorityTimeline', ['driver' => $this->driver])?>
+          <?=$this->context($this)->renderInContext('authority/record/tabs', ['driver' => $this->driver])?>
+        </div>
+      </div>
+    </div>
 </div>
 
 <?php

@@ -66,6 +66,12 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
         );
     }
 
+    protected function addLicense(&$spec) {
+        $spec->setTemplateLine(
+            'Rights Information', 'getLicense', 'data-license.phtml'
+        );
+    }
+
     protected function addOnlineAccess(&$spec) {
         // = URLs and material types
         $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');

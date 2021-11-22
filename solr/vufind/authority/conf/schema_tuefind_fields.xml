@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
     <!-- COMMON fields -->
+    <field name="date_sort" type="date" indexed="true" stored="true" docValues="true"/>
     <field name="external_references" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="gnd" type="string" indexed="true" stored="true"/>
     <field name="heading_search" type="text" indexed="true" stored="true"/>

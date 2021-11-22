@@ -119,6 +119,11 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
             return $route_match->getParam('controller', $default);
     }
 
+
+    public function getRouteParams() {
+        return $this->container->get('application')->getMvcEvent()->getRouteMatch()->getParams();
+    }
+
     /**
      * Calculate percentage of a count related to a solr search result
      *
@@ -473,5 +478,9 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
              return true;
          }
          return false;
+    }
+
+    public function getKfL() {
+        return $this->container->get(\TueFind\Service\KfL::class);
     }
 }

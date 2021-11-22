@@ -67,6 +67,12 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
                 'TAD', 'workIsTADCandidate', 'data-TAD.phtml'
             );
         }
+        // KfL (IxTheo-specific)
+        if ($this->user != null) {
+            $spec->setTemplateLine(
+                'KfL', 'workIsKfLCandidate', 'data-KfL.phtml'
+            );
+        }
         $this->addPublications($spec);
         $this->addContainerIdsAndTitles($spec);
         // Reviews (IxTheo-specific)
@@ -98,6 +104,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         );
         $this->addChildRecords($spec);
         $this->addOnlineAccess($spec);
+        $this->addLicense($spec); // TueFind specific
         // Parallel Edition PPNs + Unlinked parallel Editions (IxTheo-specific)
         $spec->setTemplateLine(
                 'Parallel Edition', true, 'data-parallel_edition.phtml'
@@ -113,7 +120,8 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec = new SpecBuilder();
         $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
         $spec->setLine('Published', 'getDateSpan');
-        $spec->setLine('Item Description', 'getGeneralNotes');
+        // Item Description (IxTheo-specific)
+        $spec->setTemplateLine('Item Description', 'getGeneralNotes', 'data-general-notes.phtml');
         $spec->setLine('Physical Description', 'getPhysicalDescriptions');
         $spec->setLine('Publication Frequency', 'getPublicationFrequency');
         $spec->setLine('Playing Time', 'getPlayingTimes');

@@ -32,6 +32,10 @@ switch($currentSystem){
     $chartByBackgroundColor = '#a51e37';
     $chartAboutBackgroundColor = '#FF849D';
   break;
+  case'krimdok':
+    $chartByBackgroundColor = '#a51e37';
+    $chartAboutBackgroundColor = '#FF849D';
+  break;
   case'biblestudies':
     $chartByBackgroundColor = '#360';
     $chartAboutBackgroundColor = '#00cc00';
@@ -91,18 +95,21 @@ $(function () {
       maintainAspectRatio: false,
       scaleShowValues: true,
       scales: {
-        yAxes: [{
+        x: {
+          title: {
+            display: true,
+          }
+        },
+        y: {
+          title: {
+            display: true,
+          },
+          min: 0,
           ticks: {
-            beginAtZero: true,
+            // forces step size to be 1 units
             stepSize: 1
           }
-        }],
-        xAxes: [{
-          stacked: true,
-          ticks: {
-            autoSkip: false
-          }
-        }]
+        }
       },
       onClick(e) {
         const activePoints = myChart.getElementsAtEventForMode(e, 'nearest', {

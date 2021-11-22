@@ -7,11 +7,7 @@
         content: 'Show less';
     }
 </style>
-<div id="breaking_news">
-   <h4 class="text-center" style="color: #343deb ; margin-top: 12px; margin-bottom: 2px">
-      ++ Major digitization project approved by the DFG ++ More information on this <a href="/docs/DigiTheo5_en.pdf" class="text-warning" style="color : #343deb" target="_blank"><u>here</u></a> ++
-   </h4>
-</div>
+<?=$this->HelpText()->render('BreakingNews', null, 'static')?>
 <?php
     $panelId = 0;
     $panelClass = "panel-default";
@@ -48,7 +44,58 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-search-plus"></i> Full Text Search<div class="new">new</div>
+                <i class="fa fa-users"></i> Person Information Pages <div class="new">neu</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>A new milestone has been reached with the introduction of the person information pages in IxTheo and RelBib. Next to the standard (IxTheo) search and the full text search, a third tab called <b>Persons / Corporations</b> is now available.</p>
+                    <div class="read-more-target">
+                        <p>The person / corporation information page allows users to search for specific <b>authors</b>, <b>corporations</b> and <b>conferences</b> (or <b>conference proceedings</b>).</p>
+
+                        <p>Retrieve all persons, corporations and conferences by clicking on FIND. You can refine your search by selecting the appropriate criteria in the facets:</p>
+                        <ul>
+                            <li>Record Type: Person / Corporation / Conference (Proceeding)</li>
+                            <li>External References: Authority files / Links to Wikipedia, Links to archives etc.</li>
+                            <li>Occupation: Theologian / Historian / Priest etc.</li>
+                            <li>Language: German / English / French etc.</li>
+                            <li>Location: Berlin / London / New York etc.</li>
+                        </ul>
+
+                        <p>Person information pages offer some biographical information and further links, e.g. to Wikipedia, archives and external resources.</p>
+
+                        <p>The information stored in IxTheo on this person are processed and displayed in a clear manner:</p>
+                        <ul>
+                            <li>Literature <b>from</b> the author</li>
+                            <li>Literature <b>on</b> the author</li>
+                            <li>Relationships to <b>other</b> persons</li>
+                            <li><b>Topics</b> (subject headings) on which the author published</li>
+                            <li>A <b>chronology</b> of publications</li>
+                        </ul>
+
+                        <p>A few examples of well-known authors:</p>
+                        <ul>
+                            <li><a href="<?=$this->url('solrauthrecord')?>080038956">Judith Butler</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>079908942">Luise Abramowski</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>079319769">Rudolf Bultmann</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>035286210">Martin Luther King</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>133801128">Paul Claudel</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>198371527">Pierre Bourdieu</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-search-plus"></i> Full Text Search
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
@@ -58,12 +105,11 @@
         </div>
     </div>
 </div>
-<div class="col-md-12"></div>
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-desktop"></i> IxTheo Open Journals <div class="new">new</div>
+                <i class="fa fa-desktop"></i> IxTheo Open Journals
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
@@ -114,7 +160,7 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-puzzle-piece"></i> IxTheo - <a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a> Cooperation <div class="new">new</div>
+                <i class="fa fa-puzzle-piece"></i> IxTheo - <a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a> Cooperation
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
