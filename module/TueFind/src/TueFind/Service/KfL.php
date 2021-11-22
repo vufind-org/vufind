@@ -73,6 +73,26 @@ class KfL
     }
 
     /**
+     * Decode a given SSO string (for debugging purposes only)
+     */
+    public function decodeSso(string $ssoHex)
+    {
+        $ssoBin = hex2bin($ssoHex);
+        $ssoJson = openssl_decrypt($ssoBin, $this->cipher, $this->encryptionKey, OPENSSL_RAW_DATA);
+
+        $error = '';
+        while (($errorLine = openssl_error_string()) != false)
+            $error .= $errorLine . "\n";
+        rtrim($error);
+
+        if ($error != '')
+            return $error;
+
+        $ssoArray = json_decode($ssoJson);
+        return $ssoArray;
+    }
+
+    /**
      * Get encrypted Single Sign On part of the request (including user credentials)
      *
      * @param string $entitlement   Entitlement (=license) for the given title, mandatory for redirects.
@@ -87,9 +107,12 @@ class KfL
         if ($entitlement != null)
             $env[] = ['name' => 'entitlement', 'value' => $entitlement];
 
+        // Amount of seconds from now until the URL is valid:
+        $validTimespan = 60*60*24*1; // 1 day
+
         $sso = ['user' => $this->frontendUserToken,
                 'env' => $env,
-                'timestamp' => time() + 300];
+                'timestamp' => time() + $validTimespan];
 
         $encryptedData = openssl_encrypt(json_encode($sso), $this->cipher, $this->encryptionKey, OPENSSL_RAW_DATA);
         if ($encryptedData === false)
@@ -122,11 +145,7 @@ class KfL
     {
         $requestData = $this->getRequestTemplate($record->getKflEntitlement());
         $requestData['method'] = 'getHANID';
-
-        // Note: We should use RETURN_REDIRECT here, but right now this will return
-        //       a 404 not found error since the redirect doesn't seem to be unlocked yet.
-        $requestData['return'] = self::RETURN_JSON;
-        //$requestData['return'] = self::RETURN_REDIRECT;
+        $requestData['return'] = self::RETURN_REDIRECT;
 
         // URL / Title doesnt work with these examples
         //$requestData['url'] = 'https://handbuch-der-religionen.de/';
