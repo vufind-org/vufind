@@ -15,16 +15,16 @@
   <form class="form-inline" method="GET" action="<?=$this->url('collections-home')?>">
     <ul class="pager">
       <?php if (isset($prevpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEsc('page_prev')?>"><i class="fa fa-angle-left" aria-hidden="true"></i> <?=$this->transEsc('Prev')?></a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_prev')?>"><i class="fa fa-angle-left" aria-hidden="true"></i> <?=$this->transEsc('Prev')?></a></li>
       <?php else: ?>
         <li class="disabled" aria-hidden="true"><a href="#"><i class="fa fa-angle-left"></i> <?=$this->transEsc('Prev')?></a></li>
       <?php endif; ?>
       <?php if (isset($nextpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEsc('page_next')?>"><?=$this->transEsc('Next')?> <i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_next')?>"><?=$this->transEsc('Next')?> <i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
       <?php else: ?>
         <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> <i class="fa fa-angle-right"></i></a></li>
       <?php endif; ?>
-      <input type="submit" class="btn btn-default" value="<?=$this->transEsc('Jump to')?>" />
+      <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Jump to')?>" />
       <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control" />
     </ul>
   </form>
@@ -47,7 +47,7 @@
         }
       ?>
       <a href="<?=$this->escapeHtmlAttr($removalUrl)?>">
-        <i class="fa fa-trash" title="<?=$this->transEsc('Delete') ?>"></i>
+        <i class="fa fa-trash" title="<?=$this->transEscAttr('Delete') ?>"></i>
         <?=$this->escapeHtml($filter['displayText'])?>
       </a>
     </li>
@@ -59,7 +59,7 @@
   <?php foreach ($letters as $letter): ?>
     <li<?php if (strcasecmp($letter, $from) == 0): ?> class="active" aria-current="page"<?php endif; ?>>
       <a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"
-         aria-label="<?=$this->transEsc('page_num', ['%%page%%' => $letter]); ?>">
+         aria-label="<?=$this->transEscAttr('page_num', ['%%page%%' => $letter]); ?>">
         <?=$this->escapeHtml($letter)?>
       </a>
     </li>

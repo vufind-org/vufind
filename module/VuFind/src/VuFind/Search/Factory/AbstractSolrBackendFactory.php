@@ -183,6 +183,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createBackend(Connector $connector)
     {
         $backend = new $this->backendClass($connector);
+        $config = $this->config->get($this->mainConfig);
+        $pageSize = $config->Index->record_batch_size ?? 100;
+        if ($pageSize > $config->Index->maxBooleanClauses ?? $pageSize) {
+            $pageSize = $config->Index->maxBooleanClauses;
+        }
+        if ($pageSize > 0) {
+            $backend->setPageSize($pageSize);
+        }
         $backend->setQueryBuilder($this->createQueryBuilder());
         $backend->setSimilarBuilder($this->createSimilarBuilder());
         if ($this->logger) {
@@ -361,7 +369,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
         );
         $connector->setTimeout(
-            isset($config->Index->timeout) ? $config->Index->timeout : 30
+            $config->Index->timeout ?? 30
         );
 
         if ($this->logger) {
@@ -384,18 +392,15 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $specs   = $this->loadSpecs();
         $config = $this->config->get($this->mainConfig);
-        $defaultDismax = isset($config->Index->default_dismax_handler)
-            ? $config->Index->default_dismax_handler : 'dismax';
+        $defaultDismax = $config->Index->default_dismax_handler ?? 'dismax';
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
         $search = $this->config->get($this->searchConfig);
         $caseSensitiveBooleans
-            = isset($search->General->case_sensitive_bools)
-            ? $search->General->case_sensitive_bools : true;
+            = $search->General->case_sensitive_bools ?? true;
         $caseSensitiveRanges
-            = isset($search->General->case_sensitive_ranges)
-            ? $search->General->case_sensitive_ranges : true;
+            = $search->General->case_sensitive_ranges ?? true;
         $helper = new LuceneSyntaxHelper(
             $caseSensitiveBooleans, $caseSensitiveRanges
         );
@@ -496,8 +501,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function getInjectHighlightingListener(BackendInterface $backend,
         Config $search
     ) {
-        $fl = isset($search->General->highlighting_fields)
-            ? $search->General->highlighting_fields : '*';
+        $fl = $search->General->highlighting_fields ?? '*';
         return new InjectHighlightingListener($backend, $fl);
     }
 

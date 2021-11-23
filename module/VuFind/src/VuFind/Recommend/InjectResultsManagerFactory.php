@@ -28,6 +28,10 @@
 namespace VuFind\Recommend;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**

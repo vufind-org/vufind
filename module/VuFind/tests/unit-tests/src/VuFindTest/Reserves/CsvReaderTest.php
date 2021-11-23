@@ -40,6 +40,8 @@ use VuFind\Reserves\CsvReader;
  */
 class CsvReaderTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test getInstructors()
      *
@@ -127,7 +129,7 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
     {
         $reader = $this->getReader();
         $reader->getReserves();
-        $fixture = $this->getFixturePath('reserves.csv');
+        $fixture = $this->getFixtureDir() . "reserves/reserves.csv";
         $errors = "Skipping empty/missing Bib ID: $fixture, line 3\nSkipping incomplete row: $fixture, line 5\n";
         $this->assertEquals($errors, $reader->getErrors());
     }
@@ -154,18 +156,6 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      */
     protected function getReader($fixture = 'reserves.csv')
     {
-        return new CsvReader($this->getFixturePath($fixture));
-    }
-
-    /**
-     * Get a fixture path
-     *
-     * @param string $fixture Name of file to load
-     *
-     * @return string
-     */
-    protected function getFixturePath($fixture)
-    {
-        return realpath(__DIR__ . '/../../../../fixtures/reserves/' . $fixture);
+        return new CsvReader($this->getFixtureDir() . "reserves/$fixture");
     }
 }

@@ -22,6 +22,13 @@
     <label class="control-label" for="list_desc"><?=$this->transEsc('Description') ?></label>
     <textarea id="list_desc" class="form-control" name="desc" rows="3"><?=isset($this->list['description']) ? $this->escapeHtml($this->list['description']) : ''?></textarea>
   </div>
+  <?php if ($this->usertags()->getListMode() === 'enabled'): ?>
+    <div class="form-group">
+      <label class="control-label" for="list_tags"><?=$this->transEsc('Tags') ?>:</label>
+      <input type="text" name="tags" id="list_tags" class="form-control" value="<?=$this->escapeHtmlAttr($this->listTags)?>"/>
+      <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
+    </div>
+  <?php endif; ?>
   <?php if ($this->userlist()->getMode() === 'public_only'): ?>
     <input type="hidden" name="public" value="1" />
   <?php elseif ($this->userlist()->getMode() === 'private_only'): ?>
@@ -42,6 +49,6 @@
     </div>
   <?php endif; ?>
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>"/>
   </div>
 </form>

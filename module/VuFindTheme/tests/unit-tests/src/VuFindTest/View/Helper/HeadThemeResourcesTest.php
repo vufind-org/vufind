@@ -108,7 +108,7 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a fake HeadMeta helper.
      *
-     * @return \Laminas\View\Helper\HeadMeta
+     * @return \PHPUnit\Framework\MockObject\MockObject&\VuFindTheme\View\Helper\HeadMeta
      */
     protected function getMockHeadMeta()
     {

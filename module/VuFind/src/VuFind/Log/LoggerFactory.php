@@ -28,8 +28,11 @@
 namespace VuFind\Log;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
 use Laminas\Log\Writer\WriterInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -176,6 +179,39 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
+     * Configure Office365 writers.
+     *
+     * @param Logger             $logger    Logger object
+     * @param ContainerInterface $container Service manager
+     * @param Config             $config    Configuration
+     *
+     * @return void
+     */
+    protected function addOffice365Writers(Logger $logger,
+        ContainerInterface $container, Config $config
+    ) {
+        $options = [];
+        // Get config
+        $error_types = $config->Logging->office365;
+        if (isset($config->Logging->office365_title)) {
+            $options['title'] = $config->Logging->office365_title;
+        }
+        $filters = explode(',', $error_types);
+        // Make Writers
+        $writer = new Writer\Office365(
+            $config->Logging->office365_url,
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
+            $options
+        );
+        $writer->setContentType('application/json');
+        $formatter = new \Laminas\Log\Formatter\Simple(
+            "*%priorityName%*: %message%"
+        );
+        $writer->setFormatter($formatter);
+        $this->addWriters($logger, $writer, $filters);
+    }
+
+    /**
      * Is dynamic debug mode enabled?
      *
      * @param ContainerInterface $container Service manager
@@ -233,6 +269,14 @@ class LoggerFactory implements FactoryInterface
         if (isset($config->Logging->email)) {
             $hasWriter = true;
             $this->addEmailWriters($logger, $container, $config);
+        }
+
+        // Activate Office365 logging, if applicable:
+        if (isset($config->Logging->office365)
+            && isset($config->Logging->office365_url)
+        ) {
+            $hasWriter = true;
+            $this->addOffice365Writers($logger, $container, $config);
         }
 
         // Activate slack logging, if applicable:

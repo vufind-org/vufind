@@ -274,6 +274,10 @@ public class CallNumberTools
             }
         }
 
+        // if the call number is empty, return null to indicate there is no LC number
+        if (firstCall.length() == 0) {
+            return null;
+        }
         // If we made it this far, did not find a valid LC number, so use what we have:
         return new LCCallNumber(firstCall).getShelfKey();
     }

@@ -41,6 +41,8 @@ use VuFindConsole\Command\Harvest\MergeMarcCommand;
  */
 class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test that missing parameters yield an error message.
      *
@@ -68,7 +70,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);
-        $directory = __DIR__ . '/../../../../../fixtures/xml';
+        $directory = $this->getFixtureDir('VuFindConsole') . 'xml';
         $commandTester->execute(compact('directory'));
         $expected = <<<EXPECTED
 <collection>
@@ -92,7 +94,7 @@ EXPECTED;
     {
         $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);
-        $directory = __DIR__ . '/../../../../../fixtures/does-not-exist';
+        $directory = $this->getFixtureDir('VuFindConsole') . 'does-not-exist';
         $commandTester->execute(compact('directory'));
         $expected = "Cannot open directory: $directory\n";
         $this->assertEquals($expected, $commandTester->getDisplay());

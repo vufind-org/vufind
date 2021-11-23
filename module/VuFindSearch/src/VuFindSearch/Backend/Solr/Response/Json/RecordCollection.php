@@ -85,6 +85,11 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function __construct(array $response)
     {
+        if (array_key_exists('response', $response)
+            && null === $response['response']
+        ) {
+            unset($response['response']);
+        }
         $this->response = array_replace_recursive(static::$template, $response);
         $this->offset = $this->response['response']['start'];
         $this->rewind();

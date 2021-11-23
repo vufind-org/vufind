@@ -181,7 +181,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Execute HTTP call
             $result = $client->send();
         } catch (\Exception $e) {
-            $this->logError("$method request for $url failed: " . $e->getMessage());
+            $this->logError("$method request '$url' failed: " . $e->getMessage());
             throw new ILSException($e->getMessage());
         }
 
@@ -194,14 +194,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $urlParams = $client->getRequest()->getQuery()->toString();
         $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
         $this->debug(
-            "[$duration] $method request for $fullUrl results ($statusCode):\n"
+            "[$duration] $method request '$fullUrl' results ($statusCode):\n"
             . $answer
         );
 
         // Check for error
         if ($result->isServerError()) {
             $this->logError(
-                "$method request for $url failed, HTTP error code: $statusCode"
+                "$method request '$url' failed, HTTP error code: $statusCode"
             );
             throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
@@ -210,7 +210,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $xml = simplexml_load_string($answer);
         } catch (\Exception $e) {
             $this->logError(
-                "Could not parse response for $method request for $url: "
+                "Could not parse response for $method request '$url': "
                 . $e->getMessage() . ". Response was:\n"
                 . $result->getHeaders()->toString()
                 . "\n\n$answer"
@@ -228,18 +228,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         } else {
             $almaErrorMsg = $xml->errorList->error[0]->errorMessage
                 ?? '[could not parse error message]';
-            error_log(
-                '[ALMA] ' . $almaErrorMsg . ' | Call to: ' . $client->getUri() .
-                '. GET params: ' . var_export($paramsGet, true) . '. POST params: ' .
-                var_export($paramsPost, true) . '. Result body: ' .
-                $result->getBody() . '. HTTP status code: ' . $statusCode
+            $errorMsg = "Alma error for $method request '$url' (status code"
+                . " $statusCode): $almaErrorMsg";
+            $this->logError(
+                $errorMsg . '. GET params: ' . var_export($paramsGet, true)
+                . '. POST params: ' . var_export($paramsPost, true)
+                . '. Result body: ' . $result->getBody()
             );
-            throw new ILSException(
-                "Alma error message for $method request for $url: "
-                . $almaErrorMsg . ' | HTTP error code: '
-                . $statusCode,
-                $statusCode
-            );
+            throw new ILSException($errorMsg, $statusCode);
         }
 
         return $returnStatus ? [$returnValue, $statusCode] : $returnValue;
@@ -559,9 +555,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     new \DateInterval($newUserConfig['expiryDate'])
                 );
             } catch (\Exception $exception) {
-                $errorMessage = 'Configuration "expiryDate" in Alma.ini (see ' .
+                $errorMessage = 'Configuration "expiryDate" in Alma ini (see ' .
                                 '[NewUser] section) has the wrong format!';
-                error_log('[ALMA]: ' . $errorMessage);
+                $this->logError($errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
             }
         } else {
@@ -577,9 +573,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     new \DateInterval($newUserConfig['purgeDate'])
                 );
             } catch (\Exception $exception) {
-                $errorMessage = 'Configuration "purgeDate" in Alma.ini (see ' .
+                $errorMessage = 'Configuration "purgeDate" in Alma ini (see ' .
                                 '[NewUser] section) has the wrong format!';
-                error_log('[ALMA]: ' . $errorMessage);
+                $this->logError($errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
             }
         }
@@ -1460,8 +1456,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if ($response->isSuccess()) {
             return ['success' => true];
         } else {
-            // TODO: Throw an error
-            error_log($response->getBody());
+            $url = $client->getRequest()->getUriString();
+            $statusCode = $response->getStatusCode();
+            $this->logError(
+                "Alma error for hold POST request '$url' (status code $statusCode): "
+                . $response->getBody()
+            );
         }
 
         // Get error message
@@ -1483,21 +1483,23 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
      *
-     * @param array $patron Patron information returned by the patronLogin method.
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Hold details
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getPickupLocations($patron)
+    public function getPickupLocations($patron, $holdDetails = null)
     {
         $xml = $this->makeRequest('/conf/libraries');
         $libraries = [];
         foreach ($xml as $library) {
             $libraries[] = [
-                'locationID' => $library->code,
-                'locationDisplay' => $library->name
+                'locationID' => (string)$library->code,
+                'locationDisplay' => (string)$library->name
             ];
         }
         return $libraries;

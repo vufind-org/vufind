@@ -20,7 +20,7 @@
     <?php if ($this->facet['type'] == 'date'): ?>
       <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($this->title)?><?=$this->escapeHtml($this->facet['type'])?>Slider"/></div>
     <?php endif; ?>
-    <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Set')?>"/>
+    <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>"/>
   </form>
 </div>
 <?php if ($this->facet['type'] == 'date'): ?>

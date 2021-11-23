@@ -19,6 +19,15 @@
 <?php if (isset($currentSearch['sublabel'])): ?>
   <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
 <?php endif; ?>
+
+<?php $permission = $currentSearch['permission'] ?? null ?>
+<?php if (isset($permission) && !$this->permission()->allowDisplay($permission)): ?>
+  <?php if ($block = $this->permission()->getAlternateContent($permission)): ?>
+    <?=$block?>
+  <?php endif; ?>
+  <?php return; // if permission is denied, don't render the rest of the template! ?>
+<?php endif; ?>
+
 <div class="clearfix">
   <div class="pull-left flip help-block">
     <?php if ($recordTotal > 0): ?>

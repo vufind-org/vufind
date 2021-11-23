@@ -4,7 +4,7 @@
   <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm">
     <?=$this->auth()->getLoginFields()?>
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
-    <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
+    <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash())?>" />
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
           <input class="btn btn-primary btn-lg btn-block" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">

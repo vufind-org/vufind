@@ -28,6 +28,9 @@
 namespace VuFind\ChannelProvider;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -63,6 +66,8 @@ class ListItemsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Db\Table\PluginManager::class)->get('UserList'),
+            $container
+                ->get(\VuFind\Db\Table\PluginManager::class)->get('ResourceTags'),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get(\VuFind\Search\Results\PluginManager::class)
         );

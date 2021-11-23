@@ -10,13 +10,13 @@
   <form class="form-admin-maintenance expired-searches" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'DeleteExpiredSearches'])?>">
     <label for="del_daysOld">Delete unsaved user search histories older than</label>
     <input id="del_daysOld" type="number" name="daysOld" size="5" value="2" class="form-control"/> days.
-    <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="btn btn-danger"/>
+    <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger"/>
   </form>
   <hr />
   <form class="form-admin-maintenance expired-sessions" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'DeleteExpiredSessions'])?>">
     <label for="delsess_daysOld">Delete user sessions older than</label>
     <input id="delsess_daysOld" type="number" name="daysOld" size="5" value="2" class="form-control"/> days.
-    <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="btn btn-danger"/>
+    <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger"/>
   </form>
   <hr />
   <form class="form-admin-maintenance clear-cache" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'ClearCache'])?>">
@@ -27,7 +27,7 @@
         <?=$this->escapeHtml($cache) ?>
       </label>
     <?php endforeach; ?>
-    <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="btn btn-danger"/>
+    <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger"/>
   </form>
 </div>
 

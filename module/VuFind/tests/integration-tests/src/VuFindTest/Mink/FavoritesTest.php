@@ -71,14 +71,16 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Perform a search and return the page after submitting the form.
      *
+     * @param string $query Search query to run
+     *
      * @return Element
      */
-    protected function gotoSearch()
+    protected function gotoSearch($query = 'Dewey')
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCssAndSetValue($page, '#searchForm_lookfor', 'Dewey');
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         $this->clickCss($page, '.btn.btn-primary');
         return $page;
     }
@@ -87,11 +89,13 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      * Perform a search and return the page after submitting the form and
      * clicking the first record.
      *
+     * @param string $query Search query to run
+     *
      * @return Element
      */
-    protected function gotoRecord()
+    protected function gotoRecord($query = 'Dewey')
     {
-        $page = $this->gotoSearch();
+        $page = $this->gotoSearch($query);
         $this->clickCss($page, '.result a.title');
         return $page;
     }
@@ -147,7 +151,10 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCssAndSetValue($page, '#list_desc', 'Just. THE BEST.');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
-        $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
+        $this->assertEquals(
+            'Test List',
+            $this->findCss($page, '#save_list option[selected]')->getHtml()
+        );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -198,8 +205,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
-            $this->findCss($page, '#save_list option[selected]')->getHtml(),
-            'Future List'
+            'Future List',
+            $this->findCss($page, '#save_list option[selected]')->getHtml()
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -208,8 +215,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
-            $this->findCss($page, '#save_list option[selected]')->getHtml(),
-            'Login Test List'
+            'Login Test List',
+            $this->findCss($page, '#save_list option[selected]')->getHtml()
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -285,10 +292,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->findCssAndSetValue($page, '#list_title', 'Test List');
         $this->findCssAndSetValue($page, '#list_desc', 'Just. THE BEST.');
+        // Confirm that tags are disabled by default:
+        $this->assertNull($page->find('css', '#list_tags'));
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
-            $this->findCss($page, '#save_list option[selected]')->getHtml(),
-            'Test List'
+            'Test List',
+            $this->findCss($page, '#save_list option[selected]')->getHtml()
         );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -341,8 +350,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
-            $this->findCss($page, '#save_list option[selected]')->getHtml(),
-            'Future List'
+            'Future List',
+            $this->findCss($page, '#save_list option[selected]')->getHtml()
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -351,8 +360,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
-            $this->findCss($page, '#save_list option[selected]')->getHtml(),
-            'Login Test List'
+            'Login Test List',
+            $this->findCss($page, '#save_list option[selected]')->getHtml()
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -389,6 +398,52 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $savedLists = $page->findAll('css', '.savedLists a');
         $this->assertEquals($listCount + 1, count($savedLists));
+    }
+
+    /**
+     * Test that lists can be tagged when the optional setting is activated.
+     *
+     * @return void
+     */
+    public function testTaggedList()
+    {
+        $this->changeConfigs(
+            ['config' =>
+                [
+                    'Social' => ['listTags' => 'enabled'],
+                ],
+            ]
+        );
+        $page = $this->gotoSearch('id:testbug2');
+
+        // Login
+        $this->clickCss($page, '.save-record');
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
+
+        $this->snooze();
+        $this->findCss($page, '#save_list');
+        // Make list
+        $this->clickCss($page, '#make-list');
+        $this->snooze();
+        $this->findCssAndSetValue($page, '#list_title', 'Tagged List');
+        $this->findCssAndSetValue($page, '#list_desc', 'It has tags on it!');
+        $this->findCssAndSetValue($page, '#list_tags', 'These are "my list tags"');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->assertEquals(
+            'Tagged List',
+            $this->findCss($page, '#save_list option[selected]')->getHtml()
+        );
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->snooze();
+        $this->clickCss($page, '.alert.alert-success a');
+        // Check list page
+        $this->snooze();
+        $this->assertEquals(
+            'are, my list tags, these',
+            $this->findCss($page, '.list-tags')->getHtml()
+        );
     }
 
     /**

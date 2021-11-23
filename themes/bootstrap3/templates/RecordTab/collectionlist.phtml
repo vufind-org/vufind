@@ -21,7 +21,7 @@
     <div class="collection-control">
       <form class="form-inline" role="form" method="get" name="keywordFilterForm" id="keywordFilterForm">
         <div class="input-group">
-          <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEsc('Search within collection')?>" value="<?=$params->getDisplayQuery()?>" class="form-control">
+          <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEscAttr('Search within collection')?>" value="<?=$params->getDisplayQuery()?>" class="form-control">
           <?php foreach ($filterList as $field => $filters): ?>
             <?php foreach ($filters as $filter): ?>
               <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />

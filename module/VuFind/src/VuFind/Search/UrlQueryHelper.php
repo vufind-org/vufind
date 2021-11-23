@@ -94,8 +94,7 @@ class UrlQueryHelper
      */
     protected function getBasicSearchParam()
     {
-        return isset($this->config['basicSearchParam'])
-            ? $this->config['basicSearchParam'] : 'lookfor';
+        return $this->config['basicSearchParam'] ?? 'lookfor';
     }
 
     /**
@@ -181,8 +180,7 @@ class UrlQueryHelper
      */
     protected function getDefault($key)
     {
-        return isset($this->config['defaults'][$key])
-            ? $this->config['defaults'][$key] : null;
+        return $this->config['defaults'][$key] ?? null;
     }
 
     /**
@@ -262,7 +260,7 @@ class UrlQueryHelper
      */
     public function __toString()
     {
-        $escape = isset($this->config['escape']) ? $this->config['escape'] : true;
+        $escape = $this->config['escape'] ?? true;
         return $this->getParams($escape);
     }
 

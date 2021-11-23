@@ -72,7 +72,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
         if ($authService->isGranted($this->ezproxyRequiredPermission)) {
             // Access granted, redirect to EZproxy
             if (empty($config->EZproxy->disable_ticket_auth_logging)) {
-                $logger = $this->serviceLocator->get(\VuFind\Logger::class);
+                $logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
                 $logger->log(
                     \Laminas\Log\Logger::INFO,
                     "EZproxy login to '" . $config->EZproxy->host

@@ -202,7 +202,7 @@ class Cart
     /**
      * Get cart size.
      *
-     * @return string The maximum cart size
+     * @return int The maximum cart size
      */
     public function getMaxSize()
     {

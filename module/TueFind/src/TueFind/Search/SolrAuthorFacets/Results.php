@@ -14,13 +14,13 @@ class Results extends \VuFind\Search\SolrAuthorFacets\Results
     {
         $query = $this->getParams()->getQuery();
         $params = $this->getParams()->getBackendParametersAuthorAndIdFacet();
-      
+
         // Perform the search:
         $collection = $this->getSearchService()
             ->search($this->backendId, $query, 0, 0, $params);
-        
+
         $this->responseFacets = $collection->getFacets();
-    
+
         // Get the facets from which we will build our results:
         $facets = $this->getFacetList(['author_and_id_facet' => null]);
         if (isset($facets['author_and_id_facet'])) {

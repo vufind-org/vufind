@@ -41,6 +41,8 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
  */
 class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Get a mock record router.
      *
@@ -119,14 +121,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue($authors));
 
         // Load record data from fixture file:
-        $fixture = json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/testbug2.json'
-                )
-            ),
-            true
-        );
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

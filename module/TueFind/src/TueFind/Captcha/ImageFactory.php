@@ -42,11 +42,18 @@ class ImageFactory extends \VuFind\Captcha\ImageFactory
             $imageOptions['lineNoiseLevel'] = $config->Captcha->image_lineNoiseLevel;
         }
 
-        // TueFind: Append subdir to url to match apache configuration
+        // TueFind:
+        // - This file has initially been created to override cache path generation
+        //   (e.g. add subfolder for "ixtheo")
+        // - Since we use the Asset Pipeline starting with the 7.1 upgrade,
+        //   it's replaced by an apache configuration directive
+        // - Since there is a Bug in 7.1 with a duplicate '/',
+        //   we need to keep this file until the bugfix is out,
+        //   which should be part of 8.0.
         return new $requestedName(
             new \Laminas\Captcha\Image($imageOptions),
             $container->get('ViewHelperManager')->get('url')->__invoke('home')
-                . 'cache/' . basename(getenv('VUFIND_LOCAL_DIR')) . '/'
+                . 'cache/'
         );
     }
 }

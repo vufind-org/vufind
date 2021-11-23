@@ -47,16 +47,18 @@
 #
 #   fields (array) List of form elements with the following options:
 #
-#     name (string)      Element name
-#     label (string)     Element label (translation key)
-#     required (boolean) Is the element required?
-#     settings (array)   HTML attributes as key-value pairs, for example:
+#     name (string)        Element name
+#     label (string)       Element label (translation key)
+#     required (boolean)   Is the element required? (for checkbox elements this means that
+#                          all options have to be selected.)
+#     requireOne (boolean) Require at least one checkbox option to be selected.
+#     settings (array)     HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox|hidden)
+#     type (string)        Element type (text|textarea|email|url|select|radio|checkbox|hidden)
 #
-#     help (string)      Element help text (translation key) that is displayed before the element.
-#                        To include HTML formatting, use a translation key ending
-#                        in '_html' here, and define markup in the language files.
+#     help (string)        Element help text (translation key) that is displayed before the element.
+#                          To include HTML formatting, use a translation key ending
+#                          in '_html' here, and define markup in the language files.
 #
 #       or
 #

@@ -488,7 +488,7 @@ class SearchController extends AbstractSolrSearch
         // Send the JSON response:
         $response = $this->getResponse();
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'application/javascript');
+        $headers->addHeaderLine('Content-type', 'application/json');
         $response->setContent(
             json_encode([$query->get('lookfor', ''), $suggestions])
         );

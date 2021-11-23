@@ -363,7 +363,7 @@ class TagsController extends AbstractAdmin
      */
     protected function getResourceTags()
     {
-        $currentPage = isset($this->params['page']) ? $this->params['page'] : "1";
+        $currentPage = $this->params['page'] ?? "1";
         $resourceTags = $this->getTable('ResourceTags');
         $tags = $resourceTags->getResourceTags(
             $this->convertFilter($this->getParam('user_id')),

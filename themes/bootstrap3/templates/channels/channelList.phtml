@@ -27,7 +27,7 @@
   <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
     <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>"/>
-    <input type="submit" value="<?=$this->escapeHtmlAttr($this->translate('Submit'))?>" class="btn btn-default" />
+    <input type="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-default" />
   </form>
 <?php endif; ?>
 

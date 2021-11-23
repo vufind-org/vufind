@@ -122,7 +122,7 @@ class TemplateBased implements ContentBlockInterface
     protected function getContextForPhtml(string $page, string $path): array
     {
         return [
-            'templateName' => $this->templateName,
+            'templateName' => $page,
         ];
     }
 }

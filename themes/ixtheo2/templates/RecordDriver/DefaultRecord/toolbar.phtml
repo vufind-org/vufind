@@ -5,7 +5,7 @@
   }
 ?>
 <nav class="record-nav">
-  <ul class="action-toolbar" aria-label="<?=$this->transEsc('ajaxview_label_tools'); ?>">
+  <ul class="action-toolbar" aria-label="<?=$this->transEscAttr('ajaxview_label_tools'); ?>">
     <?php if (count($this->driver->getCitationFormats()) > 0): ?>
       <li role="none"><a class="cite-record toolbar-btn btn-type-cite" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" rel="nofollow"><?=$this->transEsc('Cite this')?></a></li>
     <?php endif; ?>

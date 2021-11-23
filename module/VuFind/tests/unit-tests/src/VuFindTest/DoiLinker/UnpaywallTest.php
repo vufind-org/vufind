@@ -42,6 +42,8 @@ use VuFind\DoiLinker\Unpaywall;
  */
 class UnpaywallTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test configuration validation.
      *
@@ -65,10 +67,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $adapter = new TestAdapter();
         $testData = [
             [
-                'filename' => realpath(
-                    __DIR__
-                    . '/../../../../../tests/fixtures/unpaywall/goodresponsepdf'
-                ),
+                'fixture' => $this->getFixture('unpaywall/goodresponsepdf'),
                 'response' => [
                     '10.7553/66-4-1434' => [
                         [
@@ -79,10 +78,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
                 ]
             ],
             [
-                'filename' => realpath(
-                    __DIR__
-                    . '/../../../../../tests/fixtures/unpaywall/goodresponseonline'
-                ),
+                'fixture' => $this->getFixture('unpaywall/goodresponseonline'),
                 'response' => [
                     '10.7553/66-4-1434' => [
                         [
@@ -93,10 +89,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
                 ]
             ],
             [
-                'filename' => realpath(
-                    __DIR__
-                    . '/../../../../../tests/fixtures/unpaywall/badresponse'
-                ),
+                'fixture' => $this->getFixture('unpaywall/badresponse'),
                 'response' => []
             ],
         ];
@@ -107,8 +100,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $unpaywall = new Unpaywall(new \Laminas\Config\Config($config));
 
         foreach ($testData as $data) {
-            $response = file_get_contents($data['filename']);
-            $responseObj = HttpResponse::fromString($response);
+            $responseObj = HttpResponse::fromString($data['fixture']);
             $adapter->setResponse($responseObj);
             $service = new \VuFindHttp\HttpService();
             $service->setDefaultAdapter($adapter);

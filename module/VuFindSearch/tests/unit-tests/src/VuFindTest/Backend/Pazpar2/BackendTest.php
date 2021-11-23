@@ -44,6 +44,8 @@ use VuFindTest\Unit\TestCase;
  */
 class BackendTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test that getConnector works.
      *
@@ -133,11 +135,8 @@ class BackendTest extends TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/pazpar2/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return simplexml_load_file($file);
+        $xml = $this->getFixture("pazpar2/response/$fixture", 'VuFindSearch');
+        return simplexml_load_string($xml);
     }
 
     /**

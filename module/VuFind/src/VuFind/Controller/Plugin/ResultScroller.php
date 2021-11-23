@@ -328,8 +328,7 @@ class ResultScroller extends AbstractPlugin
 
         // now we can set the previous/next record
         $retVal['previousRecord'] = null;
-        $retVal['nextRecord'] = isset($this->data->currIds[1])
-            ? $this->data->currIds[1] : null;
+        $retVal['nextRecord'] = $this->data->currIds[1] ?? null;
         // cover extremely unlikely edge case -- page size of 1:
         if (null === $retVal['nextRecord'] && isset($this->data->nextIds[0])) {
             $retVal['nextRecord'] = $this->data->nextIds[0];
@@ -457,8 +456,7 @@ class ResultScroller extends AbstractPlugin
             }
 
             // Store total result set size:
-            $retVal['resultTotal']
-                = isset($this->data->total) ? $this->data->total : 0;
+            $retVal['resultTotal'] = $this->data->total ?? 0;
 
             // Set first and last record IDs
             if ($this->data->firstlast) {

@@ -69,7 +69,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -288,6 +288,19 @@ class AbstractSearch extends AbstractBase
      */
     public function resultsAction()
     {
+        return $this->getSearchResultsView();
+    }
+
+    /**
+     * Perform a search and send results to a results view
+     *
+     * @param callable $setupCallback Optional setup callback that overrides the
+     * default one
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    protected function getSearchResultsView($setupCallback = null)
+    {
         $view = $this->createViewModel();
 
         // Handle saved search requests:
@@ -306,7 +319,8 @@ class AbstractSearch extends AbstractBase
             ->retrieveLastSetting($this->searchClassId, 'view');
         try {
             $view->results = $results = $runner->run(
-                $request, $this->searchClassId, $this->getSearchSetupCallback(),
+                $request, $this->searchClassId,
+                $setupCallback ?: $this->getSearchSetupCallback(),
                 $lastView
             );
         } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
@@ -432,7 +446,7 @@ class AbstractSearch extends AbstractBase
         $history = $this->getTable('Search');
         $history->saveSearch(
             $this->getResultsManager(), $results, $sessId,
-            isset($user->id) ? $user->id : null
+            $user->id ?? null
         );
     }
 
@@ -755,9 +769,7 @@ class AbstractSearch extends AbstractBase
         }
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get($options->getFacetsIni());
-        $limit = isset($config->Results_Settings->lightboxLimit)
-            ? $config->Results_Settings->lightboxLimit
-            : 50;
+        $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         $facets = $results->getPartialFieldFacets(
             [$facet], false, $limit, $sort, $page,

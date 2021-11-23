@@ -128,8 +128,7 @@ class BrowZineBackendFactory implements FactoryInterface
         // Build HTTP client:
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $timeout = isset($this->browzineConfig->General->timeout)
-            ? $this->browzineConfig->General->timeout : 30;
+        $timeout = $this->browzineConfig->General->timeout ?? 30;
         $client->setOptions(['timeout' => $timeout]);
 
         $connector = new Connector(

@@ -251,26 +251,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = (isset($this->config['pickUpLocations']))
             ? $this->config['pickUpLocations'] : false;
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation']
-            : '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
         $this->holdCheckLimit
-            = isset($this->config['Holds']['holdCheckLimit'])
-            ? $this->config['Holds']['holdCheckLimit'] : '15';
+            = $this->config['Holds']['holdCheckLimit'] ?? '15';
         $this->callSlipCheckLimit
-            = isset($this->config['StorageRetrievalRequests']['checkLimit'])
-            ? $this->config['StorageRetrievalRequests']['checkLimit'] : '15';
+            = $this->config['StorageRetrievalRequests']['checkLimit'] ?? '15';
 
         $this->recallsEnabled
-            = isset($this->config['Holds']['enableRecalls'])
-            ? $this->config['Holds']['enableRecalls'] : true;
+            = $this->config['Holds']['enableRecalls'] ?? true;
 
         $this->itemHoldsEnabled
-            = isset($this->config['Holds']['enableItemHolds'])
-            ? $this->config['Holds']['enableItemHolds'] : true;
+            = $this->config['Holds']['enableItemHolds'] ?? true;
 
         $this->requestGroupsEnabled
             = isset($this->config['Holds']['extraHoldFields'])
@@ -279,31 +273,25 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 explode(':', $this->config['Holds']['extraHoldFields'])
             );
         $this->defaultRequestGroup
-            = isset($this->config['Holds']['defaultRequestGroup'])
-            ? $this->config['Holds']['defaultRequestGroup'] : false;
+            = $this->config['Holds']['defaultRequestGroup'] ?? false;
         if ($this->defaultRequestGroup === 'user-selected') {
             $this->defaultRequestGroup = false;
         }
         $this->pickupLocationsInRequestGroup
-            = isset($this->config['Holds']['pickupLocationsInRequestGroup'])
-            ? $this->config['Holds']['pickupLocationsInRequestGroup'] : false;
+            = $this->config['Holds']['pickupLocationsInRequestGroup'] ?? false;
 
         $this->checkItemsExist
-            = isset($this->config['Holds']['checkItemsExist'])
-            ? $this->config['Holds']['checkItemsExist'] : false;
+            = $this->config['Holds']['checkItemsExist'] ?? false;
         $this->checkItemsNotAvailable
-            = isset($this->config['Holds']['checkItemsNotAvailable'])
-            ? $this->config['Holds']['checkItemsNotAvailable'] : false;
+            = $this->config['Holds']['checkItemsNotAvailable'] ?? false;
         $this->checkLoans
-            = isset($this->config['Holds']['checkLoans'])
-            ? $this->config['Holds']['checkLoans'] : false;
+            = $this->config['Holds']['checkLoans'] ?? false;
         $this->excludedItemLocations
             = isset($this->config['Holds']['excludedItemLocations'])
             ? str_replace(':', ',', $this->config['Holds']['excludedItemLocations'])
             : '';
         $this->allowCancelingAvailableRequests
-            = isset($this->config['Holds']['allowCancelingAvailableRequests'])
-            ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
+            = $this->config['Holds']['allowCancelingAvailableRequests'] ?? true;
     }
 
     /**
@@ -749,8 +737,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
-            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
         if (count($pickResponse) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -1056,8 +1043,7 @@ EOT;
         }
 
         // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(['timeout' => $timeout]);
 
         // Attach XML if necessary

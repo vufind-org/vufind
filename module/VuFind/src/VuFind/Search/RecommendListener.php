@@ -150,6 +150,9 @@ class RecommendListener
                 // Break apart the setting into module name and extra parameters:
                 $current = explode(':', $current);
                 $module = array_shift($current);
+                if (empty($module)) {
+                    continue;
+                }
                 $config = implode(':', $current);
                 if (!$this->pluginManager->has($module)) {
                     throw new \Exception(

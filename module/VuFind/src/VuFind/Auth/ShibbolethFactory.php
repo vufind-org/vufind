@@ -28,6 +28,11 @@
 namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
+use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 
 /**
  * Factory for Shibboleth authentication module.
@@ -40,6 +45,8 @@ use Interop\Container\ContainerInterface;
  */
 class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
+
     /**
      * Create an object
      *
@@ -60,8 +67,35 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $loader = $this->getConfigurationLoader($container);
+        $request = $container->get('Request');
         return new $requestedName(
-            $container->get(\Laminas\Session\SessionManager::class)
+            $container->get(\Laminas\Session\SessionManager::class),
+            $loader, $request
         );
+    }
+
+    /**
+     * Return configuration loader for shibboleth
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return configuration loader
+     */
+    public function getConfigurationLoader(ContainerInterface $container)
+    {
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $override = $config->Shibboleth->allow_configuration_override ?? false;
+        $loader = null;
+        if ($override) {
+            $shibConfig = $container->get('VuFind\Config')->get(
+                self::SHIBBOLETH_CONFIG_FILE_NAME
+            );
+            $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
+        } else {
+            $loader = new SingleIdPConfigurationLoader($config);
+        }
+        return $loader;
     }
 }

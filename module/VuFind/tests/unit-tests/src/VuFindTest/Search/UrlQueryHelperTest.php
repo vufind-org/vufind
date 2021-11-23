@@ -44,6 +44,8 @@ use VuFindTest\Unit\TestCase as TestCase;
  */
 class UrlQueryHelperTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Get a preconfigured helper.
      *
@@ -195,8 +197,7 @@ class UrlQueryHelperTest extends TestCase
      */
     public function testAdvancedSearch()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/advanced/';
-        $q = unserialize(file_get_contents($fixturePath . 'query'));
+        $q = unserialize($this->getFixture('searches/advanced/query'));
         $helper = new UrlQueryHelper([], $q);
         $this->assertEquals(
             '?join=OR&bool0%5B%5D=AND&lookfor0%5B%5D=oranges&lookfor0%5B%5D=bananas'

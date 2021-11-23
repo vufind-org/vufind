@@ -149,7 +149,7 @@ class NewItems extends AbstractPlugin
      */
     public function getMethod()
     {
-        return isset($this->config->method) ? $this->config->method : 'ils';
+        return $this->config->method ?? 'ils';
     }
 
     /**

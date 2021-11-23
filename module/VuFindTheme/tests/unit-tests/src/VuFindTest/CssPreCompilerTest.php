@@ -58,7 +58,7 @@ class CssPreCompilerTest extends Unit\TestCase
     /**
      * Data Provider for extensions and classes
      *
-     * @return void
+     * @return array
      */
     public static function extClassProvider()
     {

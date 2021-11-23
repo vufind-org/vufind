@@ -403,6 +403,9 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         // necessary.
         $url = $this->getAuth()->logout($url);
 
+        // Reset authentication state
+        $this->getAuth()->resetState();
+
         // Clear out the cached user object and session entry.
         $this->currentUser = false;
         unset($this->session->userId);

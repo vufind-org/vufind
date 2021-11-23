@@ -3,7 +3,7 @@
   <div class="alert alert-info">
     <?=$this->translate('doi_detected_html', ['%%url%%' => $url, '%%doi%%' => $doi])?>
   </div>
-  <?php if ($this->recommend->isFullMatch()): ?>
+  <?php if ($this->recommend->isFullMatch() && $this->recommend->redirectFullMatch()): ?>
     <?php $redirect = 'document.location.href = "' . $this->escapeJs($url) . '";'; ?>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $redirect, 'SET')?>
   <?php endif; ?>

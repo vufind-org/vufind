@@ -83,7 +83,6 @@ class SolrWeb extends SolrDefault
      */
     public function getLastModified()
     {
-        return isset($this->fields['last_modified'])
-            ? $this->fields['last_modified'] : '';
+        return $this->fields['last_modified'] ?? '';
     }
 }

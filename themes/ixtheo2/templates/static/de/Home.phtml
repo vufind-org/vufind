@@ -227,6 +227,32 @@ EOD;
     </div>
 </section>
 
+
+
+<style>
+.cw-card.three-links img{
+    border-radius: 0.4rem;
+}
+.cw-card.three-links a{
+    display: block !important;
+    width: 100% !important;
+    position: relative;
+    z-index: 20;
+    opacity: 0.7;
+    margin: 22px 0;
+    background-color: #000;
+    text-decoration: none;
+}
+.cw-card.three-links a h6{
+    color:#fff;
+    margin-bottom: 42px;
+}
+.three-links .cw-overlay-content {
+    opacity: 1;
+}
+</style>
+
+
 <section class="cw-py-5">
     <div class="container">
         <div class="row cw-mb-5">
@@ -277,7 +303,7 @@ EOD;
                     </div>
                     <div class="swiper-slide cw-h-auto cw-px-2">
                         <div class="cw-card cw-hover-animate cw-mb-4 cw-mb-lg-0 three-links">
-                            <!--<img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">-->
+                            <img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="cw-bg-image">
                             <a href="https://relbib.de" class="">
                                 <div class="cw-card-body cw-overlay-content">
                                 <h6 class="cw-card-title text-cw-shadow text-uppercase">RelBib</h6>

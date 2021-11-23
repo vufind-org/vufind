@@ -7,6 +7,9 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">Directory of Open Access Journals</xsl:param>
     <xsl:param name="collection">DOAJ</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:template match="oai_doaj:doajArticle">
         <add>
             <doc>
@@ -51,7 +54,6 @@
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
-                -->
 
                 <!-- FORMAT -->
                 <field name="format">Article</field>
@@ -155,7 +157,14 @@
                             <field name="url">http://<xsl:value-of select="//oai_doaj:fullTextUrl[normalize-space()]"/></field>
                         </xsl:otherwise>
                     </xsl:choose>
-                </xsl:if> 
+                </xsl:if>
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //oai_doaj:title[normalize-space()], php:function('VuFind::stripArticles', string(//oai_doaj:title[normalize-space()])), //oai_doaj:authors/oai_doaj:author/oai_doaj:name, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
+                </xsl:for-each>
             </doc>
         </add>
     </xsl:template>

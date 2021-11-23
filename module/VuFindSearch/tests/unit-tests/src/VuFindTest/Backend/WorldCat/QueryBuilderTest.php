@@ -42,6 +42,8 @@ use VuFindSearch\Backend\WorldCat\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test query parsing.
      *
@@ -62,9 +64,7 @@ class QueryBuilderTest extends TestCase
         foreach ($tests as $test) {
             list($input, $output) = $test;
             $q = unserialize(
-                file_get_contents(
-                    PHPUNIT_SEARCH_FIXTURES . '/worldcat/query/' . $input
-                )
+                $this->getFixture("worldcat/query/$input", 'VuFindSearch')
             );
             $response = $qb->build($q);
             $processedQ = $response->get('query');
@@ -81,7 +81,7 @@ class QueryBuilderTest extends TestCase
     {
         $qb = new QueryBuilder('TEST');
         $q = unserialize(
-            file_get_contents(PHPUNIT_SEARCH_FIXTURES . '/worldcat/query/basic')
+            $this->getFixture('worldcat/query/basic', 'VuFindSearch')
         );
         $response = $qb->build($q);
         $processedQ = $response->get('query');
