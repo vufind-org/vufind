@@ -107,7 +107,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         foreach ($lookups as $domain => & $tokens) {
             $sourceDir = $this->getLangDir($output, $domain, false);
             if (!$sourceDir) {
-                return $this->getFailureResponse();
+                return 1;
             }
             $sourceCallback = function ($full) use ($domain, & $tokens) {
                 $strings = $this->reader->getTextDomain($full, false);

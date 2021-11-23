@@ -73,7 +73,7 @@ class HoldSettings
      */
     public function getHoldsMode()
     {
-        return isset($this->config->holds_mode) ? $this->config->holds_mode : 'all';
+        return $this->config->holds_mode ?? 'all';
     }
 
     /**
@@ -85,7 +85,6 @@ class HoldSettings
      */
     public function getTitleHoldsMode()
     {
-        return isset($this->config->title_level_holds_mode)
-            ? $this->config->title_level_holds_mode : 'disabled';
+        return $this->config->title_level_holds_mode ?? 'disabled';
     }
 }

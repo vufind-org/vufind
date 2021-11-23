@@ -44,6 +44,8 @@ use VuFindConsole\Command\Import\WebCrawlCommand;
  */
 class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test the simplest possible success case.
      *
@@ -51,8 +53,8 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $fixture1 = __DIR__ . '/../../../../../fixtures/sitemap/index.xml';
-        $fixture2 = __DIR__ . '/../../../../../fixtures/sitemap/map.xml';
+        $fixture1 = $this->getFixtureDir('VuFindConsole') . 'sitemap/index.xml';
+        $fixture2 = $this->getFixtureDir('VuFindConsole') . 'sitemap/map.xml';
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(

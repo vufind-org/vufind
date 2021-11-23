@@ -43,12 +43,24 @@ use VuFindConsole\Command\Language\CopyStringCommand;
  */
 class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Language fixture directory
      *
      * @var string
      */
-    protected $languageFixtureDir = __DIR__ . '/../../../../../fixtures/language';
+    protected $languageFixtureDir = null;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->languageFixtureDir = $this->getFixtureDir('VuFindConsole') . 'language';
+    }
 
     /**
      * Test that missing parameters yield an error message.

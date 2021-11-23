@@ -938,8 +938,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             // the driver class without wasting time initializing it; if NoILS
             // failover is enabled, we have to initialize the driver object now
             // to be sure we are checking capabilities on the appropriate class.
-            $driverToCheck = $this->hasNoILSFailover()
-                ? $this->getDriver() : $this->getDriverClass();
+            $driverToCheck = $this->getDriver($this->hasNoILSFailover());
 
             // First check that the function is callable:
             if (is_callable([$driverToCheck, $method])) {

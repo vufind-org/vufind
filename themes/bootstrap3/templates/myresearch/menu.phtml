@@ -43,7 +43,11 @@
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-fines')?>" class="flex<?=$this->active == 'fines' ? ' active' : ''?>">
-      <span class="flex-col"><i class="fa fa-fw fa-usd" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Fines')?></span>
+      <?php
+        // Use a "fines" icon based on the configured default currency symbol:
+        $currency = strtolower($this->config()->get('config')->Site->defaultCurrency ?? 'usd');
+      ?>
+      <span class="flex-col"><i class="fa fa-fw fa-<?=$this->escapeHtmlAttr($currency)?>" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Fines')?></span>
       <span class="fines-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
     </a>
   <?php endif; ?>

@@ -281,7 +281,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                         $facetOp = $values['facetOp'];
                         $values = $values['values'];
                     }
-                    array_map(
+                    $values = array_map(
                         function ($value) {
                             return urlencode(preg_replace('/,/', '+', $value));
                         },

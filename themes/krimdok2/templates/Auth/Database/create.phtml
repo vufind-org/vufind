@@ -31,7 +31,7 @@
 <div class="form-group">
   <label class="control-label" for="account_password"><?=$this->transEsc('Password')?>:</label>
   <input id="account_password" type="password" name="password" required aria-required="true" class="form-control"
-    <?=isset($this->passwordPolicy['minLength']) ? ' data-minlength="' . $this->passwordPolicy['minLength'] . '" data-minlength-error="' . $this->escapeHtmlAttr($this->translate('password_minimum_length', ['%%minlength%%' => $this->passwordPolicy['minLength']])) . '"' : ''?>
+    <?=isset($this->passwordPolicy['minLength']) ? ' data-minlength="' . $this->passwordPolicy['minLength'] . '" data-minlength-error="' . $this->transEscAttr('password_minimum_length', ['%%minlength%%' => $this->passwordPolicy['minLength']]) . '"' : ''?>
     <?=isset($this->passwordPolicy['maxLength']) ? ' maxlength="' . $this->passwordPolicy['maxLength'] . '"' : ''?>
     <?=$pattern ? ' pattern="' . $pattern . '"' : '' ?>
   />
@@ -42,7 +42,7 @@
 </div>
 <div class="form-group">
   <label class="control-label" for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
-  <input id="account_password2" type="password" name="password2" required aria-required="true" class="form-control" data-match="#account_password" data-match-error="<?=$this->escapeHtmlAttr($this->translate('Passwords do not match'))?>"/>
+  <input id="account_password2" type="password" name="password2" required aria-required="true" class="form-control" data-match="#account_password" data-match-error="<?=$this->transEscAttr('Passwords do not match')?>"/>
   <div class="help-block with-errors"></div>
 </div>
 <!-- TueFind: Newsletter -->

@@ -41,6 +41,8 @@ use VuFind\Config\Writer;
  */
 class WriterTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test reading from a file.
      *
@@ -48,9 +50,10 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testReadFile()
     {
-        $file = realpath(__DIR__ . '/../../../../fixtures/configs/1.1/sms.ini');
-        $test = new Writer($file);
-        $this->assertEquals(file_get_contents($file), $test->getContent());
+        $test = new Writer($this->getFixtureDir() . 'configs/1.1/sms.ini');
+        $this->assertEquals(
+            $this->getFixture('configs/1.1/sms.ini'), $test->getContent()
+        );
     }
 
     /**

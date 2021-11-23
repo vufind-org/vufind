@@ -147,6 +147,8 @@ var TueFind = {
             var sortBottomRegex = new RegExp(sortBottomPattern);
             var filterUniquePattern = this.getAttribute('data-filter-unique-pattern');
             var filterUniqueRegex = new RegExp(filterUniquePattern);
+            var filterLabelPattern = this.getAttribute('data-filter-label-pattern');
+            var filterLabelRegex = new RegExp(filterLabelPattern);
 
             $.ajax({
                 type: 'GET',
@@ -173,7 +175,8 @@ var TueFind = {
                             if (label.match(sortBottomRegex))
                                 sortPriority = 2;
 
-                            references.push({ label: label, groupLabel: groupLabel, description: description, url: url, count: count, sortPriority: sortPriority });
+                            if (filterLabelPattern == '' || !label.match(filterLabelRegex))
+                                references.push({ label: label, groupLabel: groupLabel, description: description, url: url, count: count, sortPriority: sortPriority });
                         }
 
                         // sort by priority, then alphabetically

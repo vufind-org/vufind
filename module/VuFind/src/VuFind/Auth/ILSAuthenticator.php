@@ -27,6 +27,7 @@
  */
 namespace VuFind\Auth;
 
+use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
 /**

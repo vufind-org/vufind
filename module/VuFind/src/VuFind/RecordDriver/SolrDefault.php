@@ -6,6 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
@@ -37,14 +39,16 @@ namespace VuFind\RecordDriver;
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord
+class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
 {
     use HierarchyAwareTrait;
+    use Feature\VersionAwareTrait;
 
     /**
      * These Solr fields should be used for snippets if available (listed in order
@@ -67,7 +71,8 @@ class SolrDefault extends DefaultRecord
     protected $forbiddenSnippetFields = [
         'author', 'title', 'title_short', 'title_full',
         'title_full_unstemmed', 'title_auth', 'title_sub', 'spelling', 'id',
-        'ctrlnum', 'author_variant', 'author2_variant', 'fullrecord'
+        'ctrlnum', 'author_variant', 'author2_variant', 'fullrecord',
+        'work_keys_str_mv',
     ];
 
     /**
@@ -133,6 +138,7 @@ class SolrDefault extends DefaultRecord
         $this->containerLinking
             = !isset($mainConfig->Hierarchy->simpleContainerLinks)
             ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
 
@@ -189,8 +195,7 @@ class SolrDefault extends DefaultRecord
      */
     public function getSnippetCaption($field)
     {
-        return isset($this->snippetCaptions[$field])
-            ? $this->snippetCaptions[$field] : false;
+        return $this->snippetCaptions[$field] ?? false;
     }
 
     /**
@@ -297,5 +302,15 @@ class SolrDefault extends DefaultRecord
         return $this->containerLinking
             && !empty($this->fields['hierarchy_parent_id'])
             ? $this->fields['hierarchy_parent_id'][0] : '';
+    }
+
+    /**
+     * Get work identification keys
+     *
+     * @return array
+     */
+    public function getWorkKeys()
+    {
+        return $this->fields['work_keys_str_mv'] ?? [];
     }
 }

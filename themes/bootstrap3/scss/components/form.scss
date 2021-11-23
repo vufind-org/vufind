@@ -17,6 +17,7 @@ form {
     }
     .form-group label.required::before,
     .form-group .radio-label.required::before,
+    .form-group .radio-label.require-one::before
     {
         content: '* ';
     }

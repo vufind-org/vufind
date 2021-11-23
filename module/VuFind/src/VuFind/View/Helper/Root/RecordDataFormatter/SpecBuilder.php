@@ -93,7 +93,7 @@ class SpecBuilder
      *
      * @param string   $key        Label to associate with this spec line
      * @param string   $dataMethod Method of data retrieval for rendering element
-     * @param Callable $callback   Callback function for multi-processing
+     * @param callable $callback   Callback function for multi-processing
      * @param array    $options    Additional options
      *
      * @return void

@@ -295,8 +295,7 @@ class Export
      */
     public function getHeaders($format)
     {
-        return isset($this->exportConfig->$format->headers)
-            ? $this->exportConfig->$format->headers : [];
+        return $this->exportConfig->$format->headers ?? [];
     }
 
     /**
@@ -308,8 +307,7 @@ class Export
      */
     public function getLabelForFormat($format)
     {
-        return isset($this->exportConfig->$format->label)
-            ? $this->exportConfig->$format->label : $format;
+        return $this->exportConfig->$format->label ?? $format;
     }
 
     /**
@@ -327,8 +325,7 @@ class Export
         }
 
         // else check if export type is set in config.ini
-        return isset($this->mainConfig->BulkExport->defaultType)
-            ? $this->mainConfig->BulkExport->defaultType : 'link';
+        return $this->mainConfig->BulkExport->defaultType ?? 'link';
     }
 
     /**

@@ -41,6 +41,8 @@ namespace VuFindTest\RecordDriver;
  */
 class SolrMarcTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test a record that used to be known to cause problems because of the way
      * its linking fields are set up.
@@ -56,7 +58,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
         $config = new \Laminas\Config\Config($configArr);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadRecordFixture('testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
             ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
@@ -75,7 +77,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     public function testBug2()
     {
         $record = new \VuFind\RecordDriver\SolrMarc();
-        $fixture = $this->loadRecordFixture('testbug2.json');
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($fixture['response']['docs'][0]);
 
         $this->assertEquals(
@@ -102,7 +104,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     {
         $config = new \Laminas\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadRecordFixture('testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $this->assertEquals(
             [['Matematica', 'Periodici.']],
@@ -121,6 +123,58 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test table of contents support.
+     *
+     * @return void
+     */
+    public function testTOC()
+    {
+        $marc = $this->getFixture('marc/toc1.xml');
+        $config = new \Laminas\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $record->setRawData(['fullrecord' => $marc]);
+        $this->assertEquals(
+            [
+                'About the Association of Professors of Missions / Robert Danielson',
+                'Foreword / Angel Santiago-Vendrell',
+                'Conference theme',
+                'Plenary Papers',
+                'Teaching missiology in and for world Christianity content and method / Peter C. Phan',
+                'The bodies we teach by: (en) gendering mission for global Christianities / Mai-Ahn Le',
+                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the 1916 Panama Congress / Philip Wingeier-Rayo',
+                'Conference Papers',
+                'Theological metaphors of teaching mission in an age of world Christianity in the North American context / David Thang Moe',
+                'Mission shifts from Pope Benedict XVI to Pope Francis / William P. Gregory',
+                'The elephant in the room: towards a paradigm shift in missiological education / Sarita D. Gallagher',
+                'Historic models of teaching Christian mission: case studies informing an age of world Christianity / Robert L. Gallagher',
+                'How the West was won: world Christianity as historic reality / Matt Friedman',
+                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s Christian universities / Janice Horsager Rasmussen',
+                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
+                'Mary McLeod Bethune: Christ did not designate any particular color to go / Mary Cloutier',
+                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the classroom / Angel Santiago-Vendrell',
+                'Conference Proceedings',
+                'First Fruits report for the APM',
+                'Minutes of 2016 meeting',
+                'Secretary\'s treasury report',
+                'Conference program.',
+            ],
+            $record->getTOC()
+        );
+        $marc2 = $this->getFixture('marc/toc2.xml');
+        $record2 = new \VuFind\RecordDriver\SolrMarc($config);
+        $record2->setRawData(['fullrecord' => $marc2]);
+        $this->assertEquals(
+            [
+                'Don\'t split the unspaced--separator.',
+                'Do split the spaced one.',
+                'Respect pre-AACR2-style separation',
+                'Even though it\'s old.',
+            ],
+            $record2->getTOC()
+        );
+    }
+
+    /**
      * Test getFormattedMarcDetails() method.
      *
      * @return void
@@ -129,7 +183,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     {
         $config = new \Laminas\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadRecordFixture('testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $input = [
             'foo' => 'msg|true',
@@ -160,21 +214,106 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Load a fixture file.
+     * Test methods in MarcAdvancedTrait.
      *
-     * @param string $file File to load from fixture directory.
+     * Note that some methods are covered by the other tests.
      *
-     * @return array
+     * @return void
      */
-    protected function loadRecordFixture($file)
+    public function testMarcAdvancedTrait()
     {
-        return json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/' . $file
-                )
-            ),
-            true
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = (new \File_MARCXML($xml, \File_MARCXML::SOURCE_STRING))->next();
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcRecord'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcRecord')
+            ->will($this->returnValue($record));
+
+        $this->assertEquals(['Classified.'], $obj->getAccessRestrictions());
+        $this->assertEquals(['VuFind Golden Award, 2020'], $obj->getAwards());
+        $this->assertEquals(['Bibliography: p. 122'], $obj->getBibliographyNotes());
+        $this->assertRegExp(
+            '/<collection.*?>.*<record>.*<\/record>.*<\/collection>/s',
+            $obj->getFilteredXML()
+        );
+        $this->assertEquals(['Finding aid available'], $obj->getFindingAids());
+        $this->assertEquals(
+            ['General notes here.', 'Translation.'], $obj->getGeneralNotes()
+        );
+        $this->assertEquals(
+            ['2020', '2020'], $obj->getHumanReadablePublicationDates()
+        );
+        $this->assertEquals(
+            ['Place :', 'Location :'], $obj->getPlacesOfPublication()
+        );
+        $this->assertEquals(['00:20:10', '01:30:55'], $obj->getPlayingTimes());
+        $this->assertEquals(['Producer: VuFind'], $obj->getProductionCredits());
+        $this->assertEquals(
+            ['Frequency varies, 2020-'], $obj->getPublicationFrequency()
+        );
+        $this->assertEquals(
+            ['Merged with several branches'], $obj->getRelationshipNotes()
+        );
+        $this->assertEquals(
+            [
+                ['name' => 'Development Series'],
+                ['name' => 'Development', 'number' => 'no. 2']
+            ],
+            $obj->getSeries()
+        );
+        $this->assertEquals(['Summary.'], $obj->getSummary());
+        $this->assertEquals(['Data in UTF-8'], $obj->getSystemDetails());
+        $this->assertEquals(['Developers'], $obj->getTargetAudienceNotes());
+        $this->assertEquals('2. Return', $obj->getTitleSection());
+        $this->assertEquals('Test Author.', $obj->getTitleStatement());
+        $this->assertEquals(
+            ['Zoolandia -- City.', 'Funland -- Funtown.'],
+            $obj->getHierarchicalPlaceNames()
+        );
+        $this->assertEquals(
+            [
+                [
+                    'url' => 'https://vufind.org/vufind/',
+                    'desc' => 'VuFind Home Page'
+                ]
+            ],
+            $obj->getURLs()
+        );
+        $this->assertEquals(['(FOO)123', '(Baz)456'], $obj->getConsortialIDs());
+        $this->assertEquals('ismn', $obj->getCleanISMN());
+        $this->assertEquals(
+            ['nbn' => 'NBN12', 'source' => 'NB'], $obj->getCleanNBN()
+        );
+        $marc21Xml = $obj->getXML('marc21');
+        $this->assertStringStartsWith(
+            '<record xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            . ' xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="'
+            . 'http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml'
+            . '/schema/MARC21slim.xsd" type="Bibliographic">',
+            $marc21Xml
+        );
+        $this->assertStringContainsString('<leader>', $marc21Xml);
+        $this->assertEquals(
+            1, substr_count($marc21Xml, '<leader>00000cam a22000004i 4500</leader>')
+        );
+        $this->assertEquals(2, substr_count($marc21Xml, '<controlfield '));
+        $this->assertEquals(52, substr_count($marc21Xml, '<datafield '));
+        $this->assertEquals(86, substr_count($marc21Xml, '<subfield '));
+        $rdfXml = $obj->getRDFXML();
+        $this->assertStringContainsString(
+            '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
+            . ' xmlns="http://www.loc.gov/mods/v3">',
+            $rdfXml
+        );
+        $this->assertStringContainsString('<nonSort>The </nonSort>', $rdfXml);
+        $this->assertStringContainsString(
+            '<namePart>Author, Test</namePart>',
+            $rdfXml
+        );
+        $this->assertStringContainsString(
+            '<identifier type="isbn">978-3-16-148410-0</identifier>',
+            $rdfXml
         );
     }
 }

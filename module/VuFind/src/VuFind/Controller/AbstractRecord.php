@@ -72,6 +72,13 @@ class AbstractRecord extends AbstractBase
     protected $backgroundTabs = null;
 
     /**
+     * Array of extra scripts for tabs
+     *
+     * @var array
+     */
+    protected $tabsExtraScripts = null;
+
+    /**
      * Type of record to display
      *
      * @var string
@@ -690,6 +697,7 @@ class AbstractRecord extends AbstractBase
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
         $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
+        $this->tabsExtraScripts = $manager->getExtraScripts();
     }
 
     /**
@@ -733,6 +741,28 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Get extra scripts required by tabs.
+     *
+     * @param array $tabs Tab names to consider
+     *
+     * @return array
+     */
+    protected function getTabsExtraScripts($tabs)
+    {
+        if (null === $this->tabsExtraScripts) {
+            $this->loadTabDetails();
+        }
+        $allScripts = [];
+        foreach (array_keys($tabs) as $tab) {
+            if (!empty($this->tabsExtraScripts[$tab])) {
+                $allScripts
+                    = array_merge($allScripts, $this->tabsExtraScripts[$tab]);
+            }
+        }
+        return array_unique($allScripts);
+    }
+
+    /**
      * Is the result scroller active?
      *
      * @return bool
@@ -773,6 +803,7 @@ class AbstractRecord extends AbstractBase
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->backgroundTabs = $this->getBackgroundTabs();
+        $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax)
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
@@ -783,9 +814,7 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->callnumberHandler = isset($config->Item_Status->callnumber_handler)
-            ? $config->Item_Status->callnumber_handler
-            : false;
+        $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;

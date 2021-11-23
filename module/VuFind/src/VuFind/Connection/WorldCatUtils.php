@@ -199,8 +199,7 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
     protected function processIdentitiesSubjects($current)
     {
         // Normalize subjects array if it has only a single entry:
-        $subjects = isset($current->fastHeadings->fast) ?
-            $current->fastHeadings->fast : null;
+        $subjects = $current->fastHeadings->fast ?? null;
         if (isset($subjects->tag)) {
             $subjects = [$subjects];
         }
@@ -278,8 +277,7 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
         $output = [];
         foreach ($data->records->record as $current) {
             // Build current name string:
-            $current = isset($current->recordData->Identity->nameInfo) ?
-                $current->recordData->Identity->nameInfo : null;
+            $current = $current->recordData->Identity->nameInfo ?? null;
             if (isset($current['type']) && $current['type'] == 'personal'
                 && !empty($current->rawName->suba)
             ) {

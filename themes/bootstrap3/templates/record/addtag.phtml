@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Add Tag'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
       . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
       . '<li class="active">' . $this->transEsc('Add Tag') . '</li>';
 ?>
@@ -18,6 +18,6 @@
     <p class="help-block"><?=$this->transEsc("add_tag_note")?></p>
   </div>
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>"/>
+    <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>"/>
   </div>
 </form

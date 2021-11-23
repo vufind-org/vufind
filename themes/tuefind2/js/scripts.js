@@ -11,13 +11,11 @@ $('#tf-back-to-top').tooltip();
 
 // onclick-events
 $(function() {
-
     // scroll down button
     $('#scroll-down-button').click(function(e) {
         e.preventDefault();
         $('html, body').animate({ scrollTop: $("#content").offset().top}, 500, 'linear');
     });
-
     // back-to-top button
     $('#tf-button-footer-back-to-top').click(function() {
         $('body,html').animate({
@@ -25,7 +23,6 @@ $(function() {
         }, 800);
         return false;
     });
-
     // expand panel if url parameter is set
     let urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('expand')) {

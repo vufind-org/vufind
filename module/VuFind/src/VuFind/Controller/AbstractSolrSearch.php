@@ -38,6 +38,8 @@ namespace VuFind\Controller;
  */
 class AbstractSolrSearch extends AbstractSearch
 {
+    use Feature\RecordVersionsSearchTrait;
+
     /**
      * Handle an advanced search
      *

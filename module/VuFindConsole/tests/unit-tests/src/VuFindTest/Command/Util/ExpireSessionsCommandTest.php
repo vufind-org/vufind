@@ -60,4 +60,18 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTest
      * @var string
      */
     protected $rowLabel = 'sessions';
+
+    /**
+     * Age parameter to use when testing illegal age input.
+     *
+     * @var int
+     */
+    protected $illegalAge = 0.01;
+
+    /**
+     * Expected minimum age in error message.
+     *
+     * @var int
+     */
+    protected $expectedMinAge = 0.1;
 }

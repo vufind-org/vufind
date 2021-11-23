@@ -43,6 +43,8 @@ use VuFindConsole\Command\Util\IndexReservesCommand;
  */
 class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Get mock ILS connection.
      *
@@ -176,8 +178,8 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('SolrReserves'));
         $command = $this->getCommand($writer);
         $commandTester = new CommandTester($command);
-        $fixture1 = __DIR__ . '/../../../../../fixtures/reserves/fixture1';
-        $fixture2 = __DIR__ . '/../../../../../fixtures/reserves/fixture2';
+        $fixture1 = $this->getFixtureDir('VuFindConsole') . 'reserves/fixture1';
+        $fixture2 = $this->getFixtureDir('VuFindConsole') . 'reserves/fixture2';
         $commandTester->execute(
             [
                 '--filename' => [$fixture1, $fixture2],

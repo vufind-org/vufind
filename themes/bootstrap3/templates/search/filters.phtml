@@ -10,7 +10,7 @@
   $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
   $options = $this->searchOptions($this->searchClassId);
   $hasDefaultsApplied = $params->hasDefaultsApplied();
-  $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
+  $filterCount = $this->searchbox()->getFilterCount($this->checkboxFilters, $this->filterList);
 
   // Determine whether the only filters applied are the default ones; this controls
   // when we display or hide the reset button:
@@ -26,7 +26,7 @@
   $advancedSearch = $this->searchType === 'advanced';
 ?>
 <?php ob_start(); ?>
-  <?php foreach ($checkboxFilters as $filter): ?>
+  <?php foreach ($this->checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
       <span class="filter-value">
         <?php

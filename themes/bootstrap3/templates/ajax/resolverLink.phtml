@@ -1,5 +1,5 @@
 <?php if (!empty($link['href'])): ?>
-  <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=$this->transEsc($link['service_type'] ?? '')?>"<?=!empty($link['access']) ? ' class="access-' . $link['access'] . '"':''?>>
+  <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=$this->transEscAttr($link['service_type'] ?? '')?>"<?=!empty($link['access']) ? ' class="access-' . $link['access'] . '"':''?>>
     <?=$this->escapeHtml($link['title'] ?? '')?>
   </a>
 <?php else: ?>

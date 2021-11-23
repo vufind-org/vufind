@@ -1,8 +1,11 @@
 <?php $this->headScript()->appendFile('collection_record.js'); ?>
 <div class="row">
-  <?php $QRCode = $this->record($this->driver)->getQRCode("core");
-     $cover = $this->record($this->driver)->getCover('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
-     $preview = $this->record($this->driver)->getPreviews(); ?>
+  <?php
+  $QRCode = $this->record($this->driver)->getQRCode("core");
+    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
+    $cover = $coverDetails['html'];
+    $preview = $this->record($this->driver)->getPreviews();
+  ?>
   <?php if ($QRCode || $cover || $preview): ?>
   <div class="col-sm-3">
     <div class="text-center">
@@ -14,7 +17,7 @@
       <?php /* Display qrcode if appropriate: */ ?>
       <?php if($QRCode): ?>
         <span class="hidden-xs">
-          <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+          <br/><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
       <?php endif; ?>
     </div>
@@ -29,7 +32,7 @@
 
     <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
 
-    <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
+    <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
     <?php if ($summary): ?>
       <p><?=$this->escapeHtml($summary)?></p>
     <?php endif; ?>

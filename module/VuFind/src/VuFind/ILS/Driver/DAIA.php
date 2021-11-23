@@ -223,7 +223,7 @@ class DAIA extends AbstractBase implements
      */
     public function getConfig($function)
     {
-        return isset($this->config[$function]) ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**

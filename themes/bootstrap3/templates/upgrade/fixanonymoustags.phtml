@@ -21,8 +21,8 @@ an administrator) to associate with old anonymous tags.</p>
 <br />
 
 <form method="post" action="<?=$this->url('upgrade-fixanonymoustags')?>">
-  <?=$this->transEsc('Username') ?>: <input type="text" name="username" /> <input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" /><br /><br />
-  <input type="submit" name="skip" id="skip" value="<?=$this->transEsc('skip_step') ?>." />
+  <?=$this->transEsc('Username') ?>: <input type="text" name="username" /> <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit') ?>" /><br /><br />
+  <input type="submit" name="skip" id="skip" value="<?=$this->transEscAttr('skip_step') ?>." />
 </form>
 <?php
 $skipText = $this->transEsc('skip_confirm');

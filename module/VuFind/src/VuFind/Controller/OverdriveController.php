@@ -45,8 +45,9 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->setLogger($sm->get('VuFind\Logger'));
-        $this->connector = $sm->get('VuFind\DigitalContent\OverdriveConnector');
+        $this->setLogger($sm->get(\VuFind\Log\Logger::class));
+        $this->connector
+            = $sm->get(\VuFind\DigitalContent\OverdriveConnector::class);
         parent::__construct($sm);
         $this->debug("ODRC constructed");
     }

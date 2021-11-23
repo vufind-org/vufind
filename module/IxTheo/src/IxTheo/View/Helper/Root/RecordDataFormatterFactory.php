@@ -104,6 +104,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         );
         $this->addChildRecords($spec);
         $this->addOnlineAccess($spec);
+        $this->addLicense($spec); // TueFind specific
         // Parallel Edition PPNs + Unlinked parallel Editions (IxTheo-specific)
         $spec->setTemplateLine(
                 'Parallel Edition', true, 'data-parallel_edition.phtml'

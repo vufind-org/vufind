@@ -44,6 +44,8 @@ use VuFindConsole\Generator\GeneratorTools;
  */
 class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test that missing parameters yield an error message.
      *
@@ -73,7 +75,7 @@ class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $configFixturePath = __DIR__ . '/../../../../../fixtures/empty.config.php';
+        $configFixturePath = $this->getFixtureDir('VuFindConsole') . 'empty.config.php';
         $expectedConfig = include $configFixturePath;
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']

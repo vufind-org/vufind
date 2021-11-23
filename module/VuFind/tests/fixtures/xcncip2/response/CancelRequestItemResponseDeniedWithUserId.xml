@@ -1,0 +1,39 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8"?>
+<NCIPMessage version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/ncip_v2_0.xsd">
+    <CancelRequestItemResponse>
+        <ItemId>
+            <AgencyId Scheme="http://www.niso.org/ncip/v1_0/schemes/agencyidtype/agencyidtype.scm">ABA008</AgencyId>
+            <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+            <ItemIdentifierValue>T015480</ItemIdentifierValue>
+        </ItemId>
+        <ResponseHeader>
+            <FromAgencyId>
+                <AgencyId>ABA008</AgencyId>
+            </FromAgencyId>
+            <ToAgencyId>
+                <AgencyId>CPK</AgencyId>
+            </ToAgencyId>
+        </ResponseHeader>
+        <UserId>
+            <AgencyId>ABA008</AgencyId>
+            <UserIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleuseridentifiertype/visibleuseridentifiertype.scm">Institution Id Number</UserIdentifierType>
+            <UserIdentifierValue>C5452001</UserIdentifierValue>
+        </UserId>
+        <Problem>
+            <ProblemType Scheme="http://www.niso.org/ncip/v1_0/schemes/processingerrortype/generalprocessingerror.scm">Temporary Processing Failure</ProblemType>
+            <ProblemDetail>CancelRequestItem Error</ProblemDetail>
+            <ProblemElement>ItemIdentifier</ProblemElement>
+            <ProblemValue>Všeobecná operácia nad databázou
+                OpacModifyDataRec -&gt;
+                Získanie údajov výpožičky
+                [ID=-1?]
+                Neznáma chyba [-1]
+                []
+            </ProblemValue>
+        </Problem>
+    </CancelRequestItemResponse>
+</NCIPMessage>

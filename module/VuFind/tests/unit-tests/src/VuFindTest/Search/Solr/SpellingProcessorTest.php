@@ -43,6 +43,8 @@ use VuFindTest\Unit\TestCase;
  */
 class SpellingProcessorTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test defaults.
      *
@@ -76,8 +78,8 @@ class SpellingProcessorTest extends TestCase
     public function testSuggestionProcessing()
     {
         $sp = new SpellingProcessor();
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
         $this->assertEquals(
             $this->getExpectedQuery1Suggestions(),
             $sp->getSuggestions($spelling, $query)
@@ -93,8 +95,8 @@ class SpellingProcessorTest extends TestCase
     {
         $config = new Config(['limit' => 5]);
         $sp = new SpellingProcessor($config);
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
         $this->assertEquals(
             [
                 'grumble' => [
@@ -128,8 +130,8 @@ class SpellingProcessorTest extends TestCase
      */
     public function testBasicSuggestions()
     {
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
         $params = $this->getServiceManager()
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $params->setBasicSearch($query->getString(), $query->getHandler());
@@ -190,8 +192,8 @@ class SpellingProcessorTest extends TestCase
      */
     public function testBasicSuggestionsForUppercaseQuery()
     {
-        $spelling = $this->getFixture('spell6');
-        $query = $this->getFixture('query6');
+        $spelling = $this->unserializeFixture('spell6');
+        $query = $this->unserializeFixture('query6');
         $params = $this->getServiceManager()
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $params->setBasicSearch($query->getString(), $query->getHandler());
@@ -252,8 +254,8 @@ class SpellingProcessorTest extends TestCase
      */
     public function testBasicSuggestionsWithNonDefaultSettings()
     {
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
         $params = $this->getServiceManager()
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $params->setBasicSearch($query->getString(), $query->getHandler());
@@ -472,8 +474,8 @@ class SpellingProcessorTest extends TestCase
         $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
 
         $sp = new SpellingProcessor(new Config([]));
-        $spelling = $this->getFixture('spell5');
-        $query = $this->getFixture('query5');
+        $spelling = $this->unserializeFixture('spell5');
+        $query = $this->unserializeFixture('query5');
         $sp->getSuggestions($spelling, $query);
     }
 
@@ -488,8 +490,8 @@ class SpellingProcessorTest extends TestCase
      */
     protected function runSpellingTest($testNum, $expected, $config = [])
     {
-        $spelling = $this->getFixture('spell' . $testNum);
-        $query = $this->getFixture('query' . $testNum);
+        $spelling = $this->unserializeFixture('spell' . $testNum);
+        $query = $this->unserializeFixture('query' . $testNum);
         $params = $this->getServiceManager()
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $this->setProperty($params, 'query', $query);
@@ -562,9 +564,8 @@ class SpellingProcessorTest extends TestCase
      *
      * @return mixed
      */
-    protected function getFixture($file)
+    protected function unserializeFixture($file)
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../../fixtures/spell') . '/';
-        return unserialize(file_get_contents($fixturePath . $file));
+        return unserialize($this->getFixture("spell/$file"));
     }
 }

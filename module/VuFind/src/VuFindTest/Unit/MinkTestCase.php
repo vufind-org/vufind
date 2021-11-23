@@ -241,7 +241,9 @@ abstract class MinkTestCase extends DbTestCase
     protected function findCss(Element $page, $selector, $timeout = 1000)
     {
         $session = $this->getMinkSession();
-        $session->wait($timeout, "$('$selector').length > 0");
+        $session->wait(
+            $timeout, "typeof $ !== 'undefined' && $('$selector').length > 0"
+        );
         $result = $page->find('css', $selector);
         $this->assertTrue(is_object($result), "Selector not found: $selector");
         return $result;
@@ -340,13 +342,14 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @param string $query   Search term(s)
      * @param string $handler Search type (optional)
+     * @param string $path    Path to use as search starting point (optional)
      *
      * @return \Behat\Mink\Element\Element
      */
-    protected function performSearch($query, $handler = null)
+    protected function performSearch($query, $handler = null, $path = '/Search')
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
         $this->findCss($page, '#searchForm_lookfor')->setValue($query);
         if ($handler) {
@@ -381,6 +384,24 @@ abstract class MinkTestCase extends DbTestCase
      */
     public function tearDown(): void
     {
+        // Take screenshot of failed test, if we have a screenshot directory set
+        // and we have run out of retries ($this->retriesLeft is set by the
+        // AutoRetryTrait when it is use, and we'll default it to 0 to cover
+        // cases where that trait is not in play):
+        if ($this->hasFailed() && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
+            && ($this->retriesLeft ?? 0) === 0
+        ) {
+            $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
+            if (!empty($imageData)) {
+                $filename = $this->getName() . '-' . hrtime(true) . '.png';
+
+                if (!file_exists($imageDir)) {
+                    mkdir($imageDir);
+                }
+                file_put_contents($imageDir . '/' . $filename, $imageData);
+            }
+        }
+
         $this->stopMinkSession();
         $this->restoreConfigs();
     }

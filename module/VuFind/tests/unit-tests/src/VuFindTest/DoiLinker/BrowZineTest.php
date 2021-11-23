@@ -41,6 +41,8 @@ use VuFindSearch\Backend\BrowZine\Connector;
  */
 class BrowZineTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Get a mock connector
      *
@@ -68,11 +70,7 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
      */
     public function testApiSuccess()
     {
-        $fixture = realpath(
-            __DIR__
-            . '/../../../../../tests/fixtures/browzine/doi.json'
-        );
-        $rawData = json_decode(file_get_contents($fixture), true);
+        $rawData = $this->getJsonFixture('browzine/doi.json');
         $testData = [
             [
                 'config' => [],

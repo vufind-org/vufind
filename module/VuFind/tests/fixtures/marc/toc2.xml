@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns='http://www.loc.gov/MARC21/slim'>
+
+<record
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+    xmlns="http://www.loc.gov/MARC21/slim">
+  <datafield tag="505" ind1="0" ind2="0">
+    <subfield code="a">Don't split the unspaced--separator. -- Do split the spaced one. --</subfield>
+    <subfield code="a">Respect pre-AACR2-style separation.--Even though it's old.</subfield>
+  </datafield>
+</record>
+</collection>

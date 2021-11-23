@@ -66,6 +66,7 @@ function settitle() {
 
 function showVisualFacets(pivotdata) {
   if (!d3.select("#visualResults").empty()) {
+    $('#visualResults').html('');
     $('.limitSelect').css('display', 'none');
     $('.sortSelector').css('display', 'none');
     $('.pagination').css('display', 'none');

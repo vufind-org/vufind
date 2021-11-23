@@ -13,7 +13,7 @@
       <?=$this->escapeHtml($favorite->getBreadcrumb())?><br />
     <?php endforeach; ?>
     <br />
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Delete')?>"/>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Delete')?>"/>
     <?php foreach ($this->deleteIDS as $deleteID): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($deleteID)?>" />
     <?php endforeach; ?>

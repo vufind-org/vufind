@@ -49,6 +49,17 @@ header .container.navbar { margin-bottom: 0; }
   .search-controls { text-align: right; }
 }
 
+.versions-tab {
+  .search-controls {
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    text-align: left;
+  }
+  .search-header {
+    .search-stats { flex-grow: 0; }
+  }
+}
+
 .record-nav,
 .bulkActionButtons {
   @include clearfix();

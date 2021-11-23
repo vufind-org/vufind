@@ -83,10 +83,14 @@
     <?php endif ?>
     <?php if ($el['type'] !== 'submit'): ?>
       <?php if ($el['label']): ?>
+        <?php
+          $required = $el['required'] ?? false;
+          $requireOne = $el['requireOne'] ?? false;
+        ?>
         <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-          <p id="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label radio-label<?=!empty($el['required']) ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
+          <p id="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label radio-label<?=$required && !$requireOne? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
         <?php else: ?>
-          <label for="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label<?=!empty($el['required']) ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
+          <label for="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
         <?php endif ?>
       <?php endif ?>
     <?php else: ?>

@@ -28,6 +28,9 @@
 namespace VuFind;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -63,8 +66,7 @@ class TagsFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $maxLength = isset($config->Social->max_tag_length)
-            ? $config->Social->max_tag_length : 64;
+        $maxLength = $config->Social->max_tag_length ?? 64;
         return new $requestedName($maxLength);
     }
 }

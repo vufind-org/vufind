@@ -389,8 +389,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $this->wwwuser = $this->config['Catalog']['wwwuser'];
             $this->wwwpasswd = $this->config['Catalog']['wwwpasswd'];
             $this->xserver_enabled = true;
-            $this->xport = isset($this->config['Catalog']['xport'])
-                ? $this->config['Catalog']['xport'] : 80;
+            $this->xport = $this->config['Catalog']['xport'] ?? 80;
         } else {
             $this->xserver_enabled = false;
         }
@@ -405,10 +404,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $this->available_statuses
             = explode(',', $this->config['Catalog']['available_statuses']);
         $this->quick_availability
-            = isset($this->config['Catalog']['quick_availability'])
-            ? $this->config['Catalog']['quick_availability'] : false;
-        $this->debug_enabled = isset($this->config['Catalog']['debug'])
-            ? $this->config['Catalog']['debug'] : false;
+            = $this->config['Catalog']['quick_availability'] ?? false;
+        $this->debug_enabled = $this->config['Catalog']['debug'] ?? false;
         if (isset($this->config['util']['tab40'])
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])

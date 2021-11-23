@@ -9,6 +9,9 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">OJS</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:template match="nlm:article">
         <add>
             <doc>
@@ -141,7 +144,7 @@
                         <!-- use first author value for sorting -->
                         <xsl:if test="position()=1">
                             <field name="author_sort">
-                                <xsl:value-of select="normalize-space()"/>
+                                <xsl:value-of select="nlm:surname[normalize-space()]" />, <xsl:value-of select="nlm:given-names[normalize-space()]" />
                             </field>
                         </xsl:if>
                     </xsl:if>
@@ -209,6 +212,13 @@
                 <field name="fullrecord">
                     <xsl:copy-of select="php:function('VuFind::removeTagAndReturnXMLasText', ., 'body')"/>
                 </field>
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', ///nlm:article-title[normalize-space()], php:function('VuFind::stripArticles', string(///nlm:article-title[normalize-space()])), //nlm:contrib[@contrib-type='author']/nlm:name, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
+                </xsl:for-each>
             </doc>
         </add>
     </xsl:template>

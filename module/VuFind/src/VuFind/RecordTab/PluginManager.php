@@ -65,6 +65,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'staffviewoverdrive' => StaffViewOverdrive::class,
         'toc' => TOC::class,
         'usercomments' => UserComments::class,
+        'versions' => Versions::class,
     ];
 
     /**
@@ -92,6 +93,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         StaffViewOverdrive::class => InvokableFactory::class,
         TOC::class => TOCFactory::class,
         UserComments::class => UserCommentsFactory::class,
+        Versions::class => VersionsFactory::class,
     ];
 
     /**

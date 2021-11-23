@@ -88,7 +88,7 @@ class Manager
         // downstream.
         // Laminas\Config\Config can be created mutable or cloned and merged, useful
         // for future cache-specific overrides.
-        $cacheConfig = isset($config->Cache) ? $config->Cache : false;
+        $cacheConfig = $config->Cache ?? false;
         $this->defaults = $cacheConfig ? $cacheConfig->toArray() : false;
 
         // Get base cache directory.
@@ -101,8 +101,7 @@ class Manager
         $this->createFileCache('public', $cacheBase . 'public');
 
         // Set up search specs cache based on config settings:
-        $searchCacheType = isset($searchConfig->Cache->type)
-            ? $searchConfig->Cache->type : false;
+        $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
         case 'APC':
             $this->createAPCCache('searchspecs');

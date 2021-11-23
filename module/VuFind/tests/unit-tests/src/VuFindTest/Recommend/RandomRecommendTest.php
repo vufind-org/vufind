@@ -42,6 +42,8 @@ use VuFindTest\Unit\TestCase as TestCase;
  */
 class RandomRecommendTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Standard setup method.
      *
@@ -129,7 +131,7 @@ class RandomRecommendTest extends TestCase
         // Use Solr since some Base components are abstract:
         $params = $this->getServiceManager()
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
-        $query = $this->getFixture('query');
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -167,7 +169,7 @@ class RandomRecommendTest extends TestCase
         // Use Solr since some Base components are abstract:
         $params = $this->getServiceManager()
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
-        $query = $this->getFixture('query');
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -195,7 +197,7 @@ class RandomRecommendTest extends TestCase
         $results = $this->getServiceManager()
             ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
-        $query = $this->getFixture('query');
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -233,7 +235,7 @@ class RandomRecommendTest extends TestCase
         $results = $this->getServiceManager()
             ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
-        $query = $this->getFixture('query');
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -271,9 +273,8 @@ class RandomRecommendTest extends TestCase
      *
      * @return mixed
      */
-    protected function getFixture($file)
+    protected function unserializeFixture($file)
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches/basic') . '/';
-        return unserialize(file_get_contents($fixturePath . $file));
+        return unserialize($this->getFixture("searches/basic/$file"));
     }
 }

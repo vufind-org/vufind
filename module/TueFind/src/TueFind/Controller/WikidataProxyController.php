@@ -22,10 +22,14 @@ class WikidataProxyController extends AbstractProxyController
         parse_str($query, $parameters);
 
         if (isset($parameters['id'])) {
-            $entities = $this->getEntities([$parameters['id']]);
-            $entity = $this->getFirstMatchingEntity($entities);
-            $image = $this->getBestImageFromEntity($entity);
-            return $this->generateResponse($image);
+            try {
+                $entities = $this->getEntities([$parameters['id']]);
+                $entity = $this->getFirstMatchingEntity($entities);
+                $image = $this->getBestImageFromEntity($entity);
+                return $this->generateResponse($image);
+            } catch (\Exception $e) {
+                // return proper status code, see end of this function
+            }
         } else {
             if (!isset($parameters['search']))
                 throw new \VuFind\Exception\BadRequest('Invalid request parameters.');
@@ -60,7 +64,8 @@ class WikidataProxyController extends AbstractProxyController
                 }
             }
         }
-        throw new \Exception('No suitable image found');
+
+        $this->getResponse()->setStatusCode(404);
     }
 
     protected function normalizeHeaderContent($artist) {
@@ -109,7 +114,7 @@ class WikidataProxyController extends AbstractProxyController
      * @return \DOMElement or null if not found
      */
     protected function getFirstMatchingEntity(&$entities, $filters=[], $mandatoryFields=[]) {
-        foreach ($entities->entities as $entity) {
+        foreach ($entities->entities ?? [] as $entity) {
             $skip = false;
 
             // must have values

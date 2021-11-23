@@ -7,9 +7,16 @@ function loadCoverByElement(data, element) {
   function coverCallback(response) {
     spinner.hide();
     container.show();
-    if (response.data.url !== false) {
+    if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
       container.children().not("img").hide();
+    } else {
+      img.remove();
+      if (typeof response.data.html !== 'undefined') {
+        container.html(response.data.html);
+      } else {
+        container.html();
+      }
     }
   }
   $.ajax({

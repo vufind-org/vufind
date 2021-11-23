@@ -20,10 +20,13 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">DSpace</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:template match="dim:dim">
         <add>
             <doc>
-                <!-- Those fields are treated the same as in dspace.xsl, except 
+                <!-- Those fields are treated the same as in dspace.xsl, except
                      for the tags
                 -->
 
@@ -257,6 +260,13 @@
                             </field>
                         </xsl:if>
                     </xsl:if>
+                </xsl:for-each>
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //dim:field[@element='title'], php:function('VuFind::stripArticles', string(//dim:field[@element='title'][normalize-space()])), //dim:field[@element='contributor' and @qualifier='author'], $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
                 </xsl:for-each>
             </doc>
         </add>

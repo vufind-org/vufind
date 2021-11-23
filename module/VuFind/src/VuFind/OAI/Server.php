@@ -655,8 +655,7 @@ class Server
         }
 
         // Use either OAI-specific or general email address; we must have SOMETHING.
-        $this->adminEmail = isset($config->OAI->admin_email) ?
-            $config->OAI->admin_email : $config->Site->email;
+        $this->adminEmail = $config->OAI->admin_email ?? $config->Site->email;
 
         // Use a Solr field to determine sets, if configured:
         if (isset($config->OAI->set_field)) {
