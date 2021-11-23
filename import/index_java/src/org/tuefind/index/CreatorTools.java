@@ -43,7 +43,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
                                                                       acceptUnknownRelators, indexRawRelators, firstOnly);
         List<String> result = new LinkedList<String>();
         for (String elem : authorRoles) {
-            if (elem.length() == 3 && result.contains(elem) == false) {
+            if (elem.length() == 3) {
                 result.add(elem);
             }
         }
