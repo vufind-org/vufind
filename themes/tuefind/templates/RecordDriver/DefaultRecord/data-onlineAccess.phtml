@@ -16,3 +16,8 @@
     <?php endif; ?>
   <?php endforeach; ?>
 <?php endif; ?>
+
+<?php if ($this->driver->workIsKfLCandidate() && $this->auth()->isLoggedIn()): ?>
+  <?php $kfl = $this->tuefind()->getKfL(); ?>
+  <a href="<?=$kfl->getUrl($this->driver)?>" target="_blank"><i class="fa fa-external-link"></i> FID-Lizenz: Zugriff mit RelBib-Konto</a>
+<?php endif; ?>
