@@ -90,6 +90,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     {
         $helper = $this->getHelper();
 
+        // escapes innerHTML
         $this->assertEquals(
             '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
             $helper(
@@ -98,6 +99,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
             )
         );
 
+        // does not escape innerHTML with option
         $this->assertEquals(
             '<button>This link is <strong>important</strong></button>',
             $helper(
@@ -108,6 +110,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
             )
         );
 
+        // escape innerHTML with option
         $this->assertEquals(
             '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
             $helper(
@@ -126,6 +129,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     {
         $helper = $this->getHelper();
 
+        // self closing tag
         $this->assertEquals(
             '<img src="book.gif" />',
             $helper(
@@ -143,6 +147,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 '',
                 'sm:hidden'
             )
+        );
+
+        // Non void tag
+        $this->assertEquals(
+            '<span></span>',
+            $helper('span', '')
         );
     }
 
