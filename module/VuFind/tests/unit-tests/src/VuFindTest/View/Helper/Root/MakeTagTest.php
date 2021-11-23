@@ -158,6 +158,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         $helper('my-custom', '');
         $helper('my-long-custom', '');
         $helper('is---this---ok', '');
+
+        // test passes if no errors are thrown
     }
 
     /*
