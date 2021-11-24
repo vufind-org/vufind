@@ -82,6 +82,21 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the subtitle (if any) of the record.
+     *
+     * @return string
+     */
+    public function getSubtitle()
+    {
+        $title = $this->getTitle();
+        if (null == $title) {
+            return '';
+        }
+        $parts = explode(':', $title, 2);
+        return count($parts) > 1 ? trim(array_pop($parts)) : '';
+    }
+
+    /**
      * Get the abstract (summary) of the record.
      *
      * @return string
@@ -564,9 +579,9 @@ class EDS extends DefaultRecord
                 if (in_array($group, $allowed_searchlink_groups)) {
                     $type = strtoupper($group);
                     $link_xml = '/<searchLink fieldCode="([^\"]*)" '
-                        . 'term="%22([^\"]*)%22">/';
-                    $link_html
-                        = "<a href=\"../EDS/Search?lookfor=$2&amp;type={$type}\">";
+                        . 'term="(%22[^\"]*%22)">/';
+                    $link_html = '<a href="../EDS/Search?lookfor=$2&amp;type='
+                        . urlencode($type) . '">';
                     $data = preg_replace($link_xml, $link_html, $data);
                     $data = str_replace('</searchLink>', '</a>', $data);
                 }
@@ -779,6 +794,29 @@ class EDS extends DefaultRecord
             'BibRecord/BibEntity/PhysicalDescription/Pagination'
         );
         return $pagination['StartPage'] ?? '';
+    }
+
+    /**
+     * Get the end page of the item that contains this record.
+     *
+     * @return string
+     */
+    public function getContainerEndPage()
+    {
+        // EBSCO doesn't make this information readily available, but in some
+        // cases we can abstract it from an OpenURL.
+        $startPage = $this->getContainerStartPage();
+        if (!empty($startPage)) {
+            $regex = "/&pages={$startPage}-(\d+)/";
+            foreach ($this->getFTCustomLinks() as $link) {
+                if (preg_match($regex, $link['Url'] ?? '', $matches)) {
+                    if (isset($matches[1])) {
+                        return $matches[1];
+                    }
+                }
+            }
+        }
+        return '';
     }
 
     /**

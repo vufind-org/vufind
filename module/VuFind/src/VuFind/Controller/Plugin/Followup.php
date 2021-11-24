@@ -90,8 +90,7 @@ class Followup extends AbstractPlugin
         if (null === $key) {
             return $this->session;
         }
-        return isset($this->session->$key)
-            ? $this->session->$key : $default;
+        return $this->session->$key ?? $default;
     }
 
     /**

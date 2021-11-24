@@ -110,8 +110,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiUsername()
     {
-        return isset($this->smsConfig->Clickatell->user)
-            ? $this->smsConfig->Clickatell->user : null;
+        return $this->smsConfig->Clickatell->user ?? null;
     }
 
     /**
@@ -121,8 +120,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiPassword()
     {
-        return isset($this->smsConfig->Clickatell->password)
-            ? $this->smsConfig->Clickatell->password : null;
+        return $this->smsConfig->Clickatell->password ?? null;
     }
 
     /**
@@ -132,8 +130,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiId()
     {
-        return isset($this->smsConfig->Clickatell->api_id)
-            ? $this->smsConfig->Clickatell->api_id : null;
+        return $this->smsConfig->Clickatell->api_id ?? null;
     }
 
     /**

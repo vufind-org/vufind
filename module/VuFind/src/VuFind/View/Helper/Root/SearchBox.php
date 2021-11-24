@@ -229,11 +229,9 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     {
         // Searchbox place
         if (!empty($this->placeholders)) {
-            return isset($this->placeholders[$activeSearchClass])
-                ? $this->placeholders[$activeSearchClass]
-                : (isset($this->placeholders['default'])
-                    ? $this->placeholders['default']
-                    : null);
+            return $this->placeholders[$activeSearchClass]
+                ?? $this->placeholders['default']
+                ?? null;
         }
         return null;
     }
@@ -309,8 +307,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     {
         if (!isset($this->cachedConfigs[$activeSearchClass])) {
             // Load and validate configuration:
-            $settings = isset($this->config['CombinedHandlers'])
-                ? $this->config['CombinedHandlers'] : [];
+            $settings = $this->config['CombinedHandlers'] ?? [];
             if (empty($settings)) {
                 throw new \Exception('CombinedHandlers configuration missing.');
             }

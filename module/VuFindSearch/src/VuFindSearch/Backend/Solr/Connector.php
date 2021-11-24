@@ -403,7 +403,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param string   $method    HTTP method to use
      * @param string   $urlSuffix Suffix to append to all URLs tried
-     * @param Callable $callback  Callback to configure client (null for none)
+     * @param callable $callback  Callback to configure client (null for none)
      *
      * @return string Response body
      *

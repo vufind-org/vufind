@@ -28,8 +28,6 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use InvalidArgumentException;
-
 use VuFind\ILS\Driver\Folio;
 
 /**
@@ -43,6 +41,8 @@ use VuFind\ILS\Driver\Folio;
  */
 class FolioTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     protected $testConfig = [
         'API' => [
             'base_url' => 'localhost',
@@ -99,16 +99,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     protected function createConnector($test)
     {
         // Setup test responses
-        $file = realpath(
-            __DIR__ .
-            '/../../../../../../tests/fixtures/folio/responses/' . $test . '.json'
-        );
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(
-                sprintf('Unable to load fixture file: %s ', $file)
-            );
-        }
-        $this->testResponses = json_decode(file_get_contents($file), true);
+        $this->testResponses = $this->getJsonFixture("folio/responses/$test.json");
         // Reset log
         $this->testRequestLog = [];
         // Session factory

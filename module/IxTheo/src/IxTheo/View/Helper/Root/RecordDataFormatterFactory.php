@@ -67,12 +67,6 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
                 'TAD', 'workIsTADCandidate', 'data-TAD.phtml'
             );
         }
-        // KfL (IxTheo-specific)
-        if ($this->user != null) {
-            $spec->setTemplateLine(
-                'KfL', 'workIsKfLCandidate', 'data-KfL.phtml'
-            );
-        }
         $this->addPublications($spec);
         $this->addContainerIdsAndTitles($spec);
         // Reviews (IxTheo-specific)

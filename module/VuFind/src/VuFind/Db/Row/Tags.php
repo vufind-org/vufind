@@ -28,6 +28,7 @@
 namespace VuFind\Db\Row;
 
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Table\Resource as ResourceTable;
 
 /**
@@ -74,7 +75,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
                     new Expression(
                         'DISTINCT(?)', ['resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(

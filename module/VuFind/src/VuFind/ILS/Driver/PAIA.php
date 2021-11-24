@@ -55,14 +55,14 @@ class PAIA extends DAIA
     /**
      * URL of PAIA service
      *
-     * @var
+     * @var string
      */
     protected $paiaURL;
 
     /**
      * Timeout in seconds to be used for PAIA http requests
      *
-     * @var
+     * @var int
      */
     protected $paiaTimeout = null;
 
@@ -954,7 +954,7 @@ class PAIA extends DAIA
             case 'access_denied':
                 throw new AuthException(
                     $array['error_description'] ?? $array['error'],
-                    $array['code'] ?? ''
+                    (int)($array['code'] ?? 0)
                 );
 
                 // invalid_grant     401     The access token was missing, invalid
@@ -966,7 +966,7 @@ class PAIA extends DAIA
             case 'insufficient_scope':
                 throw new ForbiddenException(
                     $array['error_description'] ?? $array['error'],
-                    $array['code'] ?? ''
+                    (int)($array['code'] ?? 0)
                 );
 
                 // not_found     404     Unknown request URL or unknown patron.
@@ -1013,7 +1013,7 @@ class PAIA extends DAIA
             default:
                 throw new ILSException(
                     $array['error_description'] ?? $array['error'],
-                    $array['code'] ?? ''
+                    (int)($array['code'] ?? 0)
                 );
             }
         }
@@ -1268,8 +1268,7 @@ class PAIA extends DAIA
      */
     protected function paiaStatusString($status)
     {
-        return isset(self::$statusStrings[$status])
-            ? self::$statusStrings[$status] : '';
+        return self::$statusStrings[$status] ?? '';
     }
 
     /**
@@ -2015,6 +2014,18 @@ class PAIA extends DAIA
         }
 
         return true;
+    }
+
+    /**
+     * Get notification identifier from message identifier
+     *
+     * @param string $messageId Message identifier
+     *
+     * @return string
+     */
+    protected function getPaiaNotificationsId($messageId)
+    {
+        return $messageId;
     }
 
     /**

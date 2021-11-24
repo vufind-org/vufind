@@ -7,7 +7,6 @@
 
     if (preg_match('"/Authority"i', $this->serverUrl(true)))
         $this->searchClassId = 'SolrAuth';
-
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
@@ -20,7 +19,7 @@
     $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
     $ignoreHiddenFilterMemory = true;
-    $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
+    $ignoreHiddenFiltersInRequest = $this->ignoreHiddenFiltersInRequest ?? false;
     $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
         $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
@@ -70,19 +69,38 @@
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'hiddenFilters' => $hiddenFilters]); ?>
     <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
       <section id="searchForm_row">
-        <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?> />
+        <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?=$this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '' ?><?php endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEscAttr($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEscAttr("search_terms")?>" />
         <?php if ($handlerCount > 1): ?>
-          <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" style="padding:4px 5px 5px 5px">
+          <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr("Search type")?>" style="padding:4px 5px 5px 5px">
+            <?php $currentGroup = $insideGroup = false; ?>
             <?php foreach ($handlers as $handler): ?>
+              <?php
+                if ($currentGroup !== ($handler['group'] ?? false)) {
+                  $currentGroup = $handler['group'];
+                  if ($insideGroup) {
+                    echo '</optgroup>';
+                  }
+                  if ($currentGroup) {
+                    echo '<optgroup label="' . $this->escapeHtmlAttr($currentGroup) . '">';
+                    $insideGroup = true;
+                  } else {
+                    $insideGroup = false;
+                  }
+                }
+              ?>
               <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
             <?php endforeach; ?>
+            <?php if ($insideGroup): ?>
+              </optgroup>
+            <?php endif; ?>
           </select>
         <?php elseif ($handlerCount == 1): ?>
           <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
         <?php endif; ?>
         <button type="submit" class="btn btn-primary form-control"><i class="fa fa-search" aria-hidden="true"></i> <?=$this->transEsc("Find")?></button>
-      </section>
-      <ul class="nav nav-pills">
+        </section>
+
+        <ul class="nav nav-pills">
         <?php if ($advSearch): ?>
           <li>
             <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced Search")?></a>
@@ -128,8 +146,7 @@
 
     <?php $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
       <?php
-      $selectedShards = isset($this->selectedShards)
-          ? $this->selectedShards : $options->getDefaultSelectedShards();
+      $selectedShards = $this->selectedShards ?? $options->getDefaultSelectedShards();
       ?>
       <br />
       <?php foreach ($shards as $shard => $val): ?>

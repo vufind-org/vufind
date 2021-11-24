@@ -139,12 +139,39 @@ class SolrMarc extends SolrDefault
     }
 
 
+    public function getKflId(): ?string
+    {
+        // So far, only available for "Handbuch der Religionen".
+        // Implementation will be changed as soon as
+        // additional information about MARC fields is provided.
+        //if (in_array('1677766123', $this->fields['ids']))
+        //    return 'handbuch-religionen';
+        return null;
+    }
+
+    public function getKflEntitlement(): ?string
+    {
+        // So far, only available for "Handbuch der Religionen".
+        // Implementation will be changed as soon as
+        // additional information about MARC fields is provided.
+
+        return null;
+    }
+
+
     public function getLicense(): ?array
     {
         $licenseFields = $this->getMarcRecord()->getFields('540');
         foreach ($licenseFields as $licenseField) {
-            $id = $licenseField->getSubfield('f')->getData() ?? null;
-            $url = $licenseField->getSubfield('u')->getData() ?? null;
+            $id = null;
+            $idSubfield = $licenseField->getSubfield('f');
+            if ($idSubfield != false)
+                $id = $idSubfield->getData();
+
+            $url = null;
+            $urlSubfield = $licenseField->getSubfield('u');
+            if ($urlSubfield != false)
+                $url = $urlSubfield->getData();
 
             if ($id != null && $url != null)
                 return ['id' => $id, 'url' => $url];
@@ -199,23 +226,19 @@ class SolrMarc extends SolrDefault
         return false;
     }
 
-    public function isSubscriptionBundle()
+    public function isSubscriptionBundle(): bool
     {
         return ($this->isSuperiorWork() && in_array('Subscription Bundle', $this->getFormats()));
     }
 
-    public function workIsTADCandidate()
+    public function workIsTADCandidate(): bool
     {
         return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isTADTagged();
     }
 
-    public function workIsKfLCandidate()
+    public function workIsKfLCandidate(): bool
     {
-        return false;
-        // So far, only available for "Handbuch der Religionen".
-        // Implementation will be changed as soon as
-        // additional information about MARC fields is provided.
-        //return in_array('1677766123', $this->fields['ids']);
+        return ($this->getKflId() != null);
     }
 
     public function suppressDisplayByFormat()

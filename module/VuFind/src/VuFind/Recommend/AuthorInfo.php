@@ -237,7 +237,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
             return false;
         }
         $details = json_decode($result->getBody());
-        return isset($details->WKP[0]) ? $details->WKP[0] : false;
+        return $details->WKP[0] ?? false;
     }
 
     /**

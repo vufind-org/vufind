@@ -895,7 +895,7 @@ class UpgradeController extends AbstractBase
         // We're finally done -- display any warnings that we collected during
         // the process.
         $allWarnings = array_merge(
-            isset($this->cookie->warnings) ? $this->cookie->warnings : [],
+            $this->cookie->warnings ?? [],
             (array)$this->session->warnings
         );
         foreach ($allWarnings as $warning) {

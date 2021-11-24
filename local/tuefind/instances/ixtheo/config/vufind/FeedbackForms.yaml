@@ -106,7 +106,7 @@ forms:
 
   AcquisitionRequest:
     enabled: true
-    title: Acquisition Request
+    #title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
     title: Acquisition Request,

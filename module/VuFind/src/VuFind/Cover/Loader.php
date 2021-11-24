@@ -165,6 +165,13 @@ class Loader extends \VuFind\ImageLoader
     protected $type;
 
     /**
+     * Flag denoting the last loaded image was a FailImage
+     *
+     * @var bool
+     */
+    protected $hasLoadedUnavailable = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config  $config      VuFind configuration
@@ -180,8 +187,7 @@ class Loader extends \VuFind\ImageLoader
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
-        $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
-            ? $config->Content->noCoverAvailableImage : null;
+        $this->configuredFailImage = $config->Content->noCoverAvailableImage ?? null;
         $this->apiManager = $manager;
         $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
@@ -315,6 +321,8 @@ class Loader extends \VuFind\ImageLoader
      */
     public function loadImage($settings = [])
     {
+        // reset to normal
+        $this->hasLoadedUnavailable = false;
         // Load settings from legacy function parameters if they are not passed
         // in as an array:
         $settings = is_array($settings)
@@ -341,6 +349,28 @@ class Loader extends \VuFind\ImageLoader
                 $this->loadUnavailable();
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     * Adds @see self::$hasLoadedUnavailable flag
+     *
+     * @return void
+     */
+    public function loadUnavailable()
+    {
+        $this->hasLoadedUnavailable = true;
+        return parent::loadUnavailable();
+    }
+
+    /**
+     * Returns true if the last loaded image was the FailImage
+     *
+     * @return bool
+     */
+    public function hasLoadedUnavailable()
+    {
+        return $this->hasLoadedUnavailable;
     }
 
     /**

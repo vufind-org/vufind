@@ -78,11 +78,13 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      * small is default).
      * @param bool         $resolveDynamic Should we resolve dynamic cover data into
      * a URL (true) or simply return false (false)?
+     * @param bool         $testLoadImage  If true the function will try to load the
+     * cover image in advance and returns false in case no image could be loaded
      *
      * @return string|bool
      */
     public function getUrl(RecordDriver $driver, $size = 'small',
-        $resolveDynamic = true
+        $resolveDynamic = true, $testLoadImage = false
     ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
@@ -127,6 +129,19 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 );
             }
         }
-        return $directUrl ?? $dynamicUrl ?? false;
+
+        if (isset($directUrl)) {
+            return $directUrl;
+        } elseif (isset($dynamicUrl)) {
+            if ($testLoadImage) {
+                $this->coverLoader->loadImage($settings);
+                if ($this->coverLoader->hasLoadedUnavailable()) {
+                    return false;
+                }
+            }
+            return $dynamicUrl;
+        }
+
+        return false;
     }
 }

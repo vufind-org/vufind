@@ -90,7 +90,7 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
      * @param string $oclc   OCLC number to look up
      * @param string $patron Patron ID (null to use default from config)
      *
-     * @return type
+     * @return array
      */
     protected function getOclcRequestData($oclc, $patron)
     {

@@ -23,6 +23,7 @@ import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
 import org.solrmarc.index.SolrIndexer;
 import org.apache.log4j.Logger;
+import org.vufind.index.FieldSpecTools;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,24 +159,13 @@ public class CreatorTools
      *
      * @param tagList The field specification to parse
      * @return HashMap
+     * @deprecated
      */
-    protected HashMap<String, Set<String>> getParsedTagList(String tagList)
+    @Deprecated protected HashMap<String, Set<String>> getParsedTagList(String tagList)
     {
-        String[] tags = tagList.split(":");//convert string input to array
-        HashMap<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
-        //cut tags array up into key/value pairs in hash map
-        Set<String> currentSet;
-        for(int i = 0; i < tags.length; i++){
-            String tag = tags[i].substring(0, 3);
-            if (!tagMap.containsKey(tag)) {
-                currentSet = new LinkedHashSet<String>();
-                tagMap.put(tag, currentSet);
-            } else {
-                currentSet = tagMap.get(tag);
-            }
-            currentSet.add(tags[i].substring(3));
-        }
-        return tagMap;
+        // Thin wrapper around FieldSpecTools.getParsedTagList() for backward
+        // compatibility; this will be removed in VuFind 8.0.
+        return FieldSpecTools.getParsedTagList(tagList);
     }
 
     /**
@@ -202,7 +192,7 @@ public class CreatorTools
         List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
         List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){
@@ -419,7 +409,7 @@ public class CreatorTools
         List result = new LinkedList();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
         List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){

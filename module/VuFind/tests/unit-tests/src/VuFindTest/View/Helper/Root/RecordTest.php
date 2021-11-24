@@ -44,6 +44,8 @@ use VuFindTheme\ThemeInfo;
  */
 class RecordTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Theme to use for testing purposes.
      *
@@ -542,7 +544,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock resolver object
      *
-     * @return
+     * @return \Laminas\View\Resolver\ResolverInterface
      */
     protected function getMockResolver()
     {
@@ -616,14 +618,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     protected function loadRecordFixture($file)
     {
-        $json = json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/' . $file
-                )
-            ),
-            true
-        );
+        $json = $this->getJsonFixture('misc/' . $file);
         $record = new \VuFind\RecordDriver\SolrMarc();
         $record->setRawData($json['response']['docs'][0]);
         return $record;

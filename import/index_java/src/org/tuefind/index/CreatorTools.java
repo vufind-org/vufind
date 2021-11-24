@@ -35,6 +35,24 @@ public class CreatorTools extends org.vufind.index.CreatorTools
 
     protected static Map<String, List<String>> normalizedRelatorMap = new ConcurrentHashMap<>();
 
+    public List getRelatorsFilteredByRelator(Record record, String tagList,
+            String acceptWithoutRelator, String relatorConfig,
+            String acceptUnknownRelators, String indexRawRelators, Boolean firstOnly)
+    {
+        List<String> authorRoles = super.getRelatorsFilteredByRelator(record, tagList, acceptWithoutRelator, relatorConfig,
+                                                                      acceptUnknownRelators, indexRawRelators, firstOnly);
+        List<String> result = new LinkedList<String>();
+        for (String elem : authorRoles) {
+            if (elem.length() == 3) {
+                result.add(elem);
+            }
+        }
+        if (result.size() > 0)
+            return result;
+        else
+            return null;
+    }
+
     /**
      * TueFind: Special treatment for iteration logic + 'g' subfield
      *

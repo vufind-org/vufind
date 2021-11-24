@@ -44,6 +44,8 @@ use VuFindTest\Unit\TestCase as TestCase;
  */
 class EuropeanaResultsTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test that the module properly parses a sample response.
      *
@@ -110,22 +112,11 @@ class EuropeanaResultsTest extends TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $adapter->setResponse($this->loadResponse($fixture));
+            $adapter->setResponse($this->getFixture("recommend/$fixture"));
         }
         $service = new HttpService();
         $service->setDefaultAdapter($adapter);
         return $service;
-    }
-
-    /**
-     * Get a fixture response
-     *
-     * @return string
-     */
-    protected function loadResponse($file)
-    {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/recommend') . '/';
-        return file_get_contents($fixturePath . $file);
     }
 
     /**

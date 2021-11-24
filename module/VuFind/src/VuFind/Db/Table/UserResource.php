@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
 /**
@@ -78,7 +79,7 @@ class UserResource extends Gateway
                     new Expression(
                         'DISTINCT(?)', ['user_resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(
@@ -156,7 +157,7 @@ class UserResource extends Gateway
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
         $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyLinks($resource_id, $user_id, $list_id);
+        $resourceTags->destroyResourceLinks($resource_id, $user_id, $list_id);
 
         // Now build the where clause to figure out which rows to remove:
         $callback = function ($select) use ($resource_id, $user_id, $list_id) {
@@ -168,7 +169,7 @@ class UserResource extends Gateway
                 $select->where->in('resource_id', $resource_id);
             }
             // null or true values of $list_id have different meanings in the
-            // context of the $resourceTags->destroyLinks() call above, since
+            // context of the $resourceTags->destroyResourceLinks() call above, since
             // some tags have a null $list_id value. In the case of user_resource
             // rows, however, every row has a non-null $list_id value, so the
             // two cases are equivalent and may be handled identically.

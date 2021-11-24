@@ -4,7 +4,7 @@
       <strong><?=$this->escapeHtml($item['displayText'])?></strong>
       <span class="badge">
         <?=$item['count']?> <?=$this->transEsc('items')?>
-        <i class="fa fa-angle-right" title="<?=$this->transEsc('Find More') ?>"></i>
+        <i class="fa fa-angle-right" title="<?=$this->transEscAttr('Find More') ?>"></i>
       </span>
     </a>
   <?php endforeach; ?>

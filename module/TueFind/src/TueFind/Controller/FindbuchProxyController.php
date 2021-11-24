@@ -23,6 +23,7 @@ class FindbuchProxyController extends AbstractProxyController
                             'ixtheo',
                             'kalliope',
                             'leobw-kglbio',
+                            'mghopac',
                             'orcid@wd',
                             'pw_allmusic',
                             'pw_discogs',
@@ -30,6 +31,7 @@ class FindbuchProxyController extends AbstractProxyController
                             'pw_imslp',
                             'pw_munzinger_pop',
                             'relbib',
+                            'unibib_rub',
                             'wikidata'];
 
     const CACHE_DIR = '/tmp/proxycache/findbuch';

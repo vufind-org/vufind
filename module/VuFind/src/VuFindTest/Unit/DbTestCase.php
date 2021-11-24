@@ -154,6 +154,7 @@ abstract class DbTestCase extends TestCase
     public function getTable($table)
     {
         $sm = $this->getServiceManager();
+        $sm->setService(\VuFind\Tags::class, new \VuFind\Tags());
         return $sm->get(\VuFind\Db\Table\PluginManager::class)->get($table);
     }
 }

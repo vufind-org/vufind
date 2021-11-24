@@ -1,90 +1,92 @@
-<?php
-$responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver); if(!empty($responseTopicsDataAndSettings[0])) :
+<?php $responseTopicsDataAndSettings = $this->authority()->getTopicsData($this->driver, $this->layout()->userLang); ?>
+<?php if(!empty($responseTopicsDataAndSettings[0])): ?>
+  <?php
 
-$this->headLink()->appendStylesheet('vendor/jqcloud.css');
-$this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
+    $this->headLink()->appendStylesheet('vendor/jqcloud.css');
+    $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
 
-$responseTopicsData = $responseTopicsDataAndSettings[0];
-$responseTopicsSettings = $responseTopicsDataAndSettings[1];
+    $responseTopicsData = $responseTopicsDataAndSettings[0];
+    $responseTopicsSettings = $responseTopicsDataAndSettings[1];
 
-$jsData = '';
-$itopic = 1;
-foreach($responseTopicsData as $topic) {
-    if($itopic <= $responseTopicsSettings['maxTopicRows']) {
-        $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_self"}},';
+
+    $jsData = '';
+    $itopic = 1;
+    foreach($responseTopicsData as $topic) {
+      if($itopic <= $responseTopicsSettings['maxTopicRows']) {
+        $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_blank"}},';
+      }
+      $itopic++;
     }
-    $itopic++;
-}
 
-$ascSortingTopicsData = $responseTopicsData;
-$toptitle = array();
-foreach ($ascSortingTopicsData as $key => $row) {
-    $toptitle[$key]  = $row['topicTitle'];
-}
-array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
+    $ascSortingTopicsData = $responseTopicsData;
+    $toptitle = array();
+    foreach ($ascSortingTopicsData as $key => $row) {
+        $toptitle[$key]  = $row['topicTitle'];
+    }
+    array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
 
 
-$countSortingTopicsData = $responseTopicsData;
-array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);
+    $countSortingTopicsData = $responseTopicsData;
+    array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);
 
-$jsSnippetTags = <<<EOD
-$(function () {
-    let word_list = [
-        $jsData
-    ];
-    $("#topic_cloud").jQCloud(word_list);
-    $(window).on('resize',function(){
-      $('#topic_cloud').css("width", "100%");
-      $('#topic_cloud').empty().jQCloud(word_list);
+    $jsSnippetTags = <<<EOD
+    $(function () {
+      let word_list = [
+          $jsData
+      ];
+      $("#topic_cloud").jQCloud(word_list);
+      $(window).on('resize',function(){
+        $('#topic_cloud').css("width", "100%");
+        $('#topic_cloud').empty().jQCloud(word_list);
+      });
     });
-});
 EOD;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
+  ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
 
-<div class="col-md-12 tf-cloud-block">
-  <h4><?=$this->transEsc('Suggested Topics')?></h4>
-  <div>
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="active"><a href="#authorityCloudFirst" aria-controls="home" role="tab" data-toggle="tab">Cloud</a></li>
-      <li role="presentation"><a href="#authorityCloudSecond" aria-controls="profile" role="tab" data-toggle="tab"><?=$this->transEsc('By Alphabetical')?></a></li>
-      <li role="presentation"><a href="#authorityCloudThird" aria-controls="messages" role="tab" data-toggle="tab"><?=$this->transEsc('By Popularity')?></a></li>
-    </ul>
-    <!-- Tab panes -->
-    <div class="tab-content tf-p-0">
-      <div role="tabpanel" class="tab-pane active" id="authorityCloudFirst">
-        <div id="topic_cloud" class="tf-cloud-block-background"></div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="authorityCloudSecond">
-        <div class="lightbox-scroll full-facets" style="max-height: 350px;">
-          <div class="facet-group" id="facet-list-count">
-            <?php foreach($ascSortingTopicsData as $topic): ?>
+  <div class="col-md-12 tf-cloud-block">
+    <h4><?=$this->transEsc('Suggested Topics')?></h4>
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#authorityCloudFirst" aria-controls="home" role="tab" data-toggle="tab">Cloud</a></li>
+        <li role="presentation"><a href="#authorityCloudSecond" aria-controls="profile" role="tab" data-toggle="tab"><?=$this->transEsc('By Alphabetical')?></a></li>
+        <li role="presentation"><a href="#authorityCloudThird" aria-controls="messages" role="tab" data-toggle="tab"><?=$this->transEsc('By Popularity')?></a></li>
+      </ul>
+      <!-- Tab panes -->
+      <div class="tab-content tf-p-0">
+        <div role="tabpanel" class="tab-pane active" id="authorityCloudFirst">
+          <div id="topic_cloud" class="tf-cloud-block-background"></div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="authorityCloudSecond">
+          <div class="lightbox-scroll full-facets" style="max-height: 350px;">
+            <div class="facet-group" id="facet-list-count">
+              <?php foreach($ascSortingTopicsData as $topic): ?>
               <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
                 <span class="text">
-                  <span class="facet-value" ><?php echo $topic['topicTitle'];?></span>
+                  <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
                 </span>
                 <span class="badge"><?php echo $topic['topicCount'];?></span>
               </a>
-            <?php endforeach; ?>
+              <?php endforeach; ?>
+            </div>
           </div>
         </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="authorityCloudThird">
-        <div class="lightbox-scroll full-facets" style="max-height: 350px;">
-          <div class="facet-group" id="facet-list-count">
-            <?php foreach($countSortingTopicsData as $topic): ?>
-            <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
-              <span class="text">
-                <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
-              </span>
-              <span class="badge"><?php echo $topic['topicCount'];?></span>
-            </a>
-            <?php endforeach; ?>
+        <div role="tabpanel" class="tab-pane" id="authorityCloudThird">
+          <div class="lightbox-scroll full-facets" style="max-height: 350px;">
+            <div class="facet-group" id="facet-list-count">
+              <?php foreach($countSortingTopicsData as $topic): ?>
+              <a href='<?=$topic['topicLink'];?>' class="facet js-facet-item facetAND">
+                <span class="text">
+                  <span class="facet-value"><?php echo $topic['topicTitle'];?></span>
+                </span>
+                <span class="badge"><?php echo $topic['topicCount'];?></span>
+              </a>
+              <?php endforeach; ?>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 <?php endif;?>

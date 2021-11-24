@@ -31,6 +31,7 @@ use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Row\User as UserRow;
 
 /**
  * Table Definition for user
