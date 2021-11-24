@@ -98,15 +98,25 @@
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_synonyms" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_de" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_de" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_el" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_el" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_en" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_en" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_es" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_es" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_fr" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_fr" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_hans" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_hans" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_hant" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_hant" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_it" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_it" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_pt" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_pt" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_ru" type="text" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud_ru" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_el" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_facet_en" type="textFacet" indexed="true" stored="true" multiValued="true"/>

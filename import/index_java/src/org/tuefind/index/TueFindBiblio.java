@@ -318,6 +318,13 @@ public class TueFindBiblio extends TueFind {
         return topics;
     }
 
+    public Set<String> getAllTopicsCloud(final Record record) {
+        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a", "0");
+        topics.addAll(getAllSubfieldsBut(record, "936a", "0", 'r', 'v'));
+        topics.addAll(getLocal689Topics(record));
+        return topics;
+    }
+
     /**
      * Hole das Sachschlagwort aus 689|a (wenn 689|d != z oder f)
      * und füge auch Schlagwörter aus LOK 689 ein
