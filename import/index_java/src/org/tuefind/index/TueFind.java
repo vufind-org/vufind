@@ -67,7 +67,7 @@ public class TueFind extends SolrIndexerMixin {
         return extractedValues;
     }
 
-    protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpec, final String excludeSubfields, final char excludeIndicator1, final char excludeIndicator2) {
+    protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpec, final String excludeSubfields, final List<String> excludeIndicators) {
         final Set<String> extractedValues = new LinkedHashSet<>();
         List<Subfield> subfieldsToSearch = new ArrayList<>();
         final List<VariableField> fieldSpecFields = record.getVariableFields(fieldSpec.substring(0,3));
@@ -75,7 +75,8 @@ public class TueFind extends SolrIndexerMixin {
             final DataField field = (DataField) variableField;
             if (field == null)
                 continue;
-            if (field.getIndicator1() == excludeIndicator1 && field.getIndicator2() == excludeIndicator2)
+            String indicators = Character.toString(field.getIndicator1()) + Character.toString(field.getIndicator2());
+            if (excludeIndicators.contains(indicators))
                 continue;
             // Differentiate between field and subfield specifications:
             if (fieldSpec.length() == 3 + 1)
