@@ -1,50 +1,7 @@
-
-<style>
-.cw-card.three-links {
-    background-color: #e0e0e0;
-}
-.cw-card.three-links img{
-    border-radius: 0.4rem;
-}
-.cw-card.three-links a{
-    display: block !important;
-    width: 100% !important;
-    position: relative;
-    z-index: 20;
-    opacity: 0.7;
-    margin: 22px 0;
-    background-color: #000;
-    text-decoration: none;
-}
-.cw-card.three-links a h6{
-    color:#fff;
-    margin-bottom: 42px;
-}
-.three-links .cw-overlay-content {
-    opacity: 1;
-}
-.ix-slick-slider-item {
-    border-radius: 7px;
-}
-.ix-news-panel-1 {
-    background-color: #EEEEEE;
-}
-.ix-news-panel {
-    border-radius: 12px;
-}
-.ix-news-container-footer {
-    margin-top: -24px;
-    border-radius: 5px;
-}
-.ix-slick-slider-item-title {
-    border-radius:0 0 5px 5px;
-}
-</style>
-
-<div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0; margin-bottom: 0px;">
+<div class="navbar navbar-default home-navbar">
     <div class="container">
         <!--<div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>-->
-        <div class="navbar-collapse collapse" style="padding-left: 0px;">
+        <div class="navbar-collapse collapse ix-paddind-left-0">
             <ul class="nav navbar-nav">
                 <li class="dropdown">
                     <a class="dropdown-toggle"><?=$this->transEsc('Browse')?>&nbsp;<span class="caret"></span></a>
@@ -89,27 +46,6 @@
                     <p class="cw-subtitle cw-text-primary">Aktuelles</p>
                     <h2 class="cw-h2 cw-mb-5">IxTheo News</h2>
                 </div>
-
-                <style>
-                .slick-prev:before, .slick-next:before {
-                    color:grey !important;
-                }
-                .ix-slick-slider-item {
-                    height:400px;
-                    color: white;
-                    vertical-align: bottom;
-                    background-size: cover;
-                }
-                .ix-slick-slider-item-title {
-                    position: absolute;
-                    bottom: 0;
-                    width: 100%;
-                    background-color: #707070;
-                }
-                .slick-arrow {
-                    display: none !important;
-                }
-                </style>
 
                 <div class="slick-slider-single-item" align="center">
                     <a href="<?=$this->url('content-page', ['page' => 'news']) ?>">
@@ -171,7 +107,7 @@ EOD;
                                     <div><small>Theologische Lexika durchsuchen</small></div>
                                 </a>
 			    </div>
-                            <div style="clear:both;">&nbsp;</div>
+                            <div class="ix-clear-both">&nbsp;</div>
 			    <div class="ix-news-container-footer">Alle Services</div>
                         </div>
                     </div>
@@ -374,7 +310,7 @@ EOD;
     </a>
 </section>
 
-<div class="tf-background-body" style="display: none;">
+<div class="tf-background-body ix-display-none">
     <div id="content" class="container">
         <div class="row">
             <?=$this->HelpText()->render('partials/discover', null, 'static');?>
