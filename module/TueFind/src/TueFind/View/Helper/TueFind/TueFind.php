@@ -122,8 +122,8 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
 
     public function getRouteParams() {
         $defaultRouteParams = [
-            'controller' => 'index',
-            'action' => 'Home'
+            'controller' => null,
+            'action' => null
         ];
         $route_match = $this->container->get('application')->getMvcEvent()->getRouteMatch();
         if ($route_match == null){
