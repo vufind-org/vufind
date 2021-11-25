@@ -102,7 +102,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $display = '';
         foreach ($references as $reference)
-            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($reference['title']) . '</a><br>';
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"><i class="fa fa-external-link"></i> ' . htmlspecialchars($reference['title']) . '</a><br>';
 
         return $display;
     }
@@ -123,7 +123,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             elseif (preg_match('"Archivportal-D"', $title))
                 $title = 'Archivportal-D';
 
-            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($title) . '</a><br>';
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"><i class="fa fa-external-link"></i> ' . htmlspecialchars($title) . '</a><br>';
         }
 
         return $display;
@@ -138,7 +138,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         if(!empty($externalSubsystems) && !empty($currentSubsystem)) {
             foreach ($externalSubsystems as $system) {
                 if ($system['label'] != $currentSubsystem) {
-                    $subSystemHTML .= '<a href="'.$system['url'].'" target="_blank" property="sameAs">'.htmlspecialchars($system['title']).'</a><br />';
+                    $subSystemHTML .= '<a href="'.$system['url'].'" target="_blank" property="sameAs"><i class="fa fa-external-link"></i> '.htmlspecialchars($system['title']).'</a><br />';
                 }
             }
         }
