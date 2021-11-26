@@ -32,7 +32,7 @@ class KfLFactory implements FactoryInterface
             ->get('tuefind')->KfL;
 
         return new $requestedName(
-            $config->base_url, $config->api_id, $config->cipher, $config->encryption_key, $userUniqueId, $config->titles
+            $config->base_url, $config->api_id, $config->cipher, $config->encryption_key, $userUniqueId, $config->titles ?? []
         );
     }
 }
