@@ -82,6 +82,19 @@ $config = [
                     ]
                 ],
             ],
+            'redirect-license' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/redirect-license/:id',
+                    'constraints' => [
+                        'id'   => '[^/]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Redirect',
+                        'action'     => 'license',
+                    ]
+                ],
+            ],
             'static-page' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
