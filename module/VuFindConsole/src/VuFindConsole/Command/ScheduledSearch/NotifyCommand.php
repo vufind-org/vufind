@@ -454,6 +454,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             return $data['selected'] ?? false;
         };
         $viewParams = [
+            'firstname' => $user->firstname,
             'records' => $newRecords,
             'info' => [
                 'baseUrl' => $viewBaseUrl,
