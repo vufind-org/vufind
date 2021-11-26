@@ -16,8 +16,19 @@ class RedirectController extends \VuFind\Controller\AbstractBase implements \VuF
      */
     protected $decoder;
 
+    /**
+     * KfL service for license redirects
+     * @var \TueFind\Service\KfL
+     */
+    protected $kfl;
+
     public function setDecoder(\TueFind\View\Helper\TueFind\TueFind $decoder) {
         $this->decoder = $decoder;
+    }
+
+    public function setKflService(\TueFind\Service\KfL $kfl)
+    {
+        $this->kfl = $kfl;
     }
 
     public function redirectAction()
@@ -42,5 +53,21 @@ class RedirectController extends \VuFind\Controller\AbstractBase implements \VuF
         }
 
         $this->getResponse()->setStatusCode(404);
+    }
+
+    public function licenseAction()
+    {
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
+        $id = $this->params()->fromRoute('id');
+        $driver = $this->getRecordLoader()->load($id);
+        if (!$driver->workIsKfLCandidate())
+            throw new \Exception('Record is no KfL candidate: ' . $id);
+
+        $licenseUrl = $this->kfl->getUrl($driver);
+        return $this->createViewModel(['driver' => $driver, 'licenseUrl' => $licenseUrl]);
     }
 }

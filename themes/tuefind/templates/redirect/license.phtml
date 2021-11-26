@@ -1,0 +1,17 @@
+<h1>Redirect by license</h1>
+<p>
+    Really? We pay for that stuff, you know...<br>
+    So if we provide you a link, it will only be valid for a few days.
+</p>
+
+
+<?php
+/**
+ * The desired behaviour could not be implemented using the default lightbox attributes data-lightbox-onclose and data-lightbox-onsubmit.
+ * Instead we use the following solution:
+ * - custom onclick event (open the URL in a new window)
+ * - data-dismiss="modal": Closes the popup AFTER the onclick event has been executed.
+ */
+?>
+<button id="licenseButton" class="btn btn-primary" data-dismiss="modal">Do it anyway!</button>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(\'#licenseButton\').click(function() { window.open(\'' . $this->licenseUrl . '\', \'_blank\')});', 'SET')?>
