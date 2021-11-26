@@ -16,6 +16,7 @@ class KfL
     protected $encryptionKey;
     protected $cipher;
     protected $frontendUserToken;
+    protected $titles;
 
     const RETURN_REDIRECT = 0;
     const RETURN_JSON = 1;
@@ -29,14 +30,24 @@ class KfL
      * @param string $cipher            cipher, e.g. 'aes-256-ecb'
      * @param string $encryptionKey     Encryption key
      * @param string $frontendUserToken An anonymized token representing the frontend user
+     * @param string $titles            Titles with PPN, KfL ID and entitlement
      */
-    public function __construct($baseUrl, $apiId, $cipher, $encryptionKey, $frontendUserToken)
+    public function __construct($baseUrl, $apiId, $cipher, $encryptionKey, $frontendUserToken, $titles)
     {
         $this->baseUrl = $baseUrl;
         $this->apiId = $apiId;
         $this->cipher = $cipher;
         $this->encryptionKey = $encryptionKey;
         $this->frontendUserToken = $frontendUserToken;
+
+        $parsedTitles = [];
+        foreach ($titles as $title) {
+            $titleDetails = explode(':', $title);
+            $parsedTitles[] = ['ppn' => $titleDetails[0],
+                               'kflId' => $titleDetails[1],
+                               'entitlement' => $titleDetails[2]];
+        }
+        $this->titles = $parsedTitles;
     }
 
     /**
@@ -143,7 +154,8 @@ class KfL
      */
     public function getUrl(\TueFind\RecordDriver\SolrMarc $record): string
     {
-        $requestData = $this->getRequestTemplate($record->getKflEntitlement());
+        $titleInfo = $this->getTitleInfo($record->getUniqueId());
+        $requestData = $this->getRequestTemplate($titleInfo['entitlement']);
         $requestData['method'] = 'getHANID';
         $requestData['return'] = self::RETURN_REDIRECT;
 
@@ -152,11 +164,44 @@ class KfL
         //$requestData['title'] = 'Handbuch der Religionen';
 
         // Passing the HANID directly seems to work (e.g. 'handbuch-religionen'):
-        $requestData['hanid'] = $record->getKflId();
+        $requestData['hanid'] = $titleInfo['kflId'];
 
         if ($requestData['hanid'] == null)
             throw new \Exception('Han-ID missing for title: ' . $record->getUniqueID());
 
         return $this->generateUrl($requestData);
+    }
+
+    /**
+     * Get information about a title, especially Kfl-ID and entitlement.
+     *
+     * @param string $ppn
+     *
+     * @return array
+     */
+    protected function getTitleInfo(string $ppn): array
+    {
+        foreach ($this->titles as $title) {
+            if ($title['ppn'] == $ppn)
+                return $title;
+        }
+
+        throw new \Exception('KfL title information missing for ppn: ' . $ppn);
+    }
+
+    /**
+     * Is the given PPN available via the KfL?
+     *
+     * @param string $ppn
+     *
+     * @return bool
+     */
+    public function hasTitle(string $ppn): bool
+    {
+        foreach ($this->titles as $title) {
+            if ($title['ppn'] == $ppn)
+                return true;
+        }
+        return false;
     }
 }

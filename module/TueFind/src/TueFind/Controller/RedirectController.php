@@ -64,9 +64,6 @@ class RedirectController extends \VuFind\Controller\AbstractBase implements \VuF
 
         $id = $this->params()->fromRoute('id');
         $driver = $this->getRecordLoader()->load($id);
-        if (!$driver->workIsKfLCandidate())
-            throw new \Exception('Record is no KfL candidate: ' . $id);
-
         $licenseUrl = $this->kfl->getUrl($driver);
         return $this->createViewModel(['driver' => $driver, 'licenseUrl' => $licenseUrl]);
     }
