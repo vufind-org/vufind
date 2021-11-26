@@ -1467,6 +1467,24 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test getBib method
+     *
+     * @throws \ReflectionException
+     */
+    public function testGetBib()
+    {
+        $this->configureDriver();
+        $method = new \ReflectionMethod(
+            '\VuFind\ILS\Driver\XCNCIP2',
+            'getBibs'
+        );
+        $method->setAccessible(true);
+        $this->mockResponse(['lookupItemSetNextItemToken.xml', 'lookupItemSet.xml']);
+        $bibs = $method->invokeArgs($this->driver, [['id1'], ['agency1']]);
+        $this->assertEquals(8, count($bibs));
+    }
+
+    /**
      * Mock fixture as HTTP client response
      *
      * @param string|array|null $fixture Fixture file
