@@ -14,7 +14,8 @@ class PluginManager extends \VuFind\Search\Params\PluginManager {
      * We need this function for overriding in derived modules.
      * This way, children can call parent and override parent settings before constructing the object.
      */
-    protected function _addAliasesAndFactories() {
+    protected function _addAliasesAndFactories()
+    {
         $this->aliases['solrauthorfacets'] = \TueFind\Search\SolrAuthorFacets\Params::class;
         $this->factories[\TueFind\Search\SolrAuthorFacets\Params::class] = \VuFind\Search\Solr\ParamsFactory::class;
     }
