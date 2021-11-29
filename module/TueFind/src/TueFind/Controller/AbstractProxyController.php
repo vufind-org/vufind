@@ -16,11 +16,10 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
     protected function getCachedUrlContents($url, $decodeJson=false)
     {
         $cacheManager = $this->serviceLocator->get(\TueFind\Cache\Manager::class);
-        $cachinProxi = $this->serviceLocator->get(\TueFind\Cover\CachingProxy::class);
+        $cachinProxy = $this->serviceLocator->get(\TueFind\Cover\CachingProxy::class);
         $cachedFile = md5($url);
         $dirPath = $cacheManager->getCacheDir() . 'wiki/' . $cachedFile;
-        $wikiData = $cachinProxi->checkWikiCache($cachedFile, $dirPath);
-        $cachedFilenew = $dirPath.'/'.$cachedFile;
+        $wikiData = $cachinProxy->checkWikiCache($cachedFile, $dirPath);
         if($wikiData == null){
             $cacheManager->addWikiCache(
                 $cachedFile,
@@ -37,7 +36,7 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
                   throw new \Exception('Invalid JSON returned from URL: ' + $url);
                 }
             }
-            $cachinProxi->setWikiCache($cachedFile, $dirPath, $contentsString);
+            $cachinProxy->setWikiCache($cachedFile, $contentsString, $cacheManager);
             return $contents;
         }else{
             return $wikiData;

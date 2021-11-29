@@ -5,8 +5,9 @@ namespace TueFind\Cover;
 class CachingProxy extends \VuFind\Cover\CachingProxy
 {
 
-    public function setWikiCache($wikiFileName, $dirPath, $cachinData)
+    public function setWikiCache($wikiFileName, $cachinData, $cacheManager)
     {
+        $dirPath = $cacheManager->getCacheDir() . 'wiki/' . $wikiFileName;
         if (!file_exists($this->cache)) {
             mkdir($this->cache);
         }
