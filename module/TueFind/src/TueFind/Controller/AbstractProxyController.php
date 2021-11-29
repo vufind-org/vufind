@@ -1,16 +1,12 @@
 <?php
 
 namespace TueFind\Controller;
-
-use Interop\Container\ContainerInterface;
 /**
  * Abstract proxy controller with functions that allow using a cache
  * and sending additional HTTP headers when resolving URLs.
  */
 class AbstractProxyController extends \VuFind\Controller\AbstractBase
 {
-    protected $cacheManager;
-
     /**
      * Resolve URL from cache if possible
      *
