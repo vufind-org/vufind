@@ -2,14 +2,14 @@
 
 namespace TueFind\Controller;
 
+use Interop\Container\ContainerInterface;
 /**
  * Abstract proxy controller with functions that allow using a cache
  * and sending additional HTTP headers when resolving URLs.
  */
 class AbstractProxyController extends \VuFind\Controller\AbstractBase
 {
-    const CACHE_DIR = '/tmp/proxycache/shared';
-    const CACHE_LIFETIME = 3600;
+    protected $cacheManager;
 
     /**
      * Resolve URL from cache if possible
@@ -19,31 +19,33 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
      */
     protected function getCachedUrlContents($url, $decodeJson=false)
     {
-        if (!is_dir(static::CACHE_DIR)) mkdir(static::CACHE_DIR, 0777, true);
-        $cachedFile = static::CACHE_DIR . '/' . md5($url);
-
-        if (is_file($cachedFile)) {
-            if (filemtime($cachedFile) + static::CACHE_LIFETIME > time()) {
-                $contents = file_get_contents($cachedFile);
-                if ($decodeJson)
-                    $contents = json_decode($contents);
-                return $contents;
+        $cacheManager = $this->serviceLocator->get(\TueFind\Cache\Manager::class);
+        $cachinProxi = $this->serviceLocator->get(\TueFind\Cover\CachingProxy::class);
+        $cachedFile = md5($url);
+        $dirPath = $cacheManager->getCacheDir() . 'wiki/' . $cachedFile;
+        $wikiData = $cachinProxi->checkWikiCache($cachedFile, $dirPath);
+        $cachedFilenew = $dirPath.'/'.$cachedFile;
+        if($wikiData == null){
+            $cacheManager->addWikiCache(
+                $cachedFile,
+                $dirPath
+            );
+            $contents = $this->resolveUrl($url);
+            if (!$contents) {
+                throw new \Exception('Could not resolve URL: ' + $url);
             }
+            $contentsString = $contents;
+            if ($decodeJson) {
+                $contents = json_decode($contents);
+                if (!$contents) {
+                  throw new \Exception('Invalid JSON returned from URL: ' + $url);
+                }
+            }
+            $cachinProxi->setWikiCache($cachedFile, $dirPath, $contentsString);
+            return $contents;
+        }else{
+            return $wikiData;
         }
-
-        $contents = $this->resolveUrl($url);
-        if (!$contents)
-            throw new \Exception('Could not resolve URL: ' + $url);
-
-        $contentsString = $contents;
-        if ($decodeJson) {
-            $contents = json_decode($contents);
-            if (!$contents)
-                throw new \Exception('Invalid JSON returned from URL: ' + $url);
-        }
-
-        file_put_contents($cachedFile, $contentsString);
-        return $contents;
     }
 
     /**
