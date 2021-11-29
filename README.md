@@ -1,10 +1,10 @@
 [![CI Status](https://github.com/vufind-org/vufind/actions/workflows/ci.yaml/badge.svg?branch=dev)](https://github.com/vufind-org/vufind/actions/workflows/ci.yaml)
-VuFind
-======
+VuFind®
+=======
 
 Introduction
 ------------
-VuFind is an open source discovery environment for searching a collection of
+VuFind® is an open source discovery environment for searching a collection of
 records.  To learn more, visit https://vufind.org.
 
 

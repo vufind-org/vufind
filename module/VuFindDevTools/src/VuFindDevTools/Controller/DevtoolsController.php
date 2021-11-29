@@ -55,15 +55,14 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function getQueryBuilder($id)
     {
+        $command = new \VuFindSearch\Command\GetQueryBuilderCommand($id);
         try {
-            $backend = $this->serviceLocator
-                ->get(\VuFind\Search\BackendManager::class)
-                ->get($id);
+            $this->serviceLocator->get(\VuFindSearch\Service::class)
+                ->invoke($command);
         } catch (\Exception $e) {
             return null;
         }
-        return is_callable([$backend, 'getQueryBuilder'])
-            ? $backend->getQueryBuilder() : null;
+        return $command->getResult();
     }
 
     /**
@@ -105,6 +104,20 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function homeAction()
     {
         return $this->createViewModel();
+    }
+
+    /**
+     * Icon action
+     *
+     * @return array
+     */
+    public function iconAction()
+    {
+        $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
+            ->getMergedConfig('icons', true);
+        $aliases = array_keys($config['aliases'] ?? []);
+        sort($aliases);
+        return compact('aliases');
     }
 
     /**

@@ -15,7 +15,7 @@
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyTransactions', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-checkedout')?>" class="flex checkedout<?=$this->active == 'checkedout' ? ' active' : ''?>">
       <span class="flex-col"><i class="fa fa-fw fa-book" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Checked Out Items')?></span>
-      <span class="checkedout-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+      <span class="checkedout-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkFunction('getMyTransactionHistory', $capabilityParams)): ?>
@@ -26,19 +26,19 @@
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyHolds', $capabilityParams)): ?>
     <a href="<?=$this->url('holds-list')?>" class="flex<?=$this->active == 'holds' ? ' active' : ''?>">
       <span class="flex-col"><i class="fa fa-fw fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Holds and Recalls')?></span>
-      <span class="holds-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+      <span class="holds-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="flex<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
       <span class="flex-col"><i class="fa fa-fw fa-archive" aria-hidden="true"></i> <?=$this->transEsc('Storage Retrieval Requests')?></span>
-      <span class="storageretrievalrequests-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+      <span class="storageretrievalrequests-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-illrequests')?>" class="flex<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
       <span class="flex-col"><i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?></span>
-      <span class="illrequests-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+      <span class="illrequests-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
@@ -48,7 +48,7 @@
         $currency = strtolower($this->config()->get('config')->Site->defaultCurrency ?? 'usd');
       ?>
       <span class="flex-col"><i class="fa fa-fw fa-<?=$this->escapeHtmlAttr($currency)?>" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Fines')?></span>
-      <span class="fines-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+      <span class="fines-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <a href="<?=$this->url('myresearch-profile')?>"<?=$this->active == 'profile' ? ' class="active"' : ''?>>

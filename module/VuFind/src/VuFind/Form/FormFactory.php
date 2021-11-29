@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Config
+ * @package  Form
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -37,7 +37,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * Factory for configurable forms.
  *
  * @category VuFind
- * @package  Config
+ * @package  Form
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -75,7 +75,7 @@ class FormFactory implements FactoryInterface
         return new $requestedName(
             $yamlReader,
             $viewHelperManager,
-            $config['Feedback'] ?? null
+            $config
         );
     }
 }

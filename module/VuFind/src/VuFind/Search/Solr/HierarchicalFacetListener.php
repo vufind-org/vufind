@@ -177,7 +177,7 @@ class HierarchicalFacetListener
     {
         $command = $event->getParam('command');
 
-        if ($command->getTargetBackendName() !== $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
         $context = $command->getContext();

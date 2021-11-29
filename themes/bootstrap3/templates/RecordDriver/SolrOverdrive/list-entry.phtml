@@ -10,7 +10,7 @@
     $user_id = $this->user ? $this->user->id : null;
   }
   // Thumbnail
-  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLink()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLinker()->getUrl($this->driver));
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
@@ -34,7 +34,7 @@
       <div class="result-body">
         <div class="resultItemLine1">
           <?php $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
-          <?php if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><?php endif; ?>
+          <?php if (!$missing): ?><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><?php endif; ?>
             <span class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
           <?php if (!$missing): ?></a><?php endif; ?>
         </div>

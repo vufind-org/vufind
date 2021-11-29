@@ -110,6 +110,44 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     protected $driverManager;
 
     /**
+     * An array of methods that should determine source from a specific parameter
+     * field
+     *
+     * @var array
+     */
+    protected $sourceCheckFields = [
+        'cancelHolds' => 'cat_username',
+        'cancelILLRequests' => 'cat_username',
+        'cancelStorageRetrievalRequests' => 'cat_username',
+        'changePassword' => 'cat_username',
+        'getCancelHoldDetails' => 'cat_username',
+        'getCancelILLRequestDetails' => 'cat_username',
+        'getCancelStorageRetrievalRequestDetails' => 'cat_username',
+        'getMyFines' => 'cat_username',
+        'getMyProfile' => 'cat_username',
+        'getMyTransactionHistory' => 'cat_username',
+        'getMyTransactions' => 'cat_username',
+        'renewMyItems' => 'cat_username',
+    ];
+
+    /**
+     * Methods that don't have parameters that allow the correct source to be
+     * determined. These methods are only supported for the default driver.
+     */
+    protected $methodsWithNoSourceSpecificParameters = [
+        'findReserves',
+        'getCourses',
+        'getDepartments',
+        'getFunds',
+        'getInstructors',
+        'getNewItems',
+        'getOfflineMode',
+        'getSuppressedAuthorityRecords',
+        'getSuppressedRecords',
+        'loginIsHidden',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
@@ -173,11 +211,12 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getStatus($id)
     {
         $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             $status = $driver->getStatus($this->getLocalId($id));
             return $this->addIdPrefixes($status, $source);
         }
+        // Return an empy array if driver is not available; id can point to an ILS
+        // that's not currently configured.
         return [];
     }
 
@@ -262,8 +301,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getHolding($id, array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             // If the patron belongs to another source, just pass on an empty array
             // to indicate that the patron has logged in but is not available for the
             // current catalog.
@@ -279,6 +317,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             );
             return $this->addIdPrefixes($holdings, $source);
         }
+        // Return an empy array if driver is not available; id can point to an ILS
+        // that's not currently configured.
         return [];
     }
 
@@ -296,10 +336,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getPurchaseHistory($id)
     {
         $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             return $driver->getPurchaseHistory($this->getLocalId($id));
         }
+        // Return an empy array if driver is not available; id can point to an ILS
+        // that's not currently configured.
         return [];
     }
 
@@ -349,8 +390,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        $driver = $this->getDriver($this->defaultDriver);
-        if ($driver) {
+        if ($driver = $this->getDriver($this->defaultDriver)) {
             $result = $driver->getNewItems($page, $limit, $daysOld, $fundId);
             if (isset($result['results'])) {
                 $result['results']
@@ -358,7 +398,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             }
             return $result;
         }
-        return [];
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -370,11 +410,10 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getDepartments()
     {
-        $driver = $this->getDriver($this->defaultDriver);
-        if ($driver) {
+        if ($driver = $this->getDriver($this->defaultDriver)) {
             return $driver->getDepartments();
         }
-        return [];
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -386,11 +425,10 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getInstructors()
     {
-        $driver = $this->getDriver($this->defaultDriver);
-        if ($driver) {
+        if ($driver = $this->getDriver($this->defaultDriver)) {
             return $driver->getInstructors();
         }
-        return [];
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -402,11 +440,10 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getCourses()
     {
-        $driver = $this->getDriver($this->defaultDriver);
-        if ($driver) {
+        if ($driver = $this->getDriver($this->defaultDriver)) {
             return $driver->getCourses();
         }
-        return [];
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -422,15 +459,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function findReserves($course, $inst, $dept)
     {
-        $driver = $this->getDriver($this->defaultDriver);
-        if ($driver) {
+        if ($driver = $this->getDriver($this->defaultDriver)) {
             return $this->addIdPrefixes(
                 $driver->findReserves($course, $inst, $dept),
                 $this->defaultDriver,
                 ['BIB_ID']
             );
         }
-        return [];
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -440,189 +476,20 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @param array $patron The patron array
      *
-     * @return mixed      Array of the patron's profile data
+     * @return mixed Array of the patron's profile data
      */
     public function getMyProfile($patron)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $profile = $driver
-                ->getMyProfile($this->stripIdPrefixes($patron, $source));
-            return $this->addIdPrefixes($profile, $source);
+        if ($driver = $this->getDriver($source)) {
+            return $this->addIdPrefixes(
+                $driver->getMyProfile($this->stripIdPrefixes($patron, $source)),
+                $source
+            );
         }
+        // Return an empy array if driver is not available; cat_username can point
+        // to an ILS that's not currently configured.
         return [];
-    }
-
-    /**
-     * Patron Login
-     *
-     * This is responsible for authenticating a patron against the catalog.
-     *
-     * @param string $username The patron user id or barcode
-     * @param string $password The patron password
-     *
-     * @return mixed           Associative array of patron info on successful login,
-     * null on unsuccessful login.
-     */
-    public function patronLogin($username, $password)
-    {
-        $source = $this->getSource($username);
-        if (!$source) {
-            $source = $this->getDefaultLoginDriver();
-        }
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $patron = $driver->patronLogin(
-                $this->getLocalId($username),
-                $password
-            );
-            $patron = $this->addIdPrefixes($patron, $source);
-            return $patron;
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Patron Transactions
-     *
-     * This is responsible for retrieving all transactions (i.e. checked out items)
-     * by a specific patron.
-     *
-     * @param array $patron The patron array from patronLogin
-     * @param array $params Parameters
-     *
-     * @return mixed      Array of the patron's transactions
-     */
-    public function getMyTransactions($patron, $params = [])
-    {
-        $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $transactions = $driver->getMyTransactions(
-                $this->stripIdPrefixes($patron, $source),
-                $params
-            );
-            return $this->addIdPrefixes($transactions, $source);
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Patron Transaction History
-     *
-     * This is responsible for retrieving all historic transactions
-     * (i.e. checked out items) by a specific patron.
-     *
-     * @param array $patron The patron array from patronLogin
-     * @param array $params Retrieval params
-     *
-     * @return array        Array of the patron's transactions
-     */
-    public function getMyTransactionHistory($patron, $params)
-    {
-        $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $transactions = $driver->getMyTransactionHistory(
-                $this->stripIdPrefixes($patron, $source),
-                $params
-            );
-            return $this->addIdPrefixes($transactions, $source);
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Renew Details
-     *
-     * In order to renew an item, the ILS requires information on the item and
-     * patron. This function returns the information as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
-     *
-     * @param array $checkoutDetails An array of item data
-     *
-     * @return string Data for use in a form field
-     */
-    public function getRenewDetails($checkoutDetails)
-    {
-        $source = $this->getSource($checkoutDetails['id'] ?? '');
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $details = $driver->getRenewDetails(
-                $this->stripIdPrefixes($checkoutDetails, $source)
-            );
-            return $this->addIdPrefixes($details, $source);
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Renew My Items
-     *
-     * Function for attempting to renew a patron's items. The data in
-     * $renewDetails['details'] is determined by getRenewDetails().
-     *
-     * @param array $renewDetails An array of data required for renewing items
-     * including the Patron ID and an array of renewal IDS
-     *
-     * @return array An array of renewal information keyed by item ID
-     */
-    public function renewMyItems($renewDetails)
-    {
-        $source = $this->getSource($renewDetails['patron']['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $details = $driver->renewMyItems(
-                $this->stripIdPrefixes($renewDetails, $source)
-            );
-            return $this->addIdPrefixes($details, $source);
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Patron Fines
-     *
-     * This is responsible for retrieving all fines by a specific patron.
-     *
-     * @param array $patron The patron array from patronLogin
-     *
-     * @return mixed      Array of the patron's fines
-     */
-    public function getMyFines($patron)
-    {
-        $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $fines = $driver->getMyFines($this->stripIdPrefixes($patron, $source));
-            return $this->addIdPrefixes($fines, $source);
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Hold Link
-     *
-     * The goal for this method is to return a URL to a "place hold" web page on
-     * the ILS OPAC. This is used for ILSs that do not support an API or method
-     * to place Holds.
-     *
-     * @param string $id      The id of the bib record
-     * @param array  $details Item details from getHoldings return array
-     *
-     * @return string         URL to ILS's OPAC's place hold screen.
-     * @throws ILSException
-     */
-    public function getHoldLink($id, $details)
-    {
-        $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            return $driver->getHoldLink($this->getLocalId($id), $details);
-        }
-        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -637,16 +504,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getMyHolds($patron)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $holds = $driver->getMyHolds($this->stripIdPrefixes($patron, $source));
-            return $this->addIdPrefixes(
-                $holds,
-                $source,
-                self::HOLD_ID_FIELDS
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
+        $holds = $this->callMethodIfSupported(
+            $source,
+            __FUNCTION__,
+            func_get_args(),
+            true,
+            false
+        );
+        return $this->addIdPrefixes($holds, $source, self::HOLD_ID_FIELDS);
     }
 
     /**
@@ -661,20 +526,15 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getMyStorageRetrievalRequests($patron)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $supported = $this->methodSupported(
-                $driver,
-                'getMyStorageRetrievalRequests',
-                compact('patron')
-            );
-            if (!$supported) {
+        if ($driver = $this->getDriver($source)) {
+            $params = [
+                $this->stripIdPrefixes($patron, $source)
+            ];
+            if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 // Return empty array if not supported by the driver
                 return [];
             }
-            $requests = $driver->getMyStorageRetrievalRequests(
-                $this->stripIdPrefixes($patron, $source)
-            );
+            $requests = $driver->getMyStorageRetrievalRequests(...$params);
             return $this->addIdPrefixes($requests, $source);
         }
         throw new ILSException('No suitable backend driver found');
@@ -699,8 +559,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             return false;
         }
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             if (!$this->driverSupportsSource($source, $id)) {
                 return false;
             }
@@ -729,8 +588,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             if (!$this->driverSupportsSource($source, $id)
                 || !is_callable([$driver, 'checkStorageRetrievalRequestIsValid'])
             ) {
@@ -770,8 +628,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             $patron['cat_username'] ?? $holdDetails['id'] ?? $holdDetails['item_id']
             ?? ''
         );
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             if ($id = ($holdDetails['id'] ?? $holdDetails['item_id'] ?? '')) {
                 if (!$this->driverSupportsSource($source, $id)) {
                     // Return empty array since the sources don't match
@@ -808,8 +665,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             if ($holdDetails) {
                 if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
                     // Return false since the sources don't match
@@ -843,24 +699,20 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     {
         // Get source from patron as that will work also with the Demo driver:
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
+            $params = [
+                $this->stripIdPrefixes($id, $source),
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
+            ];
             if (!$this->driverSupportsSource($source, $id)
-                || !$this->methodSupported(
-                    $driver,
-                    'getRequestGroups',
-                    compact('id', 'patron', 'holdDetails')
-                )
+                || !$this->driverSupportsMethod($driver, __FUNCTION__, $params)
             ) {
                 // Return empty array since the sources don't match or the method
                 // isn't supported by the driver
                 return [];
             }
-            $groups = $driver->getRequestGroups(
-                $this->stripIdPrefixes($id, $source),
-                $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
-            );
+            $groups = $driver->getRequestGroups(...$params);
             return $groups;
         }
         throw new ILSException('No suitable backend driver found');
@@ -883,25 +735,21 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
+            $params = [
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
+            ];
             if (!empty($holdDetails)) {
                 if (!$this->driverSupportsSource($source, $holdDetails['id'])
-                    || !$this->methodSupported(
-                        $driver,
-                        'getDefaultRequestGroup',
-                        compact('patron', 'holdDetails')
-                    )
+                    || !$this->driverSupportsMethod($driver, __FUNCTION__, $params)
                 ) {
                     // Return false since the sources don't match or the method
                     // isn't supported by the driver
                     return false;
                 }
             }
-            $locations = $driver->getDefaultRequestGroup(
-                $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
-            );
+            $locations = $driver->getDefaultRequestGroup(...$params);
             return $this->addIdPrefixes($locations, $source);
         }
         throw new ILSException('No suitable backend driver found');
@@ -921,40 +769,15 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function placeHold($holdDetails)
     {
         $source = $this->getSource($holdDetails['patron']['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
+        if ($driver = $this->getDriver($source)) {
             if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
                 return [
-                    "success" => false,
-                    "sysMessage" => 'hold_wrong_user_institution'
+                    'success' => false,
+                    'sysMessage' => 'hold_wrong_user_institution'
                 ];
             }
             $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
             return $driver->placeHold($holdDetails);
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Cancel Holds
-     *
-     * Attempts to Cancel a hold or recall on a particular item. The
-     * data in $cancelDetails['details'] is taken from holds' cancel_details fields
-     * or, if cancel_details is not set, determined by getCancelHoldDetails().
-     *
-     * @param array $cancelDetails An array of item and patron data
-     *
-     * @return array               An array of data on each request including
-     * whether or not it was successful and a system message (if available)
-     */
-    public function cancelHolds($cancelDetails)
-    {
-        $source = $this->getSource($cancelDetails['patron']['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            return $driver->cancelHolds(
-                $this->stripIdPrefixes($cancelDetails, $source)
-            );
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -977,44 +800,15 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource(
             $patron['cat_username'] ?? $hold['id'] ?? $hold['item_id'] ?? ''
         );
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $hold = $this->stripIdPrefixes(
+        $params = [
+            $this->stripIdPrefixes(
                 $hold,
                 $source,
                 self::HOLD_ID_FIELDS
-            );
-            return $driver->getCancelHoldDetails(
-                $hold,
-                $this->stripIdPrefixes($patron, $source)
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Update holds
-     *
-     * This is responsible for changing the status of hold requests
-     *
-     * @param array $holdsDetails The details identifying the holds
-     * @param array $fields       An associative array of fields to be updated
-     * @param array $patron       Patron array
-     *
-     * @return array Associative array of the results
-     */
-    public function updateHolds(array $holdsDetails, array $fields, array $patron)
-    {
-        $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            return $driver->updateHolds(
-                $holdsDetails,
-                $fields,
-                $this->stripIdPrefixes($patron, $source)
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
+            ),
+            $this->stripIdPrefixes($patron, $source)
+        ];
+        return $this->callMethodIfSupported($source, __FUNCTION__, $params, false);
     }
 
     /**
@@ -1037,73 +831,12 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         ) {
             if (!$this->driverSupportsSource($source, $details['id'])) {
                 return [
-                    "success" => false,
-                    "sysMessage" => 'hold_wrong_user_institution'
+                    'success' => false,
+                    'sysMessage' => 'hold_wrong_user_institution'
                 ];
             }
-            $details = $this->stripIdPrefixes($details, $source);
-            return $driver->placeStorageRetrievalRequest($details);
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Cancel Call Slips
-     *
-     * Attempts to Cancel a call slip on a particular item. The
-     * data in $cancelDetails['details'] is determined by
-     * getCancelStorageRetrievalRequestDetails().
-     *
-     * @param array $cancelDetails An array of item and patron data
-     *
-     * @return array               An array of data on each request including
-     * whether or not it was successful and a system message (if available)
-     */
-    public function cancelStorageRetrievalRequests($cancelDetails)
-    {
-        $source = $this->getSource($cancelDetails['patron']['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported(
-                $driver,
-                'cancelStorageRetrievalRequests',
-                compact('cancelDetails')
-            )
-        ) {
-            return $driver->cancelStorageRetrievalRequests(
-                $this->stripIdPrefixes($cancelDetails, $source)
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Cancel Call Slip Details
-     *
-     * In order to cancel a call slip, the ILS requires some information on it.
-     * This function returns the required information, which is then submitted
-     * as form data. This value is then extracted by the
-     * CancelStorageRetrievalRequests function.
-     *
-     * @param array $request An array of request data
-     * @param array $patron  Patron information
-     *
-     * @return string Data for use in a form field
-     */
-    public function getCancelStorageRetrievalRequestDetails($request, $patron)
-    {
-        $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported(
-                $driver,
-                'getCancelStorageRetrievalRequestDetails',
-                compact('request', 'patron')
-            )
-        ) {
-            return $driver->getCancelStorageRetrievalRequestDetails(
-                $this->stripIdPrefixes($request, $source),
-                $this->stripIdPrefixes($patron, $source)
+            return $driver->placeStorageRetrievalRequest(
+                $this->stripIdPrefixes($details, $source)
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -1125,22 +858,19 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function checkILLRequestIsValid($id, $data, $patron)
     {
         $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported(
-                $driver,
-                'checkILLRequestIsValid',
-                compact('id', 'data', 'patron')
-            )
-        ) {
-            // Patron is not stripped so that the correct library can be determined
-            return $driver->checkILLRequestIsValid(
-                $this->stripIdPrefixes($id, $source),
-                $this->stripIdPrefixes($data, $source),
-                $patron
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
+        // Patron is not stripped so that the correct library can be determined
+        $params = [
+            $this->stripIdPrefixes($id, $source),
+            $this->stripIdPrefixes($data, $source),
+            $patron
+        ];
+        return $this->callMethodIfSupported(
+            $source,
+            __FUNCTION__,
+            $params,
+            false,
+            false
+        );
     }
 
     /**
@@ -1157,21 +887,18 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getILLPickupLibraries($id, $patron)
     {
         $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported(
-                $driver,
-                'getILLPickupLibraries',
-                compact('id', 'patron')
-            )
-        ) {
-            // Patron is not stripped so that the correct library can be determined
-            return $driver->getILLPickupLibraries(
-                $this->stripIdPrefixes($id, $source, ['id']),
-                $patron
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
+        // Patron is not stripped so that the correct library can be determined
+        $params = [
+            $this->stripIdPrefixes($id, $source, ['id']),
+            $patron
+        ];
+        return $this->callMethodIfSupported(
+            $source,
+            __FUNCTION__,
+            $params,
+            false,
+            false
+        );
     }
 
     /**
@@ -1190,22 +917,19 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported(
-                $driver,
-                'getILLPickupLocations',
-                compact('id', 'pickupLib', 'patron')
-            )
-        ) {
-            // Patron is not stripped so that the correct library can be determined
-            return $driver->getILLPickupLocations(
-                $this->stripIdPrefixes($id, $source, ['id']),
-                $pickupLib,
-                $patron
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
+        // Patron is not stripped so that the correct library can be determined
+        $params = [
+            $this->stripIdPrefixes($id, $source, ['id']),
+            $pickupLib,
+            $patron
+        ];
+        return $this->callMethodIfSupported(
+            $source,
+            __FUNCTION__,
+            $params,
+            false,
+            false
+        );
     }
 
     /**
@@ -1223,15 +947,15 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function placeILLRequest($details)
     {
         $source = $this->getSource($details['id']);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported($driver, 'placeILLRequest', compact('details'))
-        ) {
-            // Patron is not stripped so that the correct library can be determined
-            $details = $this->stripIdPrefixes($details, $source, ['id'], ['patron']);
-            return $driver->placeILLRequest($details);
-        }
-        throw new ILSException('No suitable backend driver found');
+        // Patron is not stripped so that the correct library can be determined
+        $params = [$this->stripIdPrefixes($details, $source, ['id'], ['patron'])];
+        return $this->callMethodIfSupported(
+            $source,
+            __FUNCTION__,
+            $params,
+            false,
+            false
+        );
     }
 
     /**
@@ -1246,110 +970,19 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getMyILLRequests($patron)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $supported = $this->methodSupported(
-                $driver,
-                'getMyILLRequests',
-                compact('patron')
-            );
-            if (!$supported) {
+        if ($driver = $this->getDriver($source)) {
+            $params = [
+                $this->stripIdPrefixes($patron, $source)
+            ];
+            if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 // Return empty array if not supported by the driver
                 return [];
             }
-            $requests = $driver->getMyILLRequests(
-                $this->stripIdPrefixes($patron, $source)
-            );
+            $requests = $driver->getMyILLRequests(...$params);
             return $this->addIdPrefixes(
                 $requests,
                 $source,
                 ['id', 'item_id', 'cat_username']
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Cancel ILL Requests
-     *
-     * Attempts to Cancel an ILL request on a particular item. The
-     * data in $cancelDetails['details'] is determined by
-     * getCancelILLRequestDetails().
-     *
-     * @param array $cancelDetails An array of request and patron data
-     *
-     * @return array               An array of data on each request including
-     * whether or not it was successful and a system message (if available)
-     */
-    public function cancelILLRequests($cancelDetails)
-    {
-        $source = $this->getSource($cancelDetails['patron']['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported(
-                $driver,
-                'cancelILLRequests',
-                compact('cancelDetails')
-            )
-        ) {
-            return $driver->cancelILLRequests(
-                $this->stripIdPrefixes($cancelDetails, $source)
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Cancel ILL Request Details
-     *
-     * In order to cancel an ILL request, the ILS requires some information on the
-     * request. This function returns the required information, which is then
-     * submitted as form data. This value is then extracted by the CancelILLRequests
-     * function.
-     *
-     * @param array $request An array of request data
-     * @param array $patron  The patron array from patronLogin
-     *
-     * @return string Data for use in a form field
-     */
-    public function getCancelILLRequestDetails($request, $patron)
-    {
-        $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported(
-                $driver,
-                'getCancelILLRequestDetails',
-                compact('request', 'patron')
-            )
-        ) {
-            return $driver->getCancelILLRequestDetails(
-                $this->stripIdPrefixes($request, $source),
-                $this->stripIdPrefixes($patron, $source)
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Change Password
-     *
-     * Attempts to change patron password (PIN code)
-     *
-     * @param array $details An array of patron id and old and new password
-     *
-     * @return mixed An array of data on the request including
-     * whether or not it was successful and a system message (if available)
-     */
-    public function changePassword($details)
-    {
-        $source = $this->getSource($details['patron']['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver
-            && $this->methodSupported($driver, 'changePassword', compact('details'))
-        ) {
-            return $driver->changePassword(
-                $this->stripIdPrefixes($details, $source)
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -1366,19 +999,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getRequestBlocks($patron)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $supported = $this->methodSupported(
-                $driver,
-                'getRequestBlocks',
-                compact('patron')
-            );
-            if (!$supported) {
+        if ($driver = $this->getDriver($source)) {
+            $params = [
+                $this->stripIdPrefixes($patron, $source)
+            ];
+            if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 return false;
             }
-            return $driver->getRequestBlocks(
-                $this->stripIdPrefixes($patron, $source)
-            );
+            return $driver->getRequestBlocks(...$params);
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -1394,19 +1022,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     public function getAccountBlocks($patron)
     {
         $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $supported = $this->methodSupported(
-                $driver,
-                'getAccountBlocks',
-                compact('patron')
-            );
-            if (!$supported) {
+        if ($driver = $this->getDriver($source)) {
+            $params = [
+                $this->stripIdPrefixes($patron, $source)
+            ];
+            if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 return false;
             }
-            return $driver->getAccountBlocks(
-                $this->stripIdPrefixes($patron, $source)
-            );
+            return $driver->getAccountBlocks(...$params);
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -1423,7 +1046,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     {
         $source = null;
         if (!empty($params)) {
-            $source = $this->getSourceFromParams($params);
+            $source = $this->getSourceForMethod($function, $params ?? []);
         }
         if (!$source) {
             try {
@@ -1438,8 +1061,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
 
         $driver = $this->getDriver($source);
 
-        // If we have resolved the needed driver, just getConfig and return.
-        if ($driver && $this->methodSupported($driver, 'getConfig', $params)) {
+        // If we have resolved the needed driver, call getConfig and return.
+        if ($driver && $this->driverSupportsMethod($driver, 'getConfig', $params)) {
             return $driver->getConfig(
                 $function,
                 $this->stripIdPrefixes($params, $source)
@@ -1466,19 +1089,34 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             return true;
         }
 
-        $source = $this->getSourceFromParams($params);
+        $source = $this->getSourceForMethod($method, $params ?? []);
         if (!$source && $this->defaultDriver) {
             $source = $this->defaultDriver;
         }
         if (!$source) {
-            // If we can't determine the source, assume we are capable to handle
-            // the request. This might happen e.g. when the user hasn't yet done
-            // a catalog login.
-            return true;
+            // If we can't determine the source, assume we are capable of handling
+            // the request unless the method is one that doesn't have parameters that
+            // allow the correct source to be determined.
+            return !in_array($method, $this->methodsWithNoSourceSpecificParameters);
         }
 
         $driver = $this->getDriver($source);
-        return $driver && $this->methodSupported($driver, $method, $params);
+        return $driver && $this->driverSupportsMethod($driver, $method, $params);
+    }
+
+    /**
+     * Default method -- pass along calls to the driver if a source can be determined
+     * and a driver is available. Throws ILSException otherwise.
+     *
+     * @param string $methodName The name of the called method
+     * @param array  $params     Array of passed parameters
+     *
+     * @throws ILSException
+     * @return mixed             Varies by method
+     */
+    public function __call($methodName, $params)
+    {
+        return $this->callMethodIfSupported(null, $methodName, $params);
     }
 
     /**
@@ -1516,14 +1154,37 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
+     * Get source for a method and parameters
+     *
+     * @param string $method Method
+     * @param array  $params Parameters
+     *
+     * @return string
+     */
+    protected function getSourceForMethod(string $method, array $params): string
+    {
+        $source = '';
+        $checkFields = $this->sourceCheckFields[$method] ?? null;
+        if ($checkFields) {
+            $source = $this->getSourceFromParams($params, (array)$checkFields);
+        } else {
+            $source = $this->getSourceFromParams($params);
+        }
+        return $source;
+    }
+
+    /**
      * Get source from method parameters
      *
-     * @param array $params Parameters of a driver method call
+     * @param array $params      Parameters of a driver method call
+     * @param array $allowedKeys Keys to use for source identification
      *
      * @return string Source id or empty string if not found
      */
-    protected function getSourceFromParams($params)
-    {
+    protected function getSourceFromParams(
+        $params,
+        $allowedKeys = [0, 'id', 'cat_username']
+    ) {
         if (!is_array($params)) {
             if (is_string($params)) {
                 $source = $this->getSource($params);
@@ -1536,8 +1197,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         foreach ($params as $key => $value) {
             $source = false;
             if (is_array($value) && (is_int($key) || $key === 'patron')) {
-                $source = $this->getSourceFromParams($value);
-            } elseif ($key === 0 || $key === 'id' || $key === 'cat_username') {
+                $source = $this->getSourceFromParams($value, $allowedKeys);
+            } elseif (in_array($key, $allowedKeys)) {
                 $source = $this->getSource($value);
             }
             if ($source && isset($this->drivers[$source])) {
@@ -1723,7 +1384,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @return bool
      */
-    protected function methodSupported($driver, $method, $params = null)
+    protected function driverSupportsMethod($driver, $method, $params = null)
     {
         if (is_callable([$driver, $method])) {
             if (method_exists($driver, 'supportsMethod')) {
@@ -1751,5 +1412,47 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         // Demo driver supports any record source:
         $driver = $this->getDriver($driverSource);
         return $driver instanceof \VuFind\ILS\Driver\Demo;
+    }
+
+    /**
+     * Check that the requested method is supported and call it.
+     *
+     * @param string $source        Source ID or null to determine from parameters
+     * @param string $method        Method name
+     * @param array  $params        Method parameters
+     * @param bool   $stripPrefixes Whether to strip ID prefixes from all input
+     * parameters
+     * @param bool   $addPrefixes   Whether to add ID prefixes to the call result
+     *
+     * @return mixed
+     * @throws ILSException
+     */
+    protected function callMethodIfSupported(
+        ?string $source,
+        string $method,
+        array $params,
+        bool $stripPrefixes = true,
+        bool $addPrefixes = true
+    ) {
+        if (null === $source) {
+            $source = $this->getSourceForMethod($method, $params);
+        }
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($stripPrefixes) {
+                foreach ($params as &$param) {
+                    $param = $this->stripIdPrefixes($param, $source);
+                }
+                unset($param);
+            }
+            if ($this->driverSupportsMethod($driver, $method, $params)) {
+                $result = call_user_func_array([$driver, $method], $params);
+                if ($addPrefixes) {
+                    $result = $this->addIdPrefixes($result, $source);
+                }
+                return $result;
+            }
+        }
+        throw new ILSException('No suitable backend driver found');
     }
 }

@@ -1,13 +1,24 @@
 <?=$this->doctype('HTML5')?>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
-    <?php $this->headThemeResources(); ?>
+    <?php $this->setupThemeResources(); ?>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
-    <?=$this->headTitle()?>
     <?php
+      // Format the page title using the translation system:
+      $siteConfig = $this->config()->get('config')->Site;
+      $fullTitle = $this->translate(
+          'title_wrapper',
+          [
+            '%%pageTitle%%' => $this->headTitle()->renderTitle(),
+            '%%siteTitle%%' => $siteConfig->title,
+            '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::'
+          ]
+      );
+      echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
+
       // Set up OpenSearch link:
       $this->headLink(
           [
@@ -17,6 +28,10 @@
             'rel' => 'search'
           ]
       );
+      // We need to generate the icons early, because they may add some stylesheets;
+      // if we render them after the headLink / headStyle calls, some dependencies
+      // may not load correctly. Thus, we render early, but use this later.
+      $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
     ?>
     <!-- RTL styling -->
     <?php if ($this->layout()->rtl) {
@@ -67,10 +82,13 @@
       $root = rtrim($this->url('home'), '/');
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
+      $cspNonce = $this->cspNonce();
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
+VuFind.addIcons({$icons});
+VuFind.setCspNonce('{$cspNonce}');
 JS;
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
@@ -78,7 +96,7 @@ JS;
           $this->headScript()->appendFile("covers.js");
       }
     ?>
-    <?=$this->headScript()?>
+    <?=$this->headScript() ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <?php // Set up the search box -- there are three possible cases:
@@ -104,24 +122,7 @@ JS;
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
-          <ul class="breadcrumb hidden-print">
-            <?php if(is_array($this->layout()->breadcrumbs)): ?>
-              <?php if(count($this->layout()->breadcrumbs) > 1): ?>
-                <?=$this->render('breadcrumbs/multi.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title' => $this->layout()->title,
-                    'from' => $this->layout()->from
-                  ]) ?>
-              <?php else: ?>
-                <?=$this->render('breadcrumbs/default.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title' => $this->layout()->title
-                  ]) ?>
-              <?php endif; ?>
-            <?php else: ?>
-              <?=$this->layout()->breadcrumbs ?>
-            <?php endif; ?>
-          </ul>
+          <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
         <?php endif; ?>
       </div>
     </nav>
@@ -138,7 +139,7 @@ JS;
           <button type="button" class="close" data-dismiss="modal">
             <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
-          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
+          <div class="modal-body"></div>
         </div>
       </div>
     </div>
@@ -149,5 +150,7 @@ JS;
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
     <?php endforeach; ?>
+
+    <?=$this->footScript() ?>
   </body>
 </html>

@@ -53,22 +53,6 @@ class Connector extends Base implements LoggerAwareInterface
     protected $client;
 
     /**
-     * Print a message if debug is enabled.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     */
-    protected function debugPrint($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug("$msg\n");
-        } else {
-            parent::debugPrint($msg);
-        }
-    }
-
-    /**
      * Constructor
      *
      * Sets up the EDS API Client
@@ -85,18 +69,18 @@ class Connector extends Base implements LoggerAwareInterface
     public function __construct($settings = [], $client = null)
     {
         parent::__construct($settings);
-        $this->client = is_object($client) ? $client : new HttpClient();
-        $this->client->setOptions(['timeout' => $settings['timeout'] ?? 120]);
-        $adapter = new CurlAdapter();
-        $adapter->setOptions(
+        if ($client) {
+            $this->client = $client;
+        } else {
+            $this->client = new HttpClient();
+            $this->client->setAdapter(new CurlAdapter());
+        }
+        $this->client->setOptions(
             [
-                'curloptions' => [
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_FOLLOWLOCATION => true,
-                ]
+                'timeout' => $settings['timeout'] ?? 120,
+                'sslverifypeer' => false,
             ]
         );
-        $this->client->setAdapter($adapter);
     }
 
     /**
@@ -141,5 +125,21 @@ class Connector extends Base implements LoggerAwareInterface
             throw new ApiException($decodedError ? $decodedError : $error);
         }
         return $result->getBody();
+    }
+
+    /**
+     * Print a message if debug is enabled.
+     *
+     * @param string $msg Message to print
+     *
+     * @return void
+     */
+    protected function debugPrint($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug("$msg\n");
+        } else {
+            parent::debugPrint($msg);
+        }
     }
 }

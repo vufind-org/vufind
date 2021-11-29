@@ -190,6 +190,52 @@ class ThemeInfo
     }
 
     /**
+     * Get a configuration element, merged to reflect theme inheritance.
+     *
+     * @param string $key     Configuration key to retrieve
+     * @param bool   $flatten Use array_replace to flatten values
+     *
+     * @return array
+     */
+    public function getMergedConfig(string $key, bool $flatten = false): array
+    {
+        $currentTheme = $this->getTheme();
+        $allThemeInfo = $this->getThemeInfo();
+
+        /**
+         * Assume a parent value 'a' and a child value 'b'
+         *
+         * Using array_merge (default) will merge them into ['b', 'a']
+         * Using array_replace ($flatten = true) will merge them into 'b'
+         *
+         * We're using an anonymous function here to swap the arguments in the
+         * flatten case. This is to make sure child values override parent values
+         * with replace but parent values are appended to the end of merged values
+         */
+        $deepFunc = !$flatten
+            ? 'array_merge_recursive'
+            : 'array_replace_recursive';
+
+        $merged = [];
+        while (!empty($currentTheme)) {
+            $currentThemeSet = array_merge(
+                (array)$currentTheme,
+                $allThemeInfo[$currentTheme]['mixins'] ?? [],
+            );
+            foreach ($currentThemeSet as $theme) {
+                if (isset($allThemeInfo[$theme][$key])) {
+                    $merged = $deepFunc(
+                        $allThemeInfo[$theme][$key],
+                        $merged,
+                    );
+                }
+            }
+            $currentTheme = $allThemeInfo[$currentTheme]['extends'];
+        }
+        return $merged;
+    }
+
+    /**
      * Search the themes for a particular file.  If it exists, return the
      * first matching theme name; otherwise, return null.
      *

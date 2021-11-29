@@ -72,8 +72,6 @@ class GeneratorFactory implements FactoryInterface
                 ->getEnabledLocales()
         );
         return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class),
-            $container->get(\VuFindSearch\Service::class),
             $configLoader->get('config')->Site->url ?? '',
             $configLoader->get('sitemap'),
             $enabledLocales,

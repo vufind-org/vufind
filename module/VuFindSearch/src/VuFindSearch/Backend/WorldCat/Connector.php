@@ -81,7 +81,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param string $id Record to obtain holdings for.
      *
      * @throws \Exception
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     public function getHoldings($id)
     {

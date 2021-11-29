@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class PunctuationContainer
 {
-   private static ThreadLocal<PunctuationContainer> containerCache =
+    private static ThreadLocal<PunctuationContainer> containerCache =
         new ThreadLocal<PunctuationContainer>()
         {
             @Override

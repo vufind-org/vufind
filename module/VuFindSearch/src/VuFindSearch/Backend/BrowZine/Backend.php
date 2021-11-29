@@ -192,6 +192,31 @@ class Backend extends AbstractBackend
         return $this->connector;
     }
 
+    /**
+     * Perform a DOI lookup
+     *
+     * @param string $doi            DOI
+     * @param bool   $includeJournal Include journal data in response?
+     *
+     * @return mixed
+     */
+    public function lookupDoi($doi, $includeJournal = false)
+    {
+        return $this->getConnector()->lookupDoi($doi, $includeJournal);
+    }
+
+    /**
+     * Perform an ISSN lookup.
+     *
+     * @param string|array $issns ISSN(s) to look up.
+     *
+     * @return mixed
+     */
+    public function lookupIssns($issns)
+    {
+        return $this->getConnector()->lookupIssns($issns);
+    }
+
     /// Internal API
 
     /**

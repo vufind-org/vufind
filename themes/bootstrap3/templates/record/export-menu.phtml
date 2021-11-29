@@ -4,7 +4,7 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Export Record') . '</li>';
 ?>
 <?=$this->flashmessages()?>
@@ -12,7 +12,7 @@
   <?=$this->transEsc('export_choose_format')?>
   <ul>
   <?php foreach ($exportFormats as $exportFormat): ?>
-    <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->transEsc($this->export()->getLabelForFormat($exportFormat))?></a></li>
+    <li><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export'))?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->transEsc($this->export()->getLabelForFormat($exportFormat))?></a></li>
   <?php endforeach; ?>
   </ul>
 <?php else: ?>

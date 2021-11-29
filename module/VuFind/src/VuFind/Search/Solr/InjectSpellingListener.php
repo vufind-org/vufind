@@ -117,7 +117,7 @@ class InjectSpellingListener
         if ($command->getContext() !== 'search') {
             return $event;
         }
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
                 // Set spelling parameters when enabled:
                 $sc = $params->get('spellcheck');
@@ -163,7 +163,7 @@ class InjectSpellingListener
         }
 
         // Merge spelling details from extra dictionaries:
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $result = $command->getResult();
             $params = $command->getSearchParameters();
             $spellcheckQuery = $params->get('spellcheck.q');

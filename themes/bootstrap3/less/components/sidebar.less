@@ -30,7 +30,6 @@
 .facet-load-indicator {
   display: flex;
   padding: .5rem;
-  width: 100%;
   line-height: 1.5rem;
   background-color: transparent;
 
@@ -60,6 +59,7 @@
 }
 .facet-group .title {
   display: block;
+  width: 100%;
   padding-right: 8px;
   border: 1px solid @list-group-border;
   font-weight: bold;
@@ -82,19 +82,20 @@
   background-color: #000;
 }
 
+.top-facets-contents {
+  margin: 2px 0;
+}
 .top-facets .facet,
-.top-facets .narrow-toggle,
 .top-facets > strong {
   display: inline-block;
   width: auto;
-  padding: .25rem .5rem;
+  padding: 2px 0;
   border: 0;
   white-space: nowrap;
 }
-.top-facets .narrow-toggle { text-decoration: underline; }
-.top-facets .top-facet {
-  margin-top: 2px;
-  margin-bottom: 2px;
+.top-facet-inner {
+  display: inline-block;
+  padding: .25rem;
   border: 1px solid @list-group-border;
 }
 
@@ -118,12 +119,9 @@
   background-color: @list-group-active-bg;
   color: #fff;
 
-  .jstree-icon,
   a { color: #fff; }
 }
-.facet.active .badge,
-.jstree-node.active .badge,
-.jstree-node.active .badge .fa {
+.facet.active .badge {
   background-color: #fff;
   color: @brand-primary;
 }
@@ -152,23 +150,16 @@
 }
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
 
-.jstree-node {
-  .facet {
-    padding: 0 0.5rem 0 0;
-    border: none;
-  }
+.truncate-done {
+  overflow: hidden;
 }
-.jstree-facet {
-  .jstree-anchor {
-    padding: 0;
-  }
-  .list-group-item {
-    padding-right: 0;
-    border: 0;
-    border-bottom: 1px solid @list-group-border;
-  }
+.more-less-btn-wrapper .fa {
+  line-height: inherit;
 }
-
+.more-less-btn-wrapper .facet {
+  display: block;
+  width: 100%;
+}
 
 .facet-range-form {
   width: 100%;

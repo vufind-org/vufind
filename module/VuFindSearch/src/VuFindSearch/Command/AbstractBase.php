@@ -28,7 +28,9 @@
  */
 namespace VuFindSearch\Command;
 
+use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Exception\LogicException;
+use VuFindSearch\Exception\RuntimeException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -47,7 +49,7 @@ abstract class AbstractBase implements CommandInterface
      *
      * @var string
      */
-    protected $backend;
+    protected $backendId;
 
     /**
      * Command context
@@ -78,27 +80,30 @@ abstract class AbstractBase implements CommandInterface
     protected $result;
 
     /**
-     * CallMethodCommand constructor.
+     * Constructor.
      *
-     * @param string    $backend Search backend identifier
-     * @param mixed     $context Command context
-     * @param ?ParamBag $params  Search backend parameters
+     * @param string    $backendId Search backend identifier
+     * @param mixed     $context   Command context
+     * @param ?ParamBag $params    Search backend parameters
      */
-    public function __construct(string $backend, $context, ?ParamBag $params = null)
-    {
-        $this->backend = $backend;
+    public function __construct(
+        string $backendId,
+        $context,
+        ?ParamBag $params = null
+    ) {
+        $this->backendId = $backendId;
         $this->context = $context;
         $this->params = $params ?: new ParamBag();
     }
 
     /**
-     * Return name of target backend.
+     * Return target backend identifier.
      *
      * @return string
      */
-    public function getTargetBackendName(): string
+    public function getTargetIdentifier(): string
     {
-        return $this->backend;
+        return $this->backendId;
     }
 
     /**
@@ -114,6 +119,23 @@ abstract class AbstractBase implements CommandInterface
         $this->result = $result;
         $this->executed = true;
         return $this;
+    }
+
+    /**
+     * Validate that the provided backend matches the expected target identifier.
+     *
+     * @param BackendInterface $backend Backend instance
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    protected function validateBackend(BackendInterface $backend): void
+    {
+        if (($backendId = $backend->getIdentifier()) !== $this->backendId) {
+            throw new RuntimeException(
+                "Expected backend instance $this->backendId instead of $backendId"
+            );
+        }
     }
 
     /**

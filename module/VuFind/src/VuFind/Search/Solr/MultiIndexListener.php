@@ -121,7 +121,7 @@ class MultiIndexListener
     public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $params = $command->getSearchParameters();
             $allShardsContexts = ['retrieve', 'retrieveBatch'];
             if (in_array($command->getContext(), $allShardsContexts)) {

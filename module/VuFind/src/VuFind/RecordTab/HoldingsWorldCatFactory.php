@@ -68,7 +68,6 @@ class HoldingsWorldCatFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $bm = $container->get(\VuFind\Search\BackendManager::class);
-        return new $requestedName($bm->get('WorldCat')->getConnector());
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }

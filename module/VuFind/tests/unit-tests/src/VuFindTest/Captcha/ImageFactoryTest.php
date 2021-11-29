@@ -46,9 +46,14 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Test that the factory behaves correctly.
      *
+     * @param string $homeUrl       Home URL (returned by url helper)
+     * @param string $expectedCache Expected cache path
+     *
      * @return void
+     *
+     * @dataProvider factoryDataProvider
      */
-    public function testFactory()
+    public function testFactory($homeUrl = null, $expectedCache = '/cache/'): void
     {
         // Set up mock services expected by factory:
         $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
@@ -62,6 +67,10 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($storage));
 
         $url = $container->get(\VuFind\View\Helper\Root\Url::class);
+        $url->expects($this->once())->method('__invoke')
+            ->with($this->equalTo('home'))
+            ->will($this->returnValue($homeUrl));
+
         $manager = $container->get('ViewHelperManager');
         $manager->expects($this->once())->method('get')
             ->with($this->equalTo('url'))->will($this->returnValue($url));
@@ -92,6 +101,21 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             'imgDir' => $options->getCacheDir()
         ];
         $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
-        $this->assertEquals('/cache/', $result->constructorArgs[1]);
+        $this->assertEquals($expectedCache, $result->constructorArgs[1]);
+    }
+
+    /**
+     * Provide data for testFactory()
+     *
+     * @return array
+     */
+    public function factoryDataProvider(): array
+    {
+        return [
+            'Empty base path' => [],
+            'Slash as base path' => ['/'],
+            'Directory with trailing slash' => ['/foo/', '/foo/cache/'],
+            'Directory without trailing slash' => ['/foo', '/foo/cache/'],
+        ];
     }
 }

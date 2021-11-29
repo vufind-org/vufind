@@ -173,7 +173,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
             'js' => ['hello.js', 'extra.js', 'mixin.js'],
             'helpers' => [
                 'factories' => [
-                    'foo' => 'fooOverrideFactory',
+                    'foo' => 'fooMixinFactory',
                     'bar' => 'barFactory',
                 ],
                 'aliases' => [

@@ -483,12 +483,27 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $defaultPatronId;
 
     /**
+     * Mapping of z304 address elements in Aleph to getMyProfile attributes
+     *
+     * @var array
+     */
+    protected $addressMappings = null;
+
+    /**
      * ISO 3166-1 alpha-2 to ISO 3166-1 alpha-3 mapping for
      * translation in REST DLF API.
      *
      * @var array
      */
     protected $languages = [];
+
+    /**
+     * Regex for extracting position in queue from status in holdings.
+     *
+     * @var string
+     */
+    protected $queuePositionRegex = "/Waiting in position "
+        . "(?<position>[0-9]+) in queue;/";
 
     /**
      * Constructor
@@ -584,11 +599,44 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         if (isset($this->config['Catalog']['default_patron_id'])) {
             $this->defaultPatronId = $this->config['Catalog']['default_patron_id'];
         }
+
+        $this->addressMappings = $this->getDefaultAddressMappings();
+
+        if (isset($this->config['AddressMappings'])) {
+            foreach ($this->config['AddressMappings'] as $key => $val) {
+                $this->addressMappings[$key] = $val;
+            }
+        }
+
+        if (isset($this->config['Catalog']['queue_position_regex'])) {
+            $this->queuePositionRegex
+                = $this->config['Catalog']['queue_position_regex'];
+        }
+
         if (isset($this->config['Languages'])) {
             foreach ($this->config['Languages'] as $locale => $lang) {
                 $this->languages[$locale] = $lang;
             }
         }
+    }
+
+    /**
+     * Return default mapping of z304 address elements in Aleph
+     * to getMyProfile attributes.
+     *
+     * @return array
+     */
+    protected function getDefaultAddressMappings()
+    {
+        return [
+            'fullname' => 'z304-address-1',
+            'address1' => 'z304-address-2',
+            'address2' => 'z304-address-3',
+            'city'     => 'z304-address-4',
+            'zip'      => 'z304-zip',
+            'email'    => 'z304-email-address',
+            'phone'    => 'z304-telephone-1',
+        ];
     }
 
     /**
@@ -1040,96 +1088,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyTransactionHistory($user, $params = null)
     {
-        $userId = $user['id'];
-        $historicLoans = [];
-        $requestParams = [
-            "view" => "full",
-            "type" => "history",
-        ];
-
-        $xml = $this->doRestDLFRequest(
-            ['patron', $userId, 'circulationActions', 'loans'],
-            $requestParams
-        );
-
-        foreach ($xml->xpath('//loan') as $item) {
-            $z36h = $item->z36h;
-            $z13 = $item->z13;
-            $z30 = $item->z30;
-            $group = $item->xpath('@href');
-            $group = substr(strrchr($group[0], "/"), 1);
-            $location = (string)$z36h->{'z36_pickup_location'};
-            $reqnum = (string)$z36h->{'z36-doc-number'}
-                . (string)$z36h->{'z36-item-sequence'}
-                . (string)$z36h->{'z36-sequence'};
-
-            $due = (string)$z36h->{'z36h-due-date'};
-            $returned = (string)$z36h->{'z36h-returned-date'};
-            $issued = (string)$z36h->{'z36h-loan-date'};
-            $title = (string)$z13->{'z13-title'};
-            $author = (string)$z13->{'z13-author'};
-            $isbn = (string)$z13->{'z13-isbn-issn'};
-            $barcode = (string)$z30->{'z30-barcode'};
-
-            $historicLoans[] = [
-                'id' => (string)$z30->{'z30-doc-number'},
-                'item_id' => $group,
-                'location' => $location,
-                'title' => $title,
-                'author' => $author,
-                'isbn' => $isbn,
-                'reqnum' => $reqnum,
-                'barcode' => $barcode,
-                'checkoutDate' => $this->parseDate($issued),
-                'dueDate' => $this->parseDate($due),
-                'returnDate' => $this->parseDate($returned),
-                '_checkoutDate' => $issued,
-                '_dueDate' => $due,
-                '_returnDate' => $returned,
-            ];
-        }
-
-        if (isset($params['sort'])) {
-            switch ($params['sort']) {
-            case 'checkout asc':
-                $sorter = function ($a, $b) {
-                    return strcmp($a['_checkoutDate'], $b['_checkoutDate']);
-                };
-                break;
-            case 'return desc':
-                $sorter = function ($a, $b) {
-                    return strcmp($b['_returnDate'], $a['_returnDate']);
-                };
-                break;
-            case 'return asc':
-                $sorter = function ($a, $b) {
-                    return strcmp($a['_returnDate'], $b['_returnDate']);
-                };
-                break;
-            case 'due desc':
-                $sorter = function ($a, $b) {
-                    return strcmp($b['_dueDate'], $a['_dueDate']);
-                };
-                break;
-            case 'due asc':
-                $sorter = function ($a, $b) {
-                    return strcmp($a['_dueDate'], $b['_dueDate']);
-                };
-                break;
-            default:
-                $sorter = function ($a, $b) {
-                    return strcmp($b['_checkoutDate'], $a['_checkoutDate']);
-                };
-                break;
-            }
-
-            usort($historicLoans, $sorter);
-        }
-
-        return [
-            'count' => count($historicLoans),
-            'transactions' => $historicLoans,
-        ];
+        return $this->getMyTransactions($user, $params, true);
     }
 
     /**
@@ -1138,40 +1097,62 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array $user The patron array from patronLogin
+     * @param array   $user    The patron array from patronLogin
+     * @param array   $params  Parameters
+     * @param boolean $history History
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($user)
+    public function getMyTransactions($user, $params = [], $history = false)
     {
         $userId = $user['id'];
-        $transList = [];
-        $params = ["view" => "full"];
-        $xml = $this->doRestDLFRequest(
-            ['patron', $userId, 'circulationActions', 'loans'],
-            $params
+
+        $alephParams = [];
+        if ($history) {
+            $alephParams['type'] = 'history';
+        }
+
+        // total count without details is fast
+        $totalCount = count(
+            $this->doRestDLFRequest(
+                ['patron', $userId, 'circulationActions', 'loans'],
+                $alephParams
+            )->xpath('//loan')
         );
 
+        // with full details and paging
+        $pageSize = $params['limit'] ?? 50;
+        $itemsNoKey = $history ? 'no_loans' : 'noItems';
+        $alephParams += [
+            'view' => 'full',
+            'startPos' => isset($params['page'])
+                ? ($params['page'] - 1) * $pageSize : 0,
+            $itemsNoKey => $pageSize,
+        ];
+
+        $xml = $this->doRestDLFRequest(
+            ['patron', $userId, 'circulationActions', 'loans'],
+            $alephParams
+        );
+
+        $transList = [];
         foreach ($xml->xpath('//loan') as $item) {
-            $z36 = $item->z36;
+            $z36 = ($history) ? $item->z36h : $item->z36;
+            $prefix = ($history) ? 'z36h-' : 'z36-';
             $z13 = $item->z13;
             $z30 = $item->z30;
             $group = $item->xpath('@href');
             $group = substr(strrchr($group[0], "/"), 1);
             $renew = $item->xpath('@renew');
-            //$docno = (string) $z36->{'z36-doc-number'};
-            //$itemseq = (string) $z36->{'z36-item-sequence'};
-            //$seq = (string) $z36->{'z36-sequence'};
 
-            $location = (string)$z36->{'z36_pickup_location'};
-            $reqnum = (string)$z36->{'z36-doc-number'}
-                . (string)$z36->{'z36-item-sequence'}
-                . (string)$z36->{'z36-sequence'};
+            $location = (string)$z36->{$prefix . 'pickup_location'};
+            $reqnum = (string)$z36->{$prefix . 'doc-number'}
+                . (string)$z36->{$prefix . 'item-sequence'}
+                . (string)$z36->{$prefix . 'sequence'};
 
-            $due = (string)$z36->{'z36-due-date'};
-            $issued = (string)$z36->{'z36-loan-date'};
+            $due = (string)$z36->{$prefix . 'due-date'};
             $title = (string)$z13->{'z13-title'};
             $author = (string)$z13->{'z13-author'};
             $isbn = (string)$z13->{'z13-isbn-issn'};
@@ -1180,8 +1161,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             // local customizations
             $adm_id = (string)$z30->{'z30-doc-number'};
 
-            $transList[] = [
-                //'type' => $type,
+            $transaction = [
                 'id' => $this->barcodeToID($barcode),
                 'adm_id'   => $adm_id,
                 'item_id' => $group,
@@ -1191,16 +1171,24 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 'isbn' => $isbn,
                 'reqnum' => $reqnum,
                 'barcode' => $barcode,
-                'issuedate' => $this->parseDate($issued),
                 'duedate' => $this->parseDate($due),
-                //'holddate' => $holddate,
-                //'delete' => $delete,
                 'renewable' => $renew[0] == "Y",
-                //'create' => $this->parseDate($create)
             ];
+            if ($history) {
+                $issued = (string)$z36->{$prefix . 'loan-date'};
+                $returned = (string)$z36->{$prefix . 'returned-date'};
+                $transaction['checkoutDate'] = $this->parseDate($issued);
+                $transaction['returnDate'] = $this->parseDate($returned);
+            }
+            $transList[] = $transaction;
         }
 
-        return $transList;
+        $key = ($history) ? 'transactions' : 'records';
+
+        return [
+            'count' => $totalCount,
+            $key => $transList
+        ];
     }
 
     /**
@@ -1284,52 +1272,53 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $delete = $item->xpath('@delete');
             $href = $item->xpath('@href');
             $item_id = substr($href[0], strrpos($href[0], '/') + 1);
-            if ((string)$z37->{'z37-request-type'} == "Hold Request" || true) {
-                $type = "hold";
-                //$docno = (string) $z37->{'z37-doc-number'};
-                //$itemseq = (string) $z37->{'z37-item-sequence'};
-                $seq = (string)$z37->{'z37-sequence'};
-                $location = (string)$z37->{'z37-pickup-location'};
-                $reqnum = (string)$z37->{'z37-doc-number'}
-                    . (string)$z37->{'z37-item-sequence'}
-                    . (string)$z37->{'z37-sequence'};
-                $expire = (string)$z37->{'z37-end-request-date'};
-                $create = (string)$z37->{'z37-open-date'};
-                $holddate = (string)$z37->{'z37-hold-date'};
-                $title = (string)$z13->{'z13-title'};
-                $author = (string)$z13->{'z13-author'};
-                $isbn = (string)$z13->{'z13-isbn-issn'};
-                $barcode = (string)$z30->{'z30-barcode'};
-                $status = (string)$z37->{'z37-status'};
-                if ($holddate == "00000000") {
-                    $holddate = null;
-                } else {
-                    $holddate = $this->parseDate($holddate);
-                }
-                $delete = ($delete[0] == "Y");
-                // Secondary, Aleph-specific identifier that may be useful for
-                // local customizations
-                $adm_id = (string)$z30->{'z30-doc-number'};
-
-                $holdList[] = [
-                    'type' => $type,
-                    'item_id' => $item_id,
-                    'adm_id'   => $adm_id,
-                    'location' => $location,
-                    'title' => $title,
-                    'author' => $author,
-                    'isbn' => $isbn,
-                    'reqnum' => $reqnum,
-                    'barcode' => $barcode,
-                    'id' => $this->barcodeToID($barcode),
-                    'expire' => $this->parseDate($expire),
-                    'holddate' => $holddate,
-                    'delete' => $delete,
-                    'create' => $this->parseDate($create),
-                    'status' => $status,
-                    'position' => ltrim($seq, '0')
-                ];
+            $type = "hold";
+            $location = (string)$z37->{'z37-pickup-location'};
+            $reqnum = (string)$z37->{'z37-doc-number'}
+                . (string)$z37->{'z37-item-sequence'}
+                . (string)$z37->{'z37-sequence'};
+            $expire = (string)$z37->{'z37-end-request-date'};
+            $create = (string)$z37->{'z37-open-date'};
+            $holddate = (string)$z37->{'z37-hold-date'};
+            $title = (string)$z13->{'z13-title'};
+            $author = (string)$z13->{'z13-author'};
+            $isbn = (string)$z13->{'z13-isbn-issn'};
+            $barcode = (string)$z30->{'z30-barcode'};
+            // remove superfluous spaces in status
+            $status = preg_replace("/\s[\s]+/", " ", $item->status);
+            $position = null;
+            // Extract position in the hold queue from item status
+            if (preg_match($this->queuePositionRegex, $status, $matches)) {
+                $position = $matches['position'];
             }
+            if ($holddate == "00000000") {
+                $holddate = null;
+            } else {
+                $holddate = $this->parseDate($holddate);
+            }
+            $delete = ($delete[0] == "Y");
+            // Secondary, Aleph-specific identifier that may be useful for
+            // local customizations
+            $adm_id = (string)$z30->{'z30-doc-number'};
+
+            $holdList[] = [
+                'type' => $type,
+                'item_id' => $item_id,
+                'adm_id'   => $adm_id,
+                'location' => $location,
+                'title' => $title,
+                'author' => $author,
+                'isbn' => $isbn,
+                'reqnum' => $reqnum,
+                'barcode' => $barcode,
+                'id' => $this->barcodeToID($barcode),
+                'expire' => $this->parseDate($expire),
+                'holddate' => $holddate,
+                'delete' => $delete,
+                'create' => $this->parseDate($create),
+                'status' => $status,
+                'position' => $position,
+            ];
         }
         return $holdList;
     }
@@ -1410,7 +1399,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     public function getMyFines($user)
     {
         $finesList = [];
-        $finesListSort = [];
 
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'circulationActions', 'cash'],
@@ -1421,56 +1409,36 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $z31 = $item->z31;
             $z13 = $item->z13;
             $z30 = $item->z30;
-            //$delete = $item->xpath('@delete');
             $title = (string)$z13->{'z13-title'};
+            $description = (string)$z31->{'z31-description'};
             $transactiondate = date('d-m-Y', strtotime((string)$z31->{'z31-date'}));
             $transactiontype = (string)$z31->{'z31-credit-debit'};
             $id = (string)$z13->{'z13-doc-number'};
             $barcode = (string)$z30->{'z30-barcode'};
             $checkout = (string)$z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
-            $mult = ($transactiontype == "Credit") ? 100 : -100;
+            $cachetype = strtolower((string)($item->attributes()->type ?? ''));
+            $mult = $cachetype == 'debit' ? -100 : 100;
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string)$z31->{'z31-sum'}))
                 * $mult;
             $cashref = (string)$z31->{'z31-sequence'};
-            //$cashdate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
-            $balance = 0;
 
-            $finesListSort["$cashref"]  = [
+            $finesList["$cashref"]  = [
                     "title"   => $title,
                     "barcode" => $barcode,
                     "amount" => $amount,
                     "transactiondate" => $transactiondate,
                     "transactiontype" => $transactiontype,
                     "checkout" => $this->parseDate($checkout),
-                    "balance"  => $balance,
-                    "id"  => $id
+                    "balance"  => $amount,
+                    "id"  => $id,
+                    "printLink" => "test",
+                    "fine" => $description,
             ];
         }
-        ksort($finesListSort);
-        foreach (array_keys($finesListSort) as $key) {
-            $title = $finesListSort[$key]["title"];
-            $barcode = $finesListSort[$key]["barcode"];
-            $amount = $finesListSort[$key]["amount"];
-            $checkout = $finesListSort[$key]["checkout"];
-            $transactiondate = $finesListSort[$key]["transactiondate"];
-            $transactiontype = $finesListSort[$key]["transactiontype"];
-            $balance += $finesListSort[$key]["amount"];
-            $id = $finesListSort[$key]["id"];
-            $finesList[] = [
-                "title"   => $title,
-                "barcode"  => $barcode,
-                "amount"   => $amount,
-                "transactiondate" => $transactiondate,
-                "transactiontype" => $transactiontype,
-                "balance"  => $balance,
-                "checkout" => $checkout,
-                "id"  => $id,
-                "printLink" => "test",
-            ];
-        }
-        return $finesList;
+        ksort($finesList);
+        return array_values($finesList);
     }
 
     /**
@@ -1567,42 +1535,31 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
-        $address = $xml->xpath('//address-information');
-        $address = $address[0];
-        $address1 = (string)$address->{'z304-address-1'};
-        $address2 = (string)$address->{'z304-address-2'};
-        $address3 = (string)$address->{'z304-address-3'};
-        //$address4 = (string)$address->{'z304-address-4'};
-        //$address5 = (string)$address->{'z304-address-5'};
-        $zip = (string)$address->{'z304-zip'};
-        $phone = (string)$address->{'z304-telephone-1'};
-        $email = (string)$address->{'z404-email-address'};
-        $dateFrom = (string)$address->{'z304-date-from'};
-        $dateTo = (string)$address->{'z304-date-to'};
-        if (strpos($address2, ",") === false) {
-            $recordList['lastname'] = $address2;
-            $recordList['firstname'] = "";
-        } else {
-            [$recordList['lastname'], $recordList['firstname']]
-                = explode(",", $address2);
+        $profile = [];
+        $profile['id'] = $user['id'];
+        $profile['cat_username'] = $user['id'];
+        $address = $xml->xpath('//address-information')[0];
+        foreach ($this->addressMappings as $key => $value) {
+            if (!empty($value)) {
+                $profile[$key] = (string)$address->{$value};
+            }
         }
-        $recordList['address1'] = $address2;
-        $recordList['address2'] = $address3;
-        $recordList['barcode'] = $address1;
-        $recordList['zip'] = $zip;
-        $recordList['phone'] = $phone;
-        $recordList['email'] = $email;
-        $recordList['dateFrom'] = $dateFrom;
-        $recordList['dateTo'] = $dateTo;
-        $recordList['id'] = $user['id'];
+        $fullName = $profile['fullname'];
+        if (strpos($fullName, ",") === false) {
+            $profile['lastname'] = $fullName;
+            $profile['firstname'] = "";
+        } else {
+            [$profile['lastname'], $profile['firstname']]
+                = explode(",", $fullName);
+        }
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronStatus', 'registration']
         );
         $status = $xml->xpath("//institution/z305-bor-status");
         $expiry = $xml->xpath("//institution/z305-expiry-date");
-        $recordList['expire'] = $this->parseDate($expiry[0]);
-        $recordList['group'] = $status[0];
-        return $recordList;
+        $profile['expiration_date'] = $this->parseDate($expiry[0]);
+        $profile['group'] = $status[0];
+        return $profile;
     }
 
     /**
@@ -1932,15 +1889,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 return false;
             }
             return [
-                'sort' => [
-                    'checkout desc' => 'sort_checkout_date_desc',
-                    'checkout asc' => 'sort_checkout_date_asc',
-                    'return desc' => 'sort_return_date_desc',
-                    'return asc' => 'sort_return_date_asc',
-                    'due desc' => 'sort_due_date_desc',
-                    'due asc' => 'sort_due_date_asc'
-                ],
-                'default_sort' => 'checkout desc',
+                'max_results' => 10000,
             ];
         } else {
             return [];

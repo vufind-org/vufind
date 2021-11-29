@@ -14,7 +14,7 @@ if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV == 'development') {
-    array_push($modules, 'WhoopsErrorHandler');
+    $modules[] = 'WhoopsErrorHandler';
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {

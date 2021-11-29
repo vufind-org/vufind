@@ -54,6 +54,14 @@ use VuFindSearch\Service as SearchService;
 class Demo extends AbstractBase
 {
     /**
+     * Catalog ID used to distinquish between multiple Demo driver instances with the
+     * MultiBackend driver
+     *
+     * @var string
+     */
+    protected $catalogId = 'demo';
+
+    /**
      * Connection used when getting random bib ids from Solr
      *
      * @var SearchService
@@ -180,6 +188,9 @@ class Demo extends AbstractBase
      */
     public function init()
     {
+        if (isset($this->config['Catalog']['id'])) {
+            $this->catalogId = $this->config['Catalog']['id'];
+        }
         if (isset($this->config['Catalog']['idsInMyResearch'])) {
             $this->idsInMyResearch = $this->config['Catalog']['idsInMyResearch'];
         }
@@ -192,13 +203,6 @@ class Demo extends AbstractBase
         }
         if (isset($this->config['Failure_Probabilities'])) {
             $this->failureProbabilities = $this->config['Failure_Probabilities'];
-        }
-        if (isset($this->config['Holdings'])) {
-            foreach ($this->config['Holdings'] as $id => $json) {
-                foreach (json_decode($json, true) as $i => $status) {
-                    $this->setStatus($id, $status, $i > 0);
-                }
-            }
         }
         $this->checkIntermittentFailure();
     }
@@ -616,23 +620,18 @@ class Demo extends AbstractBase
      */
     protected function getSession($patron = null)
     {
-        // We have a separate session for each user ID; if none is specified,
-        // try to pick the first one arbitrarily; the difference only matters
-        // when testing multiple accounts.
-        $selectedPatron = empty($patron)
-            ? (current(array_keys($this->session)) ?: 'default')
-            : md5($patron);
+        $sessionKey = md5($this->catalogId . '/' . ($patron ?? 'default'));
 
         // SessionContainer not defined yet? Build it now:
-        if (!isset($this->session[$selectedPatron])) {
-            $factory = $this->sessionFactory;
-            $this->session[$selectedPatron] = $factory($selectedPatron);
+        if (!isset($this->session[$sessionKey])) {
+            $this->session[$sessionKey] = ($this->sessionFactory)($sessionKey);
         }
-        $result = $this->session[$selectedPatron];
+        $result = $this->session[$sessionKey];
         // Special case: check for clear_demo request parameter to reset:
         if ($this->request && $this->request->getQuery('clear_demo')) {
             $result->exchangeArray([]);
         }
+
         return $result;
     }
 
@@ -647,10 +646,18 @@ class Demo extends AbstractBase
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getSimulatedStatus($id, array $patron = null)
     {
         $id = (string)$id;
+
+        if ($json = $this->config['StaticHoldings'][$id] ?? null) {
+            foreach (json_decode($json, true) as $i => $status) {
+                $this->setStatus($id, $status, $i > 0, $patron);
+            }
+        }
 
         // Do we have a fake status persisted in the session?
         $session = $this->getSession($patron['id'] ?? null);

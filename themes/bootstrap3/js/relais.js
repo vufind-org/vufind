@@ -50,9 +50,7 @@ VuFind.register('relais', function Relais() {
   }
 
   function makeRequest(url, failLink) {
-    $('#requestButton').html(
-      '<i class="fa fa-spinner fa-spin"></i> ' + VuFind.translate('relais_requesting')
-    );
+    $('#requestButton').html(VuFind.loading("relais_requesting"));
     $.ajax({
       dataType: 'json',
       url: url,

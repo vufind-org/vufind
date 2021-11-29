@@ -63,9 +63,9 @@ class ErrorListener extends AbstractErrorListener
      */
     public function onSearchError(EventInterface $event)
     {
-        $backend = $event->getParam('backend_instance');
-        if ($backend && $this->listenForBackend($backend)) {
-            $error = $event->getTarget();
+        $command = $event->getParam('command');
+        if ($this->listenForBackend($command->getTargetIdentifier())) {
+            $error = $event->getParam('error');
             if ($error instanceof HttpErrorException) {
                 $response = $error->getResponse();
 

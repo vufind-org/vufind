@@ -4,53 +4,117 @@
   overflow-y: auto;
 }
 @media (min-width: 768px) {
-  .collection-hierarchytree { display: flex; }
+  .collection-hierarchytree {
+    display: flex;
+  }
   .collection-hierarchytree .tree-panel,
   .collection-hierarchytree #tree-preview {
     flex-basis: 50%;
     padding: 1rem;
   }
-  #modal .collection-hierarchytree { display: block; }
+  #modal .collection-hierarchytree {
+    display: block;
+  }
   #modal .tree-panel {
     flex-basis: 100%;
     padding: 0;
   }
-  #modal #tree-preview { display: none; }
+  #modal #tree-preview {
+    display: none;
+  }
+}
+
+/* --- Icons --- */
+.jstree-ocl::before {
+  display: inline-block;
+  width: 1.5rem;
+  padding-top: 2px;
+  font-style: normal;
+  text-align: center;
+  text-decoration: inherit;
+  cursor: pointer;
+  speak: none;
+}
+.jstree-open > .jstree-ocl::before {
+  content: "\25BD"; // Unicode white down-pointing triangle
+}
+.jstree-closed > .jstree-ocl::before {
+  content: "\25B6"; // Unicode black right-pointing triangle
+}
+.jstree-leaf > .jstree-ocl::before {
+  color: transparent;
+  content: "\25B8"; // Unicode black right-pointing small triangle
+}
+
+.jstree-themeicon-custom {
+  display: inline-block;
+  width: 1.4em;
+  height: 1em;
+  vertical-align: text-bottom;
+  background-repeat: no-repeat;
+}
+
+/* Reset styles for children of active children */
+.facet-group .jstree-node.active,
+.facet-group .jstree-node.active a {
+  color: $link-color;
+  background-color: transparent;
+}
+
+.facet-group .jstree-facet .jstree-node.active .badge {
+  color: $badge-color;
+  background-color: $badge-bg;
 }
 
 /* --- Look --- */
+.jstree-children {
+  padding: 0;
+}
+.jstree-node .jstree-children {
+  padding-left: 1rem;
+}
+
+.jstree-clicked,
+.jstree-clicked:active,
+.jstree-clicked:focus,
+.jstree-clicked:hover {
+  color: $list-group-active-color;
+  background-color: $list-group-active-bg;
+
+  .jstree-themeicon-custom {
+    color: #fff;
+    filter: invert(1);
+  }
+}
+
+.jstree-facet {
+  padding: 0;
+
+  .jstree-node.list-group-item {
+    padding: 0.5rem;
+  }
+
+  .jstree-node .facet {
+    padding: 2px 0;
+    border: 0;
+  }
+
+  .active > .jstree-anchor .facet {
+    padding-left: 2px;
+    color: $list-group-active-color;
+    background-color: $list-group-active-bg;
+  }
+  .jstree-node.active .badge,
+  .jstree-node.active .badge .fa {
+    background-color: #fff;
+    color: $brand-primary;
+  }
+}
+
 .hierarchy-tree,
 .jstree-facet {
-  /* jsTree arrows */
-  .jstree-ocl:before {
-    float: left;
-    width: 10px;
-    padding: 0;
-    margin-left: -10px;
-    font-family: 'FontAwesome';
-    font-style: normal;
-    font-weight: normal;
-    cursor: pointer;
-    text-decoration: inherit;
-    speak: none;
-  }
-  .jstree-open > .jstree-ocl:before   {content: "\f0d7";} // .fa-caret-down
-  .jstree-closed > .jstree-ocl:before {content: "\f0da";} // .fa-caret-right
-  .jstree-leaf > .jstree-ocl:before   {content: " ";}
-  .jstree-icon {
-    width: 16px;
-    color: #000;
-  }
-  .jstree-anchor { padding-left: 5px; }
-  .jstree-container-ul,
-  .jstree-children {
-    padding-left: 16px;
-  }
-  .jstree-initial-node {display: none;}
-  .jstree-clicked {
-    .jstree-icon {
-      color: #fff;
-    }
+  .jstree-initial-node {
+    display: none;
   }
   .jstree-search a {
     font-style: italic;
@@ -64,6 +128,10 @@
   border-bottom: 1px solid $list-group-border;
   border-radius: 0;
 }
+.jstree-node.list-group-item.active:hover,
+.jstree-node.list-group-item.active:focus {
+  border-color: $list-group-border;
+}
 
 /* --- Record --- */
 #hierarchyTreeHolder {
@@ -76,34 +144,7 @@
   color: #000;
 }
 
-.collection-hierarchytree {
-  .jstree-clicked {
-    color: $list-group-active-color;
-    background-color: $list-group-active-bg;
-    .jstree-icon {
-      color: #fff;
-    }
-  }
-}
-
 /* --- Facets --- */
-.facet .jstree-ocl:before {
-  float: left;
-  width: 10px;
-  padding: 0;
-  margin-left: -10px;
-  font-family: 'FontAwesome';
-  font-weight: normal;
-  font-style: normal;
-  text-decoration:inherit;
-  cursor: pointer;
-  speak: none;
-}
-.facet .jstree-default {
-  & .jstree-open > .jstree-ocl:before {content: "\f0d7";}
-  & .jstree-closed > .jstree-ocl:before {content: "\f0da";}
-  & .jstree-leaf > .jstree-ocl:before {content: " ";}
-}
 /* facet list styling */
 .jstree-facet li span.main {
   overflow: hidden;
@@ -111,20 +152,40 @@
   white-space: nowrap;
 }
 .jstree-facet .main.applied .fa-check {
-  margin-top: 2px;
-  margin-right: 4px;
+  margin: 4px;
 }
-.jstree-facet .jstree-container-ul { padding: 0; }
-.jstree-facet .active,
-.jstree-facet .active a.jstree-anchor {
-  background-color: $list-group-active-bg;
-  color: #fff;
+.jstree-facet .jstree-container-ul {
+  padding: 0;
 }
-li.jstree-facet,
-li.jstree-node { list-style: none; }
-li.jstree-facet .badge { cursor: text; }
-li.jstree-facet ul { padding-left: 20px; }
 
-.facet .jstree-node.list-group-item { padding-left: 19px; }
-.facet .jstree-icon::before { margin-left: -12px; }
-.facet .jstree-facet li span.main { padding: 1px; }
+li.jstree-facet,
+li.jstree-node {
+  list-style: none;
+}
+li.jstree-facet .badge {
+  cursor: text;
+}
+.jstree-facet .jstree-ocl {
+  float: left;
+}
+
+/* RTL */
+body.rtl {
+  .jstree-node .jstree-children {
+    padding-left: 0;
+    padding-right: 1rem;
+  }
+  .jstree-closed > .jstree-ocl::before {
+    content: "\25C0"; // Unicode black left-pointing triangle
+  }
+  .jstree-leaf > .jstree-ocl::before {
+    content: "\25C2"; // Unicode black left-pointing small triangle
+  }
+  .jstree-facet .jstree-ocl {
+    float: right;
+  }
+  .jstree-facet .active > .jstree-anchor .facet {
+      padding-left: 0;
+      padding-right: 2px;
+  }
+}

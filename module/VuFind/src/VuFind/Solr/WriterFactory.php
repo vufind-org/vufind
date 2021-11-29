@@ -69,7 +69,7 @@ class WriterFactory implements FactoryInterface
         $changeTracker = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('changetracker');
         return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class),
+            $container->get(\VuFindSearch\Service::class),
             $changeTracker
         );
     }

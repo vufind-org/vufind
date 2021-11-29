@@ -68,7 +68,6 @@ class AlphaBrowseFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
-            $container->get(\VuFind\Search\BackendManager::class)->get('Solr'),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get(\VuFind\Record\Router::class)
         );

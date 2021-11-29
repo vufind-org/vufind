@@ -47,6 +47,8 @@ use VuFindSearch\ParamBag;
  */
 class AlphabrowseController extends AbstractBase
 {
+    use Feature\AlphaBrowseTrait;
+
     /**
      * Default browse types
      *
@@ -136,9 +138,7 @@ class AlphabrowseController extends AbstractBase
             }
 
             // Load Solr data or die trying:
-            $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
-                ->get('Solr');
-            $result = $db->alphabeticBrowse(
+            $result = $this->alphabeticBrowse(
                 $view->source,
                 $view->from,
                 $page,
@@ -151,7 +151,7 @@ class AlphabrowseController extends AbstractBase
             // the end of the list....
             if ($result['Browse']['totalCount'] == 0) {
                 $page--;
-                $result = $db->alphabeticBrowse(
+                $result = $this->alphabeticBrowse(
                     $view->source,
                     $view->from,
                     $page,

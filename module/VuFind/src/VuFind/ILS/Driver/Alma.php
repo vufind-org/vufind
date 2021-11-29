@@ -737,12 +737,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         ];
 
         // Check for patron in Alma
-        $response = $this->makeRequest(
+        [$response, $status] = $this->makeRequest(
             '/users/' . rawurlencode($patronId),
-            $getParams
+            $getParams,
+            [],
+            'GET',
+            null,
+            null,
+            [400],
+            true
         );
 
-        if ($response !== null) {
+        if ($status != 400 && $response !== null) {
             // We may already have some information, so just fill the gaps
             $patron['id'] = (string)$response->primary_id;
             $patron['cat_username'] = trim($username);

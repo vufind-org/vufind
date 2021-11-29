@@ -27,7 +27,7 @@ VuFind.register('recordVersions', function recordVersions() {
       )
         .done(function onGetVersionsDone(response) {
           if (response.data.length > 0) {
-            $elem.html(response.data);
+            $elem.html(VuFind.updateCspNonce(response.data));
           } else {
             $elem.text('');
           }

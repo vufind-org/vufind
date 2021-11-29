@@ -37,14 +37,14 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     }
     var description = document.createElement('span');
     description.className = 'facet-value';
-    description.innerHTML = facet.displayText;
+    description.appendChild(document.createTextNode(facet.displayText));
     item.appendChild(description);
     html.appendChild(item);
 
     if (!facet.isApplied && counts) {
       var badge = document.createElement('span');
       badge.className = 'badge';
-      badge.innerHTML = facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator);
+      badge.appendChild(document.createTextNode(facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator)));
       html.appendChild(badge);
       if (allowExclude) {
         var excludeUrl = currentPath + facet.exclude;
@@ -90,7 +90,7 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   var excludeTitle = treeNode.data('exclude-title');
 
   var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, inSidebar);
-  treeNode.find('.fa-spinner').parent().remove();
+  treeNode.find('.loading-spinner').parent().remove();
   if (inSidebar) {
     treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
       treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
@@ -113,9 +113,9 @@ function initFacetTree(treeNode, inSidebar)
   treeNode.data('loaded', true);
 
   if (inSidebar) {
-    treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
+    treeNode.prepend('<li class="list-group-item">' + VuFind.loading() + '</li>');
   } else {
-    treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
+    treeNode.prepend('<div>' + VuFind.loading() + '<div>');
   }
   var request = {
     method: "getFacetData",
@@ -154,8 +154,9 @@ VuFind.register('sideFacets', function SideFacets() {
   function showLoadingOverlay(e, data) {
     e.preventDefault();
     var overlay = '<div class="facet-loading-overlay">'
-      + '<span class="facet-loading-overlay-label">' + VuFind.translate('loading')
-      + "...</span></div>";
+      + '<span class="facet-loading-overlay-label">'
+      + VuFind.loading()
+      + "</span></div>";
     $(this).closest(".collapse").append(overlay);
     // This callback operates both as a click handler and a JSTree callback;
     // if the data element is undefined, we assume we are handling a click.
@@ -207,7 +208,7 @@ VuFind.register('sideFacets', function SideFacets() {
               );
             }
           } else if (typeof facetData.html !== 'undefined') {
-            $facetContainer.html(facetData.html);
+            $facetContainer.html(VuFind.updateCspNonce(facetData.html));
             activateFacetBlocking($facetContainer);
           } else {
             var treeNode = $facetContainer.find('.jstree-facet');
@@ -352,21 +353,8 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
   return { setup: setup };
 });
 
-function registerMoreLessFacetsEventHandlers() {
-  $('.more-facets, .less-facets').off('click');
-  $('.more-facets').click(function moreFacets() {
-    var id = 'narrowGroupHidden-' + $(this).data('title');
-    $('.' + id).removeClass('hidden');
-    $('#more-' + id).addClass('hidden');
-    return false;
-  });
-
-  $('.less-facets').click(function lessFacets() {
-    var id = 'narrowGroupHidden-' + $(this).data('title');
-    $('.' + id).addClass('hidden');
-    $('#more-' + id).removeClass('hidden');
-    return false;
-  });
+function registerSideFacetTruncation() {
+  VuFind.truncate.initTruncate('.truncate-facets', '.facet');
 }
 
-VuFind.listen('VuFind.sidefacets.loaded', registerMoreLessFacetsEventHandlers);
+VuFind.listen('VuFind.sidefacets.loaded', registerSideFacetTruncation);

@@ -16,7 +16,7 @@
       <div class="item active">
         <?php foreach ($similarRecords as $index => $data): ?>
           <div class="carousel-item">
-            <a class="hover-overlay record-cover-link" href="<?=$this->recordLink()->getUrl($data)?>">
+            <a class="hover-overlay record-cover-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
               <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
               <div class="content">
                 <?php $formats = $data->getFormats(); ?>

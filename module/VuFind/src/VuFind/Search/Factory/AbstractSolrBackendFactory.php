@@ -153,7 +153,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * Create service
      *
      * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
+     * @param string             $name    Requested service name
      * @param array              $options Extra options (unused)
      *
      * @return Backend
@@ -170,6 +170,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
+        $backend->setIdentifier($name);
         $this->createListeners($backend);
         return $backend;
     }
@@ -285,9 +286,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
-        $legacyErrorListener = new LegacyErrorListener($backend);
+        $legacyErrorListener = new LegacyErrorListener($backend->getIdentifier());
         $legacyErrorListener->attach($events);
-        $errorListener = new ErrorListener($backend);
+        $errorListener = new ErrorListener($backend->getIdentifier());
         $errorListener->attach($events);
     }
 

@@ -167,6 +167,19 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Get holdings information for the specified record.
+     *
+     * @param string $id Record to obtain holdings for.
+     *
+     * @throws \Exception
+     * @return \SimpleXMLElement
+     */
+    public function getHoldings($id)
+    {
+        return $this->getConnector()->getHoldings($id);
+    }
+
+    /**
      * Return the WorldCat connector.
      *
      * @return Connector

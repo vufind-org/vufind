@@ -83,7 +83,8 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container->addJs('a');
         $container->addJs(['file' => 'p2', 'priority' => 220]);
         $container->addJs(['b', 'c']);
-        $container->addJs(['file' => 'd']);
+        $container->addJs(['file' => 'd', 'position' => 'header']);
+        $container->addJs(['file' => 'df', 'position' => 'footer']);
         $container->addJs('http://foo/bar:lt IE 7');
         $container->addJs(['file' => 'd1', 'load_after' => 'd']);
         $container->addJs(['file' => 'p1', 'priority' => 110]);
@@ -91,21 +92,50 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container->addJs([]);
 
         $expectedResult = [
-            ['file' => 'p1', 'priority' => 110],
-            ['file' => 'p2', 'priority' => 220],
-            ['file' => 'a'],
-            ['file' => 'b'],
-            ['file' => 'c'],
-            ['file' => 'd'],
-            ['file' => 'd1', 'load_after' => 'd'],
-            ['file' => 'd2', 'load_after' => 'd1'],
+            ['file' => 'p1', 'priority' => 110, 'position' => 'header'],
+            ['file' => 'p2', 'priority' => 220, 'position' => 'header'],
+            ['file' => 'a', 'position' => 'header'],
+            ['file' => 'b', 'position' => 'header'],
+            ['file' => 'c', 'position' => 'header'],
+            ['file' => 'd', 'position' => 'header'],
+            ['file' => 'd1', 'load_after' => 'd', 'position' => 'header'],
+            ['file' => 'd2', 'load_after' => 'd1', 'position' => 'header'],
+            ['file' => 'df', 'position' => 'footer'],
             [
                 'file' => 'http://foo/bar',
+                'position' => 'header',
                 'attributes' => ['conditional' => 'lt IE 7']
             ],
         ];
-
         $this->assertEquals($expectedResult, $container->getJs());
+
+        $expectedHeaderResult = [
+            ['file' => 'p1', 'priority' => 110, 'position' => 'header'],
+            ['file' => 'p2', 'priority' => 220, 'position' => 'header'],
+            ['file' => 'a', 'position' => 'header'],
+            ['file' => 'b', 'position' => 'header'],
+            ['file' => 'c', 'position' => 'header'],
+            ['file' => 'd', 'position' => 'header'],
+            ['file' => 'd1', 'load_after' => 'd', 'position' => 'header'],
+            ['file' => 'd2', 'load_after' => 'd1', 'position' => 'header'],
+            [
+                'file' => 'http://foo/bar',
+                'position' => 'header',
+                'attributes' => ['conditional' => 'lt IE 7']
+            ],
+        ];
+        $this->assertEquals(
+            $expectedHeaderResult,
+            array_values($container->getJs('header'))
+        );
+
+        $expectedFooterResult = [
+            ['file' => 'df', 'position' => 'footer'],
+        ];
+        $this->assertEquals(
+            $expectedFooterResult,
+            array_values($container->getJs('footer'))
+        );
     }
 
     /**

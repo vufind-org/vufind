@@ -455,6 +455,18 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Extract the Solr core from the connector's URL.
+     *
+     * @return string
+     */
+    public function getCore(): string
+    {
+        $url = rtrim($this->getUrl(), '/');
+        $parts = explode('/', $url);
+        return array_pop($parts);
+    }
+
+    /**
      * Send request the SOLR and return the response.
      *
      * @param HttpClient $client Prepared HTTP client

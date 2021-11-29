@@ -28,13 +28,13 @@
 namespace VuFind\Solr;
 
 use VuFind\Db\Table\ChangeTracker;
-use VuFind\Search\BackendManager;
-use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Service;
 
 /**
  * Solr Writer service
@@ -48,11 +48,11 @@ use VuFindSearch\ParamBag;
 class Writer
 {
     /**
-     * Search backend manager
+     * Search service
      *
-     * @var BackendManager
+     * @var Service
      */
-    protected $backendManager;
+    protected $searchService;
 
     /**
      * Change tracker database table gateway
@@ -64,12 +64,12 @@ class Writer
     /**
      * Constructor
      *
-     * @param BackendManager $backend Search backend manager
-     * @param ChangeTracker  $tracker Change tracker database table gateway
+     * @param Service       $service Search service
+     * @param ChangeTracker $tracker Change tracker database table gateway
      */
-    public function __construct(BackendManager $backend, ChangeTracker $tracker)
+    public function __construct(Service $service, ChangeTracker $tracker)
     {
-        $this->backendManager = $backend;
+        $this->searchService = $service;
         $this->changeTracker = $tracker;
     }
 
@@ -83,7 +83,7 @@ class Writer
     public function commit($backend)
     {
         // Commit can take a long time -- use a custom timeout:
-        $this->writeWithTimeout($backend, new CommitDocument(), 60 * 60);
+        $this->write($backend, new CommitDocument(), 60 * 60);
     }
 
     /**
@@ -114,8 +114,7 @@ class Writer
     {
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addQuery($query);
-        $connector = $this->getConnector($backend);
-        $connector->write($deleteDoc);
+        $this->write($backend, $deleteDoc);
     }
 
     /**
@@ -131,13 +130,11 @@ class Writer
         // Delete IDs:
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addKeys($idList);
-        $connector = $this->getConnector($backend);
-        $connector->write($deleteDoc);
+        $result = $this->write($backend, $deleteDoc);
 
         // Update change tracker:
-        $core = $this->getCore($connector);
         foreach ($idList as $id) {
-            $this->changeTracker->markDeleted($core, $id);
+            $this->changeTracker->markDeleted($result['core'], $id);
         }
     }
 
@@ -151,7 +148,7 @@ class Writer
     public function optimize($backend)
     {
         // Optimize can take a long time -- use a custom timeout:
-        $this->writeWithTimeout($backend, new OptimizeDocument(), 60 * 60 * 24);
+        $this->write($backend, new OptimizeDocument(), 60 * 60 * 24);
     }
 
     /**
@@ -170,61 +167,29 @@ class Writer
         $handler = 'update',
         ParamBag $params = null
     ) {
-        $connector = $this->getConnector($backend);
-        $connector->write($doc, $handler, $params);
+        $this->write($backend, $doc, null, $handler, $params);
     }
 
     /**
-     * Write a document using a custom timeout value.
+     * Write a document to the search service. Return the result array from
+     * the command.
      *
      * @param string            $backend Backend ID
      * @param DocumentInterface $doc     Document(s) to write
-     * @param int               $timeout Timeout value
+     * @param ?int              $timeout Timeout value (null for default)
+     * @param string            $handler Handler to use
+     * @param ?ParamBag         $params  Additional backend params (optional)
      *
-     * @return void
+     * @return array
      */
-    protected function writeWithTimeout($backend, DocumentInterface $doc, $timeout)
-    {
-        $connector = $this->getConnector($backend);
-
-        // Remember the old timeout value and then override it with a different one:
-        $oldTimeout = $connector->getTimeout();
-        $connector->setTimeout($timeout);
-
-        // Write!
-        $connector->write($doc);
-
-        // Restore previous timeout value:
-        $connector->setTimeout($oldTimeout);
-    }
-
-    /**
-     * Get the connector for a specified backend.
-     *
-     * @param string $backend Backend ID
-     *
-     * @return Connector
-     */
-    protected function getConnector($backend)
-    {
-        $connector = $this->backendManager->get($backend)->getConnector();
-        if (!($connector instanceof Connector)) {
-            throw new \Exception('Unexpected connector: ' . get_class($connector));
-        }
-        return $connector;
-    }
-
-    /**
-     * Extract the Solr core from a connector's URL.
-     *
-     * @param Connector $connector Solr connector
-     *
-     * @return string
-     */
-    protected function getCore(Connector $connector)
-    {
-        $url = rtrim($connector->getUrl(), '/');
-        $parts = explode('/', $url);
-        return array_pop($parts);
+    protected function write(
+        $backend,
+        DocumentInterface $doc,
+        $timeout = null,
+        $handler = 'update',
+        $params = null
+    ) {
+        $command = new WriteDocumentCommand(...func_get_args());
+        return $this->searchService->invoke($command)->getResult();
     }
 }

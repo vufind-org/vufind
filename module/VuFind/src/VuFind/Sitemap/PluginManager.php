@@ -46,8 +46,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'StartPage' => Plugin\StartPage::class,
         'ContentPages' => Plugin\ContentPages::class,
+        'Index' => Plugin\Index::class,
+        'StartPage' => Plugin\StartPage::class,
     ];
 
     /**
@@ -56,8 +57,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Plugin\StartPage::class => InvokableFactory::class,
         Plugin\ContentPages::class => Plugin\ContentPagesFactory::class,
+        Plugin\Index::class => Plugin\IndexFactory::class,
+        Plugin\StartPage::class => InvokableFactory::class,
     ];
 
     /**

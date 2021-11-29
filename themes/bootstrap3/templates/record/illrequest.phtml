@@ -4,7 +4,7 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-        . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+        . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
         . '<li class="active">' . $this->transEsc('ill_request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('ill_request_place_text')?></h2>
@@ -55,7 +55,11 @@
 
   <?php if (in_array("pickUpLibraryLocation", $this->extraFields)): ?>
     <div class="form-group">
-      <label id="pickupLibraryLocationLabel" class="control-label"><i></i>&nbsp;<?=$this->transEsc("ill_request_pick_up_location")?>:<noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript></label>
+      <label id="pickupLibraryLocationLabel" class="control-label">
+        <span class="loading-icon"><?=$this->icon('spinner') ?></span>
+        <?=$this->transEsc("ill_request_pick_up_location")?>:
+        <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
+      </label>
       <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control"></select>
     </div>
   <?php endif; ?>

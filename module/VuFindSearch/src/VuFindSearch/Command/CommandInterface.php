@@ -47,11 +47,11 @@ use VuFindSearch\ParamBag;
 interface CommandInterface
 {
     /**
-     * Return name of target backend.
+     * Return target backend identifier.
      *
      * @return string
      */
-    public function getTargetBackendName(): string;
+    public function getTargetIdentifier(): string;
 
     /**
      * Execute command on backend.

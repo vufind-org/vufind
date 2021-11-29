@@ -1,4 +1,4 @@
-<span class="relaisLink"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('relais_checking')?></span>
+<span class="relaisLink"><?=$this->icon('spinner') ?> <?=$this->transEsc('relais_checking')?></span>
 <?php
   // Only activate Relais code once, even if there are multiple items:
   if (empty($this->layout()->relaisActive)) {
