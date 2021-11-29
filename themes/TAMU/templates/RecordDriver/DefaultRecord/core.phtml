@@ -79,7 +79,7 @@
       $sfxData->title = null;
       $sfxData->isJournal = false;
       if ($issnParent) {
-        $issnSubField = $issnParent[0]->getSubField("a");
+        $issnSubField = $issnParent[0]->getSubField("a") ? $issnParent[0]->getSubField("a"):$issnParent[0]->getSubField("y");
         if ($issnSubField) {
           $sfxData->issn = $issnSubField->getData();
           $sfxData->title = $this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection());
