@@ -100,7 +100,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * - starts with letter
      * - contains only letters and hyphens
      *
-     * @param string $tagName  Element tag name
+     * @param string $tagName Element tag name
      *
      * @return void
      * @throws InvalidArgumentException

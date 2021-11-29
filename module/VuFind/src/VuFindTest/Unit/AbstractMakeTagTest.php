@@ -41,7 +41,7 @@ abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
     /**
      * Get makeTag helper with mock view
      *
-     * return \Laminas\View\Helper\EscapeHtml
+     * @return \Laminas\View\Helper\EscapeHtml
      */
     protected function getViewWithHelpers()
     {
