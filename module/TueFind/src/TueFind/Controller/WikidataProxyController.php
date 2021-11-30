@@ -13,7 +13,7 @@ class WikidataProxyController extends AbstractProxyController
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     const API_URL = 'https://www.wikidata.org/w/api.php?format=json';
-    const CACHE_DIR = '/tmp/proxycache/wikidata';
+    const CACHE_DIR = 'wikidata';
 
     public function loadAction()
     {

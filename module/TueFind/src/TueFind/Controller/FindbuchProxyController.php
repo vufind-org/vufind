@@ -34,7 +34,7 @@ class FindbuchProxyController extends AbstractProxyController
                             'unibib_rub',
                             'wikidata'];
 
-    const CACHE_DIR = '/tmp/proxycache/findbuch';
+    const CACHE_DIR = 'findbuch';
 
     public function loadAction()
     {
