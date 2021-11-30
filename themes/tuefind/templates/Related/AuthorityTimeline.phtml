@@ -4,7 +4,9 @@
     $chartJSby = '';
     $chartJSabout = '';
     foreach($responseChartData as $chartData) {
-        $chartJSDates .= $chartData[0].',';
+        if(is_int($chartData[0])) {
+            $chartJSDates .= $chartData[0].',';
+        }
         $chartJSby .= $chartData[1].',';
         $chartJSabout .= $chartData[2].',';
     }
