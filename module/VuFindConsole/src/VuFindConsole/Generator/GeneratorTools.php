@@ -110,10 +110,10 @@ class GeneratorTools
     {
         $pmClass = $this->getPluginManagerForNamespace($classParts, 'VuFind');
         // Special cases: no such service; use framework core services instead:
-        if ($pmClass === \VuFind\Controller\PluginManager::class) {
+        if ($pmClass === 'VuFind\Controller\PluginManager') {
             return 'ControllerManager';
         }
-        if ($pmClass === \VuFind\Controller\Plugin\PluginManager::class) {
+        if ($pmClass === 'VuFind\Controller\Plugin\PluginManager') {
             return \Laminas\Mvc\Controller\PluginManager::class;
         }
         // Special case: no such service; check other modules:
