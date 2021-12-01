@@ -28,8 +28,8 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Factory for the reserves SOLR backend.
@@ -55,15 +55,13 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
     }
 
     /**
-     * Create the SOLR backend.
+     * Create the record collection factory.
      *
-     * @param Connector $connector Connector
-     *
-     * @return \VuFindSearch\Backend\Solr\Backend
+     * @return RecordCollectionFactoryInterface
      */
-    protected function createBackend(Connector $connector)
+    protected function createRecordCollectionFactory()
+        : RecordCollectionFactoryInterface
     {
-        $backend = parent::createBackend($connector);
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
@@ -71,8 +69,6 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
             $driver->setRawData($data);
             return $driver;
         };
-        $factory = new RecordCollectionFactory($callback);
-        $backend->setRecordCollectionFactory($factory);
-        return $backend;
+        return new RecordCollectionFactory($callback);
     }
 }
