@@ -240,10 +240,34 @@ var TueFind = {
                                 html += '</ul><ul class="list-group">';
                             }
                             previousSortPriority = reference.sortPriority;
-                            html += '<li class="list-group-item"><a href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank" property="sameAs">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
+                            html += '<li class="list-group-item tf-beacon-reference"><a class="tf-beacon-reference-link" href="' + reference.url + '" title="' + TueFind.EscapeHTML(reference.description) + '" target="_blank" property="sameAs">' + TueFind.EscapeHTML(reference.label) + '</a></li>';
                         });
                         html += '</ul>';
                         $(container).append(html);
+
+                        // check if urls are valid (only if special URL parameter is set)
+                        // Note that CORS needs to be disabled in your browser for this to work.
+                        // See also:
+                        // - https://github.com/ubtue/tuefind/issues/1924
+                        // - https://medium.com/swlh/avoiding-cors-errors-on-localhost-in-2020-5a656ed8cefa
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('checkUrls') == 'true') {
+                            $('.tf-beacon-reference').each(function() {
+                                $(this).css('backgroundColor', 'yellow');
+                                var urlToCheck = $(this).children('.tf-beacon-reference-link').attr('href');
+                                var targetBackground = $(this);
+                                $.ajax({
+                                    type: 'GET',
+                                    url: urlToCheck,
+                                    complete: function(jqXHR, textStatus) {
+                                        let color = 'red';
+                                        if (textStatus == 'success')
+                                            color = 'green';
+                                        targetBackground.css('backgroundColor', color);
+                                    }
+                                });
+                            });
+                        }
                     }
                 }
             });
