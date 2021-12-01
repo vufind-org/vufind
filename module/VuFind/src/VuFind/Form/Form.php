@@ -548,14 +548,24 @@ class Form extends \Laminas\Form\Form implements
         $elements = [];
         $configuredElements = $this->getFormElements($config);
 
-        // Add sender contact name & email fields
+        // Defaults for sender contact name & email fields:
         $senderName = [
-            'name' => 'name', 'type' => 'text', 'label' => 'feedback_name',
-            'group' => '__sender__'
+            'name' => 'name',
+            'type' => 'text',
+            'label' => $this->translate('feedback_name'),
+            'group' => '__sender__',
+            'settings' => [
+                'size' => 50
+            ]
         ];
         $senderEmail = [
-            'name' => 'email', 'type' => 'email', 'label' => 'feedback_email',
-            'group' => '__sender__'
+            'name' => 'email',
+            'type' => 'email',
+            'label' => $this->translate('feedback_email'),
+            'group' => '__sender__',
+            'settings' => [
+                'size' => 254
+            ]
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderEmail['aria-required']
@@ -567,8 +577,6 @@ class Form extends \Laminas\Form\Form implements
         if ($formConfig['senderEmailRequired'] ?? false) {
             $senderEmail['required'] = $senderEmail['aria-required'] = true;
         }
-        $configuredElements[] = $senderName;
-        $configuredElements[] = $senderEmail;
 
         foreach ($configuredElements as $el) {
             $element = [];
@@ -585,7 +593,7 @@ class Form extends \Laminas\Form\Form implements
             }
 
             if (in_array($element['type'], ['checkbox', 'radio'])
-                && ! isset($element['group'])
+                && !isset($element['group'])
             ) {
                 $element['group'] = $element['name'];
             }
@@ -673,7 +681,25 @@ class Form extends \Laminas\Form\Form implements
                     $element['settings']['rows'] = 8;
                 }
             }
+
+            // Merge sender fields with any existing field definitions:
+            if ('name' === $element['name']) {
+                $element = array_merge($senderName, $element);
+                $senderName = null;
+            } elseif ('email' === $element['name']) {
+                $element = array_merge($senderEmail, $element);
+                $senderEmail = null;
+            }
+
             $elements[] = $element;
+        }
+
+        // Add sender fields if they were not merged in the loop above:
+        if ($senderName) {
+            $elements[] = $senderName;
+        }
+        if ($senderEmail) {
+            $elements[] = $senderEmail;
         }
 
         if ($this->reportReferrer()) {

@@ -157,7 +157,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 50],
+                    'settings' => ['size' => 254],
                 ],
                 [
                     'type' => 'submit',
@@ -205,7 +205,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                         'name' => 'email',
                         'group' => '__sender__',
                         'label' => 'feedback_email',
-                        'settings' => ['size' => 50],
+                        'settings' => ['size' => 254],
                     ],
                 ],
                 'Email/form.phtml'

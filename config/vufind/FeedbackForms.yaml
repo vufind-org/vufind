@@ -53,7 +53,7 @@
 #
 #   fields (array) List of form elements with the following options:
 #
-#     name (string)        Element name
+#     name (string)        Element name (see below for reserved element names)
 #     label (string)       Element label (translation key)
 #     required (boolean)   Is the element required? (for checkbox elements this means that
 #                          all options have to be selected.)
@@ -113,6 +113,19 @@
 #       can be configured by adding a HTML-attribute via 'settings', for example:
 #       settings:
 #         - [placeholder, Please select...]
+#
+#
+# Reserved element names:
+#
+# - name       Sender name. You can add the field to fields configuration to define
+#              its position on the form.
+# - email      Sender email. You can add the field to fields configuration to define
+#              its position on the form.
+# - referrer   Used for browser's referrer information when reportReferrer is
+#              enabled.
+# - useragent  Used for reporting browser's user agent string when reportUserAgent is
+#              enabled.
+# - submit     Form submit button.
 #
 #-----------------------------------------------------------------------------------
 
