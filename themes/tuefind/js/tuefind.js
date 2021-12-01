@@ -252,7 +252,6 @@ var TueFind = {
                         // - https://medium.com/swlh/avoiding-cors-errors-on-localhost-in-2020-5a656ed8cefa
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('checkUrls') == 'true') {
-                            console.log('checkUrls');
                             $('.tf-beacon-reference').each(function() {
                                 $(this).css('backgroundColor', 'yellow');
                                 var urlToCheck = $(this).children('.tf-beacon-reference-link').attr('href');
