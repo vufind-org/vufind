@@ -667,6 +667,16 @@ class Form extends \Laminas\Form\Form implements
                 $element['settings'] = $settings;
             }
 
+            // Merge sender fields with any existing field definitions:
+            if ('name' === $element['name']) {
+                $element = array_merge($senderName, $element);
+                $senderName = null;
+            } elseif ('email' === $element['name']) {
+                $element = array_merge($senderEmail, $element);
+                $senderEmail = null;
+            }
+
+            // Add default field size settings for fields that don't define them:
             if (in_array($elementType, ['text', 'url', 'email'])
                 && !isset($element['settings']['size'])
             ) {
@@ -680,15 +690,6 @@ class Form extends \Laminas\Form\Form implements
                 if (!isset($element['settings']['rows'])) {
                     $element['settings']['rows'] = 8;
                 }
-            }
-
-            // Merge sender fields with any existing field definitions:
-            if ('name' === $element['name']) {
-                $element = array_merge($senderName, $element);
-                $senderName = null;
-            } elseif ('email' === $element['name']) {
-                $element = array_merge($senderEmail, $element);
-                $senderEmail = null;
             }
 
             $elements[] = $element;
