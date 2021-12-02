@@ -43,26 +43,7 @@ public class TueFind extends SolrIndexerMixin {
         final String[] fieldSpecs = fieldSpecList.split(":");
         List<Subfield> subfieldsToSearch = new ArrayList<>();
         for (final String fieldSpec : fieldSpecs) {
-            final List<VariableField> fieldSpecFields = record.getVariableFields(fieldSpec.substring(0,3));
-            for (final VariableField variableField : fieldSpecFields) {
-                final DataField field = (DataField) variableField;
-                if (field == null)
-                    continue;
-                // Differentiate between field and subfield specifications:
-                if (fieldSpec.length() == 3 + 1)
-                    subfieldsToSearch = field.getSubfields(fieldSpec.charAt(3));
-                else if (fieldSpec.length() == 3)
-                    subfieldsToSearch = field.getSubfields();
-                else {
-                    logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
-                    System.exit(1);
-                }
-
-                for (final Subfield subfield : subfieldsToSearch) {
-                    if (!excludeSubfields.contains(Character.toString(subfield.getCode())))
-                        extractedValues.add(subfield.getData());
-                }
-            }
+            extractedValues.addAll(getAllSubfieldsBut(record, fieldSpec, excludeSubfields, (List<String>)null));
         }
         return extractedValues;
     }
@@ -76,7 +57,7 @@ public class TueFind extends SolrIndexerMixin {
             if (field == null)
                 continue;
             String indicators = Character.toString(field.getIndicator1()) + Character.toString(field.getIndicator2());
-            if (excludeIndicators.contains(indicators))
+            if (excludeIndicators != null && excludeIndicators.contains(indicators))
                 continue;
             // Differentiate between field and subfield specifications:
             if (fieldSpec.length() == 3 + 1)
