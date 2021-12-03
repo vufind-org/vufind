@@ -71,7 +71,7 @@
     <?php endif ?>
     <?php if (in_array($handleGroup, ['open', 'openAndClose'])): ?>
       <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-        <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($el['name']) . '"' : ''?>>
+        <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($formElement->getAttribute('id')) . '"' : ''?>>
       <?php else: ?>
         <div class="field-set"<?= !empty($elementHelpPre) ? ' role="contentinfo" aria-label="' . $this->escapeHtmlAttr($elementHelpPre) . '"' : ''?>>
       <?php endif ?>
@@ -88,9 +88,9 @@
           $requireOne = $el['requireOne'] ?? false;
         ?>
         <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-          <p id="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label radio-label<?=$required && !$requireOne? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
-        <?php else: ?>
-          <label for="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
+          <p id="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label radio-label<?=$required && !$requireOne? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
+        <?php elseif ('hidden' !== $el['type']): ?>
+          <label for="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
         <?php endif ?>
       <?php endif ?>
     <?php else: ?>
