@@ -59,6 +59,8 @@
 #                          all options have to be selected.)
 #     requireOne (boolean) Require at least one checkbox option to be selected.
 #     settings (array)     HTML attributes as key-value pairs, for example:
+#       - class: "custom-css-class another-class"
+#                          or
 #       - [class, "custom-css-class another-class"]
 #     type (string)        Element type (text|textarea|date|email|url|select|radio|checkbox|hidden)
 #

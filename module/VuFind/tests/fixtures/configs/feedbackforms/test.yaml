@@ -167,3 +167,24 @@ forms:
         type: textarea
         label: Comments
         required: true
+
+  TestSenderFieldsWithSettings:
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+        settings:
+        - size: 100
+      - name: phone
+        type: text
+        label: Phone Number
+        group: __sender__
+      - name: email
+        type: email
+        label: feedback_email
+        settings:
+        - [aria-label, Test label]
+      - name: message
+        type: textarea
+        label: Comments
+        required: true

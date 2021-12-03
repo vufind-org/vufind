@@ -331,6 +331,57 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test sender field merging.
+     *
+     * @return void
+     */
+    public function testSenderFieldMergingWithSettings()
+    {
+        $form = $this->getMockTestForm('TestSenderFieldsWithSettings');
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 100],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'group' => '__sender__',
+                    'label' => 'Phone Number',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => [
+                        'size' => 254,
+                        'aria-label' => 'Test label'
+                    ],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['cols' => 50, 'rows' => 8],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
+    }
+
+    /**
      * Get a mock YamlReader object.
      *
      * @return YamlReader

@@ -656,9 +656,19 @@ class Form extends \Laminas\Form\Form implements
 
             $settings = [];
             if (isset($el['settings'])) {
-                foreach ($el['settings'] as [$settingId, $settingVal]) {
-                    $settingId = trim($settingId);
-                    $settingVal = trim($settingVal);
+                foreach ($el['settings'] as $setting) {
+                    if (!is_array($setting)) {
+                        continue;
+                    }
+                    // Allow both [key => value] and [key, value]:
+                    if (count($setting) !== 2) {
+                        reset($setting);
+                        $settingId = trim(key($setting));
+                        $settingVal = trim(current($setting));
+                    } else {
+                        $settingId = trim($setting[0]);
+                        $settingVal = trim($setting[1]);
+                    }
                     if ($settingId === 'placeholder') {
                         $settingVal = $this->translate($settingVal);
                     }
@@ -669,10 +679,10 @@ class Form extends \Laminas\Form\Form implements
 
             // Merge sender fields with any existing field definitions:
             if ('name' === $element['name']) {
-                $element = array_merge($senderName, $element);
+                $element = array_replace_recursive($senderName, $element);
                 $senderName = null;
             } elseif ('email' === $element['name']) {
-                $element = array_merge($senderEmail, $element);
+                $element = array_replace_recursive($senderEmail, $element);
                 $senderEmail = null;
             }
 
@@ -837,7 +847,7 @@ class Form extends \Laminas\Form\Form implements
         if (!empty($el['settings'])) {
             $attributes += $el['settings'];
         }
-        if (!empty($el['label'])) {
+        if (!empty($el['label']) && !isset($attributes['aria-label'])) {
             $attributes['aria-label'] = $el['label'];
         }
 
