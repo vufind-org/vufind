@@ -166,7 +166,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
         <tr vocab="http://schema.org/" typeof="Offer">
           <th colspan="2">
   <?php
-      if ($item['issues'][0] ?? false) {
+      if (count($item['issues']) > 0) {
   ?>
             <span>Library Owns</span>
   <?php
@@ -179,9 +179,9 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
           </th>
           <td>
   <?php
-      if ($item['issues'][0] ?? false) {
+      if (count($item['issues']) > 0) {
   ?>
-            <span class="holding_note">&nbsp;&nbsp;(<?=$this->escapeHtml($item['issues'][0])?>)</span>
+            <span class="holding_note">(<?=$this->escapeHtml(implode('; ', $item['issues']))?>)</span>
   <?php
       }
   ?>
