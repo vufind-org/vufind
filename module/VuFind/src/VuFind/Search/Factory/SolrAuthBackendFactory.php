@@ -40,13 +40,6 @@ namespace VuFind\Search\Factory;
 class SolrAuthBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Method for creating a record driver.
-     *
-     * @var string
-     */
-    protected $createRecordMethod = 'getSolrAuthRecord';
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -66,5 +59,19 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
     {
         $config = $this->config->get($this->mainConfig);
         return $config->Index->default_authority_core ?? 'authority';
+    }
+
+    /**
+     * Get the callback for creating a record.
+     *
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
+     */
+    protected function getCreateRecordCallback(): ?callable
+    {
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
+        return [$manager, 'getSolrAuthRecord'];
     }
 }

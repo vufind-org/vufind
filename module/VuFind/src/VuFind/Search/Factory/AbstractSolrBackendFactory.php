@@ -157,13 +157,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $recordCollectionFactoryClass = RecordCollectionFactory::class;
 
     /**
-     * Method for creating a record driver.
-     *
-     * @var string
-     */
-    protected $createRecordMethod = 'getSolrRecord';
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -487,12 +480,22 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createRecordCollectionFactory()
         : RecordCollectionFactoryInterface
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
         return new $this->recordCollectionFactoryClass(
-            [$manager, $this->createRecordMethod],
+            $this->getCreateRecordCallback(),
             $this->recordCollectionClass
         );
+    }
+
+    /**
+     * Get the callback for creating a record.
+     *
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
+     */
+    protected function getCreateRecordCallback(): ?callable
+    {
+        return null;
     }
 
     /**

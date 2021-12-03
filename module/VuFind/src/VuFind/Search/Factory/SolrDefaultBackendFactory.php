@@ -60,4 +60,18 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
         $config = $this->config->get($this->mainConfig);
         return $config->Index->default_core ?? 'biblio';
     }
+
+    /**
+     * Get the callback for creating a record.
+     *
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
+     */
+    protected function getCreateRecordCallback(): ?callable
+    {
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
+        return [$manager, 'getSolrRecord'];
+    }
 }
