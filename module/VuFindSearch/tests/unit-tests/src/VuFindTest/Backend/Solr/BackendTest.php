@@ -384,9 +384,12 @@ class BackendTest extends TestCase
     public function testWriteDocument()
     {
         $doc = new CommitDocument();
-        $connector = $this->getConnectorMock(
-            ['write', 'getUrl', 'getTimeout', 'setTimeout']
-        );
+        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+            ->onlyMethods(['setOptions'])
+            ->getMock();
+        $client->expects($this->exactly(1))->method('setOptions')
+            ->with(['timeout' => 60]);
+        $connector = $this->getConnectorMock(['getUrl', 'write'], $client);
         $connector->expects($this->once())->method('write')
             ->with(
                 $this->equalTo($doc),
@@ -395,10 +398,6 @@ class BackendTest extends TestCase
             );
         $connector->expects($this->once())->method('getUrl')
             ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
-        $connector->expects($this->once())->method('getTimeout')
-            ->will($this->returnValue(30));
-        $connector->expects($this->exactly(2))->method('setTimeout')
-            ->withConsecutive([60], [30]);
         $backend = new Backend($connector);
         $this->assertEquals(
             ['core' => 'biblio'],
@@ -445,16 +444,18 @@ class BackendTest extends TestCase
     /**
      * Return connector mock.
      *
-     * @param array $mock Functions to mock
+     * @param array      $mock   Functions to mock
+     * @param HttpClient $client HTTP Client (optional)
      *
      * @return Connector
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = [], $client = null)
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
+        $client = $client ?? new \Laminas\Http\Client();
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->onlyMethods($mock)
-            ->setConstructorArgs(['http://example.org/', $map])
+            ->setConstructorArgs(['http://example.org/', $map, $client])
             ->getMock();
     }
 }

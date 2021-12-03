@@ -97,13 +97,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected $uniqueKey;
 
     /**
-     * HTTP read timeout.
-     *
-     * @var int
-     */
-    protected $timeout;
-
-    /**
      * Request cache
      *
      * @var StorageInterface
@@ -115,21 +108,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param string|array $url       SOLR core URL or an array of alternative URLs
      * @param HandlerMap   $map       Handler map
+     * @param HttpClient   $client    HTTP client
      * @param string       $uniqueKey Solr field used to store unique identifier
-     * @param HttpClient   $client    HTTP client (optional)
      */
     public function __construct(
         $url,
         HandlerMap $map,
+        HttpClient $client,
         $uniqueKey = 'id',
-        HttpClient $client = null
     ) {
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        $this->client = $client ?? new HttpClient();
-        // Set default timeout:
-        $this->setTimeout(30);
+        $this->client = $client;
     }
 
     /// Public API
@@ -263,32 +254,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Get the HTTP connect timeout.
-     *
-     * @return int
-     */
-    public function getTimeout()
-    {
-        return $this->timeout;
-    }
-
-    /**
-     * Set the HTTP connect timeout.
-     *
-     * @param int $timeout Timeout in seconds
-     *
-     * @return void
-     */
-    public function setTimeout($timeout)
-    {
-        // Ideally, it would be nice to fully delegate the timeout setting to the
-        // client... however, there is no way to retrieve the setting from the
-        // client, so we need to also store it here in the connector.
-        $this->timeout = $timeout;
-        $this->client->setOptions(compact('timeout'));
-    }
-
-    /**
      * Set the cache storage
      *
      * @param StorageInterface $cache Cache
@@ -330,6 +295,30 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         $this->debug(sprintf('Query %s', $paramString));
         return $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
+    }
+
+    /**
+     * Call a method with provided options for the HTTP client
+     *
+     * @param array  $options HTTP client options
+     * @param string $method  Method to call
+     * @param array  ...$args Method parameters
+     *
+     * @return mixed
+     */
+    public function callWithHttpOptions(
+        array $options,
+        string $method,
+        ...$args
+    ) {
+        $saveClient = $this->client;
+        try {
+            $this->client = clone $this->client;
+            $this->client->setOptions($options);
+            return call_user_func_array([$this, $method], $args);
+        } finally {
+            $this->client = $saveClient;
+        }
     }
 
     /**

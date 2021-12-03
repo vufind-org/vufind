@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Factory for BrowZine backend.
  *
@@ -30,7 +29,6 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
@@ -46,7 +44,7 @@ use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class BrowZineBackendFactory implements FactoryInterface
+class BrowZineBackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -54,13 +52,6 @@ class BrowZineBackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * BrowZine configuration
@@ -82,7 +73,7 @@ class BrowZineBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        parent::__invoke($sm, $name, $options);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         $this->browzineConfig = $configReader->get('BrowZine');
@@ -125,14 +116,10 @@ class BrowZineBackendFactory implements FactoryInterface
         if (empty($this->browzineConfig->General->library_id)) {
             throw new \Exception("Missing library ID in BrowZine.ini");
         }
-        // Build HTTP client:
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient();
-        $timeout = $this->browzineConfig->General->timeout ?? 30;
-        $client->setOptions(['timeout' => $timeout]);
 
+        // Create connector:
         $connector = new Connector(
-            $client,
+            $this->createHttpClient($this->browzineConfig->General->timeout ?? 30),
             $this->browzineConfig->General->access_token,
             $this->browzineConfig->General->library_id
         );

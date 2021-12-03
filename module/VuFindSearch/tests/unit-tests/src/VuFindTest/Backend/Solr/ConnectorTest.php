@@ -131,7 +131,7 @@ class ConnectorTest extends TestCase
             ->with($this->equalTo($csvData));
         $conn = $this->getMockBuilder(Connector::class)
             ->onlyMethods(['send'])
-            ->setConstructorArgs(['http://foo', $map, 'id', $client])
+            ->setConstructorArgs(['http://foo', $map, $client, 'id'])
             ->getMock();
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
@@ -161,7 +161,7 @@ class ConnectorTest extends TestCase
             ->with($this->equalTo($jsonData));
         $conn = $this->getMockBuilder(Connector::class)
             ->onlyMethods(['send'])
-            ->setConstructorArgs(['http://foo', $map, 'id', $client])
+            ->setConstructorArgs(['http://foo', $map, $client, 'id'])
             ->getMock();
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
@@ -219,20 +219,10 @@ class ConnectorTest extends TestCase
         $url = 'http://example.tld/';
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
         $key = 'foo';
-        $conn = new Connector($url, $map, $key);
+        $conn = new Connector($url, $map, new \Laminas\Http\Client(), $key);
         $this->assertEquals($url, $conn->getUrl());
         $this->assertEquals($map, $conn->getMap());
         $this->assertEquals($key, $conn->getUniqueKey());
-    }
-
-    /**
-     * Test default timeout value
-     *
-     * @return void
-     */
-    public function testDefaultTimeout()
-    {
-        $this->assertEquals(30, $this->createConnector()->getTimeout());
     }
 
     /**
@@ -252,7 +242,7 @@ class ConnectorTest extends TestCase
         }
 
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
-        return new Connector('http://example.tld/', $map, 'id', $this->createClient());
+        return new Connector('http://example.tld/', $map, $this->createClient(), 'id');
     }
 
     /**

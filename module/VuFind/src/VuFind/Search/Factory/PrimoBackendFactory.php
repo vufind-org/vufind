@@ -30,11 +30,9 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
-
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
 
@@ -51,7 +49,7 @@ use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PrimoBackendFactory implements FactoryInterface
+class PrimoBackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -59,13 +57,6 @@ class PrimoBackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Primo configuration
@@ -87,7 +78,7 @@ class PrimoBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        parent::__invoke($sm, $name, $options);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         $this->primoConfig = $configReader->get('Primo');
@@ -148,16 +139,11 @@ class PrimoBackendFactory implements FactoryInterface
             ? $permHandler->getInstCode()
             : null;
 
-        // Build HTTP client:
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient();
-        $timeout = $this->primoConfig->General->timeout ?? 30;
-        $client->setOptions(['timeout' => $timeout]);
-
+        // Create connector:
         $connector = new Connector(
             $this->primoConfig->General->url,
             $instCode,
-            $client
+            $this->createHttpClient($this->primoConfig->General->timeout ?? 30)
         );
         $connector->setLogger($this->logger);
         return $connector;
