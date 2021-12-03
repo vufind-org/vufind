@@ -115,7 +115,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $url,
         HandlerMap $map,
         HttpClient $client,
-        $uniqueKey = 'id',
+        $uniqueKey = 'id'
     ) {
         $this->url = $url;
         $this->map = $map;
