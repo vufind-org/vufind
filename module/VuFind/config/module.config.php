@@ -338,6 +338,9 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'Doctrine\DBAL\Connection' => 'VuFind\Db\ConnectionFactory',
+            'Doctrine\ORM\Mapping\Driver\AnnotationDriver' => 'VuFind\Db\AnnotationDriverFactory',
+            'Doctrine\ORM\EntityManager' => 'Roave\PsrContainerDoctrine\EntityManagerFactory',
             'League\CommonMark\MarkdownConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -461,6 +464,9 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'doctrine.connection.orm_default' => 'Doctrine\DBAL\Connection',
+            'doctrine.driver.orm_default' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+            'doctrine.entity_manager.orm_default' => 'Doctrine\ORM\EntityManager',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
