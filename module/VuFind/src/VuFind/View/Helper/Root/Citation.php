@@ -308,7 +308,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
 
         // pubDate -> issued (date)
         if (!empty($this->details['pubDate'])) {
-            $item['issued'] = ['raw' => $this->getYear()];
+            $item['issued'] = ['date-parts' => [[$this->getYear()]]];
         }
 
         // today -> accessed (date)
