@@ -150,7 +150,6 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
             ];
         }
 
-        // Admin API endpoints are not published
         return json_encode($spec);
     }
 
