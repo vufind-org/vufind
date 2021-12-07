@@ -66,7 +66,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      */
     public function __construct(
         $recordFactory = null,
-        $collectionClass = 'VuFindSearch\Backend\Solr\Response\Json\RecordCollection'
+        $collectionClass = RecordCollection::class
     ) {
         if (null === $recordFactory) {
             $this->recordFactory = function ($data) {
