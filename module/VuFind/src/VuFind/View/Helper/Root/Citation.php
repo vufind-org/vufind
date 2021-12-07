@@ -428,7 +428,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     public function getCitationVancouver()
     {
         $data = $this->getDataCSL();
-        $processor = new CiteProc(StyleSheet::loadStyleSheet('vancouver'), 'en-US');
+
+        $locale = $this->getView()->layout()->userLang;
+
+        $processor = new CiteProc(StyleSheet::loadStyleSheet('vancouver'), $locale);
         return $processor->render(json_decode($data), 'bibliography');
     }
 
