@@ -157,7 +157,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 50],
+                    'settings' => ['size' => 254],
                 ],
                 [
                     'type' => 'submit',
@@ -205,7 +205,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                         'name' => 'email',
                         'group' => '__sender__',
                         'label' => 'feedback_email',
-                        'settings' => ['size' => 50],
+                        'settings' => ['size' => 254],
                     ],
                 ],
                 'Email/form.phtml'
@@ -242,6 +242,143 @@ class FormTest extends \PHPUnit\Framework\TestCase
         // Validators: Good data
         $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
         $this->assertTrue($form->isValid());
+    }
+
+    /**
+     * Test sender field merging.
+     *
+     * @return void
+     */
+    public function testSenderFieldMerging()
+    {
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId('FeedbackSite');
+
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['cols' => 50, 'rows' => 8],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'feedback_name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
+
+        $form = $this->getMockTestForm('TestSenderFields');
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'group' => '__sender__',
+                    'label' => 'Phone Number',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['cols' => 50, 'rows' => 8],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
+    }
+
+    /**
+     * Test sender field merging.
+     *
+     * @return void
+     */
+    public function testSenderFieldMergingWithSettings()
+    {
+        $form = $this->getMockTestForm('TestSenderFieldsWithSettings');
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 100],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'group' => '__sender__',
+                    'label' => 'Phone Number',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => [
+                        'size' => 254,
+                        'aria-label' => 'Test label'
+                    ],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['cols' => 50, 'rows' => 8],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
     }
 
     /**
