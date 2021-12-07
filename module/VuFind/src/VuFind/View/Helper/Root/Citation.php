@@ -192,6 +192,47 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         return '';
     }
 
+    protected function trimPunctuation($text)
+    {
+        return trim($text, " \n\r\t\v\0,:;/");
+    }
+
+    protected function removeDateRange($name)
+    {
+        return preg_replace('/\d+[ ]*\-[ ]*\d*/', '', $name);
+    }
+
+    protected function nameToGivenFamily($name)
+    {
+        if (strpos($name, ', ') !== false) {
+            [$family, $given] = explode(', ', $this->removeDateRange($name));
+
+            return [
+                'given' => $this->trimPunctuation($given),
+                'family' => $this->trimPunctuation($family),
+            ];
+        }
+
+        $parts = explode(' ', $this->removeDateRange($name));
+
+        $family = array_pop($parts);
+        $given = implode(' ', $parts);
+
+        return [
+            'given' => $this->trimPunctuation($given),
+            'family' => $this->trimPunctuation($family),
+        ];
+    }
+
+    protected function addIfNotEmpty(&$item, $pairs)
+    {
+        foreach ($pairs as $key => $value) {
+            if (!empty($value)) {
+                $item[$key] = $this->trimPunctuation(((array) $value)[0]);
+            }
+        }
+    }
+
     /**
      * Map data about the current record to the CSL JSON schema defined here:
      * https://github.com/citation-style-language/schema/blob/master/csl-data.json
@@ -200,11 +241,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function getDataCSL()
     {
-        // id and title
-        $item = [
-            'id' => $this->driver->getUniqueID(),
-            'title' => $this->details['title'],
-        ];
+        // id
+        $item = ['id' => $this->driver->getUniqueID()];
+
         // type
         switch ($this->driver->getFormats()[0]) {
         case 'Thesis':
@@ -223,55 +262,70 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         default:
             $item['type'] = 'book';
         }
-        // subtitle -> shortTile
-        if (!empty($this->details['subtitle'])) {
-            $item['shortTitle'] = $this->details['subtitle'];
-        }
-        // authors
-        if (!empty($this->details['authors'])) {
-            foreach ($this->details['authors'] as $author) {
-                $item['author'][] = ['literal' => $author];
+
+        // title
+        $this->addIfNotEmpty(
+            $item,
+            [
+                'title' => $this->driver->tryMethod('getTitle'),
+                'title-short' => $this->driver->tryMethod('getShortTitle'),
+            ]
+        );
+
+        // meta
+        $this->addIfNotEmpty(
+            $item,
+            [
+                'call-number' => $this->driver->getCallNumbers(),
+                'edition' => $this->details['edition'],
+                'ISBN' => $this->driver->getISBNs(),
+                'language' => $this->driver->getLanguages(),
+                'publisher' => $this->driver->getPublishers(),
+                'publisher-place' => $this->driver->getPlacesOfPublication(),
+            ]
+        );
+
+        // journal meta
+        $this->addIfNotEmpty(
+            $item,
+            [
+                'ISSN' => $this->driver->getISSNs(),
+                'volume' => $this->driver->getContainerIssue(),
+                'volume-title' => $this->driver->getContainerVolume(),
+                // TODO: journalAbbreviation
+            ]
+        );
+        $pageFirst = $this->driver->tryMethod('getContainerStartPage');
+        $pageLast = $this->driver->tryMethod('getContainerEndPage');
+        if (!empty($pageFirst)) {
+            if (!empty($pageLast)) {
+                $item['page-first'] = $pageFirst;
+                $item['number-of-pages'] = $pageLast - $pageFirst;
+            } else {
+                $item['page'] = $pageFirst;
             }
         }
-        // pubDate -> issued
+
+        // pubDate -> issued (date)
         if (!empty($this->details['pubDate'])) {
-            $item['issued'] = ['raw' => $this->details['pubDate']];
+            $item['issued'] = ['raw' => $this->getYear()];
         }
-        // edition
-        if (!empty($this->details['edition'])) {
-            $item['edition'] = $this->details['edition'][0];
-        }
-        // isbn
-        if (!empty($this->driver->getISBNs())) {
-            $item['ISBN'] = $this->driver->getISBNs()[0];
-        }
-        // issn
-        if (!empty($this->driver->getISSNs())) {
-            $item['ISSN'] = $this->driver->getISSNs()[0];
-        }
-        // call-number
-        if (!empty($this->driver->getCallNumbers())) {
-            $item['call-number'] = $this->driver->getCallNumbers()[0];
-        }
-        // publisher
-        if (!empty($this->driver->getPublishers())) {
-            $item['publisher'] = $this->driver->getPublishers()[0];
-        }
-        // publisher-place
-        if (!empty($this->driver->getPlacesOfPublication())) {
-            $item['publisher-place'] = $this->driver->getPlacesOfPublication()[0];
+
+        // today -> accessed (date)
+        $item['accessed'] = ['raw' => date('Y-m-d\TH:i:s')];
+
+        // authors
+        if (!empty($this->details['authors'])) {
+            foreach ($this->details['authors'] as $i => $author) {
+                $item['author'][] = array_merge(
+                    ['literal' => $author],
+                    $this->nameToGivenFamily($author)
+                );
+            }
         }
         // URL
         if (!empty($this->driver->getURLs())) {
             $item['URL'] = $this->driver->getURLs()[0]['url'];
-        }
-        // TODO: volume
-        // TODO: editor
-        // TODO: director
-        // TODO: journalAbbreviation
-        // language
-        if (!empty($this->driver->getLanguages())) {
-            $item['language'] = $this->driver->getLanguages()[0];
         }
 
         return json_encode([$item]);
