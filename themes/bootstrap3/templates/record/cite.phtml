@@ -17,11 +17,13 @@
 <?php if (count($citations) == 0): ?>
   <?=$this->transEsc('No citations are available for this record')?>
 <?php else: ?>
-  <?php foreach ($citations as $caption => $citation): ?>
-    <strong><?=$this->transEsc($caption)?></strong>
-    <p class="text-left">
-      <?=$citation?>
-    </p>
-  <?php endforeach; ?>
+  <dl class="citation-list">
+    <?php foreach ($citations as $caption => $citation): ?>
+      <dt class="citation-title"><?=$this->transEsc($caption)?></dt>
+      <dd class="citation">
+        <?=$citation?>
+      </dd>
+    <?php endforeach; ?>
+  </dl>
   <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
 <?php endif; ?>
