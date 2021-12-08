@@ -66,6 +66,20 @@ class PrimoBackendFactory extends AbstractBackendFactory
     protected $primoConfig;
 
     /**
+     * Primo backend class
+     *
+     * @var string
+     */
+    protected $backendClass = Backend::class;
+
+    /**
+     * Primo connector class
+     *
+     * @var string
+     */
+    protected $connectorClass = Connector::class;
+
+    /**
      * Create service
      *
      * @param ContainerInterface $sm      Service manager
@@ -103,7 +117,10 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function createBackend(Connector $connector)
     {
-        $backend = new Backend($connector, $this->createRecordCollectionFactory());
+        $backend = new $this->backendClass(
+            $connector,
+            $this->createRecordCollectionFactory()
+        );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
         return $backend;
@@ -140,7 +157,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
             : null;
 
         // Create connector:
-        $connector = new Connector(
+        $connector = new $this->connectorClass(
             $this->primoConfig->General->url,
             $instCode,
             $this->createHttpClient($this->primoConfig->General->timeout ?? 30)

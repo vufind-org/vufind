@@ -31,6 +31,8 @@ use Laminas\Http\Client as HttpClient;
 use VuFind\Db\Table\ChangeTracker;
 use VuFind\Search\BackendManager;
 use VuFind\Solr\Writer;
+use VuFindSearch\Backend\Solr\Document\CommitDocument;
+use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
 /**
@@ -60,7 +62,8 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             ->with(['timeout' => 60 * 60]);
         $bm = $this->getBackendManagerWithMockSolr($client);
         $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')->with($this->isInstanceOf(\VuFindSearch\Backend\Solr\Document\CommitDocument::class));
+        $connector->expects($this->once())->method('write')
+            ->with($this->isInstanceOf(CommitDocument::class));
         $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->commit('Solr');
     }
@@ -122,7 +125,8 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             ->with(['timeout' => 60 * 60 * 24]);
         $bm = $this->getBackendManagerWithMockSolr($client);
         $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')->with($this->isInstanceOf(\VuFindSearch\Backend\Solr\Document\OptimizeDocument::class));
+        $connector->expects($this->once())->method('write')
+            ->with($this->isInstanceOf(OptimizeDocument::class));
         $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->optimize('Solr');
     }
