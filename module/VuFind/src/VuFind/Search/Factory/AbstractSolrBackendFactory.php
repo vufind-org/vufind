@@ -41,7 +41,6 @@ use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
-
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
 use VuFindSearch\Backend\BackendInterface;
@@ -49,10 +48,11 @@ use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-
 use VuFindSearch\Backend\Solr\QueryBuilder;
-
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Abstract factory for SOLR backends.
@@ -143,6 +143,20 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $backendClass = Backend::class;
 
     /**
+     * Record collection class for RecordCollectionFactory
+     *
+     * @var string
+     */
+    protected $recordCollectionClass = RecordCollection::class;
+
+    /**
+     * Record collection factory class
+     *
+     * @var string
+     */
+    protected $recordCollectionFactoryClass = RecordCollectionFactory::class;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -198,6 +212,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
+        $backend->setRecordCollectionFactory($this->createRecordCollectionFactory());
         return $backend;
     }
 
@@ -426,18 +441,22 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
-        $search = $this->config->get($this->searchConfig);
-        $caseSensitiveBooleans
-            = $search->General->case_sensitive_bools ?? true;
-        $caseSensitiveRanges
-            = $search->General->case_sensitive_ranges ?? true;
-        $helper = new LuceneSyntaxHelper(
-            $caseSensitiveBooleans,
-            $caseSensitiveRanges
-        );
-        $builder->setLuceneHelper($helper);
+        $builder->setLuceneHelper($this->createLuceneSyntaxHelper());
 
         return $builder;
+    }
+
+    /**
+     * Create Lucene syntax helper.
+     *
+     * @return LuceneSyntaxHelper
+     */
+    protected function createLuceneSyntaxHelper()
+    {
+        $search = $this->config->get($this->searchConfig);
+        $caseSensitiveBooleans = $search->General->case_sensitive_bools ?? true;
+        $caseSensitiveRanges = $search->General->case_sensitive_ranges ?? true;
+        return new LuceneSyntaxHelper($caseSensitiveBooleans, $caseSensitiveRanges);
     }
 
     /**
@@ -451,6 +470,32 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $this->config->get($this->searchConfig),
             $this->uniqueKey
         );
+    }
+
+    /**
+     * Create the record collection factory.
+     *
+     * @return RecordCollectionFactoryInterface
+     */
+    protected function createRecordCollectionFactory()
+        : RecordCollectionFactoryInterface
+    {
+        return new $this->recordCollectionFactoryClass(
+            $this->getCreateRecordCallback(),
+            $this->recordCollectionClass
+        );
+    }
+
+    /**
+     * Get the callback for creating a record.
+     *
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
+     */
+    protected function getCreateRecordCallback(): ?callable
+    {
+        return null;
     }
 
     /**
