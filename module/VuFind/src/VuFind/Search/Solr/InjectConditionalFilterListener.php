@@ -32,6 +32,7 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFindSearch\Service;
 
 /**
  * Conditional Filter listener.
@@ -82,7 +83,11 @@ class InjectConditionalFilterListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
     }
 
     /**
@@ -132,7 +137,7 @@ class InjectConditionalFilterListener
             $this->addConditionalFilter($fc);
         }
 
-        $params = $event->getParam('params');
+        $params = $event->getParam('command')->getSearchParameters();
         $fq = $params->get('fq');
         if (!is_array($fq)) {
             $fq = [];

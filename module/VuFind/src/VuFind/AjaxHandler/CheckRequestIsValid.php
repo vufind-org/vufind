@@ -69,14 +69,10 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
     {
         // If successful, return success message:
         if ($results) {
-            return isset($this->statuses[$requestType]['success'])
-                ? $this->statuses[$requestType]['success']
-                : 'request_place_text';
+            return $this->statuses[$requestType]['success'] ?? 'request_place_text';
         }
         // If unsuccessful, return failure message:
-        return isset($this->statuses[$requestType]['failure'])
-            ? $this->statuses[$requestType]['failure']
-            : 'hold_error_blocked';
+        return $this->statuses[$requestType]['failure'] ?? 'hold_error_blocked';
     }
 
     /**
@@ -137,7 +133,8 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
         }
 
         return $this->formatResponse(
-            $this->translate('An error has occurred'), self::STATUS_HTTP_ERROR
+            $this->translate('An error has occurred'),
+            self::STATUS_HTTP_ERROR
         );
     }
 }

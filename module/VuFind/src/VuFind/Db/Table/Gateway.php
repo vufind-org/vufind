@@ -59,8 +59,12 @@ class Gateway extends AbstractTableGateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj, $table
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj,
+        $table
     ) {
         $this->adapter = $adapter;
         $this->tableManager = $tm;
@@ -93,7 +97,8 @@ class Gateway extends AbstractTableGateway
                 }
                 $this->featureSet->addFeature(
                     new Feature\SequenceFeature(
-                        $maps[$this->table][0], $maps[$this->table][1]
+                        $maps[$this->table][0],
+                        $maps[$this->table][1]
                     )
                 );
             }

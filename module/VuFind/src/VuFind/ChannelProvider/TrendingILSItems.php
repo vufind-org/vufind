@@ -58,7 +58,7 @@ class TrendingILSItems extends AbstractILSChannelProvider
         if (!isset($options['maxAge'])) {
             $options['maxAge'] = 90;
         }
-        return parent::setOptions($options);
+        parent::setOptions($options);
     }
 
     /**

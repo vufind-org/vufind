@@ -39,10 +39,8 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class CombinedSearchTest extends \VuFindTest\Unit\MinkTestCase
+class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Get config settings for combined.ini.
      *
@@ -80,7 +78,8 @@ class CombinedSearchTest extends \VuFindTest\Unit\MinkTestCase
         ];
         foreach ($expectedResults as $container => $title) {
             $this->assertEquals(
-                $title, $this->findCss($page, "$container a.title")->getText()
+                $title,
+                $this->findCss($page, "$container a.title")->getText()
             );
             // Check for sample driver location/call number in output (this will
             // only appear after AJAX returns):
@@ -103,7 +102,8 @@ class CombinedSearchTest extends \VuFindTest\Unit\MinkTestCase
     public function testCombinedSearchResults()
     {
         $this->changeConfigs(
-            ['combined' => $this->getCombinedIniOverrides()], ['combined']
+            ['combined' => $this->getCombinedIniOverrides()],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');
@@ -126,7 +126,8 @@ class CombinedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $config['Solr:one']['ajax'] = true;
         $config['Solr:two']['ajax'] = true;
         $this->changeConfigs(
-            ['combined' => $config], ['combined']
+            ['combined' => $config],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');
@@ -148,7 +149,8 @@ class CombinedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
         $this->changeConfigs(
-            ['combined' => $config], ['combined']
+            ['combined' => $config],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');

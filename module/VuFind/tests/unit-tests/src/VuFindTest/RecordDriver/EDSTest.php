@@ -40,7 +40,7 @@ use VuFind\RecordDriver\EDS;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EDSTest extends \VuFindTest\Unit\TestCase
+class EDSTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getUniqueID for a record.
@@ -286,7 +286,8 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $driver = $this->getDriverWithIdentifierData();
         $this->assertEquals(
-            ['1234-5678', '5678-1234'], $driver->getISSNs()
+            ['1234-5678', '5678-1234'],
+            $driver->getISSNs()
         );
     }
 
@@ -299,7 +300,8 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $driver = $this->getDriverWithIdentifierData();
         $this->assertEquals(
-            ['0123456789X', 'fakeisbnxxx'], $driver->getISBNs()
+            ['0123456789X', 'fakeisbnxxx'],
+            $driver->getISBNs()
         );
     }
 

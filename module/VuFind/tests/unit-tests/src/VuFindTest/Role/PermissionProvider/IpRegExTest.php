@@ -38,7 +38,7 @@ use VuFind\Role\PermissionProvider\IpRegEx;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IpRegExTest extends \VuFindTest\Unit\TestCase
+class IpRegExTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a permission provider with the specified IP assigned.
@@ -70,7 +70,8 @@ class IpRegExTest extends \VuFindTest\Unit\TestCase
         $regEx = '/123\.124\..*/';
         $provider = $this->getPermissionProvider('123.124.125.126');
         $this->assertEquals(
-            ['guest', 'loggedin'], $provider->getPermissions($regEx)
+            ['guest', 'loggedin'],
+            $provider->getPermissions($regEx)
         );
     }
 

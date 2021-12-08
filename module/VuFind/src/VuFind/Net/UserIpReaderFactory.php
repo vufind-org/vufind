@@ -28,6 +28,9 @@
 namespace VuFind\Net;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for instantiating UserIpReader.
@@ -52,11 +55,13 @@ class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInte
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -65,9 +70,11 @@ class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $allowForwardedIps = $config->Proxy->allow_forwarded_ips ?? false;
+        $ipFilter = $config->Proxy->forwarded_ip_filter ?? [];
         return new $requestedName(
             $container->get('Request')->getServer(),
-            $allowForwardedIps
+            $allowForwardedIps,
+            is_object($ipFilter) ? $ipFilter->toArray() : (array)$ipFilter
         );
     }
 }

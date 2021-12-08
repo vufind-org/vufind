@@ -18,14 +18,17 @@
   <?=$this->flashmessages();?>
 
   <table class="table table-striped">
-    <?=$this->renderArray(
-      $arrTemplate, $this->user,
-      [
-        $this->transEsc('First Name') => 'firstname',
-        $this->transEsc('Last Name') => 'lastname',
-        $this->transEsc('Email') => 'email',
-      ]
-    )?>
+    <?=
+      $this->renderArray(
+          $arrTemplate,
+          $this->user,
+          [
+              $this->transEsc('First Name') => 'firstname',
+              $this->transEsc('Last Name') => 'lastname',
+              $this->transEsc('Email') => 'email',
+          ]
+      );
+    ?>
     <?php /* this section renders under two distinct circumstances; see if/else below: */ ?>
     <?php if (count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
       <tr>
@@ -42,7 +45,7 @@
                   <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
               </select>
-              <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
+              <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Save')?>" />
             </form>
           <?php else: // case 2: set home library disallowed, but default provided by ILS ?>
             <?=$this->transEscWithPrefix('location_', $this->preferredLibraryDisplay)?>
@@ -78,22 +81,25 @@
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
     </p>
     <table class="table table-striped">
-      <?=$this->renderArray(
-        $arrTemplate, $this->profile,
-        [
-          $this->transEsc('First Name') => 'firstname',
-          $this->transEsc('Last Name') => 'lastname',
-          $this->transEsc('Address') . ' 1' => 'address1',
-          $this->transEsc('Address') . ' 2' => 'address2',
-          $this->transEsc('Zip') => 'zip',
-          $this->transEsc('City') => 'city',
-          $this->transEsc('Country') => 'country',
-          $this->transEsc('Phone Number') => 'phone',
-          $this->transEsc('Mobile Number') => 'mobile_phone',
-          $this->transEsc('Group') => 'group',
-          $this->transEsc('Expires') => 'expiration_date'
-        ]
-      )?>
+      <?=
+        $this->renderArray(
+            $arrTemplate,
+            $this->profile,
+            [
+              $this->transEsc('First Name') => 'firstname',
+              $this->transEsc('Last Name') => 'lastname',
+              $this->transEsc('Address') . ' 1' => 'address1',
+              $this->transEsc('Address') . ' 2' => 'address2',
+              $this->transEsc('Zip') => 'zip',
+              $this->transEsc('City') => 'city',
+              $this->transEsc('Country') => 'country',
+              $this->transEsc('Phone Number') => 'phone',
+              $this->transEsc('Mobile Number') => 'mobile_phone',
+              $this->transEsc('Group') => 'group',
+              $this->transEsc('patron_account_expires') => 'expiration_date'
+            ]
+        );
+      ?>
     </table>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>

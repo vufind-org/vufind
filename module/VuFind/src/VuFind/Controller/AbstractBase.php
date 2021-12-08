@@ -158,7 +158,9 @@ class AbstractBase extends AbstractActionController
         if ($this->accessPermission) {
             $events = $this->getEventManager();
             $events->attach(
-                MvcEvent::EVENT_DISPATCH, [$this, 'validateAccessPermission'], 1000
+                MvcEvent::EVENT_DISPATCH,
+                [$this, 'validateAccessPermission'],
+                1000
             );
         }
     }
@@ -286,7 +288,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Get the user object if logged in, false otherwise.
      *
-     * @return object|bool
+     * @return \VuFind\Db\Row\User|bool
      */
     protected function getUser()
     {
@@ -510,8 +512,8 @@ class AbstractBase extends AbstractActionController
      */
     public function translate($msg, $tokens = [], $default = null)
     {
-        return $this->getViewRenderer()->plugin('translate')
-            ->__invoke($msg, $tokens, $default);
+        $translate = $this->getViewRenderer()->plugin('translate');
+        return $translate($msg, $tokens, $default);
     }
 
     /**
@@ -542,7 +544,8 @@ class AbstractBase extends AbstractActionController
      *
      * @return bool
      */
-    protected function formWasSubmitted($submitElement = 'submit',
+    protected function formWasSubmitted(
+        $submitElement = 'submit',
         $useCaptcha = false
     ) {
         // Fail if the expected submission element was missing from the POST:
@@ -562,11 +565,16 @@ class AbstractBase extends AbstractActionController
      *
      * @return mixed
      */
-    public function confirm($title, $yesTarget, $noTarget, $messages = [],
+    public function confirm(
+        $title,
+        $yesTarget,
+        $noTarget,
+        $messages = [],
         $extras = []
     ) {
         return $this->forwardTo(
-            'Confirm', 'Confirm',
+            'Confirm',
+            'Confirm',
             [
                 'data' => [
                     'title' => $title,
@@ -746,7 +754,8 @@ class AbstractBase extends AbstractActionController
     {
         return
             $this->params()->fromPost(
-                'layout', $this->params()->fromQuery('layout', false)
+                'layout',
+                $this->params()->fromQuery('layout', false)
             ) === 'lightbox'
             || 'layout/lightbox' == $this->layout()->getTemplate();
     }
@@ -761,7 +770,8 @@ class AbstractBase extends AbstractActionController
     protected function getILSLoginMethod($target = '')
     {
         $config = $this->getILS()->checkFunction(
-            'patronLogin', ['patron' => ['cat_username' => "$target.login"]]
+            'patronLogin',
+            ['patron' => ['cat_username' => "$target.login"]]
         );
         return $config['loginMethod'] ?? 'password';
     }
@@ -789,5 +799,18 @@ class AbstractBase extends AbstractActionController
             $loginMethod = $this->getILSLoginMethod();
         }
         return compact('targets', 'defaultTarget', 'loginMethod', 'loginMethods');
+    }
+
+    /**
+     * Construct an HTTP 205 (refresh) response. Useful for reporting success
+     * in the lightbox without actually rendering content.
+     *
+     * @return \Laminas\Http\Response
+     */
+    protected function getRefreshResponse()
+    {
+        $response = $this->getResponse();
+        $response->setStatusCode(205);
+        return $response;
     }
 }

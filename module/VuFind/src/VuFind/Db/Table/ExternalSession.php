@@ -55,8 +55,12 @@ class ExternalSession extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, $table = 'external_session'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'external_session'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -108,21 +112,12 @@ class ExternalSession extends Gateway
      *
      * @param Select $select  Select clause
      * @param int    $daysOld Age in days of an "expired" record.
-     * @param int    $idFrom  Lowest id of rows to delete.
-     * @param int    $idTo    Highest id of rows to delete.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld, $idFrom = null,
-        $idTo = null
-    ) {
+    protected function expirationCallback($select, $daysOld)
+    {
         $expireDate = date('Y-m-d', time() - $daysOld * 24 * 60 * 60);
-        $where = $select->where->lessThan('created', $expireDate);
-        if (null !== $idFrom) {
-            $where->and->greaterThanOrEqualTo('id', $idFrom);
-        }
-        if (null !== $idTo) {
-            $where->and->lessThanOrEqualTo('id', $idTo);
-        }
+        $select->where->lessThan('created', $expireDate);
     }
 }

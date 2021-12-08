@@ -274,7 +274,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             $template = $children[0]->getTemplate();
             if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
                 $results = $children[0]->getVariable('results');
-                if (is_a($results, 'VuFind\Search\Base\Results')) {
+                if ($results instanceof \VuFind\Search\Base\Results) {
                     return $results;
                 }
             }
@@ -318,14 +318,15 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
         $current = $viewModel->getCurrent();
         if (null === $current) {
             $driver = $view->vars('driver');
-            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+            if ($driver instanceof \VuFind\RecordDriver\AbstractBase) {
                 return $driver;
             }
+            return null;
         }
         $children = $current->getChildren();
         if (isset($children[0])) {
             $driver = $children[0]->getVariable('driver');
-            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+            if ($driver instanceof \VuFind\RecordDriver\AbstractBase) {
                 return $driver;
             }
         }

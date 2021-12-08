@@ -3,13 +3,13 @@
     $this->headTitle($this->translate('ill_request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
-        . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+        . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
         . '<li class="active">' . $this->transEsc('ill_request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('ill_request_place_text')?></h2>
-<?php if ($this->helpText): ?>
-  <p class="help-block"><?=$this->helpText?></p>
+<?php if ($this->helpTextHtml): ?>
+  <p class="help-block"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
 
 <form id="ILLRequestForm" name="placeILLRequest" class="form-ill-retrieval-request" method="post" data-clear-account-cache="illRequests">
@@ -47,7 +47,7 @@
         </select>
       <?php else: ?>
         <?php $lib = $this->pickupLibraries[0]; ?>
-        <input type="text" class="form-control" size="40" readonly="readonly" value="<?=$this->escapeHtmlAttr($this->translate('library_' . $lib['name'], null, $lib['name']))?>" />
+        <input type="text" class="form-control" size="40" readonly="readonly" value="<?=$this->transEscAttr('library_' . $lib['name'], null, $lib['name'])?>" />
         <input type="hidden" id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" value="<?=$this->escapeHtmlAttr($lib['id'])?>" />
       <?php endif; ?>
     </div>
@@ -55,7 +55,11 @@
 
   <?php if (in_array("pickUpLibraryLocation", $this->extraFields)): ?>
     <div class="form-group">
-      <label id="pickupLibraryLocationLabel" class="control-label"><i></i>&nbsp;<?=$this->transEsc("ill_request_pick_up_location")?>:<noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript></label>
+      <label id="pickupLibraryLocationLabel" class="control-label">
+        <span class="loading-icon"><?=$this->icon('spinner') ?></span>
+        <?=$this->transEsc("ill_request_pick_up_location")?>:
+        <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
+      </label>
       <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control"></select>
     </div>
   <?php endif; ?>
@@ -102,7 +106,7 @@
   <?php endif; ?>
 
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="placeILLRequest" value="<?=$this->transEsc('ill_request_submit_text')?>"/>
+    <input class="btn btn-primary" type="submit" name="placeILLRequest" value="<?=$this->transEscAttr('ill_request_submit_text')?>"/>
   </div>
 </form>
 

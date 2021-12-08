@@ -127,8 +127,7 @@ class Summon extends DefaultRecord
      */
     public function getBibliographyNotes()
     {
-        return isset($this->fields['Notes']) ?
-            $this->fields['Notes'] : [];
+        return $this->fields['Notes'] ?? [];
     }
 
     /**
@@ -186,8 +185,7 @@ class Summon extends DefaultRecord
      */
     public function getFormats()
     {
-        return isset($this->fields['ContentType'])
-            ? $this->fields['ContentType'] : [];
+        return $this->fields['ContentType'] ?? [];
     }
 
     /**
@@ -271,8 +269,7 @@ class Summon extends DefaultRecord
      */
     public function getLanguages()
     {
-        return isset($this->fields['Language']) ?
-            $this->fields['Language'] : [];
+        return $this->fields['Language'] ?? [];
     }
 
     /**
@@ -282,8 +279,7 @@ class Summon extends DefaultRecord
      */
     public function getOCLC()
     {
-        return isset($this->fields['OCLC']) ?
-            $this->fields['OCLC'] : [];
+        return $this->fields['OCLC'] ?? [];
     }
 
     /**
@@ -302,9 +298,8 @@ class Summon extends DefaultRecord
             return false;
         }
 
-        return isset($this->fields['openUrl'])
-            ? $this->fields['openUrl']
-            : parent::getOpenUrl($overrideSupportsOpenUrl);
+        return $this->fields['openUrl']
+            ?? parent::getOpenUrl($overrideSupportsOpenUrl);
     }
 
     /**
@@ -325,8 +320,7 @@ class Summon extends DefaultRecord
      */
     public function getPlacesOfPublication()
     {
-        return isset($this->fields['PublicationPlace']) ?
-            $this->fields['PublicationPlace'] : [];
+        return $this->fields['PublicationPlace'] ?? [];
     }
 
     /**
@@ -384,8 +378,7 @@ class Summon extends DefaultRecord
                 return $dates;
             }
         }
-        return isset($this->fields['PublicationDate']) ?
-            $this->fields['PublicationDate'] : [];
+        return $this->fields['PublicationDate'] ?? [];
     }
 
     /**
@@ -395,8 +388,7 @@ class Summon extends DefaultRecord
      */
     public function getPublishers()
     {
-        return isset($this->fields['Publisher']) ?
-            $this->fields['Publisher'] : [];
+        return $this->fields['Publisher'] ?? [];
     }
 
     /**
@@ -426,8 +418,7 @@ class Summon extends DefaultRecord
      */
     public function getSeries()
     {
-        return isset($this->fields['PublicationSeriesTitle'])
-            ? $this->fields['PublicationSeriesTitle'] : [];
+        return $this->fields['PublicationSeriesTitle'] ?? [];
     }
 
     /**
@@ -459,8 +450,7 @@ class Summon extends DefaultRecord
      */
     public function getSummary()
     {
-        return isset($this->fields['Abstract']) ?
-          $this->fields['Abstract'] : [];
+        return $this->fields['Abstract'] ?? [];
     }
 
     /**
@@ -509,7 +499,9 @@ class Summon extends DefaultRecord
         $sub = $this->getSubtitle();
         $title = empty($sub) ? $title : "{$title}: {$sub}";
         return str_replace(
-            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $title
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+            '',
+            $title
         );
     }
 
@@ -520,8 +512,7 @@ class Summon extends DefaultRecord
      */
     public function getTOC()
     {
-        return isset($this->fields['TableOfContents'])
-            ? $this->fields['TableOfContents'] : [];
+        return $this->fields['TableOfContents'] ?? [];
     }
 
     /**

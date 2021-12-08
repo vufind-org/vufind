@@ -105,7 +105,9 @@ class LibGuidesBackendFactory implements FactoryInterface
     {
         $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
         $backend = new Backend(
-            $connector, $this->createRecordCollectionFactory(), $defaultSearch
+            $connector,
+            $this->createRecordCollectionFactory(),
+            $defaultSearch
         );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());

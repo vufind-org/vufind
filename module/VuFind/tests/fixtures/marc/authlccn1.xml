@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns='http://www.loc.gov/MARC21/slim'>
+
+<record
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+    xmlns="http://www.loc.gov/MARC21/slim">
+  <datafield tag="700" ind1="0" ind2="5">
+    <subfield code="w">a</subfield>
+    <subfield code="a">Augustin,</subfield>
+    <subfield code="c">saint, évêque d’Hippone.</subfield>
+    <subfield code="0">(DLC)foo</subfield>
+  </datafield>
+</record>
+</collection>

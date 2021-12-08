@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink cart test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,10 +41,10 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class CartTest extends \VuFindTest\Unit\MinkTestCase
+final class CartTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -148,7 +150,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    protected function addCurrentPageToCart(Element $page, Element $updateCart,
+    protected function addCurrentPageToCart(
+        Element $page,
+        Element $updateCart,
         $selectAllId = '#addFormCheckboxSelectAll'
     ) {
         $selectAll = $page->find('css', $selectAllId);
@@ -378,11 +382,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $add = $this->findCss($page, '.cart-add');
         $remove = $this->findCss($page, '.cart-remove');
         $add->click();
-        $this->assertEquals('1 items (Full)', $cartItems->getText());
+        $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
         $remove->click();
-        $this->assertEquals('0 items', $cartItems->getText());
+        $this->assertEquals('Book Bag: 0 items', $cartItems->getText());
         $add->click();
-        $this->assertEquals('1 items (Full)', $cartItems->getText());
+        $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
 
         // Now move to another page and try to add a second item -- it should
         // not be added due to cart limit:
@@ -390,7 +394,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $cartItems = $this->findCss($page, '#cartItems');
         $add = $this->findCss($page, '.cart-add');
         $add->click();
-        $this->assertEquals('1 items (Full)', $cartItems->getText());
+        $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
     }
 
     /**
@@ -410,7 +414,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
             $page = $this->getRecordPage('testsample' . $x);
             $this->clickCss($page, '.cart-add');
             $this->assertEquals(
-                $x . ' items', $this->findCss($page, '#cartItems')->getText()
+                'Book Bag: ' . $x . ' items',
+                $this->findCss($page, '#cartItems')->getText()
             );
         }
     }
@@ -565,7 +570,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
         $this->findCssAndSetValue(
-            $page, '.modal #email_to', 'demian.katz@villanova.edu'
+            $page,
+            '.modal #email_to',
+            'demian.katz@villanova.edu'
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -609,11 +616,12 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
-            'Your item(s) were saved successfully. Go to List.', $result->getText()
+            'Your item(s) were saved successfully. Go to List.',
+            $result->getText()
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
             $result->getOuterHtml()
         );
@@ -722,7 +730,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->selectAllItemsInCart($page);
         $button->click();
         $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
@@ -751,7 +759,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         ];
         // Expected
         $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
-        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions'], $combo);
+        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions']);
         $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
         $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
         $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);
@@ -762,52 +770,59 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
         $page = $this->getSearchResultsPage();
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => false,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => false,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => false,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => false,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => false,
+            $page,
+            [
+                'showBookBag' => false,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => false,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => false,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => false,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => false,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => false,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => false,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => true,
             ]
         );
         $elements = $this->runConfigCombo(
-            $page, [
-            'showBookBag' => true,
-            'showBulkOptions' => true,
-            'bookbagTogglesInSearch' => true,
+            $page,
+            [
+                'showBookBag' => true,
+                'showBulkOptions' => true,
+                'bookbagTogglesInSearch' => true,
             ]
         );
     }

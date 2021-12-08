@@ -1,0 +1,9 @@
+<?php
+  $this->headTitle($this->translate('Icons'));
+?>
+
+<table>
+  <?php foreach ($aliases as $icon): ?>
+    <?=$this->icon($icon)?>: <?=$this->escapeHtml($icon)?><br />
+  <?php endforeach; ?>
+</table>

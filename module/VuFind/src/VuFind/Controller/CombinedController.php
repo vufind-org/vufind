@@ -88,13 +88,13 @@ class CombinedController extends AbstractSearch
         if (!isset($tabConfig[$sectionId])) {
             throw new \Exception('Illegal ID');
         }
-        list($searchClassId) = explode(':', $sectionId);
+        [$searchClassId] = explode(':', $sectionId);
 
         // Retrieve results:
         $options = $this->serviceLocator
             ->get(\VuFind\Search\Options\PluginManager::class);
         $currentOptions = $options->get($searchClassId);
-        list($controller, $action)
+        [$controller, $action]
             = explode('-', $currentOptions->getSearchAction());
         $settings = $tabConfig[$sectionId];
 
@@ -123,7 +123,7 @@ class CombinedController extends AbstractSearch
                     && ($general->Site->showBulkOptions ?? false)
             ];
             // Load custom CSS, if necessary:
-            $html = $this->getViewRenderer()->plugin('headLink')->__invoke();
+            $html = ($this->getViewRenderer()->plugin('headLink'))();
             // Render content:
             $html .= $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
@@ -144,7 +144,9 @@ class CombinedController extends AbstractSearch
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
         $results = $this->serviceLocator->get(SearchRunner::class)->run(
-            $request, 'Combined', $this->getSearchSetupCallback()
+            $request,
+            'Combined',
+            $this->getSearchSetupCallback()
         );
 
         // Remember the current URL, then disable memory so multi-search results
@@ -163,16 +165,17 @@ class CombinedController extends AbstractSearch
         // Save the initial type value, since it may get manipulated below:
         $initialType = $this->params()->fromQuery('type');
         foreach ($this->getTabConfig($config) as $current => $settings) {
-            list($searchClassId) = explode(':', $current);
+            [$searchClassId] = explode(':', $current);
             $currentOptions = $options->get($searchClassId);
             $this->adjustQueryForSettings(
-                $settings, $currentOptions->getHandlerForLabel($initialType)
+                $settings,
+                $currentOptions->getHandlerForLabel($initialType)
             );
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {
                 $supportsCart = true;
             }
-            list($controller, $action)
+            [$controller, $action]
                 = explode('-', $currentOptions->getSearchAction());
             $combinedResults[$current] = $settings;
 
@@ -181,7 +184,10 @@ class CombinedController extends AbstractSearch
             $combinedResults[$current]['domId']
                 = 'combined_' . str_replace(':', '____', $current);
 
-            $combinedResults[$current]['view'] = ($settings['ajax'] ?? false)
+            $permissionDenied = isset($settings['permission'])
+                && !$this->permission()->isAuthorized($settings['permission']);
+            $isAjax = $settings['ajax'] ?? false;
+            $combinedResults[$current]['view'] = ($permissionDenied || $isAjax)
                 ? $this->createViewModel(['results' => $results])
                 : $this->forwardTo($controller, $action);
 
@@ -201,8 +207,7 @@ class CombinedController extends AbstractSearch
         $actualMaxColumns = count($combinedResults);
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
-        $placement = $config['Layout']['stack_placement']
-            ?? 'distributed';
+        $placement = $config['Layout']['stack_placement'] ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }
@@ -234,10 +239,10 @@ class CombinedController extends AbstractSearch
      */
     public function searchboxAction()
     {
-        list($type, $target) = explode(':', $this->params()->fromQuery('type'), 2);
+        [$type, $target] = explode(':', $this->params()->fromQuery('type'), 2);
         switch ($type) {
         case 'VuFind':
-            list($searchClassId, $type) = explode('|', $target);
+            [$searchClassId, $type] = explode('|', $target);
             $params = $this->getRequest()->getQuery()->toArray();
             $params['type'] = $type;
 

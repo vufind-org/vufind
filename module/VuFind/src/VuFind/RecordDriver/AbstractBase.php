@@ -93,7 +93,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function __construct($mainConfig = null, $recordConfig = null)
     {
         $this->mainConfig = $mainConfig;
-        $this->recordConfig = (null === $recordConfig) ? $mainConfig : $recordConfig;
+        $this->recordConfig = $recordConfig ?? $mainConfig;
     }
 
     /**
@@ -147,7 +147,8 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $table = $this->getDbTable('Comments');
         return $table->getForResource(
-            $this->getUniqueId(), $this->getSourceIdentifier()
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
         );
     }
 
@@ -175,14 +176,21 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return array
      */
-    public function getTags($list_id = null, $user_id = null, $sort = 'count',
+    public function getTags(
+        $list_id = null,
+        $user_id = null,
+        $sort = 'count',
         $ownerId = null
     ) {
         $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
-            0, $list_id, $user_id, $sort, $ownerId
+            0,
+            $list_id,
+            $user_id,
+            $sort,
+            $ownerId
         );
     }
 
@@ -198,7 +206,8 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $resources = $this->getDbTable('Resource');
         $resource = $resources->findResource(
-            $this->getUniqueId(), $this->getSourceIdentifier()
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
         );
         foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
@@ -217,7 +226,8 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $resources = $this->getDbTable('Resource');
         $resource = $resources->findResource(
-            $this->getUniqueId(), $this->getSourceIdentifier()
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
         );
         foreach ($tags as $tag) {
             $resource->deleteTag($tag, $user);
@@ -236,7 +246,10 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $db = $this->getDbTable('UserResource');
         $data = $db->getSavedData(
-            $this->getUniqueId(), $this->getSourceIdentifier(), $list_id, $user_id
+            $this->getUniqueId(),
+            $this->getSourceIdentifier(),
+            $list_id,
+            $user_id
         );
         $notes = [];
         foreach ($data as $current) {
@@ -258,7 +271,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $table = $this->getDbTable('UserList');
         return $table->getListsContainingResource(
-            $this->getUniqueId(), $this->getSourceIdentifier(), $user_id
+            $this->getUniqueId(),
+            $this->getSourceIdentifier(),
+            $user_id
         );
     }
 
@@ -372,7 +387,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getExtraDetail($key)
     {
-        return isset($this->extraDetails[$key]) ? $this->extraDetails[$key] : null;
+        return $this->extraDetails[$key] ?? null;
     }
 
     /**

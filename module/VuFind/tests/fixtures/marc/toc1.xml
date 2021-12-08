@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns='http://www.loc.gov/MARC21/slim'>
+
+<record
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+    xmlns="http://www.loc.gov/MARC21/slim">
+  <datafield tag="505" ind1="0" ind2="0">
+    <subfield code="t">About the Association of Professors of Missions /</subfield>
+    <subfield code="r">Robert Danielson --</subfield>
+    <subfield code="g">Foreword /</subfield>
+    <subfield code="r">Angel Santiago-Vendrell --</subfield>
+    <subfield code="g">Conference theme -- Plenary Papers --</subfield>
+    <subfield code="t">Teaching missiology in and for world Christianity content and method /</subfield>
+    <subfield code="r">Peter C. Phan --</subfield>
+    <subfield code="t">The bodies we teach by: (en) gendering mission for global Christianities /</subfield>
+    <subfield code="r">Mai-Ahn Le --</subfield>
+    <subfield code="t">Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the 1916 Panama Congress /</subfield>
+    <subfield code="r">Philip Wingeier-Rayo --</subfield>
+    <subfield code="g">Conference Papers --</subfield>
+    <subfield code="t">Theological metaphors of teaching mission in an age of world Christianity in the North American context /</subfield>
+    <subfield code="r">David Thang Moe --</subfield>
+    <subfield code="t">Mission shifts from Pope Benedict XVI to Pope Francis /</subfield>
+    <subfield code="r">William P. Gregory --</subfield>
+    <subfield code="t">The elephant in the room: towards a paradigm shift in missiological education /</subfield>
+    <subfield code="r">Sarita D. Gallagher --</subfield>
+    <subfield code="t">Historic models of teaching Christian mission: case studies informing an age of world Christianity /</subfield>
+    <subfield code="r">Robert L. Gallagher --</subfield>
+    <subfield code="t">How the West was won: world Christianity as historic reality /</subfield>
+    <subfield code="r">Matt Friedman --</subfield>
+    <subfield code="t">The world's Christians: strategies for teaching international graduate students in Kenya's Christian universities /</subfield>
+    <subfield code="r">Janice Horsager Rasmussen --</subfield>
+    <subfield code="t">Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian Church USA in Barranquilla, Colombia, 1880-1920 /</subfield>
+    <subfield code="r">Angel Santiago-Vendrell --</subfield>
+    <subfield code="t">Mary McLeod Bethune: Christ did not designate any particular color to go /</subfield>
+    <subfield code="r">Mary Cloutier --</subfield>
+    <subfield code="t">Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the classroom /</subfield>
+    <subfield code="r">Angel Santiago-Vendrell --</subfield>
+    <subfield code="g">Conference Proceedings -- First Fruits report for the APM -- Minutes of 2016 meeting -- Secretary's treasury report -- Conference program.</subfield>
+  </datafield>
+</record>
+</collection>

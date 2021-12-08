@@ -137,7 +137,7 @@ deleteGroup = function _deleteGroup(group) {
 $(document).ready(function advSearchReady() {
   $('.clear-btn').click(function clearBtnClick() {
     $('input[type="text"]').val('');
-    $("option:selected").removeAttr("selected");
+    $("option:selected").prop("selected", false);
     $("#illustrated_-1").click();
   });
 });

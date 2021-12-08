@@ -31,7 +31,6 @@
 namespace VuFindTest\Record;
 
 use VuFind\Record\Cache;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * Record cache tests.
@@ -43,7 +42,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CacheTest extends TestCase
+class CacheTest extends \PHPUnit\Framework\TestCase
 {
     protected $recordTable = [];
 
@@ -230,11 +229,11 @@ class CacheTest extends TestCase
     /**
      * Create Record Table
      *
-     * @return PHPUnit\Framework\MockObject\MockObject
+     * @return \VuFind\Db\Table\Record
      */
-    protected function getRecordTable()
+    protected function getRecordTable(): \VuFind\Db\Table\Record
     {
-        $findRecordsCallback = function ($ids, $source) {
+        $findRecordsCallback = function (array $ids, string $source): array {
             $results = [];
             foreach ($this->recordTable as $row) {
                 if (in_array($row['record_id'], $ids)
@@ -264,7 +263,7 @@ class CacheTest extends TestCase
         $recordTable->method('findRecord')
             ->will($this->returnCallback($findRecordCallback));
 
-        $updateRecordCallback = function ($recordId, $source, $rawData) {
+        $updateRecordCallback = function ($recordId, $source, $rawData): void {
             $this->recordTable[] = [
                 'record_id' => $recordId,
                 'source' => $source,
@@ -281,12 +280,12 @@ class CacheTest extends TestCase
     /**
      * Create a Record Factory Manager
      *
-     * @return PHPUnit\Framework\MockObject\MockObject
+     * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    protected function getRecordFactoryManager()
+    protected function getRecordFactoryManager(): \PHPUnit\Framework\MockObject\MockObject
     {
         $recordFactoryManager = $this->createMock(
-            'VuFind\RecordDriver\PluginManager'
+            \VuFind\RecordDriver\PluginManager::class
         );
         $recordFactoryManager->method('getSolrRecord')->will(
             $this->returnValue($this->getDriver('test', 'Solr'))
@@ -321,10 +320,12 @@ class CacheTest extends TestCase
      * @param string $id     id
      * @param string $source source
      *
-     * @return PHPUnit\Framework\MockObject\MockObject
+     * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getDriver($id = 'test', $source = 'Solr')
-    {
+    protected function getDriver(
+        $id = 'test',
+        $source = 'Solr'
+    ): \VuFind\RecordDriver\AbstractBase {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->any())
             ->method('getUniqueId')

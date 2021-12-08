@@ -28,6 +28,9 @@
 namespace VuFind\Record\FallbackLoader;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -53,18 +56,19 @@ class SummonFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backendManager = $container->get(\VuFind\Search\BackendManager::class);
         return new $requestedName(
             $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
-            $backendManager->get('Summon')
+            $container->get(\VuFindSearch\Service::class)
         );
     }
 }

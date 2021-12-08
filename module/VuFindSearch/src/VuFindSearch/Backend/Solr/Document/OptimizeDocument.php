@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -36,10 +37,11 @@ use XMLWriter;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class OptimizeDocument extends AbstractDocument
+class OptimizeDocument implements DocumentInterface
 {
     /**
      * Value for waitFlush attribute
@@ -60,31 +62,29 @@ class OptimizeDocument extends AbstractDocument
      *
      * @param bool $waitFlush    waitFlush attribute value
      * @param bool $waitSearcher waitSearcher attribute value
-     *
-     * @return void
      */
-    public function __construct($waitFlush = null, $waitSearcher = null)
+    public function __construct(bool $waitFlush = null, bool $waitSearcher = null)
     {
         $this->waitFlush    = $waitFlush;
         $this->waitSearcher = $waitSearcher;
     }
 
     /**
-     * Return serialized JSON representation.
+     * Return content MIME type.
      *
      * @return string
      */
-    public function asJSON()
+    public function getContentType(): string
     {
-        // @todo Implement
+        return 'text/xml; charset=UTF-8';
     }
 
     /**
-     * Return serialized XML representation.
+     * Return serialized representation.
      *
      * @return string
      */
-    public function asXML()
+    public function getContent(): string
     {
         $writer = new XMLWriter();
         $writer->openMemory();
@@ -92,12 +92,14 @@ class OptimizeDocument extends AbstractDocument
         $writer->startElement('optimize');
         if ($this->waitFlush !== null) {
             $writer->writeAttribute(
-                'waitFlush', $this->waitFlush ? 'true' : 'false'
+                'waitFlush',
+                $this->waitFlush ? 'true' : 'false'
             );
         }
         if ($this->waitSearcher !== null) {
             $writer->writeAttribute(
-                'waitSearcher', $this->waitSearcher ? 'true' : 'false'
+                'waitSearcher',
+                $this->waitSearcher ? 'true' : 'false'
             );
         }
         $writer->endElement();

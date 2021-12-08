@@ -6,10 +6,14 @@
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
+  // Add any extra scripts the tabs require:
+  foreach ($this->tabsExtraScripts as $script) {
+    $this->headScript()->appendFile($script);
+  }
 
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
-      $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
   }
 
   // Set flag for special cases relating to full-width hierarchy tree tab:
@@ -18,10 +22,11 @@
   // Set up breadcrumbs:
   $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   if (!empty($lastSearch)) {
-    $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+      $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+  } else {
+      $this->layout()->breadcrumbs = '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> ';
   }
-  $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
-     . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
+  $this->layout()->breadcrumbs .= '<li class="active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
 ?>
 
 <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
@@ -30,7 +35,7 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="record">
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?> solo"<?php endif; ?>>
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
@@ -42,29 +47,31 @@
       <div class="record-tabs">
         <ul class="nav nav-tabs">
           <?php foreach ($this->tabs as $tab => $obj): ?>
-            <?php // add current tab to breadcrumbs if applicable:
+            <?php
               $desc = $obj->getDescription();
-              $tab_classes = [];
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tabClasses = [ 'record-tab', $tabName ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
-                  $tab_classes[] = 'active';
+                  $tabClasses[] = 'active';
                 }
-                $tab_classes[] = 'initiallyActive';
-                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                $tabClasses[] = 'initiallyActive';
                 $activeTabObj = $obj;
               }
-              if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
             ?>
-            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
+            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+              <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
+                <?=$this->transEsc($desc)?>
+              </a>
             </li>
           <?php endforeach; ?>
         </ul>
 
         <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
           <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->activeTab ?>-tab">
+            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <?php endif; ?>

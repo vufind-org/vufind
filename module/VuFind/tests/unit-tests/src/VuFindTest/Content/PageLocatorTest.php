@@ -40,75 +40,86 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PageLocatorTest extends \VuFindTest\Unit\TestCase
+class PageLocatorTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
-     * Path to theme fixtures
+     * Test determining a template and renderer.
      *
-     * @var string
+     * @return void
      */
-    protected $fixturePath;
-
-    /**
-     * Constructor
-     */
-    public function setUp(): void
-    {
-        $this->fixturePath = realpath(__DIR__ . '/../../../../../../VuFindTheme/tests/unit-tests/fixtures/themes');
-    }
-
     public function testDetermineTemplateAndRenderer()
     {
         $language  = 'aa';
         $defaultLanguage = 'bb';
         $pathPrefix = 'templates/page-locator-test/';
+        $fixturePath = $this->getFixtureDir('VuFindTheme') . 'themes/';
         $testCases = [
             [
                 'pageName' => 'page1',
                 'result' => [
                     'renderer' => 'phtml',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page1.phtml',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page1.phtml',
+                    'relativePath' => 'page-locator-test/page1.phtml',
                     'page' => 'page1',
+                    'theme' => 'parent',
+                    'matchType' => 'pageName',
                 ],
             ],
             [
                 'pageName' => 'page2',
                 'result' => [
                     'renderer' => 'phtml',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page2_aa.phtml',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page2_aa.phtml',
+                    'relativePath' => 'page-locator-test/page2_aa.phtml',
                     'page' => 'page2_aa',
+                    'theme' => 'parent',
+                    'matchType' => 'language',
                 ],
             ],
             [
                 'pageName' => 'page3',
                 'result' => [
                     'renderer' => 'phtml',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page3_bb.phtml',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page3_bb.phtml',
+                    'relativePath' => 'page-locator-test/page3_bb.phtml',
                     'page' => 'page3_bb',
+                    'theme' => 'parent',
+                    'matchType' => 'defaultLanguage',
                 ],
             ],
             [
                 'pageName' => 'page4',
                 'result' => [
                     'renderer' => 'md',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page4.md',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page4.md',
+                    'relativePath' => 'page-locator-test/page4.md',
                     'page' => 'page4',
+                    'theme' => 'parent',
+                    'matchType' => 'pageName',
                 ],
             ],
             [
                 'pageName' => 'page5',
                 'result' => [
                     'renderer' => 'md',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page5_aa.md',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page5_aa.md',
+                    'relativePath' => 'page-locator-test/page5_aa.md',
                     'page' => 'page5_aa',
+                    'theme' => 'parent',
+                    'matchType' => 'language',
                 ],
             ],
             [
                 'pageName' => 'page6',
                 'result' => [
                     'renderer' => 'md',
-                    'path' => $this->fixturePath . '/parent/templates/page-locator-test/page6_bb.md',
+                    'path' => $fixturePath . 'parent/templates/page-locator-test/page6_bb.md',
+                    'relativePath' => 'page-locator-test/page6_bb.md',
                     'page' => 'page6_bb',
+                    'theme' => 'parent',
+                    'matchType' => 'defaultLanguage',
                 ],
             ],
             [
@@ -116,20 +127,10 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'result' => null,
             ],
         ];
-        $themeInfo = $this->getThemeInfo();
+        $themeInfo = new ThemeInfo(rtrim($fixturePath, '/'), 'parent');
         $pageLocator = new PageLocator($themeInfo, $language, $defaultLanguage);
         foreach ($testCases as $case) {
             $this->assertEquals($case['result'], $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName']));
         }
-    }
-
-    /**
-     * Get a test object
-     *
-     * @return ThemeInfo
-     */
-    protected function getThemeInfo()
-    {
-        return new ThemeInfo($this->fixturePath, 'parent');
     }
 }

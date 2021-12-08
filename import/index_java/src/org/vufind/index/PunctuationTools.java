@@ -32,7 +32,8 @@ public class PunctuationTools
     /**
      * Normalize trailing punctuation. This mimics the functionality built into VuFind's
      * textFacet field type, so that you can get equivalent values when indexing into
-     * a string field. (Useful for docValues support).
+     * a string field. (Useful for docValues support). See CreatorTools.java for more
+     * creator-specific punctuation stripping logic.
      *
      * Can return null
      *

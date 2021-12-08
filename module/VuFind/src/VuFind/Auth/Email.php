@@ -81,7 +81,7 @@ class Email extends AbstractBase
 
         if (!$hash) {
             // Validate the credentials:
-            $user = $this->getUserTable()->getByEmail($email, false);
+            $user = $this->getUserTable()->getByEmail($email);
             if ($user) {
                 $loginData = [
                     'vufind_id' => $user['id']

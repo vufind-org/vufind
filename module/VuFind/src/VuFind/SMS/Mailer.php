@@ -87,7 +87,7 @@ class Mailer extends AbstractBase
         if (isset($config->Carriers) && count($config->Carriers) > 0) {
             $this->carriers = [];
             foreach ($config->Carriers as $id => $settings) {
-                list($domain, $name) = explode(':', $settings, 2);
+                [$domain, $name] = explode(':', $settings, 2);
                 $this->carriers[$id] = ['name' => $name, 'domain' => $domain];
             }
         }

@@ -29,6 +29,10 @@
 namespace VuFind\RecordDriver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use VuFind\DigitalContent\OverdriveConnector;
 
 /**
  * Factory for Overdrive record drivers.
@@ -54,17 +58,20 @@ class SolrOverdriveFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $odConfig = $container->get('VuFind\Config\PluginManager')->get('Overdrive');
-        $connector = $container->get('VuFind\DigitalContent\OverdriveConnector');
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $configManager->get('config');
+        $odConfig = $configManager->get('Overdrive');
+        $connector = $container->get(OverdriveConnector::class);
         return new $requestedName($config, $odConfig, $connector);
     }
 }

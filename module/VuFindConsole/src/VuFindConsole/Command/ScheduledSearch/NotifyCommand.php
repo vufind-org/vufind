@@ -35,6 +35,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Db\Table\Search as SearchTable;
 use VuFind\Db\Table\User as UserTable;
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -145,6 +146,13 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected $userTable;
 
     /**
+     * Locale settings object
+     *
+     * @var LocaleSettings
+     */
+    protected $localeSettings;
+
+    /**
      * Constructor
      *
      * @param HMAC           $hmac            HMAC generator
@@ -155,12 +163,21 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param Mailer         $mailer          Mail service
      * @param SearchTable    $searchTable     Search table
      * @param UserTable      $userTable       User table
+     * @param LocaleSettings $localeSettings  Locale settings object
      * @param string|null    $name            The name of the command; passing
      * null means it must be set in configure()
      */
-    public function __construct(HMAC $hmac, PhpRenderer $renderer,
-        ResultsManager $resultsManager, array $scheduleOptions, Config $mainConfig,
-        Mailer $mailer, SearchTable $searchTable, UserTable $userTable, $name = null
+    public function __construct(
+        HMAC $hmac,
+        PhpRenderer $renderer,
+        ResultsManager $resultsManager,
+        array $scheduleOptions,
+        Config $mainConfig,
+        Mailer $mailer,
+        SearchTable $searchTable,
+        UserTable $userTable,
+        LocaleSettings $localeSettings,
+        $name = null
     ) {
         $this->hmac = $hmac;
         $this->renderer = $renderer;
@@ -171,6 +188,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         $this->mailer = $mailer;
         $this->searchTable = $searchTable;
         $this->userTable = $userTable;
+        $this->localeSettings = $localeSettings;
         parent::__construct($name);
     }
 
@@ -238,6 +256,9 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $this->output = $output;
         $this->processViewAlerts();
+        // Disconnect mailer to prevent exceptions from an attempt to gracefully
+        // close the connection on teardown
+        $this->mailer->resetConnection();
         return 0;
     }
 
@@ -316,14 +337,17 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         // Start with default language setting; override with user language
         // preference if set and valid. Default to English if configuration
         // is missing.
-        $language = $this->mainConfig->Site->language ?? 'en';
-        $allLanguages = isset($this->mainConfig->Languages)
-            ? array_keys($this->mainConfig->Languages->toArray()) : ['en'];
+        $language = $this->localeSettings->getDefaultLocale();
+        $allLanguages = array_keys($this->localeSettings->getEnabledLocales());
         if ($userLang != '' && in_array($userLang, $allLanguages)) {
             $language = $userLang;
         }
         $this->translator->setLocale($language);
-        $this->addLanguageToTranslator($this->translator, $language);
+        $this->addLanguageToTranslator(
+            $this->translator,
+            $this->localeSettings,
+            $language
+        );
     }
 
     /**
@@ -416,12 +440,12 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function buildEmail($s, $user, $searchObject, $newRecords)
     {
         $viewBaseUrl = $searchUrl = $s->notification_base_url;
-        $searchUrl .= $this->urlHelper->__invoke(
+        $searchUrl .= ($this->urlHelper)(
             $searchObject->getOptions()->getSearchAction()
         ) . $searchObject->getUrlQuery()->getParams(false);
         $secret = $s->getUnsubscribeSecret($this->hmac, $user);
         $unsubscribeUrl = $s->notification_base_url
-            . $this->urlHelper->__invoke('myresearch-unsubscribe')
+            . ($this->urlHelper)('myresearch-unsubscribe')
             . "?id={$s->id}&key=$secret";
         $userInstitution = $this->mainConfig->Site->institution;
         $params = $searchObject->getParams();
@@ -430,6 +454,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             return $data['selected'] ?? false;
         };
         $viewParams = [
+            'user' => $user,
             'records' => $newRecords,
             'info' => [
                 'baseUrl' => $viewBaseUrl,
@@ -438,7 +463,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                 'url' => $searchUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
                 'checkboxFilters' => array_filter(
-                    $params->getCheckboxFacets(), $selectedCheckboxes
+                    $params->getCheckboxFacets(),
+                    $selectedCheckboxes
                 ),
                 'filters' => $params->getFilterList(true),
                 'userInstitution' => $userInstitution

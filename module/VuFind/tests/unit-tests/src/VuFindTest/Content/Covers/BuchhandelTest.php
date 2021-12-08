@@ -55,7 +55,9 @@ class BuchhandelTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'http://base/9780739313121/s?access_token=mytoken',
             $loader->getUrl(
-                'mytoken', 'small', ['isbn' => new ISBN('0739313126')]
+                'mytoken',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }

@@ -39,7 +39,7 @@ use VuFind\Session\AbstractBase as SessionHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class SessionHandlerTestCase extends TestCase
+abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Mock database tables.
@@ -56,10 +56,8 @@ abstract class SessionHandlerTestCase extends TestCase
     protected function getTables()
     {
         if (!$this->tables) {
-            $this->tables = $this
-                ->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $this->tables
+                = new \VuFindTest\Container\MockDbTablePluginManager($this);
         }
         return $this->tables;
     }
@@ -98,11 +96,7 @@ abstract class SessionHandlerTestCase extends TestCase
             ->method('destroySession')
             ->with($this->equalTo($sessId));
         $tables = $this->getTables();
-        $tables->expects($this->at(0))->method('get')
-            ->with($this->equalTo('Search'))
-            ->will($this->returnValue($search));
-        $tables->expects($this->at(1))->method('get')
-            ->with($this->equalTo('ExternalSession'))
-            ->will($this->returnValue($external));
+        $tables->set('Search', $search);
+        $tables->set('ExternalSession', $external);
     }
 }

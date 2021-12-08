@@ -22,7 +22,7 @@
             <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
           <?php endforeach; ?>
         </select>
-        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Find')?>"/>
       </div>
     <?php endif; ?>
 
@@ -35,7 +35,7 @@
             <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->escapeHtml($instName)?></option>
           <?php endforeach; ?>
         </select>
-        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Find')?>"/>
       </div>
     <?php endif; ?>
 
@@ -48,7 +48,7 @@
             <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
           <?php endforeach; ?>
         </select>
-        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Find')?>"/>
       </div>
     <?php endif; ?>
   </form>

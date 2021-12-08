@@ -57,13 +57,15 @@ class LibraryCardsController extends AbstractBase
         // Check for "delete card" request; parameter may be in GET or POST depending
         // on calling context.
         $deleteId = $this->params()->fromPost(
-            'delete', $this->params()->fromQuery('delete')
+            'delete',
+            $this->params()->fromQuery('delete')
         );
         if ($deleteId) {
             // If the user already confirmed the operation, perform the delete now;
             // otherwise prompt for confirmation:
             $confirm = $this->params()->fromPost(
-                'confirm', $this->params()->fromQuery('confirm')
+                'confirm',
+                $this->params()->fromQuery('confirm')
             );
             if ($confirm) {
                 $success = $this->performDeleteLibraryCard($deleteId);
@@ -81,7 +83,9 @@ class LibraryCardsController extends AbstractBase
         return $this->createViewModel(
             [
                 'libraryCards' => $user->getLibraryCards(),
-                'multipleTargets' => $catalog->checkCapability('getLoginDrivers')
+                'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
+                'allowConnectingCards' => $this->getAuthManager()
+                    ->supportsConnectingLibraryCard(),
             ]
         );
     }
@@ -122,7 +126,7 @@ class LibraryCardsController extends AbstractBase
         $loginSettings = $this->getILSLoginSettings();
         // Split target and username if multiple login targets are available:
         if ($loginSettings['targets'] && strstr($username, '.')) {
-            list($target, $username) = explode('.', $username, 2);
+            [$target, $username] = explode('.', $username, 2);
         }
 
         $cardName = $this->params()->fromPost('card_name', $card->card_name);
@@ -163,7 +167,8 @@ class LibraryCardsController extends AbstractBase
 
         // Have we confirmed this?
         $confirm = $this->params()->fromPost(
-            'confirm', $this->params()->fromQuery('confirm')
+            'confirm',
+            $this->params()->fromQuery('confirm')
         );
         if ($confirm) {
             $user->deleteLibraryCard($cardID);
@@ -179,7 +184,8 @@ class LibraryCardsController extends AbstractBase
             'confirm_delete_library_card_brief',
             $this->url()->fromRoute('librarycards-deletecard'),
             $this->url()->fromRoute('librarycards-home'),
-            'confirm_delete_library_card_text', ['cardID' => $cardID]
+            'confirm_delete_library_card_text',
+            ['cardID' => $cardID]
         );
     }
 
@@ -241,6 +247,45 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
+     * Redirects to authentication to connect a new library card
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectCardLoginAction()
+    {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+        $url = $this->getServerUrl('librarycards-connectcard');
+        $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
+        if (!$redirectUrl) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_technical', 'error');
+            return $this->redirect()->toRoute('librarycards-home');
+        }
+        return $this->redirect()->toUrl($redirectUrl);
+    }
+
+    /**
+     * Connects a new library card for authenticated user
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectCardAction()
+    {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+        try {
+            $this->getAuthManager()->connectLibraryCard($this->getRequest(), $user);
+        } catch (\Exception $ex) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($ex->getMessage());
+        }
+        return $this->redirect()->toRoute('librarycards-home');
+    }
+
+    /**
      * Process the "edit library card" submission.
      *
      * @param \VuFind\Db\Row\User $user Logged in user
@@ -273,7 +318,12 @@ class LibraryCardsController extends AbstractBase
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
             $catalog = $this->getILS();
-            $patron = $catalog->patronLogin($username, $password);
+            try {
+                $patron = $catalog->patronLogin($username, $password);
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                return false;
+            }
             if ('password' === $loginMethod && !$patron) {
                 $this->flashMessenger()
                     ->addMessage('authentication_error_invalid', 'error');
@@ -301,7 +351,10 @@ class LibraryCardsController extends AbstractBase
 
         try {
             $user->saveLibraryCard(
-                $id == 'NEW' ? null : $id, $cardName, $username, $password
+                $id == 'NEW' ? null : $id,
+                $cardName,
+                $username,
+                $password
             );
         } catch (\VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -331,9 +384,7 @@ class LibraryCardsController extends AbstractBase
                 $info['cat_username'],
                 ' '
             );
-        } catch (\VuFind\Exception\Auth $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
-        } catch (\VuFind\Exception\LibraryCard $e) {
+        } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
 

@@ -27,7 +27,6 @@
  */
 namespace VuFindDevTools;
 
-use Laminas\Config\Config;
 use Laminas\I18n\Translator\TextDomain;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 
@@ -50,22 +49,22 @@ class LanguageHelper
     protected $loader;
 
     /**
-     * Configuration
+     * Configured languages (code => description)
      *
-     * @var Config
+     * @var string[]
      */
-    protected $config;
+    protected $configuredLanguages;
 
     /**
      * Constructor
      *
      * @param ExtendedIni $loader Language loader
-     * @param Config      $config Config
+     * @param array       $langs  Configured languages (code => description)
      */
-    public function __construct(ExtendedIni $loader, Config $config)
+    public function __construct(ExtendedIni $loader, array $langs = [])
     {
         $this->loader = $loader;
-        $this->config = $config;
+        $this->configuredLanguages = $langs;
     }
 
     /**
@@ -157,8 +156,8 @@ class LanguageHelper
      */
     public function getLangName($lang)
     {
-        if (isset($this->config->Languages->$lang)) {
-            return $this->config->Languages->$lang;
+        if (isset($this->configuredLanguages[$lang])) {
+            return $this->configuredLanguages[$lang];
         }
         switch ($lang) {
         case 'en-gb':
@@ -256,6 +255,40 @@ class LanguageHelper
     }
 
     /**
+     * Create summary data for use in the tabular display.
+     *
+     * @param array $details Full details from getAllLanguageDetails()
+     *
+     * @return array
+     */
+    protected function summarizeData($details)
+    {
+        $data = [];
+        foreach ($details as $langCode => $diffs) {
+            if ($diffs['l2Percent'] > 90) {
+                $progressLevel = 'info';
+            } elseif ($diffs['l2Percent'] > 70) {
+                $progressLevel = 'warning';
+            } else {
+                $progressLevel = 'danger';
+            }
+            $data[] = [
+                "lang" => $langCode,
+                "name"=> $diffs['name'],
+                "langtitle" => $langCode . (($langCode != $diffs['name'])
+                    ? " (" . $diffs['name'] . ")" : ''),
+                "missing" => count($diffs['notInL2']),
+                "extra" => count($diffs['notInL1']),
+                "percent" => $diffs['l2Percent'],
+                "countfiles" => count($diffs['helpFiles']),
+                "files" => $diffs['helpFiles'],
+                "progresslevel" => $progressLevel,
+            ];
+        }
+        return $data;
+    }
+
+    /**
      * Return language comparison information, using $mainLanguage as the
      * baseline.
      *
@@ -266,11 +299,21 @@ class LanguageHelper
     public function getAllDetails($mainLanguage)
     {
         $main = $this->loadLanguage($mainLanguage);
+        $details = $this->getAllLanguageDetails($main);
+        $dirHelpParts = [
+            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations'
+        ];
+        $dirLangParts = [APPLICATION_PATH, 'languages'];
         return [
-            'details' => $this->getAllLanguageDetails($main),
+            'details' => $details,
+            'dirHelp' => implode(DIRECTORY_SEPARATOR, $dirHelpParts)
+                . DIRECTORY_SEPARATOR,
+            'dirLang' => implode(DIRECTORY_SEPARATOR, $dirLangParts)
+                . DIRECTORY_SEPARATOR,
             'mainCode' => $mainLanguage,
             'mainName' => $this->getLangName($mainLanguage),
             'main' => $main,
+            'summaryData' => $this->summarizeData($details),
         ];
     }
 }

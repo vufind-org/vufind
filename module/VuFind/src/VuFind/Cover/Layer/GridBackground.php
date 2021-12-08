@@ -99,7 +99,11 @@ class GridBackground extends AbstractBackgroundLayer
     protected function renderGrid($im, $pattern, $color, $settings)
     {
         imagefilledrectangle(
-            $im, 0, 0, $settings->width, $settings->height,
+            $im,
+            0,
+            0,
+            $settings->width,
+            $settings->height,
             $this->getColor($im, $settings->baseColor)
         );
         $halfWidth = $settings->width / 2;
@@ -116,8 +120,12 @@ class GridBackground extends AbstractBackgroundLayer
             for ($i = 0;$i < 16;$i++) {
                 if ($bc[$i] == "1") {
                     imagefilledrectangle(
-                        $im, $x, $y,
-                        $x + $boxWidth - 1, $y + $boxHeight - 1, $color
+                        $im,
+                        $x,
+                        $y,
+                        $x + $boxWidth - 1,
+                        $y + $boxHeight - 1,
+                        $color
                     );
                 }
                 $x += $u;

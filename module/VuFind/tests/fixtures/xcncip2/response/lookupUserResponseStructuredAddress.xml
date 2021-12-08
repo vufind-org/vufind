@@ -1,0 +1,52 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="utf-8" ?>
+<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/ncip_v2_0.xsd">
+    <ns1:LookupUserResponse>
+        <ns1:UserId>
+            <ns1:AgencyId ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/agencyidtype/agencyidtype.scm">MZK</ns1:AgencyId>
+            <ns1:UserIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleuseridentifiertype/visibleuseridentifiertype.scm">Institution Id Number</ns1:UserIdentifierType>
+            <ns1:UserIdentifierValue>700</ns1:UserIdentifierValue>
+        </ns1:UserId>
+        <ns1:UserOptionalFields>
+            <ns1:NameInformation>
+                <ns1:PersonalNameInformation>
+                    <ns1:StructuredPersonalUserName>
+                        <ns1:GivenName>John</ns1:GivenName>
+                        <ns1:Surname>Smith</ns1:Surname>
+                    </ns1:StructuredPersonalUserName>
+                </ns1:PersonalNameInformation>
+            </ns1:NameInformation>
+            <ns1:UserAddressInformation>
+                <ns1:UserAddressRoleType ns1:Scheme="http://www.niso.org/ncip/v2_0/imp1/schemes/useraddressroletype/useraddressroletype.scm">Ship To</ns1:UserAddressRoleType>
+                <ns1:PhysicalAddress>
+                    <ns1:StructuredAddress>
+                        <ns1:Line1>Trvalá ulice 123</ns1:Line1>
+                        <ns1:Line2>12345 Big City</ns1:Line2>
+                    </ns1:StructuredAddress>
+                    <ns1:PhysicalAddressType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/physicaladdresstype/physicaladdresstype.scm">Postal Address</ns1:PhysicalAddressType>
+                </ns1:PhysicalAddress>
+            </ns1:UserAddressInformation>
+            <ns1:UserAddressInformation>
+                <ns1:UserAddressRoleType ns1:Scheme="http://www.niso.org/ncip/v2_0/imp1/schemes/useraddressroletype/useraddressroletype.scm">Notice</ns1:UserAddressRoleType>
+                <ns1:ElectronicAddress>
+                    <ns1:ElectronicAddressType ns1:Scheme="http://www.iana.org/assignments/uri-schemes">mailserver</ns1:ElectronicAddressType>
+                    <ns1:ElectronicAddressData>test@mzk.cz</ns1:ElectronicAddressData>
+                </ns1:ElectronicAddress>
+            </ns1:UserAddressInformation>
+            <ns1:UserPrivilege>
+                <ns1:AgencyId>MZK</ns1:AgencyId>
+                <ns1:AgencyUserPrivilegeType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/agencyuserprivilegetype/agencyuserprivilegetype.scm">MZK type</ns1:AgencyUserPrivilegeType>
+                <ns1:ValidFromDate>2010-08-30T00:00:00Z</ns1:ValidFromDate>
+                <ns1:ValidToDate>2099-12-31T01:00:00Z</ns1:ValidToDate>
+                <ns1:UserPrivilegeDescription>04 - S</ns1:UserPrivilegeDescription>
+            </ns1:UserPrivilege>
+            <ns1:UserId>
+                <ns1:UserIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleuseridentifiertype/visibleuseridentifiertype.scm">Barcode</ns1:UserIdentifierType>
+                <ns1:UserIdentifierValue>700</ns1:UserIdentifierValue>
+            </ns1:UserId>
+        </ns1:UserOptionalFields>
+    </ns1:LookupUserResponse>
+</ns1:NCIPMessage>

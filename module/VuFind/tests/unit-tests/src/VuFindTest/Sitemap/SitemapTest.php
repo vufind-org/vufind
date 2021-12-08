@@ -38,7 +38,7 @@ use VuFind\Sitemap\Sitemap;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SitemapTest extends \VuFindTest\Unit\TestCase
+class SitemapTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test toString().
@@ -69,5 +69,65 @@ class SitemapTest extends \VuFindTest\Unit\TestCase
 </urlset>
 XML;
         $this->assertEquals($expected, $sm->toString());
+    }
+
+    /**
+     * Test toString() with multiple languages.
+     *
+     * @return void
+     */
+    public function testToStringWithLanguagesAndFrequencies()
+    {
+        $sm = new Sitemap();
+        $sm->addUrl(
+            [
+                'url' => 'http://foo',
+                'languages' => [
+                    'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+                ]
+            ]
+        );
+        $sm->addUrl(
+            [
+                'url' => 'http://bar?t=1',
+                'languages' => [
+                  'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+                ],
+                'frequency' => 'daily'
+            ]
+        );
+        $sm->addUrl('http://baz');
+        $expected = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+   xmlns:xhtml="http://www.w3.org/1999/xhtml"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<url>
+  <loc>http://foo</loc>
+  <changefreq>weekly</changefreq>
+  <xhtml:link rel="alternate" hreflang="en">http://foo?lng=en</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="en-GB">http://foo?lng=en-gb</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="fi">http://foo?lng=fi</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="x-default">http://foo</xhtml:link>
+</url>
+<url>
+  <loc>http://bar?t=1</loc>
+  <changefreq>daily</changefreq>
+  <xhtml:link rel="alternate" hreflang="en">http://bar?t=1&amp;lng=en</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="en-GB">http://bar?t=1&amp;lng=en-gb</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="fi">http://bar?t=1&amp;lng=fi</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="x-default">http://bar?t=1</xhtml:link>
+</url>
+<url>
+  <loc>http://baz</loc>
+  <changefreq>weekly</changefreq>
+</url>
+</urlset>
+XML;
+        $this->assertXmlStringEqualsXmlString($expected, $sm->toString());
     }
 }

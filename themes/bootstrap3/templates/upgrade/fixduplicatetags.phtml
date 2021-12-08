@@ -20,8 +20,8 @@ otherwise, it is recommended that you fix these.  Click Submit to proceed.</p>
 <br />
 
 <form method="post" action="<?=$this->url('upgrade-fixduplicatetags')?>">
-  <input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" /><br /><br />
-  <input type="submit" name="skip" value="<?=$this->transEsc('skip_step') ?>." id="skip" />
+  <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit') ?>" /><br /><br />
+  <input type="submit" name="skip" value="<?=$this->transEscAttr('skip_step') ?>." id="skip" />
 </form>
 <?php
 $confirmText = $this->transEsc('skip_confirm');

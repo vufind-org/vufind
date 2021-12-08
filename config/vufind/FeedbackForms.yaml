@@ -12,7 +12,8 @@
 #   useCaptcha (boolean) Should the form use Captcha validation? Requires the "feedback"
 #                        option to be turned on in the config.ini [Captcha] form setting.
 #                        (default = true, if Captcha turned on for feedback overall).
-#   reportReferrer (boolean) Should the form report the page from which it was invoked?
+#   reportReferrer (boolean) Should the form report the page from which it was invoked
+#   reportUserAgent (boolean) Should the form report the browser's user agent string
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
@@ -20,6 +21,11 @@
 #                         value from config.ini [Feedback] section, or 'VuFind Feedback')
 #                         The subject may contain placeholders (for example %%receiver%%)
 #                         that are replaced with submitted form values.
+#   emailFrom (address in email envelope, separate from user's email)
+#     name (string)  Sender name (default = sender_name setting from config.ini
+#                    [Feedback] section)
+#     email (string) Sender email (default = sender_email setting from
+#                    config.ini [Feedback] section)
 #   recipient
 #     name (string)  Recipient name (default = recipient_name setting from config.ini
 #                    [Feedback] section)
@@ -43,20 +49,22 @@
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
 #     post (string) Help text displayed at the end of the form (translation key)
 #
-#   Help texts may contain HTML-formatting.
+#     Help texts may contain HTML-formatting.
 #
 #   fields (array) List of form elements with the following options:
 #
-#     name (string)      Element name
-#     label (string)     Element label (translation key)
-#     required (boolean) Is the element required?
-#     settings (array)   HTML attributes as key-value pairs, for example:
+#     name (string)        Element name
+#     label (string)       Element label (translation key)
+#     required (boolean)   Is the element required? (for checkbox elements this means that
+#                          all options have to be selected.)
+#     requireOne (boolean) Require at least one checkbox option to be selected.
+#     settings (array)     HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox|hidden)
+#     type (string)        Element type (text|textarea|date|email|url|select|radio|checkbox|hidden)
 #
-#     help (string)      Element help text (translation key) that is displayed before the element.
-#                        To include HTML formatting, use a translation key ending
-#                        in '_html' here, and define markup in the language files.
+#     help (string)        Element help text (translation key) that is displayed before the element.
+#                          To include HTML formatting, use a translation key ending
+#                          in '_html' here, and define markup in the language files.
 #
 #       or
 #
@@ -65,8 +73,18 @@
 #      post (string)     Like above but the help text is displayed after the element.
 #
 #
-#     And for select, radio and checkbox elements:
-# 
+#     Additional settings for date element:
+#
+#     format             Date format to use in the resulting message  (default is
+#                        displayDateFormat in config.ini). Format of the actual field
+#                        displayed on the form is controlled by user's browser.
+#     minValue           Minimum acceptable date. A string that PHP's strtotime can
+#                        parse (e.g. 'now' or '2021-09-09').
+#     maxValue           Maximum acceptable date. A string that PHP's strtotime can
+#                        parse (e.g. 'now' or '2021-09-09').
+#
+#     Additional settings for select, radio and checkbox elements:
+#
 #     options (array) List of select values (translation keys)
 #                     or a list of options with 'value' and 'label' (translation) keys.
 #                       Examples:
@@ -82,7 +100,7 @@
 #                           - value: value-2
 #                             label: label-2
 #
-#     or for select elements alternatively:
+#     Alternative settings for select elements:
 #
 #     optionGroups (array) List of option groups with keys:
 #       label (string) Group label (translation key)
@@ -107,6 +125,9 @@ forms:
     enabled: true
     useCaptcha: true
     reportReferrer: false
+    reportUserAgent: true
+    #emailFrom:
+    #  name: Your Library - Site Feedback
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
@@ -136,7 +157,6 @@ forms:
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
-    title: Acquisition Request,
     response: Thank you for your feedback.
 
     recipient:
@@ -186,6 +206,13 @@ forms:
         type: text
         label: Format
         required: true
+
+      - name: last_interest_date
+        type: date
+        label: Last interest date
+        required: false
+        min: now
+        max: 'now + 1 year'
 
       - name: boolean
         type: radio

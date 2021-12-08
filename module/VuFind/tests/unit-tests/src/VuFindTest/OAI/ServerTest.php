@@ -39,7 +39,7 @@ use VuFind\OAI\Server;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
-class ServerTest extends \VuFindTest\Unit\TestCase
+class ServerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test an empty input.
@@ -61,7 +61,9 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      *
      * @return Server
      */
-    protected function getServer($config = [], $baseURL = 'http://foo',
+    protected function getServer(
+        $config = [],
+        $baseURL = 'http://foo',
         $params = []
     ) {
         // Force an email into the configuration if missing; this is required by the

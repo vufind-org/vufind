@@ -28,6 +28,8 @@
  */
 namespace VuFindTest\Config\Reader;
 
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Config\Reader\ReaderInterface;
 use VuFind\Config\Reader\CacheDecorator;
 
 /**
@@ -48,13 +50,13 @@ class CacheDecoratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromFileAndString()
     {
-        $cache = $this->getMockForAbstractClass('Laminas\Cache\Storage\StorageInterface');
+        $cache = $this->getMockForAbstractClass(StorageInterface::class);
         $cache->expects($this->exactly(2))
             ->method('setItem');
         $cache->expects($this->exactly(2))
             ->method('hasItem')
             ->will($this->returnValue(false));
-        $reader = $this->getMockForAbstractClass('Laminas\Config\Reader\ReaderInterface');
+        $reader = $this->getMockForAbstractClass(ReaderInterface::class);
         $reader->expects($this->once())
             ->method('fromFile')
             ->will($this->returnValue([]));
@@ -73,7 +75,7 @@ class CacheDecoratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromFileAndStringCached()
     {
-        $cache = $this->getMockForAbstractClass('Laminas\Cache\Storage\StorageInterface');
+        $cache = $this->getMockForAbstractClass(StorageInterface::class);
         $cache->expects($this->never())
             ->method('setItem');
         $cache->expects($this->exactly(2))
@@ -82,7 +84,7 @@ class CacheDecoratorTest extends \PHPUnit\Framework\TestCase
         $cache->expects($this->exactly(2))
             ->method('getItem')
             ->will($this->returnValue([]));
-        $reader = $this->getMockForAbstractClass('Laminas\Config\Reader\ReaderInterface');
+        $reader = $this->getMockForAbstractClass(ReaderInterface::class);
         $deco = new CacheDecorator($reader, $cache);
         $deco->fromFile('ignore');
         $deco->fromString('ignore');

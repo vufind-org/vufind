@@ -80,8 +80,7 @@ class TopFacets extends AbstractFacets
 
         // Load other relevant settings:
         $this->baseSettings = [
-            'rows' => $config->Results_Settings->top_rows,
-            'cols' => $config->Results_Settings->top_cols
+            'rows' => $config->Results_Settings->top_rows
         ];
 
         // Load boolean configurations:
@@ -89,7 +88,8 @@ class TopFacets extends AbstractFacets
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.

@@ -70,7 +70,9 @@ class ResultScroller extends AbstractPlugin
      * @param ResultsManager   $rm      Results manager
      * @param bool             $enabled Is the scroller enabled?
      */
-    public function __construct(SessionContainer $session, ResultsManager $rm,
+    public function __construct(
+        SessionContainer $session,
+        ResultsManager $rm,
         $enabled = true
     ) {
         $this->enabled = $enabled;
@@ -156,7 +158,8 @@ class ResultScroller extends AbstractPlugin
         // fetch the previous page
         if ($this->data->page > 1 && $this->data->prevIds == null) {
             $this->data->prevIds = $this->fetchPage(
-                $lastSearch, $this->data->page - 1
+                $lastSearch,
+                $this->data->page - 1
             );
         }
 
@@ -196,7 +199,8 @@ class ResultScroller extends AbstractPlugin
             && $this->data->nextIds == null
         ) {
             $this->data->nextIds = $this->fetchPage(
-                $lastSearch, $this->data->page + 1
+                $lastSearch,
+                $this->data->page + 1
             );
         }
 
@@ -328,8 +332,7 @@ class ResultScroller extends AbstractPlugin
 
         // now we can set the previous/next record
         $retVal['previousRecord'] = null;
-        $retVal['nextRecord'] = isset($this->data->currIds[1])
-            ? $this->data->currIds[1] : null;
+        $retVal['nextRecord'] = $this->data->currIds[1] ?? null;
         // cover extremely unlikely edge case -- page size of 1:
         if (null === $retVal['nextRecord'] && isset($this->data->nextIds[0])) {
             $retVal['nextRecord'] = $this->data->nextIds[0];
@@ -457,8 +460,7 @@ class ResultScroller extends AbstractPlugin
             }
 
             // Store total result set size:
-            $retVal['resultTotal']
-                = isset($this->data->total) ? $this->data->total : 0;
+            $retVal['resultTotal'] = $this->data->total ?? 0;
 
             // Set first and last record IDs
             if ($this->data->firstlast) {

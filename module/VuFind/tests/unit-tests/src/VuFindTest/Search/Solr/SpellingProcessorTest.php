@@ -30,7 +30,6 @@ namespace VuFindTest\Search\Solr;
 
 use Laminas\Config\Config;
 use VuFind\Search\Solr\SpellingProcessor;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for spelling processor.
@@ -41,8 +40,12 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SpellingProcessorTest extends TestCase
+class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+    use \VuFindTest\Feature\SolrSearchObjectTrait;
+
     /**
      * Test defaults.
      *
@@ -76,8 +79,8 @@ class SpellingProcessorTest extends TestCase
     public function testSuggestionProcessing()
     {
         $sp = new SpellingProcessor();
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
         $this->assertEquals(
             $this->getExpectedQuery1Suggestions(),
             $sp->getSuggestions($spelling, $query)
@@ -93,8 +96,8 @@ class SpellingProcessorTest extends TestCase
     {
         $config = new Config(['limit' => 5]);
         $sp = new SpellingProcessor($config);
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
         $this->assertEquals(
             [
                 'grumble' => [
@@ -128,10 +131,9 @@ class SpellingProcessorTest extends TestCase
      */
     public function testBasicSuggestions()
     {
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
+        $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
         $this->assertEquals(
@@ -178,7 +180,9 @@ class SpellingProcessorTest extends TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -190,10 +194,9 @@ class SpellingProcessorTest extends TestCase
      */
     public function testBasicSuggestionsForUppercaseQuery()
     {
-        $spelling = $this->getFixture('spell6');
-        $query = $this->getFixture('query6');
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $spelling = $this->unserializeFixture('spell6');
+        $query = $this->unserializeFixture('query6');
+        $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
         $this->assertEquals(
@@ -240,7 +243,9 @@ class SpellingProcessorTest extends TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery6Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery6Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -252,10 +257,9 @@ class SpellingProcessorTest extends TestCase
      */
     public function testBasicSuggestionsWithNonDefaultSettings()
     {
-        $spelling = $this->getFixture('spell1');
-        $query = $this->getFixture('query1');
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $spelling = $this->unserializeFixture('spell1');
+        $query = $this->unserializeFixture('query1');
+        $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $config = new Config(['expand' => false, 'phrase' => true]);
         $sp = new SpellingProcessor($config);
@@ -297,7 +301,9 @@ class SpellingProcessorTest extends TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -472,8 +478,8 @@ class SpellingProcessorTest extends TestCase
         $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
 
         $sp = new SpellingProcessor(new Config([]));
-        $spelling = $this->getFixture('spell5');
-        $query = $this->getFixture('query5');
+        $spelling = $this->unserializeFixture('spell5');
+        $query = $this->unserializeFixture('query5');
         $sp->getSuggestions($spelling, $query);
     }
 
@@ -488,17 +494,18 @@ class SpellingProcessorTest extends TestCase
      */
     protected function runSpellingTest($testNum, $expected, $config = [])
     {
-        $spelling = $this->getFixture('spell' . $testNum);
-        $query = $this->getFixture('query' . $testNum);
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $spelling = $this->unserializeFixture('spell' . $testNum);
+        $query = $this->unserializeFixture('query' . $testNum);
+        $params = $this->getSolrParams();
         $this->setProperty($params, 'query', $query);
         $sp = new SpellingProcessor(new Config($config));
         $suggestions = $sp->getSuggestions($spelling, $query);
         $this->assertEquals(
             $expected,
             $sp->processSuggestions(
-                $suggestions, $spelling->getQuery(), $params
+                $suggestions,
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -562,9 +569,8 @@ class SpellingProcessorTest extends TestCase
      *
      * @return mixed
      */
-    protected function getFixture($file)
+    protected function unserializeFixture($file)
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../../fixtures/spell') . '/';
-        return unserialize(file_get_contents($fixturePath . $file));
+        return unserialize($this->getFixture("spell/$file"));
     }
 }

@@ -28,9 +28,10 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
-use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+use VuFindSearch\Service;
 
 /**
  * Hierarchy Tree Data Source (Solr)
@@ -48,9 +49,16 @@ class Solr extends AbstractBase
     /**
      * Search service
      *
-     * @var Connector
+     * @var Service
      */
-    protected $solrConnector;
+    protected $searchService;
+
+    /**
+     * Search backend ID used for tree generation.
+     *
+     * @var string
+     */
+    protected $backendId;
 
     /**
      * Formatter manager
@@ -90,16 +98,23 @@ class Solr extends AbstractBase
     /**
      * Constructor.
      *
-     * @param Connector        $connector Solr connector
+     * @param Service          $ss        Search service
+     * @param string           $backendId Search backend ID
      * @param FormatterManager $fm        Formatter manager
      * @param string           $cacheDir  Directory to hold cache results (optional)
      * @param array            $filters   Filters to apply to Solr tree queries
      * @param int              $batchSize Number of records retrieved in a batch
      */
-    public function __construct(Connector $connector, FormatterManager $fm,
-        $cacheDir = null, $filters = [], $batchSize = 1000
+    public function __construct(
+        Service $ss,
+        string $backendId,
+        FormatterManager $fm,
+        $cacheDir = null,
+        $filters = [],
+        $batchSize = 1000
     ) {
-        $this->solrConnector = $connector;
+        $this->searchService = $ss;
+        $this->backendId = $backendId;
         $this->formatterManager = $fm;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
@@ -125,33 +140,61 @@ class Solr extends AbstractBase
     }
 
     /**
-     * Search Solr.
-     *
-     * @param string $q    Search query
-     * @param int    $rows Max rows to retrieve (default = int max / 2 since Solr
-     * may choke with higher values)
+     * Get default search parameters shared by cursorMark and legacy methods.
      *
      * @return array
      */
-    protected function searchSolr($q, $rows = 1073741823)
+    protected function getDefaultSearchParams(): array
+    {
+        return [
+            'fq' => $this->filters,
+            'hl' => ['false'],
+            'fl' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
+                . 'is_hierarchy_id,hierarchy_sequence,title_in_hierarchy'],
+            'wt' => ['json'],
+            'json.nl' => ['arrarr'],
+        ];
+    }
+
+    /**
+     * Search Solr using legacy, non-cursorMark method (sometimes needed for
+     * backward compatibility, but usually disabled).
+     *
+     * @param Query $query Search query
+     * @param int   $rows  Page size
+     *
+     * @return array
+     */
+    protected function searchSolrLegacy(Query $query, $rows): array
+    {
+        $params = new ParamBag($this->getDefaultSearchParams());
+        $command = new RawJsonSearchCommand(
+            $this->backendId,
+            $query,
+            0,
+            $rows,
+            $params
+        );
+        $json = $this->searchService->invoke($command)->getResult();
+        return $json->response->docs ?? [];
+    }
+
+    /**
+     * Search Solr using a cursor.
+     *
+     * @param Query $query Search query
+     * @param int   $rows  Page size
+     *
+     * @return array
+     */
+    protected function searchSolrCursor(Query $query, $rows): array
     {
         $prevCursorMark = '';
         $cursorMark = '*';
         $records = [];
         while ($cursorMark !== $prevCursorMark) {
             $params = new ParamBag(
-                [
-                    'q'  => [$q],
-                    'fq' => $this->filters,
-                    'hl' => ['false'],
-                    'spellcheck' => ['false'],
-                    'fl' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
-                        . 'is_hierarchy_id,hierarchy_sequence,title_in_hierarchy'],
-                    'wt' => ['json'],
-                    'json.nl' => ['arrarr'],
-                    'rows' => [min([$this->batchSize, $rows])],
-                    // Start is always 0 when using cursorMark
-                    'start' => [0],
+                $this->getDefaultSearchParams() + [
                     // Sort is required
                     'sort' => ['id asc'],
                     // Override any default timeAllowed since it cannot be used with
@@ -160,7 +203,14 @@ class Solr extends AbstractBase
                     'cursorMark' => $cursorMark
                 ]
             );
-            $results = json_decode($this->solrConnector->search($params));
+            $command = new RawJsonSearchCommand(
+                $this->backendId,
+                $query,
+                0, // Start is always 0 when using cursorMark
+                min([$this->batchSize, $rows]),
+                $params
+            );
+            $results = $this->searchService->invoke($command)->getResult();
             if (empty($results->response->docs)) {
                 break;
             }
@@ -172,6 +222,24 @@ class Solr extends AbstractBase
             $cursorMark = $results->nextCursorMark;
         }
         return $records;
+    }
+
+    /**
+     * Search Solr.
+     *
+     * @param string $q    Search query
+     * @param int    $rows Max rows to retrieve (default = int max / 2 since Solr
+     * may choke with higher values)
+     *
+     * @return array
+     */
+    protected function searchSolr($q, $rows = 1073741823): array
+    {
+        $query = new Query($q);
+        // If batch size is zero or negative, use legacy, non-cursor method:
+        return $this->batchSize <= 0
+            ? $this->searchSolrLegacy($query, $rows)
+            : $this->searchSolrCursor($query, $rows);
     }
 
     /**
@@ -199,8 +267,7 @@ class Solr extends AbstractBase
         }
         $map = [$id => []];
         foreach ($records as $current) {
-            $parents = isset($current->hierarchy_parent_id)
-                ? $current->hierarchy_parent_id : [];
+            $parents = $current->hierarchy_parent_id ?? [];
             foreach ($parents as $parentId) {
                 if ($current->id === $parentId) {
                     // Ignore circular reference
@@ -268,7 +335,10 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getFormattedData($id, $format, $options = [],
+    public function getFormattedData(
+        $id,
+        $format,
+        $options = [],
         $cacheTemplate = 'tree_%s'
     ) {
         $cacheFile = (null !== $this->cacheDir)
@@ -295,7 +365,8 @@ class Solr extends AbstractBase
             // Get top record's info
             $formatter = $this->formatterManager->get($format);
             $formatter->setRawData(
-                $this->getRecord($id), $map,
+                $this->getRecord($id),
+                $map,
                 $this->getHierarchyDriver()->treeSorting(),
                 $this->getHierarchyDriver()->getCollectionLinkType()
             );

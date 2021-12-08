@@ -30,7 +30,6 @@ namespace VuFindTest\Search;
 
 use VuFind\Search\QueryAdapter;
 use VuFindSearch\Query\Query;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * QueryAdapter unit tests.
@@ -41,8 +40,10 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class QueryAdapterTest extends TestCase
+class QueryAdapterTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test various conversions.
      *
@@ -51,11 +52,10 @@ class QueryAdapterTest extends TestCase
     public function testConversions()
     {
         $cases = ['basic', 'advanced'];
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
         foreach ($cases as $case) {
             // Load minified, unminified, and Query object data:
-            $min = unserialize(file_get_contents($fixturePath . $case . '/min'));
-            $q = unserialize(file_get_contents($fixturePath . $case . '/query'));
+            $min = unserialize($this->getFixture('searches/' . $case . '/min'));
+            $q = unserialize($this->getFixture('searches/' . $case . '/query'));
 
             // Test conversion of minified data:
             $this->assertEquals($q, QueryAdapter::deminify($min));
@@ -75,8 +75,7 @@ class QueryAdapterTest extends TestCase
      */
     public function testOperatorDefinedEverywhere()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
-        $q = unserialize(file_get_contents($fixturePath . '/operators'));
+        $q = unserialize($this->getFixture('searches/operators'));
         $minified = QueryAdapter::minify($q);
 
         // First, check that count of 'o' values matches count of queries in group:
@@ -102,9 +101,8 @@ class QueryAdapterTest extends TestCase
      */
     public function testAdvancedRequest()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/advanced/';
-        $req = unserialize(file_get_contents($fixturePath . 'request'));
-        $q = unserialize(file_get_contents($fixturePath . 'query'));
+        $req = unserialize($this->getFixture('searches/advanced/request'));
+        $q = unserialize($this->getFixture('searches/advanced/query'));
         $this->assertEquals($q, QueryAdapter::fromRequest($req, 'AllFields'));
     }
 
@@ -138,9 +136,8 @@ class QueryAdapterTest extends TestCase
         };
 
         // Run the tests:
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
         foreach ($cases as $case => $expected) {
-            $q = unserialize(file_get_contents($fixturePath . $case . '/query'));
+            $q = unserialize($this->getFixture('searches/' . $case . '/query'));
             $this->assertEquals($expected, QueryAdapter::display($q, $echo, $echo));
         }
     }

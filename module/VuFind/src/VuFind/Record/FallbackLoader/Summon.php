@@ -29,8 +29,8 @@ namespace VuFind\Record\FallbackLoader;
 
 use SerialsSolutions\Summon\Laminas as Connector;
 use VuFind\Db\Table\Resource;
-use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Service;
 
 /**
  * Summon record fallback loader
@@ -51,22 +51,22 @@ class Summon implements FallbackLoaderInterface
     protected $table;
 
     /**
-     * Summon backend
+     * Search service
      *
-     * @var Backend
+     * @var Service
      */
-    protected $backend;
+    protected $searchService;
 
     /**
      * Constructor
      *
-     * @param Resource $table   Resource database table object
-     * @param Backend  $backend Summon search backend
+     * @param Resource $table         Resource database table object
+     * @param Service  $searchService Search service
      */
-    public function __construct(Resource $table, Backend $backend)
+    public function __construct(Resource $table, Service $searchService)
     {
         $this->table = $table;
-        $this->backend = $backend;
+        $this->searchService = $searchService;
     }
 
     /**
@@ -105,7 +105,7 @@ class Summon implements FallbackLoaderInterface
                 $params = new ParamBag(
                     ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
                 );
-                return $this->backend->retrieve($bookmark, $params);
+                return $this->searchService->retrieve('Summon', $bookmark, $params);
             }
         }
         return new \VuFindSearch\Backend\Summon\Response\RecordCollection([]);

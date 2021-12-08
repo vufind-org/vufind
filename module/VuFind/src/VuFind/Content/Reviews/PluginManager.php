@@ -63,8 +63,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Amazon::class => \VuFind\Content\AbstractAmazonFactory::class,
-        AmazonEditorial::class => \VuFind\Content\AbstractAmazonFactory::class,
         Booksite::class => BooksiteFactory::class,
         Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Deprecated::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,

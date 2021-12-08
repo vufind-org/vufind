@@ -113,7 +113,7 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
             }
         }
 
-        $item->attributes['nonce'] = $this->cspNonce;
+        $this->addNonce($item);
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 
@@ -126,7 +126,9 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
      *
      * @return void
      */
-    public function forcePrependFile($src = null, $type = 'text/javascript',
+    public function forcePrependFile(
+        $src = null,
+        $type = 'text/javascript',
         array $attrs = []
     ) {
         // Look for existing entry and remove it if found. Comparison method
@@ -215,5 +217,17 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
             $data .= ';';
         }
         return $data;
+    }
+
+    /**
+     * Add a nonce to the item
+     *
+     * @param stdClass $item Item
+     *
+     * @return void
+     */
+    protected function addNonce($item)
+    {
+        $item->attributes['nonce'] = $this->cspNonce;
     }
 }

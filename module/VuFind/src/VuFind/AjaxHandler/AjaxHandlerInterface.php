@@ -41,11 +41,11 @@ use Laminas\Mvc\Controller\Plugin\Params;
 interface AjaxHandlerInterface
 {
     // define some status constants
-    const STATUS_HTTP_BAD_REQUEST = 400; // bad request
-    const STATUS_HTTP_NEED_AUTH = 401;   // must login first
-    const STATUS_HTTP_FORBIDDEN = 403;   // method is unavailable
-    const STATUS_HTTP_ERROR = 500;       // an error occurred
-    const STATUS_HTTP_UNAVAILABLE = 503; // temporarily unavailable
+    public const STATUS_HTTP_BAD_REQUEST = 400; // bad request
+    public const STATUS_HTTP_NEED_AUTH = 401;   // must login first
+    public const STATUS_HTTP_FORBIDDEN = 403;   // method is unavailable
+    public const STATUS_HTTP_ERROR = 500;       // an error occurred
+    public const STATUS_HTTP_UNAVAILABLE = 503; // temporarily unavailable
 
     /**
      * Handle a request.

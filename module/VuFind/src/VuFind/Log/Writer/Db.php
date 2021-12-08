@@ -51,6 +51,6 @@ class Db extends \Laminas\Log\Writer\Db
     protected function doWrite(array $event)
     {
         // Apply verbosity, Call parent method:
-        return parent::doWrite($this->applyVerbosity($event));
+        parent::doWrite($this->applyVerbosity($event));
     }
 }

@@ -1,0 +1,378 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="utf-8" ?>
+<NCIPMessage xmlns="http://www.niso.org/2008/ncip" version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/ncip_v2_0.xsd">
+    <LookupUserResponse>
+        <UserId>
+            <AgencyId Scheme="http://www.niso.org/ncip/v1_0/schemes/agencyidtype/agencyidtype.scm">MZK</AgencyId>
+            <UserIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleuseridentifiertype/visibleuseridentifiertype.scm">Institution Id Number</UserIdentifierType>
+            <UserIdentifierValue>700</UserIdentifierValue>
+        </UserId>
+        <UserFiscalAccount>
+            <AccountBalance>
+                <CurrencyCode>CZK</CurrencyCode>
+                <MonetaryValue>105</MonetaryValue>
+            </AccountBalance>
+            <AccountDetails>
+                <AccrualDate>2014-11-14T16:22:46.016Z</AccrualDate>
+                <FiscalTransactionInformation>
+                    <FiscalActionType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/fiscalactiontype/fiscalactiontype.scm">Penalty</FiscalActionType>
+                    <FiscalTransactionType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/fiscaltransactiontype/fiscaltransactiontype.scm">Service Charge</FiscalTransactionType>
+                    <Amount>
+                        <CurrencyCode>CZK</CurrencyCode>
+                        <MonetaryValue>25</MonetaryValue>
+                    </Amount>
+                    <FiscalTransactionDescription>Please note that there is an additional accrued overdue items fine of: 0.00.</FiscalTransactionDescription>
+                </FiscalTransactionInformation>
+            </AccountDetails>
+        </UserFiscalAccount>
+        <LoanedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>104</ItemIdentifierValue>
+            </ItemId>
+            <DateDue>2014-11-20T01:00:00Z</DateDue>
+            <Title>Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...</Title>
+            <Ext>
+                <DateCheckedOut>2014-03-26T01:00:00Z</DateCheckedOut>
+                <BibliographicDescription>
+                    <BibliographicRecordId>
+                        <BibliographicRecordIdentifier>MZK01000847602-MZK50000847602000090</BibliographicRecordIdentifier>
+                        <BibliographicRecordIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">URI</BibliographicRecordIdentifierCode>
+                        <AgencyId>My Agency</AgencyId>
+                    </BibliographicRecordId>
+                    <Publisher>Joh. Alt,</Publisher>
+                    <Title>Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Magazine</MediumType>
+                </BibliographicDescription>
+            </Ext>
+        </LoanedItem>
+        <LoanedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>105</ItemIdentifierValue>
+            </ItemId>
+            <DateDue>2014-11-27T01:00:00Z</DateDue>
+            <Title>Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz</Title>
+            <Ext>
+                <DateCheckedOut>2014-08-27T00:00:00Z</DateCheckedOut>
+                <BibliographicDescription>
+                    <Author>Saathen, Friedrich,</Author>
+                    <BibliographicRecordId>
+                        <BibliographicRecordIdentifier>MZK01000000456-MZK50000000456000440</BibliographicRecordIdentifier>
+                        <BibliographicRecordIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">URI</BibliographicRecordIdentifierCode>
+                        <AgencyId>My Agency</AgencyId>
+                    </BibliographicRecordId>
+                    <Publisher>Akropolis,</Publisher>
+                    <Title>Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+            </Ext>
+        </LoanedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000974548-MZK50000974548000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-02T16:42:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Draganov, Nedjalko Ivanov,</Author>
+                    <Publisher>Bulharská tvorba,</Publisher>
+                    <Title>Česko-bulharské rozhovory / sestavil Nedjalko Draganov</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-02T00:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-02T00:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000353880-MZK50000353880000040</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Hold</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-10T13:14:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Title>Ahoj, Blanko! : dívčí román / Eva Bernardinová</Title>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Bernardinová, Eva,</Author>
+                    <Publisher>Erika,</Publisher>
+                    <Title>Ahoj, Blanko! : dívčí román / Eva Bernardinová</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                    <BibliographicRecordId>
+                        <BibliographicRecordIdentifier>111</BibliographicRecordIdentifier>
+                        <BibliographicRecordIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">URI</BibliographicRecordIdentifierCode>
+                    </BibliographicRecordId>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-10T00:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2014-11-20T01:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000702881-MZK50000702881000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-17T09:41:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Title>Veselé prasátko [objekt]</Title>
+            <Ext>
+                <BibliographicDescription>
+                    <Publisher>Svojtka </Publisher>
+                    <Title>Veselé prasátko [objekt]</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-17T00:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-17T00:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000065021-MZK50000065021000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Recall</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-23T16:44:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Title>Aktiv revizních techniků elektrických zařízení</Title>
+            <Ext>
+                <BibliographicDescription>
+                    <Publisher>Dům techniky ČSVTS,</Publisher>
+                    <Title>Aktiv revizních techniků elektrických zařízení</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                    <BibliographicRecordId>
+                        <BibliographicRecordIdentifier>112</BibliographicRecordIdentifier>
+                        <BibliographicRecordIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">URI</BibliographicRecordIdentifierCode>
+                    </BibliographicRecordId>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-23T00:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-23T00:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01001276830-MZK50001311815000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-24T13:21:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>James, E. L.,</Author>
+                    <Publisher>XYZ,</Publisher>
+                    <Title>Padesát odstínů temnoty = Fifty shades darker / E.L. James ; [z anglického originálu ... přelo</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-24T00:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-24T00:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01001422752-MZK50001457754000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-24T18:36:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Teplan, Vladimír,</Author>
+                    <Publisher>Grada,</Publisher>
+                    <Title>Praktická nefrologie / Vladimír Teplan</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-24T00:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-24T00:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000053496-MZK50000053496000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-30T14:33:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Himl, Pavel,</Author>
+                    <Publisher>Parta,</Publisher>
+                    <Title>Zlato Šumavy / Pavel Himl ; [ilustroval Miloslav Havlíček]</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-30T01:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-30T01:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000053495-MZK50000053495000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-30T15:19:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Rausch, Antonín,</Author>
+                    <Publisher>Erika,</Publisher>
+                    <Title>Příběhy ze staré Šumavy / Antonín Rausch</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-30T01:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-30T01:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000003911-MZK50000003911000010</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-10-30T18:50:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Petržela, Zdeněk</Author>
+                    <Publisher>Fantisk,</Publisher>
+                    <Title>Hrajeme si II</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-10-30T01:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-10-30T01:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01000602324-MZK50000602324000020</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-11-09T13:19:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Šámalová, Lenka</Author>
+                    <Publisher>Grada,</Publisher>
+                    <Title>Klinické použití krve : příručka / [odpovědná redaktorka Lenka Šámalová]</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-11-09T01:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-11-09T01:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01001333770-MZK50001370317000020</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Stack Retrieval</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-11-09T19:29:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Title>Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]</Title>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Štiková, Věra</Author>
+                    <Publisher>Nová škola,</Publisher>
+                    <Title>Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                    <BibliographicRecordId>
+                        <BibliographicRecordIdentifier>155</BibliographicRecordIdentifier>
+                        <BibliographicRecordIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">URI</BibliographicRecordIdentifierCode>
+                    </BibliographicRecordId>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-11-09T01:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-11-09T01:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <RequestedItem>
+            <ItemId>
+                <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                <ItemIdentifierValue>MZK01001333770-MZK50001370317000030</ItemIdentifierValue>
+            </ItemId>
+            <RequestType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Estimate</RequestType>
+            <RequestStatusType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</RequestStatusType>
+            <DatePlaced>2014-11-09T19:29:00Z</DatePlaced>
+            <PickupLocation>Loan Department - Ground floor</PickupLocation>
+            <ReminderLevel>3</ReminderLevel>
+            <Ext>
+                <BibliographicDescription>
+                    <Author>Štiková, Věra</Author>
+                    <Publisher>Nová škola,</Publisher>
+                    <Title>Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]</Title>
+                    <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+                </BibliographicDescription>
+                <EarliestDateNeeded>2014-11-09T01:00:00Z</EarliestDateNeeded>
+                <NeedBeforeDate>2015-11-09T01:00:00Z</NeedBeforeDate>
+            </Ext>
+        </RequestedItem>
+        <UserOptionalFields>
+            <NameInformation>
+                <PersonalNameInformation>
+                    <StructuredPersonalUserName>
+                        <GivenName>John</GivenName>
+                        <Surname>Smith</Surname>
+                    </StructuredPersonalUserName>
+                </PersonalNameInformation>
+            </NameInformation>
+            <UserAddressInformation>
+                <UserAddressRoleType Scheme="http://www.niso.org/ncip/v2_0/imp1/schemes/useraddressroletype/useraddressroletype.scm">Ship To</UserAddressRoleType>
+                <PhysicalAddress>
+                    <UnstructuredAddress>
+                        <UnstructuredAddressData>Trvalá ulice 123, Big City, 12345</UnstructuredAddressData>
+                    </UnstructuredAddress>
+                    <PhysicalAddressType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/physicaladdresstype/physicaladdresstype.scm">Postal Address</PhysicalAddressType>
+                </PhysicalAddress>
+            </UserAddressInformation>
+            <UserAddressInformation>
+                <UserAddressRoleType Scheme="http://www.niso.org/ncip/v2_0/imp1/schemes/useraddressroletype/useraddressroletype.scm">Notice</UserAddressRoleType>
+                <ElectronicAddress>
+                    <ElectronicAddressType Scheme="http://www.iana.org/assignments/uri-schemes">mailserver</ElectronicAddressType>
+                    <ElectronicAddressData>test@mzk.cz</ElectronicAddressData>
+                </ElectronicAddress>
+            </UserAddressInformation>
+            <UserPrivilege>
+                <AgencyId>MZK</AgencyId>
+                <AgencyUserPrivilegeType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/agencyuserprivilegetype/agencyuserprivilegetype.scm">MZK type</AgencyUserPrivilegeType>
+                <ValidFromDate>2010-08-30T00:00:00Z</ValidFromDate>
+                <ValidToDate>2099-12-31T01:00:00Z</ValidToDate>
+                <UserPrivilegeDescription>04 - S</UserPrivilegeDescription>
+            </UserPrivilege>
+            <UserId>
+                <UserIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleuseridentifiertype/visibleuseridentifiertype.scm">Barcode</UserIdentifierType>
+                <UserIdentifierValue>700</UserIdentifierValue>
+            </UserId>
+        </UserOptionalFields>
+    </LookupUserResponse>
+</NCIPMessage>

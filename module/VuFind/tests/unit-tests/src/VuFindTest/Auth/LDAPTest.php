@@ -39,8 +39,10 @@ use VuFind\Auth\LDAP;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class LDAPTest extends \VuFindTest\Unit\DbTestCase
+class LDAPTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Get an authentication object.
      *
@@ -53,7 +55,10 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone $this->getAuthManager()->get('LDAP');
+        $authManager = new \VuFind\Auth\PluginManager(
+            new \VuFindTest\Container\MockContainer($this)
+        );
+        $obj = $authManager->get('LDAP');
         $obj->setConfig($config);
         return $obj;
     }
@@ -71,7 +76,8 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
                 'port' => 1234,
                 'basedn' => 'basedn',
                 'username' => 'username'
-            ], true
+            ],
+            true
         );
         return new Config(['LDAP' => $ldapConfig], true);
     }

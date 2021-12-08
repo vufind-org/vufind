@@ -1,70 +1,146 @@
 <?php
-    $this->headTitle($this->translate('Language'));
+  $pageTitle = 'Comparing Languages Against ' . $mainName;
+  $this->headTitle($pageTitle);
+
+  $uLangs = [];
+  foreach ($this->layout()->allLangs ?? [] as $c => $n) {
+    $uLangs[] = $c;
+  }
+
+  // Initialize flag -- did any languages get hidden due to missing configuration?
+  $hiddenLanguages = false;
 ?>
 
-<h2>Comparing Languages Against <?=$this->escapeHtml($mainName)?></h2>
+<h1><?=$this->escapeHtml($pageTitle)?></h1>
 
-<h3>Summary</h3>
-
-<table class="table table-striped">
-  <tr><th>Language</th><th>Missing Lines</th><th>Extra Lines</th><th>Percent Translated</th><th>Extra Help Files</th></tr>
-  <?php foreach ($details as $langCode => $diffs): ?>
-    <?php
-      $extraCount = count($diffs['notInL1']);
-      $missingCount = count($diffs['notInL2']);
-    ?>
+<table id="lang-summary" class="table table-striped">
+  <caption>Summarize status of translations in language files</caption>
+  <thead>
     <tr>
-      <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
-      <td><?=$missingCount ?><?php if($missingCount > 0): ?> (<button class="missing_count btn btn-link" data-langcode="<?=$langCode?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
-      <td><?=$extraCount ?><?php if($extraCount > 0): ?> (<button class="extra_count btn btn-link" data-langcode="<?=$langCode?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
-      <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
-      <td><?=count($diffs['helpFiles'])?></td>
+      <th scope="col">Language</th>
+      <th scope="col">Percent Translated</th>
+      <th scope="col">Missing Lines</th>
+      <th scope="col">Extra Lines</th>
+      <th scope="col">Extra Help Files</th>
     </tr>
-  <?php endforeach; ?>
+  </thead>
+  <tbody>
+    <?php foreach ($summaryData as $row): ?>
+      <?php
+        $languageActive = in_array($row['lang'], $uLangs);
+        $hiddenLanguages = $hiddenLanguages || !$languageActive;
+      ?>
+      <tr class="<?=$this->escapeHtmlAttr($row['lang'])?> <?=$languageActive ? '' : 'hide'?>">
+        <td><?=$this->escapeHtml($row['langtitle'])?></td>
+        <td>
+          <div class="progress progress-border-<?=$this->escapeHtmlAttr($row['progresslevel'])?>">
+            <div class="progress-bar progress-bar-<?=$this->escapeHtmlAttr($row['progresslevel'])?>" role="progressbar" aria-valuenow="<?=$this->escapeHtmlAttr($row['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$row['percent']?>%;">
+              <?=$this->escapeHtml($row['percent'])?>% <span class="sr-only">Complete</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <?=$this->escapeHtml($row['missing']) ?>
+          <?php if($row['missing'] > 0):?> <button class="btn-missing btn btn-default" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+        </td>
+        <td>
+          <?=$this->escapeHtml($row['extra']) ?>
+          <?php if($row['extra'] > 0):?> <button class="btn-extra btn btn-default" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+        </td>
+        <td>
+          <?php if (($row['countfiles'] > 0) && (in_array($row['lang'], $uLangs))):?>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
+                <?=$this->escapeHtml($row['countfiles'])?> <span class="caret d-none"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
+              <?php foreach ($row['files'] as $k => $v): ?>
+                <li>
+                  <a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url("help-home") . "?lng=" . $this->escapeHtmlAttr($row['lang']) . "&amp;topic=" . $this->escapeHtmlAttr(str_replace(".phtml", "", $v));?>">
+                    <?=$this->escapeHtml($v)?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php else: ?>
+            <?=$this->escapeHtml($row['countfiles'])?>
+          <?php endif; ?>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
 </table>
+
+<?php if ($hiddenLanguages): ?>
+  <div class="show-all" data-text="Show all languages"></div>
+<?php endif; ?>
+
+<h2>Directories</h2>
+<p>Languages in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirLang)?></em> as .ini files.</p>
+<p>Translation of Help in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
+
+<template id="template-copy-btn">
+  <div class="float-right"><?=$this->copyToClipboardButton('.translation-output'); ?></div>
+</template>
+
 <?php
   $json = json_encode($details);
   $script = <<<JS
-  function createDiffManager() {
-    var details = {$json};
-    function makeRow(opArray, lang) {
-      var arr = [];
-      for (var i = 0; i < opArray.length; i++) {
-        console.log(details[lang].object[opArray[i]] || details.en.object[opArray[i]]);
-        arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
-      }
-      return '<textarea class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25)+ '">' + arr.join('\\n') + '</textarea>';
+function createDiffManager() {
+  var details = {$json};
+  function makeTextarea(opArray, lang) {
+    var arr = [];
+    for (var i = 0; i < opArray.length; i++) {
+      arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
     }
-    function bindTextareaEvent() {
-       $('.translation-output').click(function(e) {
-        this.select();
-      });
-    }
-    function showExtra(lang) {
-      VuFind.lightbox.render('<h2>Extra Lines</h2>'+makeRow(details[lang].notInL1, lang));
-      bindTextareaEvent();
-      return false;
-    }
-    function showMissing(lang) {
-      VuFind.lightbox.render('<h2>Missing Lines</h2>'+makeRow(details[lang].notInL2, lang));
-      bindTextareaEvent();
-      return false;
-    }
-    return {
-      showExtra: showExtra,
-      showMissing: showMissing
-    }
+    return '<textarea readonly class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
   }
-  var diffManager = createDiffManager();
-  
-  $('.missing_count').click(function(e) {
-    lang = $(this).data('langcode');
-    return diffManager.showMissing(lang);
+
+  function bindTextareaEvent() {
+    var copyBtn = document.getElementById("template-copy-btn").content.cloneNode(true);
+    $(".modal-body h2").after(copyBtn);
+    $('.translation-output').click(function(e) {
+      this.select();
+    });
+  }
+
+  function showExtra(lang, title) {
+    VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL1, lang));
+    bindTextareaEvent();
+    return false;
+  }
+  function showMissing(lang, title) {
+    VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL2, lang));
+    bindTextareaEvent();
+    return false;
+  }
+
+  return {
+    showExtra: showExtra,
+    showMissing: showMissing
+  };
+}
+var diffManager = createDiffManager();
+
+$('#lang-summary .btn-missing').click(function(e) {
+  var lang = $(this).data('langcode');
+  var title = $(this).attr('title');
+  return diffManager.showMissing(lang, title);
+});
+$('#lang-summary .btn-extra').click(function(e) {
+  var lang = $(this).data('langcode');
+  var title = $(this).attr('title');
+  return diffManager.showExtra(lang, title);
+});
+
+$('.show-all').html('<button class="btn btn-default btn-light" type="button">' + $('.show-all:first').data('text') + '</button>');
+$('.show-all button').click(function() {
+  $("#lang-summary tr").each(function() {
+    $(this).removeClass("hide");
   });
-  $('.extra_count').click(function(e) {
-    lang = $(this).data('langcode');
-    return diffManager.showExtra(lang);
-  });
+  $(this).remove();
+});
 JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

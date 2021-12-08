@@ -90,7 +90,13 @@ abstract class FacetCache
     protected function getCacheKey()
     {
         $params = $this->results->getParams();
-        $settings = [$params->getFacetConfig(), $params->getHiddenFilters()];
+        $facetConfig = $params->getFacetConfig();
+        $settings = [
+            $facetConfig,
+            $params->getHiddenFilters(),
+            // Factor operator settings into cache key:
+            array_map([$params, 'getFacetOperator'], array_keys($facetConfig)),
+        ];
         return $this->language . md5(print_r($settings, true));
     }
 

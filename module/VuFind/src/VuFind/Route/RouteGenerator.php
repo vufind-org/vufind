@@ -49,7 +49,7 @@ class RouteGenerator
     protected $nonTabRecordActions = [
         'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
         'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
-        'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText',
+        'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink',
     ];
 
     /**
@@ -77,7 +77,7 @@ class RouteGenerator
      */
     public function addDynamicRoute(& $config, $routeName, $controller, $action)
     {
-        list($actionName) = explode('/', $action, 2);
+        [$actionName] = explode('/', $action, 2);
         $config['router']['routes'][$routeName] = [
             'type'    => 'Laminas\Router\Http\Segment',
             'options' => [
@@ -132,6 +132,7 @@ class RouteGenerator
                 'constraints' => [
                     'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    'tab'        => '[a-zA-Z][a-zA-Z0-9_-]*',
                 ],
                 'defaults' => [
                     'controller' => $controller,
@@ -184,7 +185,7 @@ class RouteGenerator
      */
     public function addStaticRoute(& $config, $route)
     {
-        list($controller, $action) = explode('/', $route);
+        [$controller, $action] = explode('/', $route);
         $routeName = str_replace('/', '-', strtolower($route));
         $config['router']['routes'][$routeName] = [
             'type' => 'Laminas\Router\Http\Literal',

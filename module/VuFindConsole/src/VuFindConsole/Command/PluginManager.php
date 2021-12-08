@@ -58,6 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'generate/thememixin' => Generate\ThemeMixinCommand::class,
         'harvest/harvest_oai' => Harvest\HarvestOaiCommand::class,
         'harvest/merge-marc' => Harvest\MergeMarcCommand::class,
+        'import/import-csv' => Import\ImportCsvCommand::class,
         'import/import-xsl' => Import\ImportXslCommand::class,
         'import/webcrawl' => Import\WebCrawlCommand::class,
         'install/install' => Install\InstallCommand::class,
@@ -113,6 +114,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Generate\ThemeMixinCommandFactory::class,
         Harvest\MergeMarcCommand::class => InvokableFactory::class,
         Harvest\HarvestOaiCommand::class => Harvest\HarvestOaiCommandFactory::class,
+        Import\ImportCsvCommand::class => Import\ImportCsvCommandFactory::class,
         Import\ImportXslCommand::class => Import\ImportXslCommandFactory::class,
         Import\WebCrawlCommand::class => Import\WebCrawlCommandFactory::class,
         Install\InstallCommand::class => InvokableFactory::class,
@@ -159,7 +161,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         //$this->addAbstractFactory(PluginFactory::class);

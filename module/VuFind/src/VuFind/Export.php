@@ -28,7 +28,7 @@
 namespace VuFind;
 
 use Laminas\Config\Config;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\PhpRenderer;
 
 /**
  * Export support class
@@ -78,16 +78,15 @@ class Export
     /**
      * Get the URL for bulk export.
      *
-     * @param RendererInterface $view   View object (needed for URL generation)
-     * @param string            $format Export format being used
-     * @param array             $ids    Array of IDs to export (in source|id format)
+     * @param PhpRenderer $view   View object (needed for URL generation)
+     * @param string      $format Export format being used
+     * @param array       $ids    Array of IDs to export (in source|id format)
      *
      * @return string
      */
     public function getBulkUrl($view, $format, $ids)
     {
-        $params = [];
-        $params[] = 'f=' . urlencode($format);
+        $params = ['f=' . urlencode($format)];
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
         }
@@ -130,7 +129,9 @@ class Export
                 break;
             case 'encodedCallback':
                 $template = str_replace(
-                    '{' . $current . '}', urlencode($callback), $template
+                    '{' . $current . '}',
+                    urlencode($callback),
+                    $template
                 );
                 break;
             }
@@ -169,7 +170,8 @@ class Export
             $ns = array_map(
                 function ($current) {
                     return explode('|', $current, 2);
-                }, $ns
+                },
+                $ns
             );
             foreach ($parts as $part) {
                 // Convert text into XML object:
@@ -295,8 +297,7 @@ class Export
      */
     public function getHeaders($format)
     {
-        return isset($this->exportConfig->$format->headers)
-            ? $this->exportConfig->$format->headers : [];
+        return $this->exportConfig->$format->headers ?? [];
     }
 
     /**
@@ -308,8 +309,7 @@ class Export
      */
     public function getLabelForFormat($format)
     {
-        return isset($this->exportConfig->$format->label)
-            ? $this->exportConfig->$format->label : $format;
+        return $this->exportConfig->$format->label ?? $format;
     }
 
     /**
@@ -322,13 +322,9 @@ class Export
     public function getBulkExportType($format)
     {
         // if exportType is set on per-format basis in export.ini then use it
-        if (isset($this->exportConfig->$format->bulkExportType)) {
-            return $this->exportConfig->$format->bulkExportType;
-        }
-
         // else check if export type is set in config.ini
-        return isset($this->mainConfig->BulkExport->defaultType)
-            ? $this->mainConfig->BulkExport->defaultType : 'link';
+        return $this->exportConfig->$format->bulkExportType
+            ?? $this->mainConfig->BulkExport->defaultType ?? 'link';
     }
 
     /**

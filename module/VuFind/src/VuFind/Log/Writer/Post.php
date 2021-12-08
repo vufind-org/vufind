@@ -96,7 +96,9 @@ class Post extends \Laminas\Log\Writer\AbstractWriter
      */
     protected function getBody($event)
     {
-        return ['message' => $this->formatter->format($event) . PHP_EOL];
+        return json_encode(
+            ['message' => $this->formatter->format($event) . PHP_EOL]
+        );
     }
 
     /**

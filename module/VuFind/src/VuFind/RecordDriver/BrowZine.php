@@ -55,7 +55,7 @@ class BrowZine extends DefaultRecord
      */
     public function getSjrValue()
     {
-        return isset($this->fields['sjrValue']) ? $this->fields['sjrValue'] : '';
+        return $this->fields['sjrValue'] ?? '';
     }
 
     /**
@@ -65,9 +65,7 @@ class BrowZine extends DefaultRecord
      */
     public function getTitle()
     {
-        return isset($this->fields['name'])
-            ? $this->fields['name']
-            : parent::getTitle();
+        return $this->fields['name'] ?? parent::getTitle();
     }
 
     /**

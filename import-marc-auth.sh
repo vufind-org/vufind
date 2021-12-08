@@ -36,7 +36,7 @@ fi
 
 # Always use the authority mappings from PROPERTIES_FILE
 # if the user specified an override file, add that to the setting.
-MAPPINGS_FILENAMES=($(sed --quiet --expression='s/^\(solr.indexer.properties\s*=\s*\)\(.*\)/\2/p' $PROPERTIES_FILE | tr "," " "))
+MAPPINGS_FILENAMES=($(grep '^solr\.indexer\.properties *=' $PROPERTIES_FILE | sed 's/^solr.indexer.properties *= *\(.*\)/\1/p' | tr "," " "))
 if [ $# -gt 1 ]
 then
   MAPPINGS_FILENAMES+=($2)

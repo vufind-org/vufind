@@ -109,8 +109,11 @@ class PluginFactory implements AbstractFactoryInterface
         while (null !== ($child = array_pop($configs))) {
             $overrideSections = isset($child->Parent_Config->override_full_sections)
                 ? explode(
-                    ',', str_replace(
-                        ' ', '', $child->Parent_Config->override_full_sections
+                    ',',
+                    str_replace(
+                        ' ',
+                        '',
+                        $child->Parent_Config->override_full_sections
                     )
                 )
                 : [];
@@ -184,7 +187,9 @@ class PluginFactory implements AbstractFactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         return $this->loadConfigFile($requestedName . '.ini');

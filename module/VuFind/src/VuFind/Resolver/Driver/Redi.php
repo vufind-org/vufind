@@ -221,7 +221,8 @@ class Redi extends AbstractBase
                     . ($i + 1) . "]/p/sup";
                 if ($xpath->evaluate("count({$expression})") == 1) {
                     $itemInfo = $this->parseRediInfo(
-                        $xml, $xpath->query($expression)->item(0)->textContent
+                        $xml,
+                        $xpath->query($expression)->item(0)->textContent
                     );
                 }
 

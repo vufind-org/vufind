@@ -81,7 +81,7 @@ class LessCompiler extends AbstractCssPreCompiler
         $less = $parts[0];
 
         $finalOutDir = $this->basePath . '/themes/' . $theme . '/css/';
-        list($fileName, ) = explode('.', $less);
+        [$fileName, ] = explode('.', $less);
         $finalFile = $finalOutDir . $fileName . '.css';
 
         $this->logMessage("\tcompiling '" . $less . "' into '" . $finalFile . "'");

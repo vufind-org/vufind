@@ -101,7 +101,9 @@ class TabManager
      * @param array         $legacyConfig Overall framework configuration (only
      * used for legacy config loading; optional)
      */
-    public function __construct(PluginManager $pm, ConfigManager $cm,
+    public function __construct(
+        PluginManager $pm,
+        ConfigManager $cm,
         $legacyConfig = []
     ) {
         $this->pluginManager = $pm;
@@ -158,8 +160,10 @@ class TabManager
      *
      * @return mixed
      */
-    protected function getConfigByClass(AbstractRecordDriver $driver,
-        $setting, $default
+    protected function getConfigByClass(
+        AbstractRecordDriver $driver,
+        $setting,
+        $default
     ) {
         // Get the current record driver's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
@@ -200,6 +204,17 @@ class TabManager
     }
 
     /**
+     * Get an array of extra JS scripts by looking up the provided record driver in
+     * the provided tab configuration array.
+     *
+     * @return array
+     */
+    public function getExtraScripts()
+    {
+        return $this->config[$this->context]['TabScripts'] ?? [];
+    }
+
+    /**
      * Get a default tab by looking up the provided record driver in the tab
      * configuration array.
      *
@@ -211,8 +226,10 @@ class TabManager
      *
      * @return string
      */
-    public function getDefaultTabForRecord(AbstractRecordDriver $driver,
-        array $tabs, $fallback = null
+    public function getDefaultTabForRecord(
+        AbstractRecordDriver $driver,
+        array $tabs,
+        $fallback = null
     ) {
         // Load default from module configuration:
         $default = $this->getConfigByClass($driver, 'defaultTab', null);
@@ -243,8 +260,10 @@ class TabManager
      *
      * @return array
      */
-    public function getTabDetailsForRecord(AbstractRecordDriver $driver,
-        $request = null, $fallback = null
+    public function getTabDetailsForRecord(
+        AbstractRecordDriver $driver,
+        $request = null,
+        $fallback = null
     ) {
         $tabs = $this->getTabsForRecord($driver, $request);
         $default = $this->getDefaultTabForRecord($driver, $tabs, $fallback);
@@ -259,7 +278,8 @@ class TabManager
      *
      * @return array               service name => tab object
      */
-    public function getTabsForRecord(AbstractRecordDriver $driver,
+    public function getTabsForRecord(
+        AbstractRecordDriver $driver,
         $request = null
     ) {
         $tabs = [];

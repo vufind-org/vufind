@@ -63,16 +63,16 @@ class Logger extends BaseLogger
      * - writers: array of writers to add to this logger
      * - exceptionhandler: if true register this logger as exceptionhandler
      * - errorhandler: if true register this logger as errorhandler
-     * - vufind_ip_reader: UserIpReader object to use for IP lookups
      *
-     * @param array|Traversable $options Configuration options
+     * @param UserIpReader      $userIpReader User IP reader
+     * @param array|Traversable $options      Configuration options
      *
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      */
-    public function __construct($options = null)
+    public function __construct(UserIpReader $userIpReader, $options = null)
     {
+        $this->userIpReader = $userIpReader;
         parent::__construct($options);
-        $this->userIpReader = $options['vufind_ip_reader'] ?? null;
     }
 
     /**
@@ -132,6 +132,10 @@ class Logger extends BaseLogger
      */
     protected function getSeverityFromException($error)
     {
+        // If the exception provides the severity level, use it:
+        if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {
+            return $error->getSeverityLevel();
+        }
         // Treat unexpected or 5xx errors as more severe than 4xx errors.
         if ($error instanceof \VuFind\Exception\HttpStatusInterface
             && in_array($error->getHttpStatus(), [403, 404])
@@ -160,8 +164,7 @@ class Logger extends BaseLogger
             $prev = $prev->getPrevious();
         }
         $referer = $server->get('HTTP_REFERER', 'none');
-        $ipAddr = $this->userIpReader !== null
-            ? $this->userIpReader->getUserIp() : $server->get('REMOTE_ADDR');
+        $ipAddr = $this->userIpReader->getUserIp();
         $basicServer
             = '(Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '

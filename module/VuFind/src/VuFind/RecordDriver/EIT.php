@@ -93,8 +93,7 @@ class EIT extends DefaultRecord
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        $su = isset($this->controlInfo['artinfo']['su'])
-            ? $this->controlInfo['artinfo']['su'] : [];
+        $su = $this->controlInfo['artinfo']['su'] ?? [];
 
         // The EIT index doesn't currently subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.
@@ -115,8 +114,7 @@ class EIT extends DefaultRecord
      */
     public function getBreadcrumb()
     {
-        return isset($this->controlInfo['artinfo']['tig']['atl']) ?
-            $this->controlInfo['artinfo']['tig']['atl'] : '';
+        return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
 
     /**
@@ -146,8 +144,7 @@ class EIT extends DefaultRecord
      */
     public function getCleanISSN()
     {
-        return isset($this->controlInfo['jinfo']['issn']) ?
-            $this->controlInfo['jinfo']['issn'] : false;
+        return $this->controlInfo['jinfo']['issn'] ?? false;
     }
 
     /**
@@ -241,8 +238,7 @@ class EIT extends DefaultRecord
      */
     public function getShortTitle()
     {
-        return isset($this->controlInfo['artinfo']['tig']['atl'])
-            ? $this->controlInfo['artinfo']['tig']['atl'] : '';
+        return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
 
     /**
@@ -275,8 +271,7 @@ class EIT extends DefaultRecord
      */
     public function getTitle()
     {
-        return isset($this->controlInfo['artinfo']['tig']['atl'])
-            ? $this->controlInfo['artinfo']['tig']['atl'] : '';
+        return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
 
     /**
@@ -334,8 +329,7 @@ class EIT extends DefaultRecord
      */
     public function getContainerTitle()
     {
-        return isset($this->controlInfo['jinfo']['jtl'])
-            ? $this->controlInfo['jinfo']['jtl'] : '';
+        return $this->controlInfo['jinfo']['jtl'] ?? '';
     }
 
     /**
@@ -346,8 +340,7 @@ class EIT extends DefaultRecord
      */
     public function getContainerVolume()
     {
-        return isset($this->controlInfo['pubinfo']['vid'])
-            ? $this->controlInfo['pubinfo']['vid'] : null;
+        return $this->controlInfo['pubinfo']['vid'] ?? null;
     }
 
     /**
@@ -358,8 +351,7 @@ class EIT extends DefaultRecord
      */
     public function getContainerIssue()
     {
-        return isset($this->controlInfo['pubinfo']['iid'])
-            ? $this->controlInfo['pubinfo']['iid'] : null;
+        return $this->controlInfo['pubinfo']['iid'] ?? null;
     }
 
     /**
@@ -370,8 +362,7 @@ class EIT extends DefaultRecord
      */
     public function getContainerStartPage()
     {
-        return isset($this->controlInfo['artinfo']['ppf'])
-            ? $this->controlInfo['artinfo']['ppf'] : null;
+        return $this->controlInfo['artinfo']['ppf'] ?? null;
     }
 
     /**
@@ -381,8 +372,7 @@ class EIT extends DefaultRecord
      */
     protected function getContainerPageCount()
     {
-        return isset($this->controlInfo['artinfo']['ppct'])
-            ? $this->controlInfo['artinfo']['ppct'] : null;
+        return $this->controlInfo['artinfo']['ppct'] ?? null;
     }
 
     /**
@@ -409,8 +399,7 @@ class EIT extends DefaultRecord
      */
     public function getSortTitle()
     {
-        return isset($this->controlInfo['artinfo']['tig']['atl'])
-            ? $this->controlInfo['artinfo']['tig']['atl'] : '';
+        return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
 
     /**

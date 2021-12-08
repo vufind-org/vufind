@@ -43,9 +43,9 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
      *
      * @const string
      */
-    const SET   = 'SET';
-    const PREPEND = 'PREPEND';
-    const APPEND = 'APPEND';
+    public const SET   = 'SET';
+    public const PREPEND = 'PREPEND';
+    public const APPEND = 'APPEND';
 
     /**
      * Storage for strings to be concatinated to the front of a block
@@ -79,9 +79,9 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
      * Get the Slot instance. Create if instance doesn't exist.
      *
      * @param string $name  Name of target block for action
-     * @param any    $value Optional shortcut parameter to set a value
+     * @param mixed  $value Optional shortcut parameter to set a value
      *
-     * @return Slot|string|any
+     * @return Slot|string|mixed
      */
     public function __invoke($name, $value = null)
     {
@@ -95,7 +95,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     /**
      * Shortcut to get if no methods are called on invoke.
      *
-     * @return string|any
+     * @return string|mixed
      */
     public function __toString()
     {
@@ -124,7 +124,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $name Name of target block for action
      *
-     * @return string|any
+     * @return string|mixed
      */
     protected function build($name)
     {
@@ -144,7 +144,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get current value of slot. Returns null if unset.
      *
-     * @param any $default Value to return if no value is set
+     * @param mixed $default Value to return if no value is set
      *
      * @return string|null
      */
@@ -152,13 +152,13 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     {
         $name = array_pop($this->stack);
         $ret = $this->build($name);
-        return $ret === null ? $default : $ret;
+        return $ret ?? $default;
     }
 
     /**
      * Set current value of slot but only if unset.
      *
-     * @param any $value Value to override if unset
+     * @param mixed $value Value to override if unset
      *
      * @return string|null
      */
@@ -223,7 +223,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $method SET/PREPEND/APPEND for where this buffer should be saved
      *
-     * @return string|any
+     * @return string|mixed
      */
     public function end($method = self::SET)
     {

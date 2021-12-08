@@ -38,7 +38,7 @@ use VuFindTheme\Mobile;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeMobileTest extends Unit\TestCase
+class ThemeMobileTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test namespace stripping.
@@ -66,7 +66,7 @@ class ThemeMobileTest extends Unit\TestCase
     public function testDetection()
     {
         $detector = $this->getMockBuilder(\uagent_info::class)
-            ->setMethods(['DetectMobileLong'])
+            ->onlyMethods(['DetectMobileLong'])
             ->getMock();
         $detector->expects($this->once())
             ->method('DetectMobileLong')->will($this->returnValue(true));
