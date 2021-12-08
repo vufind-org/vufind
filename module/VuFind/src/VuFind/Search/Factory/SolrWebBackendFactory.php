@@ -28,9 +28,6 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 /**
  * Factory for the website SOLR backend.
  *
@@ -81,20 +78,20 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     }
 
     /**
-     * Create the record collection factory.
+     * Get the callback for creating a record.
      *
-     * @return RecordCollectionFactoryInterface
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
      */
-    protected function createRecordCollectionFactory()
-        : RecordCollectionFactoryInterface
+    protected function getCreateRecordCallback(): ?callable
     {
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
-        $callback = function ($data) use ($manager) {
+        return function ($data) use ($manager) {
             $driver = $manager->get('SolrWeb');
             $driver->setRawData($data);
             return $driver;
         };
-        return new RecordCollectionFactory($callback);
     }
 }
