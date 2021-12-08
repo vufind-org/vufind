@@ -8,7 +8,16 @@ $(document).ready(function triggerPrint() {
       // when the "test mode" cookie is set. This should never happen
       // under normal usage outside of the Phing startup process.
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
-        window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
+        window.addEventListener(
+          "afterprint",
+          function doAfterPrint() {
+            // Return to previous page after a minimal timeout. This is
+            // done to avoid problems with some browsers, which fire the
+            // afterprint event while the print dialog is still open.
+            setTimeout(function doGoBack() { history.back(); }, 10);
+          },
+          { once: true }
+        );
         // Trigger print after a minimal timeout. This is done to avoid
         // problems with some browsers, which might not fully update
         // ajax loaded page content before showing the print dialog.

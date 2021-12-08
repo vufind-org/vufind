@@ -302,6 +302,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         };
         $message = 'sample message';
         $expectedViewParams = [
+            'user' => $this->getMockUserObject(),
             'records' => [$record],
             'info' => [
                 'baseUrl' => 'http://foo',
