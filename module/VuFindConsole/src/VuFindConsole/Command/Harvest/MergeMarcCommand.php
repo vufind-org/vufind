@@ -46,6 +46,11 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
 class MergeMarcCommand extends RelativeFileAwareCommand
 {
     /**
+     * XML namespace for MARC21.
+     */
+    public const MARC21_NAMESPACE = 'http://www.loc.gov/MARC21/slim';
+
+    /**
      * The name of the command (the part after "public/index.php")
      *
      * @var string
@@ -104,7 +109,16 @@ class MergeMarcCommand extends RelativeFileAwareCommand
 
             // output content:
             $output->writeln("<!-- $filePath -->");
-            $output->write($fileContent);
+
+            // If the current file is a collection, we need to extract records:
+            $xml = simplexml_load_string($fileContent);
+            if (stristr($xml->getName(), 'collection') !== false) {
+                foreach ($xml->children(self::MARC21_NAMESPACE) as $record) {
+                    $output->write($record->asXml());
+                }
+            } else {
+                $output->write($fileContent);
+            }
         }
         $output->writeln('</collection>');
         return 0;
