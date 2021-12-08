@@ -16,8 +16,14 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody.html(VuFind.updateCspNonce(content));
     // Set or update title if we have one
     var $h2 = _modalBody.find("h2:first-of-type");
-    if (_lightboxTitle && $h2) {
+    if (_lightboxTitle && $h2.length > 0) {
       $h2.text(_lightboxTitle);
+    }
+    if ($h2.length > 0) {
+      $h2.attr('id', 'lightbox-title');
+      _modal.attr('aria-labelledby', 'lightbox-title');
+    } else {
+      _modal.removeAttr('aria-labelledby');
     }
     _lightboxTitle = false;
     _modal.modal('handleUpdate');
