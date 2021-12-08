@@ -75,6 +75,20 @@ class PrimoBackendFactory implements FactoryInterface
     protected $primoConfig;
 
     /**
+     * Primo backend class
+     *
+     * @var string
+     */
+    protected $backendClass = Backend::class;
+
+    /**
+     * Primo connector class
+     *
+     * @var string
+     */
+    protected $connectorClass = Connector::class;
+
+    /**
      * Create service
      *
      * @param ContainerInterface $sm      Service manager
@@ -112,7 +126,10 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-        $backend = new Backend($connector, $this->createRecordCollectionFactory());
+        $backend = new $this->backendClass(
+            $connector,
+            $this->createRecordCollectionFactory()
+        );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
         return $backend;
@@ -154,7 +171,7 @@ class PrimoBackendFactory implements FactoryInterface
         $timeout = $this->primoConfig->General->timeout ?? 30;
         $client->setOptions(['timeout' => $timeout]);
 
-        $connector = new Connector(
+        $connector = new $this->connectorClass(
             $this->primoConfig->General->url,
             $instCode,
             $client
