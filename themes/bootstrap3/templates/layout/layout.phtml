@@ -3,10 +3,10 @@
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
-    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
+
     <?php
       // Format the page title using the translation system:
       $siteConfig = $this->config()->get('config')->Site;
