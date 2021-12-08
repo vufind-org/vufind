@@ -4,7 +4,7 @@
 
   $title = $form->getTitle();
   $title = !empty($title)
-    ? $this->transEsc($title) : null;
+    ? $this->translate($title) : null;
 
   $formUrl = $this->url('feedback-form', ['id' => $this->formId]);
   $form->setAttribute('action', $formUrl);
@@ -20,7 +20,7 @@
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
     <?php $headTag = $this->inLightbox ? 'h2' : 'h1'; ?>
-    <<?=$headTag?>><?=$title?></<?=$headTag?>>
+    <<?=$headTag?>><?=$this->escapeHtml($title)?></<?=$headTag?>>
   <?php endif; ?>
   <?=$this->flashmessages()?>
 
