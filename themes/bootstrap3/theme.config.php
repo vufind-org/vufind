@@ -104,4 +104,5 @@ return [
             'spinner' => 'FontAwesome:spinner:icon--spin',
         ],
     ],
+    'doctype' => 'HTML5'
 ];
