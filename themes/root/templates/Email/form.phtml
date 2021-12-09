@@ -1,8 +1,9 @@
 <?php foreach($this->fields as $data): ?>
 <?php $label = $this->translate($data['label'] ?? '') ?>
 <?php if ($data['type'] === 'textarea'): ?>
------
 <?=$label ? "$label: " : ''?>
+
+-----
 <?=$data['value']?>
 
 -----
