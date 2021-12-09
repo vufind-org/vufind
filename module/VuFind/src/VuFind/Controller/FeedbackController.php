@@ -96,11 +96,10 @@ class FeedbackController extends AbstractBase
             return $view;
         }
 
-        [$messageParams, $template]
-            = $form->formatEmailMessage($this->params()->fromPost());
+        $fields = $form->mapRequestParamsToFieldValues($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
-            $template,
-            ['fields' => $messageParams]
+            'Email/form.phtml',
+            compact('fields')
         );
 
         [$senderName, $senderEmail] = $this->getSender($form);
@@ -144,6 +143,7 @@ class FeedbackController extends AbstractBase
 
         if ($sendSuccess) {
             $this->showResponse($view, $form, true);
+            $view->setTemplate('feedback/response');
         }
 
         return $view;
@@ -224,10 +224,7 @@ class FeedbackController extends AbstractBase
     protected function showResponse($view, $form, $success, $errorMsg = null)
     {
         if ($success) {
-            $this->flashMessenger()->addMessage(
-                $form->getSubmitResponse(),
-                'success'
-            );
+            $view->setTemplate('feedback/response');
         } else {
             $this->flashMessenger()->addMessage($errorMsg, 'error');
         }
