@@ -28,6 +28,7 @@
  */
 namespace VuFindConsole\Command\Harvest;
 
+use SimpleXMLElement;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -77,6 +78,93 @@ class MergeMarcCommand extends RelativeFileAwareCommand
     }
 
     /**
+     * Convert a SimpleXMLElement into a string, ensuring that namespace declarations
+     * are appropriately included.
+     *
+     * @param SimpleXMLElement $record Record to reformat
+     *
+     * @return string
+     */
+    protected function recordXmlToString(SimpleXMLElement $record): string
+    {
+        // Add missing namespace declarations:
+        $xml = $record->asXml();
+        foreach ($record->getNamespaces() as $prefix => $uri) {
+            // Not an ideal way to check if the namespace is already defined, but
+            // SimpleXML doesn't seem to provide a more reliable option.
+            if (!stristr($xml, 'xmlns:' . $prefix . '=')) {
+                $record->addAttribute('xmlnls:xmlns:' . $prefix, $uri);
+                $xml = $record->asXml();
+            }
+        }
+        return $xml;
+    }
+
+    /**
+     * Find all XML files in a directory; return a sorted list.
+     *
+     * @param string $dir Directory to read from
+     *
+     * @return string[]
+     * @throws \Exception
+     */
+    protected function findXmlFiles($dir): array
+    {
+        $handle = @opendir($dir);
+        if (!$handle) {
+            throw new \Exception("Cannot open directory: {$dir}");
+        }
+        $fileList = [];
+        while (false !== ($file = readdir($handle))) {
+            // Only operate on XML files:
+            if (pathinfo($file, PATHINFO_EXTENSION) === "xml") {
+                // get file content
+                $fileList[] = $dir . '/' . $file;
+            }
+        }
+        // Sort filenames so that we have consistent results:
+        sort($fileList);
+        return $fileList;
+    }
+
+    /**
+     * Given the filename of an XML document, feed any MARC records from the file
+     * to the output stream.
+     *
+     * @param string          $filePath XML filename
+     * @param OutputInterface $output   Output stream
+     *
+     * @return void
+     */
+    protected function outputRecordsFromFile(
+        string $filePath,
+        OutputInterface $output
+    ): void {
+        $fileContent = file_get_contents($filePath);
+
+        // output content:
+        $output->writeln("<!-- $filePath -->");
+
+        // If the current file is a collection, we need to extract records:
+        $xml = simplexml_load_string($fileContent);
+        if (stristr($xml->getName(), 'collection') !== false) {
+            $childSets = [
+                $xml->children(self::MARC21_NAMESPACE),
+                $xml->children(),
+            ];
+            foreach ($childSets as $children) {
+                foreach ($children as $record) {
+                    if (stristr($record->getName(), 'record') !== false) {
+                        $output->write($this->recordXmlToString($record) . "\n");
+                    }
+                }
+            }
+        } else {
+            $output->write($fileContent);
+        }
+    }
+
+    /**
      * Run the command.
      *
      * @param InputInterface  $input  Input object
@@ -88,37 +176,16 @@ class MergeMarcCommand extends RelativeFileAwareCommand
     {
         $dir = rtrim($input->getArgument('directory'), '/');
 
-        if (!($handle = @opendir($dir))) {
-            $output->writeln("Cannot open directory: {$dir}");
+        try {
+            $fileList = $this->findXmlFiles($dir);
+        } catch (\Exception $e) {
+            $output->writeln($e->getMessage());
             return 1;
         }
 
         $output->writeln('<collection>');
-        $fileList = [];
-        while (false !== ($file = readdir($handle))) {
-            // Only operate on XML files:
-            if (pathinfo($file, PATHINFO_EXTENSION) === "xml") {
-                // get file content
-                $fileList[] = $dir . '/' . $file;
-            }
-        }
-        // Sort filenames so that we have consistent results:
-        sort($fileList);
         foreach ($fileList as $filePath) {
-            $fileContent = file_get_contents($filePath);
-
-            // output content:
-            $output->writeln("<!-- $filePath -->");
-
-            // If the current file is a collection, we need to extract records:
-            $xml = simplexml_load_string($fileContent);
-            if (stristr($xml->getName(), 'collection') !== false) {
-                foreach ($xml->children(self::MARC21_NAMESPACE) as $record) {
-                    $output->write($record->asXml());
-                }
-            } else {
-                $output->write($fileContent);
-            }
+            $this->outputRecordsFromFile($filePath, $output);
         }
         $output->writeln('</collection>');
         return 0;

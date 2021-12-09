@@ -78,6 +78,12 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
 <record id="a" />
 <!-- $directory/b.xml -->
 <record id="b" />
+<!-- $directory/c.xml -->
+<record id="c"/>
+<record id="d"/>
+<!-- $directory/d.xml -->
+<marc:record id="e" xmlns:marc="http://www.loc.gov/MARC21/slim"/>
+<marc:record xmlns:marc="http://www.loc.gov/MARC21/slim" id="f"/>
 </collection>
 
 EXPECTED;
