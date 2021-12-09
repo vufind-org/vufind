@@ -57,24 +57,15 @@ abstract class AbstractBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create service
+     * Initialize the factory
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $sm Service manager
      *
-     * @return Backend
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return void
      */
-    public function __invoke(
-        ContainerInterface $sm,
-        $name,
-        array $options = null
-    ) {
+    public function setup(ContainerInterface $sm)
+    {
         $this->serviceLocator = $sm;
-
-        return null;
     }
 
     /**

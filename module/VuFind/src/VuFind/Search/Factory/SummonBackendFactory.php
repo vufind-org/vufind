@@ -82,7 +82,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        parent::__invoke($sm, $name, $options);
+        $this->setup($sm);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         $this->config = $configReader->get('config');

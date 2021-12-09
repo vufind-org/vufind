@@ -311,6 +311,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         string $method,
         ...$args
     ) {
+        if (empty($options)) {
+            return call_user_func_array([$this, $method], $args);
+        }
         $saveClient = $this->client;
         try {
             $this->client = clone $this->client;

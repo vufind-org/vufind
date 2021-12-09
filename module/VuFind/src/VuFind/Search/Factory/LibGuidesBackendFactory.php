@@ -74,7 +74,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        parent::__invoke($sm, $name, $options);
+        $this->setup($sm);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         $this->libGuidesConfig = $configReader->get('LibGuides');

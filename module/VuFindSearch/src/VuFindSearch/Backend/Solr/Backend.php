@@ -441,17 +441,13 @@ class Backend extends AbstractBackend
         $connector = $this->getConnector();
 
         // Write!
-        if (is_int($timeout ?? null)) {
-            $connector->callWithHttpOptions(
-                compact('timeout'),
-                'write',
-                $doc,
-                $handler ?? 'update',
-                $params
-            );
-        } else {
-            $connector->write($doc, $handler ?? 'update', $params);
-        }
+        $connector->callWithHttpOptions(
+            is_int($timeout ?? null) ? compact('timeout') : [],
+            'write',
+            $doc,
+            $handler ?? 'update',
+            $params
+        );
 
         // Save the core name in the results in case the caller needs it.
         return ['core' => $connector->getCore()];

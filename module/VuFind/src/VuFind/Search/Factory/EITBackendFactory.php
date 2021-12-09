@@ -75,7 +75,7 @@ class EITBackendFactory extends AbstractBackendFactory
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        parent::__invoke($sm, $name, $options);
+        $this->setup($sm);
         $this->config = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class)
             ->get('EIT');
