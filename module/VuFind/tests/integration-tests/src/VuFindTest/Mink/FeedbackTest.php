@@ -109,7 +109,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
-        $this->findCss($page, "#modal #message")->setValue('test test test');
+        $this->findCss($page, "#modal #form_FeedbackSite_message")
+            ->setValue('test test test');
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->snooze();
     }
