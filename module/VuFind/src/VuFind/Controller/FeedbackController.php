@@ -92,7 +92,7 @@ class FeedbackController extends AbstractBase
             return $view;
         }
 
-        if (! $form->isValid()) {
+        if (!$form->isValid()) {
             return $view;
         }
 
@@ -132,18 +132,13 @@ class FeedbackController extends AbstractBase
 
             $sendSuccess = $sendSuccess && $success;
             if (!$success) {
-                $this->showResponse(
-                    $view,
-                    $form,
-                    false,
-                    $errorMsg
-                );
+                $this->flashMessenger()->addErrorMessage($errorMsg);
             }
         }
 
         if ($sendSuccess) {
-            $this->showResponse($view, $form, true);
             $view->setTemplate('feedback/response');
+            $view->emailMessage = $emailMessage;
         }
 
         return $view;
@@ -208,25 +203,6 @@ class FeedbackController extends AbstractBase
             return [true, null];
         } catch (MailException $e) {
             return [false, $e->getMessage()];
-        }
-    }
-
-    /**
-     * Show response after form submit.
-     *
-     * @param ViewModel $view     View
-     * @param Form      $form     Form
-     * @param boolean   $success  Was email sent successfully?
-     * @param string    $errorMsg Error message (optional)
-     *
-     * @return void
-     */
-    protected function showResponse($view, $form, $success, $errorMsg = null)
-    {
-        if ($success) {
-            $view->setTemplate('feedback/response');
-        } else {
-            $this->flashMessenger()->addMessage($errorMsg, 'error');
         }
     }
 
