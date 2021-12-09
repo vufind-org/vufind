@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink record actions test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,10 +39,10 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
+final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -91,7 +93,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
-            $page, ['username' => $username, 'email' => $username . '@vufind.org']
+            $page,
+            ['username' => $username, 'email' => $username . '@vufind.org']
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -322,8 +325,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
         $this->assertEquals(
-            $expected, substr(
-                $this->findCss($page, '.search-stats')->getText(), 0,
+            $expected,
+            substr(
+                $this->findCss($page, '.search-stats')->getText(),
+                0,
                 strlen($expected)
             )
         );
@@ -512,7 +517,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Make sure we're printing
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals('print=1', $params);
     }
 

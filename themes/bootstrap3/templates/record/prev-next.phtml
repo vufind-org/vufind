@@ -1,16 +1,16 @@
-<nav aria-label="<?=$this->transEsc('Search Results')?>">
+<nav aria-label="<?=$this->transEscAttr('Search Results')?>">
   <ul class="pager hidden-print">
     <?php if ($this->scrollData['previousRecord']): ?>
       <?php if ($this->scrollData['firstRecord']): ?>
         <li role="none">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" aria-label="<?=$this->transEsc('First Search Result')?>" rel="nofollow">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['firstRecord']))?>" aria-label="<?=$this->transEscAttr('First Search Result')?>" rel="nofollow">
             <i class="fa fa-angle-double-left" aria-hidden="true"></i>
             <?=$this->transEsc('First')?>
           </a>
         </li>
       <?php endif; ?>
       <li role="none">
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" aria-label="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['previousRecord']))?>" aria-label="<?=$this->transEscAttr('Previous Search Result')?>" rel="nofollow">
           <i class="fa fa-angle-left" aria-hidden="true"></i>
           <?=$this->transEsc('Prev')?>
         </a>
@@ -29,14 +29,14 @@
 
     <?php if ($this->scrollData['nextRecord']): ?>
       <li role="none">
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" aria-label="<?=$this->transEsc('Next Search Result')?>" rel="nofollow">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['nextRecord']))?>" aria-label="<?=$this->transEscAttr('Next Search Result')?>" rel="nofollow">
           <?=$this->transEsc('Next')?>
           <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
       </li>
       <?php if ($this->scrollData['lastRecord']): ?>
         <li role="none">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" aria-label="<?=$this->transEsc('Last Search Result')?>" rel="nofollow">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->scrollData['lastRecord']))?>" aria-label="<?=$this->transEscAttr('Last Search Result')?>" rel="nofollow">
             <?=$this->transEsc('Last')?>
             <i class="fa fa-angle-double-right" aria-hidden="true"></i>
           </a>

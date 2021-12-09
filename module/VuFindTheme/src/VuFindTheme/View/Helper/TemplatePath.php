@@ -55,6 +55,13 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
     protected $pathPost;
 
     /**
+     * Template path stack
+     *
+     * @var TemplatePathStack
+     */
+    protected $templatePathStack;
+
+    /**
      * Constructor
      *
      * @param TemplatePathStack $templateStack Inheritance stack of template paths
@@ -66,7 +73,7 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
         $paths = $this->templatePathStack->getPaths();
         // split for easy replacement later
         preg_match('/\/themes\/([^\/]+)/', $paths->current(), $matches);
-        list($this->pathPre, $this->pathPost)
+        [$this->pathPre, $this->pathPost]
             = explode($matches[1], $paths->current());
     }
 

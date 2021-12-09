@@ -109,9 +109,10 @@ public class ConfigManager
      */
     private String sanitizeConfigSetting(String str)
     {
-        // Drop comments if necessary:
+        // Drop comments if necessary; if the semi-colon is inside quotes, leave
+        // it alone. TODO: handle complex cases with comment AND quoted semi-colon
         int pos = str.indexOf(';');
-        if (pos >= 0) {
+        if (pos >= 0 && !str.matches("\"[^\"]*;[^\"]*\"")) {
             str = str.substring(0, pos).trim();
         }
 
@@ -158,6 +159,24 @@ public class ConfigManager
             }
         }
         return configCache.get(filename);
+    }
+
+    /**
+     * Get a section from a VuFind configuration file and sanitize all the values.
+     * @param filename configuration file name
+     * @param section section name within the file
+     */
+    public Map<String, String> getSanitizedConfigSection(String filename, String section)
+    {
+        Map<String, String> retVal = getConfigSection(filename, section);
+        if (retVal == null) {
+            logger.warn(section + " section missing from " + filename);
+            return new ConcurrentHashMap<String, String>();
+        }
+        for (String key : retVal.keySet()) {
+            retVal.put(key, sanitizeConfigSetting(retVal.get(key)));
+        }
+        return retVal;
     }
 
     /**
@@ -240,6 +259,28 @@ public class ConfigManager
 
         // Return the processed setting:
         return retVal == null ? null : sanitizeConfigSetting(retVal);
+    }
+
+    /**
+     * Get a Boolean setting from a VuFind configuration file; match PHP's string to Boolean logic.
+     * @param filename configuration file name
+     * @param section section name within the file
+     * @param setting setting name within the section
+     * @param default defaultValue value to use if setting is missing
+     */
+    public boolean getBooleanConfigSetting(String filename, String section, String setting, boolean defaultValue)
+    {
+        String config = getConfigSetting(filename, section, setting);
+        if (config == null) {
+            return defaultValue;
+        }
+        switch (config.trim().toLowerCase()) {
+        case "false":
+        case "0":
+        case "":
+            return false;
+        }
+        return true;
     }
 
     /**

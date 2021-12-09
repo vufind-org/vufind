@@ -73,14 +73,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        Config $mainConfig = null, $recordConfig = null,
+        Config $mainConfig = null,
+        $recordConfig = null,
         OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
         $this->config = $connector->getConfig();
         parent::__construct($mainConfig, $recordConfig, null);
-
-        $this->debug("SolrOverdrive Rec Driver constructed");
     }
 
     /**
@@ -118,13 +117,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $od_id = $this->getOverdriveID();
 
         if ($checkout = $this->connector->getCheckout($od_id, false)) {
-            //if we are already locked in, then we need free ones and locked in ones.
+            // If we're already locked in, then we need free ones and locked in ones.
             if ($checkout->isFormatLockedIn) {
                 foreach ($checkout->formats as $format) {
                     $formatType = $format->formatType;
                     $formats[$formatType] = $formatNames[$formatType];
                 }
-                //if we aren't locked in, we can show all formats
+                // If we aren't locked in, we can show all formats
             } else {
                 foreach ($this->getDigitalFormats() as $format) {
                     $formats[$format->id] = $formatNames[$format->id];
@@ -146,7 +145,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         $formats = [];
         $formatNames = $this->connector->getFormatNames();
-        if ($this->config->isMarc) {
+        if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
             $data = $fulldata[strtolower($od_id)];
@@ -246,7 +245,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        //Future: add this as an overdrive configuration to turn it off
+        // TODO: add this as an Overdrive configuration to turn it off
         return true;
     }
 
@@ -256,7 +255,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * Pass-through to the connector to determine whether logged-in user
      * has access to Overdrive actions
      *
-     * @return boolean Whether the logged-in user has access to Overdrive.
+     * @return bool Whether the logged-in user has access to Overdrive.
      */
     public function getOverdriveAccess()
     {
@@ -268,7 +267,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * Returns whether the current user is logged in
      *
-     * @return object|boolean User if logged in, false if not.
+     * @return object|bool User if logged in, false if not.
      */
     public function isLoggedIn()
     {
@@ -289,11 +288,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $result = 0;
 
         if ($this->config) {
-            if ($this->config->isMarc) {
+            if ($this->getIsMarc()) {
                 $field = $this->config->idField;
-                $subfield = $this->confif->idSubfield;
+                $subfield = $this->config->idSubfield;
                 $result = strtolower(
-                    $this->getFieldArray($field, $subfield)[0]
+                    $this->getFieldArray($field, $subfield)[0] ?? ''
                 );
             } else {
                 $result = strtolower($this->getUniqueID());
@@ -344,7 +343,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $result->data = false;
             }
         }
-        //if it didn't work, an error should be logged from the connector
+        // If it didn't work, an error should be logged from the connector
         return $result;
     }
 
@@ -367,7 +366,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 }
             }
         }
-        //if it didn't work, an error should be logged from the connector
+        // If it didn't work, an error should be logged from the connector
         return false;
     }
 
@@ -378,67 +377,65 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getBreadcrumb()
     {
-        if (!$this->getShortTitle()) {
-            return $this->getTitle();
-        } else {
-            return $this->getShortTitle();
-        }
+        $short = $this->getShortTitle();
+        return $short ? $short : $this->getTitle();
+    }
+
+    /**
+     * Get Marc Reader
+     *
+     * Override the base marc trait to return an empty marc reader object if no MARC
+     * is available.
+     *
+     * @return \VuFind\Marc\MarcReader
+     */
+    public function getMarcReader()
+    {
+        return $this->getIsMarc()
+            ? parent::getMarcReader()
+            : new $this->marcReaderClass('<record></record>');
     }
 
     /**
      * Get Marc Record
      *
-     * Override the base marc trait to return a fake marc obj.
+     * Override the base marc trait to return a fake marc object
      *
-     * @return \File_MARCBASE
-     * @throws \File_MARC_Exception
+     * @return     \File_MARCBASE
+     * @throws     \File_MARC_Exception
+     * @deprecated Use getMarcReader()
      */
     public function getMarcRecord()
     {
         if ($this->getIsMarc()) {
             return parent::getMarcRecord();
-        } else {
-            //return new fake marc class
-            return new class {
-                /**
-                 * Get the field
-                 *
-                 * @param string $f Fieldname
-                 *
-                 * @return string
-                 */
-                public function getField($f)
-                {
-                    return "";
-                }
-
-                /**
-                 * Get the fields
-                 *
-                 * @param array $f Fieldnames
-                 *
-                 * @return array
-                 */
-                public function getFields($f)
-                {
-                    return [];
-                }
-            };
         }
-    }
+        // No MARC support? Return new fake MARC class.
+        return new class {
+            /**
+             * Get the field
+             *
+             * @param string $f Fieldname
+             *
+             * @return string
+             */
+            public function getField($f)
+            {
+                return "";
+            }
 
-    /**
-     * Get Subtitle
-     *
-     * @return string
-     */
-    public function getSubtitle()
-    {
-        if ($this->getIsMarc()) {
-            return parent::getSubtitle();
-        } else {
-            return $this->fields['title_sub'];
-        }
+            /**
+             * Get the fields
+             *
+             * @param array $f Fieldnames
+             *
+             * @return array
+             */
+            public function getFields($f)
+            {
+                return [];
+            }
+        };
     }
 
     /**
@@ -448,26 +445,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getTitleSection()
     {
-        if ($this->getIsMarc()) {
-            return parent::getTitleSection();
-        } else {
-            //I don't think overdrive has this metadata
-            return "";
-        }
-    }
-
-    /**
-     * Get Short Title
-     *
-     * @return string
-     */
-    public function getShortTitle()
-    {
-        if ($this->getIsMarc()) {
-            return parent::getShortTitle();
-        } else {
-            return $this->fields['title_short'];
-        }
+        return $this->getIsMarc()
+            ? parent::getTitleSection()
+            : ''; // I don't think Overdrive has this metadata
     }
 
     /**
@@ -477,11 +457,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getGeneralNotes()
     {
-        if ($this->config->isMarc) {
-            return parent::getGeneralNotes();
-        } else {
-            return [];
-        }
+        return $this->getIsMarc() ? parent::getGeneralNotes() : [];
     }
 
     /**
@@ -497,36 +473,25 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return string|array|bool
      * @throws \Exception
      */
-    public function getThumbnail(
-        $size = 'small'
-    ) {
-        if ($size == 'large') {
-            $cover = "cover300Wide";
-        } elseif ($size == 'medium') {
-            $cover = "cover150Wide";
-        } elseif ($size == 'small') {
-            $cover = 'thumbnail';
-        } else {
-            $cover = "cover";
-        }
+    public function getThumbnail($size = 'small')
+    {
+        $coverMap = [
+            'large' => 'cover300Wide',
+            'medium' => 'cover150Wide',
+            'small' => 'thumbnail'
+        ];
+        $cover = $coverMap[$size] ?? 'cover';
 
-        //if the record is marc then the cover links probably aren't there.
-        if ($this->config->isMarc) {
+        // If the record is marc then the cover links probably aren't there.
+        if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
             $data = $fulldata[strtolower($od_id)];
         } else {
-            $result = false;
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
         }
-
-        if (isset($data->images)) {
-            if (isset($data->images->{$cover})) {
-                $result = $data->images->{$cover}->href;
-            }
-        }
-        return $result;
+        return $data->images->{$cover}->href ?? false;
     }
 
     /**
@@ -536,15 +501,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getSummary()
     {
-        if ($this->config->isMarc) {
+        if ($this->getIsMarc()) {
             return parent::getSummary();
-        } else {
-            $desc = $this->fields["description"];
-
-            $newDesc = preg_replace("/&#8217;/i", "", $desc);
-            $newDesc = strip_tags($newDesc);
-            return ["Summary" => $newDesc];
         }
+        // Non-MARC case:
+        $desc = $this->fields["description"] ?? '';
+
+        $newDesc = preg_replace("/&#8217;/i", "", $desc);
+        $newDesc = strip_tags($newDesc);
+        return ["Summary" => $newDesc];
     }
 
     /**
@@ -555,13 +520,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getRawData()
     {
-        if ($this->config->isMarc) {
-            return parent::getRawData();
-        } else {
-            $jsonData = $this->fields['fullrecord'];
-            $data = json_decode($jsonData, true);
-            return $data;
-        }
+        return $this->getIsMarc()
+            ? parent::getRawData()
+            : json_decode($this->fields['fullrecord'], true);
     }
 
     /**
@@ -591,35 +552,12 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        if ($this->config) {
-            if ($this->config->isMarc) {
-                return parent::getAllSubjectHeadings($extended);
-            } else {
-                $headings = [];
-                foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
-                    if (isset($this->fields[$field])) {
-                        $headings = array_merge(
-                            $headings, $this->fields[$field]
-                        );
-                    }
-                }
-
-                // The default index schema doesn't currently store subject
-                // headings in a
-                // broken-down format, so we'll just send each value as a
-                // single chunk.
-                // Other record drivers (i.e. SolrMarc) can offer this data
-                // in a more granular format.
-                $callback = function ($i) use ($extended) {
-                    return $extended
-                        ? ['heading' => [$i], 'type' => '', 'source' => '']
-                        : [$i];
-                };
-                return array_map($callback, array_unique($headings));
-            }
-        } else {
+        if (!$this->config) {
             return [];
         }
+        return $this->getIsMarc()
+            ? parent::getAllSubjectHeadings($extended)
+            : DefaultRecord::getAllSubjectHeadings($extended);
     }
 
     /**

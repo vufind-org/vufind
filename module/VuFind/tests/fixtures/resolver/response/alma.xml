@@ -52,6 +52,14 @@ Date: Mon, 19 Aug 2019 12:34:14 GMT
     </keys>
   </context_object>
   <context_services>
+    <context_service service_type="getOpenAccessFullText" context_service_id="1267096700006249">
+      <keys>
+        <key id="service_type_description">Open Access full text available at:</key>
+        <key id="package_display_name">Unpaywall</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=1</resolution_url>
+      <target_url>http://dro.dur.ac.uk/9845/1/9845.pdf</target_url>
+    </context_service>
     <context_service service_type="getFullTxt" context_service_id="5687861830000561">
       <keys>
         <key id="package_name">Ebook Central Perpetual and DDA Titles</key>
@@ -86,7 +94,7 @@ Date: Mon, 19 Aug 2019 12:34:14 GMT
     <context_service service_type="getFullTxt" context_service_id="5687861800000561">
       <keys>
         <key id="package_name">ebrary</key>
-        <key id="package_public_name">ebrary Academic Complete Subscription UKI Edition</key>
+        <key id="package_public_name">ebrary Academic Complete Subscription UKI</key>
         <key id="package_display_name">ebrary Academic Complete Subscription UKI Edition</key>
         <key id="package_internal_name">EBRARY_ACADEMIC_COMPLETE_SUBSCRIPTION_UKI_EDITION</key>
         <key id="interface_name">ebrary</key>
@@ -149,7 +157,6 @@ Date: Mon, 19 Aug 2019 12:34:14 GMT
       <keys>
         <key id="package_name">EBSCOhost</key>
         <key id="package_public_name">EBSCOhost Academic eBook Collection (North America)</key>
-        <key id="package_display_name">EBSCOhost Academic eBook Collection (North America)</key>
         <key id="package_internal_name">EBSCOHOST_EBOOKS_ACADEMIC_COLLECTION_NORTH_AMERICA</key>
         <key id="interface_name">EBSCOhost</key>
         <key id="package_pid">6178520000000561</key>

@@ -1,4 +1,18 @@
-<?php $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
+<?php
+  $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+
+  // We need to pass the current URL query to the Javascript; we use substr() to
+  // strip off the leading ? character. The "suppress query" option is used for
+  // special search types like course reserves / new items. The AJAX handler needs
+  // the real Solr query in order to process facets correctly, so we need to
+  // unsuppress it here.
+  $querySuppressed = $this->results->getUrlQuery()->isQuerySuppressed();
+  $urlQuery = substr($this->results->getUrlQuery()->setSuppressQuery(false)->getParams(false), 1);
+  $this->results->getUrlQuery()->setSuppressQuery($querySuppressed); // restore original config
+  // We also need to inform the helper about any special parameters used in place
+  // of the suppressed query:
+  $extraUrlFields = $this->results->getUrlQuery()->getParamsWithConfiguredDefaults();
+?>
 <?php if (!in_array($this->title, $this->collapsedFacets)): ?>
   <?php
     $script = <<<JS
@@ -24,6 +38,9 @@ JS;
     data-path="<?=$this->currentPath()?>"
     data-exclude="<?=$this->allowExclude?>"
     data-operator="<?=$this->recommend->getFacetOperator($this->title)?>"
-    data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-    data-sort="<?=isset($this->sortOptions) ? $this->sortOptions : ''?>">
+    data-exclude-title="<?=$this->transEscAttr('exclude_facet')?>"
+    data-sort="<?=$this->sortOptions ?? ''?>"
+    data-query="<?=$this->escapeHtmlAttr($urlQuery)?>"
+    data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>"
+    data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
 </li>

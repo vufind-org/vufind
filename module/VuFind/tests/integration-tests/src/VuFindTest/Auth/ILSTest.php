@@ -34,15 +34,18 @@ use VuFind\Db\Table\User;
 /**
  * ILS authentication test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSTest extends \VuFindTest\Unit\DbTestCase
+final class ILSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
      * Standard setup method.
@@ -76,11 +79,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver($type = 'Sample', $methods = [])
+    protected function getMockDriver($type = 'Sample', $methods = ['patronLogin'])
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -100,7 +103,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         }
         $authenticator = $this->getMockILSAuthenticator($patron);
         $driverManager = new \VuFind\ILS\Driver\PluginManager(
-            $this->getServiceManager()
+            new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
         $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
@@ -109,13 +112,12 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
                 new \Laminas\Config\Config(['driver' => 'Sample']),
-                $driverManager, $mockConfigReader
+                $driverManager,
+                $mockConfigReader
             ),
             $authenticator
         );
-        $auth->setDbTableManager(
-            $this->getServiceManager()->get(\VuFind\Db\Table\PluginManager::class)
-        );
+        $auth->setDbTableManager($this->getLiveTableManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }
@@ -371,7 +373,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
-            ->setMethods(['storedCatalogLogin'])
+            ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
         $mock->expects($this->any())->method('storedCatalogLogin')
             ->will($this->returnValue($patron));

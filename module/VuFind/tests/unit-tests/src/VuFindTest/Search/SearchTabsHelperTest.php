@@ -29,7 +29,6 @@
 namespace VuFindTest\Search;
 
 use VuFind\Search\SearchTabsHelper;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * SearchTabsHelper unit tests.
@@ -40,7 +39,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SearchTabsHelperTest extends TestCase
+class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
 {
     protected $tabConfig = [
         'default_unfiltered' => [
@@ -83,7 +82,8 @@ class SearchTabsHelperTest extends TestCase
         // Non-default tab with filters
         $helper = $this->getSearchTabsHelper('default_unfiltered', ['format:video']);
         $this->assertEquals(
-            ['format' => ['video']], $helper->getHiddenFilters('Solr')
+            ['format' => ['video']],
+            $helper->getHiddenFilters('Solr')
         );
         $this->assertEquals(
             ['format' => ['video']],
@@ -93,12 +93,14 @@ class SearchTabsHelperTest extends TestCase
         // Default tab with filters
         $helper = $this->getSearchTabsHelper('default_filtered');
         $this->assertEquals(
-            ['building' => ['main']], $helper->getHiddenFilters('Solr')
+            ['building' => ['main']],
+            $helper->getHiddenFilters('Solr')
         );
         $this->assertEmpty($helper->getHiddenFilters('Solr', false));
 
         $helper = $this->getSearchTabsHelper(
-            'default_unfiltered', ['building:main', 'format:video']
+            'default_unfiltered',
+            ['building:main', 'format:video']
         );
         $this->assertEquals(
             ['building' => ['main'], 'format' => ['video']],
@@ -111,7 +113,8 @@ class SearchTabsHelperTest extends TestCase
 
         // Non-default tab with filters
         $helper = $this->getSearchTabsHelper(
-            'default_unfiltered', ['rtype:Dissertation']
+            'default_unfiltered',
+            ['rtype:Dissertation']
         );
         $this->assertEquals(
             ['rtype' => ['Dissertation']],
@@ -132,7 +135,8 @@ class SearchTabsHelperTest extends TestCase
     {
         $helper = $this->getSearchTabsHelper();
         $this->assertEquals(
-            $this->tabConfig['default_unfiltered'], $helper->getTabConfig()
+            $this->tabConfig['default_unfiltered'],
+            $helper->getTabConfig()
         );
         $this->assertEquals($this->filterConfig, $helper->getTabFilterConfig());
     }
@@ -205,7 +209,8 @@ class SearchTabsHelperTest extends TestCase
      *
      * @return \VuFind\Search\SearchTabsHelper
      */
-    protected function getSearchTabsHelper($config = 'default_unfiltered',
+    protected function getSearchTabsHelper(
+        $config = 'default_unfiltered',
         $filters = null
     ) {
         $mockRequest = $this->createMock(\Laminas\Http\Request::class);

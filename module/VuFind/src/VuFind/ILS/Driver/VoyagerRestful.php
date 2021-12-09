@@ -50,7 +50,7 @@ use VuFind\Exception\ILS as ILSException;
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
-    use CacheTrait {
+    use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -220,8 +220,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param string                 $holdsMode      Holds mode setting
      * @param string                 $titleHoldsMode Title holds mode setting
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        $holdsMode = 'disabled', $titleHoldsMode = 'disabled'
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
+        $holdsMode = 'disabled',
+        $titleHoldsMode = 'disabled'
     ) {
         parent::__construct($dateConverter);
         $this->holdsMode = $holdsMode;
@@ -248,29 +250,22 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->ws_dbKey = $this->config['WebServices']['dbKey'];
         $this->ws_patronHomeUbId = $this->config['WebServices']['patronHomeUbId'];
         $this->ws_pickUpLocations
-            = (isset($this->config['pickUpLocations']))
-            ? $this->config['pickUpLocations'] : false;
+            = $this->config['pickUpLocations'] ?? false;
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation']
-            : '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
         $this->holdCheckLimit
-            = isset($this->config['Holds']['holdCheckLimit'])
-            ? $this->config['Holds']['holdCheckLimit'] : '15';
+            = $this->config['Holds']['holdCheckLimit'] ?? '15';
         $this->callSlipCheckLimit
-            = isset($this->config['StorageRetrievalRequests']['checkLimit'])
-            ? $this->config['StorageRetrievalRequests']['checkLimit'] : '15';
+            = $this->config['StorageRetrievalRequests']['checkLimit'] ?? '15';
 
         $this->recallsEnabled
-            = isset($this->config['Holds']['enableRecalls'])
-            ? $this->config['Holds']['enableRecalls'] : true;
+            = $this->config['Holds']['enableRecalls'] ?? true;
 
         $this->itemHoldsEnabled
-            = isset($this->config['Holds']['enableItemHolds'])
-            ? $this->config['Holds']['enableItemHolds'] : true;
+            = $this->config['Holds']['enableItemHolds'] ?? true;
 
         $this->requestGroupsEnabled
             = isset($this->config['Holds']['extraHoldFields'])
@@ -279,31 +274,25 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 explode(':', $this->config['Holds']['extraHoldFields'])
             );
         $this->defaultRequestGroup
-            = isset($this->config['Holds']['defaultRequestGroup'])
-            ? $this->config['Holds']['defaultRequestGroup'] : false;
+            = $this->config['Holds']['defaultRequestGroup'] ?? false;
         if ($this->defaultRequestGroup === 'user-selected') {
             $this->defaultRequestGroup = false;
         }
         $this->pickupLocationsInRequestGroup
-            = isset($this->config['Holds']['pickupLocationsInRequestGroup'])
-            ? $this->config['Holds']['pickupLocationsInRequestGroup'] : false;
+            = $this->config['Holds']['pickupLocationsInRequestGroup'] ?? false;
 
         $this->checkItemsExist
-            = isset($this->config['Holds']['checkItemsExist'])
-            ? $this->config['Holds']['checkItemsExist'] : false;
+            = $this->config['Holds']['checkItemsExist'] ?? false;
         $this->checkItemsNotAvailable
-            = isset($this->config['Holds']['checkItemsNotAvailable'])
-            ? $this->config['Holds']['checkItemsNotAvailable'] : false;
+            = $this->config['Holds']['checkItemsNotAvailable'] ?? false;
         $this->checkLoans
-            = isset($this->config['Holds']['checkLoans'])
-            ? $this->config['Holds']['checkLoans'] : false;
+            = $this->config['Holds']['checkLoans'] ?? false;
         $this->excludedItemLocations
             = isset($this->config['Holds']['excludedItemLocations'])
             ? str_replace(':', ',', $this->config['Holds']['excludedItemLocations'])
             : '';
         $this->allowCancelingAvailableRequests
-            = isset($this->config['Holds']['allowCancelingAvailableRequests'])
-            ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
+            = $this->config['Holds']['allowCancelingAvailableRequests'] ?? true;
     }
 
     /**
@@ -422,7 +411,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
         if (isset($this->config['StorageRetrievalRequests']['valid_item_types'])) {
             $validTypes = explode(
-                ':', $this->config['StorageRetrievalRequests']['valid_item_types']
+                ':',
+                $this->config['StorageRetrievalRequests']['valid_item_types']
             );
 
             $type = $holdingsRow['TEMP_ITEM_TYPE_ID']
@@ -520,7 +510,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                     // This limit is set as the api is slow to return results
                     if ($i < $this->holdCheckLimit && $this->holdCheckLimit != '0') {
                         $holdType = $this->determineHoldType(
-                            $patron['id'], $row['id'], $row['item_id']
+                            $patron['id'],
+                            $row['id'],
+                            $row['item_id']
                         );
                         $addLink = $holdType ? $holdType : false;
                     } else {
@@ -686,10 +678,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
@@ -699,6 +693,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $pickResponse = [];
         $params = [];
         if ($this->ws_pickUpLocations) {
             foreach ($this->ws_pickUpLocations as $code => $library) {
@@ -734,7 +729,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             try {
                 $sqlStmt = $this->executeSQL($sql, $params);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Read results
@@ -749,8 +744,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
-            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
         if (count($pickResponse) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -992,7 +986,7 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql);
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $results = [];
@@ -1023,9 +1017,13 @@ EOT;
      * @throws ILSException
      * @return obj  A Simple XML Object loaded with the xml data returned by the API
      */
-    protected function makeRequest($hierarchy, $params = false, $mode = 'GET',
+    protected function makeRequest(
+        $hierarchy,
+        $params = false,
+        $mode = 'GET',
         $xml = false
     ) {
+        $hierarchyString = [];
         // Build Url Base
         $urlParams = "http://{$this->ws_host}:{$this->ws_port}/{$this->ws_app}";
 
@@ -1056,8 +1054,7 @@ EOT;
         }
 
         // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(['timeout' => $timeout]);
 
         // Attach XML if necessary
@@ -1271,7 +1268,7 @@ EOT;
             $itemIdentifiers = '';
 
             foreach ($renewDetails['details'] as $renewID) {
-                list($dbKey, $loanId) = explode('|', $renewID);
+                [$dbKey, $loanId] = explode('|', $renewID);
                 if (!$dbKey) {
                     $dbKey = $this->ws_dbKey;
                 }
@@ -1309,7 +1306,10 @@ xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
 EOT;
 
             $response = $this->makeRequest(
-                ['AuthenticatePatronService' => false], [], 'POST', $xml
+                ['AuthenticatePatronService' => false],
+                [],
+                'POST',
+                $xml
             );
             if ($response === false) {
                 throw new ILSException('renew_error');
@@ -1333,7 +1333,10 @@ $itemIdentifiers
 EOT;
 
             $response = $this->makeRequest(
-                ['RenewService' => false], [], 'POST', $xml
+                ['RenewService' => false],
+                [],
+                'POST',
+                $xml
             );
             if ($response === false) {
                 throw new ILSException('renew_error');
@@ -1342,7 +1345,8 @@ EOT;
             // Process
             $myac_ns = 'http://www.endinfosys.com/Voyager/myAccount';
             $response->registerXPathNamespace(
-                'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+                'ser',
+                'http://www.endinfosys.com/Voyager/serviceParameters'
             );
             $response->registerXPathNamespace('myac', $myac_ns);
             // The service doesn't actually return messages (in Voyager 8.1),
@@ -1377,7 +1381,8 @@ EOT;
                     $dueDate = (string)$chargedItem->dueDate;
                     try {
                         $newDate = $this->dateFormat->convertToDisplayDate(
-                            'Y-m-d H:i', $dueDate
+                            'Y-m-d H:i',
+                            $dueDate
                         );
                         $response['new_date'] = $newDate;
                     } catch (DateException $e) {
@@ -1386,7 +1391,8 @@ EOT;
                     }
                     try {
                         $newTime = $this->dateFormat->convertToDisplayTime(
-                            'Y-m-d H:i', $dueDate
+                            'Y-m-d H:i',
+                            $dueDate
                         );
                         $response['new_time'] = $newTime;
                     } catch (DateException $e) {
@@ -1416,7 +1422,10 @@ EOT;
      *
      * @return bool true if the request can be made, false if it cannot
      */
-    protected function checkItemRequests($patronId, $request, $bibId,
+    protected function checkItemRequests(
+        $patronId,
+        $request,
+        $bibId,
         $itemId = false
     ) {
         if (!empty($bibId) && !empty($patronId) && !empty($request)) {
@@ -1472,7 +1481,10 @@ EOT;
      * @return array             An array of data from the attempted request
      * including success, status and a System Message (if available)
      */
-    protected function makeItemRequests($patron, $type, $requestData
+    protected function makeItemRequests(
+        $patron,
+        $type,
+        $requestData
     ) {
         if (empty($patron) || empty($requestData) || empty($requestData['bibId'])
             || empty($type)
@@ -1532,7 +1544,10 @@ EOT;
 EOT;
 
         $response = $this->makeRequest(
-            ['SendPatronRequestService' => false], [], 'POST', $xml
+            ['SendPatronRequestService' => false],
+            [],
+            'POST',
+            $xml
         );
 
         if ($response === false) {
@@ -1540,10 +1555,12 @@ EOT;
         }
         // Process
         $response->registerXPathNamespace(
-            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+            'ser',
+            'http://www.endinfosys.com/Voyager/serviceParameters'
         );
         $response->registerXPathNamespace(
-            'req', 'http://www.endinfosys.com/Voyager/requests'
+            'req',
+            'http://www.endinfosys.com/Voyager/requests'
         );
         foreach ($response->xpath('//ser:message') as $message) {
             if ($message->attributes()->type == 'success') {
@@ -1671,10 +1688,10 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $sqlRow['CNT'] > 0;
     }
 
     /**
@@ -1733,10 +1750,10 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $sqlRow['CNT'] > 0;
     }
 
     /**
@@ -1807,10 +1824,10 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($outersql, $sql['bind']);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $sqlRow['CNT'] > 0;
     }
 
     /**
@@ -1952,7 +1969,8 @@ EOT;
         // Convert last interest date from Display Format to Voyager required format
         try {
             $lastInterestDate = $this->dateFormat->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
+                'Y-m-d',
+                $holdDetails['requiredBy']
             );
         } catch (DateException $e) {
             // Hold Date is invalid
@@ -1961,13 +1979,14 @@ EOT;
 
         try {
             $checkTime = $this->dateFormat->convertFromDisplayDate(
-                'U', $holdDetails['requiredBy']
+                'U',
+                $holdDetails['requiredBy']
             );
             if (!is_numeric($checkTime)) {
                 throw new DateException('Result should be numeric');
             }
         } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.');
+            $this->throwAsIlsException($e, 'Problem parsing required by date.');
         }
 
         if (time() > $checkTime) {
@@ -2067,7 +2086,7 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($itemId, $cancelCode) = explode('|', $cancelDetails);
+            [$itemId, $cancelCode] = explode('|', $cancelDetails);
 
             // Create Rest API Cancel Key
             $cancelID = $this->ws_dbKey . '|' . $cancelCode;
@@ -2119,11 +2138,14 @@ EOT;
      * separated by a pipe, which is then submitted as form data in Hold.php. This
      * value is then extracted by the CancelHolds function.
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if (!$this->allowCancelingAvailableRequests && $holdDetails['available']) {
             return '';
@@ -2223,7 +2245,8 @@ EOT;
 
                     try {
                         $dueDate = $this->dateFormat->convertToDisplayDate(
-                            'Y-m-d H:i', (string)$loan->dueDate
+                            'Y-m-d H:i',
+                            (string)$loan->dueDate
                         );
                     } catch (DateException $e) {
                         // If we can't parse out the date, use the raw string:
@@ -2232,7 +2255,8 @@ EOT;
 
                     try {
                         $dueTime = $this->dateFormat->convertToDisplayTime(
-                            'Y-m-d H:i', (string)$loan->dueDate
+                            'Y-m-d H:i',
+                            (string)$loan->dueDate
                         );
                     } catch (DateException $e) {
                         // If we can't parse out the time, just ignore it:
@@ -2317,14 +2341,16 @@ EOT;
                         'location' => (string)$item->pickupLocation,
                         'expire' => (string)$item->expiredDate
                             ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
+                                'Y-m-d',
+                                (string)$item->expiredDate
                             )
                             : '',
                         // Looks like expired date shows creation date for
                         // UB requests, but who knows
                         'create' => (string)$item->expiredDate
                             ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
+                                'Y-m-d',
+                                (string)$item->expiredDate
                             )
                             : '',
                         'position' => (string)$item->queuePosition,
@@ -2378,7 +2404,7 @@ EOT;
 
         $replyCode = (string)$results->{'reply-code'};
         if ($replyCode != 0 && $replyCode != 8) {
-            throw new Exception('System error fetching call slips');
+            throw new \Exception('System error fetching call slips');
         }
         $requests = [];
         if (isset($results->callslips->institution)) {
@@ -2398,14 +2424,16 @@ EOT;
                         'location' => (string)$item->pickupLocation,
                         'expire' => (string)$item->expiredDate
                             ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
+                                'Y-m-d',
+                                (string)$item->expiredDate
                             )
                             : '',
                         // Looks like expired date shows creation date for
                         // call slip requests, but who knows
                         'create' => (string)$item->expiredDate
                             ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
+                                'Y-m-d',
+                                (string)$item->expiredDate
                             )
                             : '',
                         'position' => (string)$item->queuePosition,
@@ -2421,13 +2449,15 @@ EOT;
                         'processed' => substr((string)$item->statusText, 0, 6)
                             == 'Filled'
                             ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', substr((string)$item->statusText, 7)
+                                'Y-m-d',
+                                substr((string)$item->statusText, 7)
                             )
                             : '',
                         'canceled' => substr((string)$item->statusText, 0, 8)
                             == 'Canceled'
                             ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', substr((string)$item->statusText, 9)
+                                'Y-m-d',
+                                substr((string)$item->statusText, 9)
                             )
                             : ''
                     ];
@@ -2461,7 +2491,9 @@ EOT;
         // Make Sure Pick Up Location is Valid
         if (isset($details['pickUpLocation'])
             && !$this->pickUpLocationIsValid(
-                $details['pickUpLocation'], $patron, $details
+                $details['pickUpLocation'],
+                $patron,
+                $details
             )
         ) {
             return $this->holdError('hold_invalid_pickup');
@@ -2486,6 +2518,7 @@ EOT;
             'view' => 'full'
         ];
 
+        $xml = [];
         if ('title' == $level) {
             $xml['call-slip-title-parameters'] = [
                 'comment' => $comment,
@@ -2528,6 +2561,7 @@ EOT;
                 ? trim((string)$result->$responseNode->note) : false;
 
             // Valid Response
+            $response = [];
             if ($reply == 'ok' && $note == 'Your request was successful.') {
                 $response['success'] = true;
                 $response['status'] = 'storage_retrieval_request_place_success';
@@ -2561,7 +2595,7 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($dbKey, $itemId, $cancelCode) = explode('|', $cancelDetails);
+            [$dbKey, $itemId, $cancelCode] = explode('|', $cancelDetails);
 
             // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
@@ -2615,10 +2649,13 @@ EOT;
      * value is then extracted by the CancelStorageRetrievalRequests function.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         $details
             = ($details['institution_dbkey'] ?? '')
@@ -2652,14 +2689,14 @@ EOT;
             $this->putCachedData($cacheId, false);
             return false;
         }
-        list($source, $patronId) = explode('.', $patron['id'], 2);
+        [$source, $patronId] = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             $this->debug("getUBRequestDetails: source '$source' unknown");
             $this->putCachedData($cacheId, false);
             return false;
         }
 
-        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
+        [, $catUsername] = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2693,7 +2730,10 @@ xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
 EOT;
 
         $response = $this->makeRequest(
-            ['PatronRequestsService' => false], [], 'POST', $xml
+            ['PatronRequestsService' => false],
+            [],
+            'POST',
+            $xml
         );
 
         if ($response === false) {
@@ -2702,10 +2742,12 @@ EOT;
         }
         // Process
         $response->registerXPathNamespace(
-            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+            'ser',
+            'http://www.endinfosys.com/Voyager/serviceParameters'
         );
         $response->registerXPathNamespace(
-            'req', 'http://www.endinfosys.com/Voyager/requests'
+            'req',
+            'http://www.endinfosys.com/Voyager/requests'
         );
         foreach ($response->xpath('//ser:message') as $message) {
             // Any message means a problem, right?
@@ -2750,7 +2792,10 @@ xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
 EOT;
 
         $response = $this->makeRequest(
-            ['PatronRequestService' => false], [], 'POST', $xml
+            ['PatronRequestService' => false],
+            [],
+            'POST',
+            $xml
         );
 
         if ($response === false) {
@@ -2759,10 +2804,12 @@ EOT;
         }
         // Process
         $response->registerXPathNamespace(
-            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+            'ser',
+            'http://www.endinfosys.com/Voyager/serviceParameters'
         );
         $response->registerXPathNamespace(
-            'req', 'http://www.endinfosys.com/Voyager/requests'
+            'req',
+            'http://www.endinfosys.com/Voyager/requests'
         );
         foreach ($response->xpath('//ser:message') as $message) {
             // Any message means a problem, right?
@@ -2804,7 +2851,8 @@ EOT;
             case 'notNeededAfter':
                 $node = current($field->xpath('./req:text'));
                 $requiredByDate = $this->dateFormat->convertToDisplayDate(
-                    'Y-m-d H:i', (string)$node
+                    'Y-m-d H:i',
+                    (string)$node
                 );
                 break;
             }
@@ -2916,12 +2964,12 @@ EOT;
             return false;
         }
 
-        list($source, $patronId) = explode('.', $patron['id'], 2);
+        [$source, $patronId] = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             return $this->holdError('ill_request_unknown_patron_source');
         }
 
-        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
+        [, $catUsername] = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2947,7 +2995,10 @@ xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
 EOT;
 
         $response = $this->makeRequest(
-            ['UBPickupLibService' => false], [], 'POST', $xml
+            ['UBPickupLibService' => false],
+            [],
+            'POST',
+            $xml
         );
 
         if ($response === false) {
@@ -2955,10 +3006,12 @@ EOT;
         }
         // Process
         $response->registerXPathNamespace(
-            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+            'ser',
+            'http://www.endinfosys.com/Voyager/serviceParameters'
         );
         $response->registerXPathNamespace(
-            'req', 'http://www.endinfosys.com/Voyager/requests'
+            'req',
+            'http://www.endinfosys.com/Voyager/requests'
         );
         if ($response->xpath('//ser:message')) {
             // Any message means a problem, right?
@@ -2989,12 +3042,12 @@ EOT;
     public function placeILLRequest($details)
     {
         $patron = $details['patron'];
-        list($source, $patronId) = explode('.', $patron['id'], 2);
+        [$source, $patronId] = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             return $this->holdError('ill_request_error_unknown_patron_source');
         }
 
-        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
+        [, $catUsername] = explode('.', $patron['cat_username'], 2);
         $patronId = htmlspecialchars($patronId, ENT_COMPAT, 'UTF-8');
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -3015,7 +3068,8 @@ EOT;
         // Convert last interest date from Display Format to Voyager required format
         try {
             $lastInterestDate = $this->dateFormat->convertFromDisplayDate(
-                'Y-m-d', $details['requiredBy']
+                'Y-m-d',
+                $details['requiredBy']
             );
         } catch (DateException $e) {
             // Date is invalid
@@ -3090,7 +3144,10 @@ xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
 EOT;
 
         $response = $this->makeRequest(
-            ['SendPatronRequestService' => false], [], 'POST', $xml
+            ['SendPatronRequestService' => false],
+            [],
+            'POST',
+            $xml
         );
 
         if ($response === false) {
@@ -3098,10 +3155,12 @@ EOT;
         }
         // Process
         $response->registerXPathNamespace(
-            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+            'ser',
+            'http://www.endinfosys.com/Voyager/serviceParameters'
         );
         $response->registerXPathNamespace(
-            'req', 'http://www.endinfosys.com/Voyager/requests'
+            'req',
+            'http://www.endinfosys.com/Voyager/requests'
         );
         foreach ($response->xpath('//ser:message') as $message) {
             if ($message->attributes()->type == 'success') {
@@ -3156,7 +3215,7 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($dbKey, $itemId, $type, $cancelCode) = explode('|', $cancelDetails);
+            [$dbKey, $itemId, $type, $cancelCode] = explode('|', $cancelDetails);
 
             // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
@@ -3217,10 +3276,13 @@ EOT;
      * submitted as form data and extracted by the CancelILLRequests function.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($details, $patron)
     {
         $details = ($details['institution_dbkey'] ?? '')
             . '|' . $details['item_id']
@@ -3267,7 +3329,9 @@ EOT;
         $ubId = htmlspecialchars($this->ws_patronHomeUbId, ENT_COMPAT, 'UTF-8');
         $oldPIN = trim(
             htmlspecialchars(
-                $this->sanitizePIN($details['oldPassword']), ENT_COMPAT, 'UTF-8'
+                $this->sanitizePIN($details['oldPassword']),
+                ENT_COMPAT,
+                'UTF-8'
             )
         );
 
@@ -3290,7 +3354,9 @@ EOT;
         }
         $newPIN = trim(
             htmlspecialchars(
-                $this->sanitizePIN($details['newPassword']), ENT_COMPAT, 'UTF-8'
+                $this->sanitizePIN($details['newPassword']),
+                ENT_COMPAT,
+                'UTF-8'
             )
         );
         if ($newPIN === '') {
@@ -3319,11 +3385,15 @@ xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
 EOT;
 
         $result = $this->makeRequest(
-            ['ChangePINService' => false], [], 'POST', $xml
+            ['ChangePINService' => false],
+            [],
+            'POST',
+            $xml
         );
 
         $result->registerXPathNamespace(
-            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+            'ser',
+            'http://www.endinfosys.com/Voyager/serviceParameters'
         );
         $error = $result->xpath("//ser:message[@type='error']");
         if (!empty($error)) {

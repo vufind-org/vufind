@@ -6,6 +6,7 @@
   </tr>
   <?php $i = 0; foreach ($this->statusItems as $item): ?>
     <?php if (++$i == 5) break; // Show no more than 5 items ?>
+    <?php $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';?>
     <tr>
       <td class="fullLocation">
         <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
@@ -17,9 +18,9 @@
       </td>
       <td class="fullCallnumber">
         <?php if ($this->callnumberHandler): ?>
-          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($item['callnumber']) ?>"><?=$this->escapeHtml($item['callnumber'])?></a>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($item['callnumber']) ?>"><?=$this->escapeHtml($callNumPrefix)?><?=$this->escapeHtml($item['callnumber'])?></a>
         <?php else: ?>
-          <?=$this->escapeHtml($item['callnumber'])?>
+          <?=$this->escapeHtml($callNumPrefix)?><?=$this->escapeHtml($item['callnumber'])?>
         <?php endif; ?>
       </td>
       <td class="fullAvailability">

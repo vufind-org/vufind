@@ -45,13 +45,17 @@
 .channel .channel-record.slide {
   display: inline-block;
   min-width: 100px;
-  max-height: 240px;
+  max-height: 16em;
   padding: 0 .5rem;
   text-align: center;
-  text-overflow: ellipsis;
+}
+.channel-record-title {
+  display: block;
+  height: 3em;
+  margin: 0;
+  line-height: 1.5;
   overflow: hidden;
 }
-.channel .channel-record.is-selected { &:extend(a:hover); }
 .channel .channel-record .thumb {
   display: flex;
   height: 200px;

@@ -28,6 +28,9 @@
 namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for ChoiceAuth authentication module.
@@ -52,16 +55,19 @@ class ChoiceAuthFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         $session = new \Laminas\Session\Container(
-            'ChoiceAuth', $container->get(\Laminas\Session\SessionManager::class)
+            'ChoiceAuth',
+            $container->get(\Laminas\Session\SessionManager::class)
         );
         $auth = new $requestedName($session);
         $auth->setPluginManager($container->get(PluginManager::class));

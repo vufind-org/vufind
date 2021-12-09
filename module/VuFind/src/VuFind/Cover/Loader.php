@@ -165,6 +165,13 @@ class Loader extends \VuFind\ImageLoader
     protected $type;
 
     /**
+     * Flag denoting the last loaded image was a FailImage
+     *
+     * @var bool
+     */
+    protected $hasLoadedUnavailable = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config  $config      VuFind configuration
@@ -174,14 +181,16 @@ class Loader extends \VuFind\ImageLoader
      * @param string                  $baseDir     Directory to store downloaded
      * images (set to system temp dir if not otherwise specified)
      */
-    public function __construct($config, ApiManager $manager,
-        \VuFindTheme\ThemeInfo $theme, \VuFindHttp\HttpService $httpService,
+    public function __construct(
+        $config,
+        ApiManager $manager,
+        \VuFindTheme\ThemeInfo $theme,
+        \VuFindHttp\HttpService $httpService,
         $baseDir = null
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
-        $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
-            ? $config->Content->noCoverAvailableImage : null;
+        $this->configuredFailImage = $config->Content->noCoverAvailableImage ?? null;
         $this->apiManager = $manager;
         $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
@@ -315,6 +324,8 @@ class Loader extends \VuFind\ImageLoader
      */
     public function loadImage($settings = [])
     {
+        // reset to normal
+        $this->hasLoadedUnavailable = false;
         // Load settings from legacy function parameters if they are not passed
         // in as an array:
         $settings = is_array($settings)
@@ -334,7 +345,9 @@ class Loader extends \VuFind\ImageLoader
             if ($this->generator) {
                 $this->generator->setOptions($this->getCoverGeneratorSettings());
                 $this->image = $this->generator->generate(
-                    $settings['title'], $settings['author'], $settings['callnumber']
+                    $settings['title'],
+                    $settings['author'],
+                    $settings['callnumber']
                 );
                 $this->contentType = 'image/png';
             } else {
@@ -344,11 +357,33 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
+     * {@inheritdoc}
+     * Adds @see self::$hasLoadedUnavailable flag
+     *
+     * @return void
+     */
+    public function loadUnavailable()
+    {
+        $this->hasLoadedUnavailable = true;
+        parent::loadUnavailable();
+    }
+
+    /**
+     * Returns true if the last loaded image was the FailImage
+     *
+     * @return bool
+     */
+    public function hasLoadedUnavailable()
+    {
+        return $this->hasLoadedUnavailable;
+    }
+
+    /**
      * Support method for fetchFromAPI() -- set the localFile property.
      *
      * @param array $ids IDs returned by getIdentifiers() method
      *
-     * @return void
+     * @return string
      */
     protected function determineLocalFile($ids)
     {
@@ -439,7 +474,9 @@ class Loader extends \VuFind\ImageLoader
             $urls = $this->getCoverUrls();
             foreach ($urls as $url) {
                 $success = $this->processImageURLForSource(
-                    $url['url'], $url['handler']->isCacheAllowed(), $url['apiName']
+                    $url['url'],
+                    $url['handler']->isCacheAllowed(),
+                    $url['apiName']
                 );
                 if ($success) {
                     return true;
@@ -543,7 +580,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function validateAndMoveTempFile($image, $tempFile, $finalFile)
     {
-        list($width, $height, $type) = @getimagesize($tempFile);
+        [$width, $height, $type] = @getimagesize($tempFile);
 
         // File too small -- delete it and report failure.
         if ($width < 2 && $height < 2) {

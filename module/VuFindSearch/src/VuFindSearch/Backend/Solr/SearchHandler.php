@@ -153,7 +153,7 @@ class SearchHandler
         $boostQuery = [];
         if ($this->hasDismax()) {
             foreach ($this->getDismaxParams() as $param) {
-                list($name, $value) = $param;
+                [$name, $value] = $param;
                 if ($name === 'bq') {
                     $boostQuery[] = $value;
                 } elseif ($name === 'bf') {
@@ -176,7 +176,8 @@ class SearchHandler
         if ($boostQuery) {
             return sprintf(
                 '(%s) AND (*:* OR %s)',
-                $search, implode(' OR ', $boostQuery)
+                $search,
+                implode(' OR ', $boostQuery)
             );
         } else {
             return $search;
@@ -335,7 +336,9 @@ class SearchHandler
         $dismaxParams = [];
         foreach ($this->specs['DismaxParams'] as $param) {
             $dismaxParams[] = sprintf(
-                "%s='%s'", $param[0], addcslashes($param[1], "'")
+                "%s='%s'",
+                $param[0],
+                addcslashes($param[1], "'")
             );
         }
         $dismaxQuery = sprintf(
@@ -364,7 +367,8 @@ class SearchHandler
             $tokens = $this->tokenize($search);
             $mungeValues = [
                 'onephrase' => sprintf(
-                    '"%s"', str_replace('"', '', implode(' ', $tokens))
+                    '"%s"',
+                    str_replace('"', '', implode(' ', $tokens))
                 ),
                 'and' => implode(' AND ', $tokens),
                 'or'  => implode(' OR ', $tokens),
@@ -438,7 +442,9 @@ class SearchHandler
             break;
         case 'preg_replace':
             $string = preg_replace(
-                $operation[1], $operation[2], $string
+                $operation[1],
+                $operation[2],
+                $string
             );
             break;
         case 'ucfirst':
@@ -525,8 +531,8 @@ class SearchHandler
                     $this->munge($clausearray, $mungeValues, $internalJoin) .
                     ')';
                 // ...and add a weight if we have one
-                $weight = $sw[1];
-                if (null !== $weight && $weight && $weight > 0) {
+                $weight = intval($sw[1] ?? 0);
+                if ($weight > 0) {
                     $sstring .= '^' . $weight;
                 }
                 // push it onto the stack of clauses
@@ -539,8 +545,8 @@ class SearchHandler
                     $sstring = $field . ':(' . $mungeValues[$spec[0]] . ')';
                     // Add the weight if we have one. Yes, I know, it's redundant
                     // code.
-                    $weight = $spec[1];
-                    if (null !== $weight && $weight && $weight > 0) {
+                    $weight = intval($spec[1] ?? 0);
+                    if ($weight > 0) {
                         $sstring .= '^' . $weight;
                     }
                     // ..and push it on the stack of clauses

@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType) {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + response.data.msg);
+          .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + VuFind.updateCspNonce(response.data.msg));
       } else {
         $(element).remove();
       }
@@ -71,7 +71,7 @@ function refreshCommentList($target, recordId, recordSource) {
       // Update HTML
       var $commentList = $target.find('.comment-list');
       $commentList.empty();
-      $commentList.append(response.data.html);
+      $commentList.append(VuFind.updateCspNonce(response.data.html));
       $commentList.find('.delete').unbind('click').click(function commentRefreshDeleteClick() {
         var commentId = $(this).attr('id').substr('recordComment'.length);
         deleteRecordComment(this, recordId, recordSource, commentId);
@@ -142,7 +142,7 @@ function handleAjaxTabLinks(_context) {
       $a.unbind('click').click(function linkClick() {
         var tabid = $('.record-tabs .nav-tabs li.active').data('tab');
         var $tab = $('.' + tabid + '-tab');
-        $tab.html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+        $tab.html('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
         ajaxLoadTab($tab, '', false, href);
         return false;
       });
@@ -161,6 +161,10 @@ function registerTabEvents() {
   handleAjaxTabLinks();
 
   VuFind.lightbox.bind('.tab-pane.active');
+
+  if (typeof VuFind.openurl !== 'undefined') {
+    VuFind.openurl.init($('.tab-pane.active'));
+  }
 }
 
 function removeHashFromLocation() {
@@ -190,9 +194,9 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   })
     .always(function ajaxLoadTabDone(data) {
       if (typeof data === 'object') {
-        $newTab.html(data.responseText ? data.responseText : VuFind.translate('error_occurred'));
+        $newTab.html(data.responseText ? VuFind.updateCspNonce(data.responseText) : VuFind.translate('error_occurred'));
       } else {
-        $newTab.html(data);
+        $newTab.html(VuFind.updateCspNonce(data));
       }
       registerTabEvents();
       if (typeof syn_get_widget === "function") {
@@ -226,7 +230,7 @@ function refreshTagList(_target, _loggedin) {
     })
       .done(function getRecordTagsDone(response) {
         $tagList.empty();
-        $tagList.replaceWith(response.data.html);
+        $tagList.replaceWith(VuFind.updateCspNonce(response.data.html));
         if (loggedin) {
           $tagList.addClass('loggedin');
         } else {
@@ -261,7 +265,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 }
 
 function getNewRecordTab(tabid) {
-  return $('<div class="tab-pane ' + tabid + '-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+  return $('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
 }
 
 function backgroundLoadTab(tabid) {
@@ -273,7 +277,7 @@ function backgroundLoadTab(tabid) {
   return ajaxLoadTab(newTab, tabid, false);
 }
 
-function applyRecordTabHash() {
+function applyRecordTabHash(scrollToTabs) {
   var activeTab = $('.record-tabs li.active').attr('data-tab');
   var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
   var newTab = typeof window.location.hash !== 'undefined'
@@ -283,13 +287,31 @@ function applyRecordTabHash() {
   if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    $('.' + newTab.substr(1) + ' a').click();
+    var $tabLink = $('.record-tabs .' + newTab.substr(1) + ' a');
+    if ($tabLink.length > 0) {
+      $tabLink.click();
+      if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
+        $('html, body').animate({
+          scrollTop: $('.record-tabs').offset().top
+        }, 500);
+      }
+    }
   }
 }
 
 $(window).on('hashchange', applyRecordTabHash);
 
+function removeCheckRouteParam() {
+  if (window.location.search.indexOf('checkRoute=1') >= 0) {
+    var newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', newHref);
+    }
+  }
+}
+
 function recordDocReady() {
+  removeCheckRouteParam();
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
@@ -334,5 +356,5 @@ function recordDocReady() {
   });
 
   registerTabEvents();
-  applyRecordTabHash();
+  applyRecordTabHash(false);
 }

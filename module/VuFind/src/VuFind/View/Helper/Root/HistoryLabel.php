@@ -74,7 +74,7 @@ class HistoryLabel extends \Laminas\View\Helper\AbstractHelper
     public function __invoke($class)
     {
         if (isset($this->config[$class])) {
-            return $this->translator->__invoke($this->config[$class]) . ':';
+            return ($this->translator)($this->config[$class]) . ':';
         }
         return '';
     }

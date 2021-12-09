@@ -126,7 +126,10 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return UpdateDocument
      */
-    protected function buildReservesIndex($instructors, $courses, $departments,
+    protected function buildReservesIndex(
+        $instructors,
+        $courses,
+        $departments,
         $reserves
     ) {
         foreach ($reserves as $record) {
@@ -178,7 +181,9 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return CsvReader
      */
-    protected function getCsvReader($files, string $delimiter,
+    protected function getCsvReader(
+        $files,
+        string $delimiter,
         string $template
     ): CsvReader {
         return new CsvReader($files, $delimiter, $template);
@@ -242,7 +247,10 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
             // Build and Save the index
             $index = $this->buildReservesIndex(
-                $instructors, $courses, $departments, $reserves
+                $instructors,
+                $courses,
+                $departments,
+                $reserves
             );
             $this->solr->save('SolrReserves', $index);
 

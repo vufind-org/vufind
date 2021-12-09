@@ -17,8 +17,8 @@
           <?php endif; ?>
           <?php $cart = $this->cart(); if ($cart->isActive()): ?>
             <li id="cartSummary">
-              <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
-                <i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?>
+              <a id="cartItems" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+                <i class="fa fa-suitcase" aria-hidden="true"></i> <span role="status"><span class="sr-only"><?=$this->transEsc('Book Bag')?>:</span> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?></span>
                 <span class="full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full') ?>)</span>
               </a>
             </li>

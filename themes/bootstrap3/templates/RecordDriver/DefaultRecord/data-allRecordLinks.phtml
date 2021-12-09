@@ -1,6 +1,6 @@
 <?php foreach ($data as $recordLink): ?>
   <?=$this->transEsc($recordLink['title'])?>:
-  <a href="<?=$this->recordLink()->related($recordLink['link'], true, $this->driver->getSourceIdentifier())?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
+  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->related($recordLink['link'], $this->driver->getSourceIdentifier()))?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
 <?php endforeach; ?>
 <?php /* if we have record links, display relevant explanatory notes */
   $related = $this->driver->getRelationshipNotes();

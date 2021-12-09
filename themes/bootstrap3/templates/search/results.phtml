@@ -18,8 +18,8 @@
         'filterList' => $this->params->getFilterList(true),
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
         'selectedShards' => $this->params->getSelectedShards(),
-        'ignoreHiddenFiltersInRequest' => isset($this->ignoreHiddenFiltersInRequest) ? $this->ignoreHiddenFiltersInRequest : false,
-        'ignoreHiddenFilterMemory' => isset($this->ignoreHiddenFilterMemory) ? $this->ignoreHiddenFilterMemory : false,
+        'ignoreHiddenFiltersInRequest' => $this->ignoreHiddenFiltersInRequest ?? false,
+        'ignoreHiddenFilterMemory' => $this->ignoreHiddenFilterMemory ?? false,
       ]
   );
 
@@ -34,16 +34,13 @@
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
-  // Load Javascript only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption() != "full") {
-    $this->headScript()->appendFile("record.js");
-    $this->headScript()->appendFile("embedded_record.js");
-  }
+  $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
 
-  // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("vendor/hunt.min.js");
-  $this->headScript()->appendFile("check_item_statuses.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
+  // Load only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() !== 'full') {
+      $this->headScript()->appendFile("record.js");
+      $this->headScript()->appendFile("embedded_record.js");
+  }
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
@@ -57,7 +54,7 @@
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
-        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
+        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
           <?=$this->transEsc('Refine Results') ?>
         </a>
       <?php else: ?>
@@ -78,9 +75,8 @@
   <?php if ($recordTotal < 1): ?>
     <p>
       <?php
-        $emptyMessage = $this->slot('empty-message')->get(
-          $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])
-        );
+        $default = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]);
+        $emptyMessage = $this->slot('empty-message')->get($default);
         $this->layout()->srmessage = $emptyMessage;
         echo $emptyMessage;
       ?>
@@ -102,26 +98,8 @@
     </form>
     <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
-    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []])?>
-
-    <div class="searchtools hidden-print">
-      <strong><?=$this->transEsc('Search Tools')?>:</strong>
-      <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell" aria-hidden="true"></i> <?=$this->transEsc('Get RSS Feed')?></a>
-      &mdash;
-      <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
-        <i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this Search')?>
-      </a>
-      <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
-        &mdash;
-        <?php if (is_numeric($this->results->getSearchId())): ?>
-          <?php if ($this->results->isSavedSearch()): ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc('save_search_remove')?></a>
-          <?php else: ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc('save_search')?></a>
-          <?php endif; ?>
-        <?php endif; ?>
-      <?php endif; ?>
-    </div>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => $this->paginationOptions ?? []])?>
+    <?=$this->context($this)->renderInContext('search/controls/results-tools.phtml', ['results' => $this->results])?>
   <?php endif; ?>
 </div>
 <?php /* End Main Listing */ ?>

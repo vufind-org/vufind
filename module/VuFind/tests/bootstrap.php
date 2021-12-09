@@ -1,8 +1,5 @@
 <?php
 
-// Set path to this module
-define('VUFIND_PHPUNIT_MODULE_PATH', __DIR__);
-
 // Define path to application directory
 defined('APPLICATION_PATH')
     || define(
@@ -64,5 +61,3 @@ if (file_exists('vendor/autoload.php')) {
     }
     $loader->register();
 }
-
-define('PHPUNIT_SEARCH_FIXTURES', realpath(__DIR__ . '/../../VuFindSearch/tests/unit-tests/fixtures'));

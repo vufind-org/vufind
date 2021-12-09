@@ -35,7 +35,7 @@ $config = [
             'content-page' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
-                    'route'    => '/Content/[:page]',
+                    'route'    => '/Content/:page',
                     'constraints' => [
                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ],
@@ -159,6 +159,7 @@ $config = [
             'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\HoldsController' => 'VuFind\Controller\HoldsControllerFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\InstallController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -243,6 +244,8 @@ $config = [
             'help' => 'VuFind\Controller\HelpController',
             'Hierarchy' => 'VuFind\Controller\HierarchyController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',
+            'Holds' => 'VuFind\Controller\HoldsController',
+            'holds' => 'VuFind\Controller\HoldsController',
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
             'Install' => 'VuFind\Controller\InstallController',
@@ -303,6 +306,7 @@ $config = [
             'VuFind\Controller\Plugin\Followup' => 'VuFind\Controller\Plugin\FollowupFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
+            'VuFind\Controller\Plugin\IlsRecords' => 'VuFind\Controller\Plugin\IlsRecordsFactory',
             'VuFind\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
             'VuFind\Controller\Plugin\Renewals' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -322,6 +326,7 @@ $config = [
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
+            'ilsRecords' => 'VuFind\Controller\Plugin\IlsRecords',
             'newItems' => 'VuFind\Controller\Plugin\NewItems',
             'permission' => 'VuFind\Controller\Plugin\Permission',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
@@ -388,6 +393,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'VuFind\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\ILS\Logic\Holds' => 'VuFind\ILS\Logic\LogicFactory',
@@ -426,9 +432,11 @@ $config = [
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',
             'VuFind\Security\CspHeaderGenerator' => 'VuFind\Security\CspHeaderGeneratorFactory',
             'VuFind\Security\NonceGenerator' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Service\CurrencyFormatter' => 'VuFind\Service\CurrencyFormatterFactory',
             'VuFind\Service\ReCaptcha' => 'VuFind\Service\ReCaptchaFactory',
             'VuFind\Session\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Session\Settings' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Sitemap\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\SMS\SMSInterface' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
             'VuFind\Tags' => 'VuFind\TagsFactory',
@@ -439,8 +447,15 @@ $config = [
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
             'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
-            'Laminas\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+        ],
+        'delegators' => [
+            'Laminas\I18n\Translator\TranslatorInterface' => [
+                'VuFind\I18n\Translator\TranslatorFactory',
+            ],
+            'SlmLocale\Locale\Detector' => [
+                'VuFind\I18n\Locale\LocaleDetectorFactory',
+            ],
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -508,8 +523,19 @@ $config = [
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\Csrf',
         ],
+        'shared' => [
+            'VuFind\Form\Form' => false,
+        ],
     ],
     'translator' => [],
+    'translator_plugins' => [
+        'factories' => [
+            'VuFind\I18n\Translator\Loader\ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIniFactory',
+        ],
+        'aliases' => [
+            'ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIni'
+        ],
+    ],
     'view_helpers' => [
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -521,9 +547,6 @@ $config = [
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_path_stack'      => [],
-        'whoops_no_catch' => [
-            'VuFind\Exception\RecordMissing',
-        ],
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Laminas components).
@@ -586,7 +609,14 @@ $config = [
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
             'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
             'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
+            'sitemap' => [ /* see VuFind\Sitemap\PluginManager for defaults */ ],
             'urlshortener' => [ /* see VuFind\UrlShortener\PluginManager for defaults */ ],
+        ],
+    ],
+    // Whoops configuration:
+    'whoops' => [
+        'ignored_exceptions' => [
+            'VuFind\Exception\RecordMissing',
         ],
     ],
     // Authorization configuration:
@@ -647,12 +677,14 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Holds/Edit', 'Holds/List',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'LibGuides/Home', 'LibGuides/Results',
     'LibraryCards/Home', 'LibraryCards/SelectCard',
+    'LibraryCards/ConnectCard', 'LibraryCards/ConnectCardLogin',
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
     'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
@@ -674,8 +706,9 @@ $staticRoutes = [
     'Search/EditMemory', 'Search/Email',
     'Search/FacetList', 'Search/History', 'Search/Home', 'Search/NewItem',
     'Search/OpenSearch', 'Search/Reserves', 'Search/ReservesFacetList',
-    'Search/Results', 'Search/Suggest',
+    'Search/Results', 'Search/Suggest', 'Search/Versions',
     'Search2/Advanced', 'Search2/FacetList', 'Search2/Home', 'Search2/Results',
+    'Search2/Versions',
     'Summon/Advanced', 'Summon/FacetList', 'Summon/Home', 'Summon/Search',
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixDuplicateTags',

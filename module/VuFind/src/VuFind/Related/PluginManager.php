@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'channels' => Channels::class,
+        'bookplate' => Bookplate::class,
         'editions' => Deprecated::class,
         'similar' => Similar::class,
         'worldcateditions' => Deprecated::class,
@@ -60,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Channels::class => InvokableFactory::class,
+        Bookplate::class => BookplateFactory::class,
         Deprecated::class => InvokableFactory::class,
         Similar::class => SimilarFactory::class,
         WorldCatSimilar::class => SimilarFactory::class,
@@ -74,7 +76,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,

@@ -56,7 +56,7 @@ class ScssBuilderCommandTest extends \PHPUnit\Framework\TestCase
         $compiler->expects($this->once())->method('compile')
             ->with($this->equalTo(['foo', 'bar']));
         $command = $this->getMockBuilder(ScssBuilderCommand::class)
-            ->setMethods(['getCompiler'])
+            ->onlyMethods(['getCompiler'])
             ->setConstructorArgs([$cacheDir])
             ->getMock();
         $command->expects($this->once())->method('getCompiler')

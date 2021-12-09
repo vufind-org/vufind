@@ -68,5 +68,6 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
                 ? 'offcanvas offcanvas-left'
                 : 'offcanvas offcanvas-right';
         }
+        throw new \Exception('Unexpected class: ' . $class);
     }
 }

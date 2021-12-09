@@ -58,7 +58,7 @@ class OaiResumption extends RowGateway
         $parts = explode('&', $this->params);
         $params = [];
         foreach ($parts as $part) {
-            list($key, $value) = explode('=', $part);
+            [$key, $value] = explode('=', $part);
             $key = urldecode($key);
             $value = urldecode($value);
             $params[$key] = $value;

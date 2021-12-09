@@ -41,7 +41,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
-    use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -57,6 +57,13 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      * @var string
      */
     protected $referrer;
+
+    /**
+     * Sigla - library identifier
+     *
+     * @var string
+     */
+    protected $sigla;
 
     /**
      * Constructor
@@ -75,6 +82,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $this->apiUrl = $config->base_url[0] . $config->books_endpoint;
         $this->cacheLifetime = 1800;
         $this->referrer = $config->referrer ?? null;
+        $this->sigla = $config->sigla ?? null;
     }
 
     /**
@@ -89,7 +97,12 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
         }
-        return $this->httpService->createClient($url);
+        $client = $this->httpService->createClient($url);
+        if (isset($this->referrer)) {
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Referer', $this->referrer);
+        }
+        return $client;
     }
 
     /**
@@ -101,15 +114,11 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function createCacheKey(array $ids)
     {
-        array_walk(
-            $ids, function (&$value, $key) {
-                if (gettype($value) === 'object') {
-                    $value = $value->get13();
-                }
-                $value = "$key::$value";
-            }
-        );
-        return implode("%%", $ids);
+        $key = $ids['recordid'];
+        $key = !empty($key) ? $key
+            : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
+        $key = !empty($key) ? $key : sha1(json_encode($ids));
+        return $key;
     }
 
     /**
@@ -149,20 +158,38 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $oclc = $ids['oclc'] ?? null;
         $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
         $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
-        $nbn = $ids['nbn'] ?? null;
+        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid']);
         foreach (['isbn', 'oclc', 'ismn', 'nbn' ] as $identifier) {
             if (isset($$identifier)) {
                 $query[$identifier] = $$identifier;
             }
         }
+
         $url = $this->apiUrl . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
-        if (isset($this->referrer)) {
-            $client->getRequest()->getHeaders()
-                ->addHeaderLine('Referer', $this->referrer);
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . get_class($e) . ': ' . $e->getMessage());
+            return null;
         }
-        $response = $client->send();
         return $response->isSuccess() ? json_decode($response->getBody())[0] : null;
+    }
+
+    /**
+     * Create identifier of local record
+     *
+     * @param string $recordid Record identifier
+     *
+     * @return string|null
+     */
+    protected function createLocalIdentifier(string $recordid): ?string
+    {
+        if (strpos($recordid, '.') !== false) {
+            [, $recordid] = explode('.', $recordid, 2);
+        }
+        return empty($this->sigla) ? null :
+            $this->sigla . '-' . str_replace('-', '', $recordid);
     }
 }

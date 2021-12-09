@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -38,6 +39,7 @@ use VuFindSearch\Backend\Solr\Document\CommitDocument;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -51,7 +53,11 @@ class CommitDocumentTest extends TestCase
     public function testAsXML()
     {
         $document = new CommitDocument('30000');
-        $xml = $document->asXML();
+        $this->assertEquals(
+            'text/xml; charset=UTF-8',
+            $document->getContentType()
+        );
+        $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(
             '<commit commitWithin="30000"/>',
             $xml

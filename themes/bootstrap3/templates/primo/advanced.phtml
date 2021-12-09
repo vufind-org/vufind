@@ -64,7 +64,7 @@
                   <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                 <?php endforeach; ?>
               </select>
-                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input" aria-label="<?=$this->transEsc("search_terms")?>"/>
+                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input" aria-label="<?=$this->transEscAttr("search_terms")?>"/>
             </div>
           <?php endfor; ?>
         </div>
@@ -74,7 +74,7 @@
     <?php if (!empty($lastSort)): ?>
       <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
     <?php endif; ?>
-    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc("Find")?>"/>
+    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEscAttr("Find")?>"/>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">

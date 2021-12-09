@@ -30,7 +30,20 @@
 ?>
 <?php if ($results->getResultTotal() > 0): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h2>
-  <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex) ?>">
+  <?php
+    // We need to pass the current URL query to the Javascript; we use substr() to
+    // strip off the leading ? character. The "suppress query" option is used for
+    // special search types like course reserves / new items. The AJAX handler needs
+    // the real Solr query in order to process facets correctly, so we need to
+    // unsuppress it here.
+    $querySuppressed = $results->getUrlQuery()->isQuerySuppressed();
+    $urlQuery = substr($results->getUrlQuery()->setSuppressQuery(false)->getParams(false), 1);
+    $results->getUrlQuery()->setSuppressQuery($querySuppressed); // restore original config
+    // We also need to inform the helper about any special parameters used in place
+    // of the suppressed query:
+    $extraUrlFields = $results->getUrlQuery()->getParamsWithConfiguredDefaults();
+  ?>
+  <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex)?>" data-query="<?=$this->escapeHtmlAttr($urlQuery)?>" data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>" data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
 <?php endif; ?>
 <?php $checkboxFilters = $this->recommend->getCheckboxFacetSet(); ?>
 <?php $checkboxesShown = false; ?>
@@ -48,7 +61,7 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
@@ -62,7 +75,7 @@
       <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <span class="facet-load-indicator hidden">
           <span class="text">
-            <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
+            <?=$this->icon('spinner') ?> <?=$this->transEsc('Loading')?>...
           </span>
         </span>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
@@ -72,7 +85,7 @@
               data-path=""
               data-exclude="<?=$allowExclude?>"
               data-operator="<?=$this->recommend->getFacetOperator($field)?>"
-              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+              data-exclude-title="<?=$this->transEscAttr('exclude_facet')?>"
               data-sort="<?=$hierarchicalFacetSortOptions[$field] ?? ''?>">
           </div>
         <?php endif; ?>

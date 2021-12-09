@@ -53,7 +53,12 @@ class SolidBackground extends AbstractBackgroundLayer
         $seed = $this->createSeed($details['title'], $details['callnumber']);
         $accentColor = $this->getAccentColor($im, $seed, $settings);
         imagefilledrectangle(
-            $im, 0, 0, $settings->width, $settings->height, $accentColor
+            $im,
+            0,
+            0,
+            $settings->width,
+            $settings->height,
+            $accentColor
         );
     }
 }

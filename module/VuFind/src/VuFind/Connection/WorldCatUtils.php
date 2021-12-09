@@ -82,8 +82,11 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
      * @param string               $ip     Current server IP address (optional, but
      * needed for xID token hashing
      */
-    public function __construct($config, \Laminas\Http\Client $client,
-        $silent = true, $ip = null
+    public function __construct(
+        $config,
+        \Laminas\Http\Client $client,
+        $silent = true,
+        $ip = null
     ) {
         // Legacy compatibility -- prior to VuFind 2.4, this parameter was a string.
         if (!($config instanceof Config)) {
@@ -199,8 +202,7 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
     protected function processIdentitiesSubjects($current)
     {
         // Normalize subjects array if it has only a single entry:
-        $subjects = isset($current->fastHeadings->fast) ?
-            $current->fastHeadings->fast : null;
+        $subjects = $current->fastHeadings->fast ?? null;
         if (isset($subjects->tag)) {
             $subjects = [$subjects];
         }
@@ -278,8 +280,7 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
         $output = [];
         foreach ($data->records->record as $current) {
             // Build current name string:
-            $current = isset($current->recordData->Identity->nameInfo) ?
-                $current->recordData->Identity->nameInfo : null;
+            $current = $current->recordData->Identity->nameInfo ?? null;
             if (isset($current['type']) && $current['type'] == 'personal'
                 && !empty($current->rawName->suba)
             ) {

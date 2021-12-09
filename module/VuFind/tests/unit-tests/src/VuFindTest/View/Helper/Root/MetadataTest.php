@@ -43,7 +43,7 @@ use VuFindTest\RecordDriver\TestHarness;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MetadataTest extends \VuFindTest\Unit\TestCase
+class MetadataTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a fake record driver
@@ -68,7 +68,7 @@ class MetadataTest extends \VuFindTest\Unit\TestCase
     {
         $mock = $this->getMockBuilder(HeadMeta::class)
             ->disableOriginalConstructor()
-            ->setMethods(['appendName'])
+            ->addMethods(['appendName'])    // mocking __call
             ->getMock();
         $mock->expects($this->once())->method('appendName')
             ->with($this->equalTo('prism.title'), $this->equalTo('Fake Title'));
@@ -84,7 +84,7 @@ class MetadataTest extends \VuFindTest\Unit\TestCase
     {
         $mock = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
+            ->onlyMethods(['get'])
             ->getMock();
         $mock->expects($this->once())->method('get')
             ->with($this->equalTo('PRISM'))

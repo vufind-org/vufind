@@ -27,7 +27,7 @@
  */
 namespace VuFindConsole\Command\Util;
 
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFindTheme\LessCompiler;
 
@@ -66,5 +66,24 @@ class CssBuilderCommand extends AbstractCssBuilderCommand
     protected function getCompiler(OutputInterface $output)
     {
         return new LessCompiler($output);
+    }
+
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $output->writeln(
+            'WARNING: this tool is deprecated; please use "grunt less" for more'
+        );
+        $output->writeln(
+            'reliable results. See https://vufind.org/wiki/development:grunt' . "\n"
+        );
+        return parent::execute($input, $output);
     }
 }

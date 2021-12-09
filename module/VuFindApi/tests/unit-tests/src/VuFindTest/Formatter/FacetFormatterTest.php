@@ -41,7 +41,7 @@ use VuFindTest\Search\TestHarness\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class FacetFormatterTest extends \VuFindTest\Unit\TestCase
+class FacetFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get fake facet data.
@@ -101,7 +101,6 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         ];
         if (!$includeOr) {
             unset($data['xyzzy']);
-            unset($data['hierarchical_xyzzy']);
         }
         return $data;
     }
@@ -164,7 +163,10 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         $urlQuery = $factory->fromParams($params);
         foreach ($data as $facet => $values) {
             $results[$facet] = $helper->buildFacetArray(
-                $facet, $values, $urlQuery, false
+                $facet,
+                $values,
+                $urlQuery,
+                false
             );
         }
 
@@ -204,7 +206,8 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
             'filter' => ['foo:baz', 'hierarchical_foo:1/bar/cookie/'],
         ];
         $formatted = $formatter->format(
-            $request, $this->getFakeResults($request, $this->getFakeFacetData()),
+            $request,
+            $this->getFakeResults($request, $this->getFakeFacetData()),
             $this->getFakeHierarchicalFacetData($request)
         );
 
@@ -259,7 +262,8 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
             'facetFilter' => ['foo:..z', 'xyzzy:val(2|3)'],
         ];
         $formatted = $formatter->format(
-            $request, $this->getFakeResults($request, $this->getFakeFacetData(true)),
+            $request,
+            $this->getFakeResults($request, $this->getFakeFacetData(true)),
             $this->getFakeHierarchicalFacetData($request, true)
         );
 

@@ -9,7 +9,7 @@
         <small>
           <?=$this->escapeHtml($comment->created)?>
           <?php if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
-            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete"><?=$this->transEsc('Delete')?></a>
+            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'DeleteComment'))?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete"><?=$this->transEsc('Delete')?></a>
           <?php endif; ?>
         </small>
       </div>

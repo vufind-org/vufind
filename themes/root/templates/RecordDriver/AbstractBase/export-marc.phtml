@@ -1,1 +1,7 @@
-<?=$this->driver->getMarcRecord()->toRaw()?>
+<?php
+$marc = $this->driver->getMarcReader()->toFormat('ISO2709');
+if (!$marc) {
+    throw new \VuFind\Exception\FormatUnavailable();
+}
+echo $marc;
+?>

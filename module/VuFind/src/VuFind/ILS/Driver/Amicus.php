@@ -121,7 +121,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $sqlStmt = $this->db->prepare($sql);
                 $sqlStmt->execute();
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Read results
@@ -201,7 +201,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             //$sqlStmt2 = $this->db->prepare($holds);
             //$sqlStmt2->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $prestados = $row['PRESTADO'];
@@ -235,7 +235,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($circulacion);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $diferencia = $row['DIFERENCIA'];
@@ -267,7 +267,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($reservas);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $reservados = $row['RESERVADOS'];
@@ -311,7 +311,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($multipleLoc);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Read results
@@ -331,7 +331,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $sqlStmt = $this->db->prepare($sql);
                 $sqlStmt->execute();
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Build Array of Item Information
@@ -441,7 +441,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -473,7 +473,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $sqlStmt = $this->db->prepare($sql);
                 $sqlStmt->execute();
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Build Holdings Array
@@ -534,17 +534,17 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             "from CPY_ID " .
             "WHERE CPY_ID.BIB_ITM_NBR = '$id' " .
             "order by CPY_ID.SHLF_LIST_KEY_NBR ASC, CPY_ID.CPY_ID_NBR ASC";
+        $data = [];
         try {
-            $data = [];
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $data[] = ['issue' => $row['ENUMCHRON']];
             }
-            return $data;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $data;
     }
 
     /**
@@ -586,7 +586,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -598,7 +598,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -618,10 +618,10 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $transList[] = ['duedate' => $row['DUEDATE'],
                                      'id' => $row['BIB_ID']];
             }
-            return $transList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $transList;
     }
 
     /**
@@ -631,7 +631,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -657,7 +657,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
             return $fineList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -668,7 +668,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -694,10 +694,10 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                                     'expire' => $row['EXPIRE_DATE'],
                                     'create' => $row['CREATE_DATE']];
             }
-            return $holdList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**
@@ -744,12 +744,11 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                                 'email' => $row['EMAIL'],
                                 'group' => $row['PATRON_GROUP_NAME']];
                 return $patron;
-            } else {
-                return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return null;
     }
 
     /**
@@ -813,7 +812,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['COUNT'];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $page = ($page) ? $page : 1;
@@ -837,10 +836,10 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $items['results'][]['id'] = $row['BIB_ID'];
             }
-            return $items;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $items;
     }
 
     /**
@@ -865,7 +864,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $list[] = $row['NAME'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
@@ -911,7 +910,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $recordList[] = $row;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $recordList;
@@ -942,7 +941,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $recordList[] = $row;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $recordList;
@@ -969,7 +968,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $list[] = $row['BIB_ID'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;

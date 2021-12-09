@@ -38,6 +38,8 @@ namespace VuFindTest\ContentBlock;
  */
 class TemplateBasedTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test basic functionality of .phtml content block.
      *
@@ -45,15 +47,82 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicPhtmlFunctionality()
     {
+        $details = [
+            'renderer' => 'phtml',
+            'page' => 'foo',
+            'path' => '/path/to/foo.phtml',
+            'relativePath' => 'to/foo.phtml',
+        ];
         $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
             ->disableOriginalConstructor()
             ->getMock();
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
-            ->will($this->returnValue(['renderer' => 'phtml', 'page' => 'foo', 'path' => '/path/to/foo.phtml']));
+            ->will($this->returnValue($details));
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
-        $this->assertEquals(['templateName' => 'foo'], $block->getContext());
+        $this->assertEquals(
+            ['template' => 'to/foo.phtml', 'pageLocatorDetails' => $details],
+            $block->getContext()
+        );
+    }
+
+    /**
+     * Test basic functionality of .phtml content block, with overrides sent to
+     * the getContext method.
+     *
+     * @return void
+     */
+    public function testBasicPhtmlFunctionalityWithContextOverrides()
+    {
+        $details = [
+            'renderer' => 'phtml',
+            'page' => 'bar',
+            'path' => '/path/to/customBasePath/bar.phtml',
+            'relativePath' => 'customBasePath/bar.phtml',
+        ];
+        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+            ->with(
+                $this->equalTo('templates/customBasePath/'),
+                $this->equalTo('bar'),
+                $this->equalTo('%pathPrefix%/%pageName%')
+            )->will($this->returnValue($details));
+        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block->setConfig('foo');
+        $this->assertEquals(
+            ['template' => 'customBasePath/bar.phtml', 'pageLocatorDetails' => $details],
+            $block->getContext('templates/customBasePath/', 'bar', '%pathPrefix%/%pageName%')
+        );
+    }
+
+    /**
+     * Test functionality of .phtml content block w/ i18n.
+     *
+     * @return void
+     */
+    public function testI18nPhtmlFunctionality()
+    {
+        $details = [
+            'renderer' => 'phtml',
+            'page' => 'foo_en',
+            'path' => '/path/to/foo_en.phtml',
+            'relativePath' => 'to/foo_en.phtml',
+        ];
+        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+            ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
+            ->will($this->returnValue($details));
+        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block->setConfig('foo');
+        $this->assertEquals(
+            ['template' => 'to/foo_en.phtml', 'pageLocatorDetails' => $details],
+            $block->getContext()
+        );
     }
 
     /**
@@ -63,16 +132,29 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicMarkdownFunctionality()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../../../VuFindTheme/tests/unit-tests/fixtures/themes');
+        $fixturePath = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
         $file = $fixturePath . '/parent/templates/page-locator-test/page4.md';
+        $details = [
+            'renderer' => 'md',
+            'page' => 'page4',
+            'path' => $file,
+            'relativePath' => 'page-locator-test/page4.md',
+        ];
         $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
             ->disableOriginalConstructor()
             ->getMock();
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo($file))
-            ->will($this->returnValue(['renderer' => 'md', 'page' => 'page4', 'path' => $file]));
+            ->will($this->returnValue($details));
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig($file);
-        $this->assertEquals(['templateName' => 'markdown', 'data' => file_get_contents($file)], $block->getContext());
+        $this->assertEquals(
+            [
+                'template' => 'ContentBlock/TemplateBased/markdown',
+                'data' => file_get_contents($file),
+                'pageLocatorDetails' => $details
+            ],
+            $block->getContext()
+        );
     }
 }

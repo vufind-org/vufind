@@ -57,7 +57,7 @@ trait AjaxResponseTrait
     /**
      * AJAX Handler plugin manager
      *
-     * @var PluginManager;
+     * @var PluginManager
      */
     protected $ajaxManager = null;
 
@@ -75,6 +75,7 @@ trait AjaxResponseTrait
     {
         switch ($type) {
         case 'application/javascript':
+        case 'application/json':
             $output = ['data' => $data];
             if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
                 $output['php_errors'] = self::$php_errors;
@@ -141,7 +142,7 @@ trait AjaxResponseTrait
      *
      * @return \Laminas\Http\Response
      */
-    protected function callAjaxMethod($method, $type = 'application/javascript')
+    protected function callAjaxMethod($method, $type = 'application/json')
     {
         // Check the AJAX handler plugin manager for the method.
         if (!$this->ajaxManager) {
@@ -151,7 +152,8 @@ trait AjaxResponseTrait
             try {
                 $handler = $this->ajaxManager->get($method);
                 return $this->getAjaxResponse(
-                    $type, ...$handler->handleRequest($this->params())
+                    $type,
+                    ...$handler->handleRequest($this->params())
                 );
             } catch (\Exception $e) {
                 return $this->getExceptionResponse($type, $e);

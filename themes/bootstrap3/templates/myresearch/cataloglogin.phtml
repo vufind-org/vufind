@@ -35,18 +35,18 @@
       <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
         <label class="control-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
       <?php endif; ?>
-      <input id="profile_cat_username" type="text" name="cat_username" value="" class="form-control"/>
+      <input id="profile_cat_username" type="<?='email' === $this->loginMethod ? 'email' : 'text'?>" name="cat_username" value="" class="form-control" autocomplete="<?='email' === $this->loginMethod ? 'email' : 'username'?>"/>
     </div>
     <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
       <div class="form-group">
         <label class="control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
-        <input id="profile_cat_password" type="password" name="cat_password" value="" class="form-control"/>
+        <input id="profile_cat_password" type="password" name="cat_password" value="" class="form-control" autocomplete="current-password"/>
       </div>
     <?php else: ?>
       <input type="hidden" name="cat_password" value="****">
     <?php endif; ?>
     <div class="form-group">
-      <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
+      <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEscAttr('Login')?>">
     </div>
   </form>
 

@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">
+    <ns1:RequestItemResponse>
+        <ns1:ItemId>
+            <ns1:AgencyId ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">CBA001</ns1:AgencyId>
+            <ns1:ItemIdentifierType ns1:Scheme="">Barcode</ns1:ItemIdentifierType>
+            <ns1:ItemIdentifierValue>3800123456</ns1:ItemIdentifierValue>
+        </ns1:ItemId>
+        <ns1:UserId>
+            <ns1:AgencyId ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">CBA001</ns1:AgencyId>
+            <ns1:UserIdentifierType ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">INSTITUTION_ID_NUMBER</ns1:UserIdentifierType>
+            <ns1:UserIdentifierValue>0059085</ns1:UserIdentifierValue>
+        </ns1:UserId>
+        <ns1:RequestType ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">hold</ns1:RequestType>
+        <ns1:RequestScopeType ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">item</ns1:RequestScopeType>
+    </ns1:RequestItemResponse>
+</ns1:NCIPMessage>

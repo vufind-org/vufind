@@ -39,8 +39,10 @@ use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
+class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test capitalizeBooleans functionality.
      *
@@ -73,7 +75,8 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         // Test all the operations:
         foreach ($tests as $current) {
             $this->assertEquals(
-                $lh->capitalizeBooleans($current[0]), $current[1]
+                $lh->capitalizeBooleans($current[0]),
+                $current[1]
             );
         }
     }
@@ -142,31 +145,37 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
 
         // Default behavior: do not capitalize:
         $this->assertEquals(
-            [], $this->callMethod($lh, 'getBoolsToCap')
+            [],
+            $this->callMethod($lh, 'getBoolsToCap')
         );
 
         // Test "capitalize all":
         $lh = new LuceneSyntaxHelper(false);
         $this->assertEquals(
-            ['AND', 'OR', 'NOT'], $this->callMethod($lh, 'getBoolsToCap')
+            ['AND', 'OR', 'NOT'],
+            $this->callMethod($lh, 'getBoolsToCap')
         );
 
         // Test selective capitalization:
         $lh = new LuceneSyntaxHelper(' not ');
         $this->assertEquals(
-            ['AND', 'OR'], $this->callMethod($lh, 'getBoolsToCap')
+            ['AND', 'OR'],
+            $this->callMethod($lh, 'getBoolsToCap')
         );
         $lh = new LuceneSyntaxHelper('NOT');
         $this->assertEquals(
-            ['AND', 'OR'], $this->callMethod($lh, 'getBoolsToCap')
+            ['AND', 'OR'],
+            $this->callMethod($lh, 'getBoolsToCap')
         );
         $lh = new LuceneSyntaxHelper('AND,OR');
         $this->assertEquals(
-            ['NOT'], $this->callMethod($lh, 'getBoolsToCap')
+            ['NOT'],
+            $this->callMethod($lh, 'getBoolsToCap')
         );
         $lh = new LuceneSyntaxHelper('and, or');
         $this->assertEquals(
-            ['NOT'], $this->callMethod($lh, 'getBoolsToCap')
+            ['NOT'],
+            $this->callMethod($lh, 'getBoolsToCap')
         );
     }
 
@@ -233,7 +242,8 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         // Test all the operations:
         foreach ($tests as $current) {
             $this->assertEquals(
-                $lh->capitalizeRanges($current[0]), $current[1]
+                $lh->capitalizeRanges($current[0]),
+                $current[1]
             );
         }
     }
@@ -314,7 +324,8 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         $lh = new LuceneSyntaxHelper(false, false);
         $this->assertFalse($lh->hasCaseSensitiveRanges());
         $this->assertEquals(
-            'a:([b TO c] OR [B TO C])', $lh->normalizeSearchString('a:[b to c]')
+            'a:([b TO c] OR [B TO C])',
+            $lh->normalizeSearchString('a:[b to c]')
         );
     }
 
@@ -339,7 +350,8 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
          ];
         foreach ($tests as $input => $expected) {
             $this->assertEquals(
-                $expected, $lh->normalizeSearchString($input)
+                $expected,
+                $lh->normalizeSearchString($input)
             );
         }
     }
@@ -374,7 +386,8 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         ];
         foreach ($tests as $input => $expected) {
             $this->assertEquals(
-                $expected, $lh->extractSearchTerms($input)
+                $expected,
+                $lh->extractSearchTerms($input)
             );
         }
     }
@@ -415,7 +428,8 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         ];
         foreach ($tests as $input => $expected) {
             $this->assertEquals(
-                $expected, $lh->normalizeSearchString($input)
+                $expected,
+                $lh->normalizeSearchString($input)
             );
         }
     }

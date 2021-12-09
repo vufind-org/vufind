@@ -74,7 +74,9 @@ class IpAddressUtils
             $count = substr_count($ip, ':');
             if ($count < 8) {
                 $ip = str_replace(
-                    '::', ':' . str_repeat('0:', 8 - $count), $ip
+                    '::',
+                    ':' . str_repeat('0:', 8 - $count),
+                    $ip
                 );
             }
             if ($ip[0] == ':') {

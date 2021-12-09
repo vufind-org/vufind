@@ -69,9 +69,8 @@ class Shibboleth extends ServerParam
     {
         parent::__construct($request);
 
-        $this->idpServerParam = isset($config->Shibboleth->idpserverparam)
-            ? $config->Shibboleth->idpserverparam
-            : ShibbolethAuth::DEFAULT_IDPSERVERPARAM;
+        $this->idpServerParam = $config->Shibboleth->idpserverparam
+            ?? ShibbolethAuth::DEFAULT_IDPSERVERPARAM;
 
         $this->aliases = ['idpentityid' => $this->idpServerParam];
         $this->serverParamDelimiter = ';';

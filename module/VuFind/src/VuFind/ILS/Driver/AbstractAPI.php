@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -102,7 +102,10 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      *
      * @return \Laminas\Http\Response
      */
-    public function makeRequest($method = "GET", $path = "/", $params = [],
+    public function makeRequest(
+        $method = "GET",
+        $path = "/",
+        $params = [],
         $headers = []
     ) {
         $client = $this->httpService->createClient(
@@ -114,7 +117,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();
         $req_headers->addHeaders($headers);
-        list($req_headers, $params) = $this->preRequest($req_headers, $params);
+        [$req_headers, $params] = $this->preRequest($req_headers, $params);
 
         if ($this->logger) {
             $this->debugRequest($method, $path, $params, $req_headers);

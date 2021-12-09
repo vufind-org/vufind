@@ -85,8 +85,11 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      * @param array          $alphabrowseConfig source => label config for
      * alphabrowse options to display in combined box (empty for none)
      */
-    public function __construct(OptionsManager $optionsManager, $config = [],
-        $placeholders = [], $alphabrowseConfig = []
+    public function __construct(
+        OptionsManager $optionsManager,
+        $config = [],
+        $placeholders = [],
+        $alphabrowseConfig = []
     ) {
         $this->optionsManager = $optionsManager;
         $this->config = $config;
@@ -229,11 +232,9 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     {
         // Searchbox place
         if (!empty($this->placeholders)) {
-            return isset($this->placeholders[$activeSearchClass])
-                ? $this->placeholders[$activeSearchClass]
-                : (isset($this->placeholders['default'])
-                    ? $this->placeholders['default']
-                    : null);
+            return $this->placeholders[$activeSearchClass]
+                ?? $this->placeholders['default']
+                ?? null;
         }
         return null;
     }
@@ -309,8 +310,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     {
         if (!isset($this->cachedConfigs[$activeSearchClass])) {
             // Load and validate configuration:
-            $settings = isset($this->config['CombinedHandlers'])
-                ? $this->config['CombinedHandlers'] : [];
+            $settings = $this->config['CombinedHandlers'] ?? [];
             if (empty($settings)) {
                 throw new \Exception('CombinedHandlers configuration missing.');
             }
@@ -352,8 +352,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getAlphabrowseHandlers($activeHandler, $indent = true)
     {
-        $alphaBrowseBase = $this->getView()->plugin('url')
-            ->__invoke('alphabrowse-home');
+        $alphaBrowseBase = ($this->getView()->plugin('url'))('alphabrowse-home');
         $labelPrefix = $this->getView()->translate('Browse Alphabetically') . ': ';
         $handlers = [];
         foreach ($this->alphabrowseConfig as $source => $label) {
@@ -452,7 +451,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         // but we are configured to include them, we should add them now:
         if (!$addedBrowseHandlers && $this->alphaBrowseOptionsEnabled()) {
             $handlers = array_merge(
-                $handlers, $this->getAlphaBrowseHandlers($activeHandler, false)
+                $handlers,
+                $this->getAlphaBrowseHandlers($activeHandler, false)
             );
         }
 

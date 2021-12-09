@@ -37,10 +37,8 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class RecordTest extends \VuFindTest\Unit\MinkTestCase
+class RecordTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Test record tabs for a particular ID.
      *
@@ -94,7 +92,7 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $holdingsTabHeader = $this->findCss($page, '.record-tabs .holdings-tab h3');
         $this->assertEquals('3rd Floor Main Library', $holdingsTabHeader->getText());
-        list($baseUrl) = explode('#', $url);
+        [$baseUrl] = explode('#', $url);
         $this->assertEquals($baseUrl, $session->getCurrentUrl());
     }
 
@@ -133,7 +131,8 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
         // plus signs in route segments!
         $this->tryRecordTabsOnId('theplus+andtheminus-', false);
         $this->tryLoadingTabHashAndReturningToDefault(
-            'theplus+andtheminus-', false
+            'theplus+andtheminus-',
+            false
         );
     }
 

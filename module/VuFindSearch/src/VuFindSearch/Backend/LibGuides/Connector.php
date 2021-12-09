@@ -150,6 +150,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
+        $baseUrl = null;
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;
         } elseif ($method == 'POST') {
@@ -224,7 +225,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 'widget_type' => 1,
                 'search_match' => 2,
                 'search_type' => 0,
-                'sort_by' => 'relevance',
                 'list_format' => 1,
                 'output_format' => 1,
                 'load_type' => 2,

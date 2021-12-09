@@ -38,7 +38,7 @@ use VuFind\Recommend\ExternalSearch;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExternalSearchTest extends \VuFindTest\Unit\TestCase
+class ExternalSearchTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Run a test scenario

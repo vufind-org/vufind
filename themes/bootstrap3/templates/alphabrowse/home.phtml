@@ -20,7 +20,7 @@
   <ul class="pager">
     <?php if (isset($this->prevpage)): ?>
       <li>
-        <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->prevpage]]))?>" aria-label="<?=$this->transEsc('page_prev')?>">
+        <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->prevpage]]))?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
           <i class="fa fa-angle-left" aria-hidden="true"></i>
           <?=$this->transEsc('Prev')?>
         </a>
@@ -31,7 +31,7 @@
 
     <?php if (isset($this->nextpage)): ?>
       <li>
-        <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->nextpage]]))?>" aria-label="<?=$this->transEsc('page_next')?>">
+        <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->nextpage]]))?>" aria-label="<?=$this->transEscAttr('page_next')?>">
           <?=$this->transEsc('Next')?>
           <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
@@ -55,7 +55,7 @@
     </select>
     <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
     <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="form-control"/>
-    <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
+    <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Browse') ?>"/>
   </form>
 <?php endif; ?>
 

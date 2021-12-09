@@ -71,32 +71,56 @@ class SolrMarcRemote extends SolrMarc implements
      *
      * @throws \Exception
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
 
         // get config values for remote fullrecord service
-        if (! $mainConfig->Record->get('remote_marc_url')) {
+        $this->uriPattern = $mainConfig->Record->remote_marc_url ?? null;
+        if (!$this->uriPattern) {
             throw new \Exception('SolrMarcRemote baseUrl-setting missing.');
-        } else {
-            $this->uriPattern = $mainConfig->Record->get('remote_marc_url');
         }
+    }
+
+    /**
+     * Get access to the MarcReader object.
+     *
+     * @return MarcReader
+     */
+    public function getMarcReader()
+    {
+        $this->verifyFullRecordIsAvailable();
+        return parent::getMarcReader();
     }
 
     /**
      * Get access to the raw File_MARC object.
      *
-     * @return \File_MARCBASE
-     * @throws \Exception
-     * @throws \File_MARC_Exception
+     * @return     \File_MARCBASE
+     * @throws     \Exception
+     * @throws     \File_MARC_Exception
+     * @deprecated Use getMarcReader()
      */
     public function getMarcRecord()
+    {
+        $this->verifyFullRecordIsAvailable();
+        return parent::getMarcRecord();
+    }
+
+    /**
+     * Load the fullrecord field if not already loaded
+     *
+     * @return void
+     */
+    protected function verifyFullRecordIsAvailable()
     {
         // handle availability of fullrecord
         if (!isset($this->fields['fullrecord'])) {
             // retrieve fullrecord from external source
-            if (! isset($this->fields['id'])) {
+            if (!isset($this->fields['id'])) {
                 throw new \Exception(
                     'No unique id given for fullrecord retrieval'
                 );
@@ -104,8 +128,6 @@ class SolrMarcRemote extends SolrMarc implements
             $this->fields['fullrecord']
                 = $this->getRemoteFullrecord($this->fields['id']);
         }
-
-        return parent::getMarcRecord();
     }
 
     /**

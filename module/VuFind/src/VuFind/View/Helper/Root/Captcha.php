@@ -38,8 +38,10 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Captcha extends AbstractClassBasedTemplateRenderer
+class Captcha extends \Laminas\View\Helper\AbstractHelper
 {
+    use ClassBasedTemplateRendererTrait;
+
     /**
      * Captcha services
      *
@@ -60,7 +62,8 @@ class Captcha extends AbstractClassBasedTemplateRenderer
      * @param \Laminas\Config\Config $config   Config
      * @param array                  $captchas Captchas
      */
-    public function __construct(\Laminas\Config\Config $config,
+    public function __construct(
+        \Laminas\Config\Config $config,
         array $captchas=[]
     ) {
         $this->config = $config;
@@ -108,7 +111,8 @@ class Captcha extends AbstractClassBasedTemplateRenderer
         }
 
         return $this->getView()->render(
-            'Helpers/captcha', ['wrapHtml' => $wrapHtml,
+            'Helpers/captcha',
+            ['wrapHtml' => $wrapHtml,
                                 'captchas' => $this->captchas]
         );
     }

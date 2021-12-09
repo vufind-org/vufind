@@ -3,10 +3,10 @@
 <?php if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" class="form-login">
     <?=$this->auth()->getLoginFields()?>
-    <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
+    <input type="hidden" name="auth_method" value="<?=$this->escapeHtmlAttr($account->getAuthMethod())?>">
     <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash())?>" />
     <div class="form-group">
-      <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
+      <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEscAttr('Login')?>">
       <?php if ($account->supportsCreation()): ?>
         <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
       <?php endif; ?>

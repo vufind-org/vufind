@@ -45,8 +45,10 @@ use VuFind\Resolver\Driver\Ezb;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class EzbTest extends \VuFindTest\Unit\TestCase
+class EzbTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test-Config
      *
@@ -163,17 +165,9 @@ class EzbTest extends \VuFindTest\Unit\TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/resolver/response/' . $fixture
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("resolver/response/$fixture")
             );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
         $client = new \Laminas\Http\Client();

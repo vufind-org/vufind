@@ -72,7 +72,10 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $collection = $this->getSearchService()->search(
-            $this->backendId, $query, $offset, $limit
+            $this->backendId,
+            $query,
+            $offset,
+            $limit
         );
 
         $this->resultTotal = $collection->getTotal();

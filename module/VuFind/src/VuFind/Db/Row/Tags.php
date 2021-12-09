@@ -28,6 +28,7 @@
 namespace VuFind\Db\Row;
 
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Table\Resource as ResourceTable;
 
 /**
@@ -63,7 +64,10 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
      *
      * @return array
      */
-    public function getResources($source = null, $sort = null, $offset = 0,
+    public function getResources(
+        $source = null,
+        $sort = null,
+        $offset = 0,
         $limit = null
     ) {
         // Set up base query:
@@ -72,9 +76,10 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
             $select->columns(
                 [
                     new Expression(
-                        'DISTINCT(?)', ['resource.id'],
+                        'DISTINCT(?)',
+                        ['resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(

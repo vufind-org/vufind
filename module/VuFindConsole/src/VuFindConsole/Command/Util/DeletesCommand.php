@@ -112,7 +112,9 @@ class DeletesCommand extends AbstractSolrCommand
      *
      * @return array
      */
-    protected function getIdsFromMarcFile(string $filename, string $mode,
+    protected function getIdsFromMarcFile(
+        string $filename,
+        string $mode,
         OutputInterface $output
     ): array {
         $ids = [];
@@ -160,7 +162,8 @@ class DeletesCommand extends AbstractSolrCommand
         }
 
         $output->writeln(
-            "Loading IDs in {$mode} mode.", OutputInterface::VERBOSITY_VERBOSE
+            "Loading IDs in {$mode} mode.",
+            OutputInterface::VERBOSITY_VERBOSE
         );
 
         // Build list of records to delete:
@@ -172,11 +175,13 @@ class DeletesCommand extends AbstractSolrCommand
         if (!empty($ids)) {
             $output->writeln(
                 'Attempting to delete ' . count($ids) . ' record(s): '
-                . implode(', ', $ids), OutputInterface::VERBOSITY_VERBOSE
+                . implode(', ', $ids),
+                OutputInterface::VERBOSITY_VERBOSE
             );
             $this->solr->deleteRecords($index, $ids);
             $output->writeln(
-                'Delete operation completed.', OutputInterface::VERBOSITY_VERBOSE
+                'Delete operation completed.',
+                OutputInterface::VERBOSITY_VERBOSE
             );
         } elseif ($output->isVerbose()) {
             $output->writeln('Nothing to delete.');

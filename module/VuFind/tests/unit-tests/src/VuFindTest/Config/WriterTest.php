@@ -39,8 +39,10 @@ use VuFind\Config\Writer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class WriterTest extends \VuFindTest\Unit\TestCase
+class WriterTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test reading from a file.
      *
@@ -48,9 +50,11 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testReadFile()
     {
-        $file = realpath(__DIR__ . '/../../../../fixtures/configs/1.1/sms.ini');
-        $test = new Writer($file);
-        $this->assertEquals(file_get_contents($file), $test->getContent());
+        $test = new Writer($this->getFixtureDir() . 'configs/1.1/sms.ini');
+        $this->assertEquals(
+            $this->getFixture('configs/1.1/sms.ini'),
+            $test->getContent()
+        );
     }
 
     /**
@@ -151,11 +155,15 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $test = new Writer('fake.ini', $cfg);
         $test->set('test', 'key2', 'val2');
         $test->set('test', 'key1', 'val1b');
+        $test->set('test', 'key4', [1, 2, 3]);
+        $test->set('test', 'key5', ['a' => 'b']);
         $test->set('test', 'keyQuote', 'I "quoted" it');
         $ini = parse_ini_string($test->getContent(), true);
         $this->assertEquals('val1b', $ini['test']['key1']);
         $this->assertEquals('val2', $ini['test']['key2']);
         $this->assertEquals('val3', $ini['test']['key3']);
+        $this->assertEquals([1, 2, 3], $ini['test']['key4']);
+        $this->assertEquals(['a' => 'b'], $ini['test']['key5']);
         $this->assertEquals('I "quoted" it', $ini['test']['keyQuote']);
     }
 
@@ -198,7 +206,8 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $test = new Writer('fake.ini', $cfg);
         $test->set('test', 'key1', 'val2');
         $this->assertEquals(
-            "[test]\nkey1 = \"val2\" ; comment", trim($test->getContent())
+            "[test]\nkey1 = \"val2\" ; comment",
+            trim($test->getContent())
         );
     }
 

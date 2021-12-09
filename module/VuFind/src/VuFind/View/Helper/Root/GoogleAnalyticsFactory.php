@@ -28,6 +28,9 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -53,9 +56,11 @@ class GoogleAnalyticsFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -64,7 +69,11 @@ class GoogleAnalyticsFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $key = $config->GoogleAnalytics->apiKey ?? false;
-        $universal = $config->GoogleAnalytics->universal ?? false;
-        return new $requestedName($key, $universal);
+        $options = [
+            'create_options_js' =>
+                $config->GoogleAnalytics->create_options_js ?? null,
+            'universal' => $config->GoogleAnalytics->universal ?? false,
+        ];
+        return new $requestedName($key, $options);
     }
 }

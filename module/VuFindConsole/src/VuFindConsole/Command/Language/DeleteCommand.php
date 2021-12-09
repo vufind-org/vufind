@@ -92,7 +92,7 @@ class DeleteCommand extends AbstractCommand
     {
         $target = $input->getArgument('target');
 
-        list($domain, $key) = $this->extractTextDomain($target);
+        [$domain, $key] = $this->extractTextDomain($target);
         $target = $key . ' = "';
 
         if (!($dir = $this->getLangDir($output, $domain))) {

@@ -73,7 +73,9 @@ class InstallController extends AbstractBase
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
         $events->attach(
-            MvcEvent::EVENT_DISPATCH, [$this, 'validateAutoConfigureConfig'], 1000
+            MvcEvent::EVENT_DISPATCH,
+            [$this, 'validateAutoConfigureConfig'],
+            1000
         );
     }
 
@@ -225,8 +227,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v7.2.0:
-        return PHP_VERSION_ID >= 70200;
+        // We need at least PHP v7.3.0:
+        return PHP_VERSION_ID >= 70300;
     }
 
     /**
@@ -363,7 +365,8 @@ class InstallController extends AbstractBase
                         ->addMessage(
                             'Problem initializing database adapter; '
                             . 'check for missing ' . $view->driver
-                            . ' library .  Details: ' . $e->getMessage(), 'error'
+                            . ' library .  Details: ' . $e->getMessage(),
+                            'error'
                         );
                     return $view;
                 }
@@ -413,7 +416,9 @@ class InstallController extends AbstractBase
                         $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
                         $config = ConfigLocator::getLocalConfigPath(
-                            'config.ini', null, true
+                            'config.ini',
+                            null,
+                            true
                         );
                         $writer = new ConfigWriter($config);
                         $writer->set('Database', 'database', $string);
@@ -454,13 +459,14 @@ class InstallController extends AbstractBase
             return [$create, $escape, $cuser, $grant];
         }
         // Default: MySQL:
-        $user = "CREATE USER '{$view->dbuser}'@'{$view->vufindhost}'"
+        $user = "CREATE USER '{$view->dbuser}'@'{$view->vufindhost}' "
             . "IDENTIFIED BY {$escapedPass}";
         $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
             . $view->dbname
             . ".* TO '{$view->dbuser}'@'{$view->vufindhost}' "
             . "WITH GRANT OPTION";
-        return [$create, $user, $grant, 'FLUSH PRIVILEGES'];
+        $use = "USE {$view->dbname}";
+        return [$create, $user, $grant, 'FLUSH PRIVILEGES', $use];
     }
 
     /**
@@ -574,7 +580,9 @@ class InstallController extends AbstractBase
             $view->drivers = $drivers;
         } else {
             $view->configPath = ConfigLocator::getLocalConfigPath(
-                "{$config->Catalog->driver}.ini", null, true
+                "{$config->Catalog->driver}.ini",
+                null,
+                true
             );
         }
         return $view;
@@ -645,8 +653,7 @@ class InstallController extends AbstractBase
             $this->getRequest()->getServer()->get('HTTP_HOST'),
             $config->Index->url
         );
-        $view->core = isset($config->Index->default_core)
-            ? $config->Index->default_core : "biblio";
+        $view->core = $config->Index->default_core ?? "biblio";
         $view->configFile = $configFile;
         return $view;
     }
@@ -856,7 +863,7 @@ class InstallController extends AbstractBase
      * @param array $config Setting(s) to add to [Http] section of config.ini.
      * @param int   $try    Which config index are we trying right now?
      *
-     * @return void
+     * @return \Laminas\Http\Response
      */
     protected function testSslCertConfig($config, $try)
     {
@@ -876,7 +883,9 @@ class InstallController extends AbstractBase
         // Jump back to fix action so we can check if it worked (and attempt
         // the next config by incrementing the $try variable, if necessary):
         return $this->redirect()->toRoute(
-            'install-fixsslcerts', [], ['query' => ['try' => $try + 1]]
+            'install-fixsslcerts',
+            [],
+            ['query' => ['try' => $try + 1]]
         );
     }
 

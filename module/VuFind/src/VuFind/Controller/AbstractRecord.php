@@ -65,6 +65,20 @@ class AbstractRecord extends AbstractBase
     protected $fallbackDefaultTab = 'Holdings';
 
     /**
+     * Array of background tabs
+     *
+     * @var array
+     */
+    protected $backgroundTabs = null;
+
+    /**
+     * Array of extra scripts for tabs
+     *
+     * @var array
+     */
+    protected $tabsExtraScripts = null;
+
+    /**
      * Type of record to display
      *
      * @var string
@@ -116,7 +130,8 @@ class AbstractRecord extends AbstractBase
 
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
-                null, ['comment' => $this->params()->fromPost('comment')]
+                null,
+                ['comment' => $this->params()->fromPost('comment')]
             );
         }
 
@@ -140,7 +155,10 @@ class AbstractRecord extends AbstractBase
         if (!empty($comment)) {
             $table = $this->getTable('Resource');
             $resource = $table->findResource(
-                $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
+                $driver->getUniqueId(),
+                $driver->getSourceIdentifier(),
+                true,
+                $driver
             );
             $resource->addComment($comment, $user);
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -239,7 +257,8 @@ class AbstractRecord extends AbstractBase
                 [
                     'msg' => 'tags_deleted',
                     'tokens' => ['%count%' => 1]
-                ], 'success'
+                ],
+                'success'
             );
         }
 
@@ -292,8 +311,10 @@ class AbstractRecord extends AbstractBase
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
+        $this->layout()->setVariable('layoutContext', 'tabs');
         return $this->showTab(
-            $this->params()->fromPost('tab', $this->getDefaultTab()), true
+            $this->params()->fromPost('tab', $this->getDefaultTab()),
+            true
         );
     }
 
@@ -389,7 +410,9 @@ class AbstractRecord extends AbstractBase
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $user->getSavedData(
-            $driver->getUniqueId(), null, $driver->getSourceIdentifier()
+            $driver->getUniqueId(),
+            null,
+            $driver->getSourceIdentifier()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
@@ -401,13 +424,9 @@ class AbstractRecord extends AbstractBase
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->id, $listIds)) {
-                $containingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $containingLists[] = $list->toArray();
             } else {
-                $nonContainingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $nonContainingLists[] = $list->toArray();
             }
         }
 
@@ -442,7 +461,8 @@ class AbstractRecord extends AbstractBase
         // Create view
         $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(
-            null, $mailer->getDefaultRecordSubject($driver)
+            null,
+            $mailer->getDefaultRecordSubject($driver)
         );
         $mailer->setMaxRecipients($view->maxRecipients);
 
@@ -455,8 +475,13 @@ class AbstractRecord extends AbstractBase
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
                 $mailer->sendRecord(
-                    $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer(), $view->subject, $cc
+                    $view->to,
+                    $view->from,
+                    $view->message,
+                    $driver,
+                    $this->getViewRenderer(),
+                    $view->subject,
+                    $cc
                 );
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
@@ -542,6 +567,18 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Show permanent link for the current record.
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function permalinkAction()
+    {
+        $view = $this->createViewModel();
+        $view->setTemplate('record/permalink');
+        return $view;
+    }
+
+    /**
      * Export the record
      *
      * @return mixed
@@ -577,13 +614,19 @@ class AbstractRecord extends AbstractBase
         }
 
         $recordHelper = $this->getViewRenderer()->plugin('record');
+        try {
+            $exportedRecord = $recordHelper($driver)->getExport($format);
+        } catch (\VuFind\Exception\FormatUnavailable $e) {
+            $this->flashMessenger()->addErrorMessage('export_unsupported_format');
+            return $this->redirectToRecord();
+        }
 
         $exportType = $export->getBulkExportType($format);
         if ('post' === $exportType) {
             $params = [
                 'exportType' => 'post',
                 'postField' => $export->getPostField($format),
-                'postData' => $recordHelper($driver)->getExport($format),
+                'postData' => $exportedRecord,
                 'targetWindow' => $export->getTargetWindow($format),
                 'url' => $export->getRedirectUrl($format, ''),
                 'format' => $format
@@ -591,7 +634,8 @@ class AbstractRecord extends AbstractBase
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', $params
+                    'cart/export-success.phtml',
+                    $params
                 )
             ];
             $this->flashMessenger()->addSuccessMessage($msg);
@@ -603,7 +647,7 @@ class AbstractRecord extends AbstractBase
         $response->getHeaders()->addHeaders($export->getHeaders($format));
 
         // Actually export the record
-        $response->setContent($recordHelper($driver)->getExport($format));
+        $response->setContent($exportedRecord);
         return $response;
     }
 
@@ -683,6 +727,7 @@ class AbstractRecord extends AbstractBase
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
         $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
+        $this->tabsExtraScripts = $manager->getExtraScripts();
     }
 
     /**
@@ -726,6 +771,28 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Get extra scripts required by tabs.
+     *
+     * @param array $tabs Tab names to consider
+     *
+     * @return array
+     */
+    protected function getTabsExtraScripts($tabs)
+    {
+        if (null === $this->tabsExtraScripts) {
+            $this->loadTabDetails();
+        }
+        $allScripts = [];
+        foreach (array_keys($tabs) as $tab) {
+            if (!empty($this->tabsExtraScripts[$tab])) {
+                $allScripts
+                    = array_merge($allScripts, $this->tabsExtraScripts[$tab]);
+            }
+        }
+        return array_unique($allScripts);
+    }
+
+    /**
      * Is the result scroller active?
      *
      * @return bool
@@ -766,6 +833,7 @@ class AbstractRecord extends AbstractBase
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->backgroundTabs = $this->getBackgroundTabs();
+        $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax)
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
@@ -776,9 +844,7 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->callnumberHandler = isset($config->Item_Status->callnumber_handler)
-            ? $config->Item_Status->callnumber_handler
-            : false;
+        $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;

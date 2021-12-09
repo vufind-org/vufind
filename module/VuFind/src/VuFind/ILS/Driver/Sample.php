@@ -46,7 +46,6 @@ class Sample extends AbstractBase
      * Validate configuration and perform all resource-intensive tasks needed to
      * make the driver active.
      *
-     * @throws ILSException
      * @return void
      */
     public function init()

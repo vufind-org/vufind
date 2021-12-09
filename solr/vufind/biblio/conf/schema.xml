@@ -95,6 +95,18 @@
         <filter class="solr.ICUFoldingFilterFactory"/>
       </analyzer>
     </fieldType>
+    <!-- Field for SolrPrefix autocomplete -->
+    <fieldType name="text_autocomplete" class="solr.TextField" positionIncrementGap="100" omitNorms="true">
+      <analyzer type="index">
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="25" />
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+      </analyzer>
+    </fieldType>
     <fieldType name="date" class="solr.DatePointField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
@@ -168,6 +180,7 @@
    <field name="author2_role" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author_corporate" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author_corporate_role" type="string" indexed="true" stored="true" multiValued="true"/>
+   <!-- the author_fuller and author2_fuller fields are deprecated and should no longer be used. -->
    <field name="author_fuller" type="textProper" indexed="true" stored="true" multiValued="true" />
    <field name="author2_fuller" type="textProper" indexed="true" stored="true" multiValued="true" />
    <field name="author_additional" type="textProper" indexed="true" stored="true" multiValued="true"/>
@@ -232,6 +245,7 @@
    <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
    <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="false" />
    <dynamicField name="*_geo_mv" type="geo" indexed="true" stored="true" multiValued="true" />
+   <dynamicField name="*_autocomplete" type="text_autocomplete" indexed="true" stored="true" multiValued="false"/>
  </fields>
  <uniqueKey>id</uniqueKey>
  <!-- CopyFields for Spelling -->

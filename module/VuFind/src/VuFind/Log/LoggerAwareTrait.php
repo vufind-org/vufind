@@ -51,7 +51,7 @@ trait LoggerAwareTrait
      */
     protected function logError($msg, array $context = [], $prependClass = true)
     {
-        return $this->log('err', $msg, $context, $prependClass);
+        $this->log('err', $msg, $context, $prependClass);
     }
 
     /**
@@ -65,7 +65,7 @@ trait LoggerAwareTrait
      */
     protected function logWarning($msg, array $context = [], $prependClass = true)
     {
-        return $this->log('warn', $msg, $context, $prependClass);
+        $this->log('warn', $msg, $context, $prependClass);
     }
 
     /**
@@ -79,7 +79,7 @@ trait LoggerAwareTrait
      */
     protected function debug($msg, array $context = [], $prependClass = true)
     {
-        return $this->log('debug', $msg, $context, $prependClass);
+        $this->log('debug', $msg, $context, $prependClass);
     }
 
     /**
@@ -92,7 +92,10 @@ trait LoggerAwareTrait
      *
      * @return void
      */
-    protected function log($level, $message, array $context = [],
+    protected function log(
+        $level,
+        $message,
+        array $context = [],
         $prependClass = false
     ) {
         if ($this->logger) {

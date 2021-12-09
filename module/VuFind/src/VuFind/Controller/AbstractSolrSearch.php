@@ -38,6 +38,8 @@ namespace VuFind\Controller;
  */
 class AbstractSolrSearch extends AbstractSearch
 {
+    use Feature\RecordVersionsSearchTrait;
+
     /**
      * Handle an advanced search
      *
@@ -74,7 +76,8 @@ class AbstractSolrSearch extends AbstractSearch
         }
         if (isset($specialFacets['checkboxes'])) {
             $view->checkboxFacets = $this->processAdvancedCheckboxes(
-                $specialFacets['checkboxes'], $view->saved
+                $specialFacets['checkboxes'],
+                $view->saved
             );
         }
         $view->ranges = $this->getAllRangeSettings($specialFacets, $view->saved);
@@ -132,8 +135,11 @@ class AbstractSolrSearch extends AbstractSearch
      *
      * @return array Sorted facets, with selected values flagged.
      */
-    protected function processAdvancedFacets($facetList, $searchObject = false,
-        $hierarchicalFacets = [], $hierarchicalFacetsSortOptions = []
+    protected function processAdvancedFacets(
+        $facetList,
+        $searchObject = false,
+        $hierarchicalFacets = [],
+        $hierarchicalFacetsSortOptions = []
     ) {
         // Process the facets
         $facetHelper = null;

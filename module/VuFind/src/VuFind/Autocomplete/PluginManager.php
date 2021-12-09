@@ -56,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrcn' => SolrCN::class,
         'solrreserves' => SolrReserves::class,
         'tag' => Tag::class,
+        'solrprefix' => SolrPrefix::class,
         // for legacy 1.x compatibility
         'noautocomplete' => 'None',
         'oclcidentitiesautocomplete' => 'OCLCIdentities',
@@ -82,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SolrCN::class => SolrFactory::class,
         SolrReserves::class => SolrFactory::class,
         Tag::class => InvokableFactory::class,
+        SolrPrefix::class => SolrFactory::class,
     ];
 
     /**
@@ -93,7 +95,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

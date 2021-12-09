@@ -104,7 +104,9 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         $class = $this->getClassName($requestedName);

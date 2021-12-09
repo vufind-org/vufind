@@ -2,7 +2,7 @@
   // set $alt to empty when we have an icon ($cover === false), because we don't want to link the icons (it looks weird)
   $alt = $this->link && $cover !== false ? trim($this->driver->tryMethod('getTitle') ?? '') : '';
 ?>
-<?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
+<?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>" class="record-cover-link"><?php endif; ?>
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
@@ -11,9 +11,9 @@
   <div><?=$this->driver->getPubType()?></div>
 <?php else: ?>
   <div class="ajaxcover">
-    <div class="spinner"><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Loading')?>...</div>
+    <div class="spinner"><?=$this->icon('spinner') ?> <?=$this->translate('Loading')?>...</div>
     <div class="cover-container">
-      <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover ajax" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
+      <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-context="<?=$this->escapeHtmlAttr($this->context)?>" data-recordsource="<?=$this->escapeHtmlAttr($driver->getSourceIdentifier())?>" data-recordid="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" data-coversize="<?=$this->escapeHtmlAttr($size)?>" class="recordcover ajax" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
     </div>
   </div>
 <?php endif; ?>

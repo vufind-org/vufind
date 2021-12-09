@@ -17,6 +17,7 @@ form {
     }
     .form-group label.required::before,
     .form-group .radio-label.required::before,
+    .form-group .radio-label.require-one::before
     {
         content: '* ';
     }
@@ -45,6 +46,12 @@ form {
         }
         .radio-label {
             font-weight: 700;
+        }
+    }
+
+    &.dynamic-form {
+        input[type=date] {
+            padding-top: 0;
         }
     }
 }
