@@ -1215,12 +1215,12 @@ class Folio extends AbstractAPI implements
     /**
      * Obtain a list of course resources, creating an id => value associative array.
      *
-     * @param string $type            Type of resource to retrieve from the API.
-     * @param string $responseKey     Key containing useful values in response
+     * @param string       $type        Type of resource to retrieve from the API.
+     * @param string       $responseKey Key containing useful values in response
      * (defaults to $type if unspecified)
-     * @param string|array $valueKey  Key containing value(s) to extract from
+     * @param string|array $valueKey    Key containing value(s) to extract from
      * response (defaults to 'name')
-     * @param string       $formatStr A sprintf format string for assembling the
+     * @param string       $formatStr   A sprintf format string for assembling the
      * parameters retrieved using $valueKey
      *
      * @return array
