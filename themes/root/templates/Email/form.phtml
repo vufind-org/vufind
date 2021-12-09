@@ -6,7 +6,9 @@
 <?=$data['value']?>
 
 -----
+<?php elseif (in_array($data['type'], ['checkbox', 'radio', 'select'])): ?>
+<?=($label ? "$label: " : '') . implode(', ', array_map([$this, 'translate'], (array)$data['value'])) . PHP_EOL ?>
 <?php else: ?>
-<?= ($label ? "$label: " : '') . implode(', ', array_map([$this, 'translate'], (array)$data['value'])) . PHP_EOL ?>
+<?=($label ? "$label: " : '') . $data['value'] . PHP_EOL ?>
 <?php endif ?>
 <?php endforeach ?>
