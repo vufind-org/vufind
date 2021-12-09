@@ -1,25 +1,25 @@
 <h1>Konektibo logikoak</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Komodin-bilaketa</a></li>
-  <li><a href="#Fuzzy Searches">Bilaketa zehaztugabea</a></li>
-  <li><a href="#Proximity Searches">Gertutasun-bilaketa</a></li>
-  <li><a href="#Range Searches">Tarte-bilaketa</a></li>
-  <li><a href="#Boosting a Term">Hitz bat estimulatu</a></li>
-  <li><a href="#Boolean operators">Eragile boolearrak</a>
+  <li><a href="#wildcard_searches">Komodin-bilaketa</a></li>
+  <li><a href="#fuzzy_searches">Bilaketa zehaztugabea</a></li>
+  <li><a href="#proximity_searches">Gertutasun-bilaketa</a></li>
+  <li><a href="#range_searches">Tarte-bilaketa</a></li>
+  <li><a href="#boosting_a_term">Hitz bat estimulatu</a></li>
+  <li><a href="#boolean_operators">Eragile boolearrak</a>
     <ul>
-      <li><a href="#AND">AND</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR</a></li>
-      <li><a href="#NOT">NOT</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Komodin-bilaketa</dt>
+  <dt><a id="wildcard_searches"></a>Komodin-bilaketa</dt>
   <dd>
     <p>Galdera ikurra <strong>(?)</strong> erabili karaktere zehatz bat ordezkatzeko..</p>
     <p>Adibidez, “text” edo “test” bilatzeko honako bilaketa hau erabil dezakezu:</p>
@@ -33,7 +33,7 @@
     <pre class="code">te*t</pre>
   </dd>
 
-  <dt><a name="Fuzzy Searches"></a>Bilaketa zehaztugabea</dt>
+  <dt><a id="fuzzy_searches"></a>Bilaketa zehaztugabea</dt>
   <dd>
 <p>
   Antzeko grafia duen hitz bat bilatzeko <strong>(~) </strong> azentu-marka jarri hitzaren amaieran. Adibidez, "mono"-ren antzeko grafia duten hitzak bilatzeko</p>
@@ -46,14 +46,14 @@
     <p>Antzekotasun-parametroa zehazten ez bada, balore estandarra erabiltzen da, hots, 0.5.</p>
   </dd>
 
-  <dt><a name="Proximity Searches"></a>Gertutasun-bilaketa</dt>
+  <dt><a id="proximity_searches"></a>Gertutasun-bilaketa</dt>
   <dd>
     <p>
     Gertutasun-bilaketa erabiltzeko <strong>(~)</strong> azentu-marka  ipini hitz anitzen bukaeran . Adibidez,  "marketing" eta "Meffert" bilatzeko bost hitz baino distantzia txikiagoan, honako bilaketa egin</p>
     <pre class="code">"marketing Meffert"~5</pre>
   </dd>
 
-  <dt><a name="Range Searches"></a>Tarte-bilaketa</dt>
+  <dt><a id="range_searches"></a>Tarte-bilaketa</dt>
   <dd>
     <p>
     Kortxeteak <strong>({ })</strong> erabili tarte-bilaketa egiteko. Adibidez, A, B edo C hizkiz hasten diren hitzak bilatzeko, honako hau idatzi</p>
@@ -63,7 +63,7 @@
     <pre class="code">[2009 TO 2012]</pre>
   </dd>
 
-  <dt><a name="Boosting a Term"></a>Hitz bat estimulatu</dt>
+  <dt><a id="boosting_a_term"></a>Hitz bat estimulatu</dt>
    <dd>
     <p>
     Hitz bati garrantzia handiagoa emateko azentu zirkunflexua <strong>(^)</strong> erabili hitz anitzen bilaketan</p>
@@ -72,7 +72,7 @@
     </p>
   </dd>
 
-  <dt><a name="Boolean operators"></a>Eragile boolearrak</dt>
+  <dt><a id="boolean_operators"></a>Eragile boolearrak</dt>
   <dd>
     <p>
     Eragile boolearrek hitz eta esaldiak logikoki konektatzea ahalbidetzen dute. Honako eragile hauek daude onartuak:</p>
@@ -84,7 +84,7 @@
     <p>Eragile boolearrak maiuskulaz idatzi behar dira.</p>
     <dl>
 
-      <dt><a name="AND"></a>AND</dt>
+      <dt><a id="boolean_and"></a>AND</dt>
       <dd>
         <p><strong>AND </strong>, eragile lehenetsia da juntagailu gisa . Hau da,  <strong> AND </strong>  eragilea katalogoak automatikoki erabiliko du bilaketa hitzen artean idatzi beharrik gabe.  <strong>AND</strong>  eragileak bilaketan zehaztutako hitz guztiak dituzten erregistroak bilatuko ditu.
         </p>
@@ -95,7 +95,7 @@
         <pre class="code">marketing AND Meffert</pre>
       </dd>
 
-      <dt><a name="+"></a>+ (gehi)</dt>
+      <dt><a id="boolean_plus"></a>+ (gehi)</dt>
       <dd>
         <p>
 Gehi <strong>(+) </strong>eragileak hitz bat behar du jarraian itsatsita. Horrela, emaitz-erregistroen edozein ataletan hitz hori agertu behar du.
@@ -104,7 +104,7 @@ Gehi <strong>(+) </strong>eragileak hitz bat behar du jarraian itsatsita. Horrel
         <pre class="code">+marketing Meffert</pre>
       </dd>
 
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p><strong>OR</strong>  eragilea aplikatuta, bilaketak hitzetako bat duen emaitzak ematen ditu.
         </p>
@@ -112,7 +112,7 @@ Gehi <strong>(+) </strong>eragileak hitz bat behar du jarraian itsatsita. Horrel
         <pre class="code">marketing OR Meffert</pre>
       </dd>
 
-      <dt><a name="NOT"></a>NOT</dt>
+      <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>
 Bigarren hitza ezik lehena duten erregistroak bilatzeko <strong> NOT </strong> eragilea erabili.
@@ -126,7 +126,7 @@ Adibidez, "marketing" hitza duten erregistroak baina, era berean, "Meffert" hitz
         <pre class="code">NOT marketing</pre>
            </dd>
 
-      <dt><a name="-"></a>- (ken)</dt>
+      <dt><a id="boolean_minus"></a>- (ken)</dt>
       <dd>
         <p>Ken eragilea <strong>(-) </strong>hitz baten aurretik jarrita, hitz hori duten erregistroak baztertzen ditu.</p>
         <p>Adibidez:</p>
