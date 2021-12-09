@@ -323,6 +323,12 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 );
             }
         }
+
+        // TODO: editors
+        // var_dump($this->driver->getProductionCredits());
+
+        // TODO: directors
+
         // URL
         if (!empty($this->driver->getURLs())) {
             $item['URL'] = $this->driver->getURLs()[0]['url'];
@@ -430,6 +436,19 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $data = $this->getDataCSL();
 
         $locale = $this->getView()->layout()->userLang;
+
+        echo '<ul>';
+
+        $processor = new CiteProc(StyleSheet::loadStyleSheet('apa'), $locale);
+        echo '<li>' . $processor->render(json_decode($data), 'bibliography') . '</li>';
+
+        $processor = new CiteProc(StyleSheet::loadStyleSheet('chicago-annotated-bibliography'), $locale);
+        echo '<li>' . $processor->render(json_decode($data), 'bibliography') . '</li>';
+
+        $processor = new CiteProc(StyleSheet::loadStyleSheet('modern-language-association'), $locale);
+        echo '<li>' . $processor->render(json_decode($data), 'bibliography') . '</li>';
+
+        echo '</ul>';
 
         $processor = new CiteProc(StyleSheet::loadStyleSheet('vancouver'), $locale);
         return $processor->render(json_decode($data), 'bibliography');
