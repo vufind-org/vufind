@@ -263,6 +263,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $otherAcceptedHttpStatusCodes = [];
 
     /**
+     * Max number of pages taken from API at once. Sometimes NCIP responders could
+     * paginate even if we want all data at one time. We then ask for all pages, but
+     * it could possibly lead to long response times.
+     *
+     * @var int
+     */
+    protected $maxNumberOfPages;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -329,6 +338,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $this->config['Catalog']['otherAcceptedHttpStatusCodes']
                 );
         }
+        $this->maxNumberOfPages = $this->config['Catalog']['maxNumberOfPages'] ?? 0;
     }
 
     /**
@@ -2838,7 +2848,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $bibs = [];
         $nextItemToken = [];
         $request = true;
+        $page = 0;
         while ($request) {
+            $page++;
             $resumption = !empty($nextItemToken) ? (string)$nextItemToken[0] : null;
             $request = $this->getStatusRequest($idList, $resumption, $agencyList);
             $response = $this->sendRequest($request);
@@ -2848,6 +2860,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             );
             $nextItemToken = $response->xpath('//ns1:NextItemToken');
             $request = !empty($nextItemToken);
+            if ($page == $this->maxNumberOfPages) {
+                break;
+            }
         }
         return $bibs;
     }
