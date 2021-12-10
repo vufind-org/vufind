@@ -120,7 +120,7 @@ class ConnectorTest extends TestCase
     {
         $csvData = 'a,b,c';
         $map = new HandlerMap();
-        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+        $client = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
@@ -148,7 +148,7 @@ class ConnectorTest extends TestCase
     {
         $jsonData = '[1,2,3]';
         $map = new HandlerMap();
-        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+        $client = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
@@ -226,15 +226,55 @@ class ConnectorTest extends TestCase
     }
 
     /**
+     * Test callWithHttpOptions.
+     *
+     * @return void
+     */
+    public function testCallWithHttpOptions()
+    {
+        $this->response
+            = $this->getFixture('solr/response/single-record', 'VuFindSearch');
+
+        $client = $this->getMockBuilder(HttpClient::class)
+            ->onlyMethods(['setOptions'])
+            ->getMock();
+        $client->expects($this->exactly(1))->method('setOptions')
+            ->with(['timeout' => 60]);
+        $adapter = new TestAdapter();
+        $adapter->setResponse($this->response);
+        $client->setAdapter($adapter);
+        $conn = $this->createConnector('single-record', $client);
+
+        // Normal request:
+        $resp = $conn->callWithHttpOptions([], 'retrieve', 'id');
+        $this->assertIsString($resp);
+        json_decode($resp, true);
+        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+
+        // Normal request with options:
+        $resp = $conn->callWithHttpOptions(['timeout' => 60], 'retrieve', 'id');
+        $this->assertIsString($resp);
+        json_decode($resp, true);
+        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+
+        // Try to call a protected method:
+        $this->expectException(
+            \VuFindSearch\Exception\InvalidArgumentException::class
+        );
+        $conn->callWithHttpOptions([], 'trySolrUrls', []);
+    }
+
+    /**
      * Create connector with fixture file.
      *
-     * @param string $fixture Fixture file
+     * @param string     $fixture Fixture file
+     * @param HttpClient $client  HTTP client
      *
      * @return Connector
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null)
+    protected function createConnector($fixture = null, $client = null)
     {
         if ($fixture) {
             $this->response
@@ -242,7 +282,12 @@ class ConnectorTest extends TestCase
         }
 
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
-        return new Connector('http://example.tld/', $map, $this->createClient(), 'id');
+        return new Connector(
+            'http://example.tld/',
+            $map,
+            $client ?: $this->createClient(),
+            'id'
+        );
     }
 
     /**

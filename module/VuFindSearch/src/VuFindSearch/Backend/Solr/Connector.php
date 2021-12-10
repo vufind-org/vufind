@@ -40,6 +40,7 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
+use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -311,6 +312,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         string $method,
         ...$args
     ) {
+        $reflectionMethod = new \ReflectionMethod($this, $method);
+        if (!$reflectionMethod->isPublic()) {
+            throw new InvalidArgumentException("Method '$method' is not public");
+        }
         if (empty($options)) {
             return call_user_func_array([$this, $method], $args);
         }
