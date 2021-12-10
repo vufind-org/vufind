@@ -44,7 +44,12 @@
     <!--  Begin section searchbar -->
     <section class="section-home">
         <div class="panel-home">
-            <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
+
+            <?php $routeParams = $this->tuefind()->getRouteParams(); if($routeParams['controller'] == "Search" && $routeParams['action'] == "Home") { ?>
+                <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeightRelbib();', 'SET')?>
+            <?php } else { ?>
+                <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
+            <?php } ?>
 
             <div class="searchbox col-12 mx-auto">
 
