@@ -1,0 +1,377 @@
+<?=$this->doctype('HTML5')?>
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+  <head>
+    <?php $this->headThemeResources(); ?>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <?=$this->headMeta()?>
+    <?=$this->headTitle()?>
+    <?php
+      // Set up OpenSearch link:
+      $this->headLink(
+        [
+          'href' => $this->url('search-opensearch') . '?method=describe',
+          'type' => 'application/opensearchdescription+xml',
+          'title' => $this->transEsc('Library Catalog Search'),
+          'rel' => 'search'
+        ]
+      );
+    ?>
+    <!-- RTL styling -->
+    <?php if ($this->layout()->rtl) {
+      $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
+    } ?>
+    <?=$this->headLink()?>
+    <?=$this->headStyle()?>
+    <?php
+      // Collect small scripts together and append as one block:
+      $appendScripts = [];
+
+      if (!isset($this->renderingError)) {
+        // Add translation strings
+        $this->jsTranslations()->addStrings(
+          [
+            'add_tag_success' => 'add_tag_success',
+            'bulk_email_success' => 'bulk_email_success',
+            'bulk_noitems_advice' => 'bulk_noitems_advice',
+            'bulk_save_success' => 'bulk_save_success',
+            'close' => 'close',
+            'collection_empty' => 'collection_empty',
+            'eol_ellipsis' => 'eol_ellipsis',
+            'error_occurred' => 'An error has occurred',
+            'go_to_list' => 'go_to_list',
+            'hold_available' => 'hold_available',
+            'libphonenumber_invalid' => 'libphonenumber_invalid',
+            'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
+            'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
+            'libphonenumber_notanumber' => 'libphonenumber_notanumber',
+            'libphonenumber_toolong' => 'libphonenumber_toolong',
+            'libphonenumber_tooshort' => 'libphonenumber_tooshort',
+            'libphonenumber_tooshortidd' => 'libphonenumber_tooshortidd',
+            'loading' => 'Loading',
+            'more' => 'more',
+            'number_thousands_separator' => [
+                'number_thousands_separator', null, ','
+            ],
+            'sms_success' => 'sms_success'
+          ]
+        );
+        // Add libphonenumber.js strings
+        $this->jsTranslations()->addStrings(
+          [
+            "Phone number invalid" => 'libphonenumber_invalid',
+            "Invalid country calling code" => 'libphonenumber_invalidcountry',
+            "Invalid region code" => 'libphonenumber_invalidregion',
+            "The string supplied did not seem to be a phone number" => 'libphonenumber_notanumber',
+            "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
+            "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
+            "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
+          ]
+        );
+        $this->jsTranslations()->addStrings(
+            [
+              "All Matches" => "All Matches",
+              "No Matches" => "No Matches",
+              "fulltext_wildcard_error" => 'fulltext_wildcard_error'
+            ]
+        );
+        // Deal with cart stuff:
+        $cart = $this->cart();
+        if ($cart->isActive()) {
+          $this->headScript()->appendFile("vendor/js.cookie.js");
+          $this->headScript()->appendFile("cart.js");
+          $domain = $cart->getCookieDomain();
+          if (!empty($domain)) {
+            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
+          }
+          $cookiePath = $cart->getCookiePath();
+          if (!empty($cookiePath)) {
+            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
+          }
+          $cookieSameSite = $cart->getCookieSameSite();
+          if (null !== $cookieSameSite) {
+            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
+          }
+          $this->jsTranslations()->addStrings(
+            [
+              'addBookBag' => 'Add to Book Bag',
+              'bookbagFull' => 'bookbag_full_msg',
+              'bookbagMax' => $cart->getMaxSize(),
+              'bookbagStatusFull' => 'bookbag_full',
+              'confirmDelete' => 'confirm_delete',
+              'confirmEmpty' => 'bookbag_confirm_empty',
+              'itemsAddBag' => 'items_added_to_bookbag',
+              'itemsInBag' => 'items_already_in_bookbag',
+              'removeBookBag' => 'Remove from Book Bag',
+              'viewBookBag' => 'View Book Bag'
+            ]
+          );
+        }
+        $this->headScript()->prependScript(
+          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+        );
+      }
+
+      // Session keep-alive
+      if ($this->keepAlive()) {
+          $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
+          $this->headScript()->appendFile("keep_alive.js");
+      }
+
+      // If account ajax is active, load script and add language strings
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->headScript()->appendFile("account_ajax.js");
+        $this->jsTranslations()->addStrings(
+          [
+            'account_checkouts_due' => 'account_checkouts_due',
+            'account_checkouts_overdue' => 'account_checkouts_overdue',
+            'account_has_alerts' => 'account_has_alerts',
+            'account_normal_checkouts' => 'account_normal_checkouts',
+            'account_requests_available' => 'account_requests_available',
+            'account_requests_in_transit' => 'account_requests_in_transit',
+            'Checked Out Items' => 'Checked Out Items',
+            'ill_request_available' => 'ill_request_available',
+            'renew_item_due_tooltip' => 'renew_item_due_tooltip',
+            'renew_item_overdue_tooltip' => 'renew_item_overdue_tooltip',
+            'request_in_transit' => 'request_in_transit',
+            'storage_retrieval_request_available' => 'storage_retrieval_request_available'
+          ]
+        );
+      }
+
+      $root = rtrim($this->url('home'), '/');
+      $translations = $this->jsTranslations()->getJSON();
+      $dsb = DEFAULT_SEARCH_BACKEND;
+      $appendScripts[] = <<<JS
+VuFind.path = '{$root}';
+VuFind.defaultSearchBackend = '{$dsb}';
+VuFind.addTranslations({$translations});
+JS;
+      $this->headScript()->appendScript(implode("\n", $appendScripts));
+
+      if ($this->config()->ajaxCoversEnabled()) {
+          $this->headScript()->appendFile("covers.js");
+      }
+    ?>
+    <?=$this->headScript()?>
+  </head>
+  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+    <?php // Set up the search box -- there are three possible cases:
+      // 1. No search box was set; we should default to the normal box
+      // 2. It was set to false; we should display nothing
+      // 3. It is set to a custom string; we should display the provided version
+      // Set up default search box if no data was provided from the template;
+      // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+      if (!isset($this->layout()->searchbox)) {
+        $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+      }
+    ?>
+
+
+    <style>
+  /* Only enabled when no touch events are detected */
+.bg-attachment-fixed {
+	background-attachment: fixed;
+}
+
+@supports ( -webkit-overflow-scrolling: touch ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+.faux-image {
+	position: relative;
+}
+
+a.faux-image {
+	display: block;
+}
+
+.faux-image:after {
+	content: "";
+	display: block;
+	padding-top: 62.5%;
+	width: 100%;
+}
+
+.faux-image.aspect-ratio-16x9:after { padding-top: 56.25%; }
+.faux-image.aspect-ratio-16x10:after { padding-top: 62.5%; }
+.faux-image.aspect-ratio-4x3:after { padding-top: 75%; }
+.faux-image.aspect-ratio-1x1:after { padding-top: 100%; }
+.faux-image.aspect-ratio-3x4:after { padding-top: 133.33%; }
+.faux-image.aspect-ratio-10x16:after { padding-top: 160%; }
+.faux-image.aspect-ratio-9x16:after { padding-top: 177.77%; }
+
+.faux-image img {
+	position: absolute;
+		left: -9999rem;
+}
+
+
+
+  .faux-image,
+.bg-image {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.bg-contain {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+/* Only enabled when no touch events are detected */
+.no-touchevents .bg-attachment-fixed {
+	background-attachment: fixed;
+}
+
+@supports ( -webkit-overflow-scrolling: touch ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+.faux-image {
+	position: relative;
+}
+
+a.faux-image {
+	display: block;
+}
+
+.faux-image:after {
+	content: "";
+	display: block;
+	padding-top: 62.5%;
+	width: 100%;
+}
+
+.faux-image.aspect-ratio-16x9:after { padding-top: 56.25%; }
+.faux-image.aspect-ratio-16x10:after { padding-top: 62.5%; }
+.faux-image.aspect-ratio-4x3:after { padding-top: 75%; }
+.faux-image.aspect-ratio-1x1:after { padding-top: 100%; }
+.faux-image.aspect-ratio-3x4:after { padding-top: 133.33%; }
+.faux-image.aspect-ratio-10x16:after { padding-top: 160%; }
+.faux-image.aspect-ratio-9x16:after { padding-top: 177.77%; }
+
+.faux-image img {
+	position: absolute;
+		left: -9999rem;
+}
+
+.navbar a{
+    color:white;
+}
+
+.navbar a.navbar-brand, .navbar nav>.nav>li>a {
+    color: #495057;
+}
+
+.bg-attachment-fixed {
+  background-image: url(/themes/ixtheo2/images/searchbar.jpg);
+  min-height: 650px;
+}
+</style>
+
+
+<div class="cover-header screen-height screen-width bg-image bg-attachment-fixed">
+  <div class="cover-header-inner-wrapper">
+    <div class="cover-header-inner">
+      <div class="cover-color-overlay color-accent opacity-60 blend-mode-normal"></div>
+      <div class="section-inner fade-block" style="opacity: 1;">
+        <header class="hidden-print">
+          <div class="container-fluid px-0">
+            <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+            <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+          <?php endif; ?>
+          <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+            <?=$this->render('header.phtml')?>
+          </div>
+
+            <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+              && !empty($this->layout()->breadcrumbs)
+              && $this->layout()->breadcrumbs !== false
+            ): ?>
+              <div class="container breadcrumb-wrapper hidden-print">
+                <?php if(is_array($this->layout()->breadcrumbs)): ?>
+                  <?php if(count($this->layout()->breadcrumbs) > 1): ?>
+                    <?=$this->render('breadcrumbs/multi.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title' => $this->layout()->title,
+                        'from' => $this->layout()->from
+                      ]) ?>
+                  <?php else: ?>
+                    <?=$this->render('breadcrumbs/default.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title' => $this->layout()->title
+                      ]) ?>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <?=$this->render('breadcrumbs/simple.phtml'); ?>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
+        </header>
+      </div><!-- .section-inner -->
+    </div><!-- .cover-header-inner -->
+  </div><!-- .cover-header-inner-wrapper -->
+</div>
+
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 px-0 pt-5 pb-5 justify-content-center">
+                <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
+                  <?php $showContainerBlock = true; $routeParams = $this->tuefind()->getRouteParams();
+                  if($routeParams['controller'] == 'index') {
+                      $showContainerBlock = false;
+                  }?>
+                  <?php  if($showContainerBlock === true) { ?>
+                    <div id="content" class="container">
+                      <?=$this->layout()->content ?>
+                    </div>
+                  <?php } else { ?>
+                    <?=$this->layout()->content ?>
+                  <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?=$this->render('footer.phtml')?>
+    <!-- MODAL IN CASE WE NEED ONE -->
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <button type="button" class="close" data-dismiss="modal">
+            <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
+        </div>
+      </div>
+    </div>
+    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
+    <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
+    <?php foreach ($this->captcha()->js() as $jsInclude):?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
+    <?php endforeach; ?>
+  </body>
+</html>
