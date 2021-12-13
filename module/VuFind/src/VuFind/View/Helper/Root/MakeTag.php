@@ -45,6 +45,100 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      *
      * @var string[]
      */
+    protected $validBodyTags = [
+        'a',
+        'abbr',
+        'address',
+        'area',
+        'article',
+        'aside',
+        'audio',
+        'b',
+        'bdi',
+        'bdo',
+        'blockquote',
+        'br',
+        'button',
+        'canvas',
+        'cite',
+        'code',
+        'data',
+        'datalist',
+        'del',
+        'details',
+        'dfn',
+        'dialog',
+        'div',
+        'dl',
+        'em',
+        'embed',
+        'fieldset',
+        'figure',
+        'footer',
+        'form',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'header',
+        'hgroup',
+        'hr',
+        'i',
+        'iframe',
+        'img',
+        'input',
+        'ins',
+        'kbd',
+        'label',
+        'main',
+        'map',
+        'mark',
+        'math',
+        'menu',
+        'meta',
+        'meter',
+        'nav',
+        'noscript',
+        'object',
+        'ol',
+        'output',
+        'p',
+        'picture',
+        'pre',
+        'progress',
+        'q',
+        'ruby',
+        's',
+        'samp',
+        'script',
+        'section',
+        'select',
+        'slot',
+        'small',
+        'span',
+        'strong',
+        'sub',
+        'sup',
+        'svg',
+        'template',
+        'textarea',
+        'time',
+        'u',
+        'ul',
+        'var',
+        'video',
+        'wbr',
+    ];
+
+    /**
+     * List of all void tags (tags that access no innerHTML)
+     *
+     * Source: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+     *
+     * @var string[]
+     */
     protected $voidElements = [
         'area',
         'base',
@@ -107,8 +201,19 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      */
     protected function verifyTagName(string $tagName)
     {
-        $validTagPattern = '/^[a-zA-Z][a-zA-Z\-]*$/';
-        if (!preg_match($validTagPattern, $tagName)) {
+        $PCENChar = '[\-\.0-9_a-z\x{B7} \x{C0}-\x{D6} \x{D8}-\x{F6} ' .
+            '\x{F8}-\x{37D} \x{37F}-\x{1FFF} \x{200C}-\x{200D} \x{203F}-\x{2040} ' .
+            '\x{2070}-\x{218F} \x{2C00}-\x{2FEF} \x{3001}-\x{D7FF} ' .
+            '\x{F900}-\x{FDCF} \x{FDF0}-\x{FFFD} \x{10000}-\x{EFFFF}]*';
+
+        $validCustomTagPattern = '/^[a-z]' . $PCENChar . '(\-' . $PCENChar . ')+$/u';
+
+        $lowerTagName = strtolower($tagName);
+
+        if (
+            !in_array($lowerTagName, $this->validBodyTags) &&
+            !preg_match($validCustomTagPattern, strtolower($lowerTagName))
+        ) {
             throw new \InvalidArgumentException('Invalid tag name: ' . $tagName);
         }
     }
