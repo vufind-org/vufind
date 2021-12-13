@@ -11,11 +11,13 @@ namespace TueFind\Service;
  */
 class KfL
 {
+    protected $authManager;
+    protected $tuefindInstance;
+
     protected $baseUrl;
     protected $apiId;
     protected $encryptionKey;
     protected $cipher;
-    protected $frontendUserToken;
     protected $titles;
 
     const RETURN_REDIRECT = 0;
@@ -25,21 +27,18 @@ class KfL
     /**
      * Constructor
      *
-     * @param string $baseUrl           Base URL of the proxy
-     * @param string $apiId             API ID
-     * @param string $cipher            cipher, e.g. 'aes-256-ecb'
-     * @param string $encryptionKey     Encryption key
-     * @param string $frontendUserToken An anonymized token representing the frontend user
-     * @param string $titles            Titles with PPN, KfL ID and entitlement
+     * @param Config $config            Configuration entries
+     * @param Manager $authManager      Auth Manager
+     * @param string $tuefindInstance   TueFind instance
      */
-    public function __construct($baseUrl, $apiId, $cipher, $encryptionKey, $frontendUserToken, $titles)
+    public function __construct($config, $authManager, $tuefindInstance)
     {
-        $this->baseUrl = $baseUrl;
-        $this->apiId = $apiId;
-        $this->cipher = $cipher;
-        $this->encryptionKey = $encryptionKey;
-        $this->frontendUserToken = $frontendUserToken;
+        $this->baseUrl = $config->base_url;
+        $this->apiId = $config->api_id;
+        $this->cipher = $config->cipher;
+        $this->encryptionKey = $config->encryption_key;
 
+        $titles = $config->titles ?? [];
         $parsedTitles = [];
         foreach ($titles as $title) {
             $titleDetails = explode(':', $title);
@@ -48,6 +47,9 @@ class KfL
                                'entitlement' => $titleDetails[2]];
         }
         $this->titles = $parsedTitles;
+
+        $this->authManager = $authManager;
+        $this->tuefindInstance = $tuefindInstance;
     }
 
     /**
@@ -104,6 +106,29 @@ class KfL
     }
 
     /**
+     * Generate token that represents the frontend user
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    protected function getFrontendUserToken(): string
+    {
+        // Check if user is logged-in:
+        // This should be checked at the latest possible point.
+        // An earlier implementation checked it in the factory, which led
+        // to errors in other actions in the same controller, which should still
+        // be possible if the user is not logged in.
+        $user = $this->authManager->isLoggedIn();
+        if (!$user)
+            throw new \Exception('Could not generate KfL Frontend User Token, user is not logged in!');
+
+        // We pass an anonymized version of the user id (tuefind_uuid) together with host+tuefind instance.
+        // This value will be saved by the proxy and reported back to us in case of abuse.
+        return implode('#', [gethostname(), $this->tuefindInstance, $user->tuefind_uuid]);
+    }
+
+    /**
      * Get encrypted Single Sign On part of the request (including user credentials)
      *
      * @param string $entitlement   Entitlement (=license) for the given title, mandatory for redirects.
@@ -121,7 +146,7 @@ class KfL
         // Amount of seconds from now until the URL is valid:
         $validTimespan = 60*60*24*1; // 1 day
 
-        $sso = ['user' => $this->frontendUserToken,
+        $sso = ['user' => $this->getFrontendUserToken(),
                 'env' => $env,
                 'timestamp' => time() + $validTimespan];
 
