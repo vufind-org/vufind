@@ -101,6 +101,11 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($solrParams, $helper->getLastSearchParams('Solr'));
     }
 
+    /**
+     * Data provider for testGetLastSearchParams()
+     *
+     * @return array
+     */
     public function getLastSearchParamsProvider(): array
     {
         return [
