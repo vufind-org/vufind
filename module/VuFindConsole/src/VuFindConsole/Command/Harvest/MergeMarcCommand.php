@@ -146,10 +146,22 @@ class MergeMarcCommand extends RelativeFileAwareCommand
              ? [$xml->children(self::MARC21_NAMESPACE), $xml->children()]
              : [[$xml]];
         foreach ($childSets as $children) {
+            // We'll set a flag to indicate whether or not we found anything in
+            // the most recent set. This allows us to break out of the loop once
+            // a record has been found, which enables us to favor namespaced
+            // matches over non-namespaced matches. This is not ideal (we might
+            // miss records in a weird file containing a mix of namespaced and
+            // non-namespaced records), but the alternative would cause namespaced
+            // but non-prefixed records to get loaded twice.
+            $foundSomething = false;
             foreach ($children as $record) {
                 if (stristr($record->getName(), 'record') !== false) {
+                    $foundSomething = true;
                     $output->write(trim($this->recordXmlToString($record)) . "\n");
                 }
+            }
+            if ($foundSomething) {
+                break;
             }
         }
     }
