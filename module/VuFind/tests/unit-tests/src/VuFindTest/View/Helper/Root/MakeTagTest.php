@@ -55,119 +55,157 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Test that responds to common inputs
      */
-    public function testAttributes()
+    public function htmlAttributesTests()
     {
-        $helper = $this->getHelper();
+        return [
+            // Basic
+            [
+                '<button class="btn" id="login">text</button>',
+                ['button', 'text', ['class' => 'btn', 'id' => 'login']]
+            ],
 
-        $this->assertEquals(
-            '<button class="btn" id="login">text</button>',
-            $helper('button', 'text', ['class' => 'btn', 'id' => 'login'])
-        );
+            // String
+            [
+                '<i class="btn">text</i>',
+                ['i', 'text', 'btn']
+            ],
 
-        // String
-        $this->assertEquals(
-            '<i class="btn">text</i>',
-            $helper('i', 'text', 'btn')
-        );
+            // Empty text
+            [
+                '<i class="fa&#x20;fa-awesome"></i>',
+                ['i', '', 'fa fa-awesome']
+            ],
 
-        // Empty text
-        $this->assertEquals(
-            '<i class="fa&#x20;fa-awesome"></i>',
-            $helper('i', '', 'fa fa-awesome')
-        );
+            // Truthy attribute
+            [
+                '<a href="&#x2F;login" data-lightbox="1">Login</a>',
+                ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]]
+            ],
+        ];
+    }
 
-        // Truthy attribute
-        $this->assertEquals(
-            '<a href="&#x2F;login" data-lightbox="1">Login</a>',
-            $helper('a', 'Login', ['href' => '/login', 'data-lightbox' => true])
-        );
+    /*
+     * Void elements for test below
+     */
+    public function helperOptionTests()
+    {
+        return [
+            // escapes innerHTML
+            [
+                '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
+                [
+                    'button',
+                    'This link is <strong>important</strong>',
+                ]
+            ],
+
+            // does not escape innerHTML with option
+            [
+                '<button>This link is <strong>important</strong></button>',
+                [
+                    'button',
+                    'This link is <strong>important</strong>',
+                    [],
+                    ['escapeContent' => false]
+                ]
+            ],
+
+            // escape innerHTML with option
+            [
+                '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
+                [
+                    'button',
+                    'This link is <strong>important</strong>',
+                    [],
+                    ['escapeContent' => true]
+                ]
+            ],
+        ];
+    }
+
+    /*
+     * Void elements for test below
+     */
+    public function voidTags()
+    {
+        return [
+            // self closing tag
+            [
+                '<img src="book.gif" />',
+                [
+                    'img',
+                    '',
+                    ['src' => 'book.gif']
+                ]
+            ],
+
+            // Class only
+            [
+                '<br class="sm&#x3A;hidden" />',
+                [
+                    'br',
+                    '',
+                    'sm:hidden'
+                ]
+            ],
+
+            // Non void tag
+            [
+                '<span></span>',
+                [
+                    'span',
+                    ''
+                ]
+            ]
+        ];
     }
 
     /**
-     * Test escapeContent
+     * Test all data providers above
+     *
+     * @dataProvider htmlAttributesTests
+     * @dataProvider helperOptionTests
+     * @dataProvider voidTags
      */
-    public function testOptionEscape()
+    public function testElements($expected, $params)
     {
         $helper = $this->getHelper();
 
-        // escapes innerHTML
         $this->assertEquals(
-            '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
-            $helper(
-                'button',
-                'This link is <strong>important</strong>',
-            )
-        );
-
-        // does not escape innerHTML with option
-        $this->assertEquals(
-            '<button>This link is <strong>important</strong></button>',
-            $helper(
-                'button',
-                'This link is <strong>important</strong>',
-                [],
-                ['escapeContent' => false]
-            )
-        );
-
-        // escape innerHTML with option
-        $this->assertEquals(
-            '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
-            $helper(
-                'button',
-                'This link is <strong>important</strong>',
-                [],
-                ['escapeContent' => true]
-            )
+            $expected,
+            call_user_func_array([$helper, '__invoke'], $params)
         );
     }
 
-    /**
-     * Test escapeContent
+    /*
+     * Good tag names for test below
      */
-    public function testVoidElements()
+    public function validTags()
     {
-        $helper = $this->getHelper();
-
-        // self closing tag
-        $this->assertEquals(
-            '<img src="book.gif" />',
-            $helper(
-                'img',
-                '',
-                ['src' => 'book.gif']
-            )
-        );
-
-        // Class only
-        $this->assertEquals(
-            '<br class="sm&#x3A;hidden" />',
-            $helper(
-                'br',
-                '',
-                'sm:hidden'
-            )
-        );
-
-        // Non void tag
-        $this->assertEquals(
-            '<span></span>',
-            $helper('span', '')
-        );
+        return [
+            ['SPAN'], // CAPITAL
+            ['sPaN'], // mIxEdCaSe
+            ['my-custom'],
+            ['my-long-custom'],
+            ['is---this---ok'],
+            ['with-4-number'],
+            ['unicode-·-test-〃'],
+        ];
     }
 
     /**
      * Test tag name edge cases
+     *
+     * @dataProvider validTags
      */
-    public function testValidTagNames()
+    public function testValidTagNames($tagName)
     {
         $helper = $this->getHelper();
 
-        $helper('CAPITAL', '');
-        $helper('mIxEdCaSe', '');
-        $helper('my-custom', '');
-        $helper('my-long-custom', '');
-        $helper('is---this---ok', '');
+        $this->assertEquals(
+            $helper($tagName, ''),
+            '<' . $tagName . '></' . $tagName . '>'
+        );
 
         // test passes if no errors are thrown
     }
@@ -178,10 +216,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     public function invalidTags()
     {
         return [
+            ['nohyphencustom'],
             ['n0numbers'],
+            ['0-numbers-at-the-start'],
             ['-must-start-with-letter'],
             ['em—dash'],
-            ['<doubleangles>'],
+            ['<double-angles>'],
             ['?php'],
         ];
     }
@@ -196,7 +236,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         $helper = $this->getHelper();
 
         // Fulfill plugin quota
-        $helper('sanitycheck', 'this is good');
+        $helper('sanity-check', 'this is good');
 
         // Test for exception
         $this->expectException(\InvalidArgumentException::class);
