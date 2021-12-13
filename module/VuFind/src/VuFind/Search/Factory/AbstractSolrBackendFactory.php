@@ -31,7 +31,6 @@ namespace VuFind\Search\Factory;
 use Interop\Container\ContainerInterface;
 
 use Laminas\Config\Config;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
@@ -63,7 +62,7 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-abstract class AbstractSolrBackendFactory implements FactoryInterface
+abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -71,13 +70,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Primary configuration file identifier.
@@ -161,6 +153,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     public function __construct()
     {
+        parent::__construct();
     }
 
     /**
@@ -176,7 +169,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->setup($sm);
         $this->config = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
@@ -392,16 +385,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
-        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
-        $client = $httpService->createClient();
-
         $connector = new $this->connectorClass(
             $this->getSolrUrl(),
             new HandlerMap($handlers),
-            $this->uniqueKey,
-            $client
+            $this->createHttpClient($config->Index->timeout ?? 30),
+            $this->uniqueKey
         );
-        $connector->setTimeout($config->Index->timeout ?? 30);
 
         if ($this->logger) {
             $connector->setLogger($this->logger);
