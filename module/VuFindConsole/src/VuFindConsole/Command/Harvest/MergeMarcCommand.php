@@ -87,17 +87,13 @@ class MergeMarcCommand extends RelativeFileAwareCommand
      */
     protected function recordXmlToString(SimpleXMLElement $record): string
     {
-        // Add missing namespace declarations:
-        $xml = $record->asXml();
-        foreach ($record->getNamespaces() as $prefix => $uri) {
-            // Not an ideal way to check if the namespace is already defined, but
-            // SimpleXML doesn't seem to provide a more reliable option.
-            if (!stristr($xml, 'xmlns:' . $prefix . '=')) {
-                $record->addAttribute('xmlnls:xmlns:' . $prefix, $uri);
-                $xml = $record->asXml();
-            }
-        }
-        return $xml;
+        // Normalize unprefixed record tags to use marc namespace; remove extraneous
+        // XML headers:
+        return str_replace(
+            ['<record>', '<record ', '</record>', '<?xml version="1.0"?>'],
+            ['<marc:record>', '<marc:record ', '</marc:record>', ''],
+            $record->asXml()
+        );
     }
 
     /**
@@ -140,27 +136,21 @@ class MergeMarcCommand extends RelativeFileAwareCommand
         string $filePath,
         OutputInterface $output
     ): void {
+        // We need to find all the possible records; if the top-level tag is a
+        // collection, we will search for namespaced and non-namespaced records
+        // inside it. Otherwise, we'll just check the top-level tag to see if
+        // it's a stand-alone record.
         $fileContent = file_get_contents($filePath);
-
-        // output content:
-        $output->writeln("<!-- $filePath -->");
-
-        // If the current file is a collection, we need to extract records:
         $xml = simplexml_load_string($fileContent);
-        if (stristr($xml->getName(), 'collection') !== false) {
-            $childSets = [
-                $xml->children(self::MARC21_NAMESPACE),
-                $xml->children(),
-            ];
-            foreach ($childSets as $children) {
-                foreach ($children as $record) {
-                    if (stristr($record->getName(), 'record') !== false) {
-                        $output->write($this->recordXmlToString($record) . "\n");
-                    }
+        $childSets = (stristr($xml->getName(), 'collection') !== false)
+             ? [$xml->children(self::MARC21_NAMESPACE), $xml->children()]
+             : [[$xml]];
+        foreach ($childSets as $children) {
+            foreach ($children as $record) {
+                if (stristr($record->getName(), 'record') !== false) {
+                    $output->write(trim($this->recordXmlToString($record)) . "\n");
                 }
             }
-        } else {
-            $output->write($fileContent);
         }
     }
 
@@ -183,11 +173,15 @@ class MergeMarcCommand extends RelativeFileAwareCommand
             return 1;
         }
 
-        $output->writeln('<collection>');
+        $output->writeln(
+            '<marc:collection xmlns:marc="' . self::MARC21_NAMESPACE . '">'
+        );
         foreach ($fileList as $filePath) {
+            // Output comment so we know which file the following records came from:
+            $output->writeln("<!-- $filePath -->");
             $this->outputRecordsFromFile($filePath, $output);
         }
-        $output->writeln('</collection>');
+        $output->writeln('</marc:collection>');
         return 0;
     }
 }

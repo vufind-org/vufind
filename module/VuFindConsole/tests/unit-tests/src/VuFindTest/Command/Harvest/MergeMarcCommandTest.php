@@ -72,19 +72,20 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $directory = $this->getFixtureDir('VuFindConsole') . 'xml';
         $commandTester->execute(compact('directory'));
+        $xmlns = MergeMarcCommand::MARC21_NAMESPACE;
         $expected = <<<EXPECTED
-<collection>
+<marc:collection xmlns:marc="$xmlns">
 <!-- $directory/a.xml -->
-<record id="a" />
+<marc:record id="a"/>
 <!-- $directory/b.xml -->
-<record id="b" />
+<marc:record id="b"/>
 <!-- $directory/c.xml -->
-<record id="c"/>
-<record id="d"/>
+<marc:record id="c"/>
+<marc:record id="d"/>
 <!-- $directory/d.xml -->
-<marc:record id="e" xmlns:marc="http://www.loc.gov/MARC21/slim"/>
-<marc:record xmlns:marc="http://www.loc.gov/MARC21/slim" id="f"/>
-</collection>
+<marc:record id="e"/>
+<marc:record id="f"/>
+</marc:collection>
 
 EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
