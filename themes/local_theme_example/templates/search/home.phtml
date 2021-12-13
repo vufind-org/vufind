@@ -1,9 +1,32 @@
 <h1>Welcome to your custom theme!</h1>
-<p><b>
-    Why does this look less than beautiful? Because we expect you to change it!
-    See the <a href="https://vufind.org/wiki/development:architecture:user_interface">User
-    Interface Customization</a> page in the wiki for details.
-</b></p>
+
+<p>
+  Why does this look less than beautiful? Because we expect you to change it! See the <a href="https://vufind.org/wiki/development:architecture:user_interface">User Interface Customization</a> page in the wiki for details.
+</p>
+
+<nav aria-label="Theme Config view helper demo" class="form-inline">
+  Some helpful links:
+
+  <?php foreach($this->themeConfig(['home-content', 'links']) as $label => $href): ?>
+    <a class="btn btn-link" href="<?=$this->escapeHtmlAttr($href) ?>">
+      <?=$this->transEsc($label) ?>
+    </a>
+  <?php endforeach; ?>
+
+  Send us a text!
+
+  <select class="form-control">
+    <option>Choose a Number</option>
+    <?php foreach($this->themeConfig(['home-content', 'contact', 'sms']) as $contact): ?>
+      <?php [$label, $number] = explode(':', $contact); ?>
+      <option value="<?=$this->escapeHtmlAttr($number) ?>">
+        <?=$this->transEsc($label) ?>
+      </option>
+    <?php endforeach; ?>
+  </select>
+  <button class="btn btn-default" disabled>Contact</button>
+</nav>
+
 <div class="searchHomeContent">
   <div class="search-hero" role="search">
     <?php require(__DIR__ . '/../../../bootstrap3/templates/search/home.phtml'); ?>
