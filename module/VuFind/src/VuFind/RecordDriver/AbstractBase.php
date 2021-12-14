@@ -343,30 +343,80 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Expand deprecated abbreviations to
+     * @param  string $abbr ALA, MLA, Chicago, Vancouver
+     * @return string
+     */
+    protected function expandLegacyAbbreviation(string $abbr) {
+        switch (trim($abbr)) {
+            case 'APA':
+                return 'APA:apa';
+            case 'Chicago':
+                return 'Chicago:chicago-annotated-bibliography';
+            case 'MLA':
+                return 'MLA:modern-language-association';
+            case 'Vancouver':
+                return 'Vancouver:vancouver';
+        };
+
+        return '';
+    }
+
+    /**
      * Get an array of supported, user-activated citation formats.
      *
      * @return array Strings representing citation formats.
      */
     public function getCitationFormats()
     {
-        $formatSetting = $this->mainConfig->Record->citation_formats ?? true;
-
-        // Default behavior: use all supported options.
-        if ($formatSetting === true || $formatSetting === 'true') {
-            return $this->getSupportedCitationFormats();
-        }
+        $formatSetting = $this->mainConfig->Record->citation_formats ?? false;
 
         // Citations disabled:
         if ($formatSetting === false || $formatSetting === 'false') {
             return [];
         }
 
-        // Filter based on include list:
-        $allowed = array_map('trim', explode(',', $formatSetting));
-        return array_intersect($allowed, $this->getSupportedCitationFormats());
+        // Legacy: convert to array
+        if (is_string($formatSetting)) {
+            $formatSetting = explode(',', $formatSetting);
+        }
+
+        // Default behavior: use all supported options.
+        if ($formatSetting === true || $formatSetting === 'true') {
+            $formatSetting = $this->tryMethod(
+                'getDefaultCitationFormats',
+                [], // ← params, ↓ fallback to legacy
+                $this->getSupportedCitationFormats()
+            );
+        }
+
+        // If no colon: convert to 9.x format
+        foreach ($formatSetting as $i => $format) {
+            if (strpos($format, ':') === false) {
+                $formatSetting[$i] = $this->expandLegacyAbbreviation($format);
+            }
+        }
+
+        // Trim and remove empty elements:
+        return array_filter(array_map('trim', $formatSetting));
     }
 
     /**
+     * Get an array of strings representing default citation formats.
+     *
+     * For possible legal values,
+     * see https://github.com/citation-style-language/styles.
+     *
+     * @return array Strings representing citation formats.
+     */
+    protected function getDefaultCitationFormats()
+    {
+        return [];
+    }
+
+    /**
+     * @deprecated
+     *
      * Get an array of strings representing citation formats supported
      * by this record's data (empty if none).  For possible legal values,
      * see /application/themes/root/helpers/Citation.php.

@@ -264,16 +264,29 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCitation($format)
     {
+        $data = $this->getDataCSL();
+
+        $locale = $this->getView()->layout()->userLang;
+
+        $processor = new CiteProc(StyleSheet::loadStyleSheet($format), $locale);
+
+        // DEBUG
+
         // Construct method name for requested format:
-        $method = 'getCitation' . $format;
+        $formatFirst = explode('-', $format, 2)[0];
+        $methodKey = ($formatFirst == 'modern') ? 'MLA' : ucfirst($formatFirst);
+
+        $method = 'getCitation' . $methodKey;
 
         // Avoid calls to inappropriate/missing methods:
         if (!empty($format) && method_exists($this, $method)) {
-            return $this->$method();
+            return '<ul>' .
+                '<li><kbd>Old</kbd> ' . $this->$method() . '</li>' .
+                '<li><kbd>New</kbd> ' . $processor->render(json_decode($data), 'bibliography') . '</li>' .
+            '</ul>';
         }
 
-        // Return blank string if no valid method found:
-        return '';
+        return $processor->render(json_decode($data), 'bibliography');
     }
 
     protected function trimPunctuation($text)
@@ -546,34 +559,6 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $yearFormat
         );
         return $partial('Citation/mla-article.phtml', $mla);
-    }
-
-    /**
-     * Get Vancouver citation.
-     *
-     * @return string
-     */
-    public function getCitationVancouver()
-    {
-        $data = $this->getDataCSL();
-
-        $locale = $this->getView()->layout()->userLang;
-
-        echo '<ul>';
-
-        $processor = new CiteProc(StyleSheet::loadStyleSheet('apa'), $locale);
-        echo '<li>' . $processor->render(json_decode($data), 'bibliography') . '</li>';
-
-        $processor = new CiteProc(StyleSheet::loadStyleSheet('chicago-annotated-bibliography'), $locale);
-        echo '<li>' . $processor->render(json_decode($data), 'bibliography') . '</li>';
-
-        $processor = new CiteProc(StyleSheet::loadStyleSheet('modern-language-association'), $locale);
-        echo '<li>' . $processor->render(json_decode($data), 'bibliography') . '</li>';
-
-        echo '</ul>';
-
-        $processor = new CiteProc(StyleSheet::loadStyleSheet('vancouver'), $locale);
-        return $processor->render(json_decode($data), 'bibliography');
     }
 
     /**

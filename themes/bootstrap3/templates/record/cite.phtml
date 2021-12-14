@@ -11,7 +11,8 @@
   $helper = $this->citation($this->driver);
   $citations = [];
   foreach ($this->driver->getCitationFormats() as $format) {
-    $citations[$format] = $helper->getCitation($format);
+    [$label, $style] = explode(':', $format);
+    $citations[$label] = $helper->getCitation($style);
   }
 ?>
 <?php if (count($citations) == 0): ?>
