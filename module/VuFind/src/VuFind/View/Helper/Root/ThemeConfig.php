@@ -83,7 +83,7 @@ class ThemeConfig extends AbstractHelper
     public function __invoke($path = [])
     {
         // Ensure path is an array
-        $path = (array) $path;
+        $path = (array)$path;
 
         $key = array_shift($path);
 
