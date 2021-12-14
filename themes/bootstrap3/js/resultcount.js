@@ -10,7 +10,7 @@ VuFind.register('resultcount', function resultCount() {
         jQuery.ajax({
           url: VuFind.path + '/AJAX/JSON?method=getResultCount',
           dataType: 'json',
-          data: {querystring: encodeURIComponent(queryString), source: source},
+          data: {querystring: queryString, source: source},
           success: function appendResultCount(response){
             $this.append(' (' + response.data.total.toLocaleString() + ')');
           }
