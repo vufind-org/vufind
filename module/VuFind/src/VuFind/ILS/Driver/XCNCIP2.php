@@ -2859,7 +2859,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $response->xpath('ns1:LookupItemSetResponse/ns1:BibInformation')
             );
             $nextItemToken = $response->xpath('//ns1:NextItemToken');
-            $request = !empty($nextItemToken);
+            $request = !empty($nextItemToken) && (string)$nextItemToken[0] !== '';
             if ($page == $this->maxNumberOfPages) {
                 break;
             }
