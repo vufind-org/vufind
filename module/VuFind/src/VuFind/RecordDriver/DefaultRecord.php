@@ -1498,6 +1498,8 @@ class DefaultRecord extends AbstractBase
 
     /**
      * @deprecated
+     * @see getCitationFormats
+     * @see getDefaultCitationFormats
      *
      * Get an array of strings representing citation formats supported
      * by this record's data (empty if none).  For possible legal values,
