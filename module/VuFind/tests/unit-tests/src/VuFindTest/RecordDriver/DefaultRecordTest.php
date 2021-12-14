@@ -388,6 +388,22 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Convert new format to old format for the test
+     *
+     * @param array $arr
+     *
+     * @return array Strings
+     */
+    private function newConfigToOld($arr)
+    {
+        $formatName = function($op) {
+            return explode(':', $op, 2)[0];
+        };
+
+        return array_map($formatName, $arr);
+    }
+
+    /**
      * Test citation behavior.
      *
      * @return void
@@ -400,10 +416,17 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEmpty($supported);
 
         // By default, all supported formats should be enabled:
-        $this->assertEquals($supported, $driver->getCitationFormats());
+        $this->assertEquals(
+            $supported,
+            $this->newConfigToOld($driver->getCitationFormats())
+        );
+    }
 
-        // Data table (citation_formats config, expected result):
-        $tests = [
+    public function citationConfigs() {
+        $driver = $this->getDriver();
+        $supported = $this->callMethod($driver, 'getSupportedCitationFormats');
+
+        return [
             // No results:
             [false, []],
             ['false', []],
@@ -414,14 +437,25 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             ['MLA,foo', ['MLA']],
             ['bar ,     APA,MLA', ['APA', 'MLA']],
         ];
-        foreach ($tests as $current) {
-            [$input, $output] = $current;
-            $cfg = new Config(['Record' => ['citation_formats' => $input]]);
-            $this->assertEquals(
-                $output,
+    }
+
+    /**
+     * Test citation configurations.
+     *
+     * @dataProvider citationConfigs
+     *
+     * @return void
+     */
+    public function testCitationConfigs($input, $output)
+    {
+        $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+
+        $this->assertEquals(
+            $output,
+            $this->newConfigToOld(
                 array_values($this->getDriver([], $cfg)->getCitationFormats())
-            );
-        }
+            )
+        );
     }
 
     /**

@@ -374,15 +374,18 @@ class CitationTest extends \PHPUnit\Framework\TestCase
             $cb = $citation($driver);
 
             // Normalize whitespace:
-            $apa = trim(preg_replace("/\s+/", " ", $cb->getCitation('APA')));
+            $apa = $cb->getCitation('apa');
+            $apa = trim(preg_replace("/\s+/", " ", $apa));
             $this->assertEquals($current['apa'], $apa);
 
             // Normalize whitespace:
-            $mla = trim(preg_replace("/\s+/", " ", $cb->getCitation('MLA')));
+            $mla = $cb->getCitation('modern-language-association');
+            $mla = trim(preg_replace("/\s+/", " ", $mla));
             $this->assertEquals($current['mla'], $mla);
 
             // Normalize whitespace:
-            $chicago = trim(preg_replace("/\s+/", " ", $cb->getCitation('Chicago')));
+            $chicago = $cb->getCitation('chicago-annotated-bibliography');
+            $chicago = trim(preg_replace("/\s+/", " ", $chicago));
             $this->assertEquals($current['chicago'], $chicago);
         }
 

@@ -369,16 +369,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getCitationFormats()
     {
-        $formatSetting = $this->mainConfig->Record->citation_formats ?? false;
+        $formatSetting = $this->mainConfig->Record->citation_formats ?? true;
 
         // Citations disabled:
         if ($formatSetting === false || $formatSetting === 'false') {
             return [];
-        }
-
-        // Legacy: convert to array
-        if (is_string($formatSetting)) {
-            $formatSetting = explode(',', $formatSetting);
         }
 
         // Default behavior: use all supported options.
@@ -388,6 +383,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 [], // ← params, ↓ fallback to legacy
                 $this->getSupportedCitationFormats()
             );
+        }
+
+        // Legacy: convert to array
+        if (is_string($formatSetting)) {
+            $formatSetting = explode(',', $formatSetting);
         }
 
         // If no colon: convert to 9.x format

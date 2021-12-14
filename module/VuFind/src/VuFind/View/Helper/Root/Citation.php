@@ -266,7 +266,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     {
         $data = $this->getDataCSL();
 
-        $locale = $this->getView()->layout()->userLang;
+        $locale = 'en';
+
+        try {
+            // will fail during unit tests
+            $locale = $this->getView()->layout()->userLang;
+        } catch (\Exception $e) {
+            // pass
+        }
 
         $processor = new CiteProc(StyleSheet::loadStyleSheet($format), $locale);
 
