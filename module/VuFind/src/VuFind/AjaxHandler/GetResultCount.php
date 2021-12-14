@@ -29,7 +29,6 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
-use VuFind\AjaxHandler\AbstractBase;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
