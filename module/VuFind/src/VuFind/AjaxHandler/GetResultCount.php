@@ -44,16 +44,16 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 class GetResultCount extends AbstractBase
 {
     /**
-     * ResultsManager
+     * resultsManager
      *
-     * @var ResultsManager
+     * @var resultsManager
      */
     protected $resultsManager;
 
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param ResultsManager $resultsManager
      */
     public function __construct(ResultsManager $resultsManager)
     {
