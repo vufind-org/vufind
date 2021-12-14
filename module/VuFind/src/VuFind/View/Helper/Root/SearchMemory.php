@@ -143,7 +143,7 @@ class SearchMemory extends AbstractHelper
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
         $request = new \Laminas\Stdlib\Parameters();
-        $request->fromString($queryParams);
+        $request->fromString($queryParams ?? '');
         $paramsPlugin = $this->getView()->plugin('searchParams');
         $params = $paramsPlugin($searchClassId);
         // Make sure the saved URL represents search results from $searchClassId;
