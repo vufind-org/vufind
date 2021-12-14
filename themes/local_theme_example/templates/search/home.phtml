@@ -4,27 +4,41 @@
   Why does this look less than beautiful? Because we expect you to change it! See the <a href="https://vufind.org/wiki/development:architecture:user_interface">User Interface Customization</a> page in the wiki for details.
 </p>
 
-<nav aria-label="Theme Config view helper demo" class="form-inline">
-  Some helpful links:
+<nav aria-label="Theme Config view helper demo" class="navbar navbar-default clearfix">
+  <div class="container-fluid">
+    <span class="navbar-text">
+      Some helpful links:
+    </span>
 
-  <?php foreach($this->themeConfig(['home-content', 'links']) as $label => $href): ?>
-    <a class="btn btn-link" href="<?=$this->escapeHtmlAttr($href) ?>">
-      <?=$this->transEsc($label) ?>
-    </a>
-  <?php endforeach; ?>
+    <ul class="nav navbar-nav">
+      <?php foreach($this->themeConfig(['home-content', 'links']) as $label => $route): ?>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$this->url($route) ?>">
+            <?=$this->transEsc($label) ?>
+          </a>
+        </li>
+      <?php endforeach; ?>
+    </ul>
 
-  Send us a text!
-
-  <select class="form-control">
-    <option>Choose a Number</option>
-    <?php foreach($this->themeConfig(['home-content', 'contact', 'sms']) as $contact): ?>
-      <?php [$label, $number] = explode(':', $contact); ?>
-      <option value="<?=$this->escapeHtmlAttr($number) ?>">
-        <?=$this->transEsc($label) ?>
-      </option>
-    <?php endforeach; ?>
-  </select>
-  <button class="btn btn-default" disabled>Contact</button>
+    <ul class="nav navbar-nav navbar-right flip">
+      <?php foreach($this->themeConfig(['header-nav']) as $section => $links): ?>
+        <li class="theme dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <?=$this->transEsc($section)?> <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <?php foreach ($links as $label => $route): ?>
+              <li>
+                <a href="<?=$this->escapeHtmlAttr($this->url($route) ?? "#") ?>" rel="nofollow">
+                  <?=$this->transEsc($label) ?>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
 </nav>
 
 <div class="searchHomeContent">

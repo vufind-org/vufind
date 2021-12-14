@@ -11,6 +11,6 @@ return [
             'Setup' => 'install-home',
             'Dev Tools' => 'devtools-home',
         ],
-        'contact' => parse_ini_file('contacts-demo.ini'),
     ],
+    'header-nav' => parse_ini_file('header-nav.ini', true),
 ];
