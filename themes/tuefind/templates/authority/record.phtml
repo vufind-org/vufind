@@ -1,5 +1,9 @@
 <?php
     $this->layout()->breadcrumbs = false;
+
+    // TueFind: Add fix for tab reset bug which will be fixed in 9.0 by demiankatz
+    $this->layout()->searchClassId = 'SolrAuth';
+
     $this->backgroundTabs = $this->BackgroundTabs ?? [];
     $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
 
