@@ -39,6 +39,35 @@ namespace VuFind\View\Helper\Root;
 class MakeLink extends \Laminas\View\Helper\AbstractHelper
 {
     /**
+     * Combine attributes including proxy
+     *
+     * @param string|array $attrs   Link attributes (associative array)
+     * @param array        $options Additional options
+     *
+     * @return array (associative) Combined attributes by key
+     */
+    protected function mergeAttributes($attrs, $options)
+    {
+        // If $attrs is not an object, interpret as class name
+        if (!is_array($attrs)) {
+            $attrs = !empty($attrs) ? ['class' => $attrs] : [];
+        }
+
+        // Merge all attributes
+        $mergedAttrs = array_merge(
+            $attrs ?? [],
+            !empty($href) ? ['href' => $href] : []
+        );
+
+        // Special option: proxy prefixing
+        if ($options['proxyUrl'] ?? false) {
+            $mergedAttrs['href'] = $options['proxyUrl'] . $mergedAttrs['href'];
+        }
+
+        return $mergedAttrs;
+    }
+
+    /**
      * Render an HTML link
      *
      * $href will override $attrs['href']
@@ -56,7 +85,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string       $innerHtml Link contents (must be properly-formed HTML)
      * @param string|array $href      Link destination (null to skip)
-     * @param array        $attrs     Link attributes (associative array)
+     * @param string|array $attrs     Link attributes (associative array)
      * @param array        $options   Additional options
      *
      * @return string HTML for an anchor tag
@@ -67,27 +96,13 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
         $attrs = [],
         $options = []
     ) {
-        // If $attrs is not an object, interpret as class name
-        if (!is_array($attrs)) {
-            $attrs = !empty($attrs) ? ['class' => $attrs] : [];
-        }
-
-        // Merge all attributes
-        $mergedAttrs = array_merge(
-            $attrs ?? [],
-            !empty($href) ? ['href' => $href] : []
-        );
-
         $makeTag = $this->getView()->plugin('makeTag');
+
+        $mergedAttrs = $this->mergeAttributes($attrs, $options);
 
         // Span instead of anchor when no href present
         if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
             return $makeTag('span', $innerHtml, $mergedAttrs, $options);
-        }
-
-        // Special option: proxy prefixing
-        if ($options['proxyUrl'] ?? false) {
-            $mergedAttrs['href'] = $options['proxyUrl'] . $mergedAttrs['href'];
         }
 
         // Forward to makeTag helper
