@@ -407,7 +407,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
         // AutoRetryTrait):
-        if ($this->hasFailed() && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
+        if ($this->hasFailed()
+            && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
             && $this->retriesLeft === 0
         ) {
             $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
