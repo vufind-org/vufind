@@ -42,11 +42,12 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      * Combine attributes including proxy
      *
      * @param string|array $attrs   Link attributes (associative array)
+     * @param string|array $href      Link destination (null to skip)
      * @param array        $options Additional options
      *
      * @return array (associative) Combined attributes by key
      */
-    protected function mergeAttributes($attrs, $options)
+    protected function mergeAttributes($attrs, $href = null, $options)
     {
         // If $attrs is not an object, interpret as class name
         if (!is_array($attrs)) {
@@ -98,7 +99,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
     ) {
         $makeTag = $this->getView()->plugin('makeTag');
 
-        $mergedAttrs = $this->mergeAttributes($attrs, $options);
+        $mergedAttrs = $this->mergeAttributes($attrs, $href, $options);
 
         // Span instead of anchor when no href present
         if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
