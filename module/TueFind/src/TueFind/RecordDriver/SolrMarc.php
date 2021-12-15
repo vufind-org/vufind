@@ -153,6 +153,9 @@ class SolrMarc extends SolrDefault
             if ($urlSubfield != false)
                 $url = $urlSubfield->getData();
 
+            if ($id == null && preg_match('"^http(s)?:' . preg_quote('//rightsstatements.org/vocab/InC/1.0/', '"') . '$"', $url))
+                $id = 'InC 1.0';
+
             if ($id != null && $url != null)
                 return ['id' => $id, 'url' => $url];
         }
