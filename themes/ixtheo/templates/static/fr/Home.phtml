@@ -41,12 +41,49 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-search-plus"></i> Recherche en texte intégral<div class="new">nouveau</div>
+                <i class="fa fa-users"></i> Page d’information sur les personnes<div class="new">nouveau</div>
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
-            <div class="panel-body flex-col">
-                    La nouvelle <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1">recherche en texte intégral</a> permet de chercher dans des textes intégrals autant commercials que libres, des des sommaires et des résumés.<br/> Trouvez des informations detaillés dans la <a href="/docs/Recherche_en_texte_Description.pdf" target="_blank">description</a>.
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Une nouvelle étape a été franchie avec l’introduction de la page d’information sur les personnes et les sociétés dans IxTheo et RelBib. Le troisième onglet nommé « Personnes / Sociétés » et situé à côté de « IxTheo » et de « Texte intégral » en donne l’accès.</p>
+                    <div class="read-more-target">
+                        <p>La page d’information sur les personnes et sociétés permet de faire une recherche sur des auteurs, des sociétés et des actes de colloque.</p>
+
+                        <p>Saisissez d’abord le nom de la personne, de la société ou du colloque et appuyez sur le bouton « Rechercher ». Vous pouvez ensuite affiner la recherche en sélectionnant une ou plusieurs des facettes :</p>
+                        <ul>
+                            <li>Type de notice: Personne / Société / Colloque (actes)</li>
+                            <li>Références externes: fichiers d’autorité / liens à Wikipedia, liens à des archives etc.</li>
+                            <li>Activité: théologien / historien / prêtre etc.</li>
+                            <li>Langue: allemand / anglais / français etc. </li>
+                            <li>Localisation: Berlin / London / New York etc.</li>
+                        </ul>
+
+                        <p>La page d’information sur les personnes offre des informations biographiques et des liens donnant accès à des informations supplémentaires sur Wikipedia, des archives et d’autres ressources externes.</p>
+
+                        <p>Les informations dont IxTheo dispose sont préparées et présentées d’une façon claire :</p>
+                        <ul>
+                            <li>Littérature <b>de</b> l’auteur</li>
+                            <li>Littérature <b>sur</b> l’auteur</li>
+                            <li>Liens avec d’<b>autres</b> personnes</li>
+                            <li><b>Thèmes</b> (mots-clés) sur lequel l’auteur a publié</li>
+                            <li>Une <b>chronologie</b> des publications</li>
+                        </ul>
+
+                        <p>Voici quelques exemples d’auteurs connus:</p>
+                        <ul>
+                            <li><a href="<?=$this->url('solrauthrecord')?>080038956">Judith Butler</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>079908942">Luise Abramowski</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>079319769">Rudolf Bultmann</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>035286210">Martin Luther King</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>133801128">Paul Claudel</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>198371527">Pierre Bourdieu</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
             </div>
         </div>
     </div>
@@ -56,7 +93,21 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-desktop"></i> Publications en libre accès sur IxTheo <div class="new">nouveau</div>
+                <i class="fa fa-search-plus"></i> Recherche en texte intégral
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body flex-col">
+                La nouvelle <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1">recherche en texte intégral</a> permet de chercher dans des textes intégrals autant commercials que libres, des des sommaires et des résumés.<br/> Trouvez des informations detaillés dans la <a href="/docs/Recherche_en_texte_Description.pdf" target="_blank">description</a>.
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-desktop"></i> Publications en libre accès sur IxTheo
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
@@ -108,7 +159,7 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-puzzle-piece"></i> Collaboration IxTheo - <a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a><div class="new">nouveau</div>
+                <i class="fa fa-puzzle-piece"></i> Collaboration IxTheo - <a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a>
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
