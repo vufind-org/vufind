@@ -210,9 +210,8 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         $lowerTagName = strtolower($tagName);
 
-        if (
-            !in_array($lowerTagName, $this->validBodyTags) &&
-            !preg_match($validCustomTagPattern, strtolower($lowerTagName))
+        if (!in_array($lowerTagName, $this->validBodyTags)
+            && !preg_match($validCustomTagPattern, strtolower($lowerTagName))
         ) {
             throw new \InvalidArgumentException('Invalid tag name: ' . $tagName);
         }
