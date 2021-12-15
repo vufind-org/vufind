@@ -147,8 +147,9 @@ class KfL
         $validTimespan = 60*60*24*1; // 1 day
 
         $sso = ['user' => $this->getFrontendUserToken(),
+                'timestamp' => time() + $validTimespan,
                 'env' => $env,
-                'timestamp' => time() + $validTimespan];
+        ];
 
         $encryptedData = openssl_encrypt(json_encode($sso), $this->cipher, $this->encryptionKey, OPENSSL_RAW_DATA);
         if ($encryptedData === false)
@@ -183,12 +184,6 @@ class KfL
         $requestData = $this->getRequestTemplate($titleInfo['entitlement']);
         $requestData['method'] = 'getHANID';
         $requestData['return'] = self::RETURN_REDIRECT;
-
-        // URL / Title doesnt work with these examples
-        //$requestData['url'] = 'https://handbuch-der-religionen.de/';
-        //$requestData['title'] = 'Handbuch der Religionen';
-
-        // Passing the HANID directly seems to work (e.g. 'handbuch-religionen'):
         $requestData['hanid'] = $titleInfo['kflId'];
 
         if ($requestData['hanid'] == null)
