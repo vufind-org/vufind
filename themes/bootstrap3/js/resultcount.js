@@ -7,7 +7,7 @@ VuFind.register('resultcount', function resultCount() {
       if ($this.attr('href') !== undefined) {
         var queryString = $this.attr('href').replace(/^.*\?/, '');
         var source = $this.data('source');
-        jQuery.ajax({
+        $.ajax({
           url: VuFind.path + '/AJAX/JSON?method=getResultCount',
           dataType: 'json',
           data: {querystring: queryString, source: source},
