@@ -68,13 +68,8 @@ class GetResultCount extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
-        $queryString = $params->fromQuery('querystring');
         $queryString = urldecode(
-            str_replace(
-                '&amp;',
-                '&',
-                trim($queryString)
-            )
+            $params->fromQuery('querystring')
         );
 
         $queryArray = explode('&', $queryString);
