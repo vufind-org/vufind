@@ -41,7 +41,7 @@ class KfL
         $titles = $config->titles ?? [];
         $parsedTitles = [];
         foreach ($titles as $title) {
-            $titleDetails = explode(':', $title);
+            $titleDetails = explode(';', $title);
             $parsedTitles[] = ['ppn' => $titleDetails[0],
                                'kflId' => $titleDetails[1],
                                'entitlement' => $titleDetails[2]];
