@@ -234,12 +234,12 @@
             <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>">
               <i class="fa fa-fw fa-star"></i>
             </a><br/>
-            <?php if ($this->driver->tryMethod('isSubscribable') && $this->accountCapabilities()->getSubscriptionSetting() === 'enabled'): ?>
+            <?php if ($this->accountCapabilities()->getSubscriptionSetting() === 'enabled'): ?>
               <?php if ($this->IxTheo()->isRecordSubscribed($this->driver) || $this->IxTheo()->isRecordSubscribedViaBundle($this->driver)): ?>
                 <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Unsubscribe')?>">
                   <i class="result-link-icon fa fa-fw fa-bell-slash"></i>
                 </a>
-              <?php else: ?>
+              <?php elseif ($this->driver->tryMethod('isSubscribable')): ?>
                 <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Subscribe')?>">
                   <i class="result-link-icon fa fa-fw fa-bell"></i>
                 </a>
