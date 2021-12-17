@@ -39,9 +39,9 @@ namespace VuFind\View\Helper\Root;
 class MakeTag extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * List of all void tags (tags that access no innerHTML)
+     * List of all valid body tags
      *
-     * Source: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+     * Source: https://html.spec.whatwg.org/multipage/dom.html#flow-content-2
      *
      * @var string[]
      */
