@@ -58,26 +58,22 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     public function htmlAttributesTests()
     {
         return [
-            // Basic
-            [
+            'Basic' => [
                 '<button class="btn" id="login">text</button>',
                 ['button', 'text', ['class' => 'btn', 'id' => 'login']]
             ],
 
-            // String
-            [
+            'String' => [
                 '<i class="btn">text</i>',
                 ['i', 'text', 'btn']
             ],
 
-            // Empty text
-            [
+            'Empty text' => [
                 '<i class="fa&#x20;fa-awesome"></i>',
                 ['i', '', 'fa fa-awesome']
             ],
 
-            // Truthy attribute
-            [
+            'Truthy attribute' => [
                 '<a href="&#x2F;login" data-lightbox="1">Login</a>',
                 ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]]
             ],
@@ -90,8 +86,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     public function helperOptionTests()
     {
         return [
-            // escapes innerHTML
-            [
+            'escapes innerHTML' => [
                 '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
                 [
                     'button',
@@ -99,8 +94,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 ]
             ],
 
-            // does not escape innerHTML with option
-            [
+            'does not escape innerHTML with option' => [
                 '<button>This link is <strong>important</strong></button>',
                 [
                     'button',
@@ -110,8 +104,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 ]
             ],
 
-            // escape innerHTML with option
-            [
+            'escape innerHTML with option' => [
                 '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
                 [
                     'button',
@@ -129,8 +122,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     public function voidTags()
     {
         return [
-            // self closing tag
-            [
+            'self closing tag' => [
                 '<img src="book.gif" />',
                 [
                     'img',
@@ -139,8 +131,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 ]
             ],
 
-            // Class only
-            [
+            'class only' => [
                 '<br class="sm&#x3A;hidden" />',
                 [
                     'br',
@@ -149,8 +140,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 ]
             ],
 
-            // Non void tag
-            [
+            'non-void tag' => [
                 '<span></span>',
                 [
                     'span',
