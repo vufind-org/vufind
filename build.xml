@@ -33,7 +33,7 @@
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="8.0.2" />
+  <property name="version" value="8.0.3" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
