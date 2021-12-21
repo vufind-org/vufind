@@ -61,3 +61,10 @@ if (file_exists('vendor/autoload.php')) {
     }
     $loader->register();
 }
+
+// Make sure local config dir exists:
+if ($localDir = \VuFind\Config\Locator::getLocalConfigPath('', null, true)) {
+    if (!file_exists($localDir)) {
+        mkdir($localDir, 0777, true);
+    }
+}
