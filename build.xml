@@ -604,7 +604,7 @@
 
     <!-- create custom import configurations to load the MARC filename into the building facet to help
           test cases to limit searches to within specific collections of test records.
-          Note: ${srcdir}/local/import/import.properties is created in install.php. -->
+          Note: ${localdir}/import/import.properties is created in install.php. -->
     <copy file="${srcdir}/import/marc_local.properties" tofile="${localdir}/import/marc-${BASENAME}.properties" overwrite="true" />
     <append destFile="${localdir}/import/marc-${BASENAME}.properties" text="building=&quot;${BASENAME}&quot;${line.separator}" />
 
