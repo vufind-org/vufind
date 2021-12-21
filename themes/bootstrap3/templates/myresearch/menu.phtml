@@ -89,7 +89,7 @@
         . '</i> <span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
     ?>
     <?php foreach ($lists as $list): ?>
-      <a class="user-list-link <?=$this->active == 'list' . $list['id'] ? 'active' : ''?>" href="<?=$this->url('userList', ['id' => $list['id']])?>">
+      <a class="user-list-link<?=$this->active == 'list' . $list['id'] ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list['id']])?>">
         <?=$this->escapeHtml($list['title'])?><?=$list['public'] ? $publicInd : ''?>
         <span class="badge"><?=$list->cnt ?></span>
       </a>
