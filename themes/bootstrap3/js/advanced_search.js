@@ -137,12 +137,11 @@ deleteGroup = function _deleteGroup(group) {
 $(document).ready(function advSearchReady() {
   $('.clear-btn').click(function clearBtnClick() {
     $('input[type="text"]').val('');
-    $('input[type="checkbox"]').each(function onEachCheckbox() {
+    $('input[type="checkbox"],input[type="radio"]').each(function onEachCheckbox() {
       var checked = $(this).data('reset-checked');
       checked = (checked == null) ? false : checked;
       $(this).prop("checked", checked);
     });
     $("option:selected").prop("selected", false);
-    $("#illustrated_-1").click();
   });
 });
