@@ -41,9 +41,9 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
     /**
      * Combine attributes including proxy
      *
-     * @param string|array $href      Link destination (null to skip)
-     * @param string|array $attrs     Link attributes (associative array)
-     * @param array        $options   Additional options
+     * @param string|array $href    Link destination (null to skip)
+     * @param string|array $attrs   Link attributes (associative array)
+     * @param array        $options Additional options
      *
      * @return array (associative) Combined attributes by key
      */
