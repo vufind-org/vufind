@@ -27,6 +27,9 @@
  */
 namespace VuFindAdmin\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Service\TagService;
+
 /**
  * Class controls distribution of tags and resource tags.
  *
@@ -44,6 +47,25 @@ class TagsController extends AbstractAdmin
      * @var array
      */
     protected $params;
+
+    /**
+     * Tag service
+     *
+     * @var TagService
+     */
+    protected $tagService;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        parent::__construct($sm);
+        $this->tagService = $sm->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(TagService::class);
+    }
 
     /**
      * Get the url parameters
@@ -69,7 +91,7 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/home');
-        $view->statistics = $this->getTable('resourcetags')->getStatistics(true);
+        $view->statistics = $this->tagService->getStatistics(true);
         return $view;
     }
 

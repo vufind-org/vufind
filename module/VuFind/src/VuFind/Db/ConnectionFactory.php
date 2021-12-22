@@ -29,7 +29,6 @@
 namespace VuFind\Db;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\PDO\MySQL\Driver as PdoMysqlDriver;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
 use Interop\Container\ContainerInterface;
