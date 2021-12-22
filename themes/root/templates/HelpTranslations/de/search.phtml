@@ -1,30 +1,30 @@
 <h1>Hilfe zu den Suchoperatoren</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Suche mit Platzhaltern</a></li>
-  <li><a href="#Fuzzy Searches">Unscharfe Suche</a></li>
-  <li><a href="#Proximity Searches">Suche nach ähnlichen Wörtern</a></li>
-  <li><a href="#Range Searches">Bereichssuche</a></li>
-  <li><a href="#Boosting a Term">Wort gewichten</a></li>
-  <li><a href="#Boolean operators">Boolesche Operatoren</a>
+  <li><a href="#wildcard_searches">Suche mit Platzhaltern</a></li>
+  <li><a href="#fuzzy_searches">Unscharfe Suche</a></li>
+  <li><a href="#proximity_searches">Suche nach ähnlichen Wörtern</a></li>
+  <li><a href="#range_searches">Bereichssuche</a></li>
+  <li><a href="#boosting_a_term">Wort gewichten</a></li>
+  <li><a href="#boolean_operators">Boolesche Operatoren</a>
     <ul>
-      <li><a href="#AND">AND</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR</a></li>
-      <li><a href="#NOT">NOT</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Suche mit Platzhaltern</dt>
+  <dt><a id="wildcard_searches"></a>Suche mit Platzhaltern</dt>
   <dd>
     <p>Als Platzhalter für ein beliebiges Zeichen verwenden Sie das Fragezeichen <strong>(?)</strong>.</p>
     <p>Beispiel: Wenn Sie nach "Text" oder "Test" suchen wollen geben Sie </p>
     <pre class="code">Te?t</pre>
     <p>ein.</p>
-    <p>Als Platzhalter für 0 oder mehrere beliebige Zeichen verwenden Sie ein Sternchen 
+    <p>Als Platzhalter für 0 oder mehrere beliebige Zeichen verwenden Sie ein Sternchen
        <strong>(*)</strong>.</p>
     <p>Beispiel: Sie wollen nach "Test", "Tests" oder "Tester" suchen, dann geben
        Sie:</p>
@@ -33,15 +33,15 @@
     <p>Sie können Platzhalter irgendwo platzieren:</p>
     <pre class="code">Te*t</pre>
   </dd>
-  
-  <dt><a name="Fuzzy Searches"></a>Unscharfe Suche</dt>
+
+  <dt><a id="fuzzy_searches"></a>Unscharfe Suche</dt>
   <dd>
     <p>Verwenden Sie für die unscharfe Suche die Tilde <strong>(~)</strong> am
        Ende eines Wortes.
        Beispiel: Sie wollen ähnlich geschriebene Wörter zu "Raum" erhalten:</p>
     <pre class="code">Raum~</pre>
     <p>In diese Suche werden Wörter, wie "Baum" oder "Rahm" aufgenommen.</p>
-    <p>Sie können die Anzahl der Wörter erhöhen oder verringern, indem Sie 
+    <p>Sie können die Anzahl der Wörter erhöhen oder verringern, indem Sie
        einen Wert zwischen 0 und 1 hinter der Tilde setzen.
        Je kleiner der Wert, desto unschärfer ist die Suche. Wird der Wert auf 1
        gesetzt, wird nur nach identisch geschriebenen Wörtern gesucht.
@@ -49,8 +49,8 @@
     <pre class="code">Raum~0.8</pre>
     <p>Wenn Sie nichts angeben, wird der Wert automatisch auf 0.5 gesetzt.</p>
   </dd>
-  
-  <dt><a name="Proximity Searches"></a>Bereichssuche</dt>
+
+  <dt><a id="proximity_searches"></a>Bereichssuche</dt>
   <dd>
     <p>
       Für die Bereichssuche verwenden Sie die Tilde <strong>(~)</strong>, die
@@ -60,8 +60,8 @@
     </p>
     <pre class="code">"Ökonomie Keynes"~10</pre>
   </dd>
-  
-  <dt><a name="Range Searches"></a>Bereichssuche</dt>
+
+  <dt><a id="range_searches"></a>Bereichssuche</dt>
   <dd>
     <p>
       Für die Bereichssuche verwenden Sie geschweifte Klammern <strong>({ })</strong>.
@@ -73,8 +73,8 @@
     </p>
     <pre class="code">[2002 TO 2003]</pre>
   </dd>
-  
-  <dt><a name="Boosting a Term"></a>Worte unterschiedlich gewichten</dt>
+
+  <dt><a id="boosting_a_term"></a>Worte unterschiedlich gewichten</dt>
   <dd>
     <p>
       Sie können Wörtern mehr Bedeutung zuweisen, indem Sie diese mit einer
@@ -86,7 +86,7 @@
     </p>
   </dd>
 
-  <dt><a name="Boolean operators"></a>Boolesche Operatoren</dt>
+  <dt><a id="boolean_operators"></a>Boolesche Operatoren</dt>
   <dd>
     <p>
       Boolesche Operatoren erlauben es, Wörter logisch miteinander zu verknüpfen.
@@ -96,7 +96,7 @@
     </p>
     <p>Hinweis: Boolesche Operatoren müssen großgeschrieben werden!</p>
     <dl>
-      <dt><a name="AND"></a>AND</dt>
+      <dt><a id="boolean_and"></a>AND</dt>
       <dd>
         <p>Die Und-Verknüpfung <strong>(AND)</strong> ist der Standardoperator. Das
             bedeutet, dass wenn zwischen zwei Wörtern kein Operator gesetzt wird,
@@ -108,8 +108,8 @@
         <pre class="code">Ökonomie Keynes</pre>
         <p>oder</p>
         <pre class="code">Ökonomie AND Keynes</pre>
-      </dd>      
-      <dt><a name="+"></a>+</dt>
+      </dd>
+      <dt><a id="boolean_plus"></a>+</dt>
       <dd>
         <p>Indem Sie den <strong>+</strong>-Operator vor ein Wort setzen, erhalten Sie
            nur Treffer, in denen dieses Wort vorkommt.
@@ -117,7 +117,7 @@
         <p>Beispiel:</p>
         <pre class="code">+Ökonomie +Keynes</pre>
       </dd>
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p>Steht eine Oder-Verknüpfung <strong>(OR)</strong> zwischen zwei Wörtern, so
            erhalten Sie Treffer, in denen eines oder beide Wörter gefunden wurden.
@@ -126,7 +126,7 @@
            "Keynes" enthalten sind:</p>
         <pre class="code">"Ökonomie Keynes" OR Keynes</pre>
       </dd>
-      <dt><a name="NOT"></a>NOT</dt>
+      <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>Indem Sie <strong>NOT</strong> vor ein Wort setzen, schließen Sie Treffer aus,
            die dieses Wort enthalten.</p>
@@ -137,7 +137,7 @@
            Beispielsweise liefert folgende Suche keine Treffer:</p>
         <pre class="code">NOT Ökonomie</pre>
       </dd>
-      <dt><a name="-"></a>-</dt>
+      <dt><a id="boolean_minus"></a>-</dt>
       <dd>
         <p>Wird der Operator <strong>(-)</strong> vor ein Wort gesetzt, so
            werden alle Treffer ausgefiltert, die dieses Wort enthalten.</p>

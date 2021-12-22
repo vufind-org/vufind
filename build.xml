@@ -30,11 +30,12 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="8.9.0" />
+  <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
+  <property name="solr_version" value="8.11.1" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="8.0.2" />
+  <property name="version" value="8.0.3" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -415,7 +416,7 @@
     </if>
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
@@ -489,7 +490,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" passthru="true" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh stop" passthru="true" />
 
     <!-- run extra cleanup action, if any -->
     <if>

@@ -28,7 +28,6 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
-use Laminas\Http\Client\Adapter\Curl as CurlAdapter;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Log\LoggerAwareInterface;
 
@@ -64,23 +63,12 @@ class Connector extends Base implements LoggerAwareInterface
      *      <li>orgid - Organization making calls to the EDS API</li>
      *      <li>timeout - HTTP timeout value (default = 120)</li>
      *    </ul>
-     * @param HttpClient $client   HTTP client object (optional)
+     * @param HttpClient $client   HTTP client object
      */
-    public function __construct($settings = [], $client = null)
+    public function __construct($settings, $client)
     {
         parent::__construct($settings);
-        if ($client) {
-            $this->client = $client;
-        } else {
-            $this->client = new HttpClient();
-            $this->client->setAdapter(new CurlAdapter());
-        }
-        $this->client->setOptions(
-            [
-                'timeout' => $settings['timeout'] ?? 120,
-                'sslverifypeer' => false,
-            ]
-        );
+        $this->client = $client;
     }
 
     /**

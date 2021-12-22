@@ -1,24 +1,24 @@
 <h1>検索演算子の使い方</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">ワイルドカード検索</a></li>
-  <li><a href="#Fuzzy Searches">あいまい検索</a></li>
-  <li><a href="#Proximity Searches">近接検索</a></li>
-  <li><a href="#Range Searches">範囲検索</a></li>
-  <li><a href="#Boosting a Term">検索語の重み付け</a></li>
-  <li><a href="#Boolean operators">ブール演算子</a>
+  <li><a href="#wildcard_searches">ワイルドカード検索</a></li>
+  <li><a href="#fuzzy_searches">あいまい検索</a></li>
+  <li><a href="#proximity_searches">近接検索</a></li>
+  <li><a href="#range_searches">範囲検索</a></li>
+  <li><a href="#boosting_a_term">検索語の重み付け</a></li>
+  <li><a href="#boolean_operators">ブール演算子</a>
     <ul>
-      <li><a href="#AND">AND</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR</a></li>
-      <li><a href="#NOT">NOT</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>ワイルドカード検索</dt>
+  <dt><a id="wildcard_searches"></a>ワイルドカード検索</dt>
   <dd>
     <p>1文字のワイルドカード検索を行うには <strong>?</strong> 記号を使用します。</p>
     <p>たとえば、"text" または "test" を検索するには次の検索語を使用します。</p>
@@ -30,8 +30,8 @@
     <pre class="code">te*t</pre>
     <p>注: 検索語の最初の文字に "*" または "?" 記号を使用することはできません。 </p>
   </dd>
-  
-  <dt><a name="Fuzzy Searches"></a>あいまい検索</dt>
+
+  <dt><a id="fuzzy_searches"></a>あいまい検索</dt>
   <dd>
     <p>あいまい検索を行うには、<strong>単一の</strong>検索語の最後に <strong>~</strong> 記号を
     使用します。たとえば、スペルが "roam" に似た語を検索するには、次のように指定します。</p>
@@ -41,8 +41,8 @@
     <pre class="code">roam~0.8</pre>
     <p>パラメタが指定されない場合は、0.5がデフォルトとして使用されます。</p>
   </dd>
-  
-  <dt><a name="Proximity Searches"></a>近接検索</dt>
+
+  <dt><a id="proximity_searches"></a>近接検索</dt>
   <dd>
     <p>
     近接検索を行うには、<strong>複数の</strong>検索語の最後にチルダ記号 <strong>~</strong> を
@@ -52,8 +52,8 @@
     </p>
     <pre class="code">"economics Keynes"~10</pre>
   </dd>
-  
-  <dt><a name="Range Searches"></a>範囲検索</dt>
+
+  <dt><a id="range_searches"></a>範囲検索</dt>
   <dd>
     <p>
     範囲検索を行うには、<strong>{ }</strong> を使用します。たとえば、"A", "B", "C" の
@@ -65,8 +65,8 @@
     </p>
     <pre class="code">[2002 TO 2003]</pre>
   </dd>
-  
-  <dt><a name="Boosting a Term"></a>検索語の重み付け</dt>
+
+  <dt><a id="boosting_a_term"></a>検索語の重み付け</dt>
   <dd>
     <p>
       検索語により高い重みを与えるには、<strong>^</strong> 文字を使用します。
@@ -75,17 +75,17 @@
     <pre class="code">economics Keynes^5</pre>
     <p>検索語 "Keynes" がより重視されます。</p>
   </dd>
-  
-  <dt><a name="Boolean operators"></a>ブール演算子</dt>
+
+  <dt><a id="boolean_operators"></a>ブール演算子</dt>
   <dd>
     <p>
-      ブール演算子により検索語に論理演算を適用できます。次の演算子が使用できます: 
-      <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong>, 
+      ブール演算子により検索語に論理演算を適用できます。次の演算子が使用できます:
+      <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong>,
       <strong>-</strong>
     </p>
     <p>注: ブール演算子は「すべて大文字」でなければなりません。</p>
     <dl>
-      <dt><a name="AND"></a>AND</dt>
+      <dt><a id="boolean_and"></a>AND</dt>
       <dd>
         <p><strong>AND</strong> 演算子はデフォルトの結合演算子です。つまり、2つの検索語の間に
         ブール演算子がない場合、AND演算子が使用されます。AND 演算子はレコードのいずれかのフィールドに2つの検索語の双方が存在するレコードに
@@ -95,7 +95,7 @@
         <p>あるいは</p>
         <pre class="code">economics AND Keynes</pre>
       </dd>
-      <dt><a name="+"></a>+</dt>
+      <dt><a id="boolean_plus"></a>+</dt>
       <dd>
         <p>"+" すなわち必須演算子は、"+" 記号が付いた検索語がレコードのいずれかのフィールドに
         必ず存在することを要求します。</p>
@@ -103,7 +103,7 @@
         指定します。</p>
         <pre class="code">+economics Keynes</pre>
       </dd>
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p>OR演算子は2つの検索語を結びつけ、
         いずれかの検索語が存在するレコードを検索します。</p>
@@ -111,7 +111,7 @@
         ように指定します。</p>
         <pre class="code">"economics Keynes" OR Keynes</pre>
       </dd>
-      <dt><a name="NOT"></a>NOT</dt>
+      <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>NOT 演算子は、NOT の後ろにある検索語を含むレコードを除外します。</p>
         <p>"economics" を含むが、"Keynes" は含まない資料を検索するには、次のように指定します。</p>
@@ -120,7 +120,7 @@
         なります。</p>
         <pre class="code">NOT economics</pre>
       </dd>
-      <dt><a name="-"></a>-</dt>
+      <dt><a id="boolean_minus"></a>-</dt>
       <dd>
         <p><Strong>-</strong> すなわち抑制演算子は、"-" 記号の後ろにある検索語を含む資料を除外します。</p>
         <p>economics" を含むが、"Keynes" は含まない資料を検索するには、次のように指定します。</p>
