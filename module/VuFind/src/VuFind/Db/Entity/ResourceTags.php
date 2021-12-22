@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -67,6 +66,4 @@ class ResourceTags
      * })
      */
     private $user;
-
-
 }

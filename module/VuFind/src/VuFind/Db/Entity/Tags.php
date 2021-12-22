@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -27,6 +26,4 @@ class Tags
      * @ORM\Column(name="tag", type="string", length=64, nullable=false)
      */
     private $tag = '';
-
-
 }

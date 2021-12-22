@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -34,6 +33,4 @@ class OaiResumption
      * @ORM\Column(name="expires", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
      */
     private $expires = '2000-01-01 00:00:00';
-
-
 }

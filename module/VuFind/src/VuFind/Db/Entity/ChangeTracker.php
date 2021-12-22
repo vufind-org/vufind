@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -57,6 +56,4 @@ class ChangeTracker
      * @ORM\Column(name="deleted", type="datetime", nullable=true)
      */
     private $deleted;
-
-
 }

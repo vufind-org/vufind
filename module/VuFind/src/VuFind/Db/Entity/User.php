@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -167,6 +166,4 @@ class User
      * @ORM\Column(name="last_language", type="string", length=30, nullable=false)
      */
     private $lastLanguage = '';
-
-
 }

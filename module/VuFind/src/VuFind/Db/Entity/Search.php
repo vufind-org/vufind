@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -97,6 +96,4 @@ class Search
      * @ORM\Column(name="notification_base_url", type="string", length=255, nullable=false)
      */
     private $notificationBaseUrl = '';
-
-
 }

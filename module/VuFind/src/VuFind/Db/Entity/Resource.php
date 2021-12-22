@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -62,6 +61,4 @@ class Resource
      * @ORM\Column(name="extra_metadata", type="text", length=16777215, nullable=true)
      */
     private $extraMetadata;
-
-
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -55,6 +54,4 @@ class Record
      * @ORM\Column(name="updated", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
      */
     private $updated = '2000-01-01 00:00:00';
-
-
 }
