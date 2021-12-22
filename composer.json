@@ -122,6 +122,6 @@
         "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
-        "qa": "phing qa-console -Dlocaldir=__BUILDTMP__"
+        "qa": "phing qa-console -Ddefaultconfigs=true"
     }
 }

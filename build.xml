@@ -4,12 +4,14 @@
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
-  <property name="localdir" value="${srcdir}/local" />
   <if>
-    <equals arg1="${localdir}" arg2="__BUILDTMP__" />
+    <equals arg1="${defaultconfigs}" arg2="true" />
     <then>
       <property name="localdir" value="${builddir}/local" override="true" />
     </then>
+    <else>
+      <property name="localdir" value="${srcdir}/local" override="true" />
+    </else>
   </if>
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
