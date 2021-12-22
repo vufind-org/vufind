@@ -299,41 +299,6 @@ class ResourceTags extends Gateway
     }
 
     /**
-     * Get statistics on use of tags.
-     *
-     * @param bool $extended Include extended (unique/anonymous) stats.
-     *
-     * @return array
-     */
-    public function getStatistics($extended = false)
-    {
-        $select = $this->sql->select();
-        $select->columns(
-            [
-                'users' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['user_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'resources' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['resource_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'total' => new Expression('COUNT(*)')
-            ]
-        );
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $result = $statement->execute();
-        $stats = (array)$result->current();
-        if ($extended) {
-            $stats['unique'] = count($this->getUniqueTags());
-            $stats['anonymous'] = $this->getAnonymousCount();
-        }
-        return $stats;
-    }
-
-    /**
      * Unlink rows for the specified resource.
      *
      * @param string|array $resource ID (or array of IDs) of resource(s) to
@@ -436,19 +401,6 @@ class ResourceTags extends Gateway
                 $tagTable->deleteByIdArray($checkResults['missing']);
             }
         }
-    }
-
-    /**
-     * Get count of anonymous tags
-     *
-     * @return int count
-     */
-    public function getAnonymousCount()
-    {
-        $callback = function ($select) {
-            $select->where->isNull('user_id');
-        };
-        return count($this->select($callback));
     }
 
     /**

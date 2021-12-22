@@ -27,6 +27,9 @@
  */
 namespace VuFindAdmin\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Service\TagService;
+
 /**
  * Class controls VuFind social statistical data.
  *
@@ -39,6 +42,25 @@ namespace VuFindAdmin\Controller;
 class SocialstatsController extends AbstractAdmin
 {
     /**
+     * Tag service
+     *
+     * @var TagService
+     */
+    protected $tagService;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        parent::__construct($sm);
+        $this->tagService = $sm->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(TagService::class);
+    }
+
+    /**
      * Social statistics reporting
      *
      * @return \Laminas\View\Model\ViewModel
@@ -49,7 +71,7 @@ class SocialstatsController extends AbstractAdmin
         $view->setTemplate('admin/socialstats/home');
         $view->comments = $this->getTable('comments')->getStatistics();
         $view->favorites = $this->getTable('userresource')->getStatistics();
-        $view->tags = $this->getTable('resourcetags')->getStatistics();
+        $view->tags = $this->tagService->getStatistics();
         return $view;
     }
 }

@@ -533,8 +533,8 @@ class UpgradeController extends AbstractBase
             // content -- the checks below should be platform-independent.
 
             // Check for legacy tag bugs:
-            $resourceTagsTable = $this->getTable('ResourceTags');
-            $anonymousTags = $resourceTagsTable->getAnonymousCount();
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $anonymousTags = $tagService->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
