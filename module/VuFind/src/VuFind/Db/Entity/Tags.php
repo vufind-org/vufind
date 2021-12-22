@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="tags")
  * @ORM\Entity
  */
-class Tags
+class Tags implements EntityInterface
 {
     /**
      * @var int

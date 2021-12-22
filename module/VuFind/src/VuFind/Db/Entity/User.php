@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="cat_id", columns={"cat_id"}), @ORM\UniqueConstraint(name="username", columns={"username"})})
  * @ORM\Entity
  */
-class User
+class User implements EntityInterface
 {
     /**
      * @var int

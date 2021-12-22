@@ -65,6 +65,7 @@ class AbstractServiceFactory implements FactoryInterface
     ) {
         return new $requestedName(
             $container->get(\Doctrine\ORM\EntityManager::class),
+            $container->get(\VuFind\Db\Entity\PluginManager::class),
             ...($options ?? [])
         );
     }

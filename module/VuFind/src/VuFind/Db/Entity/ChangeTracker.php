@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="change_tracker", indexes={@ORM\Index(name="deleted_index", columns={"deleted"})})
  * @ORM\Entity
  */
-class ChangeTracker
+class ChangeTracker implements EntityInterface
 {
     /**
      * @var string

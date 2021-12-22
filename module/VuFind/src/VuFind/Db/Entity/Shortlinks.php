@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="shortlinks", uniqueConstraints={@ORM\UniqueConstraint(name="shortlinks_hash_IDX", columns={"hash"})})
  * @ORM\Entity
  */
-class Shortlinks
+class Shortlinks implements EntityInterface
 {
     /**
      * @var int

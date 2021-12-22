@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="session", uniqueConstraints={@ORM\UniqueConstraint(name="session_id", columns={"session_id"})}, indexes={@ORM\Index(name="last_used", columns={"last_used"})})
  * @ORM\Entity
  */
-class Session
+class Session implements EntityInterface
 {
     /**
      * @var int

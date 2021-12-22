@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="resource", indexes={@ORM\Index(name="record_id", columns={"record_id"})})
  * @ORM\Entity
  */
-class Resource
+class Resource implements EntityInterface
 {
     /**
      * @var int

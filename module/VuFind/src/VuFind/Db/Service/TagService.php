@@ -28,6 +28,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\ResourceTags;
 
 /**
@@ -51,12 +52,16 @@ class TagService extends AbstractService
     /**
      * Constructor
      *
-     * @param EntityManager $entityManager Doctrine ORM entity manager
-     * @param bool          $caseSensitive Are tags case sensitive?
+     * @param EntityManager       $entityManager       Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
+     * @param bool                $caseSensitive       Are tags case sensitive?
      */
-    public function __construct(EntityManager $entityManager, bool $caseSensitive)
-    {
-        parent::__construct($entityManager);
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        bool $caseSensitive
+    ) {
+        parent::__construct($entityManager, $entityPluginManager);
         $this->caseSensitive = $caseSensitive;
     }
 
@@ -68,7 +73,7 @@ class TagService extends AbstractService
     public function getAnonymousCount(): int
     {
         $dql = "SELECT COUNT(rt.id) AS total "
-            . "FROM " . ResourceTags::class . " rt "
+            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
             . "WHERE rt.user IS NULL";
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
@@ -93,7 +98,7 @@ class TagService extends AbstractService
         $dql = "SELECT MAX(r.id) AS resource_id, MAX(t.id) AS tag_id, "
             . "MAX(l.id) AS list_id, MAX(u.id) AS user_id, MAX(rt.id) AS id, "
             . $tagClause . " AS tag "
-            . "FROM " . ResourceTags::class . " rt "
+            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
             . "LEFT JOIN rt.resource r "
             . "LEFT JOIN rt.tag t "
             . "LEFT JOIN rt.list l "
@@ -130,7 +135,7 @@ class TagService extends AbstractService
         $dql = "SELECT COUNT(DISTINCT(rt.user)) AS users, "
             . "COUNT(DISTINCT(rt.resource)) AS resources, "
             . "COUNT(rt.id) AS total "
-            . "FROM " . ResourceTags::class . " rt";
+            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt";
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         if ($extended) {

@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="search", indexes={@ORM\Index(name="folder_id", columns={"folder_id"}), @ORM\Index(name="notification_base_url", columns={"notification_base_url"}), @ORM\Index(name="notification_frequency", columns={"notification_frequency"}), @ORM\Index(name="session_id", columns={"session_id"}), @ORM\Index(name="user_id", columns={"user_id"})})
  * @ORM\Entity
  */
-class Search
+class Search implements EntityInterface
 {
     /**
      * @var int

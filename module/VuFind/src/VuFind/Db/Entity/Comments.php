@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="comments", indexes={@ORM\Index(name="resource_id", columns={"resource_id"}), @ORM\Index(name="user_id", columns={"user_id"})})
  * @ORM\Entity
  */
-class Comments
+class Comments implements EntityInterface
 {
     /**
      * @var int

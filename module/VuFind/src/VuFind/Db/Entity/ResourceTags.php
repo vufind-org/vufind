@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="resource_tags", indexes={@ORM\Index(name="list_id", columns={"list_id"}), @ORM\Index(name="resource_id", columns={"resource_id"}), @ORM\Index(name="tag_id", columns={"tag_id"}), @ORM\Index(name="user_id", columns={"user_id"})})
  * @ORM\Entity
  */
-class ResourceTags
+class ResourceTags implements EntityInterface
 {
     /**
      * @var int

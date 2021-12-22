@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user_card", indexes={@ORM\Index(name="user_card_cat_username", columns={"cat_username"}), @ORM\Index(name="user_id", columns={"user_id"})})
  * @ORM\Entity
  */
-class UserCard
+class UserCard implements EntityInterface
 {
     /**
      * @var int

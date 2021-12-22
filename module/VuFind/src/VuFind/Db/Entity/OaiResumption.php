@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="oai_resumption")
  * @ORM\Entity
  */
-class OaiResumption
+class OaiResumption implements EntityInterface
 {
     /**
      * @var int

@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="auth_hash", uniqueConstraints={@ORM\UniqueConstraint(name="hash_type", columns={"hash", "type"})}, indexes={@ORM\Index(name="created", columns={"created"}), @ORM\Index(name="session_id", columns={"session_id"})})
  * @ORM\Entity
  */
-class AuthHash
+class AuthHash implements EntityInterface
 {
     /**
      * @var int

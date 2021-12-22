@@ -1,6 +1,6 @@
 <?php
 /**
- * Database service abstract base class
+ * Marker interface for VuFind entity models.
  *
  * PHP version 7
  *
@@ -25,13 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-namespace VuFind\Db\Service;
-
-use Doctrine\ORM\EntityManager;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+namespace VuFind\Db\Entity;
 
 /**
- * Database service abstract base class
+ * Marker interface for VuFind entity models.
  *
  * @category VuFind
  * @package  Database
@@ -39,46 +36,6 @@ use VuFind\Db\Entity\PluginManager as EntityPluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-abstract class AbstractService
+interface EntityInterface
 {
-    /**
-     * Doctrine ORM entity manager
-     *
-     * @var EntityManager
-     */
-    protected $entityManager;
-
-    /**
-     * VuFind entity plugin manager
-     *
-     * @var EntityPluginManager
-     */
-    protected $entityPluginManager;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager
-    ) {
-        $this->entityManager = $entityManager;
-        $this->entityPluginManager = $entityPluginManager;
-    }
-
-    /**
-     * Resolve an entity class name using the plugin manager.
-     *
-     * @param string $entity Entity class name or alias
-     *
-     * @return string
-     */
-    protected function getEntityClass(string $entity): string
-    {
-        $entity = $this->entityPluginManager->get($entity);
-        return get_class($entity);
-    }
 }
