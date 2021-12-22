@@ -4,7 +4,13 @@
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
-  <property name="localdir" value="${srcdir}/local" override="true"/>
+  <property name="localdir" value="${srcdir}/local" />
+  <if>
+    <equals arg1="${localdir}" arg2="__BUILDTMP__" />
+    <then>
+      <property name="localdir" value="${builddir}/local" override="true" />
+    </then>
+  </if>
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
   <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
