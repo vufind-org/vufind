@@ -4,13 +4,18 @@
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
+  <!--
+    Use builddir/local as the local directory if defaultconfigs=true. This allows the
+    tests to be run without any custom configuration possibly interfering in the
+    normal local directory.
+  -->
   <if>
     <equals arg1="${defaultconfigs}" arg2="true" />
     <then>
       <property name="localdir" value="${builddir}/local" override="true" />
     </then>
     <else>
-      <property name="localdir" value="${srcdir}/local" override="true" />
+      <property name="localdir" value="${srcdir}/local" override="false" />
     </else>
   </if>
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
