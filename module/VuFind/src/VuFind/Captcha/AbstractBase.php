@@ -61,6 +61,17 @@ abstract class AbstractBase
     }
 
     /**
+     * Get any error message after a failed captcha verification. The message can be
+     * displayed to the user.
+     *
+     * @return string
+     */
+    public function getErrorMessage(): string
+    {
+        return '';
+    }
+
+    /**
      * Pull the captcha field from controller params and check them for accuracy
      *
      * @param Params $params Controller params

@@ -128,11 +128,12 @@ class Captcha extends AbstractPlugin
         }
 
         if (!$captchaPassed && $this->errorMode != 'none') {
+            $message = $captcha->getErrorMessage() ?: 'captcha_not_passed';
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
-                    ->addMessage('captcha_not_passed', 'error');
+                    ->addErrorMessage($message);
             } else {
-                throw new \Exception('captcha_not_passed');
+                throw new \Exception($message);
             }
         }
         return $captchaPassed;

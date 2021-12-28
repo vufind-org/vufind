@@ -160,4 +160,43 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#modal .alert-success')->getText()
         );
     }
+
+    /**
+     * Test feedback form with the interval captcha.
+     *
+     * @return void
+     */
+    public function testIntervalCaptcha()
+    {
+        $page = $this->setupPage(
+            [
+                'Captcha' => [
+                    'types' => ['interval'],
+                    'forms' => 'feedback',
+                    'action_interval' => 8
+                ]
+            ]
+        );
+        // Send once before actual tests to reset the interval:
+        $this->fillInAndSubmitFeedbackForm($page);
+
+        // Resubmit too soon:
+        $this->fillInAndSubmitFeedbackForm($page);
+        $this->assertEquals(
+            1,
+            preg_match(
+                '/This action can only be performed after (\d+) seconds/',
+                $this->findCss($page, '#modal .alert-danger')->getText(),
+                $matches
+            )
+        );
+
+        // Wait and resubmit:
+        $this->snooze($matches[1]);
+        $this->clickCss($page, '#modal input[type="submit"]');
+        $this->assertEquals(
+            'Thank you for your feedback.',
+            $this->findCss($page, '#modal .alert-success')->getText()
+        );
+    }
 }
