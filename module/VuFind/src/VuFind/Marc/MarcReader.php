@@ -194,6 +194,46 @@ class MarcReader
     }
 
     /**
+     * Return all fields as an array.
+     *
+     * Control fields have the following elements:
+     * - tag
+     * - data
+     *
+     * Data fields have the following elements:
+     * - tag
+     * - i1
+     * - i2
+     * - subfields
+     *
+     * @return array
+     */
+    public function getAllFields()
+    {
+        $result = [];
+        foreach (array_keys($this->fields) as $tag) {
+            $fields = array_map(
+                function ($field) use ($tag) {
+                    // Convert control fields to arrays:
+                    if (is_string($field)) {
+                        return [
+                            'tag' => $tag,
+                            'data' => $field
+                        ];
+                    }
+                    return $field;
+                },
+                $this->getFields($tag)
+            );
+            $result = array_merge(
+                $result,
+                $fields
+            );
+        }
+        return $result;
+    }
+
+    /**
      * Return first subfield with the given code in the MARC field provided by
      * getField or getFields
      *
