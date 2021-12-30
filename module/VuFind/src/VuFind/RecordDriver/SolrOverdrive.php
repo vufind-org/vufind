@@ -397,48 +397,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Marc Record
-     *
-     * Override the base marc trait to return a fake marc object
-     *
-     * @return     \File_MARCBASE
-     * @throws     \File_MARC_Exception
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        if ($this->getIsMarc()) {
-            return parent::getMarcRecord();
-        }
-        // No MARC support? Return new fake MARC class.
-        return new class {
-            /**
-             * Get the field
-             *
-             * @param string $f Fieldname
-             *
-             * @return string
-             */
-            public function getField($f)
-            {
-                return "";
-            }
-
-            /**
-             * Get the fields
-             *
-             * @param array $f Fieldnames
-             *
-             * @return array
-             */
-            public function getFields($f)
-            {
-                return [];
-            }
-        };
-    }
-
-    /**
      * Get Title Section
      *
      * @return string

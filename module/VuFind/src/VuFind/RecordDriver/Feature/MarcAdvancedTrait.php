@@ -225,15 +225,70 @@ trait MarcAdvancedTrait
      */
     public function getFilteredXML()
     {
-        $record = clone $this->getMarcReader();
-        // The default implementation does not filter out any fields
-        // $marc = new \File_MARCXML(
-        //    $record->toFormat('MARCXML'), \File_MARCXML::SOURCE_STRING
-        //);
-        // $marc->deleteFields('9', true);
-        // return $marc->toXML();
+        // The default implementation does not filter out any fields. You can do
+        // simple filtering using MarcReader's getFilteredRecord method, or more
+        // complex changes by using the XML DOM.
         //
-        return $record->toFormat('MARCXML');
+        // Example for removing field 520, 9xx fields and subfield 0 from all fields
+        // with getFilteredRecord:
+        //
+        //
+        // return $this->getMarcReader()->getFilteredRecord(
+        //     [
+        //         [
+        //             'tag' => '520',
+        //         ],
+        //         [
+        //             'tag' => '9..',
+        //         ],
+        //         [
+        //             'tag' => '...',
+        //             'subfields' => '0',
+        //         ],
+        //     ]
+        // )->toFormat('MARCXML');
+        //
+        //
+        // Example for removing field 520 using DOM (note that the fields must be
+        // removed in a second loop to not affect the iteration of fields) and adding
+        // a new 955 field:
+        //
+        // $collection = new \DOMDocument();
+        // $collection->preserveWhiteSpace = false;
+        // $collection->loadXML($this->getMarcReader()->toFormat('MARCXML'));
+        // $record = $collection->getElementsByTagName('record')->item(0);
+        // $fieldsToRemove = [];
+        // foreach ($record->getElementsByTagName('datafield') as $field) {
+        //     $tag = $field->getAttribute('tag');
+        //     if ('520' === $tag) {
+        //         $fieldsToRemove[] = $field;
+        //     }
+        // }
+        // foreach ($fieldsToRemove as $field) {
+        //     $record->removeChild($field);
+        // }
+        //
+        // $field = $collection->createElement('datafield');
+        // $tag = $collection->createAttribute('tag');
+        // $tag->value = '955';
+        // $field->appendChild($tag);
+        // $ind1 = $collection->createAttribute('ind1');
+        // $ind1->value = ' ';
+        // $field->appendChild($ind1);
+        // $ind2 = $collection->createAttribute('ind2');
+        // $ind2->value = ' ';
+        // $field->appendChild($ind2);
+        // $subfield = $collection->createElement('subfield');
+        // $code = $collection->createAttribute('code');
+        // $code->value = 'a';
+        // $subfield->appendChild($code);
+        // $subfield->appendChild($collection->createTextNode('VuFind'));
+        // $field->appendChild($subfield);
+        // $record->appendChild($field);
+        //
+        // return $collection->saveXML();
+
+        return $this->getMarcReader()->toFormat('MARCXML');
     }
 
     /**
