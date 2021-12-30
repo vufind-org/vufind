@@ -119,7 +119,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     /**
      * CSRF validator
      *
-     * @var Csrf
+     * @var CsrfInterface
      */
     protected $csrf;
 
