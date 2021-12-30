@@ -890,6 +890,12 @@ trait MarcAdvancedTrait
 
             // Set up proper namespacing and extract just the <record> tag:
             $xml->record->addAttribute('xmlns', "http://www.loc.gov/MARC21/slim");
+            // There's a quirk in SimpleXML that strips the first namespace
+            // declaration, hence the double xmlns: prefix:
+            $xml->record->addAttribute(
+                'xmlns:xmlns:xsi',
+                'http://www.w3.org/2001/XMLSchema-instance'
+            );
             $xml->record->addAttribute(
                 'xsi:schemaLocation',
                 'http://www.loc.gov/MARC21/slim ' .

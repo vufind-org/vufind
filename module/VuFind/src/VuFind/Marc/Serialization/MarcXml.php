@@ -178,6 +178,15 @@ class MarcXml implements SerializationInterface, SerializationFileInterface
         $xml->setIndent(true);
         $xml->startDocument('1.0', 'UTF-8');
         $xml->startElementNs(null, 'collection', "http://www.loc.gov/MARC21/slim");
+        $xml->writeAttribute(
+            'xmlns:xsi',
+            'http://www.w3.org/2001/XMLSchema-instance'
+        );
+        $xml->writeAttribute(
+            'xsi:schemaLocation',
+            'http://www.loc.gov/MARC21/slim'
+            . ' http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd'
+        );
         $xml->startElement('record');
         if ($leader) {
             $xml->writeElement('leader', $leader);
