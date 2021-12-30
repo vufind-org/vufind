@@ -28,7 +28,7 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
-use File_MARC_Record;
+use VuFind\Marc\MarcReader;
 use VuFindSearch\Response\RecordInterface;
 
 /**
@@ -45,7 +45,7 @@ class Record implements RecordInterface
     /**
      * MARC record.
      *
-     * @var File_MARC_Record
+     * @var MarcReader
      */
     protected $marc;
 
@@ -59,11 +59,11 @@ class Record implements RecordInterface
     /**
      * Constructor.
      *
-     * @param File_MARC_Record $marc MARC record
+     * @param MarcReader $marc MARC record
      *
      * @return void
      */
-    public function __construct(File_MARC_Record $marc)
+    public function __construct(MarcReader $marc)
     {
         $this->marc = $marc;
     }
@@ -93,9 +93,9 @@ class Record implements RecordInterface
     /**
      * Get MARC record
      *
-     * @return File_MARC_Record
+     * @return MarcReader
      */
-    public function getMarc()
+    public function getMarc(): MarcReader
     {
         return $this->marc;
     }
