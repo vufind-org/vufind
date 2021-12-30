@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020.
+ * Copyright (C) The National Library of Finland 2020-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -57,11 +57,49 @@ class Iso2709 implements SerializationInterface
     }
 
     /**
-     * Parse MARCXML string
+     * Check if the serialization class can parse the given MARC collection string
      *
-     * @param string $marc MARCXML
+     * @param string $marc MARC
      *
-     * @throws Exception
+     * @return bool
+     */
+    public static function canParseCollection(string $marc): bool
+    {
+        // A pretty naïve check, but it's enough to tell the different formats apart
+        return ctype_digit(substr($marc, 0, 4));
+    }
+
+    /**
+     * Parse MARC collection from a string into an array
+     *
+     * @param string $collection MARC record collection in the format supported by
+     * the serialization class
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public static function collectionFromString(string $collection): array
+    {
+        return array_slice(
+            array_map(
+                function ($record) {
+                    // Clean up any extra characters between records and append an
+                    // end-of-record marker lost in explode:
+                    return ltrim($record, "\x00\x0a\x0d") . self::END_OF_RECORD;
+                },
+                explode(self::END_OF_RECORD, $collection)
+            ),
+            0,
+            -1
+        );
+    }
+
+    /**
+     * Wrapper for parsing an ISO2709 string
+     *
+     * @param string $marc ISO2709
+     *
+     * @throws \Exception
      * @return array
      */
     public static function fromString(string $marc): array

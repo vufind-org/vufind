@@ -48,7 +48,39 @@ class MarcXml implements SerializationInterface
     public static function canParse(string $marc): bool
     {
         // A pretty naïve check, but it's enough to tell the different formats apart
-        return strncmp($marc, '<', 1) === 0;
+        return strncmp(trim($marc), '<', 1) === 0;
+    }
+
+    /**
+     * Check if the serialization class can parse the given MARC collection string
+     *
+     * @param string $marc MARC
+     *
+     * @return bool
+     */
+    public static function canParseCollection(string $marc): bool
+    {
+        // A pretty naïve check, but it's enough to tell the different formats apart
+        return strncmp(trim($marc), '<', 1) === 0;
+    }
+
+    /**
+     * Parse MARC collection from a string into an array
+     *
+     * @param string $collection MARC record collection in the format supported by
+     * the serialization class
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public static function collectionFromString(string $collection): array
+    {
+        $xml = static::loadXML(trim($collection));
+        $results = [];
+        foreach ($xml->record as $record) {
+            $results[] = $record->asXML();
+        }
+        return $results;
     }
 
     /**
@@ -56,21 +88,12 @@ class MarcXml implements SerializationInterface
      *
      * @param string $marc MARCXML
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array
      */
     public static function fromString(string $marc): array
     {
-        $xmlHead = '<?xml version';
-        if (strcasecmp(substr($marc, 0, strlen($xmlHead)), $xmlHead) === 0) {
-            $decl = substr($marc, 0, strpos($marc, '?>'));
-            if (strstr($decl, 'encoding') === false) {
-                $marc = $decl . ' encoding="utf-8"' . substr($marc, strlen($decl));
-            }
-        } else {
-            $marc = '<?xml version="1.0" encoding="utf-8"?>' . "\n\n$marc";
-        }
-        $xml = static::loadXML($marc);
+        $xml = static::loadXML(trim($marc));
 
         // Move to the record element if we were given a collection
         if ($xml->record) {
@@ -159,11 +182,21 @@ class MarcXml implements SerializationInterface
      *
      * @param string $xml XML
      *
-     * @throws Exception
+     * @throws \Exception
      * @return \SimpleXMLElement
      */
     protected static function loadXML(string $xml): \SimpleXMLElement
     {
+        // Make sure we have an XML prolog with proper encoding:
+        $xmlHead = '<?xml version';
+        if (strcasecmp(substr($xml, 0, strlen($xmlHead)), $xmlHead) === 0) {
+            $decl = substr($xml, 0, strpos($xml, '?>'));
+            if (strstr($decl, 'encoding') === false) {
+                $xml = $decl . ' encoding="utf-8"' . substr($xml, strlen($decl));
+            }
+        } else {
+            $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n\n$xml";
+        }
         $saveUseErrors = libxml_use_internal_errors(true);
         try {
             libxml_clear_errors();
