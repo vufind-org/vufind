@@ -26,8 +26,9 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Marc\MarcCollection;
+use VuFind\Marc\MarcReader;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -1292,32 +1293,30 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * reflect local policies regarding interpretation of the a, b and
      * c subfields of  852.
      *
-     * @param File_Marc_Field $field Location field to be processed.
+     * @param MarcReader $record MARC record.
+     * @param array      $field  Location field to be processed.
      *
      * @return array Location information.
      */
-    protected function processMarcHoldingLocation($field)
+    protected function processMarcHoldingLocation(MarcReader $record, $field)
     {
-        $library_code  = $field->getSubfield('b')->getData();
-        $location_code = $field->getSubfield('c')->getData();
+        $library_code  = $record->getSubfield($field, 'b');
+        $location_code = $record->getSubfield($field, 'c');
         $location = [
             'library_code'  => $library_code,
             'library'       => $this->mapLibrary($library_code),
             'location_code' => $location_code,
             'location'      => $this->mapLocation($location_code),
-            'notes'   => [],
-            'marc852' => $field
+            'notes'         => $record->getSubfields($field, 'z'),
+            'marc852'       => $field
         ];
-        foreach ($field->getSubfields('z') as $note) {
-            $location['notes'][] = $note->getData();
-        }
         return $location;
     }
 
     /**
      * Decode a MARC holding record.
      *
-     * @param File_MARC_Record $record Holding record to decode..
+     * @param MarcReader $record Holding record to decode..
      *
      * @return array Has two elements: the first is the list of
      *               locations found in the record, the second are the
@@ -1326,7 +1325,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @todo Check if is OK to print multiple times textual holdings
      *       that had more than one $8.
      */
-    protected function decodeMarcHoldingRecord($record)
+    protected function decodeMarcHoldingRecord(MarcReader $record)
     {
         $locations = [];
         $holdings = [];
@@ -1337,19 +1336,20 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         //    able to easily check later what fields from enumeration
         //    and chronology they override.
         $textuals = [];
-        foreach ($record->getFields('852|866', true) as $field) {
-            switch ($field->getTag()) {
+        $fields = array_merge($record->getFields('852'), $record->getFields('866'));
+        foreach ($fields as $field) {
+            switch ($field['tag']) {
             case '852':
-                $locations[] = $this->processMarcHoldingLocation($field);
+                $locations[] = $this->processMarcHoldingLocation($record, $field);
                 break;
             case '866':
-                $linking_fields = $field->getSubfields('8');
+                $linking_fields = $record->getSubfields($field, '8');
                 if ($linking_fields === false) {
                     // Skip textual holdings fields with no linking
                     continue 2;
                 }
                 foreach ($linking_fields as $linking_field) {
-                    $linking = explode('.', $linking_field->getData());
+                    $linking = explode('.', $linking_field);
                     // Only the linking part is used in textual
                     // holdings...
                     $linking = $linking[0];
@@ -1371,14 +1371,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                   ? []
                   : $record->getFields('863'))
                  as $field) {
-            $linking_field = $field->getSubfield('8');
+            $linking_field = $record->getSubfield($field, '8');
 
             if ($linking_field === false) {
                 // Skip record if there is no linking number
                 continue;
             }
 
-            $linking = explode('.', $linking_field->getData());
+            $linking = explode('.', $linking_field);
             if (1 < count($linking)) {
                 $sequence = explode('\\', $linking[1]);
                 // Lets ignore the link type, as we only care for \x
@@ -1395,11 +1395,11 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
 
             $decoded_holding = '';
-            foreach ($field->getSubfields() as $subfield) {
-                if (strpos('68x', (string)$subfield->getCode()) !== false) {
+            foreach ($field['subfields'] as $subfield) {
+                if (strpos('68x', $subfield['code']) !== false) {
                     continue;
                 }
-                $decoded_holding .= ' ' . $subfield->getData();
+                $decoded_holding .= ' ' . $subfield['data'];
             }
 
             $ndx = (int)($linking
@@ -1408,9 +1408,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         foreach ($textuals as $linking => $field) {
-            $textual_holding = $field->getSubfield('a')->getData();
-            foreach ($field->getSubfields('z') as $note) {
-                $textual_holding .= ' ' . $note->getData();
+            $textual_holding = $record->getSubfield($field, 'a');
+            foreach ($record->getSubfields($field, 'z') as $note) {
+                $textual_holding .= ' ' . $note;
             }
 
             $ndx = (int)($linking . sprintf("%0{$link_digits}u", 0));
@@ -1431,10 +1431,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function getMarcHoldings($marc)
     {
         $holdings = [];
-        $file = new File_MARC($marc, File_MARC::SOURCE_STRING);
-        while ($marc = $file->next()) {
+        $collection = new MarcCollection($marc);
+        foreach ($collection as $record) {
             [$locations, $record_holdings]
-                = $this->decodeMarcHoldingRecord($marc);
+                = $this->decodeMarcHoldingRecord($record);
             // Flatten locations with corresponding holdings as VuFind
             // expects it.
             foreach ($locations as $location) {
