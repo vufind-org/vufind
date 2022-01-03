@@ -5,7 +5,7 @@ VuFind.register('resultcount', function resultCount() {
     $('ul.nav-tabs li a').each(function queryResultCount(){
       var $this = $(this);
       if ($this.attr('href') !== undefined) {
-        var queryString = $this.attr('href').replace(/^.*\?/, '');
+        var queryString = $this.attr('href');
         var source = $this.data('source');
         $.ajax({
           url: VuFind.path + '/AJAX/JSON?method=getResultCount',

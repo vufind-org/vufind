@@ -2,9 +2,10 @@
 /**
  * Ajax Controller for Libraries Extension
  *
- * PHP version 5
+ * PHP version 8 
  *
- * Copyright (C) Staats- und Universitätsbibliothek 2017.
+ * Copyright (C) Villanova University 2010.
+ * Copyright (C) Staats- und Universitätsbibliothek 2021-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -19,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
- * @package  Controller
+ * @category VuFind
+ * @package  AJAX
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/subhh/beluga
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\AjaxHandler;
 
@@ -32,13 +34,14 @@ use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
- * This controller handles global AJAX functionality
+ * "Get Result Counts" AJAX Handler
  *
- * @category VuFind2
- * @package  Controller
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @category VuFind
+ * @package  AJAX
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class GetResultCount extends AbstractBase
 {
@@ -71,21 +74,7 @@ class GetResultCount extends AbstractBase
         $queryString = urldecode(
             $params->fromQuery('querystring')
         );
-
-        $queryArray = explode('&', $queryString);
-        $searchParams = [];
-        foreach ($queryArray as $queryItem) {
-            [$key, $value] = explode('=', $queryItem, 2);
-            if (strpos($key, '[]') > 0) {
-                $key = str_replace('[]', '', $key);
-                if (!isset($searchParams[$key])) {
-                    $searchParams[$key] = [];
-                }
-                $searchParams[$key][] = $value;
-            } else {
-                $searchParams[$key] = $value;
-            }
-        }
+        parse_str(parse_url($queryString, PHP_URL_QUERY), $searchParams);
 
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $results = $this->resultsManager->get($backend);
