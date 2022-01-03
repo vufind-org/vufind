@@ -2,7 +2,7 @@
 /**
  * Ajax Controller for Libraries Extension
  *
- * PHP version 8
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) Staats- und Universitätsbibliothek 2021-2022.
