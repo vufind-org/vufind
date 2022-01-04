@@ -516,13 +516,21 @@ EOT;
         }
 
         $escape = $this->getView()->plugin('escapejs');
-        $code = '';
+        $code = <<<EOT
+_paq.push(['deleteCustomVariables','page']);
+
+EOT;
         $i = 0;
         foreach ($customData as $key => $value) {
             ++$i;
+            // We're committed to tracking a maximum of 10 custom variables at a
+            // time:
+            if ($i > 10) {
+                break;
+            }
             $value = $escape($value);
             $code .= <<<EOT
-_paq.push(['setCustomVariable','$i','$key','$value']);
+_paq.push(['setCustomVariable',$i,'$key','$value','page']);
 
 EOT;
         }
