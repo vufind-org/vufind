@@ -284,7 +284,7 @@ class PAIA extends DAIA
         }
 
         $details = [];
-
+        $count = 0;
         if (isset($array_response['error'])) {
             $details[] = [
                 'success' => false,
@@ -292,7 +292,6 @@ class PAIA extends DAIA
                 'sysMessage' => $array_response['error']
             ];
         } else {
-            $count = 0;
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
                 $item_id = $element['item'];
