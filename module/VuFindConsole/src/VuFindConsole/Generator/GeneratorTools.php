@@ -286,7 +286,7 @@ class GeneratorTools
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
         if ($generateFactory) {
-            $this->generateFactory($class, $factory, $module);
+            $this->generateFactory($factory, $module);
         }
         $factoryPath = array_merge($configPath, ['factories', $class]);
         $this->writeNewConfig($factoryPath, $factory, $module);
@@ -309,20 +309,19 @@ class GeneratorTools
     /**
      * Generate a factory class.
      *
-     * @param string $class   Name of class being built by factory
      * @param string $factory Name of factory to generate
      * @param string $module  Name of module to generate factory within
      *
      * @return void
      */
-    protected function generateFactory($class, $factory, $module)
+    protected function generateFactory($factory, $module)
     {
         $this->createClassInModule(
             $factory,
             $module,
             null,
             ['Laminas\ServiceManager\Factory\FactoryInterface'],
-            function ($generator) use ($class) {
+            function ($generator) {
                 $method = MethodGenerator::fromArray(
                     [
                         'name' => '__invoke',
