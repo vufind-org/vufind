@@ -208,9 +208,9 @@ class PrimoBackendFactory extends AbstractBackendFactory
     /**
      * Get a PrimoPermissionHandler
      *
-     * @return PrimoPermissionHandler
+     * @return ?PrimoPermissionHandler
      */
-    protected function getPermissionHandler()
+    protected function getPermissionHandler(): ?PrimoPermissionHandler
     {
         if (isset($this->primoConfig->Institutions)) {
             $permHandler = new PrimoPermissionHandler(

@@ -448,9 +448,9 @@ class Shibboleth extends AbstractBase
      * @param \Laminas\Http\PhpEnvironment\Request $request   Request object
      * @param string                               $attribute Attribute name
      *
-     * @return string attribute value
+     * @return ?string attribute value
      */
-    protected function getAttribute($request, $attribute)
+    protected function getAttribute($request, $attribute): ?string
     {
         if ($this->useHeaders) {
             $header = $request->getHeader($attribute);

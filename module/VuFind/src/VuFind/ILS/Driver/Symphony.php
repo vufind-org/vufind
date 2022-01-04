@@ -228,14 +228,17 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * If the cached session token is expired or otherwise defective,
      * the caller can use the $reset parameter.
      *
-     * @param string $login    The login account name
-     * @param string $password The login password, or null for no password
-     * @param bool   $reset    If true, replace any currently cached token
+     * @param string  $login    The login account name
+     * @param ?string $password The login password, or null for no password
+     * @param bool    $reset    If true, replace any currently cached token
      *
      * @return string The session token
      */
-    protected function getSessionToken($login, $password, $reset = false)
-    {
+    protected function getSessionToken(
+        string $login,
+        ?string $password = null,
+        bool $reset = false
+    ) {
         static $sessionTokens = [];
 
         // If we keyed only by $login, we might mistakenly retrieve a valid
