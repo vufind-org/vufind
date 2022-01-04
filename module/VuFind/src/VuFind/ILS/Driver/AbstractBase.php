@@ -71,7 +71,7 @@ abstract class AbstractBase implements DriverInterface
      * @param string     $msg       Override exception message (optional)
      *
      * @throws ILSException
-     * @return void
+     * @return never
      */
     protected function throwAsIlsException(
         \Throwable $exception,

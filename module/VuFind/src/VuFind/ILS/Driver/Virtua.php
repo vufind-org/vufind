@@ -565,6 +565,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $sorted = []; // We'll put items from the patron's location in here
         $return = []; // Everything else in here
         foreach ($holdings as $h) {
+            $item_loc_code = null;
             // Super Users (eg. Off-Camp, and Lending) can request anything
             if ($super_user) {
                 $h['req_allowed'] = true;
@@ -980,10 +981,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $sort_set = [];
         // Loop through each sequence
         foreach ($data_set as $row) {
-            $sort = '';
             $tag  = '';
             $data = [];
-
+            $sort_rule = '';
+            $sort_order = '';
             // And each subfield
             foreach ($row as $subfield) {
                 // Found the '8' subfield
@@ -1002,7 +1003,6 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     ];
                 }
             }
-
             $sort_set[$sort_rule . "." . $sort_order] = [
                 'tag'  => $tag,
                 'data' => $data
