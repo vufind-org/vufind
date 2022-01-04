@@ -94,6 +94,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      * @param array         $filterConfig Tab filter configuration
      * @param Request       $request      Request
      * @param array         $permConfig   Tab permission configuration
+     * @param array         $detailConfig Tab detailed configuration
      */
     public function __construct(
         PluginManager $results,
