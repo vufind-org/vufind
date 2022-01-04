@@ -487,16 +487,14 @@ EOT;
     protected function getPageUrl(): string
     {
         $path = $this->request->getUri()->toString();
+        // Replace 'AjaxTab' with tab name in record page URLs:
         $routeMatch = $this->router->match($this->request);
         if ($routeMatch
-            && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
+            && substr($routeMatch->getMatchedRouteName(), -8) === '-ajaxtab'
+            && null !== ($pos = strrpos($path, '/AjaxTab'))
+            && ($tab = $this->request->getPost('tab'))
         ) {
-            // Replace 'AjaxTab' with tab name in record page URLs
-            $replace = 'AjaxTab';
-            $tab = $this->request->getPost('tab');
-            if (null !== ($pos = strrpos($path, $replace))) {
-                $path = substr_replace($path, $tab, $pos, $pos + strlen($replace));
-            }
+            $path = substr_replace($path, $tab, $pos + 1, 7);
         }
         return $path;
     }
