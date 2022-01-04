@@ -438,9 +438,12 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getOpeningTrackingCode(): string
     {
+        $escape = $this->getView()->plugin('escapejs');
+        $pageUrl = $escape($this->getPageUrl());
         $code = <<<EOT
 var _paq = window._paq = window._paq || [];
 _paq.push(['enableLinkTracking']);
+_paq.push(['setCustomUrl', '$pageUrl']);
 
 EOT;
         if ($this->disableCookies) {
@@ -458,18 +461,19 @@ EOT;
     protected function getClosingTrackingCode(): string
     {
         $escape = $this->getView()->plugin('escapejs');
-        $url = $escape($this->url);
         $trackerUrl = $escape($this->getTrackerUrl());
-        $pageUrl = $escape($this->getPageUrl());
+        $url = $escape($this->getTrackerJsUrl());
         return <<<EOT
 (function() {
-  var u='$url';
-  _paq.push(['setTrackerUrl', '$trackerUrl']);
-  _paq.push(['setSiteId', '{$this->siteId}']);
-  _paq.push(['setCustomUrl', '$pageUrl']);
-  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  g.type='text/javascript'; g.async=true; g.src=u+'matomo.js';
-  s.parentNode.insertBefore(g,s);
+  var d=document;
+  if (!d.getElementById('_matomo_js_script')) {
+    _paq.push(['setTrackerUrl', '$trackerUrl']);
+    _paq.push(['setSiteId', {$this->siteId}]);
+    var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.src='$url';
+    g.id = '_matomo_js_script';
+    s.parentNode.insertBefore(g,s);
+  }
 })();
 
 EOT;
@@ -671,6 +675,16 @@ EOT;
     protected function getTrackerUrl(): string
     {
         return $this->url . 'matomo.php';
+    }
+
+    /**
+     * Get Matomo tracker JS URL
+     *
+     * @return string
+     */
+    protected function getTrackerJsUrl(): string
+    {
+        return $this->url . 'matomo.js';
     }
 
     /**
