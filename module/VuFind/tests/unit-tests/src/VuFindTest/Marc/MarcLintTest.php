@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020-2021.
+ * Copyright (C) The National Library of Finland 2020-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,6 +39,7 @@ namespace VuFindTest\Marc;
 class MarcLintTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test MarcLint
@@ -60,5 +61,90 @@ class MarcLintTest extends \PHPUnit\Framework\TestCase
         $marc = $this->getFixture('marc/marclint_bad2.xml');
         $reader = new \VuFind\Marc\MarcReader($marc);
         $this->assertEquals(38, count($lint->checkRecord($reader)));
+
+        // Test checkArticle with field 130 and an invalid field:
+        $lint = new \VuFind\Marc\MarcLint();
+        $this->CallMethod(
+            $lint,
+            'checkArticle',
+            [
+                [
+                    'tag' => '130',
+                    'i1' => ' ',
+                    'i2' => ' ',
+                    's' => [
+                        ['a' => 'Foo']
+                    ]
+                ],
+                $reader
+            ]
+        );
+        $this->CallMethod(
+            $lint,
+            'checkArticle',
+            [
+                [
+                    'tag' => '650',
+                    'i1' => ' ',
+                    'i2' => ' ',
+                    's' => [
+                        ['a' => 'Foo']
+                    ]
+                ],
+                $reader
+            ]
+        );
+        $this->assertEquals(
+            [
+                '130: Non-filing indicator is non-numeric',
+                'Internal error: 650 is not a valid field for article checking'
+            ],
+            $this->getProperty($lint, 'warnings')
+        );
+
+        // Test rule parsing for a range of subfields:
+        $ruleGroup = [
+            '999     R       LOCAL',
+            'ind1    0-9     Undefined',
+            'ind2    0-9     Undefined',
+            'a-c     R       Undefined'
+        ];
+        $expected = [
+            'repeatable' => '',
+            'desc' => '',
+            'ind1' => [
+                'values' => '',
+                'hr_values' => '',
+                'desc' => '',
+            ],
+            'ind2' => [
+                'values' => '',
+                'hr_values' => '',
+                'desc' => '',
+            ],
+            'suba' => [
+                'repeatable' => '',
+                'desc' => '',
+            ],
+            'subb' => [
+                'repeatable' => '',
+                'desc' => '',
+            ],
+            'subc' => [
+                'repeatable' => '',
+                'desc' => '',
+            ],
+        ];
+
+        $lint = new \VuFind\Marc\MarcLint();
+        $this->CallMethod(
+            $lint,
+            'processRuleGroup',
+            [
+                $ruleGroup
+            ]
+        );
+        $rules = $this->getProperty($lint, 'rules');
+        $this->assertEquals($expected, $rules['999']);
     }
 }

@@ -730,7 +730,7 @@ class MarcLint
         } else {
             $this->warn(
                 'Internal error: ' . $tagNo
-                . " is not a valid field for article checking\n"
+                . ' is not a valid field for article checking'
             );
             return;
         }
@@ -875,8 +875,8 @@ class MarcLint
                     ];
                 } elseif (strstr($key, '-')) {
                     [$startKey, $endKey] = explode('-', $key);
-                    for ($key = $startKey; $key <= $endKey; $key++) {
-                        $this->rules[$tag]['sub' . $key] = [
+                    foreach (range($startKey, $endKey) as $sub) {
+                        $this->rules[$tag]['sub' . $sub] = [
                             'repeatable' => $value,
                             'desc' => $lineDesc
                         ];
