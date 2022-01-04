@@ -1,4 +1,4 @@
-//check with Catalog Service
+//check with GIFM Service for buttons
 var buildButtons = function() {
   let bibId = $("#hiddenInstanceId").val();
   if (bibId) {
@@ -54,11 +54,32 @@ var buildButtons = function() {
   }
 };
 
+var buildMapButton = function() {
+  if ($(".localmap").length > 0) {
+    $(".localmap").each(function(index,mapButton) {
+      let locationCode = $(mapButton).data("locationcode");
+      if (locationCode) {
+        $.ajax({
+          url: gifmBase+"catalog-access/get-map-link",
+          data: {"location": locationCode,"catalogName":catalogName}
+        }).done(function(data) {
+          let mapDetail = data.payload.MapDetail;
+          if (mapDetail.type == "URL") {
+            $(mapButton).append('<a target="_blank" class="SMButton SMsearchbtn" style="font-size: 12px; margin: 0px;" href="'+mapDetail.url+'"><i class="fa fa-map-marker searchIcon"></i> Map it</a>');
+          }
+        });
+      }
+    });
+  }
+};
+
 $(document).ready(function() {
   buildButtons();
+  buildMapButton();
   $(document).ajaxSuccess(function( event, xhr, settings ) {
     if (settings.data && settings.data=='tab=holdings') {
       buildButtons();
+      buildMapButton();
     }
   });
 });
