@@ -2,7 +2,7 @@
 
 VuFind.register('resultcount', function resultCount() {
   function init() {
-    $('ul.nav-tabs li a').each(function queryResultCount(){
+    $('ul.nav-tabs li.show-counts a').each(function queryResultCount(){
       var $this = $(this);
       if ($this.attr('href') !== undefined) {
         var queryString = $this.attr('href');

@@ -73,6 +73,13 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     protected $permissionConfig;
 
     /**
+     * Tab detailed configuration
+     *
+     * @var array
+     */
+    protected $detailConfig;
+
+    /**
      * Request
      *
      * @var Request
@@ -93,13 +100,15 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
         array $tabConfig,
         array $filterConfig,
         Request $request,
-        array $permConfig = []
+        array $permConfig = [],
+        array $detailConfig = []
     ) {
         $this->results = $results;
         $this->tabConfig = $tabConfig;
         $this->filterConfig = $filterConfig;
         $this->request = $request;
         $this->permissionConfig = $permConfig;
+        $this->detailConfig = $detailConfig;
     }
 
     /**
@@ -155,6 +164,16 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     public function getTabPermissionConfig()
     {
         return $this->permissionConfig;
+    }
+
+    /**
+     * Get the tab details
+     *
+     * @return array
+     */
+    public function getTabDetailConfig()
+    {
+        return $this->detailConfig;
     }
 
     /**
