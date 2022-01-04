@@ -135,6 +135,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
         <?php endif; ?>
         <br />
       <?php endforeach; ?>
+      <div data-locationcode="<?=$holding['items'][0]['location_code']?>" class="localmap"></div>
     </td>
   </tr>
   <?php endif; ?>
