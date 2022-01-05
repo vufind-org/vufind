@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2020.
+ * Copyright (C) The National Library of Finland 2016-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -180,6 +180,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected $sortItemsByEnumChron;
 
     /**
+     * Whether to allow canceling of available holds
+     *
+     * @var bool
+     */
+    protected $allowCancelingAvailableRequests = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -245,6 +252,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             = !empty($this->config['Holds']['title_hold_bib_levels'])
             ? explode(':', $this->config['Holds']['title_hold_bib_levels'])
             : ['a', 'b', 'm', 'd'];
+
+        $this->allowCancelingAvailableRequests
+            = $this->config['Holds']['allowCancelingAvailableRequests'] ?? false;
 
         $this->defaultPickUpLocation
             = $this->config['Holds']['defaultPickUpLocation'] ?? '';
@@ -776,6 +786,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (!isset($result['entries'])) {
             return [];
         }
+        $freezeEnabled = in_array(
+            'frozen',
+            explode(':', $this->config['Holds']['updateFields'] ?? '')
+        );
         $holds = [];
         foreach ($result['entries'] as $entry) {
             $bibId = null;
@@ -821,7 +835,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ) : '';
             $inTransit = $entry['status']['code'] === 't';
             $requestId = $this->extractId($entry['id']);
-            $updateDetails = ($available || $inTransit) ? '' : $requestId;
+            // Allow the user to attempt update if freezing is enabled or the hold
+            // is not available or in transit. Checking if the hold can be freezed
+            // up front is slow, so defer it to when update is requested.
+            if ($freezeEnabled || (!$available && !$inTransit)) {
+                $updateDetails = $requestId;
+            }
+            $cancelDetails = $this->allowCancelingAvailableRequests
+                || (!$available && !$inTransit) ? $requestId : '';
             $holds[] = [
                 'id' => $this->formatBibId($bibId),
                 'reqnum' => $requestId,
@@ -841,7 +862,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'publication_year' => $publicationYear,
                 'title' => $title,
                 'frozen' => !empty($entry['frozen']),
-                'cancel_details' => $updateDetails,
+                'cancel_details' => $cancelDetails,
                 'updateDetails' => $updateDetails,
             ];
         }
@@ -914,32 +935,70 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     ): array {
         $results = [];
         foreach ($holdsDetails as $requestId) {
-            $updateFields = [];
-            if (isset($fields['frozen'])) {
-                $updateFields['freeze'] = $fields['frozen'];
-            }
-            if (isset($fields['pickUpLocation'])) {
-                $updateFields['pickupLocation'] = $fields['pickUpLocation'];
-            }
-
-            $result = $this->makeRequest(
+            // Fetch existing hold status:
+            $reqFields = 'status,pickupLocation,frozen'
+                . (isset($fields['frozen']) ? ',canFreeze' : '');
+            $hold = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'holds', $requestId],
-                json_encode($updateFields),
-                'PUT',
+                [
+                    'fields' => $reqFields
+                ],
+                'GET',
                 $patron
             );
+            $available = in_array($hold['status']['code'], ['b', 'j', 'i']);
+            $inTransit = $hold['status']['code'] === 't';
 
-            if (!empty($result['code'])) {
+            // Check if we can do the requested changes:
+            $updateFields = [];
+            $fieldsSkipped = false;
+            if (isset($fields['frozen']) && $hold['frozen'] !== $fields['frozen']) {
+                if ($fields['frozen'] && !$hold['canFreeze']) {
+                    $fieldsSkipped = true;
+                } else {
+                    $updateFields['freeze'] = $fields['frozen'];
+                }
+            }
+            if (isset($fields['pickUpLocation'])) {
+                if ($available || $inTransit) {
+                    $fieldsSkipped = true;
+                } else {
+                    $updateFields['pickupLocation'] = $fields['pickUpLocation'];
+                }
+            }
+
+            if (!$updateFields) {
                 $results[$requestId] = [
                     'success' => false,
-                    'status' => $this->formatErrorMessage(
-                        $result['description'] ?? $result['name']
-                    )
+                    'status' => 'hold_error_update_blocked_status'
                 ];
             } else {
-                $results[$requestId] = [
-                    'success' => true
-                ];
+                $result = $this->makeRequest(
+                    [$this->apiBase, 'patrons', 'holds', $requestId],
+                    json_encode($updateFields),
+                    'PUT',
+                    $patron
+                );
+
+                if (!empty($result['code'])) {
+                    $results[$requestId] = [
+                        'success' => false,
+                        'status' => $this->formatErrorMessage(
+                            $result['description'] ?? $result['name']
+                        )
+                    ];
+                } else {
+                    if ($fieldsSkipped) {
+                        $results[$requestId] = [
+                            'success' => false,
+                            'status' => 'hold_error_update_blocked_status'
+                        ];
+                    } else {
+                        $results[$requestId] = [
+                            'success' => true
+                        ];
+                    }
+                }
             }
         }
 
