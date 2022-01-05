@@ -2,7 +2,7 @@
   <ul class="nav nav-tabs">
     <?php foreach ($searchTabs as $tab): ?>
         <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
-          <li<?=$tab['selected'] ? ' class="active"' : ($showCounts ? ' class="show-counts"' : '')?>>
+          <li<?=$tab['selected'] ? ' class="active"' : ''?><?=$showCounts ? ' data-show-counts' : ''?>>
             <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
           </li>
         <?php elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
