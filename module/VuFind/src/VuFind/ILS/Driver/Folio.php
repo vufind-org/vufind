@@ -1290,11 +1290,12 @@ class Folio extends AbstractAPI implements
      */
     public function getCourses()
     {
+        $showCodes = $this->config['CourseReserves']['displayCourseCodes'] ?? false;
         $courses = $this->getCourseResourceList(
             'courses',
             null,
-            ['courseNumber', 'name'],
-            '%s: %s'
+            $showCodes ? ['courseNumber', 'name'] : ['name'],
+            $showCodes ? '%s: %s' : '%s'
         );
         $callback = function ($course) {
             return trim(ltrim($course, ':'));
