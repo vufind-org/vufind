@@ -1902,7 +1902,10 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(
-            ['success' => false, 'sysMessage' => 'hold_wrong_user_institution'],
+            [
+                'success' => false,
+                'sysMessage' => 'ILSMessages::hold_wrong_user_institution'
+            ],
             $result
         );
 
@@ -2064,7 +2067,10 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(
-            ['success' => false, 'sysMessage' => 'hold_wrong_user_institution'],
+            [
+                'success' => false,
+                'sysMessage' => 'ILSMessages::storage_wrong_user_institution'
+            ],
             $result
         );
 
