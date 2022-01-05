@@ -92,6 +92,32 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that getFacetLabel works as expected.
+     *
+     * @return void
+     */
+    public function testGetFacetLabel()
+    {
+        $params = $this->getMockParams();
+        // If we haven't set up any facets yet, labels will be unrecognized:
+        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+
+        // Now if we add a facet, we should get the label back:
+        $params->addFacet('foo', 'foo_label');
+        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+    }
+
+    /**
+     * Test that we get a mock search class ID while testing.
+     *
+     * @return void
+     */
+    public function testGetSearchClassId()
+    {
+        $this->assertEquals('Mock', $this->getMockParams()->getSearchClassId());
+    }
+
+    /**
      * Test that spelling replacement works as expected.
      *
      * @return void
