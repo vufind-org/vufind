@@ -73,7 +73,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     protected $permissionConfig;
 
     /**
-     * Tab detailed configuration
+     * Tab settings
      *
      * @var array
      */
@@ -94,7 +94,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      * @param array         $filterConfig Tab filter configuration
      * @param Request       $request      Request
      * @param array         $permConfig   Tab permission configuration
-     * @param array         $detailConfig Tab detailed configuration
+     * @param array         $settings     Tab settings
      */
     public function __construct(
         PluginManager $results,
