@@ -144,8 +144,10 @@ class Folio extends AbstractAPI implements
      */
     protected function debugRequest($method, $path, $params, $req_headers)
     {
-        // Only log non-GET requests
-        if ($method == 'GET') {
+        // Only log non-GET requests, unless configured otherwise
+        if ($method == 'GET'
+            && !($this->config['API']['debug_get_requests'] ?? false)
+        ) {
             return;
         }
         // remove passwords
