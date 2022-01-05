@@ -386,6 +386,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($current['chicago'], $chicago);
         }
 
+        $cb = $citation($driver);
         // Test a couple of illegal citation formats:
         $this->assertEquals('', $cb->getCitation(''));
         $this->assertEquals('', $cb->getCitation('Citation'));

@@ -173,6 +173,9 @@ class Export
                 },
                 $ns
             );
+            if (empty($parts)) {
+                return '';
+            }
             foreach ($parts as $part) {
                 // Convert text into XML object:
                 $current = simplexml_load_string($part);

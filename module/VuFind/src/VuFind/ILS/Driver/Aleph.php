@@ -646,7 +646,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      * @param array  $params Parameters
      * @param bool   $auth   Include authentication?
      *
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     protected function doXRequest($op, $params, $auth = false)
     {
@@ -686,7 +686,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      * @param string $method        HTTP method
      * @param string $body          HTTP body
      *
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     protected function doRestDLFRequest(
         $path_elements,
@@ -755,7 +755,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      * @param string $method HTTP method
      * @param string $body   HTTP body (null for none)
      *
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     protected function doHTTPRequest($url, $method = 'GET', $body = null)
     {
