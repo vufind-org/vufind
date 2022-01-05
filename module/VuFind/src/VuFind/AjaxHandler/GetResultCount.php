@@ -1,6 +1,6 @@
 <?php
 /**
- * Ajax Controller for Libraries Extension
+ * "Get Result Counts" AJAX Handler
  *
  * PHP version 7
  *
@@ -71,9 +71,7 @@ class GetResultCount extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
-        $queryString = urldecode(
-            $params->fromQuery('querystring')
-        );
+        $queryString = $params->fromQuery('querystring');
         parse_str(parse_url($queryString, PHP_URL_QUERY), $searchParams);
 
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
