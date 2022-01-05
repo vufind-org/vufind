@@ -138,7 +138,7 @@ $(document).ready(function advSearchReady() {
   $('.clear-btn').click(function clearBtnClick() {
     $('input[type="text"]').val('');
     $('input[type="checkbox"],input[type="radio"]').each(function onEachCheckbox() {
-      var checked = $(this).data('reset-checked');
+      var checked = $(this).data('checked-by-default');
       checked = (checked == null) ? false : checked;
       $(this).prop("checked", checked);
     });
