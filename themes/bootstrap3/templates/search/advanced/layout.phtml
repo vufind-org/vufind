@@ -20,10 +20,16 @@
         $groups = $searchDetails->getQueries();
     }
     $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
-    $searchFilters = $this->saved->getParams()->getFilterList();
+    $checkboxFilters = array_filter(
+        $this->saved->getParams()->getCheckboxFacets(),
+        function ($current) {
+            return $current['selected'];
+        }
+    );
+    $searchFilters = $this->saved->getParams()->getFilterList(true);
     $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
-    $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
+    $hasDefaultsApplied = $searchDetails = $checkboxFilters = $searchFilters = $groups = false;
     $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true);
   }
 
@@ -158,7 +164,7 @@
       <?php if ($hasDefaultsApplied): ?>
         <input type="hidden" name="dfApplied" value="1" />
       <?php endif ?>
-      <?php if (!empty($searchFilters)): ?>
+      <?php if ($checkboxFilters || $searchFilters): ?>
         <h2><?=$this->transEsc("adv_search_filters")?></h2>
         <div class="facet-group">
           <label class="checkbox">
@@ -166,6 +172,17 @@
             <?=$this->transEsc("adv_search_select_all")?>
           </label>
         </div>
+
+        <?php if ($checkboxFilters): ?>
+          <div class="checkboxFilter">
+            <?php foreach ($checkboxFilters as $data): ?>
+              <div class="checkbox-filter">
+                <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($data['filter'])?>" /> <?=$this->transEsc($data['desc'])?></label>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
         <?php foreach ($searchFilters as $field => $data): ?>
           <div class="facet-group">
             <div class="title"><?=$this->transEsc($field)?></div>

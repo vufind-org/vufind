@@ -6,9 +6,11 @@
 
 <?php if (empty($min)): ?>
   <form method='POST'>
-    Minified text:
-    <textarea name="min"></textarea>
-    <input type="submit" />
+    <div class="form-group">
+      <label for="min-text">Minified text:</label>
+      <textarea class="form-control" id="min-text" name="min" rows="6"></textarea>
+    </div>
+    <input class="btn btn-primary" type="submit" />
   </form>
 <?php else: ?>
   <h3>Minified Object</h3>

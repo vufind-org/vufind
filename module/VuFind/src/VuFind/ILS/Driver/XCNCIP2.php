@@ -263,6 +263,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $otherAcceptedHttpStatusCodes = [];
 
     /**
+     * Max number of pages taken from API at once. Sometimes NCIP responders could
+     * paginate even if we want all data at one time. We then ask for all pages, but
+     * it could possibly lead to long response times.
+     *
+     * @var int
+     */
+    protected $maxNumberOfPages;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -329,6 +338,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $this->config['Catalog']['otherAcceptedHttpStatusCodes']
                 );
         }
+        $this->maxNumberOfPages = $this->config['Catalog']['maxNumberOfPages'] ?? 0;
     }
 
     /**
@@ -884,12 +894,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         $holdings = [];
-        $request = $this->getStatusRequest($idList, null, $agencyList);
-        $response = $this->sendRequest($request);
-
-        $bibs = $response->xpath(
-            'ns1:LookupItemSetResponse/ns1:BibInformation'
-        );
+        $bibs = $this->getBibs($idList, $agencyList);
 
         foreach ($bibs as $bib) {
             $this->registerNamespaceFor($bib);
@@ -1111,7 +1116,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemRequest = $this->getLookupItemRequest($itemId, $itemType);
                 $itemResponse = $this->sendRequest($itemRequest);
             }
-            if ($bibId === null) {
+            if ($bibId === null && isset($itemResponse)) {
                 $bibId = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
@@ -1125,7 +1130,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 // temporarily until consortial functionality is enabled.
                 $bibId = !empty($bibId) ? (string)$bibId[0] : "1";
             }
-            if ($itemAgencyId === null) {
+            if ($itemAgencyId === null && isset($itemResponse)) {
                 $itemAgencyId = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
@@ -1136,7 +1141,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemAgencyId = !empty($itemAgencyId)
                     ? (string)$itemAgencyId[0] : null;
             }
-            if (empty($due)) {
+            if (empty($due) && isset($itemResponse)) {
                 $rawDueDate = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:DateDue'
@@ -2827,5 +2832,38 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function invalidateResponseCache(string $message, string $key): void
     {
         unset($this->responses['LookupUser'][$key]);
+    }
+
+    /**
+     * Get all bibliographic records
+     *
+     * @param array $idList     List of bibliographic IDs.
+     * @param array $agencyList List of possible toAgency values
+     *
+     * @return array|false|\SimpleXMLElement[]
+     * @throws ILSException
+     */
+    protected function getBibs(array $idList, array $agencyList): array
+    {
+        $bibs = [];
+        $nextItemToken = [];
+        $request = true;
+        $page = 0;
+        while ($request) {
+            $page++;
+            $resumption = !empty($nextItemToken) ? (string)$nextItemToken[0] : null;
+            $request = $this->getStatusRequest($idList, $resumption, $agencyList);
+            $response = $this->sendRequest($request);
+            $bibs = array_merge(
+                $bibs,
+                $response->xpath('ns1:LookupItemSetResponse/ns1:BibInformation')
+            );
+            $nextItemToken = $response->xpath('//ns1:NextItemToken');
+            $request = !empty($nextItemToken) && (string)$nextItemToken[0] !== '';
+            if ($page == $this->maxNumberOfPages) {
+                break;
+            }
+        }
+        return $bibs;
     }
 }
