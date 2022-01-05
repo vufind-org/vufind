@@ -28,6 +28,10 @@
  */
 namespace VuFindTest\Search\Base;
 
+use VuFind\Config\PluginManager;
+use VuFind\Search\Base\Options;
+use VuFind\Search\Base\Params;
+
 /**
  * Base Search Object Parameters Test
  *
@@ -40,18 +44,61 @@ namespace VuFindTest\Search\Base;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\SolrSearchObjectTrait;
+    /**
+     * Get mock configuration plugin manager
+     *
+     * @return PluginManager
+     */
+    protected function getMockConfigManager()
+    {
+        return $this->getMockBuilder(PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
 
     /**
-     * Test a record that used to be known to cause problems because of the way
-     * series name was handled (the old "Bug2" test from VuFind 1.x).
+     * Get mock Options object
+     *
+     * @param PluginManager $configManager Config manager for Options object (null
+     * for new mock)
+     *
+     * @return Options
+     */
+    protected function getMockOptions($configManager = null)
+    {
+        return $this->getMockForAbstractClass(
+            Options::class,
+            [$configManager ?? $this->getMockConfigManager()]
+        );
+    }
+
+    /**
+     * Get mock Params object
+     *
+     * @param Options       $options       Options object to send to Params
+     * constructor (null for new mock)
+     * @param PluginManager $configManager Config manager for Params object (null
+     * for new mock)
+     *
+     * @return Params
+     */
+    protected function getMockParams($options = null, $configManager = null)
+    {
+        $configManager = $configManager ?? $this->getMockConfigManager();
+        return $this->getMockForAbstractClass(
+            Params::class,
+            [$options ?? $this->getMockOptions($configManager), $configManager]
+        );
+    }
+
+    /**
+     * Test that spelling replacement works as expected.
      *
      * @return void
      */
     public function testSpellingReplacements()
     {
-        // Use Solr since some Base components are abstract:
-        $params = $this->getSolrParams();
+        $params = $this->getMockParams();
 
         // Key test: word boundaries:
         $params->setBasicSearch('go good googler');
