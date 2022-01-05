@@ -975,14 +975,20 @@ class Params
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
+        $checkboxFacet = $this->checkboxFacets[$field]["$field:$value"] ?? null;
         if (!isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
+            && null === $checkboxFacet
             && isset($this->facetAliases[$field])
         ) {
             $field = $this->facetAliases[$field];
+            $checkboxFacet = $this->checkboxFacets[$field]["$field:$value"] ?? null;
         }
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
+        }
+        if (null !== $checkboxFacet) {
+            return $checkboxFacet['desc'];
         }
         return $this->extraFacetLabels[$field]
             ?? ($default ?: 'unrecognized_facet_label');
