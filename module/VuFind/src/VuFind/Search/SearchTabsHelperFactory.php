@@ -74,15 +74,15 @@ class SearchTabsHelperFactory implements FactoryInterface
             ? $config->SearchTabsFilters->toArray() : [];
         $permissionConfig = isset($config->SearchTabsPermissions)
             ? $config->SearchTabsPermissions->toArray() : [];
-        $detailConfig = isset($config->SearchTabsDetails)
-            ? $config->SearchTabsDetails->toArray() : [];
+        $settings = isset($config->SearchTabsSettings)
+            ? $config->SearchTabsSettings->toArray() : [];
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $tabConfig,
             $filterConfig,
             $container->get('Application')->getRequest(),
             $permissionConfig,
-            $detailConfig
+            $settings
         );
     }
 }
