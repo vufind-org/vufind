@@ -11,7 +11,7 @@ parameters:
         - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\SyndeticsPlus not found#'
         - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\Amazon[a-zA-Z0-9]* not found#'
     bootstrapFiles:
-        - constants.php
+        - phpstan-constants.php
     level: 0
     parallel:
         processTimeout: 600.0
