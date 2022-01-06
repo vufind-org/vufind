@@ -1116,7 +1116,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemRequest = $this->getLookupItemRequest($itemId, $itemType);
                 $itemResponse = $this->sendRequest($itemRequest);
             }
-            if ($bibId === null) {
+            if ($bibId === null && isset($itemResponse)) {
                 $bibId = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
@@ -1130,7 +1130,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 // temporarily until consortial functionality is enabled.
                 $bibId = !empty($bibId) ? (string)$bibId[0] : "1";
             }
-            if ($itemAgencyId === null) {
+            if ($itemAgencyId === null && isset($itemResponse)) {
                 $itemAgencyId = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
@@ -1141,7 +1141,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemAgencyId = !empty($itemAgencyId)
                     ? (string)$itemAgencyId[0] : null;
             }
-            if (empty($due)) {
+            if (empty($due) && isset($itemResponse)) {
                 $rawDueDate = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:DateDue'
@@ -2859,7 +2859,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $response->xpath('ns1:LookupItemSetResponse/ns1:BibInformation')
             );
             $nextItemToken = $response->xpath('//ns1:NextItemToken');
-            $request = !empty($nextItemToken);
+            $request = !empty($nextItemToken) && (string)$nextItemToken[0] !== '';
             if ($page == $this->maxNumberOfPages) {
                 break;
             }
