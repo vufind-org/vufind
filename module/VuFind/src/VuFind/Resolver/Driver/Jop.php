@@ -1,12 +1,12 @@
 <?php
 /**
- * EZB Link Resolver Driver
+ * JOP Link Resolver Driver
  *
- * EZB is a free service -- the API endpoint is available at
+ * JOP is a free service -- the API endpoint is available at
  * http://services.dnb.de/fize-service/gvr/full.xml
  *
  * API documentation is available at
- * http://www.zeitschriftendatenbank.de/services/schnittstellen/journals-online-print
+ * http://www.zeitschriftendatenbank.de/services/journals-online-print
  *
  * PHP version 7
  *
@@ -41,7 +41,7 @@ use DOMXpath;
 use VuFind\Net\UserIpReader;
 
 /**
- * EZB Link Resolver Driver
+ * JOP Link Resolver Driver
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -50,8 +50,17 @@ use VuFind\Net\UserIpReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
-class Ezb extends AbstractBase
+class Jop extends AbstractBase
 {
+    /**
+     * As the JOP resolver provides also generic labels 'Article', 'Journal'
+     * etc. in element AccessLevel this label can be used as title for
+     * resolver results by setting this variable to 'AccessLevel'
+     *
+     * @var string
+     */
+    protected static $xpathTitleSelector = 'Title';
+
     /**
      * HTTP client
      *
@@ -97,7 +106,7 @@ class Ezb extends AbstractBase
         // Get the actual resolver url for the given openUrl
         $url = $this->getResolverUrl($openURL);
 
-        // Make the call to the EZB and load results
+        // Make the call to the JOP and load results
         $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }
@@ -129,10 +138,12 @@ class Ezb extends AbstractBase
         $this->getElectronicResults('2', 'Licensed', $records, $xpath);
         $this->getElectronicResults('3', 'Partially licensed', $records, $xpath);
         $this->getElectronicResults('4', 'Not free', $records, $xpath);
+        $this->getElectronicResults('10', 'Unknown Electronic', $records, $xpath);
 
         // get results for print, only if available
         $this->getPrintResults('2', 'Print available', $records, $xpath);
         $this->getPrintResults('3', 'Print partially available', $records, $xpath);
+        $this->getPrintResults('10', 'Unknown Print', $records, $xpath);
 
         return $records;
     }
@@ -148,10 +159,10 @@ class Ezb extends AbstractBase
      */
     public function getResolverUrl($openURL)
     {
-        // Unfortunately the EZB-API only allows OpenURL V0.1 and
-        // breaks when sending a non expected parameter (like an ISBN).
+        // Unfortunately the JOP-API only allows OpenURL V0.1 and
+        // breaks when sending a non expected parameter.
         // So we do have to 'downgrade' the OpenURL-String from V1.0 to V0.1
-        // and exclude all parameters that are not compliant with the EZB.
+        // and exclude all parameters that are not compliant with the JOP.
 
         // Parse OpenURL into associative array:
         $tmp = explode('&', $openURL);
@@ -172,7 +183,7 @@ class Ezb extends AbstractBase
         $ipAddr = $this->userIpReader->getUserIp();
         $openURL .= '&pid=client_ip%3D' . urlencode($ipAddr);
 
-        // Make the call to the EZB and load results
+        // Make the call to the JOP and load results
         $url = $this->baseUrl . '?' . $openURL;
 
         return $url;
@@ -187,58 +198,64 @@ class Ezb extends AbstractBase
      */
     public function supportsMoreOptionsLink()
     {
-        // the EZB link resolver returns unstyled XML which is not helpful for the
+        // the JOP link resolver returns unstyled XML which is not helpful for the
         // user
         return false;
     }
 
     /**
-     * Downgrade an OpenURL from v1.0 to v0.1 for compatibility with EZB.
+     * Downgrade an OpenURL from v1.0 to v0.1 for compatibility with JOP.
      *
      * @param array $parsed Array of parameters parsed from the OpenURL.
      *
-     * @return string       EZB-compatible v0.1 OpenURL
+     * @return string       JOP-compatible v0.1 OpenURL
      */
     protected function downgradeOpenUrl($parsed)
     {
         $downgraded = [];
 
-        // we need 'genre' but only the values
-        // article or journal are allowed...
-        $downgraded[] = "genre=article";
+        // prepare content for downgrading
+        // resolver only accepts date formats YYYY, YYYY-MM, and YYYY-MM-DD
+        // in case we have a date in another format, drop the date information
+        if (isset($parsed['rft.date'])
+            && !preg_match('/^\d{4}(-\d\d(-\d\d)?)?$/', $parsed['rft.date'])
+        ) {
+            unset($parsed['rft.date']);
+        }
+
+        $map = [
+            'rfr_id' => 'sid',
+            'rft.date' => 'date',
+            'rft.issn' => 'issn',
+            'rft.isbn' => 'isbn', // isbn is supported as of 12/2021
+            'rft.volume' => 'volume',
+            'rft.issue' => 'issue',
+            'rft.spage' => 'spage',
+            'rft.pages' => 'pages',
+        ];
 
         // ignore all other parameters
         foreach ($parsed as $key => $value) {
             // exclude empty parameters
             if (isset($value) && $value !== '') {
-                if ($key == 'rfr_id') {
-                    $newKey = 'sid';
-                } elseif ($key == 'rft.date') {
-                    $newKey = 'date';
-                } elseif ($key == 'rft.issn') {
-                    $newKey = 'issn';
-                } elseif ($key == 'rft.volume') {
-                    $newKey = 'volume';
-                } elseif ($key == 'rft.issue') {
-                    $newKey = 'issue';
-                } elseif ($key == 'rft.spage') {
-                    $newKey = 'spage';
-                } elseif ($key == 'rft.pages') {
-                    $newKey = 'pages';
-                } else {
-                    $newKey = false;
-                }
-                if ($newKey !== false) {
-                    $downgraded[] = "$newKey=$value";
+                if (isset($map[$key])) {
+                    $downgraded[] = "{$map[$key]}=$value";
+                } elseif (in_array($key, $map)) {
+                    $downgraded[] = "$key=$value";
                 }
             }
         }
+        if (!empty($downgraded)) {
+            // we need 'genre' but only the values
+            // article or journal are allowed...
+            return "genre=article&" . implode('&', $downgraded);
+        }
 
-        return implode('&', $downgraded);
+        return implode('&', $parsed);
     }
 
     /**
-     * Extract electronic results from the EZB response and inject them into the
+     * Extract electronic results from the JOP response and inject them into the
      * $records array.
      *
      * @param string   $state    The state attribute value to extract
@@ -273,8 +290,8 @@ class Ezb extends AbstractBase
         $state_access_mapping = [
             '-1' => 'error',
             '0'  => 'open',
-            '1'  => 'limited',
-            '2'  => 'open',
+            '1'  => 'open',
+            '2'  => 'limited',
             '3'  => 'limited',
             '4'  => 'denied',
             '5'  => 'denied',
@@ -284,13 +301,17 @@ class Ezb extends AbstractBase
         $i = 0;
         foreach ($results as $result) {
             $record = [];
+
+            // get title from XPath Element defined in $xpathTitleSelector
             $titleXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][" . ($i + 1) . "]/Title";
+                "Result[@state={$state}][" . ($i + 1) . "]/" .
+                static::$xpathTitleSelector;
             $title = $xpath->query($titleXP, $result)->item(0);
             if (isset($title)) {
                 $record['title'] = strip_tags($title->nodeValue);
             }
 
+            // get additional coverage information
             $additionalXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
                 "Result[@state={$state}][" . ($i + 1) . "]/Additionals/Additional";
             $additionalType = ['nali', 'intervall', 'moving_wall'];
@@ -308,11 +329,21 @@ class Ezb extends AbstractBase
 
             $record['access'] = $state_access_mapping[$state];
 
-            $urlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
+            // try to find direct access URL
+            $accessUrlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
                 "Result[@state={$state}][" . ($i + 1) . "]/AccessURL";
-            $url = $xpath->query($urlXP, $result)->item(0);
-            if (isset($url->nodeValue)) {
-                $record['href'] = $url->nodeValue;
+            $accessUrl = $xpath->query($accessUrlXP, $result)->item(0);
+
+            // try to find journal URL as fallback for direct access URL
+            $journalUrlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
+                "Result[@state={$state}][" . ($i + 1) . "]/JournalURL";
+            $journalUrl = $xpath->query($journalUrlXP, $result)->item(0);
+
+            // return direct access URL if available otherwise journal URL fallback
+            if (isset($accessUrl->nodeValue)) {
+                $record['href'] = $accessUrl->nodeValue;
+            } elseif (isset($journalUrl)) {
+                $record['href'] = $journalUrl->nodeValue;
             }
             // Service type needs to be hard-coded for calling code to properly
             // categorize links. The commented code below picks a more appropriate
@@ -328,7 +359,7 @@ class Ezb extends AbstractBase
     }
 
     /**
-     * Extract print results from the EZB response and inject them into the
+     * Extract print results from the JOP response and inject them into the
      * $records array.
      *
      * @param string   $state    The state attribute value to extract

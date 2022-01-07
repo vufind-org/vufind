@@ -1,6 +1,6 @@
 <?php
 /**
- * Ezb resolver driver test
+ * Jop resolver driver test
  *
  * PHP version 7
  *
@@ -33,10 +33,10 @@ use InvalidArgumentException;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
 
-use VuFind\Resolver\Driver\Ezb;
+use VuFind\Resolver\Driver\Jop;
 
 /**
- * Ezb resolver driver test
+ * Jop resolver driver test
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\Resolver\Driver\Ezb;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class EzbTest extends \PHPUnit\Framework\TestCase
+class JopTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 
@@ -58,7 +58,7 @@ class EzbTest extends \PHPUnit\Framework\TestCase
         'OpenURL' => [
             'url' => "http://services.d-nb.de/fize-service/gvr/full.xml",
             'rfr_id' => "www.ub.uni-leipzig.de",
-            'resolver' => "ezb",
+            'resolver' => "jop",
             'window_settings' => "toolbar=no,location=no,directories=no,buttons=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=550,height=600",
             'show_in_results' => false,
             'show_in_record' => false,
@@ -75,7 +75,7 @@ class EzbTest extends \PHPUnit\Framework\TestCase
      */
     public function testParseLinks()
     {
-        $conn = $this->createConnector('ezb.xml');
+        $conn = $this->createConnector('jop.xml');
 
         $openUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fwww.ub.uni-leipzig.de%3Agenerator&rft.title=No%C3%BBs&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&rft.creator=&rft.pub=Wiley-Blackwell&rft.format=Journal&rft.language=English&rft.issn=0029-4624&zdbid=339287-9";
         $result = $conn->parseLinks($conn->fetchLinks($openUrl));
@@ -178,7 +178,7 @@ class EzbTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $ipReader->expects($this->once())->method('getUserIp')
             ->will($this->returnValue($ipAddr));
-        $conn = new Ezb($this->openUrlConfig['OpenURL']['url'], $client, $ipReader);
+        $conn = new Jop($this->openUrlConfig['OpenURL']['url'], $client, $ipReader);
         return $conn;
     }
 }

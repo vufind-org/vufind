@@ -78,7 +78,7 @@ abstract class AbstractBase implements DriverInterface
      * This controls whether a "More options" link will be shown below the fetched
      * resolver links eventually linking to the resolver page previously being
      * parsed.
-     * This is especially useful for resolver such as the EZB resolver returning
+     * This is especially useful for resolver such as the JOP resolver returning
      * XML which would not be of any immediate use for the user.
      *
      * @return bool

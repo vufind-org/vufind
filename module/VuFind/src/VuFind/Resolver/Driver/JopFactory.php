@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for EZB resolver driver.
+ * Factory for JOP resolver driver.
  *
  * PHP version 7
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
- * Factory for EZB resolver driver.
+ * Factory for JOP resolver driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -41,7 +41,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EzbFactory extends DriverWithHttpClientFactory
+class JopFactory extends DriverWithHttpClientFactory
 {
     /**
      * Create an object
