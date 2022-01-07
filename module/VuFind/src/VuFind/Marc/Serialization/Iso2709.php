@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020-2021.
+ * Copyright (C) The National Library of Finland 2020-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -36,12 +36,20 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Iso2709 implements SerializationInterface
+class Iso2709 implements SerializationInterface, SerializationFileInterface
 {
     public const SUBFIELD_INDICATOR = "\x1F";
     public const END_OF_FIELD = "\x1E";
     public const END_OF_RECORD = "\x1D";
     public const LEADER_LEN = 24;
+    public const MAX_LENGTH = 99999;
+
+    /**
+     * Serialized record file handle
+     *
+     * @var resource
+     */
+    protected $file = null;
 
     /**
      * Check if this class can parse the given MARC string
@@ -66,7 +74,28 @@ class Iso2709 implements SerializationInterface
     public static function canParseCollection(string $marc): bool
     {
         // A pretty naïve check, but it's enough to tell the different formats apart
-        return ctype_digit(substr($marc, 0, 4));
+        return ctype_digit(substr($marc, 0, 5));
+    }
+
+    /**
+     * Check if the serialization class can parse the given MARC collection file
+     *
+     * @param string $file File name
+     *
+     * @return bool
+     */
+    public static function canParseCollectionFile(string $file): bool
+    {
+        if (false === ($f = fopen($file, 'rb'))) {
+            throw new \Exception("Cannot open file '$file' for reading");
+        }
+        $s = '';
+        do {
+            $s .= fgets($f, 10);
+        } while (strlen(ltrim($s)) < 5 && !feof($f));
+        fclose($f);
+
+        return self::canParseCollection($s);
     }
 
     /**
@@ -213,5 +242,54 @@ class Iso2709 implements SerializationInterface
             . substr($leader, 17);
 
         return $leader . $directory . $data;
+    }
+
+    /**
+     * Open a collection file
+     *
+     * @param string $file File name
+     *
+     * @return void
+     */
+    public function openCollectionFile(string $file): void
+    {
+        if (false === ($this->file = fopen($file, 'rb'))) {
+            throw new \Exception("Cannot open file '$file' for reading");
+        }
+    }
+
+    /**
+     * Rewind the collection file
+     *
+     * @return void;
+     */
+    public function rewind(): void
+    {
+        if (null === $this->file) {
+            throw new \Exception('Collection file not open');
+        }
+        rewind($this->file);
+    }
+
+    /**
+     * Get next record from the file or an empty string on EOF
+     *
+     * @return string
+     */
+    public function getNextRecord(): string
+    {
+        if (null === $this->file) {
+            throw new \Exception('Collection file not open');
+        }
+        $record = ltrim(
+            stream_get_line(
+                $this->file,
+                self::MAX_LENGTH,
+                self::END_OF_RECORD
+            ),
+            "\x00\x0a\x0d"
+        );
+
+        return $record ? ($record . self::END_OF_RECORD) : '';
     }
 }
