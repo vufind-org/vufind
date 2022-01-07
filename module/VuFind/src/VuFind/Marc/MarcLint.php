@@ -495,8 +495,7 @@ class MarcLint
                 $second = $subfields[1]['code'];
                 if ($first != '6') {
                     $this->warn("245: First subfield must be _6, but it is $first");
-                }
-                if ($second != 'a') {
+                } elseif ($second != 'a') {
                     $this->warn(
                         "245: First subfield after subfield _6 must be _a, but it "
                         . "is _$second"
