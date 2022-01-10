@@ -10,4 +10,7 @@
         <?php endif; ?>
     <?php endforeach; ?>
   </ul>
+  <?php if ($showCounts): ?>
+    <?php $this->headScript()->appendFile('resultcount.js'); ?>
+  <?php endif; ?>
 <?php endif; ?>
