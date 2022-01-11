@@ -100,7 +100,7 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
                 $bText = $b['displayText'] == $b['value']
                     ? $this->formatDisplayText($b['displayText'])
                     : $b['displayText'];
-                return strcasecmp($aText, $bText);
+                return strcoll($aText, $bText);
             }
             return $a['level'] == $b['level']
                 ? $b['count'] - $a['count']
