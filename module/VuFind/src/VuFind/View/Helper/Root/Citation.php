@@ -414,6 +414,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $item,
             [
                 'call-number' => $this->driver->getCallNumbers(),
+                'doi' => $this->driver->tryMethod('getCleanDOI'),
                 'edition' => $this->details['edition'],
                 'ISBN' => $this->driver->getISBNs(),
                 'language' => $this->driver->getLanguages(),
