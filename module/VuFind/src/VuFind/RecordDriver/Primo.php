@@ -275,7 +275,9 @@ class Primo extends DefaultRecord
      * see /application/themes/root/helpers/Citation.php, getCitation()
      * method.
      *
-     * @return array Strings representing citation formats.
+     * Return true to use all formats in config.ini.
+     *
+     * @return array|boolean Strings representing citation formats.
      */
     protected function getSupportedCitationFormats()
     {

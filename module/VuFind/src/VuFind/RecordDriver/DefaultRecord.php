@@ -1484,33 +1484,13 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get an array of strings representing default citation formats.
+     * @see AbstractBase::getSupportedCitationFormats() for more details
      *
-     * For possible legal values,
-     * see https://github.com/citation-style-language/styles.
-     *
-     * @return array Strings representing citation formats.
-     */
-    protected function getDefaultCitationFormats()
-    {
-        return ['APA', 'Chicago', 'MLA', 'Vancouver'];
-    }
-
-    /**
-     * @deprecated
-     * @see getCitationFormats
-     * @see getDefaultCitationFormats
-     *
-     * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
-     * see /application/themes/root/helpers/Citation.php, getCitation()
-     * method.
-     *
-     * @return array Strings representing citation formats.
+     * @return array|boolean Strings representing citation formats.
      */
     protected function getSupportedCitationFormats()
     {
-        return ['APA', 'Chicago', 'MLA', 'Vancouver'];
+        return true;
     }
 
     /**

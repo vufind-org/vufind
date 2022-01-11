@@ -296,17 +296,38 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         return $processor->render(json_decode($data), 'bibliography');
     }
 
-    protected function trimPunctuation($text)
+    /**
+     * Remove punctuation from both ends
+     *
+     * @param string|number $text
+     *
+     * @return string
+     */
+    protected function trimPunctuation($text): string
     {
-        return trim($text, " \n\r\t\v\0,:;/");
+        return trim((string)$text, " \n\r\t\v\0,:;/");
     }
 
-    protected function removeDateRange($name)
+    /**
+     * From hyphenated date ranges (XXXX-XXXX)
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    protected function removeDateRange(string $name): string
     {
         return preg_replace('/\d+[ ]*\-[ ]*\d*/', '', $name);
     }
 
-    protected function nameToGivenFamily($name)
+    /**
+     * Split author string into given and family parts
+     *
+     * @param string $name
+     *
+     * @return array (associative) of given and family
+     */
+    protected function nameToGivenFamily(string $name)
     {
         if (strpos($name, ', ') !== false) {
             [$family, $given] = explode(', ', $this->removeDateRange($name));
@@ -328,11 +349,23 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         ];
     }
 
+    /**
+     * Util function to normalize and add data to citation object if non-empty
+     *
+     * @param array &$item item reference to add data to
+     * @param array $pairs citation name => value (array|string) from driver
+     */
     protected function addIfNotEmpty(&$item, $pairs)
     {
         foreach ($pairs as $key => $value) {
-            if (!empty($value)) {
-                $item[$key] = $this->trimPunctuation(((array) $value)[0]);
+            if (empty($value)) {
+                continue;
+            }
+
+            $trimmed = $this->trimPunctuation(((array) $value)[0]);
+
+            if (!empty($trimmed)) {
+                $item[$key] = $trimmed;
             }
         }
     }
