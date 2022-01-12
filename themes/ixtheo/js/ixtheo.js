@@ -22,7 +22,7 @@ var IxTheo = {
     // Try to determine status
     $.ajax({
       type: "GET",
-      url: ajaxUrl + isbn,
+      url: ajaxUrl,
       dataType: "json",
       success: function(json) {
 	$(document).ready(function() {

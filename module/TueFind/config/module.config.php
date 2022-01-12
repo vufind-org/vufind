@@ -82,6 +82,19 @@ $config = [
                     ]
                 ],
             ],
+            'redirect-license' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/redirect-license/:id',
+                    'constraints' => [
+                        'id'   => '[^/]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Redirect',
+                        'action'     => 'license',
+                    ]
+                ],
+            ],
             'static-page' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -227,6 +240,7 @@ $config = [
             'TueFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Service\DSpace' => 'TueFind\Service\DSpaceFactory',
@@ -267,6 +281,7 @@ $config = [
             'VuFind\RecordTabPluginManager' => 'TueFind\RecordTab\PluginManager',
             'VuFind\RecordTab\PluginManager' => 'TueFind\RecordTab\PluginManager',
             'VuFind\Search' => 'TueFindSearch\Service',
+            'VuFind\Search\Options\PluginManager' => 'TueFind\Search\Options\PluginManager',
             'VuFind\Search\Params\PluginManager' => 'TueFind\Search\Params\PluginManager',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
             'VuFindSearch\Service' => 'TueFindSearch\Service',
