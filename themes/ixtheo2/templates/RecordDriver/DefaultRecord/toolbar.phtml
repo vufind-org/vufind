@@ -45,10 +45,10 @@
     <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
 
     <!-- IxTheo: Subscribe button -->
-    <?php if ($this->driver->isSubscribable()):?>
+    <?php if ($this->accountCapabilities()->getSubscriptionSetting() === 'enabled'):?>
       <?php if ($this->IxTheo()->isRecordSubscribed($this->driver) || $this->IxTheo()->isRecordSubscribedViaBundle($this->driver)): ?>
         <li><a class="subscribe-record toolbar-btn btn-type-unsubscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Unsubscribe')?></a></li>
-      <?php else: ?>
+      <?php elseif ($this->driver->isSubscribable()): ?>
         <li><a class="subscribe-record toolbar-btn btn-type-subscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Subscribe')?></a></li>
       <?php endif; ?>
     <?php endif; ?>

@@ -139,26 +139,6 @@ class SolrMarc extends SolrDefault
     }
 
 
-    public function getKflId(): ?string
-    {
-        // So far, only available for "Handbuch der Religionen".
-        // Implementation will be changed as soon as
-        // additional information about MARC fields is provided.
-        //if (in_array('1677766123', $this->fields['ids']))
-        //    return 'handbuch-religionen';
-        return null;
-    }
-
-    public function getKflEntitlement(): ?string
-    {
-        // So far, only available for "Handbuch der Religionen".
-        // Implementation will be changed as soon as
-        // additional information about MARC fields is provided.
-
-        return null;
-    }
-
-
     public function getLicense(): ?array
     {
         $licenseFields = $this->getMarcRecord()->getFields('540');
@@ -172,6 +152,12 @@ class SolrMarc extends SolrDefault
             $urlSubfield = $licenseField->getSubfield('u');
             if ($urlSubfield != false)
                 $url = $urlSubfield->getData();
+
+            if ($id == null && preg_match('"^http(s)?:' . preg_quote('//rightsstatements.org/vocab/InC/1.0/', '"') . '$"', $url)) {
+                // force correct ID + english URL
+                $id = 'InC 1.0';
+                $url = 'https://rightsstatements.org/page/InC/1.0/?language=en';
+            }
 
             if ($id != null && $url != null)
                 return ['id' => $id, 'url' => $url];
@@ -234,11 +220,6 @@ class SolrMarc extends SolrDefault
     public function workIsTADCandidate(): bool
     {
         return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isTADTagged();
-    }
-
-    public function workIsKfLCandidate(): bool
-    {
-        return ($this->getKflId() != null);
     }
 
     public function suppressDisplayByFormat()

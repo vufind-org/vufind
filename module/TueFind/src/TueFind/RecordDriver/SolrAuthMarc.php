@@ -363,8 +363,19 @@ class SolrAuthMarc extends SolrAuthDefault {
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
-                if ($nameSubfield !== false)
-                    $nameVariants[] = $nameSubfield->getData();
+                if ($nameSubfield !== false) {
+                    $name = $nameSubfield->getData();
+
+                    $numberSubfield = $field->getSubfield('b');
+                    if ($numberSubfield !== false)
+                        $name .= ' ' . $numberSubfield->getData();
+
+                    $titleSubfield = $field->getSubfield('c');
+                    if ($titleSubfield !== false)
+                        $name .= ' ' . $titleSubfield->getData();
+
+                    $nameVariants[] = $name;
+                }
             }
         }
 

@@ -11,11 +11,14 @@ namespace TueFind\Service;
  */
 class KfL
 {
+    protected $authManager;
+    protected $tuefindInstance;
+
     protected $baseUrl;
     protected $apiId;
     protected $encryptionKey;
     protected $cipher;
-    protected $frontendUserToken;
+    protected $titles;
 
     const RETURN_REDIRECT = 0;
     const RETURN_JSON = 1;
@@ -24,19 +27,29 @@ class KfL
     /**
      * Constructor
      *
-     * @param string $baseUrl           Base URL of the proxy
-     * @param string $apiId             API ID
-     * @param string $cipher            cipher, e.g. 'aes-256-ecb'
-     * @param string $encryptionKey     Encryption key
-     * @param string $frontendUserToken An anonymized token representing the frontend user
+     * @param Config $config            Configuration entries
+     * @param Manager $authManager      Auth Manager
+     * @param string $tuefindInstance   TueFind instance
      */
-    public function __construct($baseUrl, $apiId, $cipher, $encryptionKey, $frontendUserToken)
+    public function __construct($config, $authManager, $tuefindInstance)
     {
-        $this->baseUrl = $baseUrl;
-        $this->apiId = $apiId;
-        $this->cipher = $cipher;
-        $this->encryptionKey = $encryptionKey;
-        $this->frontendUserToken = $frontendUserToken;
+        $this->baseUrl = $config->base_url;
+        $this->apiId = $config->api_id;
+        $this->cipher = $config->cipher;
+        $this->encryptionKey = $config->encryption_key;
+
+        $titles = $config->titles ?? [];
+        $parsedTitles = [];
+        foreach ($titles as $title) {
+            $titleDetails = explode(';', $title);
+            $parsedTitles[] = ['ppn' => $titleDetails[0],
+                               'kflId' => $titleDetails[1],
+                               'entitlement' => $titleDetails[2]];
+        }
+        $this->titles = $parsedTitles;
+
+        $this->authManager = $authManager;
+        $this->tuefindInstance = $tuefindInstance;
     }
 
     /**
@@ -93,6 +106,29 @@ class KfL
     }
 
     /**
+     * Generate token that represents the frontend user
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    protected function getFrontendUserToken(): string
+    {
+        // Check if user is logged-in:
+        // This should be checked at the latest possible point.
+        // An earlier implementation checked it in the factory, which led
+        // to errors in other actions in the same controller, which should still
+        // be possible if the user is not logged in.
+        $user = $this->authManager->isLoggedIn();
+        if (!$user)
+            throw new \Exception('Could not generate KfL Frontend User Token, user is not logged in!');
+
+        // We pass an anonymized version of the user id (tuefind_uuid) together with host+tuefind instance.
+        // This value will be saved by the proxy and reported back to us in case of abuse.
+        return implode('#', [gethostname(), $this->tuefindInstance, $user->tuefind_uuid]);
+    }
+
+    /**
      * Get encrypted Single Sign On part of the request (including user credentials)
      *
      * @param string $entitlement   Entitlement (=license) for the given title, mandatory for redirects.
@@ -110,9 +146,10 @@ class KfL
         // Amount of seconds from now until the URL is valid:
         $validTimespan = 60*60*24*1; // 1 day
 
-        $sso = ['user' => $this->frontendUserToken,
+        $sso = ['user' => $this->getFrontendUserToken(),
+                'timestamp' => time() + $validTimespan,
                 'env' => $env,
-                'timestamp' => time() + $validTimespan];
+        ];
 
         $encryptedData = openssl_encrypt(json_encode($sso), $this->cipher, $this->encryptionKey, OPENSSL_RAW_DATA);
         if ($encryptedData === false)
@@ -143,20 +180,48 @@ class KfL
      */
     public function getUrl(\TueFind\RecordDriver\SolrMarc $record): string
     {
-        $requestData = $this->getRequestTemplate($record->getKflEntitlement());
+        $titleInfo = $this->getTitleInfo($record->getUniqueId());
+        $requestData = $this->getRequestTemplate($titleInfo['entitlement']);
         $requestData['method'] = 'getHANID';
         $requestData['return'] = self::RETURN_REDIRECT;
-
-        // URL / Title doesnt work with these examples
-        //$requestData['url'] = 'https://handbuch-der-religionen.de/';
-        //$requestData['title'] = 'Handbuch der Religionen';
-
-        // Passing the HANID directly seems to work (e.g. 'handbuch-religionen'):
-        $requestData['hanid'] = $record->getKflId();
+        $requestData['hanid'] = $titleInfo['kflId'];
 
         if ($requestData['hanid'] == null)
             throw new \Exception('Han-ID missing for title: ' . $record->getUniqueID());
 
         return $this->generateUrl($requestData);
+    }
+
+    /**
+     * Get information about a title, especially Kfl-ID and entitlement.
+     *
+     * @param string $ppn
+     *
+     * @return array
+     */
+    protected function getTitleInfo(string $ppn): array
+    {
+        foreach ($this->titles as $title) {
+            if ($title['ppn'] == $ppn)
+                return $title;
+        }
+
+        throw new \Exception('KfL title information missing for ppn: ' . $ppn);
+    }
+
+    /**
+     * Is the given PPN available via the KfL?
+     *
+     * @param string $ppn
+     *
+     * @return bool
+     */
+    public function hasTitle(string $ppn): bool
+    {
+        foreach ($this->titles as $title) {
+            if ($title['ppn'] == $ppn)
+                return true;
+        }
+        return false;
     }
 }
