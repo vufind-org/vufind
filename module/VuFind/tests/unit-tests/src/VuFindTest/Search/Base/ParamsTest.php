@@ -93,7 +93,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /** 
+    /**
      * Test that getCheckboxFacets works as expected.
      *
      * @return void
@@ -114,7 +114,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'selected' => false,
                     'alwaysVisible' => false
                 ]
-            ], $params->getCheckboxFacets()
+            ],
+            $params->getCheckboxFacets()
         );
 
         // Selecting one works:
@@ -127,7 +128,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'selected' => true,
                     'alwaysVisible' => false
                 ]
-            ], $params->getCheckboxFacets()
+            ],
+            $params->getCheckboxFacets()
         );
     }
 
