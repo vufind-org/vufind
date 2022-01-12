@@ -105,6 +105,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
         $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+
+        // If we add a checkbox facet for a field that already has an assigned label,
+        // we do not expect the checkbox label to override the field label:
+        $params->addCheckboxFacet('foo:bar', 'checkbox_label');
+        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
+        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
     }
 
     /**
