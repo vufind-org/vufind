@@ -120,6 +120,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         $retVal = ['tabs' => []];
         $allFilters = $this->helper->getTabFilterConfig();
         $allPermissions = $this->helper->getTabPermissionConfig();
+        $allSettings = $this->helper->getSettings();
+        $retVal['showCounts'] = $allSettings['show_result_counts'] ?? false;
         foreach ($this->helper->getTabConfig() as $key => $label) {
             $permissionName = null;
             if (isset($allPermissions[$key])) {
