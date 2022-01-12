@@ -40,23 +40,6 @@
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 
-<style>
-.panel-home h1 a {
-    color: #3586b2;
-    text-shadow: none;
-    font-family: 'Open Sans',Arial,Helvetica,sans-serif;
-}
-.panel-home small {
-    display: block;
-    text-align: center;
-    margin: 5px 0 auto;
-    padding-bottom: 12px;
-    color: #495057;
-    text-shadow: none;
-}
-</style>
-
-
 <div class="row tf-row-home">
     <!--  Begin section searchbar -->
     <section class="section-home">
@@ -116,7 +99,7 @@
                     <?php else: ?>
                         <!-- ixtheo2: custom form with included dropdown inspired by finna.fi -->
                         <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'hiddenFilters' => $hiddenFilters]); ?>
-                        <form id="searchForm" class="searchForm ix2-searchForm tuefind-event-searchForm-on-submit" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off" style="display: flex;" >
+                        <form id="searchForm" class="searchForm ix2-searchForm tuefind-event-searchForm-on-submit ix-display-flex" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off" >
                             <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
 

@@ -5,6 +5,7 @@
 
 AllFields:
   DismaxFields:
+    - heading_search^500
     - allfields
   DismaxHandler: edismax
 

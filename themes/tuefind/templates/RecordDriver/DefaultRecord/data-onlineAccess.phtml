@@ -4,15 +4,19 @@
   <?php $direct_fulltext_present = !empty(preg_grep('/Volltext.*/', $material_types))?>
   <?php foreach ($urls_and_material_types as $url => $material_type): ?>
       <?php if ($direct_fulltext_present && $material_type == 'Presumably Free Access'): ?>
-      <?php  continue; ?>
+        <?php continue; ?>
       <?php else: ?>
-          <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i>
-          <?php if (preg_match('/([^)]+?)\s*\\(([^)]+)\\)/', $material_type, $material_type_components)): ?>
-               <?=$this->transEsc($material_type_components[1]) . ' (' . $this->transEsc($material_type_components[2]) . ')'?>
-          <?php else: ?>
-               <?=$this->transEsc($material_type)?>
-          <?php endif; ?>
-          </a><br/>
-      <?php endif; ?>
+        <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i>
+        <?php if (preg_match('/([^)]+?)\s*\\(([^)]+)\\)/', $material_type, $material_type_components)): ?>
+          <?=$this->transEsc($material_type_components[1]) . ' (' . $this->transEsc($material_type_components[2]) . ')'?>
+        <?php else: ?>
+          <?=$this->transEsc($material_type)?>
+        <?php endif; ?>
+      </a><br/>
+    <?php endif; ?>
   <?php endforeach; ?>
+<?php endif; ?>
+
+<?php if ($this->auth()->isLoggedIn() && $this->tuefind()->getKfl()->hasTitle($this->driver->getUniqueId())): ?>
+  <a href="<?=$this->url('redirect-license', ['id' => $this->driver->getUniqueId()])?>" data-lightbox=""><i class="fa fa-external-link"></i> FID-Lizenz: Zugriff mit RelBib-Konto</a>
 <?php endif; ?>
