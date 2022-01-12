@@ -84,15 +84,15 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      * - proxyUrl: proxy url prefix before href
      * - escapeContent: Default true, set to false to skip escaping (like for HTML).
      *
-     * @param string       $innerHtml Link contents (must be properly-formed HTML)
-     * @param string|array $href      Link destination (null to skip)
-     * @param string|array $attrs     Link attributes (associative array)
-     * @param array        $options   Additional options
+     * @param string       $contents Link contents (must be properly-formed HTML)
+     * @param string|array $href     Link destination (null to skip)
+     * @param string|array $attrs    Link attributes (associative array)
+     * @param array        $options  Additional options
      *
      * @return string HTML for an anchor tag
      */
     public function __invoke(
-        string $innerHtml,
+        string $contents,
         string $href = null,
         $attrs = [],
         $options = []
@@ -103,10 +103,10 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
 
         // Span instead of anchor when no href present
         if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
-            return $makeTag('span', $innerHtml, $mergedAttrs, $options);
+            return $makeTag('span', $contents, $mergedAttrs, $options);
         }
 
         // Forward to makeTag helper
-        return $makeTag('a', $innerHtml, $mergedAttrs, $options);
+        return $makeTag('a', $contents, $mergedAttrs, $options);
     }
 }

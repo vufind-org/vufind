@@ -223,17 +223,17 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * Additional options
      * - escapeContent: Default true, set to false to skip escaping (like for HTML).
      *
-     * @param string $tagName   HTML tag name
-     * @param string $innerHtml InnerHTML
-     * @param array  $attrs     Tag attributes (associative array)
-     * @param array  $options   Additional options
+     * @param string $tagName  HTML tag name
+     * @param string $contents InnerHTML
+     * @param array  $attrs    Tag attributes (associative array)
+     * @param array  $options  Additional options
      *
      * @return string
      * @throws InvalidArgumentException
      */
     protected function compileTag(
         string $tagName,
-        string $innerHtml,
+        string $contents,
         $attrs = [],
         $options = []
     ) {
@@ -241,7 +241,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         $htmlAttrs = $this->getView()->plugin('htmlAttributes')($attrs);
 
-        if (empty($innerHtml) && in_array($tagName, $this->voidElements)) {
+        if (empty($contents) && in_array($tagName, $this->voidElements)) {
             return '<' . $tagName . $htmlAttrs . ' />';
         }
 
@@ -251,11 +251,12 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         $escHTML = $escapeContent
             ? $this->getView()->plugin('escapeHtml')
             : function ($str) {
+                // no-op
                 return $str;
-            }; // no-op
+            };
 
         return '<' . $tagName . $htmlAttrs . '>' .
-            $escHTML($innerHtml) .
+            $escHTML($contents) .
             '</' . $tagName . '>';
     }
 }
