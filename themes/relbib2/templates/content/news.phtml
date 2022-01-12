@@ -1,18 +1,62 @@
 <div id="news_de_link" class="navbar-fixed-top">
-     <a href="<?=$this->url('content-page', ['page' => 'news_de'])?>" date-lightbox="">
-         <button id="tf-button-german-news" class="btn float-right mx-5" style="color:white;background-color:darkred">
-               <strong><?=$this->transEsc('See German news page for additional information')?></strong>
+    <a href="<?= $this->url('content-page', ['page' => 'news_de']) ?>" date-lightbox="">
+        <button id="tf-button-german-news" class="btn float-right mx-5" style="color:white;background-color:darkred;">
+            <strong><?= $this->transEsc('See German news page for additional information') ?></strong>
         </button>
-     </a>
+    </a>
 </div>
 
 <ul class="rb-news-list text-justify">
     <li>
-        <h1 id="06_2021">Articles from collective works in RelBib</h1>
+        <h1 id="12_2021">New feature: RelBib authority search and persons' websites</h1>
+        <p class="rb-news-date">(December 2021)</p>
+        <p>A new milestone has been reached with the introduction of the authority search and persons' websites in RelBib. Next to the standard (RelBib) search and the full text search, a third tab called <b>Persons / Corporations</b> is now available above the RelBib search slot. In this tab, you can search specifically for authors, corporations and conferences or conference proceedings that are indexed in RelBib.</p>
+
+            <p><a href="https://www.relbib.de/Authority/" target="_blank">RelBib authority search</a></p>
+
+            <p>Search for all persons, corporations and conferences by clicking on FIND. You can narrow down your search results by using different facets:</p>
+            <ul>
+                    <li>Record Type: Person / Corporation / Conference (Proceeding)</li>
+                    <li>External References: Authority files / Links to Wikipedia, Links to archives etc.</li>
+                    <li>Occupation: Religious Studies Scholar / Historian / Sociologist etc.</li>
+                    <li>Language: English / German / French etc.</li>
+                    <li>Location: Berlin / Paris / London etc.</li>
+            </ul>
+            <p>The persons' websites contain basic biographical information as well as further links, e.g. to Wikipedia, archival material and external resources.</p>
+            <p>The information available in RelBib on an author's publication range and activity is being processed and neatly presented on the persons' websites:</p>
+            <ul>
+                    <li>literature by the author</li>
+                    <li>literature about the author</li>
+                    <li>related authors</li>
+                    <li>topics (keywords) on which the author has published</li>
+                    <li>a chronology of publications</li>
+            </ul>
+            <p>A few examples of well-known authors:</p>
+            <ul>
+                    <li><a href="https://www.relbib.de/Authority/374216355" target="_blank">Eileen Barker</a></li>
+                    <li><a href="https://www.relbib.de/Authority/598845674" target="_blank">Grace Davie</a></li>
+                    <li><a href="https://www.relbib.de/Authority/500674582" target="_blank">Burkhard Gladigow</a></li>
+                    <li><a href="https://www.relbib.de/Authority/077492714" target="_blank">Hans G. Kippenberg</a></li>
+                    <li><a href="https://www.relbib.de/Authority/569003709" target="_blank">Annette Wilke</a></li>
+            </ul>
+            <p>We cordially invite you to try out this new search option and the persons' websites in RelBib! Please do not hesitate to contact us for feedback.</p>
+    </li>
+    <li>
+        <h1 id="11_2021">RelBib Alerting service: Now also subscribe to journal bundles!</h1>
+        <p class="rb-news-date">(November 2021)</p>
+        <p>We have expanded the RelBib Alerting Service: Now you can also subscribe to thematic journal bundles with a RelBib account. For example, do you want to stay up to date on newly published articles in journals related to religion in Asia? Then select the alert bundle "Asia", etc. You will receive an automatic e-mail notification when new content from journals in this bundle is published in RelBib. You can find a detailed description of the RelBib Alerting service on our help page:</p>
+        <p><a href="https://www.relbib.de/Content/features_personalised?expand=&lng=en#alerting" target="_blank">RelBib Alerting</a></p>
+    </li>
+    <li>
+        <h1 id="07_2021">Articles from collective works in RelBib</h1>
         <p class="rb-news-date">(July 2021)</p>
         <p>Did you know that we also index articles from collective works in RelBib? With this project, we have taken up a desideratum from the academic community in the current FID funding phase. In the meantime, around 41,000 articles can be found in RelBib, which are mainly assigned to collected works relevant to the study of religion from the years 2010-2018. We will successively add further volumes.</p>
         <p><a href="https://www.relbib.de/Search/Results?lookfor=rs%3Aimwa%20rs%3Arwrk%20rs%3Aixau&type=AllFields&sort=year%20asc%2C%20volume_sort%20asc%2C%20issue_sort%20asc%2C%20start_page%20asc&botprotect=&lng=en" target="_blank">Search for articles from collective works in RelBib</a></p>
     </li>
+
+    <!-- anchor for "archive" link on start page -->
+    <span id="archive"></span>
+
     <li>
         <h1 id="08_2020">Full text search now available!</h1>
         <p class="rb-news-date">(August 2020)</p>
@@ -23,13 +67,10 @@
         <p class="rb-news-date">(January 2020)</p>
         <p>Finally, we were able to evaluate the survey on research data, which ran from June 4 to July 7, 2019 on the RelBib portal. 167 people took part in the survey, 120 of them made it to the end.</p>
         <p>Perhaps the results will help clarify how the study of religion scholars and the DVRW would like to position themselves in the emerging national research data infrastructure (NFDI).</p>
-        <p><a href="<?=$this->url('content-page', ['page' => 'survey_results'])?>"><button>Show results*</button></a></p>
+        <p><a href="<?= $this->url('content-page', ['page' => 'survey_results']) ?>"><button>Show results*</button></a></p>
         <p><small>*Please note that the Survey as well as the evaluation is in German only.</small></p>
     </li>
     <li>
-        <!-- anchor for "archive" link on start page -->
-        <div id="archive" />
-
         <h1 id="12_2019">Self-archiving service successfully started</h1>
         <p class="rb-news-date">(December 2019)</p>
         <p>In May 2019, the FID Religionswissenschaft started its green open access project, the "self-archiving service". Approximately 60 scholars of religion had registered for this project in the context of a brief survey in 2018. We offer the researchers a comprehensive service: From the indexing of all their published titles in RelBib to the legal examination of the individual contributions in terms of self-archiving possibilities to the digitisation of printed contributions that can be self-archived. All secondary publications are archived on a long-term basis in the subject repository of the study of religion, hosted by Tübingen University Library. The full texts can be accessed directly via RelBib.</p>
@@ -62,7 +103,7 @@
         <p><b>Dear scholars of the study of religion!</b></p>
         <p>On 25 February 2019, the advisory board and the team of the FID Study of Religion dealt intensively with the topic of research data and research data management (RDM) in the study of religion.</p>
         <p>The reason for this meeting was the currently widely discussed and followed development of a National Research Data Infrastructure (NFDI), which was adopted by the German Joint Science Conference (GWK) in November 2018 by an agreement between the Federal Government and the States.</p>
-        <p><a href="<?=$this->url('content-page', ['page' => 'research_data_management'])?>">Here you can find this agreement and further information on RDM.</a></p>
+        <p><a href="<?= $this->url('content-page', ['page' => 'research_data_management']) ?>">Here you can find this agreement and further information on RDM.</a></p>
         <p>There are clear signs that the handling of research data will in future play a more prominent role in the scientific work process than in the past: Funding will be allocated on the basis of proven RDM, among other things. The formation of NFDI consortia in which users and providers of research data are to network in cooperation with scientific infrastructure institutions is already in full swing. The specialist associations are expected to actively identify the requirements if their subject is to be taken into account.</p>
         <p>The dialogue on research data and the RDM should therefore be brought into the community by the German Association for the Study of Religion (DVRW) as soon as possible. With this survey the FID Study of Religion would like to support the DVRW in this. On the basis of the survey and further discussions, the DVRW can develop a position paper that phrases the needs of the research community vis-à-vis the actors in the NFDI formation process. Depending on the survey results, the FID will examine the extent to which participation in the formation of NFDI consortia is necessary.</p>
         <p>We therefore kindly ask you to participate in the survey. The survey consists of 19 questions and will take about <b>10 minutes</b>. It will end on <b>7 July 2019</b>, after which the results will be published on the FID website.</p>
