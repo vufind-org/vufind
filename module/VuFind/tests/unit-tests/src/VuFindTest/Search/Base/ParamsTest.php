@@ -49,7 +49,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager
      */
-    protected function getMockConfigManager()
+    protected function getMockConfigManager(): PluginManager
     {
         return $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
@@ -64,7 +64,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Options
      */
-    protected function getMockOptions($configManager = null)
+    protected function getMockOptions(PluginManager $configManager = null): Options
     {
         return $this->getMockForAbstractClass(
             Options::class,
@@ -82,12 +82,52 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Params
      */
-    protected function getMockParams($options = null, $configManager = null)
-    {
+    protected function getMockParams(
+        ?Options $options = null,
+        ?PluginManager $configManager = null
+    ): Params {
         $configManager = $configManager ?? $this->getMockConfigManager();
         return $this->getMockForAbstractClass(
             Params::class,
             [$options ?? $this->getMockOptions($configManager), $configManager]
+        );
+    }
+
+    /** 
+     * Test that getCheckboxFacets works as expected.
+     *
+     * @return void
+     */
+    public function testGetCheckboxFacets(): void
+    {
+        // None by default:
+        $params = $this->getMockParams();
+        $this->assertEquals([], $params->getCheckboxFacets());
+
+        // Adding one works:
+        $params->addCheckboxFacet('foo:bar', 'checkbox_label');
+        $this->assertEquals(
+            [
+                [
+                    'desc' => 'checkbox_label',
+                    'filter' => 'foo:bar',
+                    'selected' => false,
+                    'alwaysVisible' => false
+                ]
+            ], $params->getCheckboxFacets()
+        );
+
+        // Selecting one works:
+        $params->addFilter('foo:bar');
+        $this->assertEquals(
+            [
+                [
+                    'desc' => 'checkbox_label',
+                    'filter' => 'foo:bar',
+                    'selected' => true,
+                    'alwaysVisible' => false
+                ]
+            ], $params->getCheckboxFacets()
         );
     }
 
@@ -96,7 +136,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFacetLabel()
+    public function testGetFacetLabel(): void
     {
         $params = $this->getMockParams();
         // If we haven't set up any facets yet, labels will be unrecognized:
@@ -119,7 +159,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSearchClassId()
+    public function testGetSearchClassId(): void
     {
         $this->assertEquals('Mock', $this->getMockParams()->getSearchClassId());
     }
@@ -129,7 +169,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSpellingReplacements()
+    public function testSpellingReplacements(): void
     {
         $params = $this->getMockParams();
 
