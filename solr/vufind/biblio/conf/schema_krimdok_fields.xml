@@ -20,6 +20,7 @@
     <field name="multipart_set" type="string" indexed="true" stored="true"/>
     <field name="pndnum" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="signature" type="signaturestring" indexed="true" stored="true" multiValued="true"/>
+    <field name="topic_cloud" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
 
     <!-- COMMON copyFields -->
