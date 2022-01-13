@@ -3,13 +3,6 @@ namespace TAMU\ILS\Driver;
 
 class Folio extends \VuFind\ILS\Driver\Folio
 {
-    public function init() {
-        $this->debug(
-            'I am TAMU'
-        );        
-        parent::init();
-    }
-
     /**
      * This method queries the ILS for holding information.
      *
@@ -23,7 +16,6 @@ class Folio extends \VuFind\ILS\Driver\Folio
      */
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
-        echo 'yes the custom';
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
@@ -80,7 +72,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 $fallbackLocationId = null;
             }
 
-            //TAMU boundwith workaround
+            //TAMU Customization boundwith workaround
             if (count($holdingItems) == 0 && $fallbackLocationId) {
                 $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk','udoc','txdoc'];
                 $holdingLocationData = $this->getLocationData($fallbackLocationId);
@@ -92,6 +84,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         '',
                         ''
                     );
+                    //TAMU Customization additional fields
                     $items[] = $callNumberData + [
                         'id' => $bibId,
                         'item_id' => 'bound-with-item',
@@ -160,5 +153,11 @@ class Folio extends \VuFind\ILS\Driver\Folio
             }
         }
         return $items;
+    }
+
+    public function getCourses()
+    {
+        //TAMU Customization
+        return $this->getCourseResourceList('courses', null, 'courseNumber');
     }
 }
