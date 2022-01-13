@@ -1,24 +1,24 @@
 <h1>Aide sur la recherche</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Troncature</a></li>
-  <li><a href="#Fuzzy Searches">Recherches floues</a></li>
-  <li><a href="#Proximity Searches">Recherche par proximité</a></li>
-  <li><a href="#Range Searches">Recherches plages</a></li>
-  <li><a href="#Boosting a Term">Valoriser un terme</a></li>
-  <li><a href="#Boolean operators">Opérateurs  booléens</a>
+  <li><a href="#wildcard_searches">Troncature</a></li>
+  <li><a href="#fuzzy_searches">Recherches floues</a></li>
+  <li><a href="#proximity_searches">Recherche par proximité</a></li>
+  <li><a href="#range_searches">Recherches plages</a></li>
+  <li><a href="#boosting_a_term">Valoriser un terme</a></li>
+  <li><a href="#boolean_operators">Opérateurs  booléens</a>
     <ul>
-      <li><a href="#AND">AND</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR</a></li>
-      <li><a href="#NOT">NOT</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Troncature</dt>
+  <dt><a id="wildcard_searches"></a>Troncature</dt>
   <dd>
     <p>La troncature est un signe qui remplace une ou plusieurs lettres d'un mot.</p>
     <p><strong>?</strong> (point d'interrogation) représente n'importe quel caractère unique.</p>
@@ -35,8 +35,8 @@
     <p>Note : Il n'est pas possible d'utiliser l'astérisque ou le point
       d'interrogation comme premier signe dans une recherche.</p>
   </dd>
-  
-  <dt><a name="Fuzzy Searches"></a>Recherches floues</dt>
+
+  <dt><a id="fuzzy_searches"></a>Recherches floues</dt>
   <dd>
     <p>Utilisez le tilde <strong>~</strong> à la fin d'un mot. Par exemple, pour
        chercher un mot semblable à "amant" vous utilisez la recherche floue:
@@ -50,7 +50,7 @@
     <p>La valeur du paramètre par défaut est 0.5</p>
   </dd>
 
-  <dt><a name="Proximity Searches"></a>Recherche par proximité</dt>
+  <dt><a id="proximity_searches"></a>Recherche par proximité</dt>
   <dd>
     <p>
       Ajoutez le tilde <strong>~</strong> après plusieurs mots. Par exemple:
@@ -58,8 +58,8 @@
       de recherche de 10 mots vous tapez dans le champ de recherche:</p>
     <pre class="code">"pain boulangerie"~10</pre>
   </dd>
-  
-  <dt><a name="Range Searches"></a>Recherche plage</dt>
+
+  <dt><a id="range_searches"></a>Recherche plage</dt>
   <dd>
     <p>
       Pour faire une recherche plage (range search) vous devez utiliser les
@@ -73,8 +73,8 @@
     </p>
     <pre class="code">[2002 TO 2003]</pre>
   </dd>
-  
-  <dt><a name="Boosting a Term"></a>Valoriser un terme</dt>
+
+  <dt><a id="boosting_a_term"></a>Valoriser un terme</dt>
   <dd>
     <p>
       Pour donner à un terme une importance plus élevé dans la recherche utilisez
@@ -84,8 +84,8 @@
     <pre class="code">pain boulangerie^5</pre>
     <p>vous obtiendrez plus de résultats avec le mot "boulangerie".</p>
   </dd>
-  
-  <dt><a name="Boolean operators"></a>Opérateurs booléens</dt>
+
+  <dt><a id="boolean_operators"></a>Opérateurs booléens</dt>
   <dd>
     <p>
       Les opérateurs booléens permettent de combiner des recherches afin de les
@@ -95,13 +95,13 @@
     </p>
     <p>Notez: Les opérateurs booléens doivent être écrit en lettre majuscules</p>
     <dl>
-      <dt><a name="AND"></a>AND</dt>
+      <dt><a id="boolean_and"></a>AND</dt>
       <dd>
           <p>L'opérateur AND est l'opérateur par défaut. Ce
            qui veut dire, que si vous faites une recherche avec deux termes sans
            l'opérateur AND, le moteur de recherche utilise automatiquement
            l'opérateur AND.
-           
+
            Utilisez AND pour croiser plusieurs termes de
              recherche. Vous obtiendrez les notices bibliographiques qui
              contiennent tous les mots recherchés. Il permet d'affiner la
@@ -112,7 +112,7 @@
         <p>ou</p>
         <pre class="code">"Théodore Monod" AND désert</pre>
       </dd>
-      <dt><a name="+"></a>+</dt>
+      <dt><a id="boolean_plus"></a>+</dt>
       <dd>
         <p>Pour obtenir des résultats avec un certain terme en utilisant plusieurs
             termes dans une recherche, utilisez le signe plus <strong>+</strong>.
@@ -123,7 +123,7 @@
         </p>
         <pre class="code">+miaou chat</pre>
       </dd>
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p>
            Au moins l'un de termes reliés par OR doit être présent dans le
@@ -133,7 +133,7 @@
         </p>
         <pre class="code">"miammiam le croissant" OR croissant</pre>
       </dd>
-      <dt><a name="NOT"></a>NOT</dt>
+      <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>L'opérateur NOT permet d'exclure des termes de la recherche.</p>
         <p>Pour obtenir des résultats qui contiennent le terme "raton" mais pas
@@ -143,7 +143,7 @@
            L'exemple suivant donne aucun résultat:</p>
         <pre class="code">NOT inconnus</pre>
       </dd>
-      <dt><a name="-"></a>-</dt>
+      <dt><a id="boolean_minus"></a>-</dt>
       <dd>
         <p>Le signe moins <strong>-</strong> permet d'exclure le terme de la
            recherche qui se situe derrière l'opérateur.</p>

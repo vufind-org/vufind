@@ -19,7 +19,7 @@
         <select name="user_id" id="user_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach($this->uniqueUsers as $user):?>
-            <option value="<?=$this->escapeHtmlAttr($user['user_id'])?>"<?php if ($user['user_id'] == $this->params['user_id'] ?? null): ?> selected="selected"<?php endif;?>>
+            <option value="<?=$this->escapeHtmlAttr($user['user_id'])?>"<?php if ($user['user_id'] == ($this->params['user_id'] ?? null)): ?> selected="selected"<?php endif;?>>
               <?=$this->escapeHtml($user['username']) ?>
             </option>
           <?php endforeach;?>
@@ -30,7 +30,7 @@
         <select name="tag_id" id="tag_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach($this->uniqueTags as $tag):?>
-          <option value="<?=$this->escapeHtmlAttr($tag['tag_id'])?>"<?php if ($tag['tag_id'] == $this->params['tag_id'] ?? null): ?> selected="selected"<?php endif;?>>
+          <option value="<?=$this->escapeHtmlAttr($tag['tag_id'])?>"<?php if ($tag['tag_id'] == ($this->params['tag_id'] ?? null)): ?> selected="selected"<?php endif;?>>
               <?=$this->escapeHtml($tag['tag']) ?>
           </option>
           <?php endforeach;?>
@@ -41,7 +41,7 @@
         <select name="resource_id" id="resource_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach($this->uniqueResources as $resource):?>
-          <option value="<?=$this->escapeHtmlAttr($resource['resource_id'])?>" title="<?=$this->escapeHtmlAttr($resource['title']) ?>"<?php if ($resource['resource_id'] == $this->params['resource_id'] ?? null): ?> selected="selected"<?php endif;?>>
+          <option value="<?=$this->escapeHtmlAttr($resource['resource_id'])?>" title="<?=$this->escapeHtmlAttr($resource['title']) ?>"<?php if ($resource['resource_id'] == ($this->params['resource_id'] ?? null)): ?> selected="selected"<?php endif;?>>
               <?=$this->escapeHtml($this->truncate($resource['title'], 80)) ?> (<?=$this->escapeHtml($resource['resource_id']) ?>)
           </option>
           <?php endforeach;?>
@@ -49,7 +49,7 @@
       </label>
       <label for="taglistsubmit">
         <input type="submit" id="taglistsubmit" value="<?=$this->transEscAttr('Filter')?>" class="btn btn-primary">
-        <?php if ((null !== $this->params['user_id'] ?? null) || (null !== $this->params['tag_id'] ?? null) || (null !== $this->params['resource_id'] ?? null)):?>
+        <?php if ((null !== ($this->params['user_id'] ?? null)) || (null !== ($this->params['tag_id'] ?? null)) || (null !== ($this->params['resource_id'] ?? null))):?>
           <a href="<?= $this->url('admin/tags', ['action' => 'List']); ?>"><?=$this->translate('clear_tag_filter')?></a>
         <?php endif;?>
       </label>

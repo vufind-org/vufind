@@ -1,6 +1,6 @@
 <?php
 /**
- * Search tabs helper factory.
+ * Factory for GetRecordDetails AJAX handler.
  *
  * PHP version 7
  *
@@ -20,29 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Search;
+namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Search tabs helper factory.
+ * Factory for GetRecordDetails AJAX handler.
  *
  * @category VuFind
- * @package  Search
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabsHelperFactory implements FactoryInterface
+class GetResultCountFactory
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -56,7 +53,9 @@ class SearchTabsHelperFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
+     * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -64,25 +63,10 @@ class SearchTabsHelperFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $tabConfig = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
-        $filterConfig = isset($config->SearchTabsFilters)
-            ? $config->SearchTabsFilters->toArray() : [];
-        $permissionConfig = isset($config->SearchTabsPermissions)
-            ? $config->SearchTabsPermissions->toArray() : [];
-        $settings = isset($config->SearchTabsSettings)
-            ? $config->SearchTabsSettings->toArray() : [];
         return new $requestedName(
-            $container->get(\VuFind\Search\Results\PluginManager::class),
-            $tabConfig,
-            $filterConfig,
-            $container->get('Application')->getRequest(),
-            $permissionConfig,
-            $settings
+            $container->get(\VuFind\Search\Results\PluginManager::class)
         );
     }
 }

@@ -148,6 +148,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     {
         $duedate = null;
         $statuses = $this->config['Statuses'][$status] ?? null;
+        $reserve = 'N';
+        $available = 0;
 
         // query the config file for the item status if there are
         // config values, use the configuration otherwise execute the switch
@@ -949,6 +951,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     protected function processTransactionsRow($row)
     {
         $dueStatus = false;
+        $dueDate = $row['DUEDATE'] ?? null;
         // Convert Horizon Format to display format
         if (!empty($row['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
@@ -1111,6 +1114,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     {
         $checkHzVersionSQL = "select database_revision from matham";
 
+        $hzVersionFound = '';
         try {
             $versionResult = $this->db->query($checkHzVersionSQL);
             foreach ($versionResult as $row) {
