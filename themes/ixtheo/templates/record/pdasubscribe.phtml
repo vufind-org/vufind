@@ -2,7 +2,7 @@
 <?php if (!empty($this->pdasubscription)) { ?>
     <?=$this->render($this->infoText);?>
     <h4><?=$this->bookDescription;?></h4>
-    <textarea style="resize: none" name="addressfield" autofocus="true"  form="edit-save-form" rows="5" cols="30" 
+    <textarea class="subscriber-textarea" name="addressfield" autofocus="true"  form="edit-save-form" rows="5" cols="30"
               placeholder="<?=$this->transEsc('Please enter your address here');?>"></textarea>
     <p/>
     <form id="edit-save-form" class="form-horizontal" method="post"

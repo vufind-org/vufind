@@ -18,7 +18,17 @@ var TueFind2 = {
         if (TueFind2.Searchbox.HeightOptions.Enabled) {
             let parts = window.location.href.split('/');
             if (parts.length > TueFind2.Searchbox.HeightOptions.MinHrefLength)
-                $('.panel-home').css("min-height", TueFind2.Searchbox.HeightOptions.MinHeight);
+                $('.panel-home').css({
+                   "min-height": TueFind2.Searchbox.HeightOptions.MinHeight,
+                   "margin-bottom": "20px"
+                });
+        }
+    },
+    ChangeSearchboxHeightRelbib: function() {
+        if (TueFind2.Searchbox.HeightOptions.Enabled) {
+            let parts = window.location.href.split('/');
+            if (parts.length > TueFind2.Searchbox.HeightOptions.MinHrefLength)
+                $('.panel-home').css("min-height", 420);
         }
     }
 }

@@ -1,0 +1,122 @@
+<!--<div class="container-fluid bg-white">-->
+    <div class="row">
+        <div class="col-12">
+            <?php $account = $this->auth()->getManager(); ?>
+
+            <!-- Begin section Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light justify-content-between ix-fixed-top">
+
+                <!-- TueFind extension template -->
+                <?=$this->render('header/logo');?>
+
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="sr-only">Toggle navigation</span>
+                    <i class="fa fa-bars" aria-hidden="true"></i>
+                </button>
+
+                <?php if (!isset($this->layout()->renderingError)): ?>
+                <div class="collapse navbar-collapse" id="header-collapse">
+                    <nav>
+                        <ul class="nav navbar-nav navbar-right flip">
+
+                            <!-- Images for supporters -->
+
+                            <!-- Begin section Main Menu -->
+                            <!-- Home -->
+                            <li class="nav-item active">
+                                <a class="nav-link" href="<?=$this->url('home')?>" >
+                                    <i class="fa fa-home" aria-hidden="true"> </i>
+                                    <?=$this->transEsc('Home');?>
+                                </a>
+                            </li>
+
+                            <!-- TueFind extension template -->
+                            <?=$this->render('header/extensions');?>
+
+                            <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+                              <li class="logoutOptions<?php if($account->dropdownEnabled()): ?> with-dropdown<?php endif ?><?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+                                <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>"><i id="account-icon" class="fa fa-user-circle" aria-hidden="true"></i> <?=$this->transEsc("Your Account")?></a>
+                              </li>
+                              <?php if($account->dropdownEnabled()): ?>
+                                <li id="login-dropdown" class="dropdown<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+                                  <a href="#" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>
+                                  <div class="dropdown-menu">
+                                    <?=$this->render('myresearch/menu'); ?>
+                                  </div>
+                                </li>
+                              <?php endif; ?>
+                              <li class="logoutOptions<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+                                <a href="<?=$this->url('myresearch-logout')?>" class="logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></a>
+                              </li>
+                              <li id="loginOptions"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
+                                <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                                  <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
+                                <?php else: ?>
+                                  <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?></a>
+                                <?php endif; ?>
+                              </li>
+                            <?php endif; ?>
+
+                            <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+                              <li class="theme dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <?php foreach ($this->layout()->themeOptions as $current): ?>
+                                    <li<?=$current['selected'] ? ' class="active"' : ''?>>
+                                      <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['ui' => $current['name']])) ?>" rel="nofollow">
+                                        <?=$this->transEsc($current['desc']) ?>
+                                      </a>
+                                    </li>
+                                  <?php endforeach; ?>
+                                </ul>
+                              </li>
+                            <?php endif; ?>
+
+                            <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+                              <li class="language dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <?php
+                                    //TueFind: Basic VuFind functionality changed, removed author ID from URL
+                                    $routeParams = $this->tuefind()->getRouteParams();
+                                    foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                                      <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
+                                        <?php $langURL = $this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode]));
+                                            if($routeParams['controller'] == "Authority" && $routeParams['action'] == "Home") {
+                                                $langURL = $this->escapeHtmlAttr($this->url()->addQueryParametersToAuthority(['lng' => $langCode]));
+                                            }
+                                        ?>
+                                        <a href="<?=$langURL?>" rel="nofollow">
+                                          <?=$this->displayLanguageOption($langName) ?>
+                                        </a>
+                                      </li>
+                                  <?php endforeach; ?>
+                                </ul>
+                              </li>
+                            <?php endif; ?>
+
+                        <!-- End section Main Menu -->
+                        </ul>
+                    </nav>
+                </div>
+            <?php endif; ?>
+            <!-- End section Navbar -->
+        </nav>
+    </div><!-- close col's -->
+</div><!-- close row -->
+<!--</div>--><!-- close container -->
+
+<!--  Begin seachbox -->
+<?=$this->layout()->searchbox ?>
+<!--  End seachbox -->
+
+<!-- Begin header image -->
+<?php //Set up the header image. It comes up instead of the search box.
+   //Accepts:
+   //1. false; nothing will be displayed, this is default.
+   //2. A string; the header image in the string will be displayed. JavaScript will not applied.
+if(isset($this->layout()->headerImage)) {
+    echo '<img src="'.$this->imageLink($this->layout()->headerImage).'" class="img-fluid header-image" alt="header image"/>';
+}
+?>
+<!-- End header image -->
