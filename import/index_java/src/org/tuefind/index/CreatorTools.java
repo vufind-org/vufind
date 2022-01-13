@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.vufind.index.FieldSpecTools;
 
 public class CreatorTools extends org.vufind.index.CreatorTools
 {
@@ -35,24 +36,6 @@ public class CreatorTools extends org.vufind.index.CreatorTools
 
     protected static Map<String, List<String>> normalizedRelatorMap = new ConcurrentHashMap<>();
 
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
-            String acceptWithoutRelator, String relatorConfig,
-            String acceptUnknownRelators, String indexRawRelators, Boolean firstOnly)
-    {
-        List<String> authorRoles = super.getRelatorsFilteredByRelator(record, tagList, acceptWithoutRelator, relatorConfig,
-                                                                      acceptUnknownRelators, indexRawRelators, firstOnly);
-        List<String> result = new LinkedList<String>();
-        for (String elem : authorRoles) {
-            if (elem.length() == 3) {
-                result.add(elem);
-            }
-        }
-        if (result.size() > 0)
-            return result;
-        else
-            return null;
-    }
-
     /**
      * TueFind: Special treatment for iteration logic + 'g' subfield
      *
@@ -67,7 +50,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
         List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
         List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){
@@ -117,6 +100,10 @@ public class CreatorTools extends org.vufind.index.CreatorTools
         String tag = authorField.getTag();
         List<Subfield> subfieldE = authorField.getSubfields('e');
         List<Subfield> subfield4 = authorField.getSubfields('4');
+
+        //remove values for author roles other than sized 3, because others are not translated
+        subfieldE.removeIf(u -> u.getData().length() != 3);
+        subfield4.removeIf(u -> u.getData().length() != 3);
 
         Set<String> relators = new LinkedHashSet<String>();
 
