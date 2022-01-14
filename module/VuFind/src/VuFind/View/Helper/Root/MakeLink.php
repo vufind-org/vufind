@@ -85,7 +85,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      * - escapeContent: Default true, set to false to skip escaping (like for HTML).
      *
      * @param string       $contents Link contents (must be properly-formed HTML)
-     * @param string|array $href     Link destination (null to skip)
+     * @param string       $href     Link destination (null to skip)
      * @param string|array $attrs    Link attributes (associative array)
      * @param array        $options  Additional options
      *
