@@ -7,7 +7,7 @@ class SolrMarc extends SolrDefault
     const ISIL_PREFIX_GND = '(DE-588)';
     const ISIL_PREFIX_K10PLUS = '(DE-627)';
 
-    use MarcAdvancedTrait;
+    use Feature\MarcAdvancedTrait;
 
     /**
      * Search for author and return its id (e.g. GND number or PPN)

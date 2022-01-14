@@ -1,10 +1,10 @@
 <?php
-namespace TueFind\RecordDriver;
+namespace TueFind\RecordDriver\Feature;
 
 
 trait MarcAdvancedTrait
 {
-    use \VuFind\RecordDriver\MarcAdvancedTrait  { getSeriesFromMARC as getVuFindSeriesFromMARC;
+    use \VuFind\RecordDriver\Feature\MarcAdvancedTrait  { getSeriesFromMARC as getVuFindSeriesFromMARC;
                                                   getSeries as getVuFindSeries;
     }
 
