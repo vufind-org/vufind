@@ -212,7 +212,9 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         // All valid characters for a Potential Custom Element Name
         // Concated for clarity (space not a valid character)
-        $PCENChar = '[\-\.0-9_a-z\x{B7}' .
+        $PCENChar = '[' .
+            '\-\.0-9_a-z' .
+            '\x{B7}' .
             '\x{C0}-\x{D6}' .
             '\x{D8}-\x{F6}' .
             '\x{F8}-\x{37D}' .
@@ -224,7 +226,8 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
             '\x{3001}-\x{D7FF}' .
             '\x{F900}-\x{FDCF}' .
             '\x{FDF0}-\x{FFFD}' .
-            '\x{10000}-\x{EFFFF}]*';
+            '\x{10000}-\x{EFFFF}' .
+            ']*';
 
         // First character must be a letter (uppercase or lowercase)
         // Needs one hyphen to designate custom element, more groups valid
