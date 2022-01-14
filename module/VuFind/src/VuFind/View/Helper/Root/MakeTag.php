@@ -190,9 +190,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Verify HTML tag matches HTML spec:
-     * - starts with letter
-     * - contains only letters and hyphens
+     * Verify HTML tag matches HTML spec
      *
      * @param string $tagName Element tag name
      *
@@ -201,18 +199,39 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      */
     protected function verifyTagName(string $tagName)
     {
-        $PCENChar = '[\-\.0-9_a-z\x{B7} \x{C0}-\x{D6} \x{D8}-\x{F6} ' .
-            '\x{F8}-\x{37D} \x{37F}-\x{1FFF} \x{200C}-\x{200D} \x{203F}-\x{2040} ' .
-            '\x{2070}-\x{218F} \x{2C00}-\x{2FEF} \x{3001}-\x{D7FF} ' .
-            '\x{F900}-\x{FDCF} \x{FDF0}-\x{FFFD} \x{10000}-\x{EFFFF}]*';
-
-        $validCustomTagPattern = '/^[a-z]' . $PCENChar . '(\-' . $PCENChar . ')+$/u';
-
+        // Simplify check by making tag lowercase
         $lowerTagName = strtolower($tagName);
 
-        if (!in_array($lowerTagName, $this->validBodyTags)
-            && !preg_match($validCustomTagPattern, strtolower($lowerTagName))
-        ) {
+        // Existing tag?
+        if (in_array($lowerTagName, $this->validBodyTags)) {
+            return;
+        }
+
+        // Check if it's a valid custom element
+        // Spec: https://html.spec.whatwg.org/#autonomous-custom-element
+
+        // All valid characters for a Potential Custom Element Name
+        // Concated for clarity (space not a valid character)
+        $PCENChar = '[\-\.0-9_a-z\x{B7}' .
+            '\x{C0}-\x{D6}' .
+            '\x{D8}-\x{F6}' .
+            '\x{F8}-\x{37D}' .
+            '\x{37F}-\x{1FFF}' .
+            '\x{200C}-\x{200D}' .
+            '\x{203F}-\x{2040}' .
+            '\x{2070}-\x{218F}' .
+            '\x{2C00}-\x{2FEF}' .
+            '\x{3001}-\x{D7FF}' .
+            '\x{F900}-\x{FDCF}' .
+            '\x{FDF0}-\x{FFFD}' .
+            '\x{10000}-\x{EFFFF}]*';
+
+        // First character must be a letter (uppercase or lowercase)
+        // Needs one hyphen to designate custom element, more groups valid
+        $validCustomTagPattern = '/^[a-z]' . $PCENChar . '(\-' . $PCENChar . ')+$/u';
+
+        // Is valid custom tag?
+        if (!preg_match($validCustomTagPattern, strtolower($lowerTagName))) {
             throw new \InvalidArgumentException('Invalid tag name: ' . $tagName);
         }
     }
