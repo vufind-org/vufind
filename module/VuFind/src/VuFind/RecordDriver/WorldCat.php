@@ -27,6 +27,10 @@
  */
 namespace VuFind\RecordDriver;
 
+use VuFind\RecordDriver\Feature\MarcAdvancedTrait;
+use VuFind\RecordDriver\Feature\MarcBasicTrait;
+use VuFind\RecordDriver\Feature\MarcReaderTrait;
+
 /**
  * Model for MARC records in WorldCat.
  *

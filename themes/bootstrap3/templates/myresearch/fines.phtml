@@ -32,7 +32,7 @@
               $title = $this->escapeHtml(trim($record['title'], '/:'));
           } else {
               $title = '<a href="'
-                  . $this->recordLink()->getUrl($record['driver'])
+                  . $this->escapeHtmlAttr($this->recordLinker()->getUrl($record['driver']))
                   . '">' . $this->escapeHtml(trim($record['title'], '/:')) . '</a>';
           }
           $tableData['Title'][] = $title;

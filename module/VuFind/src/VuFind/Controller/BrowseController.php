@@ -258,7 +258,8 @@ class BrowseController extends AbstractBase
             $results = $this->getFacetList(
                 $this->params()->fromQuery('facet_field'),
                 $this->params()->fromQuery('query_field'),
-                'count', $this->params()->fromQuery('query')
+                'count',
+                $this->params()->fromQuery('query')
             );
             $resultList = [];
             foreach ($results as $result) {
@@ -340,7 +341,9 @@ class BrowseController extends AbstractBase
                         }
                     }
                     $view->resultList = array_slice(
-                        $tagList, 0, $this->config->Browse->result_limit
+                        $tagList,
+                        0,
+                        $this->config->Browse->result_limit
                     );
                 }
             } else {
@@ -352,7 +355,8 @@ class BrowseController extends AbstractBase
 
                 $tagList = $tagTable->getTagList(
                     $params['findby'],
-                    $this->config->Browse->result_limit, $callback
+                    $this->config->Browse->result_limit,
+                    $callback
                 );
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {
@@ -380,7 +384,7 @@ class BrowseController extends AbstractBase
     {
         $this->setCurrentAction('LCC');
         $view = $this->createViewModel();
-        list($view->filter, $view->secondaryList) = $this->getSecondaryList('lcc');
+        [$view->filter, $view->secondaryList] = $this->getSecondaryList('lcc');
         $view->secondaryParams = [
             'query_field' => 'callnumber-first',
             'facet_field' => 'callnumber-subject'
@@ -398,7 +402,7 @@ class BrowseController extends AbstractBase
     {
         $this->setCurrentAction('Dewey');
         $view = $this->createViewModel();
-        list($view->filter, $hundredsList) = $this->getSecondaryList('dewey');
+        [$view->filter, $hundredsList] = $this->getSecondaryList('dewey');
         $categoryList = [];
         foreach ($hundredsList as $dewey) {
             $categoryList[$dewey['value']] = [
@@ -455,7 +459,7 @@ class BrowseController extends AbstractBase
                 'facet_field' => $this->getCategory($currentAction)
             ];
             $view->facetPrefix = $facetPrefix && $findby == 'alphabetical';
-            list($view->filter, $view->secondaryList)
+            [$view->filter, $view->secondaryList]
                 = $this->getSecondaryList($findby);
         }
 
@@ -599,6 +603,7 @@ class BrowseController extends AbstractBase
                     )
                 ];
         }
+        throw new \Exception('Unexpected value: ' . $facet);
     }
 
     /**
@@ -612,8 +617,11 @@ class BrowseController extends AbstractBase
      * @return array           Array indexed by value with text of displayText and
      * count
      */
-    protected function getFacetList($facet, $category = null,
-        $sort = 'count', $query = '[* TO *]'
+    protected function getFacetList(
+        $facet,
+        $category = null,
+        $sort = 'count',
+        $query = '[* TO *]'
     ) {
         $results = $this->serviceLocator
             ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');

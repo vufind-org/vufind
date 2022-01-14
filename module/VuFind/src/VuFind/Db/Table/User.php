@@ -70,8 +70,13 @@ class User extends Gateway
      * (optional; used for privacy mode)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj, Config $config, Container $session = null,
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj,
+        Config $config,
+        Container $session = null,
         $table = 'user'
     ) {
         $this->config = $config;

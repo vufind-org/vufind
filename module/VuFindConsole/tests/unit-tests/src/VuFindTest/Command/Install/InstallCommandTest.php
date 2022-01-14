@@ -55,15 +55,25 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand(
             ['buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
         );
-        $command->expects($this->at(0))->method('getInput')
-            ->with(
-                $this->isInstanceOf(InputInterface::class),
-                $this->isInstanceOf(OutputInterface::class),
-                $this->equalTo(
+        $command->expects($this->exactly(3))->method('getInput')
+            ->withConsecutive(
+                [
+                    $this->isInstanceOf(InputInterface::class),
+                    $this->isInstanceOf(OutputInterface::class),
                     'Where would you like to store your local settings? '
                     . "[$expectedBaseDir/local] "
-                )
-            )->will($this->returnValue($localFixtures));
+                ],
+                [
+                    $this->isInstanceOf(InputInterface::class),
+                    $this->isInstanceOf(OutputInterface::class),
+                    "\nWhat module name would you like to use? [blank for none] "
+                ],
+                [
+                    $this->isInstanceOf(InputInterface::class),
+                    $this->isInstanceOf(OutputInterface::class),
+                    'What base path should be used in VuFind\'s URL? [/vufind] '
+                ]
+            )->willReturnOnConsecutiveCalls($localFixtures, '', '/bar');
         $expectedDirs = [
             $localFixtures,
             $localFixtures . '/cache',
@@ -71,45 +81,19 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             $localFixtures . '/harvest',
             $localFixtures . '/import',
         ];
-        $command->expects($this->at(1))->method('buildDirs')
-            ->with($this->equalTo($expectedDirs))
-            ->will($this->returnValue(true));
-        $command->expects($this->at(2))->method('getInput')
-            ->with(
-                $this->isInstanceOf(InputInterface::class),
-                $this->isInstanceOf(OutputInterface::class),
-                $this->equalTo(
-                    "\nWhat module name would you like to use? [blank for none] "
-                )
-            )->will($this->returnValue(''));
-        $command->expects($this->at(3))->method('getInput')
-            ->with(
-                $this->isInstanceOf(InputInterface::class),
-                $this->isInstanceOf(OutputInterface::class),
-                $this->equalTo(
-                    'What base path should be used in VuFind\'s URL? [/vufind] '
-                )
-            )->will($this->returnValue('/bar'));
-        $command->expects($this->at(4))->method('buildDirs')
+        $command->expects($this->exactly(2))->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
-        $command->expects($this->at(5))->method('writeFileToDisk')
-            ->with(
-                $this->equalTo("$expectedBaseDir/env.bat"),
-                $this->equalTo($expectedEnvBat)
+        $command->expects($this->exactly(4))->method('writeFileToDisk')
+            ->withConsecutive(
+                ["$expectedBaseDir/env.bat", $expectedEnvBat],
+                ["$localFixtures/import/import.properties"],
+                ["$localFixtures/import/import_auth.properties"],
+                ["$localFixtures/httpd-vufind.conf"]
             )->will($this->returnValue(true));
-        $command->expects($this->at(6))->method('writeFileToDisk')
-            ->with($this->equalTo("$localFixtures/import/import.properties"))
-            ->will($this->returnValue(true));
-        $command->expects($this->at(7))->method('writeFileToDisk')
-            ->with($this->equalTo("$localFixtures/import/import_auth.properties"))
-            ->will($this->returnValue(true));
-        $command->expects($this->at(8))->method('writeFileToDisk')
-            ->with($this->equalTo("$localFixtures/httpd-vufind.conf"))
-            ->will($this->returnValue(true));
-        $command->expects($this->at(9))->method('getApacheLocation')
+        $command->expects($this->once())->method('getApacheLocation')
             ->with($this->isInstanceOf(OutputInterface::class));
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -132,7 +116,8 @@ VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
 $expectedBaseDir and $localFixtures respectively.
 TEXT;
         $this->assertEquals(
-            $expectedOutput, trim($commandTester->getDisplay())
+            $expectedOutput,
+            trim($commandTester->getDisplay())
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -156,26 +141,19 @@ TEXT;
             $localFixtures . '/harvest',
             $localFixtures . '/import',
         ];
-        $command->expects($this->at(0))->method('buildDirs')
+        $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
-        $command->expects($this->at(1))->method('writeFileToDisk')
-            ->with(
-                $this->equalTo("$expectedBaseDir/env.bat"),
-                $this->equalTo($expectedEnvBat)
+        $command->expects($this->exactly(4))->method('writeFileToDisk')
+            ->withConsecutive(
+                ["$expectedBaseDir/env.bat", $expectedEnvBat],
+                ["$localFixtures/import/import.properties"],
+                ["$localFixtures/import/import_auth.properties"],
+                ["$localFixtures/httpd-vufind.conf"]
             )->will($this->returnValue(true));
-        $command->expects($this->at(2))->method('writeFileToDisk')
-            ->with($this->equalTo("$localFixtures/import/import.properties"))
-            ->will($this->returnValue(true));
-        $command->expects($this->at(3))->method('writeFileToDisk')
-            ->with($this->equalTo("$localFixtures/import/import_auth.properties"))
-            ->will($this->returnValue(true));
-        $command->expects($this->at(4))->method('writeFileToDisk')
-            ->with($this->equalTo("$localFixtures/httpd-vufind.conf"))
-            ->will($this->returnValue(true));
-        $command->expects($this->at(5))->method('getApacheLocation')
+        $command->expects($this->once())->method('getApacheLocation')
             ->with($this->isInstanceOf(OutputInterface::class));
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -195,7 +173,8 @@ VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
 $expectedBaseDir and $localFixtures respectively.
 EXPECTED;
         $this->assertEquals(
-            $expectedOutput, trim($commandTester->getDisplay())
+            $expectedOutput,
+            trim($commandTester->getDisplay())
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -211,7 +190,7 @@ EXPECTED;
         array $methods = ['buildDirs', 'getInput', 'writeFileToDisk']
     ) {
         return $this->getMockBuilder(InstallCommand::class)
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

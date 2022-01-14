@@ -116,10 +116,13 @@ class EdsBackendFactory implements FactoryInterface
             $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
         $backend = new Backend(
-            $connector, $this->createRecordCollectionFactory(),
+            $connector,
+            $this->createRecordCollectionFactory(),
             $this->serviceLocator->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
-            $session, $this->edsConfig, $isGuest
+            $session,
+            $this->edsConfig,
+            $isGuest
         );
         $backend->setAuthManager(
             $this->serviceLocator->get(\VuFind\Auth\Manager::class)

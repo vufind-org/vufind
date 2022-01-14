@@ -20,24 +20,33 @@
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
+  <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" /><!-- if you have issues with segfaults during code coverage generation, try adding -dzend.enable_gc=0 to this (but this fix was probably only needed in PHP 5) -->
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="2.0.13" />
+  <property name="composer_version" value="2.1.6" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="7.7.3" />
+  <property name="solr_version" value="8.11.1" />
   <property name="skip_phpdoc" value="false" />
-  <property name="phpdoc_version" value="3.0.0-alpha.4" />
+  <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="7.1.1" />
+  <property name="version" value="8.0.3" />
 
   <!-- We only need the -p switch if the password is non-blank -->
-  <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
-    <property name="mysqlpwswitch" value="-p" />
-  </then></if>
+  <if>
+    <not>
+      <equals arg1="${mysqlrootpass}" arg2="" />
+    </not>
+    <then>
+      <property name="mysqlpwswitch" value="-p" />
+    </then>
+    <else>
+      <property name="mysqlpwswitch" value="" />
+    </else>
+  </if>
 
   <!-- Main Target -->
   <target name="main" description="main target">
@@ -72,11 +81,12 @@
     <phingcall target="phploc"/>
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
+    <phingcall target="phpstan-checkstyle"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
-    <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuDL/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+    <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
   </target>
 
   <!-- Measure project with phploc -->
@@ -105,14 +115,22 @@
     <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
   </target>
 
+  <!-- Phpstan -->
+  <target name="phpstan-checkstyle">
+    <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G --error-format=checkstyle analyse &gt; ${builddir}/reports/phpstan-checkstyle.xml" escape="false" passthru="true" checkreturn="true" />
+  </target>
+  <target name="phpstan-console">
+    <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G analyse" escape="false" passthru="true" checkreturn="true" />
+  </target>
+
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php_cs -vvv" passthru="true" escape="false" />
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php_cs -vvv" passthru="true" escape="false" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php-cs-fixer.php -vvv" passthru="true" escape="false" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php -vvv" passthru="true" escape="false" />
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php_cs --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php_cs --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php-cs-fixer.php --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
   <!-- ESLint -->
@@ -177,17 +195,17 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -198,9 +216,13 @@
         <loadfile property="existing_solr_version" file="${srcdir}/solr/vendor/.installedVersion" />
       </then>
     </if>
-    <!-- only attempt to install Solr if the desired version is not already there -->
+    <!-- only attempt to install Solr if the desired version is not already there,
+         and a marker file has not been created to disable Solr installation. -->
     <if>
-      <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+      <and>
+        <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+        <not><available file="${srcdir}/solr/.disableAutomaticInstall" /></not>
+      </and>
       <then>
         <!-- make sure we don't run out of memory or time during installation: -->
         <php expression="ini_set('memory_limit', '1G');" />
@@ -219,7 +241,12 @@
         <!-- unpack the archive into solr/vendor -->
         <mkdir dir="${builddir}/solr" />
         <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${builddir}/solr" />
-        <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
+        <if>
+          <available file="${srcdir}/solr/vendor" type="dir" />
+          <then>
+            <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
+          </then>
+        </if>
         <move file="${builddir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
         <!-- make scripts executable -->
         <chmod mode="0755">
@@ -253,13 +280,29 @@
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
-    <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+    <if>
+      <equals arg1="${composer_version}" arg2="latest-2.x" />
+      <then>
+        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${srcdir}" filename="composer.phar" />
+      </then>
+      <else>
+        <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+      </else>
+    </if>
     <echo message="Installing dependencies..." />
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
+    <property name="solr_pid_file" value="${srcdir}/local/solr-8983.pid" />
+    <!-- fail if the system is already running -->
+    <if>
+      <available file="${solr_pid_file}" />
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
+      </then>
+    </if>
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
@@ -273,7 +316,7 @@
 
     <!-- Generate basic configuration -->
     <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
-    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" />
+    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" passthru="true" checkreturn="true" />
 
     <!-- Activate Selenium (if a path has been provided) -->
     <if>
@@ -288,8 +331,7 @@
       <istrue value="${apachectl}" />
       <then>
         <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
-        <exec command="${apachectl} restart" outputProperty="LASTOUTPUT" />
-        <echo message="${LASTOUTPUT}" />
+        <exec command="${apachectl} restart" passthru="true" />
       </then>
     </if>
 
@@ -338,9 +380,14 @@
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="touch ${srcdir}/local/vufindtest.pid" />
-    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
-    <echo message="${LASTOUTPUT}" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
+    <!-- fail if Solr did not start up successfully: -->
+    <if>
+      <not><available file="${solr_pid_file}" /></not>
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) not detected. Solr startup failed.</fail>
+      </then>
+    </if>
 
     <if>
       <equals arg1="0" arg2="${solr_startup_sleep}" />
@@ -353,15 +400,32 @@
       </else>
     </if>
 
-    <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
-    <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
-    <foreach list="${buglist}" param="filename" delimiter="," target="importrec" />
-    <exec escape="false" command="find ${srcdir}/tests/data/authority -name '*.mrc' -printf '%p,'" outputProperty="authlist" />
-    <foreach list="${authlist}" param="filename" delimiter="," target="importauthrec" />
+    <phingcall target="import_biblios" />
+    <phingcall target="import_authorities" />
+    <phingcall target="build_alphabrowse" />
+  </target>
 
-    <!-- build alphabrowse index -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/index-alphabetic-browse.sh" outputProperty="LASTOUTPUT" />
-    <echo message="${LASTOUTPUT}" />
+  <!-- Import test biblio data -->
+  <target name="import_biblios" description="import all biblio test records">
+    <foreach param="relfilename" absparam="filename" target="importrec">
+      <fileset dir="${srcdir}/tests/data">
+          <include name="*.mrc" />
+      </fileset>
+    </foreach>
+  </target>
+
+  <!-- Import test authority data -->
+  <target name="import_authorities" description="import all authority test records">
+    <foreach param="relfilename" absparam="filename" target="importauthrec">
+      <fileset dir="${srcdir}/tests/data/authority">
+          <include name="*.mrc" />
+      </fileset>
+    </foreach>
+  </target>
+
+  <!-- Build alphabrowse index -->
+  <target name="build_alphabrowse" description="build the alphabrowse index">
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/index-alphabetic-browse.sh" passthru="true" />
   </target>
 
   <!-- Uninstall and Deactivate VuFind -->
@@ -390,8 +454,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
-    <echo message="${LASTOUTPUT}" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" passthru="true" />
 
     <!-- run extra cleanup action, if any -->
     <if>
@@ -406,18 +469,44 @@
       <istrue value="${seleniumjar}" />
       <then>
         <exec command="pkill -f xvfb" />
-        <exec command="pkill -f &quot;java -jar `basename ${seleniumjar}`&quot;" />
+        <basename file="${seleniumjar}" property="seleniumbase" />
+        <exec command="pkill -f &quot;java -jar ${seleniumbase}&quot;" />
       </then>
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
-    <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
-    <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
-    <delete file="${srcdir}/composer.phar" failonerror="false" />
-    <delete file="${srcdir}/vufind-exception.log" failonerror="false" />
+    <if>
+      <available file="${srcdir}/import/solrmarc.log" />
+      <then>
+        <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/solr" type="dir" />
+      <then>
+        <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/composer.phar" />
+      <then>
+        <delete file="${srcdir}/composer.phar" failonerror="true" />
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/vufind-exception.log" />
+      <then>
+        <delete file="${srcdir}/vufind-exception.log" failonerror="true" />
+      </then>
+    </if>
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
-    <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
-    <exec command="git reset --hard" />
+    <if>
+      <available file="${srcdir}/local" type="dir" />
+      <then>
+        <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
+      </then>
+    </if>
+    <exec command="git reset --hard" passthru="true" />
   </target>
 
   <!-- Prepare VuFind for distribution -->
@@ -469,70 +558,57 @@
   </target>
 
   <target name="importauthrec" description="import each of the MARC authority test records">
-    <if>
-    <istrue value="${filename}"/>       <!-- To ignore the last token, as find command output list has ',' after last filename -->
-      <then>
-        <exec command="basename ${filename}" outputProperty="BASENAME" />
-
-        <!-- perform the import -->
-        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc-auth.sh ${filename} marc_auth_ils.properties" outputProperty="LASTOUTPUT" />
-        <echo message="${LASTOUTPUT}" />
-      </then>
-    </if>
+    <!-- perform the import -->
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc-auth.sh ${filename} marc_auth_ils.properties" passthru="true" checkreturn="true" />
   </target>
 
   <target name="importrec" description="import each of the MARC bibliographic test records">
-    <if>
-    <istrue value="${filename}"/>       <!-- To ignore the last token, as find command output list has ',' after last filename -->
-      <then>
-        <exec command="basename ${filename}" outputProperty="BASENAME" />
+    <basename file="${filename}" property="BASENAME" />
 
-        <!-- create custom import configurations to load the MARC filename into the building facet to help
-             test cases to limit searches to within specific collections of test records. -->
-        <copy file="${srcdir}/import/marc_local.properties" tofile="${srcdir}/local/import/marc-${BASENAME}.properties" />
-        <exec command="echo building=\&quot;${BASENAME}\&quot; &gt;&gt; ${srcdir}/local/import/marc-${BASENAME}.properties" />
-        <exec command="sed -e &quot;s!marc_local.properties!marc-${BASENAME}.properties!&quot; ${srcdir}/local/import/import.properties &gt; ${srcdir}/local/import/import-${BASENAME}.properties" />
+    <!-- create custom import configurations to load the MARC filename into the building facet to help
+          test cases to limit searches to within specific collections of test records.
+          Note: ${srcdir}/local/import/import.properties is created in install.php. -->
+    <copy file="${srcdir}/import/marc_local.properties" tofile="${srcdir}/local/import/marc-${BASENAME}.properties" overwrite="true" />
+    <append destFile="${srcdir}/local/import/marc-${BASENAME}.properties" text="building=&quot;${BASENAME}&quot;${line.separator}" />
 
-        <!-- if there is a file-specific import configuration, load it now: -->
-        <if>
-          <available file="${filename}.properties" />
-          <then>
-            <echo message="Found custom import configs for ${filename}." />
-            <exec command="cat ${filename}.properties &gt;&gt; ${srcdir}/local/import/marc-${BASENAME}.properties" />
-          </then>
-        </if>
-
-        <!-- perform the import -->
-        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc.sh -p ${srcdir}/local/import/import-${BASENAME}.properties ${filename}" outputProperty="LASTOUTPUT" />
-        <echo message="${LASTOUTPUT}" />
-
-        <!-- clean up temp files -->
-        <delete file="${srcdir}/local/import/marc-${BASENAME}.properties" />
-        <delete file="${srcdir}/local/import/import-${BASENAME}.properties" />
-      </then>
-    </if>
-  </target>
-
-  <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- Fix for PHP 8 incompatibility in laminas-db 2.11.3: -->
+    <copy file="${srcdir}/local/import/import.properties" tofile="${srcdir}/local/import/import-${BASENAME}.properties" />
     <reflexive>
-      <fileset dir="${srcdir}/vendor/laminas/laminas-db/src/Sql">
-        <include pattern="AbstractSql.php" />
+      <fileset dir="${srcdir}/local/import">
+        <include pattern="import-${BASENAME}.properties" />
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="\$multiParamValues\[\] = vsprintf\(\$paramSpecs\[\$position\]\[\$ppCount\], \$multiParamsForPosition\);" replace="\$multiParamValues[] = vsprintf(\$paramSpecs[\$position][\$ppCount], (array)\$multiParamsForPosition);" />
+          <regexp pattern="marc_local.properties" replace="marc-${BASENAME}.properties" />
         </replaceregexp>
       </filterchain>
     </reflexive>
-    <!-- Fix for PHP 8 incompatibility in phing 2.16.4: -->
+
+    <!-- if there is a file-specific import configuration, load it now: -->
+    <if>
+      <available file="${filename}.properties" />
+      <then>
+        <echo message="Found custom import configs for ${filename}." />
+        <append file="${filename}.properties" destFile="${srcdir}/local/import/marc-${BASENAME}.properties" />
+      </then>
+    </if>
+
+    <!-- perform the import -->
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc.sh -p ${srcdir}/local/import/import-${BASENAME}.properties ${filename}" passthru="true" checkreturn="true" />
+
+    <!-- clean up temp files -->
+    <delete file="${srcdir}/local/import/marc-${BASENAME}.properties" />
+    <delete file="${srcdir}/local/import/import-${BASENAME}.properties" />
+  </target>
+
+  <target name="patch-dependencies" description="apply fixes to dependencies">
+    <!-- Fix for PHP 8 incompatibility in chrome-mink-driver 2.8.0: -->
     <reflexive>
-      <fileset dir="vendor/phing/phing/classes/phing/tasks/system">
-        <include pattern="ChmodTask.php" />
+      <fileset dir="vendor/dmore/chrome-mink-driver/src">
+        <include pattern="ChromeDriver.php" />
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="vsprintf\([&quot;']%o[&quot;'], \$mode\)" replace="vsprintf('%o', [\$mode])" />
+          <regexp pattern="\$base_url," replace="\$base_url = &apos;&apos;," />
         </replaceregexp>
       </filterchain>
     </reflexive>

@@ -152,7 +152,8 @@ trait AjaxResponseTrait
             try {
                 $handler = $this->ajaxManager->get($method);
                 return $this->getAjaxResponse(
-                    $type, ...$handler->handleRequest($this->params())
+                    $type,
+                    ...$handler->handleRequest($this->params())
                 );
             } catch (\Exception $e) {
                 return $this->getExceptionResponse($type, $e);

@@ -122,7 +122,7 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
             ->setMethod('POST');
         $requestBody = json_encode($data + $this->getDefaultData());
         $this->debug('Posting ' . $requestBody . ' to ' . $uri);
-        $this->client->setRawBody($requestBody, 'application/json');
+        $this->client->setRawBody($requestBody);
         $this->client->getRequest()->getHeaders()
             ->addHeaderLine('Content-Type: application/json');
         $response = $this->client->send();

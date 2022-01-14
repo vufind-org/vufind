@@ -8,11 +8,11 @@
       <li class="list-group-item">
         <?php if ($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"): ?>
           <?php /* Display thumbnail if appropriate: */ ?>
-          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
+          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLinker()->getUrl($driver)); ?>
         <?php endif; ?>
 
         <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
-        <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
           <?=$this->record($driver)->getTitleHtml()?>
           <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
           <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">

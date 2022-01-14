@@ -29,7 +29,6 @@
 namespace VuFindTest\Search\Primo;
 
 use VuFind\Search\Primo\Params;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Primo Params.
@@ -40,7 +39,7 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ParamsTest extends TestCase
+class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test facet value normalization

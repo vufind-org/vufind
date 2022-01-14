@@ -28,6 +28,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
 
 /**
  * Mink test class to test advanced search.
@@ -39,22 +40,31 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
+class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    /**
+     * Go to the advanced search page.
+     *
+     * @param Session $session Mink session
+     *
+     * @return Element
+     */
+    protected function goToAdvancedSearch(Session $session): Element
+    {
+        $path = '/Search/Advanced';
+        $session->visit($this->getVuFindUrl() . $path);
+        return $session->getPage();
+    }
 
     /**
      * Test persistent
      *
      * @return void
      */
-    public function testPersistent()
+    public function testPersistent(): void
     {
-        // Go to the advanced search page
         $session = $this->getMinkSession();
-        $path = '/Search/Advanced';
-        $session->visit($this->getVuFindUrl() . $path);
-        $page = $session->getPage();
+        $page = $this->goToAdvancedSearch($session);
         // Submit empty search form
         $this->findCss($page, '[type=submit]')->press();
         // Test edit search
@@ -98,11 +108,8 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAdvancedSearch()
     {
-        // Go to the advanced search page
         $session = $this->getMinkSession();
-        $path = '/Search/Advanced';
-        $session->visit($this->getVuFindUrl() . $path);
-        $page = $session->getPage();
+        $page = $this->goToAdvancedSearch($session);
 
         // Add a group
         $session->executeScript("addGroup()");
@@ -181,5 +188,66 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.adv-submit .clear-btn')->press();
         $this->assertEquals('', $this->findCss($page, '#search_lookfor0_0')->getValue());
         $this->assertEquals(0, count($multiSel->getValue()));
+    }
+
+    /**
+     * Test default limit sorting
+     *
+     * @return void
+     */
+    public function testDefaultLimitSorting(): void
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+        // By default, everything is sorted alphabetically:
+        $this->assertEquals(
+            'Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm',
+            $this->findCss($page, "#limit_format")->getText()
+        );
+        // Change the language:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->snooze();
+        // Still sorted alphabetically, even though in a different language:
+        $this->assertEquals(
+            'Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            $this->findCss($page, "#limit_format")->getText()
+        );
+    }
+
+    /**
+     * Test limit sorting with order override
+     *
+     * @return void
+     */
+    public function testLimitSortingWithOrderOverride(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Advanced_Settings' => [
+                        'limitOrderOverride' => [
+                            'format' => 'Book::eBook'
+                        ]
+                    ]
+                ]
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+        // By default, everything is sorted alphabetically:
+        $this->assertEquals(
+            'Book eBook Book Chapter Conference Proceeding Electronic Journal Microfilm',
+            $this->findCss($page, "#limit_format")->getText()
+        );
+        // Change the language:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->snooze();
+        // Still sorted alphabetically, even though in a different language:
+        $this->assertEquals(
+            'Buch E-Book Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            $this->findCss($page, "#limit_format")->getText()
+        );
     }
 }

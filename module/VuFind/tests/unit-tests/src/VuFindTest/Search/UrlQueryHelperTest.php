@@ -31,7 +31,6 @@ namespace VuFindTest\Search;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\UrlQueryHelper;
 use VuFindSearch\Query\Query;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * UrlQueryHelper unit tests.
@@ -42,9 +41,9 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UrlQueryHelperTest extends TestCase
+class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get a preconfigured helper.
@@ -71,7 +70,8 @@ class UrlQueryHelperTest extends TestCase
         $this->assertEquals('?foo=bar&amp;lookfor=search', $helper->getParams());
         $this->assertEquals('?foo=bar&amp;lookfor=search', (string)$helper);
         $this->assertEquals(
-            ['foo' => 'bar', 'lookfor' => 'search'], $helper->getParamArray()
+            ['foo' => 'bar', 'lookfor' => 'search'],
+            $helper->getParamArray()
         );
         $this->assertEquals(
             '<input type="hidden" name="foo" value="bar" />',
@@ -109,7 +109,8 @@ class UrlQueryHelperTest extends TestCase
 
         // Confirm that we can look up a list of configured parameters:
         $this->assertEquals(
-            ['foo', 'xyzzy'], $helper->getParamsWithConfiguredDefaults()
+            ['foo', 'xyzzy'],
+            $helper->getParamsWithConfiguredDefaults()
         );
     }
 
@@ -219,7 +220,8 @@ class UrlQueryHelperTest extends TestCase
         $factory = new UrlQueryHelperFactory();
         $config = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new \VuFindTest\Search\TestHarness\Params(
-            new \VuFindTest\Search\TestHarness\Options($config), $config
+            new \VuFindTest\Search\TestHarness\Options($config),
+            $config
         );
         $params->setBasicSearch('foo', 'bar');
         $params->setLimit(100);

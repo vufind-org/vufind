@@ -45,7 +45,7 @@ class GetUserTransactions extends AbstractIlsAndUserAction
      *
      * @var \VuFind\ILS\PaginationHelper
      */
-    protected $paginator = null;
+    protected $paginationHelper = null;
 
     /**
      * Handle a request.
@@ -59,10 +59,10 @@ class GetUserTransactions extends AbstractIlsAndUserAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH, 401);
+            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
         }
         if (!$this->ils->checkCapability('getMyTransactions')) {
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
         $counts = [

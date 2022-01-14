@@ -56,9 +56,11 @@ class WriterFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -67,7 +69,8 @@ class WriterFactory implements FactoryInterface
         $changeTracker = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('changetracker');
         return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class), $changeTracker
+            $container->get(\VuFindSearch\Service::class),
+            $changeTracker
         );
     }
 }

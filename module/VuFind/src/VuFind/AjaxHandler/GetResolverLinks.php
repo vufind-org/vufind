@@ -82,8 +82,11 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
      * @param RendererInterface $renderer View renderer
      * @param Config            $config   Top-level VuFind configuration (config.ini)
      */
-    public function __construct(SessionSettings $ss, ResolverManager $pm,
-        RendererInterface $renderer, Config $config
+    public function __construct(
+        SessionSettings $ss,
+        ResolverManager $pm,
+        RendererInterface $renderer,
+        Config $config
     ) {
         $this->sessionSettings = $ss;
         $this->pluginManager = $pm;
@@ -142,7 +145,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         if (isset($this->config->OpenURL->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            list($base) = explode('?', $this->config->OpenURL->url);
+            [$base] = explode('?', $this->config->OpenURL->url);
         } else {
             $base = false;
         }

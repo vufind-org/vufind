@@ -40,9 +40,9 @@ use VuFind\RecordDriver\SolrOverdrive;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
+class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test supportsOpenUrl()
@@ -154,7 +154,8 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
             ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
         );
         $this->assertEquals(
-            ['General notes here.', 'Translation.'], $driver->getGeneralNotes()
+            ['General notes here.', 'Translation.'],
+            $driver->getGeneralNotes()
         );
     }
 
@@ -171,7 +172,8 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
             ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
         );
         $this->assertEquals(
-            ['Summary.'], $driver->getSummary()
+            ['Summary.'],
+            $driver->getSummary()
         );
     }
 
@@ -188,7 +190,8 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
             ['description' => '<tag>&#8217;&#8217;Summary.</tag>']
         );
         $this->assertEquals(
-            ['Summary.'], array_values($driver->getSummary())
+            ['Summary.'],
+            array_values($driver->getSummary())
         );
     }
 
@@ -223,7 +226,8 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
             ['era' => ['foo'], 'genre' => ['bar']]
         );
         $this->assertEquals(
-            [['bar'], ['foo']], $driver->getAllSubjectHeadings()
+            [['bar'], ['foo']],
+            $driver->getAllSubjectHeadings()
         );
     }
 
@@ -264,7 +268,9 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
      *
      * @return SolrOverdrive
      */
-    protected function getDriver(Config $config = null, Config $recordConfig = null,
+    protected function getDriver(
+        Config $config = null,
+        Config $recordConfig = null,
         OverdriveConnector $connector = null
     ): SolrOverdrive {
         return new SolrOverdrive(

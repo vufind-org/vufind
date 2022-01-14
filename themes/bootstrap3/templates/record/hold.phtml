@@ -4,12 +4,12 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-        . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+        . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
         . '<li class="active">' . $this->transEsc('request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('request_place_text')?></h2>
-<?php if ($this->helpText): ?>
-<p class="helptext"><?=$this->helpText?></p>
+<?php if ($this->helpTextHtml): ?>
+  <p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
 
 <form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds">
@@ -23,10 +23,18 @@
     </div>
   <?php endif; ?>
 
+  <?php if (in_array('startDate', $this->extraHoldFields)): ?>
+    <div class="form-group hold-start-date">
+      <label class="control-label"><?=$this->transEsc('hold_start_date')?>:</label>
+      <input id="startDate" type="text" name="gatheredDetails[startDate]" value="<?=!empty($this->gatheredDetails['startDate']) ? $this->escapeHtmlAttr($this->gatheredDetails['startDate']) : $this->escapeHtmlAttr($this->defaultStartDate)?>" size="10" class="form-control"/>
+      (<?=$this->dateTime()->getDisplayDateFormat()?>)
+    </div>
+  <?php endif; ?>
+
   <?php if (in_array("requiredByDate", $this->extraHoldFields)): ?>
     <div class="form-group hold-required-by">
       <label class="control-label"><?=$this->transEsc("hold_required_by")?>:</label>
-      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
+      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=!empty($this->gatheredDetails['requiredBy']) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="10" class="form-control"/>
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
   <?php endif; ?>
@@ -68,7 +76,7 @@
     ?>
     <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
-        <label id="pickUpLocationLabel" class="control-label"><i></i> <?=$this->transEsc("pick_up_location")?>:
+        <label id="pickUpLocationLabel" class="control-label"><?=$this->icon('spinner', 'loading-icon hidden')?> <?=$this->transEsc("pick_up_location")?>:
           <?php if (in_array("requestGroup", $this->extraHoldFields)): ?>
             <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
           <?php endif; ?>

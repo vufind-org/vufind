@@ -25,8 +25,7 @@ function settext() {
 
     // Case 3: "More Topics" special-case collapsed block:
     if (d.name === VuFind.translate('More Topics')) {
-      var topics = VuFind.translate('more_topics');
-      return topics.replace("%%count%%", d.count);
+      return VuFind.translate('more_topics_unescaped', { '%%count%%': d.count});
     }
 
     // Csae 4 (default): Standard second-level field
@@ -58,8 +57,8 @@ function settitle() {
 
     // Case 3: Standard second-level field
     if (typeof d.field !== "undefined") {
-      var on_topic = VuFind.translate('on_topic');
-      return d.name + " (" + on_topic.replace("%%count%%", d.count) + ")";
+      var on_topic = VuFind.translate('on_topic_unescaped', {'%%count%%': d.count});
+      return d.name + " (" + on_topic + ")";
     }
   });
 }

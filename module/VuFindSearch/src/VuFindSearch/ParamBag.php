@@ -238,7 +238,9 @@ class ParamBag implements \Countable
                     array_map(
                         function ($value) use ($name) {
                             return sprintf(
-                                '%s=%s', urlencode($name), urlencode($value)
+                                '%s=%s',
+                                urlencode($name),
+                                urlencode($value)
                             );
                         },
                         $values

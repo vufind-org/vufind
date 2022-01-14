@@ -44,7 +44,7 @@ use VuFind\Connection\WorldCatUtils;
  */
 class WorldCatUtilsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test related identities

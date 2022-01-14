@@ -29,7 +29,6 @@
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Hierarchical Facet Helper.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase;
  * @link     https://vufind.org Main Site
  * @todo     Test buildFacetArray using url helper
  */
-class HierarchicalFacetHelperTest extends TestCase
+class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test input data.
@@ -153,7 +152,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testSortFacetListDefault()
+    public function testSortFacetListDefault(): void
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList);
@@ -179,7 +178,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testSortFacetListTopLevelBooleanTrue()
+    public function testSortFacetListTopLevelBooleanTrue(): void
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList, true);
@@ -197,7 +196,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testSortFacetListTopLevelStringConfig()
+    public function testSortFacetListTopLevelStringConfig(): void
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList, 'top');
@@ -215,7 +214,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testSortFacetListAllLevelsBooleanFalse()
+    public function testSortFacetListAllLevelsBooleanFalse(): void
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList, false);
@@ -233,7 +232,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testSortFacetListAllLevelsStringConfig()
+    public function testSortFacetListAllLevelsStringConfig(): void
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList, 'all');
@@ -251,7 +250,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testBuildFacetArray()
+    public function testBuildFacetArray(): void
     {
         // Test without active filters
         $facetList = $this->helper->buildFacetArray('format', $this->facetList);
@@ -260,14 +259,16 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertFalse($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
+            $facetList[0]['children'][0]['value'],
+            '1/Book/BookPart/'
         );
         $this->assertEquals(1, $facetList[0]['children'][0]['level']);
         $this->assertFalse($facetList[0]['children'][0]['isApplied']);
         $this->assertEquals('0/AV/', $facetList[1]['value']);
         $this->assertEquals('0/Audio/', $facetList[2]['value']);
         $this->assertEquals(
-            $facetList[2]['children'][0]['value'], '1/Audio/Spoken/'
+            $facetList[2]['children'][0]['value'],
+            '1/Audio/Spoken/'
         );
         $this->assertEquals('1/Audio/Music/', $facetList[2]['children'][1]['value']);
 
@@ -280,7 +281,8 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertTrue($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
+            $facetList[0]['children'][0]['value'],
+            '1/Book/BookPart/'
         );
         $this->assertEquals(true, $facetList[0]['children'][0]['isApplied']);
     }
@@ -290,7 +292,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testBuildFacetArrayInvalidValues()
+    public function testBuildFacetArrayInvalidValues(): void
     {
         // Test without active filters
         $facetList = $this->helper
@@ -317,11 +319,12 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testFlattenFacetHierarchy()
+    public function testFlattenFacetHierarchy(): void
     {
         $facetList = $this->helper->flattenFacetHierarchy(
             $this->helper->buildFacetArray(
-                'format', $this->facetList
+                'format',
+                $this->facetList
             )
         );
         $this->assertEquals('0/Book/', $facetList[0]['value']);
@@ -338,7 +341,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testFormatDisplayText()
+    public function testFormatDisplayText(): void
     {
         $this->assertEquals(
             $this->helper->formatDisplayText('0/Sound/')->getDisplayString(),
@@ -377,7 +380,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testIsDeepestFacetLevel()
+    public function testIsDeepestFacetLevel(): void
     {
         $facetList = [
             '0/Audio/',
@@ -406,7 +409,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    public function testGetFilterStringParts()
+    public function testGetFilterStringParts(): void
     {
         $result = $this->helper->getFilterStringParts('0/Foo/');
         $this->assertIsArray($result);
@@ -437,11 +440,11 @@ class HierarchicalFacetHelperTest extends TestCase
      * Set 'isApplied' to true in facet item with the given value
      *
      * @param string $facetValue Value to search for
-     * @param string $facetList  Facet list
+     * @param array  $facetList  Facet list
      *
      * @return array Facet list
      */
-    protected function setApplied($facetValue, $facetList)
+    protected function setApplied(string $facetValue, array $facetList): array
     {
         foreach ($facetList as &$facetItem) {
             if ($facetItem['value'] == $facetValue) {

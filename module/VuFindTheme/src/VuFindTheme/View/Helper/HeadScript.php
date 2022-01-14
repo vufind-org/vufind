@@ -126,7 +126,9 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
      *
      * @return void
      */
-    public function forcePrependFile($src = null, $type = 'text/javascript',
+    public function forcePrependFile(
+        $src = null,
+        $type = 'text/javascript',
         array $attrs = []
     ) {
         // Look for existing entry and remove it if found. Comparison method

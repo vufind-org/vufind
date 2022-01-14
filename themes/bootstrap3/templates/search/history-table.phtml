@@ -45,7 +45,7 @@
                   <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($schedule == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
                 <?php endforeach; ?>
               </select>
-              <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
+              <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($info->getSearchId()) ?>"/>
             </form>
           <?php else: ?>
             <span class="disable"><?=$this->transEsc("cannot set")?></span>

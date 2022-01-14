@@ -8,7 +8,8 @@
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
-        $this->searchClassId, $this->searchIndex ?? null
+        $this->searchClassId,
+        $this->searchIndex ?? null
     );
     $handlerCount = count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
@@ -49,17 +50,19 @@
         <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
         <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Basic Search")?></a>
       </p>
-      <?=$this->context($this)->renderInContext(
-        'search/filters.phtml',
-        [
-          'params' => $params ?? null,
-          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
-          'filterList' => $showFilters ? $filterList : [],
-          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-          'searchClassId' => $this->searchClassId,
-          'searchType' => $this->searchType,
-        ]
-      );?>
+      <?=
+        $this->context($this)->renderInContext(
+            'search/filters.phtml',
+            [
+              'params' => $params ?? null,
+              'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+              'filterList' => $showFilters ? $filterList : [],
+              'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+              'searchClassId' => $this->searchClassId,
+              'searchType' => $this->searchType,
+            ]
+        );
+      ?>
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
   </div>
 <?php else: ?>
@@ -141,15 +144,15 @@
       }
     ?>
     <?=$this->context($this)->renderInContext(
-      'search/filters.phtml',
-      [
-        'params' => $params ?? null,
-        'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
-        'filterList' => $showFilters ? $filterList : [],
-        'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-        'searchClassId' => $this->searchClassId,
-        'searchType' => $this->searchType,
-      ]
+        'search/filters.phtml',
+        [
+          'params' => $params ?? null,
+          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+          'filterList' => $showFilters ? $filterList : [],
+          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+          'searchClassId' => $this->searchClassId,
+          'searchType' => $this->searchType,
+        ]
     );?>
   </form>
 <?php endif; ?>

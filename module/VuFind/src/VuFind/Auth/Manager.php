@@ -117,6 +117,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     protected $currentUser = false;
 
     /**
+     * CSRF validator
+     *
+     * @var Csrf
+     */
+    protected $csrf;
+
+    /**
      * Constructor
      *
      * @param Config         $config         VuFind configuration
@@ -126,9 +133,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      * @param CookieManager  $cookieManager  Cookie manager
      * @param Csrf           $csrf           CSRF validator
      */
-    public function __construct(Config $config, UserTable $userTable,
-        SessionManager $sessionManager, PluginManager $pm,
-        CookieManager $cookieManager, Csrf $csrf
+    public function __construct(
+        Config $config,
+        UserTable $userTable,
+        SessionManager $sessionManager,
+        PluginManager $pm,
+        CookieManager $cookieManager,
+        Csrf $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -234,6 +245,20 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     {
         return ($this->config->Authentication->change_password ?? false)
             && $this->getAuth($authMethod)->supportsPasswordChange();
+    }
+
+    /**
+     * Is connecting library card allowed and supported?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return bool
+     */
+    public function supportsConnectingLibraryCard($authMethod = null)
+    {
+        return ($this->config->Catalog->auth_based_library_cards ?? false)
+            && $this->getAuth($authMethod)->supportsConnectingLibraryCard();
     }
 
     /**
@@ -438,7 +463,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|bool Object if user is logged in, false otherwise.
+     * @return UserRow|false Object if user is logged in, false otherwise.
      */
     public function isLoggedIn()
     {
@@ -583,9 +608,12 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
         if ($this->config->Authentication->verify_email ?? false) {
-            $user->pending_email = $email;
+            // If new email address is the current address, just reset any pending
+            // email address:
+            $user->pending_email = ($email === $user->email) ? '' : $email;
         } else {
             $user->updateEmail($email, true);
+            $user->pending_email = '';
         }
         $user->save();
         $this->updateSession($user);
@@ -685,7 +713,8 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         if (!isset($this->auth[$method])) {
             $this->legalAuthOptions = array_unique(
                 array_merge(
-                    $this->legalAuthOptions, $this->getSelectableAuthOptions()
+                    $this->legalAuthOptions,
+                    $this->getSelectableAuthOptions()
                 )
             );
         }
@@ -721,6 +750,26 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
             return $auth->getILSLoginMethod($target);
         }
         return false;
+    }
+
+    /**
+     * Connect authenticated user as library card to his account.
+     *
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object
+     * containing account credentials.
+     * @param \VuFind\Db\Row\User                  $user    Connect newly created
+     * library card to this user.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function connectLibraryCard($request, $user)
+    {
+        $auth = $this->getAuth();
+        if (!$auth->supportsConnectingLibraryCard()) {
+            throw new \Exception("Connecting of library cards is not supported");
+        }
+        $auth->connectLibraryCard($request, $user);
     }
 
     /**

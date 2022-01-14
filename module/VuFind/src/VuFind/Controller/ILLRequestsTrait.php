@@ -76,7 +76,9 @@ trait ILLRequestsTrait
 
         // Block invalid requests:
         $validRequest = $catalog->checkILLRequestIsValid(
-            $driver->getUniqueID(), $gatheredDetails, $patron
+            $driver->getUniqueID(),
+            $gatheredDetails,
+            $patron
         );
         if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
             $this->flashMessenger()->addErrorMessage(
@@ -130,14 +132,17 @@ trait ILLRequestsTrait
         }
 
         // Find and format the default required date:
-        $defaultRequired = $this->ILLRequests()
+        $defaultRequiredDate = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequired);
+        $defaultRequiredDate
+            = $this->serviceLocator->get(\VuFind\Date\Converter::class)
+            ->convertToDisplayDate("U", $defaultRequiredDate);
 
         // Get pickup libraries
         $pickupLibraries = $catalog->getILLPickUpLibraries(
-            $driver->getUniqueID(), $patron, $gatheredDetails
+            $driver->getUniqueID(),
+            $patron,
+            $gatheredDetails
         );
 
         // Get pickup locations. Note that these are independent of pickup library,
@@ -146,18 +151,22 @@ trait ILLRequestsTrait
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
 
         $config = $this->getConfig();
-        $allowHomeLibrary = $config->Account->set_home_library ?? true;
+        $homeLibrary = ($config->Account->set_home_library ?? true)
+            ? $this->getUser()->home_library : '';
+        // helpText is only for backward compatibility:
+        $helpText = $helpTextHtml = $checkRequests['helpText'];
+
         $view = $this->createViewModel(
-            [
-                'gatheredDetails' => $gatheredDetails,
-                'pickupLibraries' => $pickupLibraries,
-                'pickupLocations' => $pickupLocations,
-                'homeLibrary' => $allowHomeLibrary
-                    ? $this->getUser()->home_library : '',
-                'extraFields' => $extraFields,
-                'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText'] ?? null
-            ]
+            compact(
+                'gatheredDetails',
+                'pickupLibraries',
+                'pickupLocations',
+                'homeLibrary',
+                'extraFields',
+                'defaultRequiredDate',
+                'helpText',
+                'helpTextHtml'
+            )
         );
         $view->setTemplate('record/illrequest');
         return $view;

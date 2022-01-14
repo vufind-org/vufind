@@ -28,9 +28,9 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
+use Interop\Container\ContainerInterface;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
-use Laminas\ServiceManager\ServiceManager;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -69,26 +69,28 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     /**
      * Set up custom extensions (should be called by factory).
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container Service container
      *
      * @return void
      */
-    public function registerExtensions(ServiceManager $sm)
+    public function registerExtensions(ContainerInterface $container)
     {
-        $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($sm);
+        $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($container);
         $manager->setInvokableClass(
             'DublinCore\Renderer\Entry',
             'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
         );
         $manager->setInvokableClass(
-            'DublinCore\Entry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
+            'DublinCore\Entry',
+            'VuFind\Feed\Writer\Extension\DublinCore\Entry'
         );
         $manager->setInvokableClass(
             'OpenSearch\Renderer\Feed',
             'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
         );
         $manager->setInvokableClass(
-            'OpenSearch\Feed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+            'OpenSearch\Feed',
+            'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
         );
         FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
@@ -108,7 +110,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         // Determine base URL if not already provided:
         if (null === $currentPath) {
-            $currentPath = $this->getView()->plugin('currentPath')->__invoke();
+            $currentPath = ($this->getView()->plugin('currentPath'))();
         }
         $serverUrl = $this->getView()->plugin('serverurl');
         $baseUrl = $serverUrl($currentPath);
@@ -238,9 +240,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             empty($title) ? $this->translate('Title not available') : $title
         );
         $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordLink');
+        $recordLinker = $this->getView()->plugin('recordLinker');
         try {
-            $url = $serverUrl($recordLink->getUrl($record));
+            $url = $serverUrl($recordLinker->getUrl($record));
         } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.

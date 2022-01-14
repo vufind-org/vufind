@@ -47,7 +47,7 @@ namespace VuFind\RecordDriver;
  */
 class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
 {
-    use HierarchyAwareTrait;
+    use Feature\HierarchyAwareTrait;
     use Feature\VersionAwareTrait;
 
     /**
@@ -121,7 +121,9 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
      * @param \Laminas\Config\Config $searchSettings Search-specific configuration
      * file
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         // Load snippet settings:
@@ -248,8 +250,7 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
         if (!$this->highlight) {
             return '';
         }
-        return (isset($this->highlightDetails['title'][0]))
-            ? $this->highlightDetails['title'][0] : '';
+        return $this->highlightDetails['title'][0] ?? '';
     }
 
     /**

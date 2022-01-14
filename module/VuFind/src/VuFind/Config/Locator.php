@@ -49,7 +49,9 @@ class Locator
      *
      * @return string
      */
-    public static function getLocalConfigPath($filename, $path = null,
+    public static function getLocalConfigPath(
+        $filename,
+        $path = null,
         $force = false
     ) {
         if (null === $path) {

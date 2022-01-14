@@ -72,16 +72,25 @@ class SpellingProcessor
     protected $phrase;
 
     /**
+     * Callback for normalizing text.
+     *
+     * @var callable
+     */
+    protected $normalizer;
+
+    /**
      * Constructor
      *
-     * @param Config $config Spelling configuration (optional)
+     * @param Config   $config     Spelling configuration (optional)
+     * @param callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct($config = null)
+    public function __construct($config = null, $normalizer = null)
     {
         $this->spellingLimit = $config->limit ?? 3;
         $this->spellSkipNumeric = $config->skip_numeric ?? true;
         $this->expand = $config->expand ?? true;
         $this->phrase = $config->phrase ?? false;
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -230,7 +239,7 @@ class SpellingProcessor
             return true;
         }
         // We should also skip terms already contained within the query:
-        return $queryContains == $query->containsNormalizedTerm($term);
+        return $queryContains == $query->containsTerm($term, $this->normalizer);
     }
 
     /**
@@ -257,7 +266,12 @@ class SpellingProcessor
                     $targetTerm = $token;
                     // Go and replace this token
                     $returnArray = $this->doSingleReplace(
-                        $term, $targetTerm, $inToken, $details, $returnArray, $params
+                        $term,
+                        $targetTerm,
+                        $inToken,
+                        $details,
+                        $returnArray,
+                        $params
                     );
                 }
             }
@@ -265,7 +279,12 @@ class SpellingProcessor
             if ($targetTerm == "") {
                 $targetTerm = $term;
                 $returnArray = $this->doSingleReplace(
-                    $term, $targetTerm, $inToken, $details, $returnArray, $params
+                    $term,
+                    $targetTerm,
+                    $inToken,
+                    $details,
+                    $returnArray,
+                    $params
                 );
             }
         }
@@ -285,8 +304,13 @@ class SpellingProcessor
      *
      * @return array              $returnArray modified
      */
-    protected function doSingleReplace($term, $targetTerm, $inToken, $details,
-        $returnArray, Params $params
+    protected function doSingleReplace(
+        $term,
+        $targetTerm,
+        $inToken,
+        $details,
+        $returnArray,
+        Params $params
     ) {
         $returnArray[$targetTerm]['freq'] = $details['freq'];
         foreach ($details['suggestions'] as $word => $freq) {
@@ -297,7 +321,8 @@ class SpellingProcessor
             //  Do we need to show the whole, modified query?
             $label = $this->phrase
                 ? $params->getDisplayQueryWithReplacedTerm(
-                    $targetTerm, $replacement
+                    $targetTerm,
+                    $replacement
                 ) : $replacement;
 
             // Basic spelling suggestion data

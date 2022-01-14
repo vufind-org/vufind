@@ -3,6 +3,13 @@ $thumbnail-width-small:   60px;
 $thumbnail-width-medium: 100px;
 $thumbnail-width-large:  160px;
 
+// record result list ol, ul that contains li.result
+.record-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
@@ -127,6 +134,7 @@ header .container.navbar { margin-bottom: 0; }
     margin: 0;
     padding-right: 10px;
     padding-left: 10px;
+    overflow: visible;
   }
   .media-left,
   .media-right {
@@ -162,6 +170,7 @@ header .container.navbar { margin-bottom: 0; }
   .media-body {
     flex: 1;
     width: unset;
+    overflow: visible;
   }
 }
 
@@ -500,8 +509,8 @@ body.rtl {
 }
 
 .search-history-table {
-  @extend .table all;
-  @extend .table-striped all;
+  @extend .table;
+  @extend .table-striped;
 }
 table.search-history-table {
   table-layout: auto;

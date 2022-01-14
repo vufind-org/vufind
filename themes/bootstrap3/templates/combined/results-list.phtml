@@ -34,9 +34,12 @@
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
-      <?=$this->context()->renderInContext('search/controls/showing.phtml',
-                                          ['lookfor' => $lookfor, 'recordTotal' => $recordTotal,
-                                           'params' => $params, 'results' => $results]) ?>
+      <?=
+        $this->context()->renderInContext(
+            'search/controls/showing.phtml',
+            compact('lookfor', 'recordTotal', 'params', 'results')
+        );
+      ?>
     <?php else: ?>
       <h3><?=$this->transEsc('nohit_heading')?></h3>
     <?php endif; ?>

@@ -33,7 +33,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>7.7.3</luceneMatchVersion>
+  <luceneMatchVersion>8.11.1</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -371,6 +371,15 @@
       <str name="spellcheck.count">20</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field 
+           centric search if different field types return different analysis (such as 
+           synonyms or stopwords). Note the downside that sow=true prevents 
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <str name="sow">true</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -395,6 +404,15 @@
       <str name="spellcheck.count">20</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field 
+           centric search if different field types return different analysis (such as 
+           synonyms or stopwords). Note the downside that sow=true prevents 
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <str name="sow">true</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -412,6 +430,15 @@
       <str name="lowercaseOperators">false</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field 
+           centric search if different field types return different analysis (such as 
+           synonyms or stopwords). Note the downside that sow=true prevents 
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <str name="sow">true</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>

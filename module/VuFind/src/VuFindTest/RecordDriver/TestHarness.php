@@ -78,4 +78,19 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
     {
         return $this->__call('getUniqueID', []);
     }
+
+    /**
+     * Return the source backend identifier.
+     *
+     * @return string
+     */
+    public function getSourceIdentifier()
+    {
+        // For consistency with other methods, allow SourceIdentifier to be
+        // overridden via rawData (but also allow the "normal" method as a
+        // fallback):
+        return isset($this->fields['SourceIdentifier'])
+            ? $this->__call('getSourceIdentifier', $this->sourceIdentifier)
+            : parent::getSourceIdentifier();
+    }
 }

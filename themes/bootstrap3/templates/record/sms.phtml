@@ -5,7 +5,7 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
 <?php $validatorCallback = <<<JS
@@ -37,7 +37,7 @@ JS;
     </div>
   <?php else: ?>
     <?php $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
-    <input type="hidden" name="provider" value="<?=$keys[0] ?? ''?>" />
+    <input type="hidden" name="provider" value="<?=$this->escapeHtmlAttr($keys[0] ?? '')?>" />
   <?php endif; ?>
   <?=$this->captcha()->html($this->useCaptcha) ?>
   <div class="form-group">

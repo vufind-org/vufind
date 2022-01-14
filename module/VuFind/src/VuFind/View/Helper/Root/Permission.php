@@ -120,7 +120,8 @@ class Permission extends AbstractHelper
             return $this->view->transEsc($displayLogic['value']);
         case 'showTemplate':
             return $this->view->context($this->view)->renderInContext(
-                $displayLogic['value'], $displayLogic['params']
+                $displayLogic['value'],
+                $displayLogic['params']
             );
         default:
             return null;

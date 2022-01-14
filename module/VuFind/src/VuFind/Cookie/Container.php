@@ -63,8 +63,7 @@ class Container
     public function __construct($groupName, CookieManager $manager = null)
     {
         $this->groupName = $groupName;
-        $this->manager = (null === $manager)
-            ? new CookieManager($_COOKIE) : $manager;
+        $this->manager = $manager ?? new CookieManager($_COOKIE);
     }
 
     /**

@@ -64,8 +64,13 @@ class UserList extends Gateway
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, Container $session = null, $table = 'user_list'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        Container $session = null,
+        $table = 'user_list'
     ) {
         $this->session = $session;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
@@ -119,25 +124,31 @@ class UserList extends Gateway
      *
      * @return array
      */
-    public function getListsContainingResource($resourceId,
-        $source = DEFAULT_SEARCH_BACKEND, $userId = null
+    public function getListsContainingResource(
+        $resourceId,
+        $source = DEFAULT_SEARCH_BACKEND,
+        $userId = null
     ) {
         // Set up base query:
         $callback = function ($select) use ($resourceId, $source, $userId) {
             $select->columns(
                 [
                     new Expression(
-                        'DISTINCT(?)', ['user_list.id'],
+                        'DISTINCT(?)',
+                        ['user_list.id'],
                         [Expression::TYPE_IDENTIFIER]
                     ), Select::SQL_STAR
                 ]
             );
             $select->join(
-                ['ur' => 'user_resource'], 'ur.list_id = user_list.id',
+                ['ur' => 'user_resource'],
+                'ur.list_id = user_list.id',
                 []
             );
             $select->join(
-                ['r' => 'resource'], 'r.id = ur.resource_id', []
+                ['r' => 'resource'],
+                'r.id = ur.resource_id',
+                []
             );
             $select->where->equalTo('r.source', $source)
                 ->equalTo('r.record_id', $resourceId);

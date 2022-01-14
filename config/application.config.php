@@ -2,14 +2,19 @@
 
 // Set up modules:
 $modules = [
-    'Laminas\Form', 'Laminas\Router', 'LmcRbacMvc',
-    'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
+    'Laminas\Cache', 'Laminas\Form', 'Laminas\Router', 'LmcRbacMvc', 'Laminas\I18n',
+    'Laminas\Mvc\I18n', 'SlmLocale', 'VuFindTheme', 'VuFindSearch', 'VuFind',
+    'VuFindAdmin', 'VuFindApi'
 ];
+if (!extension_loaded('intl')) {
+    // Disable SlmLocale module if intl extension is missing:
+    $modules = array_diff($modules, ['SlmLocale']);
+}
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV == 'development') {
-    array_push($modules, 'WhoopsErrorHandler');
+    $modules[] = 'WhoopsErrorHandler';
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {

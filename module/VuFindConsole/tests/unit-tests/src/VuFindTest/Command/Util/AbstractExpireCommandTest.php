@@ -88,7 +88,7 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage(
-            get_class($table) . ' does not support getExpiredIdRange()'
+            get_class($table) . ' does not support deleteExpired()'
         );
         new $this->targetClass($table, 'foo');
     }
@@ -124,15 +124,9 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $table = $this->getMockBuilder($this->validTableClass)
             ->disableOriginalConstructor()
             ->getMock();
-        $table->expects($this->at(0))->method('getExpiredIdRange')
-            ->with($this->equalTo(2))
-            ->will($this->returnValue([0, 1500]));
-        $table->expects($this->at(1))->method('deleteExpired')
-            ->with($this->equalTo(2), $this->equalTo(0), $this->equalTo(999))
-            ->will($this->returnValue(50));
-        $table->expects($this->at(2))->method('deleteExpired')
-            ->with($this->equalTo(2), $this->equalTo(1000), $this->equalTo(1999))
-            ->will($this->returnValue(7));
+        $table->expects($this->exactly(3))->method('deleteExpired')
+            ->withConsecutive([2, 1000], [2, 1000], [2, 1000])
+            ->willReturnOnConsecutiveCalls(1000, 7, false);
         $command = new $this->targetClass($table, 'foo');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--sleep' => 1]);
@@ -140,14 +134,18 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         // The response contains date stamps that will vary every time the test
         // runs, so let's split things apart to work around that...
         $parts = explode("\n", trim($response));
-        $this->assertEquals(2, count($parts));
+        $this->assertEquals(3, count($parts));
         $this->assertEquals(
-            "50 {$this->rowLabel} deleted.",
+            "1000 {$this->rowLabel} deleted.",
             explode('] ', $parts[0])[1]
         );
         $this->assertEquals(
             "7 {$this->rowLabel} deleted.",
             explode('] ', $parts[1])[1]
+        );
+        $this->assertEquals(
+            "Total 1007 {$this->rowLabel} deleted.",
+            explode('] ', $parts[2])[1]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -162,9 +160,9 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $table = $this->getMockBuilder($this->validTableClass)
             ->disableOriginalConstructor()
             ->getMock();
-        $table->expects($this->once())->method('getExpiredIdRange')
+        $table->expects($this->once())->method('deleteExpired')
             ->with($this->equalTo(2))
-            ->will($this->returnValue(false));
+            ->will($this->returnValue(0));
         $command = new $this->targetClass($table, 'foo');
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -174,7 +172,8 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $parts = explode("\n", trim($response));
         $this->assertEquals(1, count($parts));
         $this->assertEquals(
-            "No {$this->rowLabel} to delete.", explode('] ', $parts[0])[1]
+            "Total 0 {$this->rowLabel} deleted.",
+            explode('] ', $parts[0])[1]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }

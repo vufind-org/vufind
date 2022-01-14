@@ -105,6 +105,19 @@ class Database extends AbstractBase
     }
 
     /**
+     * Does the provided exception indicate that a duplicate key value has been
+     * created?
+     *
+     * @param \Exception $e Exception to check
+     *
+     * @return bool
+     */
+    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
+    {
+        return strstr($e->getMessage(), 'Duplicate entry') !== false;
+    }
+
+    /**
      * Create a new user account from the request.
      *
      * @param Request $request Request object containing new account details.
@@ -128,7 +141,19 @@ class Database extends AbstractBase
 
         // If we got this far, we're ready to create the account:
         $user = $this->createUserFromParams($params, $userTable);
-        $user->save();
+        try {
+            $user->save();
+        } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
+            // In a scenario where the unique key of the user table is
+            // shorter than the username field length, it is possible that
+            // a user will pass validation but still get rejected due to
+            // the inability to generate a unique key. This is a very
+            // unlikely scenario, but if it occurs, we will treat it the
+            // same as a duplicate username. Other unexpected database
+            // errors will be passed through unmodified.
+            throw $this->exceptionIndicatesDuplicateKey($e)
+                ? new AuthException('That username is already taken') : $e;
+        }
 
         // Verify email address:
         $this->checkEmailVerified($user);
@@ -269,7 +294,8 @@ class Database extends AbstractBase
 
         // Normalize the allowed list:
         $includeList = array_map(
-            'trim', array_map('strtolower', $rawIncludeList)
+            'trim',
+            array_map('strtolower', $rawIncludeList)
         );
 
         // Extract the domain from the email address:

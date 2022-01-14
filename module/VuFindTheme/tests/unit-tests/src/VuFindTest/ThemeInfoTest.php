@@ -38,9 +38,9 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeInfoTest extends Unit\TestCase
+class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Path to theme fixtures
@@ -162,7 +162,7 @@ class ThemeInfoTest extends Unit\TestCase
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
         $this->assertEquals('parent', $ti->findContainingTheme('parent.txt'));
         $this->assertEquals($this->fixturePath . '/parent/parent.txt', $ti->findContainingTheme('parent.txt', true));
-        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt'];
+        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt', 'relativePath' => 'parent.txt'];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
     }
 
@@ -177,6 +177,137 @@ class ThemeInfoTest extends Unit\TestCase
         $ti->setTheme('mixin_user');
         $this->assertEquals('mixin', $ti->findContainingTheme('js/mixin.js'));
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
+    }
+
+    /**
+     * Test findInThemes()
+     *
+     * @return void
+     */
+    public function testFindInThemes()
+    {
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('child');
+        $files = $ti->findInThemes(
+            [
+                'templates/content/*.phtml',
+                'templates/content/*.md'
+            ]
+        );
+        $this->assertIsArray($files);
+        $this->assertEquals(3, count($files));
+        $this->assertEquals('parent', $files[0]['theme']);
+        $this->assertEquals(
+            'templates/content/page1.phtml',
+            $files[0]['relativeFile']
+        );
+        $this->assertEquals('child', $files[1]['theme']);
+        $this->assertEquals(
+            'templates/content/page2.phtml',
+            $files[1]['relativeFile']
+        );
+        $this->assertEquals('parent', $files[2]['theme']);
+        $this->assertEquals(
+            'templates/content/page3.md',
+            $files[2]['relativeFile']
+        );
+    }
+
+    /**
+     * Test getMergedConfig() with a basic theme
+     *
+     * @return void
+     */
+    public function testGetMergedConfigParentOnly()
+    {
+        // Parent
+        $ti = $this->getThemeInfo();
+        $parentJS = $ti->getMergedConfig('js');
+        $this->assertEquals(['hello.js'], $parentJS);
+        // recursive
+        $parentHelpers = $ti->getMergedConfig('helpers');
+        $this->assertEquals(
+            'fooFactory',
+            $parentHelpers['factories']['foo']
+        );
+    }
+
+    /**
+     * Test getMergedConfig() using a child theme
+     *
+     * @return void
+     */
+    public function testGetMergedConfigChild()
+    {
+        // Child with parents merged in
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('child');
+        $childJS = $ti->getMergedConfig('js');
+        $this->assertEquals(['hello.js', 'extra.js'], $childJS);
+        // recursive
+        $childHelpers = $ti->getMergedConfig('helpers');
+        $this->assertEquals(
+            ['fooFactory', 'fooOverrideFactory'],
+            $childHelpers['factories']['foo']
+        );
+    }
+
+    /**
+     * Test getMergedConfig() using a child theme and flattening
+     *
+     * @return void
+     */
+    public function testGetMergedConfigChildFlattened()
+    {
+        // Use array_replace_recursive
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('child');
+        $childJS = $ti->getMergedConfig('js', true);
+        $this->assertEquals(['extra.js'], $childJS);
+        // recursive
+        $childHelpers = $ti->getMergedConfig('helpers', true);
+        $this->assertEquals(
+            'fooOverrideFactory',
+            $childHelpers['factories']['foo']
+        );
+    }
+
+    /**
+     * Test getMergedConfig() using a mixin
+     *
+     * @return void
+     */
+    public function testGetMergedConfigMixin()
+    {
+        // Theme using a mixin
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('mixin_user');
+        $mixinJS = $ti->getMergedConfig('js');
+        $this->assertEquals(['hello.js', 'extra.js', 'mixin.js'], $mixinJS);
+        $mixinHelpers = $ti->getMergedConfig('helpers');
+        $this->assertEquals(
+            ['fooFactory', 'fooOverrideFactory', 'fooMixinFactory'],
+            $mixinHelpers['factories']['foo']
+        );
+    }
+
+    /**
+     * Test getMergedConfig() using a mixin and flattening
+     *
+     * @return void
+     */
+    public function testGetMergedConfigMixinWithFlattening()
+    {
+        // Theme using a mixin
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('mixin_user');
+        $mixinJS = $ti->getMergedConfig('js', true);
+        $this->assertEquals(['mixin.js'], $mixinJS);
+        $mixinHelpers = $ti->getMergedConfig('helpers', true);
+        $this->assertEquals(
+            'fooMixinFactory',
+            $mixinHelpers['factories']['foo']
+        );
     }
 
     /**

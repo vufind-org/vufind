@@ -161,7 +161,8 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return SuppressedCommand
      */
-    protected function getCommand(Loader $loader = null,
+    protected function getCommand(
+        Loader $loader = null,
         PluginManager $results = null
     ) {
         return new CreateHierarchyTreesCommand(

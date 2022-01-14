@@ -47,9 +47,9 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
-    const CONTEXT_DISABLED = '';
-    const CONTEXT_DEFAULT = 'Default';
-    const CONTEXT_FAVORITE = 'Favorite';
+    public const CONTEXT_DISABLED = '';
+    public const CONTEXT_DEFAULT = 'Default';
+    public const CONTEXT_FAVORITE = 'Favorite';
 
     /**
      * RecordCache.ini contents
@@ -131,7 +131,15 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
             "Cached record {$source}|{$id} "
             . ($record !== false ? 'found' : 'not found')
         );
-        return $record !== false ? [$this->getVuFindRecord($record)] : [];
+        try {
+            return $record !== false ? [$this->getVuFindRecord($record)] : [];
+        } catch (\Exception $e) {
+            $this->logError(
+                'Could not load record {$source}|{$id} from the record cache: '
+                . $e->getMessage()
+            );
+        }
+        return [];
     }
 
     /**
@@ -153,7 +161,15 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
         $vufindRecords = [];
         $cachedRecords = $this->recordTable->findRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
-            $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
+            try {
+                $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
+            } catch (\Exception $e) {
+                $this->logError(
+                    'Could not load record ' . $cachedRecord['source'] . '|'
+                    . $cachedRecord['record_id'] . ' from the record cache: '
+                    . $e->getMessage()
+                );
+            }
         }
 
         $extractIdCallback = function ($record) {

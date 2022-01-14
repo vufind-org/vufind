@@ -70,6 +70,61 @@
 #
 # ...etc.
 #
+# GlobalExtraParams allows extra parameters to be (conditionally) added to the Solr
+# search request.
+#
+# Example showcasing all the available conditions:
+#
+# GlobalExtraParams:
+#   - param: bf
+#     value: "recip(rord(publishDateSort),1,1000,1000)"
+#     conditions:
+#       - NoDismaxParams
+#         - bf
+#         - bq
+#       - SearchTypeIn:
+#         - AllFields
+#         - Title
+#         - Author
+#       - SearchTypeNotIn:
+#         - Series
+#
+# Value can be a single string or a list of strings to repeat the parameter.
+#
+# Available conditions:
+#
+# - NoDismaxParams: None of the search types specifies any of the listed parameters
+#   in DismaxParams
+# - SearchTypeIn      At least one of the search types must be in the given list
+# - AllSearchTypesIn  All of the search types must be in the given list
+# - SearchTypeNotIn   None of the search types must be in the given list
+#
+# Example: Boost more recent material if any of the search fields is of type
+# "AllFields" or "Title" unless there's a search type specific boost:
+#
+# GlobalExtraParams:
+#   - param: bf
+#     value: "recip(ms(NOW/DAY,publishDateSort),1,1000,1000)"
+#     conditions:
+#       - SearchTypeIn:
+#         - AllFields
+#         - Title
+#       - NoDismaxParams:
+#         - bf
+#         - bq
+#
+#
+# Example: Boost material in English if any of the search fields is of type
+# "AllFields" unless any of the search fields is of type "year":
+#
+# GlobalExtraParams:
+#   - param: bq
+#     value: "language:English^100"
+#     conditions:
+#       - SearchTypeNotIn: year
+#       - SearchTypeIn: AllFields
+#
+#
 #-----------------------------------------------------------------------------------
 #
 # Within the QueryFields area, fields are OR'd together, unless they're in an
@@ -181,9 +236,7 @@
 Author:
   DismaxFields:
     - author^100
-    - author_fuller^50
     - author2
-    - author2_fuller
     - author_additional
     - author_corporate
     - author_variant
@@ -271,7 +324,6 @@ AllFields:
     - series^50
     - series2^30
     - author^300
-    - author_fuller^150
     - contents^10
     - topic_unstemmed^550
     - topic^500

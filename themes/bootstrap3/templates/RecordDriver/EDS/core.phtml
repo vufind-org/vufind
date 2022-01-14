@@ -49,7 +49,7 @@
       <?php endif; ?>
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <span>
-          <a href="<?=$this->recordLink()->getUrl($this->driver)?>#html" class="icon html fulltext">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon html fulltext">
             <?=$this->transEsc('HTML Full Text')?>
           </a>
         </span><br />
@@ -109,11 +109,11 @@
           $icon = $customLink['Icon'] ?? '';
           $name = $customLink['Text'] ?? '';
         ?>
-        <span>
+        <div>
           <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
             <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <?php endif; ?><?=$this->escapeHtml($name)?>
           </a>
-        </span>
+        </div>
       <?php endforeach; ?>
     <?php endif; ?>
 

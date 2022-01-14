@@ -1,6 +1,6 @@
 <div class="form-group">
   <label class="control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
-  <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" name="to" value="<?=$this->to ?? ''?>"/>
+  <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" name="to" value="<?=$this->escapeHtmlAttr($this->to ?? '')?>"/>
   <?php if ($this->maxRecipients != 1): ?>
     <br />
     <?=$this->transEsc('email_multiple_recipients_note')?>
@@ -12,24 +12,24 @@
 <?php if (!$this->disableFrom): ?>
   <div class="form-group">
     <label class="control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
-    <input type="email" id="email_from" name="from" value="<?=$this->from ?? ''?>" size="40" class="form-control"/>
+    <input type="email" id="email_from" name="from" value="<?=$this->escapeHtmlAttr($this->from ?? '')?>" size="40" class="form-control"/>
   </div>
 <?php endif; ?>
 <?php if ($this->editableSubject): ?>
   <div class="form-group">
     <label class="control-label" for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
-    <input type="text" id="email_subject" name="subject" value="<?=$this->subject ?? ''?>" size="40" class="form-control"/>
+    <input type="text" id="email_subject" name="subject" value="<?=$this->escapeHtmlAttr($this->subject ?? '')?>" size="40" class="form-control"/>
   </div>
 <?php endif; ?>
 <div class="form-group">
   <label class="control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
-  <textarea id="email_message" class="form-control" name="message" rows="4"><?=$this->message ?? ''?></textarea>
+  <textarea id="email_message" class="form-control" name="message" rows="4"><?=$this->escapeHtml($this->message ?? '')?></textarea>
 </div>
 <?php if ($this->disableFrom && $this->userEmailInFrom): ?>
   <div class="form-group">
     <div class="checkbox">
       <label>
-        <input type="checkbox" name="ccself"/> <?=$this->translate('send_email_copy_to_me'); ?>
+        <input type="checkbox" name="ccself"/> <?=$this->transEsc('send_email_copy_to_me'); ?>
       </label>
     </div>
   </div>

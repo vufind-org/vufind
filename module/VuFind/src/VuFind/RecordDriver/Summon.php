@@ -499,7 +499,9 @@ class Summon extends DefaultRecord
         $sub = $this->getSubtitle();
         $title = empty($sub) ? $title : "{$title}: {$sub}";
         return str_replace(
-            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $title
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+            '',
+            $title
         );
     }
 

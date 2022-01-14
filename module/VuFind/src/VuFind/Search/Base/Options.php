@@ -301,7 +301,7 @@ abstract class Options implements TranslatorAwareInterface
             ) {
                 $this->facetSortOptions[$facet] = [];
                 foreach (explode(',', $sortOptions) as $fieldAndLabel) {
-                    list($field, $label) = explode('=', $fieldAndLabel);
+                    [$field, $label] = explode('=', $fieldAndLabel);
                     $this->facetSortOptions[$facet][$field] = $label;
                 }
             }
@@ -992,6 +992,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Return the callback used for normalization within this backend.
+     *
+     * @return callable
+     */
+    public function getSpellingNormalizer()
+    {
+        return new \VuFind\Normalizer\DefaultSpellingNormalizer();
     }
 
     /**

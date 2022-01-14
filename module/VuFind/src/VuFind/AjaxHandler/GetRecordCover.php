@@ -29,9 +29,9 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\ILS\Driver\CacheTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -88,7 +88,9 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      * @param bool            $useCoverFallbacksOnFail If true we will render a
      * fallback html template in case no image could be loaded
      */
-    public function __construct(SessionSettings $ss, RecordLoader $recordLoader,
+    public function __construct(
+        SessionSettings $ss,
+        RecordLoader $recordLoader,
         CoverRouter $coverRouter,
         ?PhpRenderer $renderer = null,
         $useCoverFallbacksOnFail = false
@@ -131,12 +133,16 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             );
         }
 
-        $url = $this->coverRouter->getUrl(
-            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail
+        $metadata = $this->coverRouter->getMetadata(
+            $record,
+            $size ?? 'small',
+            true,
+            $this->useCoverFallbacksOnFail,
+            true
         );
 
-        return ($url || !$this->renderer || !$this->useCoverFallbacksOnFail)
-            ? $this->formatResponse(compact('url', 'size'))
+        return ($metadata || !$this->renderer || !$this->useCoverFallbacksOnFail)
+            ? $this->formatResponse(array_merge($metadata, compact('size')))
             : $this->formatResponse(
                 [
                     'html' => $this->renderer->render(

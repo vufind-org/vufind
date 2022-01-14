@@ -75,9 +75,8 @@
   <?php if ($recordTotal < 1): ?>
     <p>
       <?php
-        $emptyMessage = $this->slot('empty-message')->get(
-          $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])
-        );
+        $default = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]);
+        $emptyMessage = $this->slot('empty-message')->get($default);
         $this->layout()->srmessage = $emptyMessage;
         echo $emptyMessage;
       ?>

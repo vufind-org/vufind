@@ -119,7 +119,7 @@ FROM config.copy_status ccs
     INNER JOIN asset.copy ac ON ac.status = ccs.id
     INNER JOIN asset.call_number acn ON acn.id = ac.call_number
     INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
-WHERE 
+WHERE
     acn.record = ? AND
     NOT ac.deleted
 HERE;
@@ -131,7 +131,7 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
@@ -220,7 +220,7 @@ FROM config.copy_status ccs
     FULL JOIN action.circulation circ ON (
         ac.id = circ.target_copy AND circ.checkin_time IS NULL
     )
-WHERE 
+WHERE
     acn.record = ? AND
     NOT ac.deleted
 HERE;
@@ -231,7 +231,7 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
@@ -348,7 +348,7 @@ HERE;
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -391,10 +391,10 @@ HERE;
                 $transList[] = ['duedate' => $due_date,
                                      'id' => $row['bib_id']];
             }
-            return $transList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $transList;
     }
 
     /**
@@ -450,7 +450,7 @@ HERE;
             }
             return $fineList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -508,10 +508,10 @@ HERE;
                                     'expire' => $exp_time,
                                     'create' => $req_time];
             }
-            return $holdList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**
@@ -562,12 +562,11 @@ HERE;
                     'group' => $row['usrgroup']
                 ];
                 return $patron;
-            } else {
-                return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return null;
     }
 
     /**
@@ -606,7 +605,7 @@ HERE;
         $sqlStmt = $this->db->prepare($sql);
         $sqlStmt->execute();
     } catch (PDOException $e) {
-        throw new ILSException($e->getMessage());
+        $this->throwAsIlsException($e);
     }
     */
     //}
@@ -671,7 +670,7 @@ HERE;
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['count'];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // TODO: implement paging support
@@ -690,10 +689,10 @@ HERE;
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $items['results'][]['id'] = $row['id'];
             }
-            return $items;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $items;
     }
 
     /**
@@ -706,9 +705,9 @@ HERE;
      */
     public function getFunds()
     {
-        /*
-        $list = array();
+        $list = [];
 
+        /* TODO:
         $sql = "";
 
         try {
@@ -718,11 +717,11 @@ HERE;
                 $list[] = $row['name'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        */
 
         return $list;
-        */
     }
 
     /**
@@ -746,7 +745,7 @@ HERE;
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;

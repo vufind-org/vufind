@@ -71,7 +71,9 @@ class SolrMarcRemote extends SolrMarc implements
      *
      * @throws \Exception
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
@@ -84,13 +86,36 @@ class SolrMarcRemote extends SolrMarc implements
     }
 
     /**
+     * Get access to the MarcReader object.
+     *
+     * @return MarcReader
+     */
+    public function getMarcReader()
+    {
+        $this->verifyFullRecordIsAvailable();
+        return parent::getMarcReader();
+    }
+
+    /**
      * Get access to the raw File_MARC object.
      *
-     * @return \File_MARCBASE
-     * @throws \Exception
-     * @throws \File_MARC_Exception
+     * @return     \File_MARCBASE
+     * @throws     \Exception
+     * @throws     \File_MARC_Exception
+     * @deprecated Use getMarcReader()
      */
     public function getMarcRecord()
+    {
+        $this->verifyFullRecordIsAvailable();
+        return parent::getMarcRecord();
+    }
+
+    /**
+     * Load the fullrecord field if not already loaded
+     *
+     * @return void
+     */
+    protected function verifyFullRecordIsAvailable()
     {
         // handle availability of fullrecord
         if (!isset($this->fields['fullrecord'])) {
@@ -103,8 +128,6 @@ class SolrMarcRemote extends SolrMarc implements
             $this->fields['fullrecord']
                 = $this->getRemoteFullrecord($this->fields['id']);
         }
-
-        return parent::getMarcRecord();
     }
 
     /**

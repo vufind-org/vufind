@@ -39,9 +39,9 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeCompilerTest extends Unit\TestCase
+class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * ThemeInfo object for tests
@@ -65,7 +65,8 @@ class ThemeCompilerTest extends Unit\TestCase
     public function setUp(): void
     {
         $this->info = new ThemeInfo(
-            $this->getFixtureDir('VuFindTheme') . 'themes', 'parent'
+            $this->getFixtureDir('VuFindTheme') . 'themes',
+            'parent'
         );
         $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:
@@ -172,7 +173,7 @@ class ThemeCompilerTest extends Unit\TestCase
             'js' => ['hello.js', 'extra.js', 'mixin.js'],
             'helpers' => [
                 'factories' => [
-                    'foo' => 'fooOverrideFactory',
+                    'foo' => 'fooMixinFactory',
                     'bar' => 'barFactory',
                 ],
                 'aliases' => [

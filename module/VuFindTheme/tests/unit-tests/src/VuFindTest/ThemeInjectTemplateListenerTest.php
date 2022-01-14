@@ -38,18 +38,27 @@ use VuFindTheme\InjectTemplateListener;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeInjectTemplateListenerTest extends Unit\TestCase
+class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
-     * Test namespace stripping.
+     * Test prefix stripping.
      *
      * @return void
      */
-    public function testNamespaceStripping()
+    public function testPrefixStripping()
     {
-        $l = new InjectTemplateListener();
+        $l = new InjectTemplateListener(['VuFind/']);
+        // We should strip a registered prefix:
         $this->assertEquals(
-            'search', $l->mapController('VuFind\Controller\SearchController')
+            'search',
+            $l->mapController(\VuFind\Controller\SearchController::class)
+        );
+        // We should NOT strip an unregistered prefix:
+        $this->assertEquals(
+            'vufindadmin/admin',
+            $l->mapController(\VuFindAdmin\Controller\AdminController::class)
         );
     }
 
@@ -60,9 +69,10 @@ class ThemeInjectTemplateListenerTest extends Unit\TestCase
      */
     public function testCamelCaseToLowerCase()
     {
-        $l = new InjectTemplateListener();
+        $l = new InjectTemplateListener(['VuFind/']);
         $this->assertEquals(
-            'testcase', $this->callMethod($l, 'inflectName', ['testCase'])
+            'testcase',
+            $this->callMethod($l, 'inflectName', ['VuFind/testCase'])
         );
     }
 }

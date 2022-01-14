@@ -28,7 +28,8 @@
  */
 namespace VuFind\Recommend;
 
-use VuFind\Search\BackendManager;
+use VuFindSearch\Command\GetLuceneHelperCommand;
+use VuFindSearch\Service;
 
 /**
  * SwitchQuery Recommendations Module
@@ -52,11 +53,11 @@ class SwitchQuery implements RecommendInterface
     protected $backend;
 
     /**
-     * Search backend plugin manager.
+     * Search service.
      *
-     * @var BackendManager
+     * @var Service
      */
-    protected $backendManager;
+    protected $searchService;
 
     /**
      * Improved query suggestions.
@@ -91,11 +92,11 @@ class SwitchQuery implements RecommendInterface
     /**
      * Constructor
      *
-     * @param BackendManager $backendManager Search backend plugin manager
+     * @param Service $searchService Search backend plugin manager
      */
-    public function __construct(BackendManager $backendManager)
+    public function __construct(Service $searchService)
     {
-        $this->backendManager = $backendManager;
+        $this->searchService = $searchService;
     }
 
     /**
@@ -118,12 +119,14 @@ class SwitchQuery implements RecommendInterface
         $optIns = !empty($params[2])
             ? explode(',', $params[2]) : [];
         $this->skipChecks = array_merge(
-            $this->skipChecks, array_diff($this->optInMethods, $optIns)
+            $this->skipChecks,
+            array_diff($this->optInMethods, $optIns)
         );
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -312,11 +315,8 @@ class SwitchQuery implements RecommendInterface
      */
     protected function getLuceneHelper()
     {
-        $backend = $this->backendManager->get($this->backend);
-        $qb = is_callable([$backend, 'getQueryBuilder'])
-            ? $backend->getQueryBuilder() : false;
-        return $qb && is_callable([$qb, 'getLuceneHelper'])
-            ? $qb->getLuceneHelper() : false;
+        $command = new GetLuceneHelperCommand($this->backend);
+        return $this->searchService->invoke($command)->getResult();
     }
 
     /**

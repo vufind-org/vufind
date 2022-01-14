@@ -17,16 +17,24 @@
                     $spanClass = 'googlePreviewSpan';
                     // specify link vs. tab
                     $link_options = '';
-                    if (isset($this->config->Content->GoogleOptions->link)
-                            && $this->config->Content->GoogleOptions->link) {
-                        $link_options = 'link:' . strtolower(str_replace(' ', '',
-                            $this->config->Content->GoogleOptions->link));
+                    if ($this->config->Content->GoogleOptions->link ?? false) {
+                        $link_options = 'link:' . strtolower(
+                            str_replace(
+                                ' ',
+                                '',
+                                $this->config->Content->GoogleOptions->link
+                            )
+                        );
                     }
                     $tab_options = '';
-                    if (isset($this->config->Content->GoogleOptions->tab)
-                            && $this->config->Content->GoogleOptions->tab) {
-                        $tab_options = 'tab:' . strtolower(str_replace(' ', '',
-                            $this->config->Content->GoogleOptions->tab));
+                    if ($this->config->Content->GoogleOptions->tab ?? false) {
+                        $tab_options = 'tab:' . strtolower(
+                            str_replace(
+                                ' ',
+                                '',
+                                $this->config->Content->GoogleOptions->tab
+                            )
+                        );
                     }
                     $options = ($link_options && $tab_options)
                         ? "$link_options;$tab_options"
@@ -34,10 +42,14 @@
                     // maintain previous behavior and default
                     if (!$link_options && !$tab_options) {
                         $options = 'link:full,partial';
-                        if (isset($this->config->Content->GoogleOptions)
-                              && is_string($this->config->Content->GoogleOptions)) {
-                            $options = 'link:' . strtolower(str_replace(' ', '',
-                                $this->config->Content->GoogleOptions));
+                        if (is_string($this->config->Content->GoogleOptions ?? null)) {
+                            $options = 'link:' . strtolower(
+                                str_replace(
+                                    ' ',
+                                    '',
+                                    $this->config->Content->GoogleOptions
+                                )
+                            );
                         }
                     }
                     break;

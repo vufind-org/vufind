@@ -15,8 +15,8 @@
     ?>
     <tr>
       <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
-      <td><?=$missingCount ?><?php if($missingCount > 0): ?> (<button class="missing_count btn btn-link" data-langcode="<?=$langCode?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
-      <td><?=$extraCount ?><?php if($extraCount > 0): ?> (<button class="extra_count btn btn-link" data-langcode="<?=$langCode?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
+      <td><?=$missingCount ?><?php if($missingCount > 0): ?> (<button class="missing_count btn btn-link" data-langcode="<?=$this->escapeHtmlAttr($langCode)?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
+      <td><?=$extraCount ?><?php if($extraCount > 0): ?> (<button class="extra_count btn btn-link" data-langcode="<?=$this->escapeHtmlAttr($langCode)?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
       <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
       <td><?=count($diffs['helpFiles'])?></td>
     </tr>
@@ -56,7 +56,7 @@
     }
   }
   var diffManager = createDiffManager();
-  
+
   $('.missing_count').click(function(e) {
     lang = $(this).data('langcode');
     return diffManager.showMissing(lang);

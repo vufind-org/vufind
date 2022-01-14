@@ -84,7 +84,7 @@ class User implements PermissionProviderInterface,
                 $this->logError("configuration option '{$option}' invalid");
                 return [];
             } else {
-                list($attribute, $pattern) = $parts;
+                [$attribute, $pattern] = $parts;
 
                 // check user attribute values against the pattern
                 if (! preg_match('/^\/.*\/$/', $pattern)) {
