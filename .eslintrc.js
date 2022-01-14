@@ -8,7 +8,7 @@ module.exports = {
   rules: {
     // errors
     "block-scoped-var": "error",
-    "func-names": "error",
+    "func-names": ["error", "as-needed"],
     "no-loop-func": "error",
     "no-param-reassign": "error",
     "no-shadow": "error",
