@@ -81,7 +81,52 @@ class TagService extends AbstractService
     }
 
     /**
-     * Gets unique tags from the table
+     * Gets unique tagged resources from the database
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     *
+     * @return array
+     */
+    public function getUniqueResources(
+        string $userId = null,
+        string $resourceId = null,
+        string $tagId = null
+    ): array {
+        $dql = "SELECT r.id AS resource_id, MAX(rt.tag) AS tag_id, "
+            . "MAX(rt.list) AS list_id, MAX(rt.user) AS user_id, MAX(rt.id) AS id, "
+            . "r.title AS title "
+            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
+            . "LEFT JOIN rt.resource r ";
+            //. "LEFT JOIN rt.tag t "
+            //. "LEFT JOIN rt.list l "
+            //. "LEFT JOIN rt.user u";
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = "rt.user = :user";
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = "r.id = :resource";
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = "rt.tag = :tag";
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $dql .= " GROUP BY resource_id, title"
+            . " ORDER BY title";
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
+    }
+
+    /**
+     * Gets unique tags from the database
      *
      * @param string $userId     ID of user
      * @param string $resourceId ID of the resource
@@ -103,18 +148,21 @@ class TagService extends AbstractService
             . "LEFT JOIN rt.tag t "
             . "LEFT JOIN rt.list l "
             . "LEFT JOIN rt.user u";
-        $parameters = [];
+        $parameters = $dqlWhere = [];
         if (null !== $userId) {
-            $dql .= " WHERE u.id = :user";
+            $dqlWhere[] = "u.id = :user";
             $parameters['user'] = $userId;
         }
         if (null !== $resourceId) {
-            $dql .= " WHERE r.id = :resource";
+            $dqlWhere[] = "r.id = :resource";
             $parameters['resource'] = $resourceId;
         }
         if (null !== $tagId) {
-            $dql .= " WHERE t.id = :tag";
+            $dqlWhere[] = "t.id = :tag";
             $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
         $dql .= " GROUP BY tag"
             . " ORDER BY tag";

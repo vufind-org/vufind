@@ -111,7 +111,7 @@ class TagsController extends AbstractAdmin
             : $this->params()->fromQuery('type', null);
         $view->uniqueTags      = $this->getUniqueTags();
         $view->uniqueUsers     = $this->getUniqueUsers()->toArray();
-        $view->uniqueResources = $this->getUniqueResources()->toArray();
+        $view->uniqueResources = $this->getUniqueResources();
         $view->params = $this->params;
         return $view;
     }
@@ -129,7 +129,7 @@ class TagsController extends AbstractAdmin
         $view->setTemplate('admin/tags/list');
         $view->uniqueTags      = $this->getUniqueTags();
         $view->uniqueUsers     = $this->getUniqueUsers()->toArray();
-        $view->uniqueResources = $this->getUniqueResources()->toArray();
+        $view->uniqueResources = $this->getUniqueResources();
         $view->results = $this->getResourceTags();
         $view->params = $this->params;
         return $view;
@@ -325,11 +325,11 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique resources based on the url params
      *
-     * @return \Laminas\Db\ResultSet
+     * @return array
      */
-    protected function getUniqueResources()
+    protected function getUniqueResources(): array
     {
-        return $this->getTable('ResourceTags')->getUniqueResources(
+        return $this->tagService->getUniqueResources(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
             $this->convertFilter($this->getParam('tag_id'))
