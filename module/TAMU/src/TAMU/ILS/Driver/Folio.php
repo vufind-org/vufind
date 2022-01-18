@@ -19,7 +19,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
-                . '" NOT discoverySuppress==true)'
+                . '")'
         ];
         $items = [];
 
@@ -39,7 +39,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
             $textFormatter = function ($supplement) {
                 $format = '%s %s';
                 $supStat = $supplement->statement;
-                $supNote = $supplement->note;
+                $supNote = $supplement->note ?? '';
                 $statement = trim(sprintf($format, $supStat, $supNote));
                 return $statement ?? '';
             };
@@ -72,19 +72,21 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 $fallbackLocationId = null;
             }
 
-            //TAMU Customization boundwith workaround
+            //TAMU Customization boundwith and zero item workarounds
             if (count($holdingItems) == 0 && $fallbackLocationId) {
                 $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk','udoc','txdoc'];
                 $holdingLocationData = $this->getLocationData($fallbackLocationId);
 
+                $callNumberData = $this->chooseCallNumber(
+                    $holdingCallNumberPrefix,
+                    $holdingCallNumber,
+                    '',
+                    ''
+                );
+
+                //TAMU Customization boundwith
                 if (in_array($holdingLocationData['code'], $boundWithLocations)) {
-                    $callNumberData = $this->chooseCallNumber(
-                        $holdingCallNumberPrefix,
-                        $holdingCallNumber,
-                        '',
-                        ''
-                    );
-                    //TAMU Customization additional fields
+
                     $items[] = $callNumberData + [
                         'id' => $bibId,
                         'item_id' => 'bound-with-item',
@@ -93,6 +95,32 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'holding_hrid' => $holding->hrid,
                         'number' => 0,
                         'barcode' => 'bound-with-item',
+                        'status' => null,
+                        'availability' => true,
+                        'is_holdable' => $this->isHoldable($holdingLocationData['name']),
+                        'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
+                        'item_notes' => null,
+                        'issues' => $holdingsStatements,
+                        'supplements' => $holdingsSupplements,
+                        'indexes' => $holdingsIndexes,
+                        'callnumber' => $holding->callNumber ?? '',
+                        'location' => $holdingLocationData['name'],
+                        'location_code' => $holdingLocationData['code'],
+                        'reserve' => 'TODO',
+                        'enumeration' => '',
+                        'item_chronology' => '',
+                        'addLink' => true
+                    ];
+                //TAMU Customization zero item
+                } else {
+                    $items[] = $callNumberData + [
+                        'id' => $bibId,
+                        'item_id' => 'itemless-holding',
+                        'item_hrid' => 'itemless-holding',
+                        'holding_id' => $holding->id,
+                        'holding_hrid' => $holding->hrid,
+                        'number' => 0,
+                        'barcode' => 'itemless-holding',
                         'status' => null,
                         'availability' => true,
                         'is_holdable' => $this->isHoldable($holdingLocationData['name']),
