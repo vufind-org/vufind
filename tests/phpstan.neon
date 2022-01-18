@@ -1,8 +1,10 @@
 parameters:
     paths:
         - %currentWorkingDirectory%/module
+        - %currentWorkingDirectory%/packages
     excludePaths:
         analyse:
+            - %currentWorkingDirectory%/packages/DEBIAN
               # Analysis would crash on PHP 8 due to a signature change in PDO
             - %currentWorkingDirectory%/module/VuFind/src/VuFind/ILS/Driver/Voyager.php
     tmpDir: %currentWorkingDirectory%/.phpstan_cache

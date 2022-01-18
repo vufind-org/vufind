@@ -50,6 +50,11 @@ trait FixtureTrait
      */
     protected function getFixtureDir($module = 'VuFind')
     {
+        $packages = ['VuFindView' => 'vufindview'];
+        if ($package = $packages[$module] ?? false) {
+            return __DIR__ . '/../../../../../packages/' . $package
+                . '/test/fixtures/';
+        }
         return __DIR__ . '/../../../../' . $module . '/tests/fixtures/';
     }
 

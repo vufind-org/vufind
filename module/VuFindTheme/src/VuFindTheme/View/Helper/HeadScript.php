@@ -38,12 +38,10 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadScript extends \Laminas\View\Helper\HeadScript
+class HeadScript extends \VuFindView\Helper\HeadScript
     implements \Laminas\Log\LoggerAwareInterface
 {
-    use ConcatTrait {
-        getMinifiedData as getBaseMinifiedData;
-    }
+    use ConcatTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -54,13 +52,6 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
     protected $themeInfo;
 
     /**
-     * CSP nonce
-     *
-     * @var string
-     */
-    protected $cspNonce;
-
-    /**
      * Constructor
      *
      * @param ThemeInfo   $themeInfo Theme information service
@@ -69,21 +60,8 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
      */
     public function __construct(ThemeInfo $themeInfo, $plconfig = false, $nonce = '')
     {
-        parent::__construct();
+        parent::__construct($plconfig, $nonce);
         $this->themeInfo = $themeInfo;
-        $this->usePipeline = $this->enabledInConfig($plconfig);
-        $this->cspNonce = $nonce;
-        $this->optionalAttributes[] = 'nonce';
-    }
-
-    /**
-     * Folder name and file extension for trait
-     *
-     * @return string
-     */
-    protected function getFileType()
-    {
-        return 'js';
     }
 
     /**
@@ -113,121 +91,6 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
             }
         }
 
-        $this->addNonce($item);
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
-    }
-
-    /**
-     * Forcibly prepend a file removing it from any existing position
-     *
-     * @param string $src   Script src
-     * @param string $type  Script type
-     * @param array  $attrs Array of script attributes
-     *
-     * @return void
-     */
-    public function forcePrependFile(
-        $src = null,
-        $type = 'text/javascript',
-        array $attrs = []
-    ) {
-        // Look for existing entry and remove it if found. Comparison method
-        // copied from isDuplicate().
-        foreach ($this->getContainer() as $offset => $item) {
-            if (($item->source === null)
-                && array_key_exists('src', $item->attributes)
-                && ($src === $item->attributes['src'])
-            ) {
-                $this->offsetUnset($offset);
-                break;
-            }
-        }
-        parent::prependFile($src, $type, $attrs);
-    }
-
-    /**
-     * Returns true if file should not be included in the compressed concat file
-     * Required by ConcatTrait
-     *
-     * @param stdClass $item Script element object
-     *
-     * @return bool
-     */
-    protected function isExcludedFromConcat($item)
-    {
-        return empty($item->attributes['src'])
-            || isset($item->attributes['conditional'])
-            || strpos($item->attributes['src'], '://');
-    }
-
-    /**
-     * Get the file path from the script object
-     * Required by ConcatTrait
-     *
-     * @param stdClass $item Script element object
-     *
-     * @return string
-     */
-    protected function getResourceFilePath($item)
-    {
-        return $item->attributes['src'];
-    }
-
-    /**
-     * Set the file path of the script object
-     * Required by ConcatTrait
-     *
-     * @param stdClass $item Script element object
-     * @param string   $path New path string
-     *
-     * @return stdClass
-     */
-    protected function setResourceFilePath($item, $path)
-    {
-        $item->attributes['src'] = $path;
-        return $item;
-    }
-
-    /**
-     * Get the minifier that can handle these file types
-     * Required by ConcatTrait
-     *
-     * @return \MatthiasMullie\Minify\JS
-     */
-    protected function getMinifier()
-    {
-        return new \MatthiasMullie\Minify\JS();
-    }
-
-    /**
-     * Get minified data for a file
-     *
-     * @param array  $details    File details
-     * @param string $concatPath Target path for the resulting file (used in minifier
-     * for path mapping)
-     *
-     * @throws \Exception
-     * @return string
-     */
-    protected function getMinifiedData($details, $concatPath)
-    {
-        $data = $this->getBaseMinifiedData($details, $concatPath);
-        // Play it safe by terminating a script with a semicolon
-        if (substr(trim($data), -1, 1) !== ';') {
-            $data .= ';';
-        }
-        return $data;
-    }
-
-    /**
-     * Add a nonce to the item
-     *
-     * @param stdClass $item Item
-     *
-     * @return void
-     */
-    protected function addNonce($item)
-    {
-        $item->attributes['nonce'] = $this->cspNonce;
     }
 }
