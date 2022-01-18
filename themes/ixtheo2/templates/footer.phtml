@@ -1,12 +1,12 @@
 <footer class="hidden-print ix-footer">
   <section class="ix-footer-section">
     <div class="container">
-      <?=$this->HelpText()->render('supporters', null, 'static')?>
+      <?=$this->tuefind()->renderStaticTemplate('supporters')?>
     </div>
   </section>
   <section class="ix-footer-section ix-footer-background-block">
     <div class="container">
-      <?=$this->HelpText()->render('footer', null, 'static')?>
+      <?=$this->tuefind()->renderStaticTemplate('footer')?>
     </div>
   </section>
   <a href="<?=$this->url('feedback-home')?>" data-lightbox="">

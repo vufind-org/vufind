@@ -324,9 +324,9 @@ EOD;
 <div class="tf-background-body ix-display-none">
     <div id="content" class="container">
         <div class="row">
-            <?=$this->HelpText()->render('partials/discover', null, 'static');?>
-            <?=$this->HelpText()->render('partials/services', null, 'static');?>
-            <?=$this->HelpText()->render('partials/derivatives', null, 'static');?>
+            <?=$this->tuefind()->renderStaticTemplate('partials/discover');?>
+            <?=$this->tuefind()->renderStaticTemplate('partials/services');?>
+            <?=$this->tuefind()->renderStaticTemplate('partials/derivatives');?>
         </div>
     </div>
 </div>

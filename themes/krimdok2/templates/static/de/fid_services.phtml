@@ -1,7 +1,7 @@
 <div class="tf-background-body">
     <div id="content" class="container">
-        <?=$this->HelpText()->render('partials/fulltexts', null, 'static'); ?>
-        <?=$this->HelpText()->render('partials/journals', null, 'static'); ?>
-        <?=$this->HelpText()->render('partials/research_data_management', null, 'static'); ?>
+        <?=$this->tuefind()->renderStaticTemplate('partials/fulltexts'); ?>
+        <?=$this->tuefind()->renderStaticTemplate('partials/journals'); ?>
+        <?=$this->tuefind()->renderStaticTemplate('partials/research_data_management'); ?>
     </div>
 </div>

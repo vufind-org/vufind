@@ -1,9 +1,9 @@
 <div class="tf-background-body">
     <div id="content" class="container">
         <div class="row">
-            <?=$this->HelpText()->render('partials/discover', null, 'static'); ?>
-            <?=$this->HelpText()->render('partials/news', null, 'static'); ?>
-            <?=$this->HelpText()->render('partials/fid_services', null, 'static'); ?>
+            <?=$this->tuefind()->renderStaticTemplate('partials/discover'); ?>
+            <?=$this->tuefind()->renderStaticTemplate('partials/news'); ?>
+            <?=$this->tuefind()->renderStaticTemplate('partials/fid_services'); ?>
         </div>
     </div>
 </div>
