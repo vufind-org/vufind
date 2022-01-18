@@ -95,19 +95,6 @@ $config = [
                     ]
                 ],
             ],
-            'static-page' => [
-                'type'    => 'Laminas\Router\Http\Segment',
-                'options' => [
-                    'route'    => "/:page",
-                    'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'StaticPage',
-                        'action'     => 'staticPage',
-                    ],
-                ],
-            ],
             'myresearch-publish' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -181,7 +168,6 @@ $config = [
             'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'TueFind\Controller\RedirectController' => 'TueFind\Controller\RedirectControllerFactory',
             'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
-            'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
@@ -210,7 +196,6 @@ $config = [
             'redirect' => 'TueFind\Controller\RedirectController',
             'RssFeed' => 'TueFind\Controller\RssFeedController',
             'rssfeed' => 'TueFind\Controller\RssFeedController',
-            'StaticPage' => 'TueFind\Controller\StaticPageController',
             'WikidataProxy' => 'TueFind\Controller\WikidataProxyController',
             'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],

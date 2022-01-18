@@ -15,11 +15,11 @@
           <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><?=$this->transEsc('About');?> <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="/Impressum"><?=$this->transEsc('Impressum');?></a></li>
+              <li><a href="/Content/Impressum"><?=$this->transEsc('Impressum');?></a></li>
               <li><a target="_blank" href="<?=$this->url('content-page', ['page' => 'privacy'])?>"><?=$this->transEsc('Privacy Protection');?></a></li>
             </ul>
           </li>
-          <li><a href="/A-Z">IxTheo A-Z</a></li>
+          <li><a href="/Content/A-Z">IxTheo A-Z</a></li>
           <?php if ($this->feedback()->tabEnabled()): ?>
             <li>
               <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc("Feedback")?></a>
