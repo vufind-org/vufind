@@ -28,6 +28,8 @@
  */
 namespace VuFindTest\Controller;
 
+use VuFind\Db\Service\TagService;
+
 /**
  * Unit tests for Socialstats controller.
  *
@@ -44,32 +46,47 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHome()
+    public function testHome(): void
     {
-        // Create mocks to simulate database lookups:
+        // Create mock containers for fetching database-related services:
         $container = new \VuFindTest\Container\MockContainer($this);
         $tables = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFind\Db\Table\PluginManager::class, $tables);
-        $c = new \VuFindAdmin\Controller\SocialstatsController($container);
+        $dbServices = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Db\Service\PluginManager::class, $dbServices);
+
+        // Create and register mock table objects:
         $comments = $this->getMockBuilder(\VuFind\Db\Table\Comments::class)
-            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
-        $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));
-        $tables->set('comments', $comments);
-        $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
-            ->onlyMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
-        $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
-        $tables->set('userresource', $userresource);
-        $resourcetags = $this->getMockBuilder(\VuFind\Db\Table\ResourceTags::class)
             ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
             ->getMock();
-        $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));
-        $tables->set('resourcetags', $resourcetags);
+        $comments->expects($this->once())->method('getStatistics')
+            ->will($this->returnValue('comments-data'));
+        $tables->set('comments', $comments);
+        $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
+            ->onlyMethods(['getStatistics'])->disableOriginalConstructor()
+            ->getMock();
+        $userresource->expects($this->once())->method('getStatistics')
+            ->will($this->returnValue('userresource-data'));
+        $tables->set('userresource', $userresource);
+
+        // Create and register mock tag service
+        $tagService = $this->getMockBuilder(TagService::class)
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
+            ->getMock();
+        $mockTagStats = ['users' => 5, 'resources' => 7, 'total' => 23];
+        $tagService->expects($this->once())->method('getStatistics')
+            ->will($this->returnValue($mockTagStats));
+        $dbServices->set(TagService::class, $tagService);
+
+        // Build the controller to test:
+        $c = new \VuFindAdmin\Controller\SocialstatsController($container);
 
         // Confirm properly-constructed view object:
         $view = $c->homeAction();
+
         $this->assertEquals('admin/socialstats/home', $view->getTemplate());
         $this->assertEquals('comments-data', $view->comments);
         $this->assertEquals('userresource-data', $view->favorites);
-        $this->assertEquals('resourcetags-data', $view->tags);
+        $this->assertEquals($mockTagStats, $view->tags);
     }
 }
