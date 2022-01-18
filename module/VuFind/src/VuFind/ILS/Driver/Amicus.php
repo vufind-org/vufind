@@ -314,6 +314,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $this->throwAsIlsException($e);
         }
 
+        $multiple = '';
         // Read results
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $multiple = $row['MULTIPLE'];

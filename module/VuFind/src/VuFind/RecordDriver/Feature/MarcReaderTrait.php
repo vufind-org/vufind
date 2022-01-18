@@ -43,6 +43,11 @@ namespace VuFind\RecordDriver\Feature;
  */
 trait MarcReaderTrait
 {
+    /**
+     * MARC reader class to use.
+     *
+     * @var string
+     */
     protected $marcReaderClass = \VuFind\Marc\MarcReader::class;
 
     /**

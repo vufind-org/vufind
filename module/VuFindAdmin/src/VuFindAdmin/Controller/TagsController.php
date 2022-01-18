@@ -220,18 +220,18 @@ class TagsController extends AbstractAdmin
         $user = $this->getTable('user')
             ->select(['id' => $this->getParam('user_id')])
             ->current();
-        $userMsg = (false !== $user)
+        $userMsg = is_object($user)
             ? $user->username . " (" . $user->id . ")" : "All";
 
         $tag = $this->getTable('tags')
             ->select(['id' => $this->getParam('tag_id')])
             ->current();
-        $tagMsg = (false !== $tag) ? $tag->tag . " (" . $tag->id . ")" : " All";
+        $tagMsg = is_object($tag) ? $tag->tag . " (" . $tag->id . ")" : " All";
 
         $resource = $this->getTable('resource')
             ->select(['id' => $this->getParam('resource_id')])
             ->current();
-        $resourceMsg = (false !== $resource)
+        $resourceMsg = is_object($resource)
             ? $resource->title . " (" . $resource->id . ")" : " All";
 
         $messages[] = [

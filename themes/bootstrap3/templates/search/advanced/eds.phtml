@@ -5,7 +5,7 @@
       $value = $expander['Value'] ?>
       <div class="checkbox">
         <label for="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
-          <input id="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($expander['selected']) && $expander['selected'])?'checked="checked"':''?> name="filter[]" value="EXPAND:<?=$this->escapeHtmlAttr($value)?>">
+          <input id="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($expander['selected']) && $expander['selected'])?'checked="checked" data-checked-by-default="true"':''?> name="filter[]" value="EXPAND:<?=$this->escapeHtmlAttr($value)?>">
           <?=$this->transEsc('eds_expander_' . $value, [], $expander['Label'])?>
         </label>
       </div>
@@ -42,7 +42,7 @@
             $value = $facet['LimiterValues'][0]['Value'] ?>
             <div class="checkbox">
               <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
-                <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|' . $field . ':' . $value)?>">
+                <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked" data-checked-by-default="true"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|' . $field . ':' . $value)?>">
                 <?=$this->transEsc($facet['Label'])?>
               </label>
             </div>

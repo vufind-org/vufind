@@ -59,7 +59,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * CSRF Validator
      *
-     * @var CsrfInterface $csrf CSRF validator
+     * @var CsrfInterface
      */
     protected $csrf = null;
 

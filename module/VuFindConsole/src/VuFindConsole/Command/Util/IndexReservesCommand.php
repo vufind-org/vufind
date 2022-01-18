@@ -132,6 +132,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
         $departments,
         $reserves
     ) {
+        $index = [];
         foreach ($reserves as $record) {
             $requiredKeysFound
                 = count(array_intersect(array_keys($record), $this->requiredKeys));

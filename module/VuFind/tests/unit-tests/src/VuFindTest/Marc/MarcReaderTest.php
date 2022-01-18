@@ -28,7 +28,7 @@
 namespace VuFindTest\Marc;
 
 /**
- * SolrMarc Record Driver Test Class
+ * MarcReader Test Class
  *
  * @category VuFind
  * @package  Tests
