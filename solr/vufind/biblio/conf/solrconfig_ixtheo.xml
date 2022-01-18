@@ -109,7 +109,7 @@
 
 
   <updateRequestProcessorChain name="conditional_insert_field">
-    <processor class="de.uni_tuebingen.ub.ixTheo.conditionalInsertField.ConditionalInsertFieldProcessorFactory" />
+    <processor class="de.uni_tuebingen.ub.tuefind.conditionalInsertField.ConditionalInsertFieldProcessorFactory" />
     <processor class="solr.LogUpdateProcessorFactory" />
     <processor class="solr.RunUpdateProcessorFactory" />
   </updateRequestProcessorChain>
