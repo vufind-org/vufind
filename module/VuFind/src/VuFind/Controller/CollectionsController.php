@@ -40,9 +40,11 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CollectionsController extends AbstractBase
+class CollectionsController extends AbstractBase implements
+    \VuFind\Service\SorterAwareInterface
 {
     use Feature\AlphaBrowseTrait;
+    use \VuFind\Service\SorterAwareTrait;
 
     /**
      * VuFind configuration
@@ -286,7 +288,7 @@ class CollectionsController extends AbstractBase
             $valuesSorted[$resKey]
                 = $this->normalizeForBrowse($resVal['displayText']);
         }
-        asort($valuesSorted);
+        $this->sorter->asort($valuesSorted);
 
         // Now the $valuesSorted is in the right order
         return $valuesSorted;

@@ -29,6 +29,7 @@
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Search\Solr\HierarchicalFacetHelper;
+use VuFind\Service\Sorter;
 
 /**
  * Unit tests for Hierarchical Facet Helper.
@@ -143,6 +144,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->helper = new HierarchicalFacetHelper();
+        $this->helper->setSorter(new Sorter('en'));
     }
 
     /**

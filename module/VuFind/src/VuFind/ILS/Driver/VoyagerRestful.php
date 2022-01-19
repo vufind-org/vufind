@@ -48,12 +48,15 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
+class VoyagerRestful extends Voyager implements
+    \VuFindHttp\HttpServiceAwareInterface,
+    \VuFind\Service\SorterAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Service\SorterAwareTrait;
 
     /**
      * Web services host
@@ -760,7 +763,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 if (isset($locationOrder[$bLoc])) {
                     return 1;
                 }
-                return strcasecmp($a['locationDisplay'], $b['locationDisplay']);
+                return $this->sorter->compare(
+                    $a['locationDisplay'],
+                    $b['locationDisplay']
+                );
             };
             usort($pickResponse, $sortFunction);
         }
@@ -835,7 +841,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if (isset($requestGroupOrder[$b['id']])) {
             return 1;
         }
-        return strcasecmp($a['name'], $b['name']);
+        return $this->sorter->compare($a['name'], $b['name']);
     }
 
     /**

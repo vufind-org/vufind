@@ -51,8 +51,10 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Demo extends AbstractBase
+class Demo extends AbstractBase implements \VuFind\Service\SorterAwareInterface
 {
+    use \VuFind\Service\SorterAwareTrait;
+
     /**
      * Catalog ID used to distinquish between multiple Demo driver instances with the
      * MultiBackend driver
@@ -784,7 +786,7 @@ class Demo extends AbstractBase
         if ($options['itemLimit'] ?? null) {
             // For sensible pagination, we need to sort by location:
             $callback = function ($a, $b) {
-                return strcmp($a['location'], $b['location']);
+                return $this->sorter->compare($a['location'], $b['location']);
             };
             usort($status, $callback);
             $slice = array_slice(
@@ -1177,7 +1179,10 @@ class Demo extends AbstractBase
                 $transactions,
                 function ($a, $b) use ($sort, $descending) {
                     if ('title' === $sort[0]) {
-                        $cmp = strcmp($a['title'] ?? '', $b['title'] ?? '');
+                        $cmp = $this->sorter->compare(
+                            $a['title'] ?? '',
+                            $b['title'] ?? ''
+                        );
                     } else {
                         $cmp = $a['rawduedate'] - $b['rawduedate'];
                     }

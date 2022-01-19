@@ -31,6 +31,8 @@ use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\UrlQueryHelper;
+use VuFind\Service\SorterAwareInterface;
+use VuFind\Service\SorterAwareTrait;
 
 /**
  * Functions for manipulating facets
@@ -41,9 +43,11 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HierarchicalFacetHelper implements TranslatorAwareInterface
+class HierarchicalFacetHelper implements TranslatorAwareInterface,
+    SorterAwareInterface
 {
     use TranslatorAwareTrait;
+    use SorterAwareTrait;
 
     /**
      * Helper method for building hierarchical facets:
@@ -100,7 +104,7 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
                 $bText = $b['displayText'] == $b['value']
                     ? $this->formatDisplayText($b['displayText'])
                     : $b['displayText'];
-                return strcoll($aText, $bText);
+                return $this->sorter->compare($aText, $bText);
             }
             return $a['level'] == $b['level']
                 ? $b['count'] - $a['count']

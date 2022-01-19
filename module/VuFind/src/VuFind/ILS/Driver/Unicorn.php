@@ -44,9 +44,11 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
-class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+    \VuFind\Service\SorterAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Service\SorterAwareTrait;
 
     /**
      * Host
@@ -860,7 +862,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $name = ($code == $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
-        asort($courses);
+        $this->sorter->asort($courses);
         return $courses;
     }
 
@@ -886,7 +888,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $user);
             $users[$id] = $name;
         }
-        asort($users);
+        $this->sorter->asort($users);
         return $users;
     }
 
@@ -912,7 +914,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $dept);
             $depts[$id] = $name;
         }
-        asort($depts);
+        $this->sorter->asort($depts);
         return $depts;
     }
 

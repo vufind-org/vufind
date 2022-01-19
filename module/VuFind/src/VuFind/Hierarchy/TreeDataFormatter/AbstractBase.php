@@ -36,8 +36,10 @@ namespace VuFind\Hierarchy\TreeDataFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractBase
+abstract class AbstractBase implements \VuFind\Service\SorterAwareInterface
 {
+    use \VuFind\Service\SorterAwareTrait;
+
     /**
      * Top-level record from index
      *
@@ -210,7 +212,7 @@ abstract class AbstractBase
     {
         // Sort arrays based on first element
         $sorter = function ($a, $b) {
-            return strcmp($a[0], $b[0]);
+            return $this->sorter->compare($a[0], $b[0]);
         };
         usort($array, $sorter);
 
