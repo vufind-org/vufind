@@ -434,6 +434,7 @@ $config = [
             'VuFind\Security\NonceGenerator' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Service\CurrencyFormatter' => 'VuFind\Service\CurrencyFormatterFactory',
             'VuFind\Service\ReCaptcha' => 'VuFind\Service\ReCaptchaFactory',
+            'VuFind\Service\Sorter' => 'VuFind\Service\SorterFactory',
             'VuFind\Session\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Session\Settings' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Sitemap\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
