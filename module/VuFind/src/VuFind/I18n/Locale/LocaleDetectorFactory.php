@@ -79,7 +79,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         // TODO: implement mappings in the future?
         //$detector->setMappings($settings->getMappedLocales());
 
-        foreach ($this->getStrategies() as $strategy) {
+        foreach ($this->getStrategies($settings) as $strategy) {
             $detector->addStrategy($strategy);
         }
 
@@ -97,9 +97,11 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
     /**
      * Generator for retrieving strategies.
      *
+     * @param ?LocaleSettings $settings Locale settings
+     *
      * @return \Generator
      */
-    protected function getStrategies(): \Generator
+    protected function getStrategies(LocaleSettings $settings = null): \Generator
     {
         yield new LocaleDetectorParamStrategy();
 
@@ -111,6 +113,8 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $cookieStrategy->setCookieName('language');
         yield $cookieStrategy;
 
-        yield new \SlmLocale\Strategy\HttpAcceptLanguageStrategy();
+        if ($settings && $settings->browserLanguageDetectionEnabled()) {
+            yield new \SlmLocale\Strategy\HttpAcceptLanguageStrategy();
+        }
     }
 }
