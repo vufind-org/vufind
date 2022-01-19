@@ -538,13 +538,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         arsort($countedTopics);
 
         $urlHelper = $this->viewHelperManager->get('url');
-        $tuefindHelper = $this->viewHelperManager->get('tuefind');
 
         $lookfor = $this->getTitlesByQueryParams($driver);
-
-        if ($tuefindHelper->getTueFindFlavour() == 'ixtheo') {
-            $settings['filter'] = $settings['filter'];
-        }
 
         $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$settings['searchType'].'&filter[]='.$settings['filter'].':';
 
