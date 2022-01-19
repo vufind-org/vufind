@@ -96,7 +96,7 @@ class LocaleSettings
         $this->enabledLocales = $config->Languages ? $config->Languages->toArray()
             : [];
         $this->browserDetectLanguage
-            = (bool)($config->Site->browserDetectLanguage ?? false);
+            = (bool)($config->Site->browserDetectLanguage ?? true);
         $this->defaultLocale = $this->parseDefaultLocale($config);
         $this->fallbackLocales = $this->parseFallbackLocales($config);
         $this->rightToLeftLocales = $this->parseRightToLeftLocales($config);
