@@ -306,7 +306,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 
     public function getKeyWordChainBag($languageSuffix=null)
     {
-        $key = 'key_word_chain_bag';
+        $key = 'topic_cloud';
         if (isset($languageSuffix))
             $key .= '_' . $languageSuffix;
         return isset($this->fields[$key]) ?

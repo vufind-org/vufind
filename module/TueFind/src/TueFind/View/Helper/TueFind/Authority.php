@@ -502,10 +502,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
             'minWeight' => 0,
-            'filter' => 'key_word_chain_bag_'.$translatorLocale,
+            'filter' => 'topic_cloud*',
             'paramBag' => [
                 'sort' => 'publishDate DESC',
-                'fl' => 'id,key_word_chain_bag_'.$translatorLocale
+                'fl' => 'id,topic_cloud_'.$translatorLocale
              ],
             'searchType' => 'AllFields'
         ];
@@ -575,7 +575,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $mainTopicsArray[] = $one;
             }
         }
-
+        
         return [$mainTopicsArray, $settings];
     }
 
