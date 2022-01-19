@@ -113,6 +113,9 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $cookieStrategy->setCookieName('language');
         yield $cookieStrategy;
 
+        // By default, we want to use the HTTP Accept header, so we'll add that
+        // strategy when no settings are provided, or when the settings tell us
+        // that browser language detection should be used.
         if (!$settings || $settings->browserLanguageDetectionEnabled()) {
             yield new \SlmLocale\Strategy\HttpAcceptLanguageStrategy();
         }
