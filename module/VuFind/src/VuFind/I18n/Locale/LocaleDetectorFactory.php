@@ -113,7 +113,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $cookieStrategy->setCookieName('language');
         yield $cookieStrategy;
 
-        if ($settings && $settings->browserLanguageDetectionEnabled()) {
+        if (!$settings || $settings->browserLanguageDetectionEnabled()) {
             yield new \SlmLocale\Strategy\HttpAcceptLanguageStrategy();
         }
     }
