@@ -321,7 +321,11 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 
     public function getTopics($language=null): array
     {
-        return array_unique($this->getKeyWordChainBag($language));
+        $key = 'topic_cloud';
+        if (isset($language))
+            $key .= '_' . $language;
+        return isset($this->fields[$key]) ?
+            $this->fields[$key] : [];
     }
 
     /**
