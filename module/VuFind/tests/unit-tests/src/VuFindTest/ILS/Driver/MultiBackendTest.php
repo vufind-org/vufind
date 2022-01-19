@@ -2870,11 +2870,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Demo
      */
-    protected function getMockDemoDriver($methods)
+    protected function getMockDemoDriver()
     {
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
-        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock', $methods)
+        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2904,7 +2904,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
         } elseif ($type == 'Demo') {
-            $mock = $this->getMockDemoDriver($methods);
+            $mock = $this->getMockDemoDriver();
         } else {
             $class = __NAMESPACE__ . '\\' . $type . 'Mock';
             $mock = $this->getMockBuilder($class)
