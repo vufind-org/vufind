@@ -502,7 +502,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
             'minWeight' => 0,
-            'filter' => 'topic_cloud*',
+            'filter' => 'topic_cloud',
             'paramBag' => [
                 'sort' => 'publishDate DESC',
                 'fl' => 'id,topic_cloud_'.$translatorLocale
@@ -575,7 +575,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $mainTopicsArray[] = $one;
             }
         }
-        
+
         return [$mainTopicsArray, $settings];
     }
 
