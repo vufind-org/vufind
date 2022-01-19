@@ -493,6 +493,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getTopicsData(AuthorityRecordDriver &$driver): array
     {
+        $translatorLocale = $this->getTranslatorLocale();
 
         $settings = [
             'maxNumber' => 10,
@@ -501,7 +502,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
             'minWeight' => 0,
-            'filter' => 'topic_facet'
+            'filter' => 'key_word_chain_bag_'.$translatorLocale,
+            'paramBag' => [
+                'sort' => 'publishDate DESC',
+                'fl' => 'id,key_word_chain_bag_'.$translatorLocale
+             ],
+            'searchType' => 'AllFields'
         ];
 
         $identifier = 'Solr';
@@ -510,11 +516,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         //       to reduce the result size and avoid out of memory problems.
         //       Example: Martin Luther, 133813363
         $titleRecords = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
-                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC', 'fl' => 'id,topic,key_word_chain_bag,key_word_chain_bag*']));
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), $settings['searchType']),
+                                                 0, 9999, new \VuFindSearch\ParamBag($settings['paramBag']));
+
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
-            $keywords = $titleRecord->getTopics($this->getTranslatorLocale());
+
+            $keywords = $titleRecord->getTopics($translatorLocale);
             foreach ($keywords as $keyword) {
                 if(strpos($keyword, "\\") !== false) {
                     $keyword = str_replace("\\", "", $keyword);
@@ -532,14 +540,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $urlHelper = $this->viewHelperManager->get('url');
         $tuefindHelper = $this->viewHelperManager->get('tuefind');
 
-        $searchType = 'AllFields';
         $lookfor = $this->getTitlesByQueryParams($driver);
 
         if ($tuefindHelper->getTueFindFlavour() == 'ixtheo') {
-            $settings['filter'] = 'key_word_chain_bag';
+            $settings['filter'] = $settings['filter'];
         }
 
-        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$searchType.'&filter[]='.$settings['filter'].':';
+        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$settings['searchType'].'&filter[]='.$settings['filter'].':';
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {
