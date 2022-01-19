@@ -969,7 +969,18 @@ abstract class Options implements TranslatorAwareInterface
     public function getSearchClassId()
     {
         // Parse identifier out of class name of format VuFind\Search\[id]\Options:
-        $class = explode('\\', get_class($this));
+        $className = get_class($this);
+        $class = explode('\\', $className);
+
+        // Special case: if there's an unexpected number of parts, we may be testing
+        // with a mock object; if so, that's okay, but anything else is unexpected.
+        if (count($class) !== 4) {
+            if ('Mock_' === substr($className, 0, 5)) {
+                return 'Mock';
+            }
+            throw new \Exception("Unexpected class name: {$className}");
+        }
+
         return $class[2];
     }
 
