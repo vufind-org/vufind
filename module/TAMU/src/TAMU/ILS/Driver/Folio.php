@@ -19,7 +19,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
-                . '")'
+                . '" NOT discoverySuppress==true)'
         ];
         $items = [];
 
