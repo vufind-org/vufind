@@ -111,6 +111,6 @@ class Missing extends DefaultRecord
      */
     public function getFormats()
     {
-        return ['other'];
+        return ['Unknown'];
     }
 }
