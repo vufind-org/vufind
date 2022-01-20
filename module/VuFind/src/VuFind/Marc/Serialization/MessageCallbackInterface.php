@@ -1,6 +1,6 @@
 <?php
 /**
- * MARC serialization file interface.
+ * MARC serialization message callback interface.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Marc\Serialization;
 
 /**
- * MARC serialization file interface.
+ * MARC serialization message callback interface.
  *
  * @category VuFind
  * @package  MARC
@@ -36,17 +36,8 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-interface SerializationFileInterface
+interface MessageCallbackInterface
 {
-    /**
-     * Check if the serialization class can parse the given MARC collection file
-     *
-     * @param string $file File name
-     *
-     * @return bool
-     */
-    public static function canParseCollectionFile(string $file): bool;
-
     /**
      * Set message callback
      *
@@ -55,27 +46,4 @@ interface SerializationFileInterface
      * @return void
      */
     public function setMessageCallback(?callable $callback): void;
-
-    /**
-     * Open a collection file
-     *
-     * @param string $file File name
-     *
-     * @return void
-     */
-    public function openCollectionFile(string $file): void;
-
-    /**
-     * Rewind the collection file
-     *
-     * @return void;
-     */
-    public function rewind(): void;
-
-    /**
-     * Get next record from the file or an empty string on EOF
-     *
-     * @return string
-     */
-    public function getNextRecord(): string;
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * MARC serialization file interface.
+ * Abstract base class for serialization format support classes.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Marc\Serialization;
 
 /**
- * MARC serialization file interface.
+ * Abstract base class for serialization format support classes.
  *
  * @category VuFind
  * @package  MARC
@@ -36,16 +36,15 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-interface SerializationFileInterface
+abstract class AbstractSerializationFile implements SerializationFileInterface,
+    MessageCallbackInterface
 {
     /**
-     * Check if the serialization class can parse the given MARC collection file
+     * Message callback
      *
-     * @param string $file File name
-     *
-     * @return bool
+     * @var callable
      */
-    public static function canParseCollectionFile(string $file): bool;
+    protected $messageCallback = null;
 
     /**
      * Set message callback
@@ -54,28 +53,24 @@ interface SerializationFileInterface
      *
      * @return void
      */
-    public function setMessageCallback(?callable $callback): void;
+    public function setMessageCallback(?callable $callback): void
+    {
+        $this->messageCallback = $callback;
+    }
 
     /**
-     * Open a collection file
+     * Output a message
      *
-     * @param string $file File name
+     * @param string $msg   Message
+     * @param int    $level Error level (see
+     * https://www.php.net/manual/en/function.error-reporting.php)
      *
      * @return void
      */
-    public function openCollectionFile(string $file): void;
-
-    /**
-     * Rewind the collection file
-     *
-     * @return void;
-     */
-    public function rewind(): void;
-
-    /**
-     * Get next record from the file or an empty string on EOF
-     *
-     * @return string
-     */
-    public function getNextRecord(): string;
+    protected function message(string $msg, int $level): void
+    {
+        if (null !== $this->messageCallback) {
+            call_user_func($this->messageCallback, $msg, $level);
+        }
+    }
 }

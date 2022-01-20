@@ -27,6 +27,7 @@
  */
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -114,7 +115,14 @@ class DeletesCommand extends AbstractSolrCommand
     ): array {
         $ids = [];
         // MARC file mode:
-        $collection = new MarcCollectionFile($filename);
+        $messageCallback = function (string $msg, int $level) use ($output) {
+            if ($output->isVerbose() || $level !== E_NOTICE) {
+                $output->writeln(
+                    '<comment>' . OutputFormatter::escape($msg) . '</comment>'
+                );
+            }
+        };
+        $collection = new MarcCollectionFile($filename, $messageCallback);
 
         // Once the records are loaded, the rest of the logic is always the same:
         $missingIdCount = 0;
