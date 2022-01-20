@@ -7,9 +7,9 @@
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
-  $this->headScript()->appendFile("tamu-config.js");
-  $this->headScript()->appendFile("gifm.js");
-  $this->headScript()->appendFile("fulltext.js");
+  $this->headScript()->appendFile("tamu_config.js");
+  $this->headScript()->appendFile("tamu_gifm.js");
+  $this->headScript()->appendFile("tamu_fulltext.js");
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
@@ -42,6 +42,7 @@
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
 <?php
+//TAMU Customization inject and id for GIFM
 $idFields = $this->driver->getMarcRecord()->getFields("999");
 $fieldCount = count($idFields);
 if ($fieldCount > 0) {
