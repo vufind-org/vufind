@@ -3,7 +3,8 @@
 $finder = new PhpCsFixer\Finder();
 $finder->in(__DIR__ . '/../config')
     ->in(__DIR__ . '/../module')
-    ->in(__DIR__ . '/../public');
+    ->in(__DIR__ . '/../public')
+    ->in(__DIR__ . '/../packages');
 
 $rules = [
     'align_multiline_comment' => true,

@@ -1,0 +1,49 @@
+name: Monorepo Split
+
+on:
+  push:
+    branches:
+      - monorepo-release
+
+jobs:
+  provide_packages_json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+
+      - uses: ramsey/composer-install@v1
+
+      - id: output_data
+        run: echo "::set-output name=matrix::$(vendor/bin/monorepo-builder packages-json)"
+
+    outputs:
+      matrix: ${{ steps.output_data.outputs.matrix }}
+
+  split_monorepo:
+    needs: provide_packages_json
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{fromJson(needs.provide_packages_json.outputs.matrix)}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Monorepo Split of ${{ matrix.package }}
+        uses: symplify/monorepo-split-github-action@2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          package_directory: 'packages/${{ matrix.package }}'
+          repository_organization: 'aleksip'
+          repository_name: '${{ matrix.package }}'
+          user_name: 'aleksip'
+          user_email: 'aleksi.peebles@helsinki.fi'

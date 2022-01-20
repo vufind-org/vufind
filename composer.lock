@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "076154250a2abe92bcf4201868e8754e",
+    "content-hash": "4adb03780a79742a11e895d19050b2c8",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -11664,6 +11664,52 @@
                 }
             ],
             "time": "2021-11-23T10:19:22+00:00"
+        },
+        {
+            "name": "symplify/monorepo-builder",
+            "version": "10.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symplify/monorepo-builder.git",
+                "reference": "92a328386413f57b3ff7d306343d5f3e5f170b27"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symplify/monorepo-builder/zipball/92a328386413f57b3ff7d306343d5f3e5f170b27",
+                "reference": "92a328386413f57b3ff7d306343d5f3e5f170b27",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "bin": [
+                "bin/monorepo-builder"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "9.5-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Prefixed version of Not only Composer tools to build a Monorepo.",
+            "support": {
+                "source": "https://github.com/symplify/monorepo-builder/tree/10.0.7"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/rectorphp",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/tomasvotruba",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-12-31T12:03:18+00:00"
         },
         {
             "name": "textalk/websocket",
