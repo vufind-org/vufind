@@ -27,7 +27,7 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
-namespace VuFind\Service;
+namespace VuFind\I18n;
 
 /**
  * Class Sorter

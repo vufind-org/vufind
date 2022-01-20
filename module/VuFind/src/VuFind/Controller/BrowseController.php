@@ -43,9 +43,9 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class BrowseController extends AbstractBase implements
-    \VuFind\Service\SorterAwareInterface
+    \VuFind\I18n\SorterAwareInterface
 {
-    use \VuFind\Service\SorterAwareTrait;
+    use \VuFind\I18n\SorterAwareTrait;
 
     /**
      * VuFind configuration

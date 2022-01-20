@@ -27,12 +27,12 @@
  */
 namespace VuFind\Search\Solr;
 
+use VuFind\I18n\SorterAwareInterface;
+use VuFind\I18n\SorterAwareTrait;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\UrlQueryHelper;
-use VuFind\Service\SorterAwareInterface;
-use VuFind\Service\SorterAwareTrait;
 
 /**
  * Functions for manipulating facets

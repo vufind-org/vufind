@@ -41,10 +41,10 @@ use VuFindSearch\Query\Query;
  * @link     https://vufind.org Main Site
  */
 class CollectionsController extends AbstractBase implements
-    \VuFind\Service\SorterAwareInterface
+    \VuFind\I18n\SorterAwareInterface
 {
     use Feature\AlphaBrowseTrait;
-    use \VuFind\Service\SorterAwareTrait;
+    use \VuFind\I18n\SorterAwareTrait;
 
     /**
      * VuFind configuration

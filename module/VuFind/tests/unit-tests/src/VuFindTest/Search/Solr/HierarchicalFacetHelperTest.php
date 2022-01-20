@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use VuFind\I18n\Sorter;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Service\Sorter;
 
 /**
  * Unit tests for Hierarchical Facet Helper.

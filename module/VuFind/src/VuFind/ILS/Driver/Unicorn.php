@@ -45,10 +45,10 @@ use VuFind\Exception\ILS as ILSException;
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
 class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \VuFind\Service\SorterAwareInterface
+    \VuFind\I18n\SorterAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
-    use \VuFind\Service\SorterAwareTrait;
+    use \VuFind\I18n\SorterAwareTrait;
 
     /**
      * Host

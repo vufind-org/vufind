@@ -51,9 +51,9 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Demo extends AbstractBase implements \VuFind\Service\SorterAwareInterface
+class Demo extends AbstractBase implements \VuFind\I18n\SorterAwareInterface
 {
-    use \VuFind\Service\SorterAwareTrait;
+    use \VuFind\I18n\SorterAwareTrait;
 
     /**
      * Catalog ID used to distinquish between multiple Demo driver instances with the

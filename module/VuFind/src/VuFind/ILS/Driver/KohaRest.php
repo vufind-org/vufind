@@ -53,13 +53,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface,
-    \VuFind\Service\SorterAwareInterface
+    \VuFind\I18n\SorterAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\ILS\Driver\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
-    use \VuFind\Service\SorterAwareTrait;
+    use \VuFind\I18n\SorterAwareTrait;
 
     /**
      * Library prefix

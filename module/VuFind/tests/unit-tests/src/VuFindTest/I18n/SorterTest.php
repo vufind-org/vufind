@@ -27,7 +27,7 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
-namespace VuFindTest\Service;
+namespace VuFindTest\I18n;
 
 /**
  * Class SorterTest
@@ -207,6 +207,6 @@ class SorterTest extends \PHPUnit\Framework\TestCase
 
     protected function createSorter(string $locale, bool $respectLocale = false)
     {
-        return new \VuFind\Service\Sorter($locale, $respectLocale);
+        return new \VuFind\I18n\Sorter($locale, $respectLocale);
     }
 }
