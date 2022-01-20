@@ -12,7 +12,11 @@
         "platform": {
             "php": "7.3.0"
         },
-        "process-timeout": 0
+        "process-timeout": 0,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "wikimedia/composer-merge-plugin": true
+        }
     },
     "require": {
         "php": ">=7.3.0",
