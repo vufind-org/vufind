@@ -563,8 +563,8 @@ class Folio extends AbstractAPI implements
             };
             $textFormatter = function ($supplement) {
                 $format = '%s %s';
-                $supStat = $supplement->statement;
-                $supNote = $supplement->note;
+                $supStat = $supplement->statement ? '';
+                $supNote = $supplement->note ? '';
                 $statement = trim(sprintf($format, $supStat, $supNote));
                 return $statement ?? '';
             };
