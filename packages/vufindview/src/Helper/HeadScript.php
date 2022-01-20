@@ -52,8 +52,8 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
     /**
      * Constructor
      *
-     * @param string|bool $plconfig  Config for current application environment
-     * @param string      $nonce     Nonce from nonce generator
+     * @param string|bool $plconfig Config for current application environment
+     * @param string      $nonce    Nonce from nonce generator
      */
     public function __construct($plconfig = false, $nonce = '')
     {
