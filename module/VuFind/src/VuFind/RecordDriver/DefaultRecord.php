@@ -1316,7 +1316,9 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get UUIDs (Universally unique identifier).
+     * Get UUIDs (Universally unique identifier). These are commonly used in, for
+     * example, digital library or repository systems and can be a useful match
+     * point with third party systems.
      *
      * @return array
      */
