@@ -36,7 +36,7 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class MarcXml implements SerializationInterface, SerializationFileInterface
+class MarcXml extends AbstractSerializationFile implements SerializationInterface
 {
     /**
      * Current file
@@ -323,9 +323,23 @@ class MarcXml implements SerializationInterface, SerializationFileInterface
             $ns = $this->xml->namespaceURI;
 
             $currentPathString = '/' . implode('/', $this->currentXmlPath);
-            if ('/collection/record' !== $currentPathString
-                || ($ns && 'http://www.loc.gov/MARC21/slim' !== $ns)
-            ) {
+            $pathOk = '/collection/record' === $currentPathString;
+            $namespaceOk = !$ns || 'http://www.loc.gov/MARC21/slim' === $ns;
+            if (!$pathOk || !$namespaceOk) {
+                if (count($this->currentXmlPath) === 2) {
+                    if (!$pathOk) {
+                        $this->message(
+                            "Unknown element \"$currentPathString\"",
+                            E_NOTICE
+                        );
+                    } elseif (!$namespaceOk) {
+                        $this->message(
+                            "Unknown namespace \"$ns\" for element \""
+                            . $currentPathString . '"',
+                            E_NOTICE
+                        );
+                    }
+                }
                 continue;
             }
             return $this->xml->readOuterXML();

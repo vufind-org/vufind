@@ -183,4 +183,36 @@ class MarcCollectionFileTest extends \PHPUnit\Framework\TestCase
         $handler = new \VuFind\Marc\Serialization\MarcXml();
         @$handler->openCollectionFile($file);
     }
+
+    /**
+     * Test message callback
+     *
+     * @return void
+     */
+    public function testMessageCallback()
+    {
+        $file = $this->getFixturePath('marc/marc_collection_ns.xml');
+        $messages = [];
+        $callback = function (string $msg, int $level) use (&$messages) {
+            $messages[] = compact('msg', 'level');
+        };
+        $collection = new MarcCollectionFile($file, $callback);
+        while ($collection->valid()) {
+            $collection->next();
+        }
+
+        $this->assertEquals(
+            [
+                [
+                    'msg' => 'Unknown namespace "http://vufind.org/bad" for element "/collection/record"',
+                    'level' => E_NOTICE
+                ],
+                [
+                    'msg' => 'Unknown element "/collection/item"',
+                    'level' => E_NOTICE
+                ],
+            ],
+            $messages
+        );
+    }
 }

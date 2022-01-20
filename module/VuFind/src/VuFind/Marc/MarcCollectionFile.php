@@ -70,12 +70,24 @@ class MarcCollectionFile implements \Iterator
     protected $record = '';
 
     /**
+     * Message callback
+     *
+     * @var callable
+     */
+    protected $messageCallback;
+
+    /**
      * Constructor
      *
-     * @param string $file MARC record collection file in MARCXML or ISO2709 format
+     * @param string   $file            MARC record collection file in MARCXML or
+     * ISO2709 format
+     * @param callable $messageCallback Callback triggered for any messages with
+     * message string and error level (similar to
+     * https://www.php.net/manual/en/function.error-reporting.php)
      */
-    public function __construct(string $file = '')
+    public function __construct(string $file = '', ?callable $messageCallback = null)
     {
+        $this->messageCallback = $messageCallback;
         $this->setFile($file);
     }
 
@@ -97,6 +109,10 @@ class MarcCollectionFile implements \Iterator
         foreach ($this->serializations as $serialization) {
             if ($serialization::canParseCollectionFile($file)) {
                 $this->stream = new $serialization();
+                if ($this->stream instanceof Serialization\MessageCallbackInterface
+                ) {
+                    $this->stream->setMessageCallback($this->messageCallback);
+                }
                 $this->stream->openCollectionFile($file);
                 return;
             }

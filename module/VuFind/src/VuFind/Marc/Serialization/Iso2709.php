@@ -36,7 +36,7 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Iso2709 implements SerializationInterface, SerializationFileInterface
+class Iso2709 extends AbstractSerializationFile implements SerializationInterface
 {
     public const SUBFIELD_INDICATOR = "\x1F";
     public const END_OF_FIELD = "\x1E";
