@@ -1320,7 +1320,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getUuid()
+    public function getUuids()
     {
         return (array)($this->fields['uuid_str_mv'] ?? []);
     }
@@ -1333,8 +1333,8 @@ class DefaultRecord extends AbstractBase
      */
     public function getCleanUuid()
     {
-        $uuid = $this->getUuid();
-        return empty($uuid) ? false : $uuid[0];
+        $uuids = $this->getUuids();
+        return empty($uuids) ? false : $uuids[0];
     }
 
     /**
