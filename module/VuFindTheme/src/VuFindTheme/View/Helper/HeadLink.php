@@ -38,7 +38,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadLink extends \Laminas\View\Helper\HeadLink
+class HeadLink extends \VuFind\View\Helper\HeadLink
     implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
@@ -50,20 +50,6 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
      * @var ThemeInfo
      */
     protected $themeInfo;
-
-    /**
-     * CSP nonce
-     *
-     * @var string
-     */
-    protected $cspNonce;
-
-    /**
-     * Maximum import size (for inlining of e.g. images) in kilobytes
-     *
-     * @var int|null
-     */
-    protected $maxImportSize;
 
     /**
      * Constructor
@@ -79,22 +65,8 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
         $nonce = '',
         $maxImportSize = null
     ) {
-        parent::__construct();
+        parent::__construct($plconfig, $nonce, $maxImportSize);
         $this->themeInfo = $themeInfo;
-        $this->usePipeline = $this->enabledInConfig($plconfig);
-        $this->cspNonce = $nonce;
-        $this->maxImportSize = $maxImportSize;
-        $this->itemKeys[] = 'nonce';
-    }
-
-    /**
-     * Folder name and file extension for trait
-     *
-     * @return string
-     */
-    protected function getFileType()
-    {
-        return 'css';
     }
 
     /**
@@ -118,7 +90,6 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
             $url .= filemtime($details['path']);
             $item->href = $url;
         }
-        $this->addNonce($item);
         return parent::itemToString($item);
     }
 
@@ -168,95 +139,10 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
     }
 
     /**
-     * Forcibly prepend a stylesheet removing it from any existing position
-     *
-     * @param string $href                  Stylesheet href
-     * @param string $media                 Media
-     * @param string $conditionalStylesheet Any conditions
-     * @param array  $extras                Array of extra attributes
-     *
-     * @return void
-     */
-    public function forcePrependStylesheet(
-        $href,
-        $media = 'screen',
-        $conditionalStylesheet = '',
-        $extras = []
-    ) {
-        // Look for existing entry and remove it if found. Comparison method
-        // copied from isDuplicate().
-        foreach ($this->getContainer() as $offset => $item) {
-            if (($item->rel == 'stylesheet') && ($item->href == $href)) {
-                $this->offsetUnset($offset);
-                break;
-            }
-        }
-        parent::prependStylesheet($href, $media, $conditionalStylesheet, $extras);
-    }
-
-    /**
-     * Returns true if file should not be included in the compressed concat file
-     * Required by ConcatTrait
-     *
-     * @param stdClass $item Link element object
-     *
-     * @return bool
-     */
-    protected function isExcludedFromConcat($item)
-    {
-        return !isset($item->rel) || $item->rel != 'stylesheet'
-            || strpos($item->href, '://');
-    }
-
-    /**
-     * Get the file path from the link object
-     * Required by ConcatTrait
-     *
-     * @param stdClass $item Link element object
-     *
-     * @return string
-     */
-    protected function getResourceFilePath($item)
-    {
-        return $item->href;
-    }
-
-    /**
-     * Set the file path of the link object
-     * Required by ConcatTrait
-     *
-     * @param stdClass $item Link element object
-     * @param string   $path New path string
-     *
-     * @return stdClass
-     */
-    protected function setResourceFilePath($item, $path)
-    {
-        $item->href = $path;
-        return $item;
-    }
-
-    /**
-     * Get the file type
-     *
-     * @param stdClass $item Link element object
-     *
-     * @return string
-     */
-    public function getType($item)
-    {
-        $type = $item->media ?? 'all';
-        if (isset($item->conditionalStylesheet)) {
-            $type .= '_' . $item->conditionalStylesheet;
-        }
-        return $type;
-    }
-
-    /**
      * Get the minifier that can handle these file types
      * Required by ConcatTrait
      *
-     * @return \MatthiasMullie\Minify\JS
+     * @return \MatthiasMullie\Minify\CSS
      */
     protected function getMinifier()
     {
