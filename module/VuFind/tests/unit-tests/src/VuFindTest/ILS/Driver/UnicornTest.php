@@ -61,6 +61,9 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
     public function testMarcParsing(): void
     {
         $marc = $this->getFixture('marc/unicornholdings.mrc');
+        // The 'marc852' element contains an object and is not used in existing code.
+        // Let's just make sure that the element is present, then remove it from the
+        // array to simplify subsequent comparison assertions.
         $checkAndRemove852 = function ($result) {
             $this->assertTrue(isset($result['marc852']));
             unset($result['marc852']);
