@@ -1,0 +1,1 @@
+00208nam  2200073   45e0852003900000863002300039866002000062852005200082\\\a852fieldblibraryclocationznote\\\a863field8foo.bar\\\a866field81234\\\a852field2blibrary2clocation2znote2aznote2b
