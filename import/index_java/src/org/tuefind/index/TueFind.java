@@ -26,6 +26,7 @@ import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.index.SolrIndexerMixin;
+import org.vufind.index.FieldSpecTools;
 
 public class TueFind extends SolrIndexerMixin {
 
@@ -43,25 +44,35 @@ public class TueFind extends SolrIndexerMixin {
         final String[] fieldSpecs = fieldSpecList.split(":");
         List<Subfield> subfieldsToSearch = new ArrayList<>();
         for (final String fieldSpec : fieldSpecs) {
-            final List<VariableField> fieldSpecFields = record.getVariableFields(fieldSpec.substring(0,3));
-            for (final VariableField variableField : fieldSpecFields) {
-                final DataField field = (DataField) variableField;
-                if (field == null)
-                    continue;
-                // Differentiate between field and subfield specifications:
-                if (fieldSpec.length() == 3 + 1)
-                    subfieldsToSearch = field.getSubfields(fieldSpec.charAt(3));
-                else if (fieldSpec.length() == 3)
-                    subfieldsToSearch = field.getSubfields();
-                else {
-                    logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
-                    System.exit(1);
-                }
+            extractedValues.addAll(getAllSubfieldsBut(record, fieldSpec, excludeSubfields, (List<String>)null));
+        }
+        return extractedValues;
+    }
 
-                for (final Subfield subfield : subfieldsToSearch) {
-                    if (!excludeSubfields.contains(Character.toString(subfield.getCode())))
-                        extractedValues.add(subfield.getData());
-                }
+    protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpec, final String excludeSubfields, final List<String> excludeIndicators) {
+        final Set<String> extractedValues = new LinkedHashSet<>();
+        List<Subfield> subfieldsToSearch = new ArrayList<>();
+        final List<VariableField> fieldSpecFields = record.getVariableFields(fieldSpec.substring(0,3));
+        for (final VariableField variableField : fieldSpecFields) {
+            final DataField field = (DataField) variableField;
+            if (field == null)
+                continue;
+            String indicators = Character.toString(field.getIndicator1()) + Character.toString(field.getIndicator2());
+            if (excludeIndicators != null && excludeIndicators.contains(indicators))
+                continue;
+            // Differentiate between field and subfield specifications:
+            if (fieldSpec.length() == 3 + 1)
+                subfieldsToSearch = field.getSubfields(fieldSpec.charAt(3));
+            else if (fieldSpec.length() == 3)
+                subfieldsToSearch = field.getSubfields();
+            else {
+                logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
+                System.exit(1);
+            }
+
+            for (final Subfield subfield : subfieldsToSearch) {
+                if (!excludeSubfields.contains(Character.toString(subfield.getCode())))
+                    extractedValues.add(subfield.getData());
             }
         }
         return extractedValues;
@@ -137,7 +148,7 @@ public class TueFind extends SolrIndexerMixin {
      */
     protected List<Subfield> getSubfieldsMatchingList(final Record record, final String subfieldList, final SubfieldMatcher matcher) {
         List<Subfield> returnSubfields = new ArrayList<>();
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(subfieldList);
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(subfieldList);
         List<VariableField> fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, subfieldList);
 
         for (final VariableField variableField : fields) {
@@ -242,28 +253,6 @@ public class TueFind extends SolrIndexerMixin {
         } catch (NumberFormatException ne) {
             return null;
         }
-    }
-
-    /**
-     * This function is copied from VuFind's CreatorTools
-     * (can't be re-used since it's protected)
-     */
-    protected HashMap<String, Set<String>> getParsedTagList(final String tagList) {
-        final String[] tags = tagList.split(":");//convert string input to array
-        HashMap<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
-        //cut tags array up into key/value pairs in hash map
-        Set<String> currentSet;
-        for (final String tagsItem : tags) {
-            String tag = tagsItem.substring(0, 3);
-            if (!tagMap.containsKey(tag)) {
-                currentSet = new LinkedHashSet<String>();
-                tagMap.put(tag, currentSet);
-            } else {
-                currentSet = tagMap.get(tag);
-            }
-            currentSet.add(tagsItem.substring(3));
-        }
-        return tagMap;
     }
 
     protected static String getFirstSubfieldValue(final Record record, final String tag, final char indicator1, final char indicator2, final char subfieldCode) {
