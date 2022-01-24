@@ -60,7 +60,7 @@ class Sorter
      * @param string $locale        Current user locale
      * @param bool   $respectLocale Do respect current locale?
      */
-    public function __construct(string $locale, bool $respectLocale = false)
+    public function __construct(string $locale = 'en', bool $respectLocale = false)
     {
         $this->collator = new \Collator($locale);
         $this->respectLocale = $respectLocale;

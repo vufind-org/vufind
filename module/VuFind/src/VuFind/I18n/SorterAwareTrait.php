@@ -43,9 +43,9 @@ trait SorterAwareTrait
     /**
      * Sorter
      *
-     * @var Sorter
+     * @var ?Sorter
      */
-    protected $sorter;
+    protected $sorter = null;
 
     /**
      * Set the sorter
@@ -57,5 +57,15 @@ trait SorterAwareTrait
     public function setSorter(Sorter $sorter): void
     {
         $this->sorter = $sorter;
+    }
+
+    /**
+     * Get the sorter
+     *
+     * @return Sorter
+     */
+    public function getSorter(): Sorter
+    {
+        return $this->sorter ?? new Sorter();
     }
 }
