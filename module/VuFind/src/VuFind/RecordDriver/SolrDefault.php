@@ -49,6 +49,7 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;
     use Feature\VersionAwareTrait;
+    use \VuFindResultsGrouping\RecordDriver\SubrecordTrait;
 
     /**
      * These Solr fields should be used for snippets if available (listed in order
