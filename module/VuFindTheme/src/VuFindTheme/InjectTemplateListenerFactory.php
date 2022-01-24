@@ -90,6 +90,42 @@ class InjectTemplateListenerFactory implements FactoryInterface
             }
         );
 
+        $this->loadConfiguredJavascriptFilesFromMixin($config, $container);
+
         return new $requestedName(array_unique($prefixes));
+    }
+
+    /**
+     * Load configured javascript files from mixin.config.php if existing
+     *
+     * @param array              $config    main config
+     * @param ContainerInterface $container Service manager
+     *
+     * @return void
+     */
+    protected function loadConfiguredJavascriptFilesFromMixin(
+        array $config,
+        ContainerInterface $container
+    ): void {
+        $templatePathStack = $config['view_manager']['template_path_stack'] ?? false;
+        if ($templatePathStack) {
+            foreach ($templatePathStack as $templatePath) {
+                if (file_exists($mixin = $templatePath . '/../mixin.config.php')) {
+                    $resourceContainer = $container
+                        ->get(\VuFindTheme\ResourceContainer::class);
+                    $resources = include $mixin;
+                    foreach ($resources as $resourceType => $resourceFiles) {
+                        switch ($resourceType) {
+                        case 'js':
+                            foreach ($resourceFiles as $file) {
+                                $resourceContainer->addJs(
+                                    dirname($mixin) . "/$resourceType/$file"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
