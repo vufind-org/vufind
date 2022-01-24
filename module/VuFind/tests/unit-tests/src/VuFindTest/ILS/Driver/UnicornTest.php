@@ -40,6 +40,9 @@ use VuFind\ILS\Driver\Unicorn;
  */
 class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Standard setup method.
      *
@@ -48,5 +51,60 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
     public function setUp(): void
     {
         $this->driver = new Unicorn(new \VuFind\Date\Converter());
+    }
+
+    /**
+     * Test MARC holdings parsing.
+     *
+     * @return void
+     */
+    public function testMarcParsing(): void
+    {
+        $marc = $this->getFixture('marc/unicornholdings.mrc');
+        // The 'marc852' element contains an object and is not used in existing code.
+        // Let's just make sure that the element is present, then remove it from the
+        // array to simplify subsequent comparison assertions.
+        $checkAndRemove852 = function ($result) {
+            $this->assertTrue(isset($result['marc852']));
+            unset($result['marc852']);
+            return $result;
+        };
+        $results = array_map(
+            $checkAndRemove852,
+            $this->callMethod($this->driver, 'getMarcHoldings', [$marc])
+        );
+
+        $this->assertEquals(
+            [
+                [
+                    'library_code' => 'library',
+                    'library' => 'library',
+                    'location_code' => 'location',
+                    'location' => 'location',
+                    'notes' => [
+                        'note',
+                    ],
+                    'summary' => [
+                        0 => '863field',
+                        1234000000000 => '863field',
+                    ],
+                ],
+                [
+                    'library_code' => 'library2',
+                    'library' => 'library2',
+                    'location_code' => 'location2',
+                    'location' => 'location2',
+                    'notes' => [
+                        'note2a',
+                        'note2b',
+                    ],
+                    'summary' => [
+                        0 => '863field',
+                        1234000000000 => '863field',
+                    ],
+                ],
+            ],
+            $results
+        );
     }
 }
