@@ -85,8 +85,7 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
                         'note',
                     ],
                     'summary' => [
-                        0 => '863field',
-                        1234000000000 => '863field',
+                        1234000000000 => '863field linked note',
                     ],
                 ],
                 [
@@ -99,8 +98,7 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
                         'note2b',
                     ],
                     'summary' => [
-                        0 => '863field',
-                        1234000000000 => '863field',
+                        1234000000000 => '863field linked note',
                     ],
                 ],
             ],
