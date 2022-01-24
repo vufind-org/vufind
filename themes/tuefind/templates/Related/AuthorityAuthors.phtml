@@ -1,5 +1,5 @@
 <?php $previewLimit = 5; ?>
-<?php $relatedAuthors = $this->authority()->getRelatedAuthors($this->driver,$previewLimit); ?>
+<?php $relatedAuthors = $this->authority()->getRelatedAuthors($this->driver, $previewLimit); ?>
 <?php $relatedAuthorsCount = count($relatedAuthors); ?>
 <?php if ($relatedAuthorsCount > 0): ?>
   <h4><?=$this->transEsc('Related Authors')?></h4>

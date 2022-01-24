@@ -305,7 +305,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $params->set('fl', 'facet_counts');
         $params->set('facet', 'true');
         $params->set('facet.pivot', 'author_and_id_facet');
-        $params->set('facet.limit', $limit+1);
+        $params->set('facet.limit', $limit+1); //Limit +1 (the result always have reference author with same ID)
 
         // Make sure we set offset+limit to 0, because we only want the facet counts
         // and not the rows itself for performance reasons.
