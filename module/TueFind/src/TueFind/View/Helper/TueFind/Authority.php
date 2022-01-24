@@ -298,13 +298,14 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $response;
     }
 
-    public function getRelatedAuthors(AuthorityRecordDriver &$driver)
+    public function getRelatedAuthors(AuthorityRecordDriver &$driver, $limit)
     {
+
         $params = new \VuFindSearch\ParamBag();
         $params->set('fl', 'facet_counts');
         $params->set('facet', 'true');
         $params->set('facet.pivot', 'author_and_id_facet');
-        $params->set('facet.limit', 9999);
+        $params->set('facet.limit', $limit+1);
 
         // Make sure we set offset+limit to 0, because we only want the facet counts
         // and not the rows itself for performance reasons.
@@ -316,25 +317,35 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $relatedAuthors = $titleRecords->getFacets()->getPivotFacets();
         $referenceAuthorKey = $driver->getUniqueID() . ':' . $driver->getTitle();
 
+        $referenceAuthorID = $driver->getUniqueID();
+
         // This is not an array but an ArrayObject, so unset() will cause an error
         // if the index does not exist => we need to check it with isset first.
-        if (isset($relatedAuthors[$referenceAuthorKey]))
+        if (isset($relatedAuthors[$referenceAuthorKey])) {
             unset($relatedAuthors[$referenceAuthorKey]);
+        }
 
         // custom sort, since solr can only sort by count but not alphabetically,
         // since the value starts with an id instead of a name.
-        $relatedAuthors->uasort(function($a, $b) {
-            $diff = $b['count'] - $a['count'];
-            if ($diff != 0)
-                return $diff;
-            else {
-                list($aId, $aTitle) = explode(':', $a['value']);
-                list($aId, $bTitle) = explode(':', $b['value']);
-                return strcmp($aTitle, $bTitle);
+        $finalAuthorArray = [];
+        $sortingArray = [];
+        foreach($relatedAuthors as $oneRelatedAuthor) {
+            $explodeData = explode(':', $oneRelatedAuthor['value']);
+            $oneRelatedAuthor['relatedAuthorTitle'] = '';
+            $oneRelatedAuthor['relatedAuthorID'] = '';
+            if(isset($explodeData[1])) {
+                $oneRelatedAuthor['relatedAuthorTitle'] = $explodeData[0];
+                $oneRelatedAuthor['relatedAuthorID'] = $explodeData[1];
             }
-        });
+            if($oneRelatedAuthor['relatedAuthorID'] != $driver->getUniqueID() && count($finalAuthorArray) < $limit) {
+                $finalAuthorArray[] = $oneRelatedAuthor;
+                $sortingArray[] = $oneRelatedAuthor['relatedAuthorTitle'];
+            }
+        }
 
-        return $relatedAuthors;
+        array_multisort($sortingArray, $finalAuthorArray);
+
+        return $finalAuthorArray;
     }
 
     /**
