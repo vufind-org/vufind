@@ -419,67 +419,6 @@ class ResourceTags extends Gateway
     }
 
     /**
-     * Gets unique users from the table
-     *
-     * @param string $userId     ID of user
-     * @param string $resourceId ID of the resource
-     * @param string $tagId      ID of the tag
-     *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
-     */
-    public function getUniqueUsers($userId = null, $resourceId = null, $tagId = null)
-    {
-        $callback = function ($select) use ($userId, $resourceId, $tagId) {
-            $select->columns(
-                [
-                    'resource_id' => new Expression(
-                        'MAX(?)',
-                        ['resource_tags.resource_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                    'tag_id' => new Expression(
-                        'MAX(?)',
-                        ['resource_tags.tag_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                    'list_id' => new Expression(
-                        'MAX(?)',
-                        ['resource_tags.list_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                    'user_id' => new Expression(
-                        'MAX(?)',
-                        ['resource_tags.user_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                    'id' => new Expression(
-                        'MAX(?)',
-                        ['resource_tags.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    )
-                ]
-            );
-            $select->join(
-                ['u' => 'user'],
-                'resource_tags.user_id = u.id',
-                ["username" => "username"]
-            );
-            if (null !== $userId) {
-                $select->where->equalTo('resource_tags.user_id', $userId);
-            }
-            if (null !== $resourceId) {
-                $select->where->equalTo('resource_tags.resource_id', $resourceId);
-            }
-            if (null !== $tagId) {
-                $select->where->equalTo('resource_tags.tag_id', $tagId);
-            }
-            $select->group(['user_id', 'username']);
-            $select->order(['username']);
-        };
-        return $this->select($callback);
-    }
-
-    /**
      * Given an array for sorting database results, make sure the tag field is
      * sorted in a case-insensitive fashion.
      *

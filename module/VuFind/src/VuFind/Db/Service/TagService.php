@@ -99,9 +99,6 @@ class TagService extends AbstractService
             . "r.title AS title "
             . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
             . "LEFT JOIN rt.resource r ";
-            //. "LEFT JOIN rt.tag t "
-            //. "LEFT JOIN rt.list l "
-            //. "LEFT JOIN rt.user u";
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
             $dqlWhere[] = "rt.user = :user";
@@ -166,6 +163,48 @@ class TagService extends AbstractService
         }
         $dql .= " GROUP BY tag"
             . " ORDER BY tag";
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
+    }
+
+    /**
+     * Gets unique users from the database
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     *
+     * @return array
+     */
+    public function getUniqueUsers(
+        string $userId = null,
+        string $resourceId = null,
+        string $tagId = null
+    ): array {
+        $dql = "SELECT MAX(rt.resource) AS resource_id, MAX(rt.tag) AS tag_id, "
+            . "MAX(rt.list) AS list_id, u.id AS user_id, MAX(rt.id) AS id, "
+            . "u.username AS username "
+            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
+            . "INNER JOIN rt.user u ";
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = "rt.user = :user";
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = "r.id = :resource";
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = "rt.tag = :tag";
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $dql .= " GROUP BY user_id, username"
+            . " ORDER BY username";
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         return $query->getResult();
