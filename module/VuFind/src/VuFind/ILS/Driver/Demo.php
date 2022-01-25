@@ -786,7 +786,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\SorterAwareInterface
         if ($options['itemLimit'] ?? null) {
             // For sensible pagination, we need to sort by location:
             $callback = function ($a, $b) {
-                return $this->sorter->compare($a['location'], $b['location']);
+                return $this->getSorter()->compare($a['location'], $b['location']);
             };
             usort($status, $callback);
             $slice = array_slice(
@@ -1179,7 +1179,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\SorterAwareInterface
                 $transactions,
                 function ($a, $b) use ($sort, $descending) {
                     if ('title' === $sort[0]) {
-                        $cmp = $this->sorter->compare(
+                        $cmp = $this->getSorter()->compare(
                             $a['title'] ?? '',
                             $b['title'] ?? ''
                         );

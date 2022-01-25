@@ -221,7 +221,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
             return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
         };
         $services = array_map($normalize, array_unique($rawServices));
-        $this->sorter->sort($services);
+        $this->getSorter()->sort($services);
 
         // Do we need to deal with a preferred service?
         $preferred = isset($this->config->Item_Status->preferred_service)

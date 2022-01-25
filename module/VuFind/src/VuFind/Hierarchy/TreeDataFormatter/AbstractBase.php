@@ -212,7 +212,7 @@ abstract class AbstractBase implements \VuFind\I18n\SorterAwareInterface
     {
         // Sort arrays based on first element
         $sorter = function ($a, $b) {
-            return $this->sorter->compare($a[0], $b[0]);
+            return $this->getSorter()->compare($a[0], $b[0]);
         };
         usort($array, $sorter);
 

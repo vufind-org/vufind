@@ -52,7 +52,7 @@ class Sorter implements \VuFind\I18n\SorterAwareInterface
      */
     public function compare(string $string1, string $string2): int
     {
-        return $this->sorter->compare($string1, $string2);
+        return $this->getSorter()->compare($string1, $string2);
     }
 
     /**
@@ -64,7 +64,7 @@ class Sorter implements \VuFind\I18n\SorterAwareInterface
      */
     public function sort(array &$array): bool
     {
-        return $this->sorter->sort($array);
+        return $this->getSorter()->sort($array);
     }
 
     /**
@@ -76,6 +76,6 @@ class Sorter implements \VuFind\I18n\SorterAwareInterface
      */
     public function asort(array &$array): bool
     {
-        return $this->sorter->asort($array);
+        return $this->getSorter()->asort($array);
     }
 }

@@ -288,7 +288,7 @@ class CollectionsController extends AbstractBase implements
             $valuesSorted[$resKey]
                 = $this->normalizeForBrowse($resVal['displayText']);
         }
-        $this->sorter->asort($valuesSorted);
+        $this->getSorter()->asort($valuesSorted);
 
         // Now the $valuesSorted is in the right order
         return $valuesSorted;

@@ -2123,7 +2123,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function statusSortFunction($a, $b)
     {
-        $result = $this->sorter->compare($a['location'], $b['location']);
+        $result = $this->getSorter()->compare($a['location'], $b['location']);
         if ($result === 0 && $this->sortItemsByEnumChron) {
             $result = strnatcmp($b['number'] ?? '', $a['number'] ?? '');
         }
@@ -2302,7 +2302,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function pickupLocationSortFunction($a, $b)
     {
-        $result = $this->sorter->compare(
+        $result = $this->getSorter()->compare(
             $a['locationDisplay'],
             $b['locationDisplay']
         );

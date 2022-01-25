@@ -862,7 +862,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $name = ($code == $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
-        $this->sorter->asort($courses);
+        $this->getSorter()->asort($courses);
         return $courses;
     }
 
@@ -888,7 +888,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $user);
             $users[$id] = $name;
         }
-        $this->sorter->asort($users);
+        $this->getSorter()->asort($users);
         return $users;
     }
 
@@ -914,7 +914,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $dept);
             $depts[$id] = $name;
         }
-        $this->sorter->asort($depts);
+        $this->getSorter()->asort($depts);
         return $depts;
     }
 

@@ -653,7 +653,7 @@ class BrowseController extends AbstractBase implements
                 && $this->config->Browse->alphabetical_order
             ) {
                 $callback = function ($a, $b) {
-                    return $this->sorter->compare(
+                    return $this->getSorter()->compare(
                         $a['displayText'],
                         $b['displayText']
                     );

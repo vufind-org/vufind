@@ -763,7 +763,7 @@ class VoyagerRestful extends Voyager implements
                 if (isset($locationOrder[$bLoc])) {
                     return 1;
                 }
-                return $this->sorter->compare(
+                return $this->getSorter()->compare(
                     $a['locationDisplay'],
                     $b['locationDisplay']
                 );
@@ -841,7 +841,7 @@ class VoyagerRestful extends Voyager implements
         if (isset($requestGroupOrder[$b['id']])) {
             return 1;
         }
-        return $this->sorter->compare($a['name'], $b['name']);
+        return $this->getSorter()->compare($a['name'], $b['name']);
     }
 
     /**
