@@ -189,7 +189,7 @@ class TagsController extends AbstractAdmin
             if (false === $confirm) {
                 return $this->confirmTagsDelete($ids, $originUrl, $newUrl);
             }
-            $delete = $tags->deleteByIdArray($ids);
+            $delete = $this->tagService->deleteLinksByResourceTagsIdArray($ids);
         }
 
         if (0 == $delete) {
@@ -401,13 +401,13 @@ class TagsController extends AbstractAdmin
      *
      * @return int Number of IDs deleted
      */
-    protected function deleteResourceTagsByFilter()
+    protected function deleteResourceTagsByFilter(): int
     {
         $tags = $this->getResourceTags();
         $ids = [];
         foreach ($tags as $tag) {
             $ids[] = $tag->id;
         }
-        return $this->getTable('ResourceTags')->deleteByIdArray($ids);
+        return $this->tagService->deleteLinksByResourceTagsIdArray($ids);
     }
 }

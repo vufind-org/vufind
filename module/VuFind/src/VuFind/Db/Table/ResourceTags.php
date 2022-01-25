@@ -509,27 +509,6 @@ class ResourceTags extends Gateway
     }
 
     /**
-     * Delete a group of tags.
-     *
-     * @param array $ids IDs of tags to delete.
-     *
-     * @return int       Count of $ids
-     */
-    public function deleteByIdArray($ids)
-    {
-        // Do nothing if we have no IDs to delete!
-        if (empty($ids)) {
-            return;
-        }
-
-        $callback = function ($select) use ($ids) {
-            $select->where->in('id', $ids);
-        };
-        $this->delete($callback);
-        return count($ids);
-    }
-
-    /**
      * Get a list of duplicate rows (this sometimes happens after merging IDs,
      * for example after a Summon resource ID changes).
      *

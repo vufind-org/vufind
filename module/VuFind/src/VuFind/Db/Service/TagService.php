@@ -66,6 +66,23 @@ class TagService extends AbstractService
     }
 
     /**
+     * Remove links from the resource_tags table based on an array of IDs.
+     *
+     * @param string[] $ids Identifiers from resource_tags to delete.
+     *
+     * @return int          Count of $ids
+     */
+    public function deleteLinksByResourceTagsIdArray(array $ids): int
+    {
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'WHERE rt.id IN (:ids)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('ids'));
+        $query->execute();
+        return count($ids);
+    }
+
+    /**
      * Get count of anonymous tags
      *
      * @return int count
