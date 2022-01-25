@@ -169,7 +169,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
   <?php
       if (count($item['issues']) > 0) {
   ?>
-            <span>Library Owns</span>
+            <span>Library Owns: <?=$item['callnumber']?></span>
   <?php
       } else {
   ?>
