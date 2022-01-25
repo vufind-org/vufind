@@ -76,7 +76,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         let displayLocations = "";
         if (locations.length > 1) {
             $(locations).each(function(i,l) {
-                displayLocations += '<div>'+l+'</div>'
+                displayLocations += '<div>'+l+'</div>';
             });
         } else {
             displayLocations = result.location;
