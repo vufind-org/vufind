@@ -31,7 +31,6 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
-use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -117,22 +116,10 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
         $recordId = $params->fromQuery('recordId');
         $recordSource = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $size = $params->fromQuery('size', 'small');
-        try {
-            $record = $this->recordLoader->load($recordId, $recordSource);
-        } catch (RecordMissingException $exception) {
-            return $this->formatResponse(
-                'Could not load record: ' . $exception->getMessage(),
-                self::STATUS_HTTP_BAD_REQUEST
-            );
-        }
-
         if (!in_array($size, ['small', 'medium', 'large'])) {
-            return $this->formatResponse(
-                'Not valid size: ' . $size,
-                self::STATUS_HTTP_BAD_REQUEST
-            );
+            $size = 'small';
         }
-
+        $record = $this->recordLoader->load($recordId, $recordSource, true);
         $metadata = $this->coverRouter->getMetadata(
             $record,
             $size ?? 'small',

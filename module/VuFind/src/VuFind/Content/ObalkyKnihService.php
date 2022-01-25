@@ -159,7 +159,13 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
         $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
         $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid']);
-        foreach (['isbn', 'oclc', 'ismn', 'nbn' ] as $identifier) {
+        $uuid = null;
+        if (isset($ids['uuid'])) {
+            $uuid = (substr($ids['uuid'], 0, 5) === 'uuid:')
+                ? $ids['uuid']
+                : ('uuid:' . $ids['uuid']);
+        }
+        foreach (['isbn', 'oclc', 'ismn', 'nbn', 'uuid'] as $identifier) {
             if (isset($$identifier)) {
                 $query[$identifier] = $$identifier;
             }
