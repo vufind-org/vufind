@@ -153,6 +153,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $disableRenewals = false;
 
     /**
+     * Which subelements of Problem element show to user when placing hold fails.
+     * Possible values are: 'ProblemType', 'ProblemDetail', 'ProblemElement',
+     * 'ProblemValue'
+     *
+     * @var string[]
+     */
+    protected $holdProblemsDisplay = ['ProblemType'];
+
+    /**
      * Schemes preset for certain elements. See implementation profile:
      * http://www.ncip.info/uploads/7/1/4/6/7146749/z39-83-2-2012_ncip.pdf
      *
@@ -339,6 +348,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 );
         }
         $this->maxNumberOfPages = $this->config['Catalog']['maxNumberOfPages'] ?? 0;
+        if (isset($this->config['Catalog']['holdProblemsDisplay'])) {
+            $this->holdProblemsDisplay
+                = explode(
+                    ',',
+                    $this->config['Catalog']['holdProblemsDisplay']
+                );
+        }
     }
 
     /**
@@ -1814,7 +1830,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $failureReturn = ['success' => false];
             $problemDescription = $this->getProblemDescription(
                 $response,
-                ['ProblemType'],
+                $this->holdProblemsDisplay,
                 false
             );
             if (!empty($problemDescription)) {
