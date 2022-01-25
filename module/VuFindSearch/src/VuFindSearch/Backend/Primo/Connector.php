@@ -612,6 +612,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord(string $recordId, $inst_code = null, $onCampus = false)
     {
+        if ('' !== $recordId) {
+            return self::$emptyQueryResponse;
+        }
         // Query String Parameters
         $qs   = [];
         // There is currently (at 2015-12-17) a problem with Primo fetching
