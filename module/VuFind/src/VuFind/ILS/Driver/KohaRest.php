@@ -1071,7 +1071,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'patron_id' => (int)$patron['id'],
             'pickup_library_id' => $pickUpLocation,
             'notes' => $comment,
-            'expiration_date' => date('Y-m-d', $holdDetails['requiredByTS']),
+            'expiration_date' => $holdDetails['requiredByTS']
+                        ? date('Y-m-d', $holdDetails['requiredByTS'])
+                        : null,
         ];
         if ($level == 'copy') {
             $request['item_id'] = (int)$itemId;

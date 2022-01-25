@@ -60,6 +60,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getRecordVersions' => GetRecordVersions::class,
         'getRequestGroupPickupLocations' => GetRequestGroupPickupLocations::class,
         'getResolverLinks' => GetResolverLinks::class,
+        'getResultCount' => GetResultCount::class,
         'getSaveStatuses' => GetSaveStatuses::class,
         'getSideFacets' => GetSideFacets::class,
         'getUserFines' => GetUserFines::class,
@@ -100,6 +101,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetRequestGroupPickupLocations::class =>
             AbstractIlsAndUserActionFactory::class,
         GetResolverLinks::class => GetResolverLinksFactory::class,
+        GetResultCount::class => GetResultCountFactory::class,
         GetSaveStatuses::class => GetSaveStatusesFactory::class,
         GetSideFacets::class => GetSideFacetsFactory::class,
         GetUserFines::class => GetUserFinesFactory::class,

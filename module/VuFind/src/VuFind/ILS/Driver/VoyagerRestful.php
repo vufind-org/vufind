@@ -1399,8 +1399,6 @@ EOT;
                         // If we can't parse out the time, just ignore it:
                         $response['new_time'] = false;
                     }
-                    $result['new_date'] = $newDate;
-                    $result['new_time'] = $newTime;
                     $result['success'] = $renewed;
 
                     $finalResult['details'][$result['item_id']] = $result;

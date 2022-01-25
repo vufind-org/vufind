@@ -810,6 +810,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $nr_copies = $titleOrderInfo->copiesOrdered;
             $library   = $this->translatePolicyID('LIBR', $library_id);
 
+            $statuses = [];
             if (!empty($titleOrderInfo->orderDateReceived)) {
                 $statuses[] = "Received $titleOrderInfo->orderDateReceived";
             }

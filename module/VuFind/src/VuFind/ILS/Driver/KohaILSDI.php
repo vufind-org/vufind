@@ -956,12 +956,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $branch = $rowItem['HLDBRNCH'] ?? $rowItem['HOMEBRANCH'] ?? '';
             }
 
-            //Retrieving the full branch name
-            if ($loc != "Unknown") {
-                $sqlBranch = "select branchname as BNAME
+            $sqlBranch = "select branchname as BNAME
                               from branches
                               where branchcode = :branch";
-                $branchSqlStmt = $this->getDb()->prepare($sqlBranch);
+            $branchSqlStmt = $this->getDb()->prepare($sqlBranch);
+            //Retrieving the full branch name
+            if ($loc != "Unknown") {
                 $branchSqlStmt->execute([':branch' => $branch]);
                 $row = $branchSqlStmt->fetch();
                 if ($row) {
