@@ -1,6 +1,41 @@
 <?php
+/**
+ * FOLIO REST API driver
+ *
+ * PHP version 7
+ *
+ * Copyright (C) Villanova University 2018.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  ILS_Drivers
+ * @author   Chris Hallberg <challber@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
+ */
 namespace TAMU\ILS\Driver;
 
+/**
+ * TAMU Customized FOLIO REST API driver
+ *
+ * @category VuFind
+ * @package  ILS_Drivers
+ * @author   Chris Hallberg <challber@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
+ */
 class Folio extends \VuFind\ILS\Driver\Folio
 {
     /**
@@ -62,11 +97,17 @@ class Folio extends \VuFind\ILS\Driver\Folio
             $holdingCallNumber = $holding->callNumber ?? '';
             $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
 
-            $holdingItems = iterator_to_array($this->getPagedResults('items', '/item-storage/items', $query));
+            $holdingItems = iterator_to_array(
+                $this->getPagedResults(
+                    'items',
+                    '/item-storage/items',
+                    $query
+                )
+            );
 
             if ($holding->effectiveLocationId) {
                 $fallbackLocationId = $holding->effectiveLocationId;
-            } else if ($holding->permanentLocationId) {
+            } elseif ($holding->permanentLocationId) {
                 $fallbackLocationId = $holding->permanentLocationId;
             } else {
                 $fallbackLocationId = null;
@@ -74,7 +115,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
 
             //TAMU Customization boundwith and zero item workarounds
             if (count($holdingItems) == 0 && $fallbackLocationId) {
-                $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk','udoc','txdoc'];
+                $boundWithLocations = ['stk','blcc,stk','BookStacks',
+                                        'psel,stk','udoc','txdoc'];
                 $holdingLocationData = $this->getLocationData($fallbackLocationId);
 
                 $callNumberData = $this->chooseCallNumber(
@@ -86,7 +128,6 @@ class Folio extends \VuFind\ILS\Driver\Folio
 
                 //TAMU Customization boundwith
                 if (in_array($holdingLocationData['code'], $boundWithLocations)) {
-
                     $items[] = $callNumberData + [
                         'id' => $bibId,
                         'item_id' => 'bound-with-item',
@@ -97,7 +138,9 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'barcode' => 'bound-with-item',
                         'status' => null,
                         'availability' => true,
-                        'is_holdable' => $this->isHoldable($holdingLocationData['name']),
+                        'is_holdable' => $this->isHoldable(
+                            $holdingLocationData['name']
+                        ),
                         'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
                         'item_notes' => null,
                         'issues' => $holdingsStatements,
@@ -111,8 +154,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'item_chronology' => '',
                         'addLink' => true
                     ];
-                //TAMU Customization zero item
                 } else {
+                    //TAMU Customization zero item
                     $items[] = $callNumberData + [
                         'id' => $bibId,
                         'item_id' => 'itemless-holding',
@@ -123,7 +166,9 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'barcode' => 'itemless-holding',
                         'status' => null,
                         'availability' => true,
-                        'is_holdable' => $this->isHoldable($holdingLocationData['name']),
+                        'is_holdable' => $this->isHoldable(
+                            $holdingLocationData['name']
+                        ),
                         'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
                         'item_notes' => null,
                         'issues' => $holdingsStatements,
@@ -183,6 +228,13 @@ class Folio extends \VuFind\ILS\Driver\Folio
         return $items;
     }
 
+    /**
+     * Get Courses
+     *
+     * Obtain a list of courses for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = ID, value = name.
+     */
     public function getCourses()
     {
         //TAMU Customization

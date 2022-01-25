@@ -27,8 +27,6 @@
  */
 namespace TAMU;
 
-use Laminas\Mvc\MvcEvent;
-
 /**
  * Code module for the core of the VuFind application
  *

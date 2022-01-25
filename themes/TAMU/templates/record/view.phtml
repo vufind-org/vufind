@@ -46,9 +46,9 @@
 $idFields = $this->driver->getMarcRecord()->getFields("999");
 $fieldCount = count($idFields);
 if ($fieldCount > 0) {
-  $instanceIdSubField = $idFields[$fieldCount-1]->getSubField("i");
+  $instanceIdSubField = $idFields[$fieldCount - 1]->getSubField("i");
   if ($instanceIdSubField) {
-    echo '<input type="hidden" value="'.$this->escapeHtmlAttr($instanceIdSubField->getData()).'" class="hiddenInstanceId" id="hiddenInstanceId" />';
+    echo '<input type="hidden" value="' . $this->escapeHtmlAttr($instanceIdSubField->getData()) . '" class="hiddenInstanceId" id="hiddenInstanceId" />';
   }
 }
 ?>

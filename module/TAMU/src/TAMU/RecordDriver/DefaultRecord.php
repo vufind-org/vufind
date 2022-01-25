@@ -38,7 +38,7 @@ namespace TAMU\RecordDriver;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class DefaultRecord extends \VuFind\RecordDriver
+class DefaultRecord extends \VuFind\RecordDriver\DefaultRecord
 {
     /**
      * Get an array of all the language notes associated with the record.

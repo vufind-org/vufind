@@ -28,7 +28,20 @@
  */
 namespace TAMU\View\Helper\Root;
 
-class RecordDataFormatterFactory extends \VuFind\View\Helper\Root
+use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
+
+/**
+ * TAMU Customized Factory for record driver data formatting view helper
+ *
+ * @category VuFind
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
+ * Wiki
+ */
+class RecordDataFormatterFactory extends
+        \VuFind\View\Helper\Root\RecordDataFormatterFactory
 {
     /**
      * Get default specifications for displaying data in core metadata.
@@ -37,7 +50,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root
      */
     public function getDefaultCoreSpecs()
     {
-        $spec = new RecordDataFormatter\SpecBuilder();
+        $spec = new SpecBuilder();
         $spec->setTemplateLine(
             'Published in',
             'getContainerTitle',
@@ -122,7 +135,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root
      */
     public function getDefaultCollectionInfoSpecs()
     {
-        $spec = new RecordDataFormatter\SpecBuilder();
+        $spec = new SpecBuilder();
         $spec->setMultiLine(
             'Authors',
             'getDeduplicatedAuthors',
@@ -149,7 +162,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root
             null,
             ['itemPrefix' => '<span property="notesLanguage">',
              'itemSuffix' => '</span>']
-        );		
+        );
         $spec->setTemplateLine(
             'Published',
             'getPublicationDetails',
@@ -190,5 +203,4 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root
         );
         return $spec->getArray();
     }
-
 }
