@@ -1,11 +1,11 @@
 <?php $previewLimit = 5; ?>
 <?php $relatedAuthors = $this->authority()->getRelatedAuthors($this->driver, $previewLimit); ?>
-<?php $relatedAuthorsCount = count($relatedAuthors); ?>
+<?php $relatedAuthorsCount = $relatedAuthors[1]; ?>
 <?php if ($relatedAuthorsCount > 0): ?>
   <h4><?=$this->transEsc('Related Authors')?></h4>
   <ul class="list-group">
     <?php $i=0; ?>
-    <?php foreach ($relatedAuthors as $authorDetails): ?>
+    <?php foreach ($relatedAuthors[0] as $authorDetails): ?>
       <li class="list-group-item" property="relatedTo" typeof="Person">
         <span property="name"><?=$authorDetails['relatedAuthorTitle'];?></span>
         <?php if ($authorDetails['relatedAuthorID'] != '' && ($authorityDriver = $this->authority()->recordExists($authorDetails['relatedAuthorID']))): ?>
@@ -21,7 +21,7 @@
   </ul>
   <?php if ($relatedAuthorsCount > $previewLimit): ?>
     <p>
-      <a href="<?=$this->url('author-search')?>?author_id=<?=urlencode($this->driver->getUniqueId())?>"><?=$this->transEsc('see all')?> (<?=$relatedAuthorsCount?>)</a>
+      <a href="<?=$this->url('author-search')?>?author_id=<?=urlencode($this->driver->getUniqueId())?>"><?=$this->transEsc('see all')." (".$relatedAuthorsCount.")"?></a>
     </p>
   <?php endif; ?>
 <?php endif; ?>

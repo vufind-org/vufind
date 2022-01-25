@@ -305,7 +305,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $params->set('fl', 'facet_counts');
         $params->set('facet', 'true');
         $params->set('facet.pivot', 'author_and_id_facet');
-        $params->set('facet.limit', $limit+1); //Limit +1 (the result always have reference author with same ID)
+        $params->set('facet.limit', 9999);
 
         // Make sure we set offset+limit to 0, because we only want the facet counts
         // and not the rows itself for performance reasons.
@@ -328,7 +328,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         // custom sort, since solr can only sort by count but not alphabetically,
         // since the value starts with an id instead of a name.
         $finalAuthorArray = [];
-        $sortingArray = [];
         foreach($relatedAuthors as $oneRelatedAuthor) {
             $explodeData = explode(':', $oneRelatedAuthor['value']);
             $oneRelatedAuthor['relatedAuthorTitle'] = '';
@@ -339,13 +338,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             }
             if($oneRelatedAuthor['relatedAuthorID'] != $driver->getUniqueID() && count($finalAuthorArray) < $limit) {
                 $finalAuthorArray[] = $oneRelatedAuthor;
-                $sortingArray[] = $oneRelatedAuthor['relatedAuthorTitle'];
             }
         }
 
-        array_multisort($sortingArray, $finalAuthorArray);
-
-        return $finalAuthorArray;
+        return array($finalAuthorArray,count($relatedAuthors));
     }
 
     /**
