@@ -28,6 +28,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\ResourceTags;
 
@@ -95,6 +96,87 @@ class TagService extends AbstractService
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats['total'];
+    }
+    /**
+     * Given an array for sorting database results, make sure the tag field is
+     * sorted in a case-insensitive fashion and that no illegal fields are
+     * specified.
+     *
+     * @param array $order Order settings
+     *
+     * @return array
+     */
+    protected function formatTagOrder(array $order)
+    {
+        // This array defines legal sort fields:
+        $legalSorts = ['tag', 'title', 'username'];
+        $newOrder = [];
+        foreach ($order as $next) {
+            if (in_array($next, $legalSorts)) {
+                $newOrder[] = $next . ' ASC';
+            }
+        }
+        return $newOrder;
+    }
+
+    /**
+     * Get Resource Tags
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     * @param string $order      The order in which to return the data
+     * @param string $page       The page number to select
+     * @param string $limit      The number of items to fetch
+     *
+     * @return Paginator
+     */
+    public function getResourceTags(
+        $userId = null,
+        $resourceId = null,
+        $tagId = null,
+        $order = null,
+        $page = null,
+        $limit = 20
+    ): Paginator {
+        $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
+        $dql = "SELECT rt.id, $tag AS tag, u.username AS username, r.title AS title,"
+            . ' t.id AS tag_id, r.id AS resource_id, u.id AS user_id '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'LEFT JOIN rt.resource r '
+            . 'LEFT JOIN rt.tag t '
+            . 'LEFT JOIN rt.user u';
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = "rt.user = :user";
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = "r.id = :resource";
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = "rt.tag = :tag";
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $sanitizedOrder = $this->formatTagOrder(
+            (array)($order ?? ["username", "tag", "title"])
+        );
+        $dql .= ' ORDER BY ' . implode(', ', $sanitizedOrder);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        if (null !== $page) {
+            $query->setMaxResults($limit);
+            $query->setFirstResult($limit * ($page - 1));
+        }
+
+        $paginator = new Paginator($query);
+        $paginator->setUseOutputWalkers(false);
+        return $paginator;
     }
 
     /**
