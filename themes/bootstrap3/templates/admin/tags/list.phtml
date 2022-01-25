@@ -76,11 +76,11 @@
               <label for="<?=$this->prefix?>checkbox_<?=$tag['id']?>">
                 <input id="<?=$this->prefix?>checkbox_<?=$tag['id']?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>" class="checkbox_ui"/>
                 <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>" />
-                <?=$tag->tag?> (<?= $tag->tag_id?>)
+                <?=$this->escapeHtml($tag['tag'])?> (<?=$this->escapeHtml($tag['tag_id'])?>)
               </label>
             </td>
-            <td><?=$tag->username ?> (<?= $tag->user_id?>)</td>
-            <td><?=$tag->title?> (<?= $tag->resource_id?>)</td>
+            <td><?=$this->escapeHtml($tag['username'])?> (<?=$this->escapeHtml($tag['user_id'])?>)</td>
+            <td><?=$this->escapeHtml($tag['title'])?> (<?=$this->escapeHtml($tag['resource_id'])?>)</td>
           </tr>
         <?php endforeach;?>
       </table>
