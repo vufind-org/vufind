@@ -612,7 +612,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord(string $recordId, $inst_code = null, $onCampus = false)
     {
-        if ('' !== $recordId) {
+        if ('' === $recordId) {
             return self::$emptyQueryResponse;
         }
         // Query String Parameters
