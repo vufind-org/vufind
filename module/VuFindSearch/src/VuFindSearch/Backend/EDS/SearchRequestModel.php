@@ -378,11 +378,10 @@ class SearchRequestModel
      *
      * @return bool
      */
-    protected static function endsWith($valueToCheck, $valueToCheckFor)
-    {
-        if (!isset($valueToCheck)) {
-            return false;
-        }
+    protected static function endsWith(
+        string $valueToCheck,
+        string $valueToCheckFor
+    ): bool {
         return substr($valueToCheck, -strlen($valueToCheckFor)) === $valueToCheckFor;
     }
 

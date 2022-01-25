@@ -63,7 +63,7 @@ abstract class Base
     /**
      * The organization id use for authentication
      *
-     * @var string
+     * @var ?string
      */
     protected $orgId;
 

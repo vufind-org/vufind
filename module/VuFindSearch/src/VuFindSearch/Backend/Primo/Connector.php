@@ -603,44 +603,43 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Retrieves a document specified by the ID.
      *
-     * @param string $recordId  The document to retrieve from the Primo API
-     * @param string $inst_code Institution code (optional)
-     * @param bool   $onCampus  Whether the user is on campus
+     * @param string  $recordId  The document to retrieve from the Primo API
+     * @param ?string $inst_code Institution code (optional)
+     * @param bool    $onCampus  Whether the user is on campus
      *
      * @throws \Exception
      * @return string    The requested resource
      */
-    public function getRecord($recordId, $inst_code = null, $onCampus = false)
+    public function getRecord(string $recordId, $inst_code = null, $onCampus = false)
     {
-        // Query String Parameters
-        if (isset($recordId)) {
-            $qs   = [];
-            // There is currently (at 2015-12-17) a problem with Primo fetching
-            // records that have colons in the id (e.g.
-            // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
-            // According to Ex Libris support we must use contains search without
-            // quotes for the time being.
-            // Escaping the - character causes problems getting records like
-            // wj10.1111/j.1475-679X.2011.00421.x
-            $qs[] = 'query=rid,contains,'
-                . urlencode(addcslashes($recordId, '":()'));
-            $qs[] = "institution=$inst_code";
-            $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
-            $qs[] = "indx=1";
-            $qs[] = "bulkSize=1";
-            $qs[] = "loc=adaptor,primo_central_multiple_fe";
-            // pcAvailability=true is needed for records, which
-            // are NOT in the PrimoCentral Holdingsfile.
-            // It won't hurt to have this parameter always set to true.
-            // But it'd hurt to have it not set in case you want to get
-            // a record, which is not in the Holdingsfile.
-            $qs[] = "pcAvailability=true";
-
-            // Send Request
-            $result = $this->call(implode('&', $qs));
-        } else {
+        if ('' === $recordId) {
             return self::$emptyQueryResponse;
         }
+        // Query String Parameters
+        $qs   = [];
+        // There is currently (at 2015-12-17) a problem with Primo fetching
+        // records that have colons in the id (e.g.
+        // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
+        // According to Ex Libris support we must use contains search without
+        // quotes for the time being.
+        // Escaping the - character causes problems getting records like
+        // wj10.1111/j.1475-679X.2011.00421.x
+        $qs[] = 'query=rid,contains,'
+            . urlencode(addcslashes($recordId, '":()'));
+        $qs[] = "institution=$inst_code";
+        $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
+        $qs[] = "indx=1";
+        $qs[] = "bulkSize=1";
+        $qs[] = "loc=adaptor,primo_central_multiple_fe";
+        // pcAvailability=true is needed for records, which
+        // are NOT in the PrimoCentral Holdingsfile.
+        // It won't hurt to have this parameter always set to true.
+        // But it'd hurt to have it not set in case you want to get
+        // a record, which is not in the Holdingsfile.
+        $qs[] = "pcAvailability=true";
+
+        // Send Request
+        $result = $this->call(implode('&', $qs));
 
         return $result;
     }
