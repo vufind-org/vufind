@@ -130,7 +130,13 @@ class TagsController extends AbstractAdmin
         $view->uniqueTags      = $this->getUniqueTags();
         $view->uniqueUsers     = $this->getUniqueUsers();
         $view->uniqueResources = $this->getUniqueResources();
-        $view->results = $this->getResourceTags();
+        $view->results = new \Laminas\Paginator\Paginator(
+            new \DoctrineORMModule\Paginator\Adapter\DoctrinePaginator(
+                $this->getResourceTags()
+            )
+        );
+        $view->results->setCurrentPageNumber($this->params['page'] ?? "1");
+        $view->results->setItemCountPerPage(20);
         $view->params = $this->params;
         return $view;
     }
@@ -143,7 +149,6 @@ class TagsController extends AbstractAdmin
     public function deleteAction()
     {
         $this->params = $this->params()->fromPost();
-        $tags = $this->getTable('ResourceTags');
 
         $origin = $this->params()
             ->fromPost('origin', $this->params()->fromQuery('origin'));
@@ -171,7 +176,7 @@ class TagsController extends AbstractAdmin
             || null !== $this->getRequest()->getQuery('deleteFilter')
         ) {
             if (false === $confirm) {
-                return $this->confirmTagsDeleteByFilter($tags, $originUrl, $newUrl);
+                return $this->confirmTagsDeleteByFilter($originUrl, $newUrl);
             }
             $delete = $this->deleteResourceTagsByFilter();
         } else {
@@ -288,19 +293,18 @@ class TagsController extends AbstractAdmin
     /**
      * Confirm Tag Delete by Filter
      *
-     * @param object $tagModel  A Tag object
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
      *
      * @return mixed
      */
-    protected function confirmTagsDeleteByFilter($tagModel, $originUrl, $newUrl)
+    protected function confirmTagsDeleteByFilter($originUrl, $newUrl)
     {
-        $count = $tagModel->getResourceTags(
+        $count = $this->tagService->getResourceTags(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
             $this->convertFilter($this->getParam('tag_id'))
-        )->getTotalItemCount();
+        )->count();
 
         $data = [
             'data' => [
@@ -385,8 +389,7 @@ class TagsController extends AbstractAdmin
     protected function getResourceTags()
     {
         $currentPage = $this->params['page'] ?? "1";
-        $resourceTags = $this->getTable('ResourceTags');
-        $tags = $resourceTags->getResourceTags(
+        $tags = $this->tagService->getResourceTags(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
             $this->convertFilter($this->getParam('tag_id')),
