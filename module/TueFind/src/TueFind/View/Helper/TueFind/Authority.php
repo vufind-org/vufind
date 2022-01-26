@@ -302,10 +302,15 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     {
 
         $params = new \VuFindSearch\ParamBag();
-        $params->set('fl', 'facet_counts');
+        $params->set('fl', 'id,author_and_id_facet');
+        $params->set('sort', 'score desc,publishDateSort desc');
         $params->set('facet', 'true');
-        $params->set('facet.pivot', 'author_and_id_facet');
+        $params->set('facet.field', 'author_and_id_facet');
         $params->set('facet.limit', 9999);
+        $params->set('hl', "true");
+        $params->set('facet.sort', 'count');
+        $params->set('spellcheck', 'false');
+        $params->set('facet.mincount', 1);
 
         // Make sure we set offset+limit to 0, because we only want the facet counts
         // and not the rows itself for performance reasons.
@@ -314,7 +319,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                      new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
                                                      0, 0, $params);
 
-        $relatedAuthors = $titleRecords->getFacets()->getPivotFacets();
+        $relatedAuthors = $titleRecords->getFacets()->getFieldFacets()['author_and_id_facet']->toArray();
+
         $referenceAuthorKey = $driver->getUniqueID() . ':' . $driver->getTitle();
 
         $referenceAuthorID = $driver->getUniqueID();
@@ -328,19 +334,18 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         // custom sort, since solr can only sort by count but not alphabetically,
         // since the value starts with an id instead of a name.
         $finalAuthorArray = [];
-        foreach($relatedAuthors as $oneRelatedAuthor) {
-            $explodeData = explode(':', $oneRelatedAuthor['value']);
-            $oneRelatedAuthor['relatedAuthorTitle'] = '';
-            $oneRelatedAuthor['relatedAuthorID'] = '';
+        foreach($relatedAuthors as $oneRelatedAuthor=>$counts) {
+            $explodeData = explode(':', $oneRelatedAuthor);
+            $relatedAuthor['relatedAuthorTitle'] = '';
+            $relatedAuthor['relatedAuthorID'] = '';
             if(isset($explodeData[1])) {
-                $oneRelatedAuthor['relatedAuthorTitle'] = $explodeData[0];
-                $oneRelatedAuthor['relatedAuthorID'] = $explodeData[1];
+                $relatedAuthor['relatedAuthorTitle'] = $explodeData[0];
+                $relatedAuthor['relatedAuthorID'] = $explodeData[1];
             }
-            if($oneRelatedAuthor['relatedAuthorID'] != $driver->getUniqueID() && count($finalAuthorArray) < $limit) {
-                $finalAuthorArray[] = $oneRelatedAuthor;
+            if($relatedAuthor['relatedAuthorID'] != $driver->getUniqueID() && count($finalAuthorArray) < $limit) {
+                $finalAuthorArray[] = $relatedAuthor;
             }
         }
-
         return array($finalAuthorArray,count($relatedAuthors));
     }
 
