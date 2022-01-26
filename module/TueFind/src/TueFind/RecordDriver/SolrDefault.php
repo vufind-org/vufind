@@ -717,7 +717,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getFulltextTypes() : array
     {
-        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : '';
+        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : [];
     }
 
 
