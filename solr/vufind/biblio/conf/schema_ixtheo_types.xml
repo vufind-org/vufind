@@ -5,52 +5,6 @@
             <!-- no error if no shared fieldType exists -->
         </xi:fallback>
     </xi:include>
-    <fieldType name="fulltext_syn_de" class="solr.TextField" positionIncrementGap="100">
-      <analyzer type="index">
-        <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="0" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1" splitOnNumerics="0"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
-        <charFilter class="solr.MappingCharFilterFactory" mapping="charfiltermap.txt"/>
-        <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-        <filter class="solr.SnowballPorterFilterFactory" protected="protwords.txt" language="German2"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-      </analyzer>
-      <analyzer type="query">
-        <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="0" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1" splitOnNumerics="0"/>
-        <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/synonyms_de.txt" ignoreCase="true" expand="true"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
-        <charFilter class="solr.MappingCharFilterFactory" mapping="charfiltermap.txt"/>
-        <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-        <filter class="solr.SnowballPorterFilterFactory" protected="protwords.txt" language="German2"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-      </analyzer>
-    </fieldType>
-    <fieldType name="fulltext_syn_en" class="solr.TextField" positionIncrementGap="100">
-      <analyzer type="index">
-        <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="0" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1" splitOnNumerics="0"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
-        <charFilter class="solr.MappingCharFilterFactory" mapping="charfiltermap.txt"/>
-        <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-        <filter class="solr.SnowballPorterFilterFactory" protected="protwords.txt" language="German2"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-      </analyzer>
-      <analyzer type="query">
-        <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="0" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1" splitOnNumerics="0"/>
-        <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/synonyms_en.txt" ignoreCase="true" expand="true"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
-        <charFilter class="solr.MappingCharFilterFactory" mapping="charfiltermap.txt"/>
-        <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-        <filter class="solr.SnowballPorterFilterFactory" protected="protwords.txt" language="German2"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-      </analyzer>
-    </fieldType>
     <fieldType name="fulltext_syn_fr" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>

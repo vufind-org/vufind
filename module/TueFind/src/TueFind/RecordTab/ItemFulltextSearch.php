@@ -1,5 +1,5 @@
 <?php 
-namespace IxTheo\RecordTab;
+namespace TueFind\RecordTab;
 
 class ItemFulltextSearch extends \VuFind\RecordTab\AbstractContent
 {

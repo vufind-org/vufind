@@ -328,15 +328,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             $this->fields[$key] : [];
     }
 
-    /**
-     * Check whether there are fulltexts associated with this record
-     * @return bool
-     */
-    public function hasFulltext()
-    {
-        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
-    }
-
+    
     public function isAvailableForPDA()
     {
         return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
