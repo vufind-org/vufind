@@ -24,14 +24,17 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
+            'VuFind\Search\BackendManager' => 'KrimDok\Search\BackendManagerFactory',
             'KrimDok\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'KrimDok\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'KrimDok\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory'
         ],
         'aliases' => [
             'VuFind\RecordDriverPluginManager' => 'KrimDok\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'KrimDok\RecordDriver\PluginManager',
             'VuFind\SearchParamsPluginManager' => 'KrimDok\Search\Params\PluginManager',
             'VuFind\Search\Params\PluginManager' => 'KrimDok\Search\Params\PluginManager',
+            'VuFind\Search\Results\PluginManager' => 'KrimDok\Search\Results\PluginManager'
         ],
     ],
     'vufind' => [
@@ -45,7 +48,7 @@ $config = [
     ],
 ];
 
-$recordRoutes = [];
+$recordRoutes = [ 'search2record' => 'Search2Record' ];
 $dynamicRoutes = [];
 $staticRoutes = [
     'Help/FAQ',

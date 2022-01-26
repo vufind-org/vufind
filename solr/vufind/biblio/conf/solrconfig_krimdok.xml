@@ -107,6 +107,14 @@
   -->
   <jmx />
 
+
+  <updateRequestProcessorChain name="conditional_insert_field">
+    <processor class="de.uni_tuebingen.ub.tuefind.conditionalInsertField.ConditionalInsertFieldProcessorFactory" />
+    <processor class="solr.LogUpdateProcessorFactory" />
+    <processor class="solr.RunUpdateProcessorFactory" />
+  </updateRequestProcessorChain>
+
+
   <!-- the default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
 
@@ -357,6 +365,15 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
+
+  <requestHandler name="/update" class="solr.UpdateRequestHandler">
+     <lst name="defaults">
+        <str name="update.chain">conditional_insert_field</str>
+     </lst>
+  </requestHandler>
+
+
+
   <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters -->
      <lst name="defaults">

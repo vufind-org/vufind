@@ -693,6 +693,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     }
 
 
+    /**
+     * Check whether there are fulltexts associated with this record
+     * @return bool
+     */
+    public function hasFulltext()
+    {
+        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
+    }
+
+
     public function setHasFulltextMatch()
     {
         $this->hasFulltextMatch = true;
@@ -707,7 +717,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getFulltextTypes() : array
     {
-        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : '';
+        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : [];
     }
 
 
