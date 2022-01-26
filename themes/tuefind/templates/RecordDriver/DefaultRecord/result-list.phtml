@@ -177,7 +177,8 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <div class="result-formats">
+      <?php if (strtolower($this->tuefind()->getControllerName()) != 'search2' ): ?>
+        <div class="result-formats">
         <?php $label=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
         <?php /* Remove separator needed for long title view */ ?>
         <?=str_replace(' | ', '', $label)?>
@@ -186,7 +187,8 @@
             <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
           </span>
         <?php endif; ?>
-      </div>
+        </div>
+      <?php endif; ?>
 
       <div class="result-previews">
         <?=$this->record($this->driver)->getPreviews()?>

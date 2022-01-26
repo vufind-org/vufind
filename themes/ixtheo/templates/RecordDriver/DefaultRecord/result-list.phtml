@@ -197,6 +197,19 @@
         }
       ?>
 
+      <?php if (strtolower($this->tuefind()->getControllerName()) != 'search2'): ?>
+        <div class="result-formats">
+        <?php $label=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
+        <?php /* Remove separator needed for long title view */ ?>
+        <?=str_replace(' | ', '', $label)?>
+        <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+          <span class="status ajax-availability hidden">
+            <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+          </span>
+        <?php endif; ?>
+        </div>
+      <?php endif; ?>
+
       <div class="result-previews">
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
