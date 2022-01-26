@@ -298,13 +298,19 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $response;
     }
 
-    public function getRelatedAuthors(AuthorityRecordDriver &$driver)
+    public function getRelatedAuthors(AuthorityRecordDriver &$driver, $limit)
     {
+
         $params = new \VuFindSearch\ParamBag();
-        $params->set('fl', 'facet_counts');
+        $params->set('fl', 'id,author_and_id_facet');
+        $params->set('sort', 'score desc,publishDateSort desc');
         $params->set('facet', 'true');
-        $params->set('facet.pivot', 'author_and_id_facet');
+        $params->set('facet.field', 'author_and_id_facet');
         $params->set('facet.limit', 9999);
+        $params->set('hl', "true");
+        $params->set('facet.sort', 'count');
+        $params->set('spellcheck', 'false');
+        $params->set('facet.mincount', 1);
 
         // Make sure we set offset+limit to 0, because we only want the facet counts
         // and not the rows itself for performance reasons.
@@ -313,28 +319,34 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                      new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
                                                      0, 0, $params);
 
-        $relatedAuthors = $titleRecords->getFacets()->getPivotFacets();
+        $relatedAuthors = $titleRecords->getFacets()->getFieldFacets()['author_and_id_facet']->toArray();
+
         $referenceAuthorKey = $driver->getUniqueID() . ':' . $driver->getTitle();
+
+        $referenceAuthorID = $driver->getUniqueID();
 
         // This is not an array but an ArrayObject, so unset() will cause an error
         // if the index does not exist => we need to check it with isset first.
-        if (isset($relatedAuthors[$referenceAuthorKey]))
+        if (isset($relatedAuthors[$referenceAuthorKey])) {
             unset($relatedAuthors[$referenceAuthorKey]);
+        }
 
         // custom sort, since solr can only sort by count but not alphabetically,
         // since the value starts with an id instead of a name.
-        $relatedAuthors->uasort(function($a, $b) {
-            $diff = $b['count'] - $a['count'];
-            if ($diff != 0)
-                return $diff;
-            else {
-                list($aId, $aTitle) = explode(':', $a['value']);
-                list($aId, $bTitle) = explode(':', $b['value']);
-                return strcmp($aTitle, $bTitle);
+        $finalAuthorArray = [];
+        foreach($relatedAuthors as $oneRelatedAuthor=>$counts) {
+            $explodeData = explode(':', $oneRelatedAuthor);
+            $relatedAuthor['relatedAuthorTitle'] = '';
+            $relatedAuthor['relatedAuthorID'] = '';
+            if(isset($explodeData[1])) {
+                $relatedAuthor['relatedAuthorTitle'] = $explodeData[0];
+                $relatedAuthor['relatedAuthorID'] = $explodeData[1];
             }
-        });
-
-        return $relatedAuthors;
+            if($relatedAuthor['relatedAuthorID'] != $driver->getUniqueID() && count($finalAuthorArray) < $limit) {
+                $finalAuthorArray[] = $relatedAuthor;
+            }
+        }
+        return array($finalAuthorArray,count($relatedAuthors));
     }
 
     /**
