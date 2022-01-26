@@ -341,19 +341,24 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         if (isset($this->config['Catalog']['otherAcceptedHttpStatusCodes'])) {
-            $this->otherAcceptedHttpStatusCodes
+            $otherAcceptedHttpStatusCodes
                 = explode(
                     ',',
                     $this->config['Catalog']['otherAcceptedHttpStatusCodes']
                 );
+            $this->otherAcceptedHttpStatusCodes = array_map(
+                'trim',
+                $otherAcceptedHttpStatusCodes
+            );
         }
         $this->maxNumberOfPages = $this->config['Catalog']['maxNumberOfPages'] ?? 0;
         if (isset($this->config['Catalog']['holdProblemsDisplay'])) {
-            $this->holdProblemsDisplay
+            $holdProblemsDisplay
                 = explode(
                     ',',
                     $this->config['Catalog']['holdProblemsDisplay']
                 );
+            $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
     }
 
