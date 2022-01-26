@@ -13,6 +13,43 @@ class SolrDefaultBackendFactory extends \TueFind\Search\Factory\SolrDefaultBacke
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+
+    protected function createConnector()
+    {
+        $config = $this->config->get($this->mainConfig);
+        $this->setTranslator($this->serviceLocator->get(\Laminas\Mvc\I18n\Translator::class));
+        $current_lang = $this->getTranslatorLocale();
+
+        $handlers = [
+            'select' => [
+                'fallback' => true,
+                'defaults' => ['fl' => '*,score', 'lang' => $current_lang,
+                               'defType' => 'multiLanguageQueryParser', 'df' => 'allfields'
+                              ],
+                'appends'  => ['fq' => []],
+            ],
+            'term' => [
+                'functions' => ['terms'],
+            ],
+        ];
+
+        foreach ($this->getHiddenFilters() as $filter) {
+            array_push($handlers['select']['appends']['fq'], $filter);
+        }
+
+        $connector = new Connector($this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey);
+        $connector->setTimeout(isset($config->Index->timeout) ? $config->Index->timeout : 30);
+
+        if ($this->logger) {
+            $connector->setLogger($this->logger);
+        }
+        if ($this->serviceLocator->has('VuFind\Http')) {
+            $connector->setProxy($this->serviceLocator->get('VuFind\Http'));
+        }
+        return $connector;
+    }
+
+
      /**
      * Create the SOLR backend.
      *
