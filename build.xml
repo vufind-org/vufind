@@ -4,6 +4,20 @@
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
+  <!--
+    Use builddir/local as the local directory if defaultconfigs=true. This allows the
+    tests to be run without any custom configuration possibly interfering in the
+    normal local directory.
+  -->
+  <if>
+    <equals arg1="${defaultconfigs}" arg2="true" />
+    <then>
+      <property name="localdir" value="${builddir}/local" override="true" />
+    </then>
+    <else>
+      <property name="localdir" value="${srcdir}/local" override="false" />
+    </else>
+  </if>
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
   <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
@@ -30,11 +44,12 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="8.9.0" />
+  <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
+  <property name="solr_version" value="8.11.1" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="8.0.1" />
+  <property name="version" value="8.0.3" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -218,17 +233,17 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -316,7 +331,7 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
-    <property name="solr_pid_file" value="${srcdir}/local/solr-8983.pid" />
+    <property name="solr_pid_file" value="${localdir}/solr-8983.pid" />
     <!-- fail if the system is already running -->
     <if>
       <available file="${solr_pid_file}" />
@@ -328,12 +343,12 @@
     <if>
       <istrue value="${extra_startup_command}" />
       <then>
-        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${extra_startup_command}" />
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${extra_startup_command}" />
       </then>
     </if>
 
     <!-- set up appropriate read/write permissions for Apache -->
-    <exec command="chmod -R a+w ${srcdir}/local/cache" />
+    <exec command="chmod -R a+w ${localdir}/cache" />
 
     <!-- Generate basic configuration -->
     <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
@@ -351,7 +366,7 @@
     <if>
       <istrue value="${apachectl}" />
       <then>
-        <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
         <exec command="${apachectl} restart" passthru="true" />
       </then>
     </if>
@@ -388,7 +403,7 @@
     </if>
 
     <!-- Update config.ini to activate DB connection, exception logging and test mode -->
-    <copy file="${srcdir}/config/vufind/config.ini" tofile="${srcdir}/local/config/vufind/config.ini">
+    <copy file="${srcdir}/config/vufind/config.ini" tofile="${localdir}/config/vufind/config.ini">
       <filterchain>
         <replaceregexp>
           <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
@@ -404,7 +419,7 @@
       <not><istrue value="${disable_csp}" /></not>
       <then>
         <!-- Update contentsecuritypolicy.ini to enforce the CSP. -->
-        <copy file="${srcdir}/config/vufind/contentsecuritypolicy.ini" tofile="${srcdir}/local/config/vufind/contentsecuritypolicy.ini">
+        <copy file="${srcdir}/config/vufind/contentsecuritypolicy.ini" tofile="${localdir}/config/vufind/contentsecuritypolicy.ini">
           <filterchain>
             <replaceregexp>
               <regexp pattern="(enabled\[.+\]) = .*" replace="\1 = true" />
@@ -415,7 +430,7 @@
     </if>
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
+    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
@@ -460,7 +475,7 @@
 
   <!-- Build alphabrowse index -->
   <target name="build_alphabrowse" description="build the alphabrowse index">
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/index-alphabetic-browse.sh" passthru="true" />
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${srcdir}/index-alphabetic-browse.sh" passthru="true" />
   </target>
 
   <!-- Uninstall and Deactivate VuFind -->
@@ -489,13 +504,13 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" passthru="true" />
+    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh stop" passthru="true" />
 
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_shutdown_cleanup}" />
       <then>
-        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${extra_shutdown_cleanup}" />
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${extra_shutdown_cleanup}" />
       </then>
     </if>
 
@@ -536,9 +551,9 @@
     </if>
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <if>
-      <available file="${srcdir}/local" type="dir" />
+      <available file="${localdir}" type="dir" />
       <then>
-        <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
+        <delete dir="${localdir}" includeemptydirs="true" failonerror="true" />
       </then>
     </if>
     <exec command="git reset --hard" passthru="true" />
@@ -594,7 +609,7 @@
 
   <target name="importauthrec" description="import each of the MARC authority test records">
     <!-- perform the import -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc-auth.sh ${filename} marc_auth_ils.properties" passthru="true" checkreturn="true" />
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${srcdir}/import-marc-auth.sh ${filename} marc_auth_ils.properties" passthru="true" checkreturn="true" />
   </target>
 
   <target name="importrec" description="import each of the MARC bibliographic test records">
@@ -602,13 +617,13 @@
 
     <!-- create custom import configurations to load the MARC filename into the building facet to help
           test cases to limit searches to within specific collections of test records.
-          Note: ${srcdir}/local/import/import.properties is created in install.php. -->
-    <copy file="${srcdir}/import/marc_local.properties" tofile="${srcdir}/local/import/marc-${BASENAME}.properties" overwrite="true" />
-    <append destFile="${srcdir}/local/import/marc-${BASENAME}.properties" text="building=&quot;${BASENAME}&quot;${line.separator}" />
+          Note: ${localdir}/import/import.properties is created in install.php. -->
+    <copy file="${srcdir}/import/marc_local.properties" tofile="${localdir}/import/marc-${BASENAME}.properties" overwrite="true" />
+    <append destFile="${localdir}/import/marc-${BASENAME}.properties" text="building=&quot;${BASENAME}&quot;${line.separator}" />
 
-    <copy file="${srcdir}/local/import/import.properties" tofile="${srcdir}/local/import/import-${BASENAME}.properties" />
+    <copy file="${localdir}/import/import.properties" tofile="${localdir}/import/import-${BASENAME}.properties" />
     <reflexive>
-      <fileset dir="${srcdir}/local/import">
+      <fileset dir="${localdir}/import">
         <include pattern="import-${BASENAME}.properties" />
       </fileset>
       <filterchain>
@@ -623,16 +638,16 @@
       <available file="${filename}.properties" />
       <then>
         <echo message="Found custom import configs for ${filename}." />
-        <append file="${filename}.properties" destFile="${srcdir}/local/import/marc-${BASENAME}.properties" />
+        <append file="${filename}.properties" destFile="${localdir}/import/marc-${BASENAME}.properties" />
       </then>
     </if>
 
     <!-- perform the import -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc.sh -p ${srcdir}/local/import/import-${BASENAME}.properties ${filename}" passthru="true" checkreturn="true" />
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${srcdir}/import-marc.sh -p ${localdir}/import/import-${BASENAME}.properties ${filename}" passthru="true" checkreturn="true" />
 
     <!-- clean up temp files -->
-    <delete file="${srcdir}/local/import/marc-${BASENAME}.properties" />
-    <delete file="${srcdir}/local/import/import-${BASENAME}.properties" />
+    <delete file="${localdir}/import/marc-${BASENAME}.properties" />
+    <delete file="${localdir}/import/import-${BASENAME}.properties" />
   </target>
 
   <target name="patch-dependencies" description="apply fixes to dependencies">

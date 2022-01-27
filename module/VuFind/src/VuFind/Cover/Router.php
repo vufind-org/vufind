@@ -179,16 +179,13 @@ class Router implements \Laminas\Log\LoggerAwareInterface
 
         if (isset($metadata)) {
             return $metadata;
-        } elseif (isset($dynamicUrl)) {
-            if ($testLoadImage) {
-                $this->coverLoader->loadImage($settings);
-                if ($this->coverLoader->hasLoadedUnavailable()) {
-                    return false;
-                }
-            }
-            return ['url' => $dynamicUrl];
         }
-
-        return false;
+        if ($testLoadImage) {
+            $this->coverLoader->loadImage($settings);
+            if ($this->coverLoader->hasLoadedUnavailable()) {
+                return false;
+            }
+        }
+        return ['url' => $dynamicUrl];
     }
 }

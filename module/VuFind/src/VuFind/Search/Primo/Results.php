@@ -103,6 +103,7 @@ class Results extends \VuFind\Search\Base\Results
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         if (is_array($this->responseFacets)) {
             foreach ($this->responseFacets as $field => $current) {
+                $transTextDomain = '';
                 if ($translate = in_array($field, $translatedFacets)) {
                     $transTextDomain = $this->getOptions()
                         ->getTextDomainForTranslatedFacet($field);

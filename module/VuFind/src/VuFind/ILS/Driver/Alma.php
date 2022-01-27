@@ -32,6 +32,7 @@ use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Marc\MarcReader;
 
 /**
  * Alma ILS Driver
@@ -463,7 +464,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return $cachedBlocks;
         }
 
-        $xml = $this->makeRequest('/users/' . $patronId);
+        $xml = $this->makeRequest('/users/' . rawurlencode($patronId));
         if ($xml == null || empty($xml)) {
             return false;
         }
@@ -842,7 +843,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyFines($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['id'] . '/fees'
+            '/users/' . rawurlencode($patron['id']) . '/fees'
         );
         $fineList = [];
         foreach ($xml as $fee) {
@@ -880,7 +881,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             = $this->config['Holds']['allowCancelingAvailableRequests'] ?? true;
         while ($offset < $totalCount) {
             $xml = $this->makeRequest(
-                '/users/' . $patron['id'] . '/requests',
+                '/users/' . rawurlencode($patron['id']) . '/requests',
                 ['request_type' => 'HOLD', 'offset' => $offset, 'limit' => 100]
             );
             $offset += 100;
@@ -1063,7 +1064,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyStorageRetrievalRequests($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['id'] . '/requests',
+            '/users/' . rawurlencode($patron['id']) . '/requests',
             ['request_type' => 'MOVE']
         );
         $holdList = [];
@@ -1103,7 +1104,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyILLRequests($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['id'] . '/requests',
+            '/users/' . rawurlencode($patron['id']) . '/requests',
             ['request_type' => 'MOVE']
         );
         $holdList = [];
@@ -1176,7 +1177,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Get user loans from Alma API
         $apiResult = $this->makeRequest(
-            '/users/' . $patronId . '/loans',
+            '/users/' . rawurlencode($patronId) . '/loans',
             $params
         );
 
@@ -1275,7 +1276,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             try {
                 // POST the renewals to Alma
                 $apiResult = $this->makeRequest(
-                    '/users/' . $patronId . '/loans/' . $loanId . '/?op=renew',
+                    '/users/' . rawurlencode($patronId) . '/loans/'
+                    . rawurlencode($loanId) . '/?op=renew',
                     [],
                     [],
                     'POST'
@@ -1581,12 +1583,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /almaws/v1/courses/{course_id}/reading-lists
-        $xml = $this->makeRequest('/courses/' . $courseID . '/reading-lists');
+        $listsBase = '/courses/' . rawurlencode($courseID) . '/reading-lists';
+        $xml = $this->makeRequest($listsBase);
         $reserves = [];
         foreach ($xml as $list) {
             $listId = $list->id;
             $listXML = $this->makeRequest(
-                "/courses/${$courseID}/reading-lists/${$listId}/citations"
+                $listsBase . '/' . rawurlencode($listId) . '/citations'
             );
             foreach ($listXML as $citation) {
                 $reserves[$citation->id] = $citation->metadata;
@@ -1729,10 +1732,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         ];
         if ($bibs = $this->makeRequest('/bibs', $params)) {
             foreach ($bibs as $bib) {
-                $marc = new \File_MARCXML(
-                    $bib->record->asXML(),
-                    \File_MARCXML::SOURCE_STRING
-                );
+                $marc = new MarcReader($bib->record->asXML());
                 $status = [];
                 $tmpl = [
                     'id' => (string)$bib->mms_id,
@@ -1740,76 +1740,71 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'callnumber' => '',
                     'reserve' => 'N',
                 ];
-                if ($record = $marc->next()) {
-                    // Physical
-                    $physicalItems = $record->getFields('AVA');
-                    foreach ($physicalItems as $field) {
-                        $avail = $this->getMarcSubfield($field, 'e');
-                        $item = $tmpl;
-                        $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = $this->getMarcSubfield($field, 'c');
-                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
-                        $status[] = $item;
+                // Physical
+                $physicalItems = $marc->getFields('AVA');
+                foreach ($physicalItems as $field) {
+                    $avail = $marc->getSubfield($field, 'e');
+                    $item = $tmpl;
+                    $item['availability'] = strtolower($avail) === 'available';
+                    $item['location'] = $marc->getSubfield($field, 'c');
+                    $item['callnumber'] = $marc->getSubfield($field, 'd');
+                    $status[] = $item;
+                }
+                // Electronic
+                $electronicItems = $marc->getFields('AVE');
+                foreach ($electronicItems as $field) {
+                    $avail = $marc->getSubfield($field, 'e');
+                    $item = $tmpl;
+                    $item['availability'] = strtolower($avail) === 'available';
+                    // Use the following subfields for location:
+                    // m (Collection name)
+                    // i (Available for library)
+                    // d (Available for library)
+                    // b (Available for library)
+                    $location = [$marc->getSubfield($field, 'm') ?: 'Get full text'];
+                    foreach (['i', 'd', 'b'] as $code) {
+                        if ($content = $marc->getSubfield($field, $code)) {
+                            $location[] = $content;
+                        }
                     }
-                    // Electronic
-                    $electronicItems = $record->getFields('AVE');
-                    foreach ($electronicItems as $field) {
-                        $avail = $this->getMarcSubfield($field, 'e');
-                        $item = $tmpl;
-                        $item['availability'] = strtolower($avail) === 'available';
-                        // Use the following subfields for location:
-                        // m (Collection name)
-                        // i (Available for library)
-                        // d (Available for library)
-                        // b (Available for library)
-                        $location = [
-                            $this->getMarcSubfield($field, 'm') ?: 'Get full text'
-                        ];
-                        foreach (['i', 'd', 'b'] as $code) {
-                            if ($content = $this->getMarcSubfield($field, $code)) {
-                                $location[] = $content;
-                            }
-                        }
-                        $item['location'] = implode(' - ', $location);
-                        $item['callnumber'] = $this->getMarcSubfield($field, 't');
-                        $url = $this->getMarcSubfield($field, 'u');
-                        if (preg_match('/^https?:\/\//', $url)) {
-                            $item['locationhref'] = $url;
-                        }
-                        $item['status'] = $this->getMarcSubfield($field, 's')
-                            ?: null;
-                        if ($note = $this->getMarcSubfield($field, 'n')) {
-                            $item['item_notes'] = [$note];
-                        }
-                        $status[] = $item;
+                    $item['location'] = implode(' - ', $location);
+                    $item['callnumber'] = $marc->getSubfield($field, 't');
+                    $url = $marc->getSubfield($field, 'u');
+                    if (preg_match('/^https?:\/\//', $url)) {
+                        $item['locationhref'] = $url;
                     }
-                    // Digital
-                    $deliveryUrl
-                        = $this->config['Holdings']['digitalDeliveryUrl'] ?? '';
-                    $digitalItems = $record->getFields('AVD');
-                    if ($digitalItems && !$deliveryUrl) {
-                        $this->logWarning(
-                            'Digital items exist for ' . (string)$bib->mms_id
-                            . ', but digitalDeliveryUrl not set -- unable to'
-                            . ' generate links'
+                    $item['status'] = $marc->getSubfield($field, 's') ?: null;
+                    if ($note = $marc->getSubfield($field, 'n')) {
+                        $item['item_notes'] = [$note];
+                    }
+                    $status[] = $item;
+                }
+                // Digital
+                $deliveryUrl
+                    = $this->config['Holdings']['digitalDeliveryUrl'] ?? '';
+                $digitalItems = $marc->getFields('AVD');
+                if ($digitalItems && !$deliveryUrl) {
+                    $this->logWarning(
+                        'Digital items exist for ' . (string)$bib->mms_id
+                        . ', but digitalDeliveryUrl not set -- unable to'
+                        . ' generate links'
+                    );
+                }
+                foreach ($digitalItems as $field) {
+                    $item = $tmpl;
+                    unset($item['callnumber']);
+                    $item['availability'] = true;
+                    $item['location'] = $marc->getSubfield($field, 'e');
+                    // Using subfield 'd' ('Repository Name') as callnumber
+                    $item['callnumber'] = $marc->getSubfield($field, 'd');
+                    if ($deliveryUrl) {
+                        $item['locationhref'] = str_replace(
+                            '%%id%%',
+                            $marc->getSubfield($field, 'b'),
+                            $deliveryUrl
                         );
                     }
-                    foreach ($digitalItems as $field) {
-                        $item = $tmpl;
-                        unset($item['callnumber']);
-                        $item['availability'] = true;
-                        $item['location'] = $this->getMarcSubfield($field, 'e');
-                        // Using subfield 'd' ('Repository Name') as callnumber
-                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
-                        if ($deliveryUrl) {
-                            $item['locationhref'] = str_replace(
-                                '%%id%%',
-                                $this->getMarcSubfield($field, 'b'),
-                                $deliveryUrl
-                            );
-                        }
-                        $status[] = $item;
-                    }
+                    $status[] = $item;
                 }
                 $results[(string)$bib->mms_id] = $status;
             }
@@ -1874,20 +1869,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $value = 'status_' . strtolower((string)$element);
         $desc = (string)($element->attributes()->desc ?? $element);
         return new \VuFind\I18n\TranslatableString($value, $desc);
-    }
-
-    /**
-     * Get a MARC subfield from a MARC field
-     *
-     * @param \File_MARC_Subfield $field    MARC Field
-     * @param string              $subfield Subfield code
-     *
-     * @return string
-     */
-    protected function getMarcSubfield($field, $subfield)
-    {
-        $subfield = $field->getSubfield($subfield);
-        return false === $subfield ? '' : $subfield->getData();
     }
 
     /**

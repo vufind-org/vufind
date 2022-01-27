@@ -78,19 +78,19 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($container);
         $manager->setInvokableClass(
             'DublinCore\Renderer\Entry',
-            'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
+            \VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry::class
         );
         $manager->setInvokableClass(
             'DublinCore\Entry',
-            'VuFind\Feed\Writer\Extension\DublinCore\Entry'
+            \VuFind\Feed\Writer\Extension\DublinCore\Entry::class
         );
         $manager->setInvokableClass(
             'OpenSearch\Renderer\Feed',
-            'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
+            \VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed::class
         );
         $manager->setInvokableClass(
             'OpenSearch\Feed',
-            'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+            \VuFind\Feed\Writer\Extension\OpenSearch\Feed::class
         );
         FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');

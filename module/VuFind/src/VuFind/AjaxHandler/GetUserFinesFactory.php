@@ -68,7 +68,7 @@ class GetUserFinesFactory extends AbstractIlsAndUserActionFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $helper = $container->get('ViewHelperManager')->get('safeMoneyFormat');
-        return parent::__invoke($container, $requestedName, [$helper]);
+        $formatter = $container->get(\VuFind\Service\CurrencyFormatter::class);
+        return parent::__invoke($container, $requestedName, [$formatter]);
     }
 }

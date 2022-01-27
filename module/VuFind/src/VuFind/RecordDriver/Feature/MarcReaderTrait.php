@@ -43,20 +43,17 @@ namespace VuFind\RecordDriver\Feature;
  */
 trait MarcReaderTrait
 {
+    /**
+     * MARC reader class to use.
+     *
+     * @var string
+     */
     protected $marcReaderClass = \VuFind\Marc\MarcReader::class;
 
     /**
      * MARC reader. Access only via getMarcReader() as this is initialized lazily.
      */
     protected $lazyMarcReader = null;
-
-    /**
-     * MARC record for legacy support. Access only via getMarcRecord() as this is
-     * initialized lazily.
-     *
-     * @var \File_MARC_Record
-     */
-    protected $lazyMarcRecord = null;
 
     /**
      * Retrieve the raw MARC data for this record; note that format may vary
@@ -94,33 +91,6 @@ trait MarcReaderTrait
         }
 
         return $this->lazyMarcReader;
-    }
-
-    /**
-     * Get access to the raw File_MARC object.
-     *
-     * @return     \File_MARC_Record
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        if (null === $this->lazyMarcRecord) {
-            $marc = $this->getRawMarcData();
-
-            // check if we are dealing with MARCXML
-            if (substr($marc, 0, 1) == '<') {
-                $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
-            } else {
-                $marc = new \File_MARC($marc, \File_MARC::SOURCE_STRING);
-            }
-
-            $this->lazyMarcRecord = $marc->next();
-            if (!$this->lazyMarcRecord) {
-                throw new \File_MARC_Exception('Cannot Process MARC Record');
-            }
-        }
-
-        return $this->lazyMarcRecord;
     }
 
     /**

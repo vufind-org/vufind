@@ -1,11 +1,12 @@
-<?=$this->doctype('HTML5')?>
+<?=$this->doctype()?>
+
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
-    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
+
     <?php
       // Format the page title using the translation system:
       $siteConfig = $this->config()->get('config')->Site;
@@ -133,13 +134,13 @@ JS;
     </div>
     <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal">
             <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
-          <div class="modal-body"><?=$this->icon('spinner') . $this->transEsc('Loading') ?>...</div>
+          <div class="modal-body"></div>
         </div>
       </div>
     </div>

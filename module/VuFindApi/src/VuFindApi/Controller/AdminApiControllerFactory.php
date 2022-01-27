@@ -1,11 +1,10 @@
 <?php
 /**
- * CSRF Validator factory.
+ * Factory for AdminApiController.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Validator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-namespace VuFind\Validator;
+namespace VuFindApi\Controller;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
@@ -36,18 +34,15 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * CSRF Validator factory.
+ * Factory for AdminApiController.
  *
  * @category VuFind
- * @package  Validator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class CsrfFactory implements FactoryInterface
+class AdminApiControllerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -69,16 +64,11 @@ class CsrfFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         return new $requestedName(
-            [
-                'session' => new \Laminas\Session\Container('csrf', $sessionManager),
-                'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt'
-            ]
+            $container,
+            $container->get(\VuFind\Cache\Manager::class)
         );
     }
 }

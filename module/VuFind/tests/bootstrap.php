@@ -36,14 +36,6 @@ defined('LOCAL_CACHE_DIR')
 
 chdir(APPLICATION_PATH);
 
-// Ensure vendor/ is on include_path; some PEAR components may not load correctly
-// otherwise (i.e. File_MARC may cause a "Cannot redeclare class" error by pulling
-// from the shared PEAR directory instead of the local copy):
-$pathParts = [];
-$pathParts[] = APPLICATION_PATH . '/vendor';
-$pathParts[] = get_include_path();
-set_include_path(implode(PATH_SEPARATOR, $pathParts));
-
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
@@ -60,4 +52,11 @@ if (file_exists('vendor/autoload.php')) {
         }
     }
     $loader->register();
+}
+
+// Make sure local config dir exists:
+if ($localDir = \VuFind\Config\Locator::getLocalConfigPath('', null, true)) {
+    if (!file_exists($localDir)) {
+        mkdir($localDir, 0777, true);
+    }
 }

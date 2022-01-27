@@ -1,4 +1,6 @@
-<?php // This template is a JSON Swagger specification ?>
+<?php // This template is a JSON Swagger specification base.
+      // Fragments from other controllers will get merged with this one.
+?>
 <?php $basePath = rtrim($this->url('home'), '/') . '/api/v1'; ?>
 {
     "swagger": "2.0",
@@ -10,5 +12,36 @@
     "produces": [
         "application/json"
     ],
-    <?=$this->specs ?>
+    "definitions": {
+        "Success": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status code",
+                    "type": "string",
+                    "enum": ["OK"]
+                },
+                "statusMessage": {
+                    "description": "A descriptive error message",
+                    "type": "string"
+                }
+            },
+            "required": ["status"]
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status code",
+                    "type": "string",
+                    "enum": ["ERROR"]
+                },
+                "statusMessage": {
+                    "description": "A descriptive error message",
+                    "type": "string"
+                }
+            },
+            "required": ["status", "statusMessage"]
+        }
+    }
 }

@@ -30,13 +30,13 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC;
 use Laminas\Validator\EmailAddress as EmailAddressValidator;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Marc\MarcReader;
 use Yajra\Pdo\Oci8;
 
 /**
@@ -873,14 +873,14 @@ EOT;
     /**
      * Get specified fields from an MFHD MARC Record
      *
-     * @param object       $record     File_MARC object
+     * @param MarcReader   $record     Marc reader
      * @param array|string $fieldSpecs Array or colon-separated list of
      * field/subfield specifications (3 chars for field code and then subfields,
      * e.g. 866az)
      *
-     * @return string|string[] Results as a string if single, array if multiple
+     * @return string|array Results as a string if single, array if multiple
      */
-    protected function getMFHDData($record, $fieldSpecs)
+    protected function getMFHDData(MarcReader $record, $fieldSpecs)
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
@@ -891,16 +891,17 @@ EOT;
             $subfieldCodes = substr($fieldSpec, 3);
             if ($fields = $record->getFields($fieldCode)) {
                 foreach ($fields as $field) {
-                    if ($subfields = $field->getSubfields()) {
+                    if ($subfields = $field['subfields'] ?? []) {
                         $line = '';
-                        foreach ($subfields as $code => $subfield) {
-                            if (false === strpos($subfieldCodes, (string)$code)) {
+                        foreach ($subfields as $subfield) {
+                            if (false === strpos($subfieldCodes, $subfield['code'])
+                            ) {
                                 continue;
                             }
                             if ($line) {
                                 $line .= ' ';
                             }
-                            $line .= $subfield->getData();
+                            $line .= $subfield['data'];
                         }
                         if ($line) {
                             if (!$results) {
@@ -931,49 +932,44 @@ EOT;
         $marcDetails = [];
 
         try {
-            $marc = new File_MARC(
-                str_replace(["\n", "\r"], '', $recordSegment),
-                File_MARC::SOURCE_STRING
+            $record = new MarcReader(str_replace(["\n", "\r"], '', $recordSegment));
+            // Get Notes
+            $data = $this->getMFHDData(
+                $record,
+                $this->config['Holdings']['notes'] ?? '852z'
             );
-            if ($record = $marc->next()) {
-                // Get Notes
+            if ($data) {
+                $marcDetails['notes'] = $data;
+            }
+
+            // Get Summary (may be multiple lines)
+            $data = $this->getMFHDData(
+                $record,
+                $this->config['Holdings']['summary'] ?? '866a'
+            );
+            if ($data) {
+                $marcDetails['summary'] = $data;
+            }
+
+            // Get Supplements
+            if (isset($this->config['Holdings']['supplements'])) {
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['notes'] ?? '852z'
+                    $this->config['Holdings']['supplements']
                 );
                 if ($data) {
-                    $marcDetails['notes'] = $data;
+                    $marcDetails['supplements'] = $data;
                 }
+            }
 
-                // Get Summary (may be multiple lines)
+            // Get Indexes
+            if (isset($this->config['Holdings']['indexes'])) {
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['summary'] ?? '866a'
+                    $this->config['Holdings']['indexes']
                 );
                 if ($data) {
-                    $marcDetails['summary'] = $data;
-                }
-
-                // Get Supplements
-                if (isset($this->config['Holdings']['supplements'])) {
-                    $data = $this->getMFHDData(
-                        $record,
-                        $this->config['Holdings']['supplements']
-                    );
-                    if ($data) {
-                        $marcDetails['supplements'] = $data;
-                    }
-                }
-
-                // Get Indexes
-                if (isset($this->config['Holdings']['indexes'])) {
-                    $data = $this->getMFHDData(
-                        $record,
-                        $this->config['Holdings']['indexes']
-                    );
-                    if ($data) {
-                        $marcDetails['indexes'] = $data;
-                    }
+                    $marcDetails['indexes'] = $data;
                 }
             }
         } catch (\Exception $e) {

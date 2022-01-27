@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020-2021.
+ * Copyright (C) The National Library of Finland 2020-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,7 +28,7 @@
 namespace VuFindTest\Marc;
 
 /**
- * SolrMarc Record Driver Test Class
+ * MarcReader Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -182,7 +182,10 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
 EOT;
 
         $expected = <<<EOT
-<collection xmlns="http://www.loc.gov/MARC21/slim">
+<collection xmlns="http://www.loc.gov/MARC21/slim"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+>
   <record>
     <leader>00047       00037       </leader>
     <datafield tag="245" ind1=" " ind2=" ">
@@ -316,5 +319,56 @@ EOT;
         $this->assertEquals(['Foo'], $reader->getFieldsSubfields('12', ['a']));
         $reader2 = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
         $this->assertEquals([], $reader2->getFieldsSubfields('12', ['a']));
+    }
+
+    /**
+     * Test field filtering
+     *
+     * @return void
+     */
+    public function testFieldFiltering()
+    {
+        $marc = $this->getFixture('marc/marcreader.xml');
+        $marcFiltered = $this->getFixture('marc/marcreader_filtered.xml');
+
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $filtered = $reader->getFilteredRecord(
+            [
+                [
+                    'tag' => '008',
+                ],
+                [
+                    'tag' => '2..',
+                    'subfields' => '6',
+                ],
+                [
+                    'tag' => '650',
+                    'subfields' => '[7g]',
+                ],
+                [
+                    'tag' => '655',
+                    'subfields' => '[ab]',
+                ],
+                [
+                    'tag' => '880',
+                ]
+            ]
+        );
+
+        $this->assertXmlStringEqualsXmlString(
+            $marcFiltered,
+            $filtered->toFormat('MARCXML')
+        );
+    }
+
+    /**
+     * Test invalid data array handling
+     *
+     * @return void
+     */
+    public function testInvalidDataArray()
+    {
+        $this->expectExceptionMessage("Invalid data array format provided");
+        new \VuFind\Marc\MarcReader([]);
     }
 }

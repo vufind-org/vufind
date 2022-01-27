@@ -30,7 +30,6 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use SerialsSolutions\Summon\Laminas as Connector;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
@@ -47,7 +46,7 @@ use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SummonBackendFactory implements FactoryInterface
+class SummonBackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -55,13 +54,6 @@ class SummonBackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * VuFind configuration
@@ -90,7 +82,7 @@ class SummonBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->setup($sm);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         $this->config = $configReader->get('config');
@@ -129,14 +121,14 @@ class SummonBackendFactory implements FactoryInterface
         $id = $this->config->Summon->apiId ?? null;
         $key = $this->config->Summon->apiKey ?? null;
 
-        // Build HTTP client:
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient();
-        $timeout = $this->summonConfig->General->timeout ?? 30;
-        $client->setOptions(['timeout' => $timeout]);
-
+        // Create connector:
         $options = ['authedUser' => $this->isAuthed()];
-        $connector = new Connector($id, $key, $options, $client);
+        $connector = new Connector(
+            $id,
+            $key,
+            $options,
+            $this->createHttpClient($this->summonConfig->General->timeout ?? 30)
+        );
         $connector->setLogger($this->logger);
         return $connector;
     }

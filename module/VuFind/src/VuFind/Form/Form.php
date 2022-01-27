@@ -152,7 +152,7 @@ class Form extends \Laminas\Form\Form implements
         $this->formElementConfig
             = $this->parseConfig($formId, $config, $params);
 
-        $this->buildForm($this->formElementConfig);
+        $this->buildForm();
     }
 
     /**
@@ -283,6 +283,9 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Return form email message subject.
      *
+     * Replaces any placeholders for form field values or labels with the submitted
+     * values.
+     *
      * @param array $postParams Posted form data
      *
      * @return string
@@ -297,16 +300,37 @@ class Form extends \Laminas\Form\Form implements
             $subject = $this->defaultFormConfig['email_subject'];
         }
 
-        $translated = [];
-        foreach ($postParams as $key => $val) {
-            $translatedVals = array_map([$this, 'translate'], (array)$val);
-            $translated["%%{$key}%%"] = implode(', ', $translatedVals);
+        $mappings = [];
+        foreach ($this->mapRequestParamsToFieldValues($postParams) as $field) {
+            // Use translated value as default for backward compatibility:
+            $mappings["%%{$field['name']}%%"]
+                = $mappings["%%translatedValue:{$field['name']}%%"]
+                    = implode(
+                        ', ',
+                        array_map(
+                            [$this, 'translate'],
+                            (array)($field['value'] ?? [])
+                        )
+                    );
+            $mappings["%%value:{$field['name']}%%"]
+                = implode(', ', (array)($field['value'] ?? []));
+            $mappings["%%label:{$field['name']}%%"]
+                = implode(', ', (array)($field['valueLabel'] ?? []));
+            $mappings["%%translatedLabel:{$field['name']}%%"] = implode(
+                ', ',
+                array_map(
+                    [$this, 'translate'],
+                    (array)($field['valueLabel'] ?? [])
+                )
+            );
         }
 
-        return str_replace(
-            array_keys($translated),
-            array_values($translated),
-            $subject
+        return trim(
+            str_replace(
+                array_keys($mappings),
+                array_values($mappings),
+                $subject
+            )
         );
     }
 
@@ -352,8 +376,25 @@ class Form extends \Laminas\Form\Form implements
      * @param array $requestParams Request parameters
      *
      * @return array Array with template parameters and template name.
+     *
+     * @deprecated Use mapRequestParamsToFieldValues
      */
     public function formatEmailMessage(array $requestParams = [])
+    {
+        return [
+            $this->mapRequestParamsToFieldValues($requestParams),
+            'Email/form.phtml'
+        ];
+    }
+
+    /**
+     * Map request parameters to field values
+     *
+     * @param array $requestParams Request parameters
+     *
+     * @return array
+     */
+    public function mapRequestParamsToFieldValues(array $requestParams): array
     {
         $params = [];
         foreach ($this->getFormElementConfig() as $el) {
@@ -362,25 +403,50 @@ class Form extends \Laminas\Form\Form implements
                 continue;
             }
             $value = $requestParams[$el['name']] ?? null;
+            $valueLabel = null;
 
             if (in_array($type, ['radio', 'select'])) {
-                $value = $this->translate($value);
-            } elseif ($type === 'checkbox' && !empty($value)) {
-                $translated = [];
-                foreach ($value as $val) {
-                    $translated[] = $this->translate($val);
+                if (isset($el['options'])) {
+                    $option = $el['options'][$value] ?? null;
+                } elseif (isset($el['optionGroups'])) {
+                    $option = null;
+                    foreach ($el['optionGroups'] as $group) {
+                        if (isset($group['options'][$value])) {
+                            $option = $group['options'][$value];
+                            break;
+                        }
+                    }
                 }
-                $value = implode(', ', $translated);
+                if (null === $option) {
+                    $value = null;
+                    $valueLabel = null;
+                } else {
+                    $value = $option['value'];
+                    $valueLabel = $option['label'];
+                }
+            } elseif ($type === 'checkbox' && !empty($value)) {
+                $labels = [];
+                $values = [];
+                foreach ($value as $val) {
+                    $option = $el['options'][$val] ?? null;
+                    if (null === $option) {
+                        continue;
+                    }
+                    $labels[] = $option['label'];
+                    $values[] = $option['value'];
+                }
+                $value = $values;
+                $valueLabel = $labels;
             } elseif ($type === 'date' && !empty($value)) {
                 $format = $el['format']
                     ?? $this->vufindConfig['Site']['displayDateFormat'] ?? 'Y-m-d';
-                $value = date($format, strtotime($value));
+                $date = strtotime($value);
+                $value = date($format, $date);
             }
-            $label = isset($el['label']) ? $this->translate($el['label']) : null;
-            $params[] = $el + compact('value', 'label');
+            $params[] = $el + compact('value', 'valueLabel');
         }
 
-        return [$params, 'Email/form.phtml'];
+        return $params;
     }
 
     /**
@@ -548,27 +614,34 @@ class Form extends \Laminas\Form\Form implements
         $elements = [];
         $configuredElements = $this->getFormElements($config);
 
-        // Add sender contact name & email fields
+        // Defaults for sender contact name & email fields:
         $senderName = [
-            'name' => 'name', 'type' => 'text', 'label' => 'feedback_name',
-            'group' => '__sender__'
+            'name' => 'name',
+            'type' => 'text',
+            'label' => $this->translate('feedback_name'),
+            'group' => '__sender__',
+            'settings' => [
+                'size' => 50
+            ]
         ];
         $senderEmail = [
-            'name' => 'email', 'type' => 'email', 'label' => 'feedback_email',
-            'group' => '__sender__'
+            'name' => 'email',
+            'type' => 'email',
+            'label' => $this->translate('feedback_email'),
+            'group' => '__sender__',
+            'settings' => [
+                'size' => 254
+            ]
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
-            $senderEmail['required'] = $senderEmail['aria-required']
-                = $senderName['required'] = $senderName['aria-required'] = true;
+            $senderEmail['required'] = $senderName['required'] = true;
         }
         if ($formConfig['senderNameRequired'] ?? false) {
-            $senderName['required'] = $senderName['aria-required'] = true;
+            $senderName['required'] = true;
         }
         if ($formConfig['senderEmailRequired'] ?? false) {
-            $senderEmail['required'] = $senderEmail['aria-required'] = true;
+            $senderEmail['required'] = true;
         }
-        $configuredElements[] = $senderName;
-        $configuredElements[] = $senderEmail;
 
         foreach ($configuredElements as $el) {
             $element = [];
@@ -585,80 +658,50 @@ class Form extends \Laminas\Form\Form implements
             }
 
             if (in_array($element['type'], ['checkbox', 'radio'])
-                && ! isset($element['group'])
+                && !isset($element['group'])
             ) {
                 $element['group'] = $element['name'];
             }
 
-            $element['label'] = $this->translate($el['label'] ?? null);
+            $element['label'] = $el['label'] ?? '';
 
             $elementType = $element['type'];
             if (in_array($elementType, ['checkbox', 'radio', 'select'])) {
-                if (empty($el['options']) && empty($el['optionGroups'])) {
-                    continue;
-                }
-                if (isset($el['options'])) {
-                    $options = [];
-                    $isSelect = $elementType === 'select';
-                    $placeholder = $element['placeholder'] ?? null;
-
-                    if ($isSelect && $placeholder) {
-                        // Add placeholder option (without value) for
-                        // select element.
-                        $options[] = [
-                            'value' => '',
-                            'label' => $this->translate($placeholder),
-                            'attributes' => [
-                                'selected' => 'selected', 'disabled' => 'disabled'
-                            ]
-                        ];
-                    }
-                    foreach ($el['options'] as $option) {
-                        $value = $option['value'] ?? $option;
-                        $label = $option['label'] ?? $option;
-                        if ($isSelect) {
-                            $options[] = [
-                                'value' => $value,
-                                'label' => $this->translate($label)
-                            ];
-                        } else {
-                            $options[$value] = $this->translate($label);
-                        }
-                    }
+                if ($options = $this->getElementOptions($el)) {
                     $element['options'] = $options;
-                } elseif (isset($el['optionGroups'])) {
-                    $groups = [];
-                    foreach ($el['optionGroups'] as $group) {
-                        if (empty($group['options'])) {
-                            continue;
-                        }
-                        $options = [];
-                        foreach ($group['options'] as $option) {
-                            $value = $option['value'] ?? $option;
-                            $label = $option['label'] ?? $option;
-
-                            $options[$value] = $this->translate($label);
-                        }
-                        $label = $this->translate($group['label']);
-                        $groups[$label] = ['label' => $label, 'options' => $options];
-                    }
-                    $element['optionGroups'] = $groups;
+                } elseif ($optionGroups = $this->getElementOptionGroups($el)) {
+                    $element['optionGroups'] = $optionGroups;
                 }
             }
 
             $settings = [];
-            if (isset($el['settings'])) {
-                foreach ($el['settings'] as [$settingId, $settingVal]) {
-                    $settingId = trim($settingId);
-                    $settingVal = trim($settingVal);
-                    if ($settingId === 'placeholder') {
-                        $settingVal = $this->translate($settingVal);
-                    }
-                    $settings[$settingId] = $settingVal;
+            foreach ($el['settings'] ?? [] as $setting) {
+                if (!is_array($setting)) {
+                    continue;
                 }
-                $element['settings'] = $settings;
+                // Allow both [key => value] and [key, value]:
+                if (count($setting) !== 2) {
+                    reset($setting);
+                    $settingId = trim(key($setting));
+                    $settingVal = trim(current($setting));
+                } else {
+                    $settingId = trim($setting[0]);
+                    $settingVal = trim($setting[1]);
+                }
+                $settings[$settingId] = $settingVal;
+            }
+            $element['settings'] = $settings;
+
+            // Merge sender fields with any existing field definitions:
+            if ('name' === $element['name']) {
+                $element = array_replace_recursive($senderName, $element);
+                $senderName = null;
+            } elseif ('email' === $element['name']) {
+                $element = array_replace_recursive($senderEmail, $element);
+                $senderEmail = null;
             }
 
+            // Add default field size settings for fields that don't define them:
             if (in_array($elementType, ['text', 'url', 'email'])
                 && !isset($element['settings']['size'])
             ) {
@@ -673,7 +716,16 @@ class Form extends \Laminas\Form\Form implements
                     $element['settings']['rows'] = 8;
                 }
             }
+
             $elements[] = $element;
+        }
+
+        // Add sender fields if they were not merged in the loop above:
+        if ($senderName) {
+            $elements[] = $senderName;
+        }
+        if ($senderEmail) {
+            $elements[] = $senderEmail;
         }
 
         if ($this->reportReferrer()) {
@@ -682,7 +734,7 @@ class Form extends \Laminas\Form\Form implements
                     'type' => 'hidden',
                     'name' => 'referrer',
                     'settings' => ['value' => $referrer],
-                    'label' => $this->translate('Referrer'),
+                    'label' => 'Referrer',
                 ];
             }
         }
@@ -693,7 +745,7 @@ class Form extends \Laminas\Form\Form implements
                     'type' => 'hidden',
                     'name' => 'useragent',
                     'settings' => ['value' => $userAgent],
-                    'label' => $this->translate('User Agent'),
+                    'label' => 'User Agent',
                 ];
             }
         }
@@ -701,10 +753,88 @@ class Form extends \Laminas\Form\Form implements
         $elements[] = [
             'type' => 'submit',
             'name' => 'submit',
-            'label' => $this->translate('Send')
+            'label' => 'Send'
         ];
 
         return $elements;
+    }
+
+    /**
+     * Get options for an element
+     *
+     * @param array $element Element configuration
+     *
+     * @return array
+     */
+    protected function getElementOptions(array $element): array
+    {
+        if (!isset($element['options'])) {
+            return [];
+        }
+
+        $options = [];
+        $isSelect = $element['type'] === 'select';
+        $placeholder = $element['placeholder'] ?? null;
+
+        if ($isSelect && $placeholder) {
+            // Add placeholder option (without value) for
+            // select element.
+            $options['o0'] = [
+                'value' => '',
+                'label' => $placeholder,
+                'attributes' => [
+                    'selected' => 'selected', 'disabled' => 'disabled'
+                ]
+            ];
+        }
+        $idx = 0;
+        foreach ($element['options'] as $option) {
+            ++$idx;
+            $value = $option['value'] ?? $option;
+            $label = $option['label'] ?? $option;
+            $options["o$idx"] = [
+                'value' => $value,
+                'label' => $label
+            ];
+        }
+        return $options;
+    }
+
+    /**
+     * Get option groups for an element
+     *
+     * @param array $element Element configuration
+     *
+     * @return array
+     */
+    protected function getElementOptionGroups(array $element): array
+    {
+        if (!isset($element['optionGroups'])) {
+            return [];
+        }
+        $groups = [];
+        $idx = 0;
+        foreach ($element['optionGroups'] as $group) {
+            if (empty($group['options'])) {
+                continue;
+            }
+            $options = [];
+            foreach ($group['options'] as $option) {
+                ++$idx;
+                $value = $option['value'] ?? $option;
+                $label = $option['label'] ?? $option;
+
+                $options["o$idx"] = [
+                    'value' => $value,
+                    'label' => $label,
+                ];
+            }
+            $groups[$group['label']] = [
+                'label' => $group['label'],
+                'options' => $options
+            ];
+        }
+        return $groups;
     }
 
     /**
@@ -757,13 +887,11 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Build form.
      *
-     * @param array $elements Parsed configuration elements
-     *
      * @return void
      */
-    protected function buildForm($elements)
+    protected function buildForm()
     {
-        foreach ($elements as $el) {
+        foreach ($this->formElementConfig as $el) {
             if ($element = $this->getFormElement($el)) {
                 $this->add($element);
             }
@@ -771,7 +899,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get form element attributes.
+     * Get configuration for a Laminas form element
      *
      * @param array $el Element configuration
      *
@@ -780,7 +908,7 @@ class Form extends \Laminas\Form\Form implements
     protected function getFormElement($el)
     {
         $type = $el['type'];
-        if (!$class = $this->getFormElementClass($type)) {
+        if (!($class = $this->getFormElementClass($type))) {
             return null;
         }
 
@@ -793,7 +921,7 @@ class Form extends \Laminas\Form\Form implements
         $attributes = $el['settings'] ?? [];
 
         $attributes = [
-            'id' => $el['name'],
+            'id' => $this->getElementId($el['name']),
             'class' => [$el['settings']['class'] ?? null]
         ];
 
@@ -803,14 +931,14 @@ class Form extends \Laminas\Form\Form implements
 
         if (!empty($el['required'])) {
             $attributes['required'] = true;
-            $attributes['aria-required'] = "true";
-        } elseif ($type !== 'submit') {
-            $attributes['aria-required'] = "false";
         }
         if (!empty($el['settings'])) {
             $attributes += $el['settings'];
         }
-        if (!empty($el['label'])) {
+        // Add aria-label only if not a hidden field and no aria-label specified:
+        if (!empty($el['label']) && 'hidden' !== $type
+            && !isset($attributes['aria-label'])
+        ) {
             $attributes['aria-label'] = $el['label'];
         }
 
@@ -821,11 +949,13 @@ class Form extends \Laminas\Form\Form implements
                 $options = $el['options'];
             }
             $optionElements = [];
-            foreach ($options as $key => $val) {
+            foreach ($options as $key => $item) {
                 $optionElements[] = [
-                    'label' => $val,
+                    'label' => $this->translate($item['label']),
                     'value' => $key,
-                    'attributes' => ['id' => $val]
+                    'attributes' => [
+                        'id' => $this->getElementId($el['name'] . '_' . $key)
+                    ]
                 ];
             }
             $conf['options'] = ['value_options' => $optionElements];
@@ -845,12 +975,15 @@ class Form extends \Laminas\Form\Form implements
             }
             $optionElements = [];
             $first = true;
-            foreach ($options as $key => $val) {
+            foreach ($options as $key => $option) {
+                $elemId = $this->getElementId($el['name'] . '_' . $key);
                 $optionElements[] = [
-                    'label' => $val,
+                    'label' => $this->translate($option['label']),
                     'value' => $key,
-                    'label_attributes' => ['for' => $val],
-                    'attributes' => ['id' => $val],
+                    'label_attributes' => ['for' => $elemId],
+                    'attributes' => [
+                        'id' => $elemId
+                    ],
                     'selected' => $first
                 ];
                 $first = false;
@@ -859,9 +992,25 @@ class Form extends \Laminas\Form\Form implements
             break;
         case 'select':
             if (isset($el['options'])) {
-                $conf['options'] = ['value_options' => $el['options']];
+                $options = $el['options'];
+                foreach ($options as $key => &$option) {
+                    $option['value'] = $key;
+                }
+                // Unset reference:
+                unset($option);
+                $conf['options'] = ['value_options' => $options];
             } elseif (isset($el['optionGroups'])) {
-                $conf['options'] = ['value_options' => $el['optionGroups']];
+                $groups = $el['optionGroups'];
+                foreach ($groups as &$group) {
+                    foreach ($group['options'] as $key => &$option) {
+                        $option['value'] = $key;
+                    }
+                    // Unset reference:
+                    unset($key);
+                }
+                // Unset reference:
+                unset($group);
+                $conf['options'] = ['value_options' => $groups];
             }
             break;
         case 'submit':
@@ -933,5 +1082,17 @@ class Form extends \Laminas\Form\Form implements
             $elements[] = $field;
         }
         return $elements;
+    }
+
+    /**
+     * Get a complete id for an element
+     *
+     * @param string $id Element ID
+     *
+     * @return string
+     */
+    protected function getElementId(string $id): string
+    {
+        return 'form_' . $this->formConfig['id'] . '_' . $id;
     }
 }

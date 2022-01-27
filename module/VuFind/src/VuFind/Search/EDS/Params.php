@@ -143,9 +143,7 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         $view = $this->getEdsView();
-        if (isset($view)) {
-            $backendParams->set('view', $view);
-        }
+        $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
         if (isset($mode)) {
@@ -297,13 +295,11 @@ class Params extends \VuFind\Search\Base\Params
     public function addLimitersAsCheckboxFacets(Options $options)
     {
         $ssLimiters = $options->getSearchScreenLimiters();
-        if (isset($ssLimiters)) {
-            foreach ($ssLimiters as $ssLimiter) {
-                $this->addCheckboxFacet(
-                    $ssLimiter['selectedvalue'],
-                    $ssLimiter['description']
-                );
-            }
+        foreach ($ssLimiters as $ssLimiter) {
+            $this->addCheckboxFacet(
+                $ssLimiter['selectedvalue'],
+                $ssLimiter['description']
+            );
         }
     }
 
@@ -317,13 +313,11 @@ class Params extends \VuFind\Search\Base\Params
     public function addExpandersAsCheckboxFacets(Options $options)
     {
         $availableExpanders = $options->getSearchScreenExpanders();
-        if (isset($availableExpanders)) {
-            foreach ($availableExpanders as $expander) {
-                $this->addCheckboxFacet(
-                    $expander['selectedvalue'],
-                    $expander['description']
-                );
-            }
+        foreach ($availableExpanders as $expander) {
+            $this->addCheckboxFacet(
+                $expander['selectedvalue'],
+                $expander['description']
+            );
         }
     }
 

@@ -536,19 +536,17 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return array
      */
-    protected function populateLimiterValues($limiterValues)
+    protected function populateLimiterValues(array $limiterValues)
     {
         $availableLimiterValues = [];
-        if (isset($limiterValues)) {
-            foreach ($limiterValues as $limiterValue) {
-                $availableLimiterValues[] = [
-                    'Value' => $limiterValue['Value'],
-                    'LimiterValues' => isset($limiterValue['LimiterValues'])
-                        ? $this
-                            ->populateLimiterValues($limiterValue['LimiterValues'])
-                        : null
-                ];
-            }
+        foreach ($limiterValues as $limiterValue) {
+            $availableLimiterValues[] = [
+                'Value' => $limiterValue['Value'],
+                'LimiterValues' => isset($limiterValue['LimiterValues'])
+                    ? $this
+                        ->populateLimiterValues($limiterValue['LimiterValues'])
+                    : null
+            ];
         }
         return empty($availableLimiterValues) ? null : $availableLimiterValues;
     }
