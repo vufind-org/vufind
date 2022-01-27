@@ -234,10 +234,8 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function getBaseUrl(): string
     {
-        if ($this->checkServersAvailability) {
-            return $this->getAliveUrl();
-        }
-        return '';
+        return $this->checkServersAvailability
+            ? $this->getAliveUrl() : $this->baseUrls[0];
     }
 
     /**
