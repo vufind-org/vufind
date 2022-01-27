@@ -41,7 +41,7 @@
     <field name="year" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="has_fulltext" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="fulltext_types" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="fulltext_toc" type="textProper" indexed="true" stored="false"/>
+    <field name="fulltext_toc" type="text" indexed="true" stored="false"/>
     <field name="fulltext_toc_unstemmed" type="textProper" indexed="true" stored="false"/>
     <field name="fulltext_abstract" type="text" indexed="true" stored="false"/>
     <field name="fulltext_abstract_unstemmed" type="textProper" indexed="true" stored="false"/>
