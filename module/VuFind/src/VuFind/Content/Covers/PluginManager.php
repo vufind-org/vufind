@@ -61,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'orb' => Orb::class,
         'summon' => Summon::class,
         'syndetics' => Syndetics::class,
+        'bokinfo' => Bokinfo::class,
     ];
 
     /**
@@ -83,6 +84,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Orb::class => OrbFactory::class,
         Summon::class => InvokableFactory::class,
         Syndetics::class => SyndeticsFactory::class,
+        Bokinfo::class => InvokableFactory::class,
     ];
 
     /**
