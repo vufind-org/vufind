@@ -52,7 +52,7 @@ $authTabEnabled = $this->tuefind()->isSearchTabEnabled('SolrAuth');
         <?php $authorityId = $dataFields['id'][0] ?? ''; ?>
         <?php if ($authorityId && $authorityDriver = $this->authority()->recordExists($authorityId)): ?>
           <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
-          <a href="/Authority/<?=$authorityId;?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
+          <a href="<?=$this->record($authorityDriver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
         <?php else: ?>
           <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
         <?php endif; ?>
