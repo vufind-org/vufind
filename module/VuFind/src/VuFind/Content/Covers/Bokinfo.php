@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Driver for Koha, using REST API
+ * Plugin for Bokinfo coverimages
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2020.
+ * Copyright (C) imCode Partner AB 2022.
  * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,11 +32,11 @@ namespace VuFind\Content\Covers;
 use SimpleXMLElement;
 
 /**
- * Summon cover content loader.
+ * Summon cover Bokinfo content loader.
  *
  * @category VuFind
  * @package  Content
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jacob Sandin <jacob@imcode.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -52,8 +52,8 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
      */
     public function __construct()
     {
-        //I will leave this untill I know if they allow it.
-        //$this->cacheAllowed = true;
+        
+        $this->cacheAllowed = true;
         $this->supportsIsbn = true;
     }
 
@@ -85,7 +85,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
             $client->getRequest()->getHeaders()
                   ->addHeaderLine("Ocp-Apim-Subscription-Key", $key);
 
-            $resp= $client->send();
+            $resp = $client->send();
             $body = $resp->getBody();
             $url = $this->getImageUrl($body);
             if ($this->testUrlFunction($url)) {
