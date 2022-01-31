@@ -18,23 +18,7 @@
     <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
       <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
     <?php else: ?>
-      <?php /* ?><a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?><span class="caret"></span></a> <?php */?>
-      <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown"  href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            <i class='fa fa-chevron-right' ></i> <?=$this->transEsc("Login")?><span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQ')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Index Theologicus')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Geschichte')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Fachinformationsdienst (FID) Theologie')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Aufgaben')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Wissenschaftlicher Beirat')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Ansprechpartner*in')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'privacy']) ?>"><?=$this->transEsc('Datenschutzerklärung')?></a></li>
-            <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'Impressum']) ?>">Impressum</a></li>
-        </ul>
-    </li>
+      <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?></a>
     <?php endif; ?>
   </li>
 <?php endif; ?>
