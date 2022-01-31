@@ -1543,6 +1543,28 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Get a set of random bib IDs
+     *
+     * @param int $limit Maximum number of IDs to return (max 30)
+     *
+     * @return string[]
+     */
+    protected function getRandomBibIds($limit): array
+    {
+        $count = rand(0, $limit > 30 ? 30 : $limit);
+        $results = [];
+        for ($x = 0; $x < $count; $x++) {
+            $randomId = $this->getRandomBibId();
+
+            // avoid duplicate entries in array:
+            if (!in_array($randomId, $results)) {
+                $results[] = $randomId;
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Get New Items
      *
      * Retrieve the IDs of items recently added to the catalog.
@@ -1566,16 +1588,8 @@ class Demo extends AbstractBase
         $this->checkIntermittentFailure();
         // Pick a random number of results to return -- don't exceed limit or 30,
         // whichever is smaller (this can be pretty slow due to the random ID code).
-        $count = rand(0, $limit > 30 ? 30 : $limit);
-        $results = [];
-        for ($x = 0; $x < $count; $x++) {
-            $randomId = $this->getRandomBibId();
-
-            // avoid duplicate entries in array:
-            if (!in_array($randomId, $results)) {
-                $results[] = $randomId;
-            }
-        }
+        $results = $this->config['Records']['new_items']
+            ?? $this->getRandomBibIds(30);
         $retVal = ['count' => count($results), 'results' => []];
         foreach ($results as $result) {
             $retVal['results'][] = ['id' => $result];
@@ -2569,9 +2583,14 @@ class Demo extends AbstractBase
         $maxage = 30,
         $patron = null
     ) {
-        // This is similar to getNewItems for demo purposes.
-        $results = $this->getNewItems(1, $limit, $maxage);
-        return $results['results'];
+        $this->checkIntermittentFailure();
+
+        $results = $this->config['Records']['recently_returned']
+            ?? $this->getRandomBibIds($limit);
+        $mapper = function ($id) {
+            return ['id' => $id];
+        };
+        return array_map($mapper, $results);
     }
 
     /**
