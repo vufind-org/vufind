@@ -1549,7 +1549,7 @@ class Demo extends AbstractBase
      *
      * @return string[]
      */
-    protected function getRandomBiBIds($limit): array
+    protected function getRandomBibIds($limit): array
     {
         $count = rand(0, $limit > 30 ? 30 : $limit);
         $results = [];
