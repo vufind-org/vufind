@@ -261,7 +261,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             $factory = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         }
         if (null === $cache) {
-            $cache = $this->createMock(\Laminas\Cache\Storage\Adapter\Filesystem::class);
+            $cache = $this->getMockForAbstractClass(\Laminas\Cache\Storage\Adapter\AbstractAdapter::class);
         }
         if (null === $container) {
             $container = $this->getMockBuilder(\Laminas\Session\Container::class)
