@@ -45,11 +45,11 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * API URL
+     * Available base URLs
      *
-     * @var string
+     * @var array
      */
-    protected $apiUrl;
+    protected $baseUrls = [];
 
     /**
      * Http referrer
@@ -66,6 +66,21 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     protected $sigla;
 
     /**
+     * Array with endpoints, possible endpoints(array keys) are: books, cover, toc,
+     * authority, citation, recommend, alive
+     *
+     * @var array
+     */
+    protected $endpoints;
+
+    /**
+     * Whether to check servers availability before API calls
+     *
+     * @var bool
+     */
+    protected $checkServersAvailability = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $config Configuration for service
@@ -79,10 +94,18 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
                 "Configuration for ObalkyKnih.cz service is not valid"
             );
         }
-        $this->apiUrl = $config->base_url[0] . $config->books_endpoint;
+        $this->baseUrls = $config->base_url;
         $this->cacheLifetime = 1800;
         $this->referrer = $config->referrer ?? null;
         $this->sigla = $config->sigla ?? null;
+        foreach ($config->toArray() as $configItem => $configValue) {
+            $parts = explode('_', $configItem);
+            if ($parts[1] ?? '' === 'endpoint') {
+                $this->endpoints[$parts[0]] = $configValue;
+            }
+        }
+        $this->checkServersAvailability
+            = $config->checkServersAvailability ?? false;
     }
 
     /**
@@ -171,7 +194,12 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
             }
         }
 
-        $url = $this->apiUrl . "?";
+        $url = $this->getBaseUrl();
+        if ($url === '') {
+            $this->logWarning('All ObalkyKnih servers are down.');
+            return null;
+        }
+        $url .= $this->endpoints['books'] . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
         try {
@@ -197,5 +225,40 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         }
         return empty($this->sigla) ? null :
             $this->sigla . '-' . str_replace('-', '', $recordid);
+    }
+
+    /**
+     * Get currently available base URL
+     *
+     * @return string
+     */
+    protected function getBaseUrl(): string
+    {
+        return $this->checkServersAvailability
+            ? $this->getAliveUrl() : $this->baseUrls[0];
+    }
+
+    /**
+     * Check base URLs and return the first available
+     *
+     * @return string
+     */
+    protected function getAliveUrl(): string
+    {
+        $aliveUrl = $this->getCachedData('baseUrl');
+        if ($aliveUrl !== null) {
+            return $aliveUrl;
+        }
+        foreach ($this->baseUrls as $baseUrl) {
+            $url = $baseUrl . $this->endpoints['alive'];
+            $client = $this->getHttpClient($url);
+            $client->setOptions(['timeout' => 2]);
+            $response = $client->send();
+            if ($response->isSuccess()) {
+                $this->putCachedData('baseUrl', $baseUrl, 60);
+                return $baseUrl;
+            }
+        }
+        return '';
     }
 }

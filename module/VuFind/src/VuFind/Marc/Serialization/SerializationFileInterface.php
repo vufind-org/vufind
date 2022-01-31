@@ -1,10 +1,10 @@
 <?php
 /**
- * MARC serialization interface.
+ * MARC serialization file interface.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,7 +28,7 @@
 namespace VuFind\Marc\Serialization;
 
 /**
- * MARC serialization interface.
+ * MARC serialization file interface.
  *
  * @category VuFind
  * @package  MARC
@@ -36,56 +36,46 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-interface SerializationInterface
+interface SerializationFileInterface
 {
     /**
-     * Check if the serialization class can parse the given MARC string
+     * Check if the serialization class can parse the given MARC collection file
      *
-     * @param string $marc MARC
-     *
-     * @return bool
-     */
-    public static function canParse(string $marc): bool;
-
-    /**
-     * Check if the serialization class can parse the given MARC collection string
-     *
-     * @param string $marc MARC
+     * @param string $file File name
      *
      * @return bool
      */
-    public static function canParseCollection(string $marc): bool;
+    public static function canParseCollectionFile(string $file): bool;
 
     /**
-     * Parse MARC collection from a string into an array of MarcReader classes
+     * Set message callback
      *
-     * @param string $collection MARC record collection in the format supported by
-     * the serialization class
+     * @param callable $callback Message callback
      *
-     * @throws Exception
-     * @return array
+     * @return void
      */
-    public static function collectionFromString(string $collection): array;
+    public function setMessageCallback(?callable $callback): void;
 
     /**
-     * Parse MARC from a string
+     * Open a collection file
      *
-     * @param string $marc MARC record in the format supported by the serialization
-     * class
+     * @param string $file File name
      *
-     * @throws Exception
-     * @return array
+     * @return void
      */
-    public static function fromString(string $marc): array;
+    public function openCollectionFile(string $file): void;
 
     /**
-     * Convert record to a string representing the format supported by the
-     * serialization class
+     * Rewind the collection file
      *
-     * @param string $leader Leader
-     * @param array  $fields Record fields
+     * @return void;
+     */
+    public function rewind(): void;
+
+    /**
+     * Get next record from the file or an empty string on EOF
      *
      * @return string
      */
-    public static function toString(string $leader, array $fields): string;
+    public function getNextRecord(): string;
 }

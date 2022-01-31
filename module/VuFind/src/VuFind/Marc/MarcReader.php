@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020-2021.
+ * Copyright (C) The National Library of Finland 2020-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -74,7 +74,8 @@ class MarcReader
     /**
      * Constructor
      *
-     * @param string $data MARC record in MARCXML or ISO2709 format
+     * @param string|array $data MARC record in MARCXML or ISO2709 format, or an
+     * associative array with 'leader' and 'fields' in the internal format
      */
     public function __construct($data)
     {
@@ -84,13 +85,24 @@ class MarcReader
     /**
      * Set MARC record data
      *
-     * @param string $data MARC record in MARCXML or ISO2709 format
+     * @param string|array $data MARC record in MARCXML or ISO2709 format, or an
+     * associative array with 'leader' and 'fields' in the internal format
      *
      * @throws Exception
      * @return void
      */
-    public function setData(string $data): void
+    public function setData($data): void
     {
+        if (is_array($data)) {
+            if (!is_string($data['leader'] ?? null)
+                || !is_array($data['fields'] ?? null)
+            ) {
+                throw new \Exception('Invalid data array format provided');
+            }
+            $this->leader = $data['leader'];
+            $this->fields = $data['fields'];
+            return;
+        }
         $leader = null;
         $valid = false;
         foreach ($this->serializations as $serialization) {
@@ -190,6 +202,46 @@ class MarcReader
             }
         }
 
+        return $result;
+    }
+
+    /**
+     * Return all fields as an array.
+     *
+     * Control fields have the following elements:
+     * - tag
+     * - data
+     *
+     * Data fields have the following elements:
+     * - tag
+     * - i1
+     * - i2
+     * - subfields
+     *
+     * @return array
+     */
+    public function getAllFields()
+    {
+        $result = [];
+        foreach (array_keys($this->fields) as $tag) {
+            $fields = array_map(
+                function ($field) use ($tag) {
+                    // Convert control fields to arrays:
+                    if (is_string($field)) {
+                        return [
+                            'tag' => $tag,
+                            'data' => $field
+                        ];
+                    }
+                    return $field;
+                },
+                $this->getFields($tag)
+            );
+            $result = array_merge(
+                $result,
+                $fields
+            );
+        }
         return $result;
     }
 
@@ -426,6 +478,121 @@ class MarcReader
             'script' => $linkParts[1] ?? '',
             'orientation' => $linkParts[2] ?? ''
         ];
+    }
+
+    /**
+     * Return a copy of the record with the specified fields and/or subfields
+     * removed.
+     *
+     * Each rule can have the following elements:
+     *
+     * tag       - Tag the rule applies to (a regular expression).
+     * subfields - Subfields codes to remove (a regular expression, optional).
+     *             Default is to remove all subfields (and the field).
+     *
+     * Examples:
+     *
+     * $result = $reader->getFilteredRecord(
+     *   [
+     *     [
+     *       'tag' => '9..'
+     *     ]
+     *   ]
+     * );
+     *
+     * $result = $reader->getFilteredRecord(
+     *   [
+     *     [
+     *       'tag' => '...',
+     *       'subfields' => '0'
+     *     ]
+     *   ]
+     * );
+     *
+     * @param array $rules Array of filtering rules
+     *
+     * @return MarcReader
+     */
+    public function getFilteredRecord(array $rules): MarcReader
+    {
+        $resultFields = [];
+        foreach ($this->fields as $tag => $fields) {
+            $fieldRules = $this->getFilteringRulesForTag($rules, $tag);
+            if ($fieldRules) {
+                foreach ($fields as $field) {
+                    if (!isset($field['s'])) {
+                        // Control field, filter out completely
+                        continue;
+                    }
+                    $field['s'] = $this->filterSubfields($fieldRules, $field['s']);
+                    if (!$field['s']) {
+                        // No subfields left, drop the field
+                        continue;
+                    }
+                    $resultFields[$tag][] = $field;
+                }
+            } else {
+                $resultFields[$tag] = $fields;
+            }
+        }
+        return new MarcReader(
+            [
+                'leader' => $this->leader,
+                'fields' => $resultFields
+            ]
+        );
+    }
+
+    /**
+     * Get filtering rules matching a field tag
+     *
+     * @param array  $rules Filtering rules
+     * @param string $tag   Field tag
+     *
+     * @return array
+     */
+    protected function getFilteringRulesForTag(array $rules, string $tag): array
+    {
+        $result = [];
+        foreach ($rules as $rule) {
+            if (preg_match('/' . $rule['tag'] . '/', $tag)
+                && (!isset($rule['subfields']) || intval($tag) >= 10)
+            ) {
+                $result[] = $rule;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Filter subfields
+     *
+     * @param array $rules     Filtering rules
+     * @param array $subfields Subfields
+     *
+     * @return array
+     */
+    protected function filterSubfields(array $rules, array $subfields): array
+    {
+        foreach ($rules as $rule) {
+            if (!isset($rule['subfields'])) {
+                // No subfields specified, filter out all of them
+                return [];
+            }
+            $remaining = [];
+            foreach ($subfields as $subfield) {
+                $code = key($subfield);
+                if (!preg_match('/' . $rule['subfields'] . '/', $code)) {
+                    $remaining[] = $subfield;
+                }
+            }
+            if (!$remaining) {
+                return [];
+            }
+            $subfields = $remaining;
+        }
+
+        return $subfields;
     }
 
     /**
