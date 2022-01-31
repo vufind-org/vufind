@@ -406,7 +406,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
                 $options['ttl'] = 300;
             }
             $settings = [
-                'name' => $cacheConfig['adapter'],
+                'adapter' => $cacheConfig['adapter'],
                 'options' => $options,
             ];
             $cache = $this->serviceLocator
