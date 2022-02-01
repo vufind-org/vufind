@@ -52,6 +52,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
      */
     public function __construct()
     {
+        // Checked with vendor to be sure caching is allowed as of February, 2022.
         $this->cacheAllowed = true;
         $this->supportsIsbn = true;
     }
