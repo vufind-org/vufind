@@ -39,6 +39,13 @@ namespace VuFind\ILS\Driver;
 class GeniePlus extends AbstractAPI
 {
     /**
+     * Access token
+     *
+     * @var string
+     */
+    protected $token = null;
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -48,6 +55,50 @@ class GeniePlus extends AbstractAPI
      */
     public function init()
     {
+    }
+
+    protected function renewAccessToken()
+    {
+        $params = [
+            'client_id' => $this->config['API']['oauth_id'],
+            'grant_type' => 'password',
+            'database' => $this->config['API']['database'],
+            'username' => $this->config['API']['username'],
+            'password' => $this->config['API']['password'],
+        ];
+        $headers = [
+            'Accept: application/json',
+        ];
+        $response = $this->makeRequest('POST', '/_oauth/token', $params, $headers);
+        $result = json_decode($response->getBody());
+        if (!isset($result->access_token)) {
+            // TODO: retry loop? Smarter status checks?
+            throw new \Exception('Unable to obtain access token.');
+        }
+        $this->token = $result->access_token;
+    }
+
+    protected function callApiWithToken(
+        $method = "GET",
+        $path = "/",
+        $params = [],
+        $headers = []
+    ) {
+        $headers[] = "Accept: application/json";
+        if (null === $this->token) {
+            $this->renewAccessToken();
+        }
+        try {
+            $authHeader = "Authorization: Bearer {$this->token}";
+            return $this
+                ->makeRequest($method, $path, $params, $headers + [$authHeader]);
+        } catch (\Exception $e) {
+            // TODO: catch more specific exception
+            $this->renewAccessToken();
+            $authHeader = "Authorization: Bearer {$this->token}";
+            return $this
+                ->makeRequest($method, $path, $params, $headers + [$authHeader]);
+        }
     }
 
     /**
@@ -64,6 +115,18 @@ class GeniePlus extends AbstractAPI
     public function getStatus($id)
     {
         // TODO: add real data
+        $database = $this->config['API']['database'];
+        $template = $this->config['API']['catalog_template'];
+        $path = "/_rest/databases/$database/templates/$template/search-result";
+        $idField = $this->config['API']['field']['id'];
+        $params = [
+            'page-size' => 100, // TODO: configurable?
+            'page' => 0,
+            'fields' => implode(',', $this->config['API']['field']),
+            'command' => "$idField == '$id'", // TODO: escape/sanitize
+        ];
+        $response = $this->callApiWithToken('GET', $path, $params);
+        var_dump($response->getBody());
         return [
             [
                 'id' => $id,
