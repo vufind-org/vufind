@@ -34,9 +34,20 @@
 
                             <!-- ixtheo2 search button box -->
                             <!-- FAQ -->
-                            <li class="nav-item">
-                                <a class="nav-link" href="/Search/Advanced"><i class='fa fa-database'></i> <?=$this->transEsc('Search')?></a>
+
+                            <li class="language dropdown">
+                                <a class="nav-link" href="/Search/Advanced"><i class='fa fa-database'></i> Search <span class="caret"></span></a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'ixtheo_content']) ?>"><?=$this->transEsc('FID-Content')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>"><?=$this->transEsc('Digitale Quellen')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'theology_digital']) ?>"><?=$this->transEsc('Theologie digital')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>"><?=$this->transEsc('Historische Drucke')?></a></li>
+                                  <li><a class="dropdown-item" href="https://relbib.de/"><?=$this->transEsc('RelBib')?></a></li>
+                                  <li><a class="dropdown-item" href="https://bible.ixtheo.de/"><?=$this->transEsc('Index Biblicus')?></a></li>
+                                  <li><a class="dropdown-item" href="https://churchlaw.ixtheo.de/"><?=$this->transEsc('Kirchenrecht')?></a></li>
+                                </ul>
                             </li>
+
 
                             <!-- ixtheo2 login button box -->
                             <?=$this->render('header/login');?>
