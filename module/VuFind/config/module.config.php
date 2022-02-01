@@ -340,7 +340,6 @@ $config = [
         'factories' => [
             'Doctrine\DBAL\Connection' => 'VuFind\Db\ConnectionFactory',
             'Doctrine\ORM\Mapping\Driver\AnnotationDriver' => 'VuFind\Db\AnnotationDriverFactory',
-            'Doctrine\ORM\EntityManager' => 'Roave\PsrContainerDoctrine\EntityManagerFactory',
             'League\CommonMark\MarkdownConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
