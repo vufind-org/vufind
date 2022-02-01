@@ -32,7 +32,7 @@ namespace VuFind\Content\Covers;
 use SimpleXMLElement;
 
 /**
- * Summon cover Bokinfo content loader.
+ * Plugin for Bokinfo coverimages
  *
  * @category VuFind
  * @package  Content
@@ -71,7 +71,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
         if (!isset($ids['isbn'])) {
             return false;
         }
-        if (!isset($key)) {
+        if (empty($key)) {
             return false;
         }
 
@@ -88,7 +88,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
             $body = $resp->getBody();
             $url = $this->getImageUrl($body);
             if ($this->testUrlFunction($url)) {
-                return "$url";
+                return $url;
             }
         } catch (\Throwable $ex) {
             return false;
