@@ -2,9 +2,21 @@
 
 // Set up modules:
 $modules = [
-    'Laminas\Cache', 'Laminas\Form', 'Laminas\Router', 'LmcRbacMvc', 'Laminas\I18n',
-    'Laminas\Mvc\I18n', 'SlmLocale', 'VuFindTheme', 'VuFindSearch', 'VuFind',
-    'VuFindAdmin', 'VuFindApi'
+    'Laminas\Cache',
+    'Laminas\Cache\Storage\Adapter\BlackHole',
+    'Laminas\Cache\Storage\Adapter\Filesystem',
+    'Laminas\Cache\Storage\Adapter\Memory',
+    'Laminas\Form',
+    'Laminas\Router',
+    'LmcRbacMvc',
+    'Laminas\I18n',
+    'Laminas\Mvc\I18n',
+    'SlmLocale',
+    'VuFindTheme',
+    'VuFindSearch',
+    'VuFind',
+    'VuFindAdmin',
+    'VuFindApi',
 ];
 if (!extension_loaded('intl')) {
     // Disable SlmLocale module if intl extension is missing:
