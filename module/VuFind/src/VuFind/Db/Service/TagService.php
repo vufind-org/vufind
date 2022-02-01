@@ -120,6 +120,42 @@ class TagService extends AbstractService
     }
 
     /**
+     * Delete resource tags rows matching specified filter(s).
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     *
+     * @return void
+     */
+    public function deleteResourceTags(
+        $userId = null,
+        $resourceId = null,
+        $tagId = null
+    ): void {
+        $dql = ' DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = "rt.user = :user";
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = "rt.resource = :resource";
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = "rt.tag = :tag";
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
      * Get Resource Tags
      *
      * @param string $userId     ID of user
@@ -292,7 +328,7 @@ class TagService extends AbstractService
             $parameters['user'] = $userId;
         }
         if (null !== $resourceId) {
-            $dqlWhere[] = "r.id = :resource";
+            $dqlWhere[] = "rt.resource = :resource";
             $parameters['resource'] = $resourceId;
         }
         if (null !== $tagId) {

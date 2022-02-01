@@ -130,9 +130,16 @@ class TagsController extends AbstractAdmin
         $view->uniqueTags      = $this->getUniqueTags();
         $view->uniqueUsers     = $this->getUniqueUsers();
         $view->uniqueResources = $this->getUniqueResources();
+        $resourceTags = $this->tagService->getResourceTags(
+            $this->convertFilter($this->getParam('user_id')),
+            $this->convertFilter($this->getParam('resource_id')),
+            $this->convertFilter($this->getParam('tag_id')),
+            $this->getParam('order'),
+            $this->params['page'] ?? '1'
+        );
         $view->results = new \Laminas\Paginator\Paginator(
             new \DoctrineORMModule\Paginator\Adapter\DoctrinePaginator(
-                $this->getResourceTags()
+                $resourceTags
             )
         );
         $view->results->setCurrentPageNumber($this->params['page'] ?? "1");
@@ -382,35 +389,22 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Get and set a list of resource tags
-     *
-     * @return \Laminas\Paginator\Paginator
-     */
-    protected function getResourceTags()
-    {
-        $currentPage = $this->params['page'] ?? "1";
-        $tags = $this->tagService->getResourceTags(
-            $this->convertFilter($this->getParam('user_id')),
-            $this->convertFilter($this->getParam('resource_id')),
-            $this->convertFilter($this->getParam('tag_id')),
-            $this->getParam('order'),
-            $currentPage
-        );
-        return $tags;
-    }
-
-    /**
      * Delete tags based on filter settings.
      *
      * @return int Number of IDs deleted
      */
     protected function deleteResourceTagsByFilter(): int
     {
-        $tags = $this->getResourceTags();
-        $ids = [];
-        foreach ($tags as $tag) {
-            $ids[] = $tag->id;
-        }
-        return $this->tagService->deleteLinksByResourceTagsIdArray($ids);
+        $count = $this->tagService->getResourceTags(
+            $this->convertFilter($this->getParam('user_id')),
+            $this->convertFilter($this->getParam('resource_id')),
+            $this->convertFilter($this->getParam('tag_id'))
+        )->count();
+        $this->tagService->deleteResourceTags(
+            $this->convertFilter($this->getParam('user_id')),
+            $this->convertFilter($this->getParam('resource_id')),
+            $this->convertFilter($this->getParam('tag_id'))
+        );
+        return $count;
     }
 }
