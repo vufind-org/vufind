@@ -117,7 +117,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Test that the url is realy working
+     * Test that the url is really working
      *
      * @param string $url image Url
      *
@@ -126,11 +126,8 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     protected function testUrlFunction($url)
     {
         try {
-            $client = $this->createHttpClient(
-                "$url"
-            );
-
-            $resp= $client->send();
+            $client = $this->createHttpClient($url);
+            $resp = $client->send();
             $headers = $resp->getHeaders();
             if ($headers) {
                 return true;
@@ -154,12 +151,12 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
             return "";
         }
 
-        //This is already wrapped in try..catch
+        // This is already wrapped in try..catch
         $xml = new SimpleXMLElement($rawXML);
 
         foreach ($xml->getDocNamespaces() as $strPrefix => $strNamespace) {
             if (strlen($strPrefix) == 0) {
-                $strPrefix = "_"; //Assign an arbitrary namespace prefix.
+                $strPrefix = "_"; // Assign an arbitrary namespace prefix.
             }
             $xml->registerXPathNamespace($strPrefix, $strNamespace);
         }
