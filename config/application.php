@@ -1,8 +1,6 @@
 <?php
 require __DIR__ . '/constants.config.php';
 
-chdir(APPLICATION_PATH);
-
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
