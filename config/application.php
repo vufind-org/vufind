@@ -2,11 +2,12 @@
 require __DIR__ . '/constants.config.php';
 
 // Composer autoloading
-if (file_exists('vendor/autoload.php')) {
-    $loader = include 'vendor/autoload.php';
+$autoloader = __DIR__ . '/../vendor/autoload.php';
+if (file_exists($autoloader)) {
+    $loader = include $autoloader;
 }
 
-if (!class_exists('Laminas\Loader\AutoloaderFactory')) {
+if (!class_exists(\Laminas\Loader\AutoloaderFactory::class)) {
     throw new RuntimeException('Unable to load Laminas autoloader.');
 }
 
