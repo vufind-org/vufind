@@ -34,6 +34,5 @@ defined('LOCAL_CACHE_DIR')
             : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
     );
 
-// Save original working directory in case we need to remember our context, then
-// switch to the application directory for convenience:
+// Save original working directory in case we need to remember our context:
 define('ORIGINAL_WORKING_DIRECTORY', getcwd());
