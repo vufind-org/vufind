@@ -173,7 +173,9 @@ class GeniePlus extends AbstractAPI
     protected function apiRecordToArray($record): array
     {
         $bibId = current(
-            $this->getFieldFromApiRecord($record, 'id')
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($record, 'id')
+            )
         );
         $barcodes = $this->extractDisplayValues(
             $this->getFieldFromApiRecord($record, 'barcode')
