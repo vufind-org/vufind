@@ -181,6 +181,9 @@ class GeniePlus extends AbstractAPI
         $callNos = $this->extractDisplayValues(
             $this->getFieldFromApiRecord($record, 'callnumber')
         );
+        $dueDates = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'duedate')
+        );
         $locations = $this->extractDisplayValues(
             $this->getFieldFromApiRecord($record, 'location')
         );
@@ -194,6 +197,7 @@ class GeniePlus extends AbstractAPI
             [
                 count($barcodes),
                 count($callNos),
+                count($dueDates),
                 count($locations),
                 count($statuses),
                 count($volumes),
@@ -210,7 +214,7 @@ class GeniePlus extends AbstractAPI
                 'location' => $locations[$i] ?? '',
                 'reserve' => 'N', // not supported
                 'callnumber' => $callNos[$i] ?? '',
-                'duedate' => '', // TODO
+                'duedate' => $dueDates[$i] ?? '',
                 'number' => $volumes[$i] ?? ($i + 1),
                 'barcode' => $barcodes[$i] ?? '',
             ];
