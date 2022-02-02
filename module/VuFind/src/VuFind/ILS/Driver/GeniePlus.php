@@ -157,6 +157,9 @@ class GeniePlus extends AbstractAPI
         $barcodes = $this->extractDisplayValues(
             $this->getFieldFromApiRecord($record, 'barcode')
         );
+        $volumes = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'volume')
+        );
         $bibId = current(
             $this->getFieldFromApiRecord($record, 'id')
         );
@@ -165,6 +168,7 @@ class GeniePlus extends AbstractAPI
                 count($locations),
                 count($callNos),
                 count($barcodes),
+                count($volumes),
             ]
         );
         $result = [];
@@ -177,7 +181,7 @@ class GeniePlus extends AbstractAPI
                 'reserve' => 'N', // not supported
                 'callnumber' => $callNos[$i] ?? '',
                 'duedate' => '', // TODO
-                'number' => $i + 1, // TODO
+                'number' => $volumes[$i] ?? ($i + 1),
                 'barcode' => $barcodes[$i] ?? '',
             ];
         }
