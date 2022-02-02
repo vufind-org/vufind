@@ -228,29 +228,46 @@ class TagsController extends AbstractAdmin
      */
     protected function getConfirmDeleteMessages($count)
     {
-        $messages = [];
-        $user = $this->getTable('user')
-            ->select(['id' => $this->getParam('user_id')])
-            ->current();
-        $userMsg = is_object($user)
-            ? $user->username . " (" . $user->id . ")" : "All";
+        // Default all messages to "All"; we'll make them more specific as needed:
+        $userMsg = $tagMsg = $resourceMsg = 'All';
 
-        $tag = $this->getTable('tags')
-            ->select(['id' => $this->getParam('tag_id')])
-            ->current();
-        $tagMsg = is_object($tag) ? $tag->tag . " (" . $tag->id . ")" : " All";
+        $userId = $this->getParam('user_id');
+        if ($userId) {
+            $user = $this->getTable('user')->select(['id' => $userId])->current();
+            if (!is_object($user)) {
+                throw new \Exception("Unexpected error retrieving user $userId");
+            }
+            $userMsg = "{$user->username} ({$user->id})";
+        }
 
-        $resource = $this->getTable('resource')
-            ->select(['id' => $this->getParam('resource_id')])
-            ->current();
-        $resourceMsg = is_object($resource)
-            ? $resource->title . " (" . $resource->id . ")" : " All";
+        $tagId = $this->getParam('tag_id');
+        if ($tagId) {
+            $tag = $this->getTable('tags')->select(['id' => $tagId])->current();
+            if (!is_object($tag)) {
+                throw new \Exception("Unexpected error retrieving tag $tagId");
+            }
+            $tagMsg = "{$tag->tag} ({$tag->id})";
+        }
 
-        $messages[] = [
-            'msg' => 'tag_delete_warning',
-            'tokens' => ['%count%' => $count]
+        $resourceId = $this->getParam('resource_id');
+        if ($resourceId) {
+            $resource = $this->getTable('resource')
+                ->select(['id' => $resourceId])->current();
+            if (!is_object($resource)) {
+                throw new \Exception(
+                    "Unexpected error retrieving resource $resourceId"
+                );
+            }
+            $resourceMsg = "{$resource->title} ({$resource->id})";
+        }
+
+        $messages = [
+            [
+                'msg' => 'tag_delete_warning',
+                'tokens' => ['%count%' => $count]
+            ]
         ];
-        if (false !== $user || false !== $tag || false !== $resource) {
+        if ($userId || $tagId || $resourceId) {
             $messages[] = [
                 'msg' => 'tag_delete_filter',
                 'tokens' => [
