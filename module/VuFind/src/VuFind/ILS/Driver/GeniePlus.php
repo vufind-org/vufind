@@ -90,15 +90,98 @@ class GeniePlus extends AbstractAPI
         }
         try {
             $authHeader = "Authorization: Bearer {$this->token}";
-            return $this
-                ->makeRequest($method, $path, $params, $headers + [$authHeader]);
+            return $this->makeRequest(
+                $method,
+                $path,
+                $params,
+                array_merge($headers, [$authHeader])
+            );
         } catch (\Exception $e) {
             // TODO: catch more specific exception
             $this->renewAccessToken();
             $authHeader = "Authorization: Bearer {$this->token}";
-            return $this
-                ->makeRequest($method, $path, $params, $headers + [$authHeader]);
+            return $this->makeRequest(
+                $method,
+                $path,
+                $params,
+                array_merge($headers, [$authHeader])
+            );
         }
+    }
+
+    /**
+     * Extract a field from an API response.
+     *
+     * @param array  $record Record containing field
+     * @param string $field  Name of field to extract
+     *
+     * @return array
+     */
+    protected function getFieldFromApiRecord($record, $field)
+    {
+        $fieldName = $this->config['API']['field'][$field] ?? '';
+        return $record[$fieldName] ?? [];
+    }
+
+    /**
+     * Extract display values from an API response field.
+     *
+     * @param array $field Array of values from API
+     *
+     * @return array
+     */
+    protected function extractDisplayValues($field): array
+    {
+        $callback = function ($value) {
+            return $value['display'];
+        };
+        return array_map($callback, $field);
+    }
+
+    /**
+     * Extract holdings data from an API response. Return an array of arrays
+     * representing 852 fields (indexed by subfield code).
+     *
+     * @param array $record Record from API response
+     *
+     * @return array
+     */
+    protected function apiRecordToArray($record): array
+    {
+        $locations = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'location')
+        );
+        $callNos = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'callnumber')
+        );
+        $barcodes = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'barcode')
+        );
+        $bibId = current(
+            $this->getFieldFromApiRecord($record, 'id')
+        );
+        $total = max(
+            [
+                count($locations),
+                count($callNos),
+                count($barcodes),
+            ]
+        );
+        $result = [];
+        for ($i = 0; $i < $total; $i++) {
+            $result[] = [
+                'id' => $bibId,
+                'availability' => 1, // TODO
+                'status' => 'TBD', // TODO
+                'location' => $locations[$i] ?? '',
+                'reserve' => 'N', // not supported
+                'callnumber' => $callNos[$i] ?? '',
+                'duedate' => '', // TODO
+                'number' => $i + 1, // TODO
+                'barcode' => $barcodes[$i] ?? '',
+            ];
+        }
+        return $result;
     }
 
     /**
@@ -114,7 +197,6 @@ class GeniePlus extends AbstractAPI
      */
     public function getStatus($id)
     {
-        // TODO: add real data
         $database = $this->config['API']['database'];
         $template = $this->config['API']['catalog_template'];
         $path = "/_rest/databases/$database/templates/$template/search-result";
@@ -125,21 +207,9 @@ class GeniePlus extends AbstractAPI
             'fields' => implode(',', $this->config['API']['field']),
             'command' => "$idField == '$id'", // TODO: escape/sanitize
         ];
-        $response = $this->callApiWithToken('GET', $path, $params);
-        var_dump($response->getBody());
-        return [
-            [
-                'id' => $id,
-                'availability' => 1,
-                'status' => 'Available',
-                'location' => '3rd Floor Main Library',
-                'reserve' => 'N',
-                'callnumber' => 'A1234.567',
-                'duedate' => '',
-                'number' => 1,
-                'barcode' => '1234567890',
-            ]
-        ];
+        $json = $this->callApiWithToken('GET', $path, $params)->getBody();
+        $response = json_decode($json, true);
+        return $this->apiRecordToArray($response['records'][0] ?? []);
     }
 
     /**
