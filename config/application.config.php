@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [

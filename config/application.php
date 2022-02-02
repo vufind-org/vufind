@@ -1,6 +1,4 @@
 <?php
-require __DIR__ . '/constants.config.php';
-
 // Composer autoloading
 $autoloader = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoloader)) {
