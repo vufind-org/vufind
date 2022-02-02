@@ -166,6 +166,7 @@ forms:
           - label: Option 1
             value: option-1
         label: checkbox
+
   TestSubjectEmailWithoutPlaceholders:
     emailSubject: Subject without placeholders
     fields:
