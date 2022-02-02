@@ -39,6 +39,13 @@ namespace VuFind\ILS\Driver;
 class GeniePlus extends AbstractAPI
 {
     /**
+     * Status messages indicating available items
+     *
+     * @var string[]
+     */
+    protected $availableStatuses;
+
+    /**
      * Access token
      *
      * @var string
@@ -55,9 +62,16 @@ class GeniePlus extends AbstractAPI
      */
     public function init()
     {
+        $this->availableStatuses
+            = (array)($this->config['API']['available_statuses'] ?? []);
     }
 
-    protected function renewAccessToken()
+    /**
+     * Renew the OAuth access token needed by the API.
+     *
+     * @return void
+     */
+    protected function renewAccessToken(): void
     {
         $params = [
             'client_id' => $this->config['API']['oauth_id'],
@@ -78,6 +92,17 @@ class GeniePlus extends AbstractAPI
         $this->token = $result->access_token;
     }
 
+    /**
+     * Call the API, with an access token added to the headers; renew token as
+     * needed.
+     *
+     * @param string $method  GET/POST/PUT/DELETE/etc
+     * @param string $path    API path (with a leading /)
+     * @param array  $params  Parameters object to be sent as data
+     * @param array  $headers Additional headers
+     *
+     * @return \Laminas\Http\Response
+     */
     protected function callApiWithToken(
         $method = "GET",
         $path = "/",
@@ -96,8 +121,7 @@ class GeniePlus extends AbstractAPI
                 $params,
                 array_merge($headers, [$authHeader])
             );
-        } catch (\Exception $e) {
-            // TODO: catch more specific exception
+        } catch (\VuFind\Exception\Forbidden $e) {
             $this->renewAccessToken();
             $authHeader = "Authorization: Bearer {$this->token}";
             return $this->makeRequest(
@@ -148,35 +172,41 @@ class GeniePlus extends AbstractAPI
      */
     protected function apiRecordToArray($record): array
     {
-        $locations = $this->extractDisplayValues(
-            $this->getFieldFromApiRecord($record, 'location')
-        );
-        $callNos = $this->extractDisplayValues(
-            $this->getFieldFromApiRecord($record, 'callnumber')
+        $bibId = current(
+            $this->getFieldFromApiRecord($record, 'id')
         );
         $barcodes = $this->extractDisplayValues(
             $this->getFieldFromApiRecord($record, 'barcode')
         );
+        $callNos = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'callnumber')
+        );
+        $locations = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'location')
+        );
+        $statuses = $this->extractDisplayValues(
+            $this->getFieldFromApiRecord($record, 'status')
+        );
         $volumes = $this->extractDisplayValues(
             $this->getFieldFromApiRecord($record, 'volume')
         );
-        $bibId = current(
-            $this->getFieldFromApiRecord($record, 'id')
-        );
         $total = max(
             [
-                count($locations),
-                count($callNos),
                 count($barcodes),
+                count($callNos),
+                count($locations),
+                count($statuses),
                 count($volumes),
             ]
         );
         $result = [];
         for ($i = 0; $i < $total; $i++) {
+            $availability = in_array($statuses[$i] ?? '', $this->availableStatuses)
+                ? 1 : 0;
             $result[] = [
                 'id' => $bibId,
-                'availability' => 1, // TODO
-                'status' => 'TBD', // TODO
+                'availability' => $availability,
+                'status' => $statuses[$i] ?? '',
                 'location' => $locations[$i] ?? '',
                 'reserve' => 'N', // not supported
                 'callnumber' => $callNos[$i] ?? '',
@@ -205,11 +235,12 @@ class GeniePlus extends AbstractAPI
         $template = $this->config['API']['catalog_template'];
         $path = "/_rest/databases/$database/templates/$template/search-result";
         $idField = $this->config['API']['field']['id'];
+        $safeId = str_replace("'", '', $id); // don't allow quotes in IDs
         $params = [
-            'page-size' => 100, // TODO: configurable?
+            'page-size' => 100,
             'page' => 0,
             'fields' => implode(',', $this->config['API']['field']),
-            'command' => "$idField == '$id'", // TODO: escape/sanitize
+            'command' => "$idField == '$safeId'",
         ];
         $json = $this->callApiWithToken('GET', $path, $params)->getBody();
         $response = json_decode($json, true);
