@@ -11,4 +11,4 @@ if (!class_exists('Laminas\Loader\AutoloaderFactory')) {
 }
 
 // Return the application!
-return Laminas\Mvc\Application::init(require 'config/application.config.php');
+return Laminas\Mvc\Application::init(require __DIR__ . '/application.config.php');
