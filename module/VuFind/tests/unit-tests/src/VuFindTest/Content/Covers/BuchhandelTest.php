@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -36,7 +36,7 @@ use VuFindCode\ISBN;
  * Unit tests for Booksite cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -49,7 +49,7 @@ class BuchhandelTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidCoverLoading()
+    public function testValidCoverLoading(): void
     {
         $loader = new Buchhandel('http://base/', 'mytoken');
         $this->assertEquals(
@@ -67,9 +67,9 @@ class BuchhandelTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingIsbn()
+    public function testMissingIsbn(): void
     {
         $loader = new Buchhandel('http://base', 'mytoken');
-        $this->assertEquals(false, $loader->getUrl('mytoken', 'small', []));
+        $this->assertFalse($loader->getUrl('mytoken', 'small', []));
     }
 }
