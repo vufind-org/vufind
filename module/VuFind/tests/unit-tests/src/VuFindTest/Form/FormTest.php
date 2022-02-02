@@ -564,4 +564,36 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($form->isValid());
         }
     }
+
+    /**
+     * Test email subjects.
+     *
+     * @return void
+     */
+    public function testEmailSubjects()
+    {
+        $ids = [
+            'TestSubjectEmailWithPlaceholders',
+            'TestSubjectEmailWithoutPlaceholders'
+        ];
+        $results = [
+            'Subject One Two option-1',
+            'Subject without placeholders'
+        ];
+        for ($i = 0; $i < count($ids); $i++) {
+            $form = $this->getMockTestForm($ids[$i]);
+            $form->setData(
+                [
+                    'text1' => 'One',
+                    'text2' => 'Two',
+                    'checkbox' => ['option-1']
+                ]
+            );
+            $this->assertTrue($form->isValid());
+            $this->assertEquals(
+                $results[$i],
+                $form->getEmailSubject($form->getData())
+            );
+        }
+    }
 }
