@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -37,6 +38,7 @@ use VuFind\Form\Form;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -563,5 +565,54 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
+    }
+
+    /**
+     * Function to get testEmailSubjects data.
+     *
+     * @return array
+     */
+    public function getEmailSubjectsData(): array
+    {
+        return [
+            'with placeholders'
+                => [
+                    'TestSubjectEmailWithPlaceholders',
+                    'Subject One Two option-1'
+                ],
+            'without placeholders'
+                => [
+                    'TestSubjectEmailWithoutPlaceholders',
+                    'Subject without placeholders'
+                ],
+       ];
+    }
+
+    /**
+     * Test email subjects.
+     * @dataProvider getEmailSubjectsData
+     *
+     * @param string $formToTest      ID of the form to test.
+     * @param string $expectedSubject String to be expected.
+     *
+     * @return void
+     */
+    public function testEmailSubjects(
+        string $formToTest,
+        string $expectedSubject
+    ): void {
+        $form = $this->getMockTestForm($formToTest);
+        $form->setData(
+            [
+                'text1' => 'One',
+                'text2' => 'Two',
+                'checkbox' => ['option-1']
+            ]
+        );
+        $this->assertTrue($form->isValid());
+        $this->assertEquals(
+            $expectedSubject,
+            $form->getEmailSubject($form->getData())
+        );
     }
 }
