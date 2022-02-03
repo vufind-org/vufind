@@ -31,6 +31,7 @@ namespace VuFindTest\Search\Base;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
+use VuFindTest\Feature\ReflectionTrait;
 
 /**
  * Base Search Object Parameters Test
@@ -44,6 +45,8 @@ use VuFind\Search\Base\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
+    use ReflectionTrait;
+
     /**
      * Get mock configuration plugin manager
      *
@@ -149,11 +152,40 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
 
         // If we add a checkbox facet for a field that already has an assigned label,
-        // we do not expect the checkbox label to override the field label:
+        // we expect the checkbox label to override the field label:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo', 'bar'));
         $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
         $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+    }
+
+    /**
+     * Test that getFacetLabel works as expected with aliases.
+     *
+     * @return void
+     */
+    public function testGetFacetLabelWithAliases(): void
+    {
+        $params = $this->getMockParams();
+        $this->setProperty(
+            $params,
+            'facetAliases',
+            [
+                'foo_old' => 'foo'
+            ]
+        );
+
+        // If we haven't set up any facets yet, labels will be unrecognized:
+        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+
+        // Now if we add a facet, we should get the label back:
+        $params->addFacet('foo', 'foo_label');
+        $this->assertEquals('foo_label', $params->getFacetLabel('foo_old'));
+
+        // If we add a checkbox facet for a field that already has an assigned label,
+        // we expect the checkbox label to override the field label:
+        $params->addCheckboxFacet('foo:bar', 'checkbox_label');
+        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo_old', 'bar'));
     }
 
     /**
