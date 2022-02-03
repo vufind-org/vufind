@@ -5,6 +5,7 @@ $modules = [
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
+    'Laminas\Cache\Storage\Adapter\Memcached',
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Form',
     'Laminas\Router',

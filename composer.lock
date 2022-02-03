@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b478d5061fd2a7d7e5b51388f12d2fe",
+    "content-hash": "8ea8adf4dc07e123441a2beabcd8e833",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1314,6 +1314,74 @@
                 }
             ],
             "time": "2021-12-01T10:01:46+00:00"
+        },
+        {
+            "name": "laminas/laminas-cache-storage-adapter-memcached",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-cache-storage-adapter-memcached.git",
+                "reference": "dd6077d2a9a67f8f30b784745259861a8ae6c7cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-memcached/zipball/dd6077d2a9a67f8f30b784745259861a8ae6c7cb",
+                "reference": "dd6077d2a9a67f8f30b784745259861a8ae6c7cb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-memcached": "^3.1.5",
+                "laminas/laminas-cache": "^3.0",
+                "php": "^7.3 || ~8.0.0 || ~8.1.0"
+            },
+            "provide": {
+                "laminas/laminas-cache-storage-implementation": "1.0"
+            },
+            "require-dev": {
+                "laminas/laminas-cache": "3.0.x-dev",
+                "laminas/laminas-cache-storage-adapter-benchmark": "^1.0",
+                "laminas/laminas-cache-storage-adapter-test": "2.0.x-dev",
+                "laminas/laminas-coding-standard": "~2.2.0",
+                "phpunit/phpunit": "^9.5.8",
+                "psalm/plugin-phpunit": "^0.16.1",
+                "vimeo/psalm": "^4.10"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "config-provider": "Laminas\\Cache\\Storage\\Adapter\\Memcached\\ConfigProvider",
+                    "module": "Laminas\\Cache\\Storage\\Adapter\\Memcached"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Cache\\Storage\\Adapter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Laminas cache adapter for memcached",
+            "keywords": [
+                "cache",
+                "laminas",
+                "memcached"
+            ],
+            "support": {
+                "docs": "https://docs.laminas.dev/laminas-cache-storage-adapter-memcached/",
+                "forum": "https://discourse.laminas.dev/",
+                "issues": "https://github.com/laminas/laminas-cache-storage-adapter-memcached/issues",
+                "rss": "https://github.com/laminas/laminas-cache-storage-adapter-memcached/releases.atom",
+                "source": "https://github.com/laminas/laminas-cache-storage-adapter-memcached"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2021-09-26T14:50:54+00:00"
         },
         {
             "name": "laminas/laminas-cache-storage-adapter-memory",
@@ -8040,9 +8108,6 @@
             "require": {
                 "php": "^7.1 || ^8.0"
             },
-            "replace": {
-                "myclabs/deep-copy": "self.version"
-            },
             "require-dev": {
                 "doctrine/collections": "^1.0",
                 "doctrine/common": "^2.6",
@@ -11199,5 +11264,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
