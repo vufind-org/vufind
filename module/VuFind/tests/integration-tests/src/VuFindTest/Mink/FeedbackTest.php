@@ -173,14 +173,11 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 8
+                    'action_interval' => 60
                 ]
             ]
         );
-        // Send once before actual tests to reset the interval:
-        $this->fillInAndSubmitFeedbackForm($page);
-
-        // Resubmit too soon:
+        // Test that submission is blocked:
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
             1,
@@ -191,9 +188,18 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             )
         );
 
-        // Wait and resubmit:
-        $this->snooze($matches[1]);
-        $this->clickCss($page, '#modal input[type="submit"]');
+        // Set up with minimal delay and test that submission is passed:
+        $page = $this->setupPage(
+            [
+                'Captcha' => [
+                    'types' => ['interval'],
+                    'forms' => 'feedback',
+                    'action_interval' => 1
+                ]
+            ]
+        );
+        $this->snooze();
+        $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
             'Thank you for your feedback.',
             $this->findCss($page, '#modal .alert-success')->getText()
