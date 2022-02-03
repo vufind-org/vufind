@@ -179,13 +179,9 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Test that submission is blocked:
         $this->fillInAndSubmitFeedbackForm($page);
-        $this->assertEquals(
-            1,
-            preg_match(
-                '/This action can only be performed after (\d+) seconds/',
-                $this->findCss($page, '#modal .alert-danger')->getText(),
-                $matches
-            )
+        $this->assertMatchesRegularExpression(
+            '/This action can only be performed after (\d+) seconds/',
+            $this->findCss($page, '#modal .alert-danger')->getText(),
         );
 
         // Set up with minimal delay and test that submission is passed:
