@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ea8adf4dc07e123441a2beabcd8e833",
+    "content-hash": "ec4f654e55f746101b4bec67deeddfbd",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -8108,6 +8108,9 @@
             "require": {
                 "php": "^7.1 || ^8.0"
             },
+            "replace": {
+                "myclabs/deep-copy": "self.version"
+            },
             "require-dev": {
                 "doctrine/collections": "^1.0",
                 "doctrine/common": "^2.6",
@@ -11264,5 +11267,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }

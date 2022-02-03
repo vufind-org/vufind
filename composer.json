@@ -18,6 +18,10 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
+    "provide": {
+        "ext-memcached": "*",
+        "ext-soap": "*"
+    },
     "require": {
         "php": ">=7.4.0",
         "ahand/mobileesp": "dev-master",
@@ -98,14 +102,6 @@
         "phpunit/phpunit": "9.5.10",
         "sebastian/phpcpd": "6.0.3",
         "squizlabs/php_codesniffer": "3.6.2"
-    },
-    "replace": {
-        "laminas/laminas-cache-storage-adapter-apc": "*",
-        "laminas/laminas-cache-storage-adapter-dba": "*",
-        "laminas/laminas-cache-storage-adapter-memcache": "*",
-        "laminas/laminas-cache-storage-adapter-mongodb": "*",
-        "laminas/laminas-cache-storage-adapter-wincache": "*",
-        "laminas/laminas-cache-storage-adapter-xcache": "*"
     },
     "extra": {
         "merge-plugin": {
