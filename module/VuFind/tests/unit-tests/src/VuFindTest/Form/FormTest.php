@@ -569,7 +569,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Function to get testEmailSubjects data.
-     * 
+     *
      * @return array
      */
     public function getEmailSubjectsData(): array
@@ -594,7 +594,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $formToTest      ID of the form to test.
      * @param string $expectedSubject String to be expected.
-     * 
+     *
      * @return void
      */
     public function testEmailSubjects(
