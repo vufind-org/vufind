@@ -68,7 +68,7 @@ abstract class AbstractBase
      */
     public function getErrorMessage(): string
     {
-        return '';
+        return 'captcha_not_passed';
     }
 
     /**

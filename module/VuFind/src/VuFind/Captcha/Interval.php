@@ -61,6 +61,13 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
     protected $actionInterval;
 
     /**
+     * Minimum time from session start to first action
+     *
+     * @var int
+     */
+    protected $timeFromSessionStart;
+
+    /**
      * Verification error message
      *
      * @var string
@@ -77,6 +84,9 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
     {
         $this->sessionData = $sc;
         $this->actionInterval = intval($config->Captcha->action_interval ?? 60);
+        $this->timeFromSessionStart = intval(
+            $config->Captcha->time_from_session_start ?? $this->actionInterval
+        );
     }
 
     /**
@@ -88,14 +98,19 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
      */
     public function verify(Params $params): bool
     {
-        $timestamp = $this->sessionData->lastProtectedActionTime
-            ?? $this->sessionData->sessionStartTime;
+        if (isset($this->sessionData->lastProtectedActionTime)) {
+            $timestamp = $this->sessionData->lastProtectedActionTime;
+            $requiredInterval = $this->actionInterval;
+        } else {
+            $timestamp = $this->sessionData->sessionStartTime;
+            $requiredInterval = $this->timeFromSessionStart;
+        }
         $timePassed = time() - $timestamp;
-        if ($timePassed < $this->actionInterval) {
+        if ($timePassed < $requiredInterval) {
             $this->errorMessage = $this->translate(
                 'interval_captcha_not_passed',
                 [
-                    '%%delay%%' => max($this->actionInterval - $timePassed, 1)
+                    '%%delay%%' => max($requiredInterval - $timePassed, 1)
                 ]
             );
             return false;
