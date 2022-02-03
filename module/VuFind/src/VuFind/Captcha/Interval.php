@@ -95,6 +95,8 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
      * @param Params $params Controller params
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function verify(Params $params): bool
     {
