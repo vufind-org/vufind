@@ -92,9 +92,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getBibliographicalReferences(AuthorityRecordDriver &$driver): string
+    public function getBiographicalReferences(AuthorityRecordDriver &$driver): string
     {
-        $references = $driver->getBibliographicalReferences();
+        $references = $driver->getBiographicalReferences();
         if (count($references) == 0)
             return '';
 

@@ -100,7 +100,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $references;
     }
 
-    public function getBibliographicalReferences(): array
+    public function getBiographicalReferences(): array
     {
         $references = [];
 
