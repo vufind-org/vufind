@@ -111,7 +111,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -135,7 +135,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -158,7 +158,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertResultsForDefaultQuery($page);
     }
 }

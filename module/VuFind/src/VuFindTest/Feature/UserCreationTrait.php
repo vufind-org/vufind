@@ -159,6 +159,5 @@ trait UserCreationTrait
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
-        $this->snooze();
     }
 }

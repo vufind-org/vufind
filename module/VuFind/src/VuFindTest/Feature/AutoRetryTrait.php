@@ -104,6 +104,8 @@ trait AutoRetryTrait
                 if (get_class($e) == SkippedTestError::class) {
                     throw $e;
                 }
+                echo "\nRETRY after " . $e->getMessage() . "\n";
+                echo $e->getTraceAsString();
                 // Execute callbacks for interrupted test, unless this is the
                 // last round of testing:
                 if ($this->retriesLeft > 0) {

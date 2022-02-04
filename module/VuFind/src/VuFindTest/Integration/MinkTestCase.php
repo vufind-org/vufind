@@ -49,6 +49,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
+    public CONST DEFAULT_TIMEOUT = 5000;
+
     /**
      * Modified configurations
      *
@@ -242,12 +244,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findCss(Element $page, $selector, $timeout = 1000, $index = 0)
+    protected function findCss(Element $page, $selector, $timeout = self::DEFAULT_TIMEOUT, $index = 0)
     {
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('$selector').length > 0"
+            "typeof $ !== 'undefined' && $('$selector').length > $index"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -257,6 +259,51 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             "Element not found: $selector index $index"
         );
         return $result;
+    }
+
+    /**
+     * Wait for a JavaScript statement to result in true.
+     *
+     * Includes a check for $ to be available to make sure jQuery has been loaded.
+     *
+     * @param string $selector CSS selector
+     * @param int    $timeout  Wait timeout (in ms)
+     *
+     * @return mixed
+     */
+    protected function waitStatement($statement, $timeout = self::DEFAULT_TIMEOUT)
+    {
+        $session = $this->getMinkSession();
+        $this->assertTrue(
+            $session->wait(
+                $timeout,
+                "(typeof $ !== 'undefined') && $statement"
+            ),
+            "Statement '$statement'"
+        );
+    }
+
+    /**
+     * Wait for an element to NOT exist.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout (in ms)
+     * @param int     $index    Index of the element (0-based)
+     *
+     * @return void
+     */
+    protected function unFindCss(Element $page, $selector, $timeout = self::DEFAULT_TIMEOUT, $index = 0)
+    {
+        $startTime = microtime(true);
+        while (microtime(true) - $startTime <= $timeout) {
+            $elements = $page->findAll('css', $selector);
+            if (!isset($elements[$index])) {
+                return;
+            }
+            usleep(50000);
+        }
+        throw new \Exception("Selector '$selector' remains accessible");
     }
 
     /**
@@ -272,7 +319,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function clickCss(
         Element $page,
         $selector,
-        $timeout = 1000,
+        $timeout = self::DEFAULT_TIMEOUT,
         $index = 0
     ) {
         $e = null;
@@ -283,6 +330,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return $result;
             } catch (\Exception $e) {
                 // Expected click didn't work... snooze and retry
+                echo "CLICK FAIL!\n";
                 $this->snooze();
             }
         }
@@ -305,19 +353,31 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         Element $page,
         $selector,
         $value,
-        $timeout = 1000,
+        $timeout = self::DEFAULT_TIMEOUT,
         $retries = 6
     ) {
-        $field = $this->findCss($page, $selector, $timeout);
+        $field = $this->findCss($page, $selector, $timeout, 0);
+
+        $session = $this->getMinkSession();
+        $session->wait(
+            $timeout,
+            "typeof $ !== 'undefined' && $('$selector:focusable').length > 0"
+        );
+        $results = $page->findAll('css', $selector);
+        $this->assertIsArray($results, "Selector not found: $selector");
+        $field = $results[0];
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
         for ($i = 0; $i < $retries; $i++) {
             $field->setValue($value);
+
             // Did it work? If so, we're done and can leave....
             if ($field->getValue() === $value) {
                 return;
             }
+            echo "RETRY SET VALUE\n";
+            $this->snooze();
         }
 
         throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
@@ -376,8 +436,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->findCss($page, '#searchForm_type')->setValue($handler);
         }
         $this->findCss($page, '.btn.btn-primary')->click();
-        $this->snooze();
         return $page;
+    }
+
+    /**
+     * Wait for page load (full page) to complete
+     *
+     * @param Element $page    Page element
+     * @param int     $timeout Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function waitForPageLoad(
+        Element $page,
+        int $timeout = self::DEFAULT_TIMEOUT
+    ) {
+        $session = $this->getMinkSession();
+        // Wait for page load to complete:
+        $session->wait($timeout, "document.readyState === 'complete'");
+        // Wait for any AJAX requests to complete:
+        $session->wait(
+            $timeout,
+            "typeof $ !== 'undefined' && $.active === 0"
+        );
+        // Wait for modal load to complete:
+        $this->unFindCss($page, '.modal-loading-overlay', $timeout);
+        // Wait for page load to complete again in case it was triggered by
+        // lightbox refresh or similar:
+        $session->wait($timeout, "document.readyState === 'complete'");
+        // Finally, make sure any loading spinners are not visible:
+        $session->wait(
+            $timeout,
+            "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
+        );
     }
 
     /**
