@@ -6,21 +6,19 @@
     <tr>
       <th><?=$this->transEsc("Author")?></th><th><?=$this->transEsc("sort_author_relevance")?></th>
     </tr>
-    <?php foreach ($this->results->getResults() as $record): ?>
+    <?php foreach ($this->relatedAuthors as $record): ?>
       <tr>
         <td>
           <?php if ($this->tuefind()->isSearchTabEnabled('SolrAuth')): ?>
-            <?php if (stripos($record['value'], ":") !== false): list($authorName,$authorityId) = explode(":", $record['value']); ?>
-              <?=$this->escapeHtml($authorName)?>
-              <?php if ($authorityId != '' && ($authorityDriver = $this->authority()->recordExists($authorityId)) && $referenceDriver != null): ?>
-                <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($referenceDriver, $authorityDriver))?>"><i class="fa fa-link" aria-hidden="true" title="<?=$this->transEsc('author_joint_titles_tooltip')?>"></i></a>
-                <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
-                <a href="<?=$this->record($authorityDriver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
-              <?php else: ?>
-                <a href="<?=$this->authority()->getTitlesByUrlNameOrID($authorName,$authorityId)?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
-                  <?php if(!empty($authorityId)):?>
-                  <a href="/Authority/<?=$authorityId?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
-                <?php endif; ?>
+            <?=$this->escapeHtml($record['relatedAuthorTitle'])?>
+            <?php if ($record['relatedAuthorID'] != '' && ($authorityDriver = $this->authority()->recordExists($record['relatedAuthorID'])) && $referenceDriver != null): ?>
+              <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($referenceDriver, $authorityDriver))?>"><i class="fa fa-link" aria-hidden="true" title="<?=$this->transEsc('author_joint_titles_tooltip')?>"></i></a>
+              <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="<?=$this->transEsc('author_all_titles_tooltip')?>"></i></a>
+              <a href="<?=$this->record($authorityDriver)->getLink('authority', $record['relatedAuthorID'])?>"><i class="fa fa-user-circle" aria-hidden="true" title="<?=$this->transEsc('author_details_tooltip')?>"></i></a>
+            <?php else: ?>
+              <a href="<?=$this->authority()->getTitlesByUrlNameOrID($record['relatedAuthorTitle'],$record['relatedAuthorID'])?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
+                <?php if(!empty($record['relatedAuthorID'])):?>
+                <a href="/Authority/<?=$record['relatedAuthorID']?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
               <?php endif; ?>
             <?php endif; ?>
           <?php else: ?>

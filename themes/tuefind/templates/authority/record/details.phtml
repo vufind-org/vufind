@@ -21,7 +21,7 @@
       <?php renderRow($this->transEsc('Time'), $this->authority()->getTimespans($this->driver)); ?>
     <?php endif; ?>
 
-    <?php renderRow($this->transEsc('Biographical References'), $this->authority()->getBibliographicalReferences($this->driver)); ?>
+    <?php renderRow($this->transEsc('Biographical References'), $this->authority()->getBiographicalReferences($this->driver)); ?>
     <?php renderRow($this->transEsc('Archived Material'), $this->authority()->getArchivedMaterial($this->driver)); ?>
     <?php renderRow($this->transEsc('Subsystems'), $this->authority()->getExternalSubsystems($this->driver, $this->tuefind()->getTueFindSubtype())); ?>
   </tbody>

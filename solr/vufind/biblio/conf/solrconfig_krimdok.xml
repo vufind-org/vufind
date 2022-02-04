@@ -107,6 +107,14 @@
   -->
   <jmx />
 
+
+  <updateRequestProcessorChain name="conditional_insert_field">
+    <processor class="de.uni_tuebingen.ub.tuefind.conditionalInsertField.ConditionalInsertFieldProcessorFactory" />
+    <processor class="solr.LogUpdateProcessorFactory" />
+    <processor class="solr.RunUpdateProcessorFactory" />
+  </updateRequestProcessorChain>
+
+
   <!-- the default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
 
@@ -186,8 +194,8 @@
          -->
 
     <!-- VuFind uses the default Solr settings for filterCache, which should produce a high
-         hit rate. You can carefully adjust the filterCache and check the hit ratio in 
-         admin>plugins>stats -->  
+         hit rate. You can carefully adjust the filterCache and check the hit ratio in
+         admin>plugins>stats -->
     <filterCache
       class="solr.FastLRUCache"
       size="512"
@@ -357,6 +365,15 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
+
+  <requestHandler name="/update" class="solr.UpdateRequestHandler">
+     <lst name="defaults">
+        <str name="update.chain">conditional_insert_field</str>
+     </lst>
+  </requestHandler>
+
+
+
   <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters -->
      <lst name="defaults">
@@ -735,6 +752,9 @@
   <queryResponseWriter name="xslt" class="org.apache.solr.response.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter>
+
+  <!-- CUSTOM queryParsers -->
+  <queryParser class="de.uni_tuebingen.ub.ixTheo.multiLanguageQuery.MultiLanguageQueryParserPlugin" name="multiLanguageQueryParser" />
 
   <!-- Mitigate CVE-2017-12629 -->
   <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin"/>

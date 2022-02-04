@@ -1,9 +1,12 @@
 <footer class="hidden-print ix-footer">
-  <section class="ix-footer-section">
-    <div class="container">
-      <?=$this->tuefind()->renderStaticTemplate('supporters')?>
-    </div>
-  </section>
+  <?php $routeParams = $this->tuefind()->getRouteParams(); ?>
+  <?php if($routeParams['controller'] == "index" && $routeParams['action'] == "Home"): ?>
+    <section class="ix-footer-section">
+      <div class="container">
+        <?=$this->tuefind()->renderStaticTemplate('supporters')?>
+      </div>
+    </section>
+  <?php endif;?>
   <section class="ix-footer-section ix-footer-background-block">
     <div class="container">
       <?=$this->tuefind()->renderStaticTemplate('footer')?>
