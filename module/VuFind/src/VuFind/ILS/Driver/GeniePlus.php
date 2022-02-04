@@ -138,6 +138,7 @@ class GeniePlus extends AbstractAPI
      *
      * @param array  $record Record containing field
      * @param string $field  Name of field to extract
+     * @param string $type   Type of field being looked up (e.g. Item, Patron)
      *
      * @return array
      */
