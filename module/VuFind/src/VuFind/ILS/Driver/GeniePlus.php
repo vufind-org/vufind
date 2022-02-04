@@ -63,7 +63,7 @@ class GeniePlus extends AbstractAPI
     public function init()
     {
         $this->availableStatuses
-            = (array)($this->config['API']['available_statuses'] ?? []);
+            = (array)($this->config['Item']['available_statuses'] ?? []);
     }
 
     /**
@@ -141,9 +141,9 @@ class GeniePlus extends AbstractAPI
      *
      * @return array
      */
-    protected function getFieldFromApiRecord($record, $field)
+    protected function getFieldFromApiRecord($record, $field, $type = 'Item')
     {
-        $fieldName = $this->config['API']['field'][$field] ?? '';
+        $fieldName = $this->config[$type]['field'][$field] ?? '';
         return $record[$fieldName] ?? [];
     }
 
@@ -170,7 +170,7 @@ class GeniePlus extends AbstractAPI
      *
      * @return array
      */
-    protected function apiRecordToArray($record): array
+    protected function apiStatusRecordToArray($record): array
     {
         $bibId = current(
             $this->extractDisplayValues(
@@ -225,6 +225,19 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
+     * Get the search path to query a template.
+     *
+     * @param string $template Name of template to query
+     *
+     * @return string
+     */
+    protected function getTemplateQueryPath(string $template): string
+    {
+        $database = $this->config['API']['database'];
+        return "/_rest/databases/$database/templates/$template/search-result";
+    }
+
+    /**
      * Get Status
      *
      * This is responsible for retrieving the status information of a certain
@@ -237,20 +250,19 @@ class GeniePlus extends AbstractAPI
      */
     public function getStatus($id)
     {
-        $database = $this->config['API']['database'];
         $template = $this->config['API']['catalog_template'];
-        $path = "/_rest/databases/$database/templates/$template/search-result";
-        $idField = $this->config['API']['field']['id'];
+        $path = $this->getTemplateQueryPath($template);
+        $idField = $this->config['Item']['field']['id'];
         $safeId = str_replace("'", '', $id); // don't allow quotes in IDs
         $params = [
             'page-size' => 100,
             'page' => 0,
-            'fields' => implode(',', $this->config['API']['field']),
+            'fields' => implode(',', $this->config['Item']['field']),
             'command' => "$idField == '$safeId'",
         ];
         $json = $this->callApiWithToken('GET', $path, $params)->getBody();
         $response = json_decode($json, true);
-        return $this->apiRecordToArray($response['records'][0] ?? []);
+        return $this->apiStatusRecordToArray($response['records'][0] ?? []);
     }
 
     /**
@@ -309,5 +321,153 @@ class GeniePlus extends AbstractAPI
     {
         // Not supported here:
         return [];
+    }
+
+    /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @throws ILSException
+     * @return mixed           Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     */
+    public function patronLogin($username, $password)
+    {
+        $template = $this->config['API']['patron_template'];
+        $path = $this->getTemplateQueryPath($template);
+        $userField = $this->config['Patron']['field']['cat_username'];
+        $passField = $this->config['Patron']['field']['cat_password'];
+        // Don't allow quotes in credentials; TODO: better escaping?
+        $safeUser = str_replace("'", '', $username);
+        $safePass = str_replace("'", '', $password);
+        $idField = $this->config['Patron']['field']['id'];
+        $nameField = $this->config['Patron']['field']['name'];
+        $emailField = $this->config['Patron']['field']['email'];
+        $params = [
+            'page-size' => 1,
+            'page' => 0,
+            'fields' => implode(',', [$idField, $nameField, $emailField]),
+            'command' => "$userField == '$safeUser' AND $passField == '$safePass'",
+        ];
+        $json = $this->callApiWithToken('GET', $path, $params)->getBody();
+        $response = json_decode($json, true);
+        $user = $response['records'][0] ?? [];
+        if (empty($user)) {
+            return null;
+        }
+        $id = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'id', 'Patron')
+            )
+        );
+        $email = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'email', 'Patron')
+            )
+        );
+        $name = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'name', 'Patron')
+            )
+        );
+        [$last, $first] = explode(',', $name, 2);
+        return [
+            'id'           => $id,
+            'firstname'    => trim($first),
+            'lastname'     => trim($last),
+            'cat_username' => trim($username),
+            'cat_password' => trim($password),
+            'email'        => $email,
+            'major'        => null,
+            'college'      => null
+        ];
+    }
+
+    /**
+     * Get Patron Profile
+     *
+     * This is responsible for retrieving the profile for a specific patron.
+     *
+     * @param array $patron The patron array
+     *
+     * @return array        Array of the patron's profile data on success.
+     */
+    public function getMyProfile($patron)
+    {
+        $template = $this->config['API']['patron_template'];
+        $path = $this->getTemplateQueryPath($template);
+        $idField = $this->config['Patron']['field']['id'];
+        $safeId = str_replace("'", '', $patron['id']);
+        $fields = [
+            $this->config['Patron']['field']['address1'],
+            $this->config['Patron']['field']['address2'],
+            $this->config['Patron']['field']['zip'],
+            $this->config['Patron']['field']['city'],
+            $this->config['Patron']['field']['country'],
+            $this->config['Patron']['field']['phone'],
+            $this->config['Patron']['field']['expiration_date'],
+        ];
+        $params = [
+            'page-size' => 1,
+            'page' => 0,
+            'fields' => implode(',', $fields),
+            'command' => "$idField == '$safeId'",
+        ];
+        $json = $this->callApiWithToken('GET', $path, $params)->getBody();
+        $response = json_decode($json, true);
+        $user = $response['records'][0] ?? [];
+        if (empty($user)) {
+            throw new \Exception("Unable to fetch patron $safeId");
+        }
+        $addr1 = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'address1', 'Patron')
+            )
+        );
+        $addr2 = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'address2', 'Patron')
+            )
+        );
+        $zip = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'zip', 'Patron')
+            )
+        );
+        $city = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'city', 'Patron')
+            )
+        );
+        $country = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'country', 'Patron')
+            )
+        );
+        $phone = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'phone', 'Patron')
+            )
+        );
+        $expirationDate = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'expiration_date', 'Patron')
+            )
+        );
+        return [
+            'firstname'       => $patron['firstname'],
+            'lastname'        => $patron['lastname'],
+            'address1'        => empty($addr1) ? null : $addr1,
+            'address2'        => empty($addr2) ? null : $addr2,
+            'zip'             => empty($zip) ? null : $zip,
+            'city'            => empty($city) ? null : $city,
+            'country'         => empty($country) ? null : $country,
+            'phone'           => empty($phone) ? null : $phone,
+            'expiration_date' => empty($expirationDate) ? null : $expirationDate,
+        ];
     }
 }
