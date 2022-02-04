@@ -470,4 +470,48 @@ class GeniePlus extends AbstractAPI
             'expiration_date' => empty($expirationDate) ? null : $expirationDate,
         ];
     }
+
+    /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @return mixed        Array of the patron's transactions on success.
+     */
+    public function getMyTransactions($patron, $params = [])
+    {
+        // TODO: add full pagination support
+        $pageSize = $params['limit'] ?? 100;
+
+        $patronTemplate = $this->config['API']['patron_template'];
+        $loanTemplate = $this->config['API']['loan_template'];
+        $path = $this->getTemplateQueryPath($loanTemplate);
+        $idField = $patronTemplate . '.' . $this->config['Patron']['field']['id'];
+        $safeId = str_replace("'", '', $patron['id']);
+        $barcodeField = $this->config['Item']['field']['barcode'];
+        // TODO: get the right field here
+        $bibIdField = $this->config['Item']['field']['id'];
+        $dueField = $this->config['Loan']['field']['duedate'];
+        $fields = [$barcodeField, $bibIdField, $dueField];
+        $params = [
+            'page-size' => $pageSize,
+            'page' => 0,
+            'fields' => implode(',', $fields),
+            'command' => "$idField == '$safeId' AND Archive == 'No'",
+        ];
+        $json = $this->callApiWithToken('GET', $path, $params)->getBody();
+        $response = json_decode($json, true);
+        $callback = function ($entry) use ($barcodeField, $bibIdField, $dueField) {
+            return [
+                'id' => $entry[$bibIdField][0]['display'] ?? null,
+                'item_id' => $entry[$barcodeField][0]['display'] ?? null,
+                'duedate' => $entry[$dueField][0]['display'] ?? null,
+            ];
+        };
+        return array_map($callback, $response['records'] ?? []);
+    }
 }
