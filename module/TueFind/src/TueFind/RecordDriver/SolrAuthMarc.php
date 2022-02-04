@@ -40,23 +40,34 @@ class SolrAuthMarc extends SolrAuthDefault {
 
     /**
      * Get List of all beacon references.
+     *
+     * @param mixed typeFlag    null: all, true: literaryRemains only, false: non-literary-remains only
+     *
      * @return [['title', 'url']]
      */
-    public function getBeaconReferences(): array
+    public function getBeaconReferences($type=null): array
     {
-        $beacon_references = [];
-        $beacon_fields = $this->getMarcRecord()->getFields('BEA');
-        if (is_array($beacon_fields)) {
-            foreach($beacon_fields as $beacon_field) {
-                $name_subfield  = $beacon_field->getSubfield('a');
-                $url_subfield   = $beacon_field->getSubfield('u');
+        $beaconReferences = [];
+        $beaconFields = $this->getMarcRecord()->getFields('BEA');
+        if (is_array($beaconFields)) {
+            foreach($beaconFields as $beaconField) {
+                if ($type !== null) {
+                    $typeSubfield = $beaconField->getSubfield('0');
+                    if ($type === true && ($typeSubfield == false || $typeSubfield->getData() != 'lr'))
+                        continue;
+                    elseif ($type === false && ($typeSubfield != false && $typeSubfield->getData() == 'lr'))
+                        continue;
+                }
 
-                if ($name_subfield !== false && $url_subfield !== false)
-                    $beacon_references[] = ['title' => $name_subfield->getData(),
-                                            'url' => $url_subfield->getData()];
+                $nameSubfield = $beaconField->getSubfield('a');
+                $urlSubfield = $beaconField->getSubfield('u');
+
+                if ($nameSubfield !== false && $urlSubfield !== false)
+                    $beaconReferences[] = ['title' => $nameSubfield->getData(),
+                                            'url' => $urlSubfield->getData()];
             }
         }
-        return $beacon_references;
+        return $beaconReferences;
     }
 
     protected function getExternalReferencesFiltered(array $blacklist=[], array $whitelist=[]): array
@@ -127,13 +138,14 @@ class SolrAuthMarc extends SolrAuthDefault {
                              'url' => 'https:////www.wikidata.org/wiki/' . urlencode($wikidataId)];
 
         $references = array_merge($references, $this->getExternalReferencesFiltered(/*blacklist=*/[], /*whitelist=*/['Wikipedia']));
+        $references = array_merge($references, $this->getBeaconReferences(/* type flag, false => only non literary-remains */ false));
         return $references;
     }
 
     public function getArchivedMaterial(): array
     {
         $references = $this->getExternalReferencesFiltered(/*blacklist=*/[], /*whitelist=*/['Archivportal-D', 'Kalliope']);
-        $references = array_merge($references, $this->getBeaconReferences());
+        $references = array_merge($references, $this->getBeaconReferences(/* type flag, true => only literary remains */ true));
         return $references;
     }
 
