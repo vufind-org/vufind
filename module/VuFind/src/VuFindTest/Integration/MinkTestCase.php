@@ -49,7 +49,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
-    public CONST DEFAULT_TIMEOUT = 5000;
+    public const DEFAULT_TIMEOUT = 5000;
 
     /**
      * Modified configurations
@@ -297,8 +297,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function unFindCss(Element $page, $selector, $timeout = self::DEFAULT_TIMEOUT, $index = 0)
-    {
+    protected function unFindCss(
+        Element $page,
+        $selector,
+        $timeout = self::DEFAULT_TIMEOUT,
+        $index = 0
+    ) {
         $startTime = microtime(true);
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
             $elements = $page->findAll('css', $selector);
@@ -489,7 +493,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->waitStatement('$("#modal:visible").length === 0');
     }
-
 
     /**
      * Verify that lightbox title contains the expected value
