@@ -266,11 +266,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-btn');
-        $genreMore->click();
+        $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
         $this->facetListProcedure($page, $limit);
-        $genreMore->click();
+        $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
         $this->clickCss($page, '#modal .js-facet-item.active');
         // facet removed
@@ -298,8 +297,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-facets');
-        $genreMore->click();
+        $this->clickCss($page, '#side-collapse-genre_facet .more-facets');
         $this->facetListProcedure($page, $limit, true);
         $this->assertEquals(1, count($page->findAll('css', $this->activeFilterSelector)));
     }

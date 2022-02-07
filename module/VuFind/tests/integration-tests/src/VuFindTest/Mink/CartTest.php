@@ -692,9 +692,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($windowCount + 1, count($windows));
         $session->switchToWindow($windows[$windowCount]);
         $this->waitForPageLoad($session->getPage());
-        $this->assertEquals(
+        $this->assertEqualsWithTimeout(
             $exportUrl,
-            $session->getCurrentUrl()
+            [$session, 'getCurrentUrl']
         );
     }
 

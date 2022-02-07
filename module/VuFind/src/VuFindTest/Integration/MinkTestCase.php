@@ -470,6 +470,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->findCss($page, '#searchForm_type')->setValue($handler);
         }
         $this->findCss($page, '.btn.btn-primary')->click();
+        $this->waitForPageLoad($page);
         return $page;
     }
 
