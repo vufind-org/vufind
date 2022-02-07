@@ -494,8 +494,7 @@ class GeniePlus extends AbstractAPI
         $idField = $patronTemplate . '.' . $this->config['Patron']['field']['id'];
         $safeId = str_replace("'", '', $patron['id']);
         $barcodeField = $this->config['Item']['field']['barcode'];
-        // TODO: get the right field here
-        $bibIdField = $this->config['Item']['field']['id'];
+        $bibIdField = $this->config['Loan']['field']['bib_id'];
         $dueField = $this->config['Loan']['field']['duedate'];
         $fields = [$barcodeField, $bibIdField, $dueField];
         $params = [
