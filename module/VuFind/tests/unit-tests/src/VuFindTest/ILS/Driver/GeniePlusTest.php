@@ -154,9 +154,87 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 $response2,
             );
         $this->driver->setConfig($this->config);
+        $this->driver->init();
         $this->assertEquals(
             $this->defaultPatron,
             $this->driver->patronLogin('foo@foo.com', 'bar')
+        );
+    }
+
+    /**
+     * Test holdings lookup
+     *
+     * @return void
+     */
+    public function testGetHolding(): void
+    {
+        $response1 = $this->getMockResponse(
+            $this->getFixture('genieplus/token.json')
+        );
+        $response2 = $this->getMockResponse(
+            $this->getFixture('genieplus/holdings.json')
+        );
+        $this->driver->expects($this->exactly(2))
+            ->method('makeRequest')
+            ->withConsecutive(
+                $this->expectedTokenRequest,
+                [
+                    'GET',
+                    '/_rest/databases/api_database_name/templates/Catalog/search-result',
+                    [
+                        'page-size' => 100,
+                        'page' => 0,
+                        'fields' => 'Inventory.Barcode,Inventory.CallNumLC,Inventory.ClaimDate,UniqRecNum,Inventory.SubLoc.CodeDesc,Inventory.ActType.Status,Inventory.VolumeDesc',
+                        'command' => "UniqRecNum == 'foo-id'",
+                    ],
+                    [
+                        'Accept: application/json',
+                        'Authorization: Bearer fake-token',
+                    ]
+                ],
+            )->willReturnOnConsecutiveCalls(
+                $response1,
+                $response2,
+            );
+        $this->driver->setConfig($this->config);
+        $this->driver->init();
+        $this->assertEquals(
+            [
+                [
+                    'id' => 'foo-id',
+                    'availability' => 1,
+                    'status' => 'Ready for Loans',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '',
+                    'number' => '2017 no.3',
+                    'barcode' => 'barcode3',
+                ],
+                [
+                    'id' => 'foo-id',
+                    'availability' => 0,
+                    'status' => 'On Loan',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '3/4/2022 11:59:59 PM',
+                    'number' => '2016 no.2',
+                    'barcode' => 'barcode2',
+                ],
+                [
+                    'id' => 'foo-id',
+                    'availability' => 1,
+                    'status' => 'Ready for Loans',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '',
+                    'number' => '2015 no.1',
+                    'barcode' => 'barcode1',
+                ],
+            ],
+            $this->driver->getHolding('foo-id')
         );
     }
 
@@ -196,6 +274,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 $response2,
             );
         $this->driver->setConfig($this->config);
+        $this->driver->init();
         $this->assertEquals(
             [
                 'firstname' => 'Fake',
@@ -248,6 +327,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 $response2,
             );
         $this->driver->setConfig($this->config);
+        $this->driver->init();
         $this->assertEquals(
             [
                 [
