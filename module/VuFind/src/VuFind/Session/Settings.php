@@ -72,14 +72,14 @@ class Settings
 
         // If the session manager is already instantiated, close it!
         if (null !== $this->manager) {
-            // Store and restore current $_SESSION contents since session_abort()
-            // will reset it:
-            $sessionData = $_SESSION;
-            session_abort();
-            $_SESSION = $sessionData;
-            if ($storage = $this->manager->getStorage()) {
-                $storage->markImmutable();
+            // Try to disable writes so that writeClose() below doesn't actually
+            // write anything:
+            $saveHandler = $this->manager->getSaveHandler();
+            if (is_callable([$saveHandler, 'disableWrites'])) {
+                $saveHandler->disableWrites();
             }
+            // Close the session:
+            $this->manager->writeClose();
         }
     }
 
