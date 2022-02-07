@@ -600,8 +600,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
-        $button = $this->findCss($page, '[name=bulkActionForm] [name=print]');
-        $button->click();
+        $this->clickCss($page, '[name=bulkActionForm] [name=print]');
         $warning = $this->findCss($page, '.flash-message');
         $this->assertEquals(
             'No items were selected. Please click on a checkbox next to an item and try again.',
@@ -610,10 +609,17 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now do it for real -- we should get redirected.
         $this->selectAllItemsInList($page);
-        $button->click();
-        $this->snooze();
-        [, $params] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals('print=true', $params);
+        $this->clickCss($page, '[name=bulkActionForm] [name=print]');
+
+        // TODO: Make this a repeatable method with timeout:
+        for ($i = 0; $i < 5; $i++) {
+            $urlParts = explode('?', $session->getCurrentUrl());
+            if ('print=true' === $urlParts[1] ?? '') {
+                $this->assertEquals('print=true', $urlParts[1]);
+                break;
+            }
+            $this->snooze();
+        }
     }
 
     /**

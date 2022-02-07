@@ -244,8 +244,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findCss(Element $page, $selector, $timeout = self::DEFAULT_TIMEOUT, $index = 0)
-    {
+    protected function findCss(
+        Element $page,
+        $selector,
+        $timeout = self::DEFAULT_TIMEOUT,
+        $index = 0
+    ) {
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
@@ -266,8 +270,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * Includes a check for $ to be available to make sure jQuery has been loaded.
      *
-     * @param string $selector CSS selector
-     * @param int    $timeout  Wait timeout (in ms)
+     * @param string $statement JavaScript statement to evaluate
+     * @param int    $timeout   Wait timeout (in ms)
      *
      * @return mixed
      */

@@ -70,6 +70,8 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check for sample driver location/call number in output (this will
         // only appear after AJAX returns):
+        $this->unFindCss($page, '.callnumber.ajax-availability');
+        $this->unFindCss($page, '.location.ajax-availability');
         $this->assertEquals(
             'A1234.567',
             $this->findCss($page, '.callnumber')->getText()
