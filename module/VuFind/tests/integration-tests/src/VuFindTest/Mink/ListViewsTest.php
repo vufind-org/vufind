@@ -83,7 +83,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testdeweybrowse');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         return $page;
     }
 
@@ -97,7 +97,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->gotoSearch();
         $this->clickCss($page, '.result a.title');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         return $page;
     }
 
@@ -122,16 +122,12 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record');
         // Make an account
         $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
         $this->findCss($page, '#save_list');
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
         $this->clickCss($page, '#modal .close');
-        $this->snooze();
         // Check saved items status
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
@@ -154,24 +150,18 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click save inside the tools tab
         $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
-        $this->snooze();
         $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record');
-        $this->snooze();
         // Login
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Make list
         $this->clickCss($page, '#make-list');
-        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
         $this->clickCss($page, '#modal .close');
-        $this->snooze();
         // Check saved items status
         // Not visible, but still exists
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
@@ -189,21 +179,19 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Reload the page to close all results
         $session->reload();
-        $this->snooze();
         // Did our saved one open automatically?
         $this->findCss($page, '.result.embedded');
 
         // Close it
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '.result a.title');
         // Did our result stay closed?
+        $this->waitForPageLoad($page);
         $session->reload();
-        $this->snooze();
-        $result = $page->find('css', '.result.embedded');
-        $this->assertFalse(is_object($result));
+        $this->unFindCss($page, '.result.embedded');
 
         // Open it
         $this->clickCss($page, '.result a.title');
-        $this->snooze();
         // Search for anything else
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();

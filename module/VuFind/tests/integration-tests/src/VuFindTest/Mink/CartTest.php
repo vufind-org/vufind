@@ -206,13 +206,13 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->addCurrentPageToCartUsingButtons($page);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
 
         // Open the cart and empty it:
         $this->openCartLightbox($page);
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         return $page;
     }
@@ -276,7 +276,6 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     {
         $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
         $cartSelectAll->check();
-        $this->snooze();
     }
 
     /**
@@ -433,9 +432,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try deleting without selecting anything:
         $delete->click();
-        $this->snooze();
         $this->clickCss($page, '#cart-confirm-delete');
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now actually select the records to delete:
@@ -450,8 +447,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $close->click();
 
         // Confirm that the cart has truly been emptied:
-        $this->snooze(); // wait for display to update
-        $this->assertEquals('0', $this->findCss($page, '#cartItems strong')->getText());
+        $this->waitStatement('$("#cartItems strong").text() === "0"');
     }
 
     /**
@@ -476,8 +472,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $close->click();
 
         // Confirm that the cart has truly been emptied:
-        $this->snooze(); // wait for display to update
-        $this->assertEquals('0', $this->findCss($page, '#cartItems strong')->getText());
+        $this->waitStatement('$("#cartItems strong").text() === "0"');
     }
 
     /**
@@ -504,7 +499,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#bottom_updateCart'),
             '#bottom_addFormCheckboxSelectAll'
         );
-        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->waitStatement('$("#cartItems strong").text() === "2"');
     }
 
     /**
@@ -531,8 +526,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $emptyConfirm->click();
 
         // Confirm that the cart has truly been emptied:
-        $this->snooze(); // wait for display to update
-        $this->assertEquals('0', $this->findCss($page, '#cartItems strong')->getText());
+        $this->waitStatement('$("#cartItems strong").text() === "0"');
     }
 
     /**
@@ -551,21 +545,18 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get a login prompt.
         $this->selectAllItemsInCart($page);
         $button->click();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->checkForLoginMessage($page);
 
         // Create an account.
         $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
@@ -575,7 +566,6 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             'demian.katz@villanova.edu'
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
         // Check for confirmation message
         $this->assertEquals(
             'Your item(s) were emailed',
@@ -597,13 +587,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get a login prompt.
         $this->selectAllItemsInCart($page);
         $button->click();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->checkForLoginMessage($page);
 
         // Log in to account created in previous test.
@@ -611,9 +600,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
-        $this->snooze();
         $this->clickCss($page, '.modal-body input[name=submit]');
-        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
@@ -644,7 +631,6 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get an export option list:
@@ -658,7 +644,6 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
-        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }
@@ -670,17 +655,18 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testCartExportToThirdParty()
     {
+        $exportUrl = $this->getVuFindUrl('/Content/export_test');
         $page = $this->setUpGenericCartTest(
             [
                 'config' => [
                     'Export' => [
-                        'Google' => 'record,bulk',
+                        'VuFind' => 'record,bulk',
                     ],
                 ],
                 'export' => [
-                    'Google' => [
+                    'VuFind' => [
                         'requiredMethods[]' => 'getTitle',
-                        'redirectUrl' => 'https://www.google.com',
+                        'redirectUrl' => $exportUrl,
                         'headers[]' => 'Content-type: text/plain; charset=utf-8',
                     ],
                 ],
@@ -694,19 +680,21 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
-        $select->selectOption('Google');
+        $select->selectOption('VuFind');
 
         // Do the export:
-        $windowCount = count($this->getMinkSession()->getWindowNames());
+        $session = $this->getMinkSession();
+        $windowCount = count($session->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
         $this->snooze();
-        $windows = $this->getMinkSession()->getWindowNames();
+        $windows = $session->getWindowNames();
         $this->assertEquals($windowCount + 1, count($windows));
-        $this->getMinkSession()->switchToWindow($windows[$windowCount]);
+        $session->switchToWindow($windows[$windowCount]);
+        $this->waitForPageLoad($session->getPage());
         $this->assertEquals(
-            'https://www.google.com/',
-            $this->getMinkSession()->getCurrentUrl()
+            $exportUrl,
+            $session->getCurrentUrl()
         );
     }
 
@@ -723,13 +711,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
         // Now do it for real -- we should get redirected.
         $this->selectAllItemsInCart($page);
         $button->click();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
@@ -749,7 +736,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(['config' => ['Site' => $combo]]);
         $this->getMinkSession()->reload();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $elements = [
             'headerBtn'  => $page->find('css', '#cartItems') !== null,
             'bulkEmail'  => $page->find('css', '#ribbon-email') !== null,

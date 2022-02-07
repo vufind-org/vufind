@@ -99,7 +99,7 @@ trait DemoDriverTestTrait
                 'renewMyItems' => 0,
                 'updateHolds' => 0,
             ],
-            'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
+            'StaticHoldings' => [$bibId => json_encode([$this->getFakeItem()])],
             'Users' => ['catuser' => 'catpass'],
         ];
     }
