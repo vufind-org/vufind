@@ -320,11 +320,7 @@ class GeniePlus extends AbstractAPI
      */
     public function getStatuses($ids)
     {
-        $items = [];
-        foreach ($ids as $id) {
-            $items[] = $this->getStatus($id);
-        }
-        return $items;
+        return array_map([$this, 'getStatus'], $ids);
     }
 
     /**
