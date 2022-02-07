@@ -426,6 +426,32 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Wait for a callback to return the expected value
+     *
+     * @param mixed    $expected Expected value
+     * @param callable $callback Callback
+     * @param int      $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertEqualsWithTimeout(
+        $expected,
+        callable $callback,
+        int $timeout = self::DEFAULT_TIMEOUT
+    ) {
+        $result = null;
+        $startTime = microtime(true);
+        while ((microtime(true) - $startTime) * 1000 <= $timeout) {
+            $result = $callback();
+            if ($result === $expected) {
+                break;
+            }
+            usleep(100000);
+        }
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Search for the specified query.
      *
      * @param string $query   Search term(s)

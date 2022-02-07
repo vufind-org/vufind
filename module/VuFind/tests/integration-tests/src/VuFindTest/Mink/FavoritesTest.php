@@ -611,15 +611,13 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->selectAllItemsInList($page);
         $this->clickCss($page, '[name=bulkActionForm] [name=print]');
 
-        // TODO: Make this a repeatable method with timeout:
-        for ($i = 0; $i < 5; $i++) {
-            $urlParts = explode('?', $session->getCurrentUrl());
-            if ('print=true' === $urlParts[1] ?? '') {
-                $this->assertEquals('print=true', $urlParts[1]);
-                break;
+        $this->assertEqualsWithTimeout(
+            'print=true',
+            function () use ($session) {
+                $urlParts = explode('?', $session->getCurrentUrl());
+                return $urlParts[1] ?? '';
             }
-            $this->snooze();
-        }
+        );
     }
 
     /**
