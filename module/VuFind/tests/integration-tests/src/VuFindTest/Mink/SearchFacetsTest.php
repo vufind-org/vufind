@@ -94,6 +94,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $facetList->click();
 
         // Check that when the page reloads, we have fewer results and a filter:
+        $this->waitForPageLoad($page);
         $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals("Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
