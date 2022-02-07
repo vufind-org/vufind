@@ -62,6 +62,9 @@ class GeniePlus extends AbstractAPI
      */
     public function init()
     {
+        if (empty($this->config)) {
+            throw new \VuFind\Exception\ILS("Configuration missing.");
+        }
         $this->availableStatuses
             = (array)($this->config['Item']['available_statuses'] ?? []);
     }
