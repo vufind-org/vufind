@@ -14,7 +14,7 @@ class AuthorityFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        return new Authority(
+        return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
             $container->get('ViewHelperManager'),
             $container->get(\VuFind\Record\Loader::class),
