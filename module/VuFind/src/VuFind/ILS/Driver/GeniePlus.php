@@ -411,6 +411,7 @@ class GeniePlus extends AbstractAPI
             $this->config['Patron']['field']['address2'],
             $this->config['Patron']['field']['zip'],
             $this->config['Patron']['field']['city'],
+            $this->config['Patron']['field']['state'],
             $this->config['Patron']['field']['country'],
             $this->config['Patron']['field']['phone'],
             $this->config['Patron']['field']['expiration_date'],
@@ -447,6 +448,11 @@ class GeniePlus extends AbstractAPI
                 $this->getFieldFromApiRecord($user, 'city', 'Patron')
             )
         );
+        $state = current(
+            $this->extractDisplayValues(
+                $this->getFieldFromApiRecord($user, 'state', 'Patron')
+            )
+        );
         $country = current(
             $this->extractDisplayValues(
                 $this->getFieldFromApiRecord($user, 'country', 'Patron')
@@ -462,13 +468,14 @@ class GeniePlus extends AbstractAPI
                 $this->getFieldFromApiRecord($user, 'expiration_date', 'Patron')
             )
         );
+        $cityAndState = trim($city . (!empty($city) ? ', ' : '') . $state);
         return [
             'firstname'       => $patron['firstname'],
             'lastname'        => $patron['lastname'],
             'address1'        => empty($addr1) ? null : $addr1,
             'address2'        => empty($addr2) ? null : $addr2,
             'zip'             => empty($zip) ? null : $zip,
-            'city'            => empty($city) ? null : $city,
+            'city'            => empty($city) ? null : $cityAndState,
             'country'         => empty($country) ? null : $country,
             'phone'           => empty($phone) ? null : $phone,
             'expiration_date' => empty($expirationDate) ? null : $expirationDate,

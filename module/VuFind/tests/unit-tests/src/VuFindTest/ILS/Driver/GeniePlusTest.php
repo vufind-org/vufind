@@ -161,6 +161,58 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test profile retrieval
+     *
+     * @return void
+     */
+    public function testGetMyProfile(): void
+    {
+        $response1 = $this->getMockResponse(
+            $this->getFixture('genieplus/token.json')
+        );
+        $response2 = $this->getMockResponse(
+            $this->getFixture('genieplus/profile.json')
+        );
+        $this->driver->expects($this->exactly(2))
+            ->method('makeRequest')
+            ->withConsecutive(
+                $this->expectedTokenRequest,
+                [
+                    'GET',
+                    '/_rest/databases/api_database_name/templates/Borrower/search-result',
+                    [
+                        'page-size' => 1,
+                        'page' => 0,
+                        'fields' => 'Address1,Address2,ZipCode,City,StateProv.CodeDesc,Country.CodeDesc,PhoneNumber,ExpiryDate',
+                        'command' => "ID == 'fake.user.fake.com'",
+                    ],
+                    [
+                        'Accept: application/json',
+                        'Authorization: Bearer fake-token',
+                    ]
+                ],
+            )->willReturnOnConsecutiveCalls(
+                $response1,
+                $response2,
+            );
+        $this->driver->setConfig($this->config);
+        $this->assertEquals(
+            [
+                'firstname' => 'Fake',
+                'lastname' => 'User',
+                'address1' => 'Address 1',
+                'address2' => 'Address 2',
+                'zip' => '12345',
+                'city' => 'FakeCity, FakeState',
+                'country' => 'USA',
+                'phone' => '1234567890',
+                'expiration_date' => '12/31/2022 3:55:00 PM',
+            ],
+            $this->driver->getMyProfile($this->defaultPatron)
+        );
+    }
+
+    /**
      * Test transaction retrieval
      *
      * @return void
