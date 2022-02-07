@@ -27,6 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
+use \VuFind\Exception\ILS as ILSException;
+
 /**
  * GeniePlus API driver
  *
@@ -123,9 +125,11 @@ class GeniePlus extends AbstractAPI
         ];
         $response = $this->makeRequest('POST', '/_oauth/token', $params, $headers);
         $result = json_decode($response->getBody());
+        if ($response->getStatusCode() >= 400) {
+            throw new ILSException($response->getBody());
+        }
         if (!isset($result->access_token)) {
-            // TODO: retry loop? Smarter status checks?
-            throw new \Exception('Unable to obtain access token.');
+            throw new ILSException('No access token in API response.');
         }
         $this->token = $this->sessionCache->genieplus_token = $result->access_token;
     }
