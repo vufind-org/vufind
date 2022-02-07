@@ -72,7 +72,14 @@ class Settings
 
         // If the session manager is already instantiated, close it!
         if (null !== $this->manager) {
-            $this->manager->writeClose();
+            // Store and restore current $_SESSION contents since session_abort()
+            // will reset it:
+            $sessionData = $_SESSION;
+            session_abort();
+            $_SESSION = $sessionData;
+            if ($storage = $this->manager->getStorage()) {
+                $storage->markImmutable();
+            }
         }
     }
 
