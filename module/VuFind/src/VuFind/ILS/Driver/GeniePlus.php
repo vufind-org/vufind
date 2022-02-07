@@ -27,7 +27,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use \VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * GeniePlus API driver
