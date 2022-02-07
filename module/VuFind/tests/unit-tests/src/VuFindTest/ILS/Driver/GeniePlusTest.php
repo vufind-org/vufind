@@ -28,6 +28,7 @@
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Response;
+use Laminas\Session\Container;
 use VuFind\ILS\Driver\GeniePlus;
 
 /**
@@ -113,7 +114,13 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             APPLICATION_PATH . '/config/vufind/GeniePlus.ini',
             true
         );
+        $sessionFactory = function ($i) {
+            return $this->getMockBuilder(Container::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+        };
         $this->driver = $this->getMockBuilder(GeniePlus::class)
+            ->setConstructorArgs([$sessionFactory])
             ->onlyMethods(['makeRequest'])
             ->getMock();
     }

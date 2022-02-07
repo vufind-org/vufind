@@ -53,6 +53,31 @@ class GeniePlus extends AbstractAPI
     protected $token = null;
 
     /**
+     * Factory function for constructing the SessionContainer.
+     *
+     * @var callable
+     */
+    protected $sessionFactory;
+
+    /**
+     * Session cache
+     *
+     * @var \Laminas\Session\Container
+     */
+    protected $sessionCache;
+
+    /**
+     * Constructor
+     *
+     * @param callable $sessionFactory Factory function returning SessionContainer
+     * object
+     */
+    public function __construct(callable $sessionFactory)
+    {
+        $this->sessionFactory = $sessionFactory;
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -67,6 +92,16 @@ class GeniePlus extends AbstractAPI
         }
         $this->availableStatuses
             = (array)($this->config['Item']['available_statuses'] ?? []);
+        $cacheNamespace = md5(
+            $this->config['API']['database'] . '|' . $this->config['API']['base_url']
+        );
+        $this->sessionCache = ($this->sessionFactory)($cacheNamespace);
+        if ($this->sessionCache->genieplus_token ?? false) {
+            $this->token = $this->sessionCache->genieplus_token;
+            $this->debug(
+                'Token taken from cache: ' . substr($this->token, 0, 30) . '...'
+            );
+        }
     }
 
     /**
@@ -92,7 +127,7 @@ class GeniePlus extends AbstractAPI
             // TODO: retry loop? Smarter status checks?
             throw new \Exception('Unable to obtain access token.');
         }
-        $this->token = $result->access_token;
+        $this->token = $this->sessionCache->genieplus_token = $result->access_token;
     }
 
     /**
