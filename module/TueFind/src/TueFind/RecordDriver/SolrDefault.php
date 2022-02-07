@@ -510,9 +510,9 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
      * Return a list of translated topics. Can be used e.g. for chart generation.
      * (translation handling only possible in IxTheo right now.)
      */
-    public function getTopics($language=null): array
+    public function getTopicsForCloud($language=null): array
     {
-        return array_unique($this->fields['topic'] ?? []);
+        return array_unique($this->fields['topic_cloud'] ?? []);
     }
 
 

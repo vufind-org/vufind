@@ -544,7 +544,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
 
-            $keywords = $titleRecord->getTopics($translatorLocale);
+            $keywords = $titleRecord->getTopicsForCloud($translatorLocale);
             foreach ($keywords as $keyword) {
                 if(strpos($keyword, "\\") !== false) {
                     $keyword = str_replace("\\", "", $keyword);
