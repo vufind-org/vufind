@@ -380,7 +380,7 @@ class GeniePlus extends AbstractAPI
         $path = $this->getTemplateQueryPath($template);
         $userField = $this->config['Patron']['field']['cat_username'];
         $passField = $this->config['Patron']['field']['cat_password'];
-        // Don't allow quotes in credentials; TODO: better escaping?
+        // Don't allow quotes in credentials to avoid breakout from query:
         $safeUser = str_replace("'", '', $username);
         $safePass = str_replace("'", '', $password);
         $idField = $this->config['Patron']['field']['id'];
