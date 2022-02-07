@@ -363,6 +363,28 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
+     * Public Function which retrieves feature-specific settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
+     *
+     * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getConfig($function, $params = null)
+    {
+        if ('getMyTransactions' === $function) {
+            return $this->config['Transactions'] ?? [
+                'max_results' => 100,
+            ];
+        }
+
+        return false;
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -530,9 +552,6 @@ class GeniePlus extends AbstractAPI
      */
     public function getMyTransactions($patron, $params = [])
     {
-        // TODO: add full pagination support
-        $pageSize = $params['limit'] ?? 100;
-
         $patronTemplate = $this->config['API']['patron_template'];
         $loanTemplate = $this->config['API']['loan_template'];
         $path = $this->getTemplateQueryPath($loanTemplate);
@@ -543,8 +562,8 @@ class GeniePlus extends AbstractAPI
         $dueField = $this->config['Loan']['field']['duedate'];
         $fields = [$barcodeField, $bibIdField, $dueField];
         $params = [
-            'page-size' => $pageSize,
-            'page' => 0,
+            'page-size' => $params['limit'] ?? 100,
+            'page' => ($params['page'] ?? 1) - 1,
             'fields' => implode(',', $fields),
             'command' => "$idField == '$safeId' AND Archive == 'No'",
         ];
@@ -557,6 +576,9 @@ class GeniePlus extends AbstractAPI
                 'duedate' => $entry[$dueField][0]['display'] ?? null,
             ];
         };
-        return array_map($callback, $response['records'] ?? []);
+        return [
+            'count' => $response['total'] ?? 0,
+            'records' => array_map($callback, $response['records'] ?? []),
+        ];
     }
 }

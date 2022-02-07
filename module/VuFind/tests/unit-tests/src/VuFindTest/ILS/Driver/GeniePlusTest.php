@@ -337,15 +337,18 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver->init();
         $this->assertEquals(
             [
-                [
-                    'id' => 'id1',
-                    'item_id' => 'barcode1',
-                    'duedate' => '3/4/2022 11:59:59 PM',
-                ],
-                [
-                    'id' => 'id2',
-                    'item_id' => 'barcode2',
-                    'duedate' => '3/4/2022 11:59:59 PM',
+                'count' => 2,
+                'records' => [
+                    [
+                        'id' => 'id1',
+                        'item_id' => 'barcode1',
+                        'duedate' => '3/4/2022 11:59:59 PM',
+                    ],
+                    [
+                        'id' => 'id2',
+                        'item_id' => 'barcode2',
+                        'duedate' => '3/4/2022 11:59:59 PM',
+                    ],
                 ],
             ],
             $this->driver->getMyTransactions($this->defaultPatron)
