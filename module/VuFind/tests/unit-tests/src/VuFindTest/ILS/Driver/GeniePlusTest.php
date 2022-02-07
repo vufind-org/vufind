@@ -159,4 +159,57 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             $this->driver->patronLogin('foo@foo.com', 'bar')
         );
     }
+
+    /**
+     * Test transaction retrieval
+     *
+     * @return void
+     */
+    public function testGetMyTransactions(): void
+    {
+        $response1 = $this->getMockResponse(
+            $this->getFixture('genieplus/token.json')
+        );
+        $response2 = $this->getMockResponse(
+            $this->getFixture('genieplus/checkedout.json')
+        );
+        $this->driver->expects($this->exactly(2))
+            ->method('makeRequest')
+            ->withConsecutive(
+                $this->expectedTokenRequest,
+                [
+                    'GET',
+                    '/_rest/databases/api_database_name/templates/CirLoan/search-result',
+                    [
+                        'page-size' => 100,
+                        'page' => 0,
+                        'fields' => 'Inventory.Barcode,Inventory.Inventory@Catalog.UniqRecNum,ClaimDate',
+                        'command' => "Borrower.ID == 'fake.user.fake.com' AND Archive == 'No'",
+                    ],
+                    [
+                        'Accept: application/json',
+                        'Authorization: Bearer fake-token',
+                    ]
+                ],
+            )->willReturnOnConsecutiveCalls(
+                $response1,
+                $response2,
+            );
+        $this->driver->setConfig($this->config);
+        $this->assertEquals(
+            [
+                [
+                    'id' => 'id1',
+                    'item_id' => 'barcode1',
+                    'duedate' => '3/4/2022 11:59:59 PM',
+                ],
+                [
+                    'id' => 'id2',
+                    'item_id' => 'barcode2',
+                    'duedate' => '3/4/2022 11:59:59 PM',
+                ],
+            ],
+            $this->driver->getMyTransactions($this->defaultPatron)
+        );
+    }
 }
