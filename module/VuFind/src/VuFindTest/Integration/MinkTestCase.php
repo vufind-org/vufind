@@ -332,13 +332,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     ) {
         $e = null;
         $result = $this->findCss($page, $selector, $timeout, $index);
-        for ($tries = 0; $tries < 3; $tries++) {
+        for ($tries = 1; $tries < 4; $tries++) {
             try {
                 $result->click();
                 return $result;
             } catch (\Exception $e) {
                 // Expected click didn't work... snooze and retry
-                echo "CLICK FAIL!\n";
+                $this->logWarning(
+                    "clickCss exception (try $tries)."
+                    . ' See PHP error log for details.',
+                    "clickCss exception (try $tries): " . $e->getTraceAsString()
+                );
                 $this->snooze();
             }
         }
@@ -377,14 +381,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
-        for ($i = 0; $i < $retries; $i++) {
+        for ($i = 1; $i <= $retries; $i++) {
             $field->setValue($value);
 
             // Did it work? If so, we're done and can leave....
             if ($field->getValue() === $value) {
                 return;
             }
-            echo "RETRY SET VALUE\n";
+            $this->logWarning(
+                'setValue failed in ' . $this->getName(false) . "(try $i)."
+            );
+
             $this->snooze();
         }
 
@@ -552,6 +559,22 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $warning = $this->findCss($page, '.modal-body .alert-danger');
         }
         $this->assertEquals($message, $warning->getText());
+    }
+
+    /**
+     * Log a warning message
+     *
+     * @param string $consoleMsg Message to output to console
+     * @param string $logMsg     Message to output to PHP error log
+     *
+     * @return void
+     */
+    protected function logWarning(string $consoleMsg, string $logMsg = ''): void
+    {
+        echo PHP_EOL . $consoleMsg . PHP_EOL;
+        if ($logMsg) {
+            error_log($logMsg);
+        }
     }
 
     /**
