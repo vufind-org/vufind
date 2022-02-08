@@ -92,7 +92,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return Response
      */
-    protected function getMockResponse($body): Response
+    protected function getMockResponse($body, $status = 200): Response
     {
         $response = $this->getMockBuilder(Response::class)
             ->disableOriginalConstructor()
@@ -100,6 +100,9 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $response->expects($this->any())
             ->method('getBody')
             ->will($this->returnValue($body));
+        $response->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue($status));
         return $response;
     }
 
@@ -123,6 +126,34 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             ->setConstructorArgs([$sessionFactory])
             ->onlyMethods(['makeRequest'])
             ->getMock();
+    }
+
+    /**
+     * Test API failure
+     *
+     * @return void
+     */
+    public function testAPIFailure(): void
+    {
+        $response = $this->getMockResponse('Internal server error', 500);
+        $this->driver->expects($this->once())
+            ->method('makeRequest')
+            ->withConsecutive($this->expectedTokenRequest)
+            ->willReturnOnConsecutiveCalls($response);
+        $this->driver->setConfig($this->config);
+        $this->driver->init();
+        $logger = $this->getMockBuilder(\Laminas\Log\Logger::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $logger->expects($this->once())
+            ->method('err')
+            ->with(
+                $this->equalTo(get_class($this->driver)
+                . ": GeniePlus API failure: Internal server error")
+            );
+        $this->driver->setLogger($logger);
+        $this->expectExceptionMessage('Problem with GeniePlus API.');
+        $this->driver->patronLogin('foo@foo.com', 'bar');
     }
 
     /**
