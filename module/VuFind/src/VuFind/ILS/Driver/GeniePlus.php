@@ -80,6 +80,41 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
+     * Support method for init(): make sure we have a valid configuration.
+     *
+     * @return void
+     * @throws ILSException
+     */
+    protected function validateConfiguration(): void
+    {
+        $missingConfigs = [];
+        $requiredApiSettings = [
+            'base_url',
+            'catalog_template',
+            'database',
+            'loan_template',
+            'oauth_id',
+            'username',
+            'password',
+            'patron_template',
+        ];
+        foreach ($requiredApiSettings as $setting) {
+            if (!isset($this->config['API'][$setting])) {
+                $missingConfigs[] = "API/$setting";
+            }
+        }
+        if (!isset($this->config['Patron']['field']['cat_password'])) {
+            $missingConfigs[] = 'Patron/field/cat_password';
+        }
+        if (!empty($missingConfigs)) {
+            throw new ILSException(
+                'Missing required GeniePlus.ini configuration setting(s): '
+                . implode(', ', $missingConfigs)
+            );
+        }
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -89,9 +124,7 @@ class GeniePlus extends AbstractAPI
      */
     public function init()
     {
-        if (empty($this->config)) {
-            throw new \VuFind\Exception\ILS("Configuration missing.");
-        }
+        $this->validateConfiguration();
         $this->availableStatuses
             = (array)($this->config['Item']['available_statuses'] ?? []);
         $cacheNamespace = md5(
@@ -296,12 +329,12 @@ class GeniePlus extends AbstractAPI
     {
         $template = $this->config['API']['catalog_template'];
         $path = $this->getTemplateQueryPath($template);
-        $idField = $this->config['Item']['field']['id'];
+        $idField = $this->config['Item']['field']['id'] ?? 'UniqRecNum';
         $safeId = str_replace("'", '', $id); // don't allow quotes in IDs
         $params = [
             'page-size' => 100,
             'page' => 0,
-            'fields' => implode(',', $this->config['Item']['field']),
+            'fields' => implode(',', $this->config['Item']['field'] ?? []),
             'command' => "$idField == '$safeId'",
         ];
         $json = $this->callApiWithToken('GET', $path, $params)->getBody();
@@ -401,14 +434,14 @@ class GeniePlus extends AbstractAPI
     {
         $template = $this->config['API']['patron_template'];
         $path = $this->getTemplateQueryPath($template);
-        $userField = $this->config['Patron']['field']['cat_username'];
+        $userField = $this->config['Patron']['field']['cat_username'] ?? 'Email';
         $passField = $this->config['Patron']['field']['cat_password'];
         // Don't allow quotes in credentials to avoid breakout from query:
         $safeUser = str_replace("'", '', $username);
         $safePass = str_replace("'", '', $password);
-        $idField = $this->config['Patron']['field']['id'];
-        $nameField = $this->config['Patron']['field']['name'];
-        $emailField = $this->config['Patron']['field']['email'];
+        $idField = $this->config['Patron']['field']['id'] ?? 'ID';
+        $nameField = $this->config['Patron']['field']['name'] ?? 'Name';
+        $emailField = $this->config['Patron']['field']['email'] ?? 'Email';
         $params = [
             'page-size' => 1,
             'page' => 0,
@@ -462,17 +495,17 @@ class GeniePlus extends AbstractAPI
     {
         $template = $this->config['API']['patron_template'];
         $path = $this->getTemplateQueryPath($template);
-        $idField = $this->config['Patron']['field']['id'];
+        $idField = $this->config['Patron']['field']['id'] ?? 'ID';
         $safeId = str_replace("'", '', $patron['id']);
         $fields = [
-            $this->config['Patron']['field']['address1'],
-            $this->config['Patron']['field']['address2'],
-            $this->config['Patron']['field']['zip'],
-            $this->config['Patron']['field']['city'],
-            $this->config['Patron']['field']['state'],
-            $this->config['Patron']['field']['country'],
-            $this->config['Patron']['field']['phone'],
-            $this->config['Patron']['field']['expiration_date'],
+            $this->config['Patron']['field']['address1'] ?? 'Address1',
+            $this->config['Patron']['field']['address2'] ?? 'Address2',
+            $this->config['Patron']['field']['zip'] ?? 'ZipCode',
+            $this->config['Patron']['field']['city'] ?? 'City',
+            $this->config['Patron']['field']['state'] ?? 'StateProv.CodeDesc',
+            $this->config['Patron']['field']['country'] ?? 'Country.CodeDesc',
+            $this->config['Patron']['field']['phone'] ?? 'PhoneNumber',
+            $this->config['Patron']['field']['expiration_date'] ?? 'ExpiryDate',
         ];
         $params = [
             'page-size' => 1,
@@ -556,17 +589,21 @@ class GeniePlus extends AbstractAPI
         $patronTemplate = $this->config['API']['patron_template'];
         $loanTemplate = $this->config['API']['loan_template'];
         $path = $this->getTemplateQueryPath($loanTemplate);
-        $idField = $patronTemplate . '.' . $this->config['Patron']['field']['id'];
+        $idField = $patronTemplate . '.'
+            . ($this->config['Patron']['field']['id'] ?? 'ID');
         $safeId = str_replace("'", '', $patron['id']);
-        $barcodeField = $this->config['Item']['field']['barcode'];
-        $bibIdField = $this->config['Loan']['field']['bib_id'];
-        $dueField = $this->config['Loan']['field']['duedate'];
+        $barcodeField = $this->config['Item']['field']['barcode']
+            ?? 'Inventory.Barcode';
+        $bibIdField = $this->config['Loan']['field']['bib_id']
+            ?? 'Inventory.Inventory@Catalog.UniqRecNum';
+        $dueField = $this->config['Loan']['field']['duedate'] ?? 'ClaimDate';
+        $archiveField = $this->config['Loan']['field']['archive'] ?? 'Archive';
         $fields = [$barcodeField, $bibIdField, $dueField];
         $params = [
             'page-size' => $params['limit'] ?? 100,
             'page' => ($params['page'] ?? 1) - 1,
             'fields' => implode(',', $fields),
-            'command' => "$idField == '$safeId' AND Archive == 'No'",
+            'command' => "$idField == '$safeId' AND $archiveField == 'No'",
         ];
         $json = $this->callApiWithToken('GET', $path, $params)->getBody();
         $response = json_decode($json, true);
