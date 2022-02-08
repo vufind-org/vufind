@@ -53,7 +53,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $path = '/Search/Advanced';
         $session->visit($this->getVuFindUrl() . $path);
-        return $session->getPage();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
     }
 
     /**
