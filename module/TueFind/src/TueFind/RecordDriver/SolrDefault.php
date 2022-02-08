@@ -510,9 +510,9 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
      * Return a list of translated topics. Can be used e.g. for chart generation.
      * (translation handling only possible in IxTheo right now.)
      */
-    public function getTopics($language=null): array
+    public function getTopicsForCloud($language=null): array
     {
-        return array_unique($this->fields['topic'] ?? []);
+        return array_unique($this->fields['topic_cloud'] ?? []);
     }
 
 
@@ -693,6 +693,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     }
 
 
+    /**
+     * Check whether there are fulltexts associated with this record
+     * @return bool
+     */
+    public function hasFulltext()
+    {
+        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
+    }
+
+
     public function setHasFulltextMatch()
     {
         $this->hasFulltextMatch = true;
@@ -707,7 +717,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getFulltextTypes() : array
     {
-        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : '';
+        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : [];
     }
 
 

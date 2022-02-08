@@ -92,9 +92,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getBibliographicalReferences(AuthorityRecordDriver &$driver): string
+    public function getBiographicalReferences(AuthorityRecordDriver &$driver): string
     {
-        $references = $driver->getBibliographicalReferences();
+        $references = $driver->getBiographicalReferences();
         if (count($references) == 0)
             return '';
 
@@ -298,13 +298,19 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $response;
     }
 
-    public function getRelatedAuthors(AuthorityRecordDriver &$driver)
+    public function getRelatedAuthors(AuthorityRecordDriver &$driver, $limit)
     {
+
         $params = new \VuFindSearch\ParamBag();
-        $params->set('fl', 'facet_counts');
+        $params->set('fl', 'id,author_and_id_facet');
+        $params->set('sort', 'score desc,publishDateSort desc');
         $params->set('facet', 'true');
-        $params->set('facet.pivot', 'author_and_id_facet');
+        $params->set('facet.field', 'author_and_id_facet');
         $params->set('facet.limit', 9999);
+        $params->set('hl', "true");
+        $params->set('facet.sort', 'count');
+        $params->set('spellcheck', 'false');
+        $params->set('facet.mincount', 1);
 
         // Make sure we set offset+limit to 0, because we only want the facet counts
         // and not the rows itself for performance reasons.
@@ -313,28 +319,34 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                      new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
                                                      0, 0, $params);
 
-        $relatedAuthors = $titleRecords->getFacets()->getPivotFacets();
+        $relatedAuthors = $titleRecords->getFacets()->getFieldFacets()['author_and_id_facet']->toArray();
+
         $referenceAuthorKey = $driver->getUniqueID() . ':' . $driver->getTitle();
+
+        $referenceAuthorID = $driver->getUniqueID();
 
         // This is not an array but an ArrayObject, so unset() will cause an error
         // if the index does not exist => we need to check it with isset first.
-        if (isset($relatedAuthors[$referenceAuthorKey]))
+        if (isset($relatedAuthors[$referenceAuthorKey])) {
             unset($relatedAuthors[$referenceAuthorKey]);
+        }
 
         // custom sort, since solr can only sort by count but not alphabetically,
         // since the value starts with an id instead of a name.
-        $relatedAuthors->uasort(function($a, $b) {
-            $diff = $b['count'] - $a['count'];
-            if ($diff != 0)
-                return $diff;
-            else {
-                list($aId, $aTitle) = explode(':', $a['value']);
-                list($aId, $bTitle) = explode(':', $b['value']);
-                return strcmp($aTitle, $bTitle);
+        $finalAuthorArray = [];
+        foreach($relatedAuthors as $oneRelatedAuthor=>$counts) {
+            $explodeData = explode(':', $oneRelatedAuthor);
+            $relatedAuthor['relatedAuthorTitle'] = '';
+            $relatedAuthor['relatedAuthorID'] = '';
+            if(isset($explodeData[1])) {
+                $relatedAuthor['relatedAuthorTitle'] = $explodeData[0];
+                $relatedAuthor['relatedAuthorID'] = $explodeData[1];
             }
-        });
-
-        return $relatedAuthors;
+            if($relatedAuthor['relatedAuthorID'] != $driver->getUniqueID() && count($finalAuthorArray) < $limit) {
+                $finalAuthorArray[] = $relatedAuthor;
+            }
+        }
+        return array($finalAuthorArray,count($relatedAuthors));
     }
 
     /**
@@ -491,8 +503,19 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $chartData;
     }
 
+    /**
+     * This will be overridden in the corresponding IxTheo View Helper to
+     * consider the correct fields based on the translatorLocale.
+     */
+    public function getTopicsCloudFieldname($translatorLocale=null): string
+    {
+        return 'topic_cloud';
+    }
+
     public function getTopicsData(AuthorityRecordDriver &$driver): array
     {
+        $translatorLocale = $this->getTranslatorLocale();
+        $topicsCloudFieldname = $this->getTopicsCloudFieldname($translatorLocale);
 
         $settings = [
             'maxNumber' => 10,
@@ -501,7 +524,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
             'minWeight' => 0,
-            'filter' => 'topic_facet'
+            'filter' => $topicsCloudFieldname,
+            'paramBag' => [
+                'sort' => 'publishDate DESC',
+                'fl' => 'id,'.$topicsCloudFieldname,
+             ],
+            'searchType' => 'AllFields'
         ];
 
         $identifier = 'Solr';
@@ -510,11 +538,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         //       to reduce the result size and avoid out of memory problems.
         //       Example: Martin Luther, 133813363
         $titleRecords = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
-                                                 0, 9999, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC', 'fl' => 'id,topic,key_word_chain_bag,key_word_chain_bag*']));
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), $settings['searchType']),
+                                                 0, 9999, new \VuFindSearch\ParamBag($settings['paramBag']));
+
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
-            $keywords = $titleRecord->getTopics($this->getTranslatorLocale());
+
+            $keywords = $titleRecord->getTopicsForCloud($translatorLocale);
             foreach ($keywords as $keyword) {
                 if(strpos($keyword, "\\") !== false) {
                     $keyword = str_replace("\\", "", $keyword);
@@ -530,16 +560,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         arsort($countedTopics);
 
         $urlHelper = $this->viewHelperManager->get('url');
-        $tuefindHelper = $this->viewHelperManager->get('tuefind');
 
-        $searchType = 'AllFields';
         $lookfor = $this->getTitlesByQueryParams($driver);
 
-        if ($tuefindHelper->getTueFindFlavour() == 'ixtheo') {
-            $settings['filter'] = 'key_word_chain_bag';
-        }
-
-        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$searchType.'&filter[]='.$settings['filter'].':';
+        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$settings['searchType'].'&filter[]='.$settings['filter'].':';
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {

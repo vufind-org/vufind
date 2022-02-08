@@ -2,10 +2,11 @@
 <!-- About -->
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown"  href="#" role="button" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-info-circle"> </i>
-        <?=$this->transEsc('Über uns')?> <span class="caret"></span>
+       <i class='fa fa-navicon' ></i> <span class="caret"></span>
     </a>
+
     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQ')?></a></li>
         <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Index Theologicus')?></a></li>
         <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Geschichte')?></a></li>
         <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><?=$this->transEsc('Fachinformationsdienst (FID) Theologie')?></a></li>
@@ -15,8 +16,4 @@
         <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'privacy']) ?>"><?=$this->transEsc('Datenschutzerklärung')?></a></li>
         <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'Impressum']) ?>">Impressum</a></li>
     </ul>
-</li>
-<!-- FAQ -->
-<li class="nav-item">
-    <a class="nav-link" href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><i class="fa fa-question-circle"></i> <?=$this->transEsc('FAQ')?></a>
 </li>

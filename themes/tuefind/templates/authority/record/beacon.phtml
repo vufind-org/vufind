@@ -1,18 +1,18 @@
 <?php
 /* BEACON (Findbuch) references over API proxy
  *
- * Filter entries from BEACON references if they are already listed in Bibliographical References.
+ * Filter entries from BEACON references if they are already listed in Biographical References.
  * Because the labels dont match, we can filter only due to a given map, else we would lose entries we want to keep
  * e.g. 'GND' => 'REGESTA IMPERII RI OPAC GND'.
  */
 $filterLabelMap = ['Wikipedia' => 'Wikipedia-Artikel'];
-$bibliographicalReferences = $this->driver->getBibliographicalReferences();
-$bibliographicalReferenceTitles = [];
-foreach ($bibliographicalReferences as $bibliographicalReference) {
-  if (isset($filterLabelMap[$bibliographicalReference['title']]))
-    $bibliographicalReferenceTitles[] = $filterLabelMap[$bibliographicalReference['title']];
+$biographicalReferences = $this->driver->getBiographicalReferences();
+$biographicalReferenceTitles = [];
+foreach ($biographicalReferences as $biographicalReference) {
+  if (isset($filterLabelMap[$biographicalReference['title']]))
+    $biographicalReferenceTitles[] = $filterLabelMap[$biographicalReference['title']];
 }
-$filterLabelPattern = implode('|', $bibliographicalReferenceTitles);
+$filterLabelPattern = implode('|', $biographicalReferenceTitles);
 $sortBottomPattern = 'B3Kat|Bayerische Staatsbibliothek|HBZ-Verbundkatalog|HeBIS|Nordrhein-Westfälische Bibliographie|SWB-Verbundkatalog|Universitätsbibliothek Heidelberg';
 ?>
 
