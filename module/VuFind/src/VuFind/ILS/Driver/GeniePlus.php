@@ -315,6 +315,19 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
+     * Sanitize a value for inclusion as a single-quoted value in a query string.
+     *
+     * @param string $value Value to sanitize
+     *
+     * @return string       Sanitized value
+     */
+    protected function sanitizeQueryParam(string $value): string
+    {
+        // Eliminate single quotes to avoid SQL-injection-style query manipulation.
+        return str_replace("'", '', $value);
+    }
+
+    /**
      * Get Status
      *
      * This is responsible for retrieving the status information of a certain
@@ -330,7 +343,7 @@ class GeniePlus extends AbstractAPI
         $template = $this->config['API']['catalog_template'];
         $path = $this->getTemplateQueryPath($template);
         $idField = $this->config['Item']['field']['id'] ?? 'UniqRecNum';
-        $safeId = str_replace("'", '', $id); // don't allow quotes in IDs
+        $safeId = $this->sanitizeQueryParam($id);
         $params = [
             'page-size' => 100,
             'page' => 0,
@@ -436,9 +449,8 @@ class GeniePlus extends AbstractAPI
         $path = $this->getTemplateQueryPath($template);
         $userField = $this->config['Patron']['field']['cat_username'] ?? 'Email';
         $passField = $this->config['Patron']['field']['cat_password'];
-        // Don't allow quotes in credentials to avoid breakout from query:
-        $safeUser = str_replace("'", '', $username);
-        $safePass = str_replace("'", '', $password);
+        $safeUser = $this->sanitizeQueryParam($username);
+        $safePass = $this->sanitizeQueryParam($password);
         $idField = $this->config['Patron']['field']['id'] ?? 'ID';
         $nameField = $this->config['Patron']['field']['name'] ?? 'Name';
         $emailField = $this->config['Patron']['field']['email'] ?? 'Email';
@@ -496,7 +508,7 @@ class GeniePlus extends AbstractAPI
         $template = $this->config['API']['patron_template'];
         $path = $this->getTemplateQueryPath($template);
         $idField = $this->config['Patron']['field']['id'] ?? 'ID';
-        $safeId = str_replace("'", '', $patron['id']);
+        $safeId = $this->sanitizeQueryParam($patron['id']);
         $fields = [
             $this->config['Patron']['field']['address1'] ?? 'Address1',
             $this->config['Patron']['field']['address2'] ?? 'Address2',
@@ -591,7 +603,7 @@ class GeniePlus extends AbstractAPI
         $path = $this->getTemplateQueryPath($loanTemplate);
         $idField = $patronTemplate . '.'
             . ($this->config['Patron']['field']['id'] ?? 'ID');
-        $safeId = str_replace("'", '', $patron['id']);
+        $safeId = $this->sanitizeQueryParam($patron['id']);
         $barcodeField = $this->config['Item']['field']['barcode']
             ?? 'Inventory.Barcode';
         $bibIdField = $this->config['Loan']['field']['bib_id']
