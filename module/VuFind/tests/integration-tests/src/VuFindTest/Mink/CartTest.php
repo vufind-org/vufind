@@ -655,6 +655,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testCartExportToThirdParty()
     {
+        // Use a local fake URL as the export URL (we only check that the redirect
+        // goes to the correct address so it doesn't matter that the target page
+        // returns a 404 error):
         $exportUrl = $this->getVuFindUrl('/Content/export_test');
         $page = $this->setUpGenericCartTest(
             [
