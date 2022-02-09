@@ -27,6 +27,9 @@
  */
 namespace VuFind\Record\FallbackLoader;
 
+use VuFind\Db\Table\Resource;
+use VuFindSearch\Service;
+
 /**
  * Solr record fallback loader
  *
@@ -50,7 +53,24 @@ class Solr extends AbstractFallbackLoader
      *
      * @param string
      */
-    protected $legacyIdField = 'previous_id_str_mv';
+    protected $legacyIdField;
+
+    /**
+     * Constructor
+     *
+     * @param Resource $table         Resource database table object
+     * @param Service  $searchService Search service
+     * @param ?string  $legacyIdField Solr field containing legacy IDs (null to
+     * disable lookups)
+     */
+    public function __construct(
+        Resource $table,
+        Service $searchService,
+        ?string $legacyIdField = 'previous_id_str_mv'
+    ) {
+        parent::__construct($table, $searchService);
+        $this->legacyIdField = $legacyIdField;
+    }
 
     /**
      * Fetch a single record (null if not found).
@@ -61,6 +81,12 @@ class Solr extends AbstractFallbackLoader
      */
     protected function fetchSingleRecord($id)
     {
+        // If there is no legacy ID field defined, short circuit the lookup:
+        if (null === $this->legacyIdField) {
+            return new \VuFindSearch\Backend\Solr\Response\Json\RecordCollection(
+                ['recordCount' => 0]
+            );
+        }
         $query = new \VuFindSearch\Query\Query(
             $this->legacyIdField . ':"' . addcslashes($id, '"') . '"'
         );

@@ -42,11 +42,11 @@ use VuFind\Record\FallbackLoader\Solr;
 class SolrTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the fallback loader.
+     * Test that the fallback loader works when enabled (default settings).
      *
      * @return void
      */
-    public function testLoader(): void
+    public function testEnabledLoader(): void
     {
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()->getMock();
@@ -76,5 +76,20 @@ class SolrTest extends \PHPUnit\Framework\TestCase
             );
         $loader = new Solr($resource, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));
+    }
+
+    /**
+     * Test that the fallback loader can be disabled.
+     *
+     * @return void
+     */
+    public function testDisabledLoader(): void
+    {
+        $search = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->disableOriginalConstructor()->getMock();
+        $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
+            ->disableOriginalConstructor()->getMock();
+        $loader = new Solr($resource, $search, null);
+        $this->assertEquals(0, count($loader->load(['oldId'])));
     }
 }
