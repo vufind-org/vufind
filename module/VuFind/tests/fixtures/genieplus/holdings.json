@@ -1,0 +1,79 @@
+{
+  "total": 1,
+  "records": [
+    {
+      "Inventory.Barcode": [
+        {
+          "display": "barcode3"
+        },
+        {
+          "display": "barcode2"
+        },
+        {
+          "display": "barcode1"
+        }
+      ],
+      "Inventory.CallNumLC": [
+        {
+          "display": "KF4651 .A767"
+        },
+        {
+          "display": "KF4651 .A767"
+        },
+        {
+          "display": "KF4651 .A767"
+        }
+      ],
+      "Inventory.ClaimDate": [
+        {
+          "display": ""
+        },
+        {
+          "display": "3/4/2022 11:59:59 PM"
+        },
+        {
+          "display": ""
+        }
+      ],
+      "UniqRecNum": [
+        {
+          "display": "foo-id"
+        }
+      ],
+      "Inventory.SubLoc.CodeDesc": [
+        {
+          "display": "Second Floor"
+        },
+        {
+          "display": "Second Floor"
+        },
+        {
+          "display": "Second Floor"
+        }
+      ],
+      "Inventory.ActType.Status": [
+        {
+          "display": "Ready for Loans"
+        },
+        {
+          "display": "On Loan"
+        },
+        {
+          "display": "Ready for Loans"
+        }
+      ],
+      "Inventory.VolumeDesc": [
+        {
+          "display": "2017 no.3"
+        },
+        {
+          "display": "2016 no.2"
+        },
+        {
+          "display": "2015 no.1"
+        }
+      ],
+      "_uri": "https://foo"
+    }
+  ]
+}
