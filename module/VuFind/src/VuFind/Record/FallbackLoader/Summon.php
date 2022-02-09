@@ -28,9 +28,7 @@
 namespace VuFind\Record\FallbackLoader;
 
 use SerialsSolutions\Summon\Laminas as Connector;
-use VuFind\Db\Table\Resource;
 use VuFindSearch\ParamBag;
-use VuFindSearch\Service;
 
 /**
  * Summon record fallback loader
@@ -41,54 +39,8 @@ use VuFindSearch\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Summon implements FallbackLoaderInterface
+class Summon extends AbstractFallbackLoader
 {
-    /**
-     * Resource table
-     *
-     * @var Resource
-     */
-    protected $table;
-
-    /**
-     * Search service
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param Resource $table         Resource database table object
-     * @param Service  $searchService Search service
-     */
-    public function __construct(Resource $table, Service $searchService)
-    {
-        $this->table = $table;
-        $this->searchService = $searchService;
-    }
-
-    /**
-     * Given an array of IDs that failed to load, try to find them using a
-     * fallback mechanism.
-     *
-     * @param array $ids IDs to load
-     *
-     * @return array
-     */
-    public function load($ids)
-    {
-        $retVal = [];
-        foreach ($ids as $id) {
-            foreach ($this->fetchSingleRecord($id) as $record) {
-                $this->updateRecord($record, $id);
-                $retVal[] = $record;
-            }
-        }
-        return $retVal;
-    }
-
     /**
      * Fetch a single record (null if not found).
      *
@@ -109,23 +61,5 @@ class Summon implements FallbackLoaderInterface
             }
         }
         return new \VuFindSearch\Backend\Summon\Response\RecordCollection([]);
-    }
-
-    /**
-     * When a record ID has changed, update the record driver and database to
-     * reflect the changes.
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record     Record to update
-     * @param string                            $previousId Old ID of record
-     *
-     * @return void
-     */
-    protected function updateRecord($record, $previousId)
-    {
-        // Update the record driver with knowledge of the previous identifier...
-        $record->setPreviousUniqueId($previousId);
-
-        // Update the database to replace the obsolete identifier...
-        $this->table->updateRecordId($previousId, $record->getUniqueId(), 'Summon');
     }
 }
