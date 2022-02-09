@@ -12,9 +12,9 @@
           <img class="media-left" src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
       </div>
       <?= $this->transEsc('od_content')?></h2>
-  <p class="od_help"><i class="fa fa-fw fa-question-circle" aria-hidden="true"></i>
+  <p class="od_help"><?=$this->icon('overdrive-help') ?>
     <?= $this->translate('od_mycontent_help', ['%%url%%' => $this->config()->get('Overdrive')->Overdrive->ODHelpLink]); ?></p>
-    
+
   <?= $this->flashmessages()?>
 
   <h3><?= $this->transEsc('od_loans')?></h3>
@@ -65,12 +65,12 @@
                    <?php if($resource['checkout']->isReturnable): ?>
                      <a class="btn btn-primary returnTitle"
                       data-lightbox title="<?= $this->transEsc('od_but_return')?>"
-                      href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm"; ?>"><i class="fa fa arrow-to-right " aria-hidden="true"></i>
+                      href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm"; ?>"><?=$this->icon('overdrive-return') ?>
                       <?= $this->transEsc('od_but_return')?></a>
                    <?php endif;?>
                      <a class="btn btn-primary getTitle"
                       data-lightbox title="<?= $this->transEsc('od_but_gettitle')?>"
-                      href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm"; ?>"><i class="fa fa-fw fa-download" aria-hidden="true"></i>
+                      href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm"; ?>"><?=$this->icon('overdrive-download') ?>
                       <?= $this->transEsc('od_but_gettitle')?></a>
 
                  </div>
@@ -133,7 +133,7 @@
                 <div class="pull-right">
                     <a class="btn btn-primary placehold"
                       data-lightbox title="<?= $this->transEsc('request_place_text')?>"
-                      href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"; ?>"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                      href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"; ?>"><?=$this->icon('ui-cancel') ?>
                       <?= $this->transEsc('od_but_cancel_hold')?></a>
                 </div>
               </div>
@@ -144,7 +144,7 @@
   <?php endif;?>
 <!--
   <h3><?= $this->transEsc('od_history')?></h3>
-       <div class="alert alert-info"><i class='fa fa-exclamation-triangle'></i>
+       <div class="alert alert-info"><?=$this->icon('warning') ?>
         Coming Soon.
       </div>
 -->
