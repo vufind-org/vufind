@@ -44,6 +44,13 @@ use VuFindSearch\Service;
 abstract class AbstractFallbackLoader implements FallbackLoaderInterface
 {
     /**
+     * Record source
+     *
+     * @var string
+     */
+    protected $source = DEFAULT_SEARCH_BACKEND;
+
+    /**
      * Resource table
      *
      * @var Resource
@@ -113,6 +120,7 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
         $record->setPreviousUniqueId($previousId);
 
         // Update the database to replace the obsolete identifier...
-        $this->table->updateRecordId($previousId, $record->getUniqueId(), 'Summon');
+        $this->table
+            ->updateRecordId($previousId, $record->getUniqueId(), $this->source);
     }
 }

@@ -42,6 +42,13 @@ use VuFindSearch\ParamBag;
 class Summon extends AbstractFallbackLoader
 {
     /**
+     * Record source
+     *
+     * @var string
+     */
+    protected $source = 'Summon';
+
+    /**
      * Fetch a single record (null if not found).
      *
      * @param string $id ID to load

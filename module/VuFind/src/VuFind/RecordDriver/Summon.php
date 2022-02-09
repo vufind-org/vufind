@@ -27,8 +27,6 @@
  */
 namespace VuFind\RecordDriver;
 
-use VuFind\RecordDriver\Feature\PreviousUniqueIdInterface;
-
 /**
  * Model for Summon records.
  *
@@ -38,9 +36,9 @@ use VuFind\RecordDriver\Feature\PreviousUniqueIdInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Summon extends DefaultRecord implements PreviousUniqueIdInterface
+class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
 {
-    use \VuFind\RecordDriver\Feature\PreviousUniqueIdTrait;
+    use Feature\PreviousUniqueIdTrait;
 
     /**
      * Fields that may contain subject headings, and their descriptions
