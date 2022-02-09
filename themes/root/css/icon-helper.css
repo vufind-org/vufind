@@ -14,16 +14,19 @@
 .icon--img {
     display: inline-block;
     max-width: 1.25em;
-    margin-top: -0.25em;
+    height: min-content; /* FF */
+    height: fit-content;
+    margin-top: 0.125em;
     text-align: center;
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 .icon--svg {
     width: 1.1em;
     height: 1.1em;
+    margin-top: 0.25em;
     fill: currentColor;
-    vertical-align: sub;
+    vertical-align: top;
 }
 
 .show--closed,
