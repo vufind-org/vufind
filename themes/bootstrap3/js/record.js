@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType) {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + VuFind.updateCspNonce(response.data.msg));
+          .html(VuFind.icon('place-hold') + VuFind.updateCspNonce(response.data.msg));
       } else {
         $(element).remove();
       }

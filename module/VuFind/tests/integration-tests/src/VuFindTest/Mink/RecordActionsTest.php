@@ -285,7 +285,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Flat tags
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
-        $this->assertNull($page->find('css', '.tagList .tag .fa'));
+        $this->assertNull($page->find('css', '.tagList .tag .tag-submit'));
         // Login with second account
         $this->clickCss($page, '#loginOptions a');
         $this->snooze();
@@ -297,7 +297,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Check selected == 0
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
         $this->findCss($page, '.tagList .tag');
-        $this->findCss($page, '.tagList .tag .fa-plus');
+        $this->findCss($page, '.tagList .tag .tag-submit');
         // Click one
         $this->clickCss($page, '.tagList .tag button');
         $this->snooze();

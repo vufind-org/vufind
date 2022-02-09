@@ -13,7 +13,7 @@
         <span class="holding-field enumchron">
           <?php if ($holding['enumchron'] ?? false): ?>
             (<?=$this->escapeHtml($holding['enumchron'])?>)
-          <?php endif; ?>         
+          <?php endif; ?>
         </span>
         <span class="holding-field barcode">
           <?=$this->escapeHtml($holding['barcode'])?>
@@ -47,24 +47,24 @@
         </span>
         <span class="holding-field storage-retrieval">
           <?php if ($holding['storageRetrievalRequestLink'] ?? false): ?>
-            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>"><?=$this->icon('place-storage-retrieval') ?>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
           <?php endif; ?>
         </span>
         <span class="holding-field ill-request">
           <?php if ($holding['ILLRequestLink'] ?? false): ?>
-            <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+            <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>"><?=$this->icon('place-ill-request') ?>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
           <?php endif; ?>
         </span>
         <?php if ($holding['availability'] ?? false): ?>
           <span class="holding-field place-hold">
             <?php if ($holding['link'] ?? false): ?>
-              <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+              <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><?=$this->icon('place-hold') ?>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
             <?php endif; ?>
           </span>
         <?php else: ?>
           <span class="holding-field recall">
             <?php if ($holding['link'] ?? false): ?>
-              <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+              <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><?=$this->icon('place-recall') ?>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
             <?php endif; ?>
             <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
           </span>
