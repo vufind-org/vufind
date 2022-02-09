@@ -148,7 +148,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultTimeout(): int
     {
-        return intval(getenv('VUFIND_DEFAULT_TIMEOUT') ?: self::DEFAULT_TIMEOUT);
+        return intval(getenv('VUFIND_DEFAULT_TEST_TIMEOUT')
+            ?: self::DEFAULT_TIMEOUT);
     }
 
     /**
