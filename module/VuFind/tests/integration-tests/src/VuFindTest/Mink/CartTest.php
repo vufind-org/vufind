@@ -690,9 +690,13 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $windowCount = count($session->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
-        $this->snooze();
+        $this->assertEqualsWithTimeout(
+            $windowCount + 1,
+            function () use ($session) {
+                return count($session->getWindowNames());
+            }
+        );
         $windows = $session->getWindowNames();
-        $this->assertEquals($windowCount + 1, count($windows));
         $session->switchToWindow($windows[$windowCount]);
         $this->waitForPageLoad($session->getPage());
         $this->assertEqualsWithTimeout(
