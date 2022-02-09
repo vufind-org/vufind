@@ -5,7 +5,8 @@
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
       <?php endif; ?>
       <span class="text">
-        <i class="fa fa-<?=$current['selected'] ? 'check-square-o' : 'square-o' ?>"></i><?=$this->transEsc($current['desc']) ?>
+        <?=$this->icon($current['selected'] ? 'facet-checked' : 'facet-unchecked') ?>
+        <?=$this->transEsc($current['desc']) ?>
       </span>
       <?php if (!$current['selected']): ?>
         <span class="badge avail-count"></span>
