@@ -13,7 +13,5 @@
 <?php endforeach; ?>
 
 <?php if ($errors == 0): ?>
-  <div class="alert alert-info">No problems were found.  You may wish to <a href="<?=$this->url('install-done')?>">Disable Auto Configuration</a> at this time.</div>
+  <p>No problems were found.  You may wish to <a href="<?=$this->url('install-done')?>">Disable Auto Configuration</a> at this time.</p>
 <?php endif; ?>
-
-<div class="alert alert-info">Please consider <a href="https://vufind.org/advanced_demo/Feedback/Form/InstallationReport">reporting your new instance to the VuFind Community</a>. This will ensure that you are included on the <a href="https://vufind.org/wiki/community:installations">VuFind Installation List</a> and will help others find your site.</div>

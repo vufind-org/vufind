@@ -5,15 +5,7 @@
 
   [data-toggle="collapse"] {
     cursor: pointer;
-
-    &::after {
-      content: '\25B2';
-      float: right;
-
-      body.rtl & { float: left; }
-    }
   }
-  .collapsed::after {content: '\25BC';}
 
   .collapse,
   .collapsing,
@@ -58,12 +50,18 @@
   border-bottom: 1px solid @list-group-border;
 }
 .facet-group .title {
-  display: block;
+  display: flex;
   width: 100%;
   padding-right: 8px;
   border: 1px solid @list-group-border;
   font-weight: bold;
   text-align: inherit;
+}
+.facet-group .facet-title {
+  flex: 1 1 0%;
+}
+.facet-group .facet-title-icon {
+  flex: none;
 }
 .facet-loading-overlay {
   position: absolute;

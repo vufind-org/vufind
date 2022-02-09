@@ -3,10 +3,8 @@
 <?php endif;?>
 
 <?php if (count($this->captchas) == 1):?>
-  <?php if ($captchaHtml = $this->captcha()->getHtmlForCaptcha($this->captchas[0])): ?>
-    <label class="control-label"><?=$this->transEsc('captcha_label_single')?></label>
-    <p><?=$captchaHtml?></p>
-  <?php endif; ?>
+  <label class="control-label"><?=$this->transEsc('captcha_label_single')?></label>
+  <p><?=$this->captcha()->getHtmlForCaptcha($this->captchas[0])?></p>
 <?php else:?>
   <label class="control-label"><?=$this->transEsc('captcha_label_multiple')?></label>
   <!-- nav -->
