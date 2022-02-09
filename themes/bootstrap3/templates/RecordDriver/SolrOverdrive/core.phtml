@@ -132,18 +132,18 @@ elseif ($avail->data):
 
     if($button):
         $button1Markup = <<<BTN1MARKUP
-            <a class="btn btn-primary {$button->class}" 
-               data-lightbox title="{$button->text}" 
-               href="{$button->url}"><i class="fa fa-{$button->icon}" aria-hidden="true"></i>&nbsp; 
+            <a class="btn btn-primary {$button->class}"
+               data-lightbox title="{$button->text}"
+               href="{$button->url}"><?=$this->icon('{$button->icon}') ?>&nbsp;
                {$button->text}</a>
 BTN1MARKUP;
     endif;
 
     if($button2):
         $button2Markup = <<<BTN2MARKUP
-             <a class="btn btn-primary {$button2->class}" 
-                data-lightbox title="{$button2->text}" 
-                href="{$button2->url}"><i class="fa fa-{$button2->icon}" aria-hidden="true"></i>&nbsp; 
+             <a class="btn btn-primary {$button2->class}"
+                data-lightbox title="{$button2->text}"
+                href="{$button2->url}"><?=$this->icon('{$button2->icon}') ?>&nbsp;
                 {$button2->text}</a>
 BTN2MARKUP;
     endif;
@@ -160,7 +160,7 @@ ACTIONMARKUP;
          <div class=\"odbrand pull-left media-left\">
            <img  src=\"https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_42x42_rgb.jpg\">
          </div>
-         
+
          <div class=\"copies\"><strong>{$this->transEsc("od_avail_total")}</strong> {$avail->data->copiesOwned}</div>
          <div class=\"avail\"><strong>{$this->transEsc("od_avail_avail")}</strong> {$avail->data->copiesAvailable}</div>
          <div class=\"holds\"><strong>{$this->transEsc("od_avail_holds")}</strong> {$avail->data->numberOfHolds}</div>
