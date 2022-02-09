@@ -266,16 +266,18 @@ trait MarcReaderTrait
 
         // Loop through all subfields, collecting results that match the filter;
         // note that it is important to retain the original MARC order here!
-        foreach ($currentField['subfields'] as $currentSubfield) {
-            if (in_array($currentSubfield['code'], $subfields)) {
-                // Grab the current subfield value and act on it if it is non-empty:
-                $data = trim($currentSubfield['data']);
-                if (!empty($data)) {
-                    $matches[] = $data;
+        if(isset($currentField['subfields'])) {
+            foreach ($currentField['subfields'] as $currentSubfield) {
+                if (in_array($currentSubfield['code'], $subfields)) {
+                    // Grab the current subfield value and act on it if it is non-empty:
+                    $data = trim($currentSubfield['data']);
+                    if (!empty($data)) {
+                        $matches[] = $data;
+                    }
                 }
             }
         }
-
+        
         // Send back the data in a different format depending on $concat mode:
         return $concat && $matches ? [implode($separator, $matches)] : $matches;
     }

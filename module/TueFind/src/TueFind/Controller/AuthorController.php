@@ -10,20 +10,23 @@ class AuthorController extends \VuFind\Controller\AuthorController {
         if(empty($author_id) && !empty($this->params()->fromQuery('lookfor'))) {
             $lookforID = explode(' ', $this->params()->fromQuery('lookfor'));
             if(!empty($lookforID[0])) {
-                $lookforID = explode(':', $lookforID[0]);
+                $lookforID = explode('"', $lookforID[0]);
                 if(!empty($lookforID[1])) {
                     $author_id = $lookforID[1];
                 }
             }
         }
+        
         $view->authorId = $author_id;
         $relatedAuthors = [];
         foreach($view->results->getResults() as $res) {
             $updateData = $this->updateRelatedAuthor($res);
-            if($updateData['relatedAuthorID'] != $author_id) {
+            if(empty($updateData['relatedAuthorID']) || $updateData['relatedAuthorID'] != $view->authorId) {
                 $relatedAuthors[] = $updateData;
             }
         }
+
+        $view->results->setResultTotal(count($relatedAuthors));
         $view->relatedAuthors = $relatedAuthors;
         return $view;
     }

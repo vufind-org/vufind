@@ -33,4 +33,9 @@ class Results extends \VuFind\Search\SolrAuthorFacets\Results
             );
         }
     }
+
+    public function setResultTotal($resultTotal): void {
+      $this->resultTotal = $resultTotal;
+    }
+
 }
