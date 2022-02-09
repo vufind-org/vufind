@@ -107,13 +107,18 @@ trait AutoRetryTrait
                 // Execute callbacks for interrupted test, unless this is the
                 // last round of testing:
                 if ($this->retriesLeft > 0) {
-                    $this->logWarning(
-                        'RETRY ' . $this->getName(false)
-                        . " ({$this->retriesLeft} left)."
-                        . ' See PHP error log for details.',
-                        'RETRY TEST ' . $this->getName(false) . ' after exception: '
-                        . $e->getTraceAsString()
-                    );
+                    $logMethod = $annotations['method']['retryLogMethod']
+                        ?? [$this, 'logWarning'];
+                    if (is_callable($logMethod)) {
+                        call_user_func(
+                            $logMethod,
+                            'RETRY ' . $this->getName(false)
+                            . " ({$this->retriesLeft} left)."
+                            . ' See PHP error log for details.',
+                            'RETRY TEST ' . $this->getName(false)
+                            . ' after exception: ' . $e->getTraceAsString()
+                        );
+                    }
                     foreach ($retryCallbacks as $callback) {
                         if (is_callable([$this, $callback])) {
                             $this->{$callback}();
