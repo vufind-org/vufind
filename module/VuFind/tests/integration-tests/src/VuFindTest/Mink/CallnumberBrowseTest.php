@@ -147,10 +147,11 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                 ]
             ]
         );
+        $callnumberSelector = '.callnumber a,.groupCallnumber a,.fullCallnumber a';
         $session = $this->getMinkSession();
         $session->reload();
         $this->waitForPageLoad($page);
-        $link = $this->findCss($page, '.callnumber a,.groupCallnumber a,.fullCallnumber a');
+        $link = $this->findCss($page, $callnumberSelector);
         $this->checkLink($link, $type);
 
         // Multiple callnumbers
@@ -158,11 +159,11 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $session->reload();
         $this->waitForPageLoad($page);
         if ($expectLinks) {
-            $link = $this->findCss($page, '.callnumber a,.groupCallnumber a,.fullCallnumber a');
+            $link = $this->findCss($page, $callnumberSelector);
             $this->checkLink($link, $type);
         } else {
-            $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
-            $this->assertTrue(null === $link);
+            $link = $page->find('css', $callnumberSelector);
+            $this->assertNull($link);
         }
     }
 
