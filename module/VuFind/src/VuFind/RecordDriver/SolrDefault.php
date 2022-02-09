@@ -45,9 +45,11 @@ namespace VuFind\RecordDriver;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
+class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInterface,
+    Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;
+    use Feature\PreviousUniqueIdTrait;
     use Feature\VersionAwareTrait;
 
     /**

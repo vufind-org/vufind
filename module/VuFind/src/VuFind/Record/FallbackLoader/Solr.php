@@ -1,10 +1,10 @@
 <?php
 /**
- * Record fallback loader plugin manager
+ * Solr record fallback loader
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,49 +23,47 @@
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record\FallbackLoader;
 
 /**
- * Record fallback loader plugin manager
+ * Solr record fallback loader
  *
  * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org Main Site
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class Solr extends AbstractFallbackLoader
 {
     /**
-     * Default plugin aliases.
+     * Record source
      *
-     * @var array
+     * @var string
      */
-    protected $aliases = [
-        'solr' => Solr::class,
-        'summon' => Summon::class,
-    ];
+    protected $source = 'Solr';
 
     /**
-     * Default plugin factories.
+     * Solr field containing legacy IDs.
      *
-     * @var array
+     * @param string
      */
-    protected $factories = [
-        Solr::class => AbstractFallbackLoaderFactory::class,
-        Summon::class => AbstractFallbackLoaderFactory::class,
-    ];
+    protected $legacyIdField = 'previous_id_str_mv';
 
     /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * Fetch a single record (null if not found).
      *
-     * @return string
+     * @param string $id ID to load
+     *
+     * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    protected function getExpectedInterface()
+    protected function fetchSingleRecord($id)
     {
-        return FallbackLoaderInterface::class;
+        $query = new \VuFindSearch\Query\Query(
+            $this->legacyIdField . ':"' . addcslashes($id, '"') . '"'
+        );
+        return $this->searchService->search('Solr', $query);
     }
 }
