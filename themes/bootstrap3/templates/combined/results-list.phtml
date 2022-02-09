@@ -10,7 +10,7 @@
 ?>
 <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
   <div class="pull-right flip">
-    <a href="<?=$moreUrl?>" class="btn btn-link"><i class="fa fa-gears" aria-hidden="true"></i> <?=$this->transEsc('More options')?></a>
+    <a href="<?=$moreUrl?>" class="btn btn-link"><?=$this->icon('options') ?> <?=$this->transEsc('More options')?></a>
   </div>
   <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['label'])?></a></h2>
 <?php else: ?>
@@ -74,6 +74,6 @@
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-    <p><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a></p>
+    <p><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <?=$this->icon('more') ?></a></p>
   <?php endif; ?>
 <?php endif; ?>
