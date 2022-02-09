@@ -35,7 +35,8 @@
         </div>
       <?php endif; ?>
     <?php endfor; ?>
-    <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
+    <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
+    <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
   </div>
 </div>
 <?php
