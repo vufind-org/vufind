@@ -886,7 +886,14 @@ class DefaultRecord extends AbstractBase
         }
 
         // Assemble the URL:
-        return http_build_query($params);
+        $query = [];
+        foreach ($params as $key => $value) {
+            $value = (array)$value;
+            foreach ($value as $sub) {
+                $query[] = $key . '=' . urlencode($sub);
+            }
+        }
+        return implode("&", $query);
     }
 
     /**
