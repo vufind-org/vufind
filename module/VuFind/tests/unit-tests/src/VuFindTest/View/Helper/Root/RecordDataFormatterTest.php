@@ -78,6 +78,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ),
             'context' => $context,
             'doi' => new \VuFind\View\Helper\Root\Doi($context),
+            'icon' => new \VuFind\View\Helper\Root\Icon(
+                [],
+                new \Laminas\Cache\Storage\Adapter\BlackHole(),
+                new \Laminas\View\Helper\EscapeHtmlAttr(),
+                new \Laminas\View\Helper\HeadLink()
+            ),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
