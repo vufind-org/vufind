@@ -1,6 +1,6 @@
 <?php
 /**
- * Summon record fallback loader factory
+ * Abstract record fallback loader factory
  *
  * PHP version 7
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Summon record fallback loader factory
+ * Abstract record fallback loader factory
  *
  * @category VuFind
  * @package  Record
@@ -42,7 +42,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SummonFactory implements FactoryInterface
+class AbstractFallbackLoaderFactory implements FactoryInterface
 {
     /**
      * Create an object

@@ -53,7 +53,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Summon::class => SummonFactory::class,
+        Summon::class => AbstractFallbackLoaderFactory::class,
     ];
 
     /**
