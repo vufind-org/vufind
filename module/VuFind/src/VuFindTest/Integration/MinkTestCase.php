@@ -142,6 +142,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get the default timeout in milliseconds
+     *
+     * @return int
+     */
+    protected function getDefaultTimeout(): int
+    {
+        return intval(getenv('VUFIND_DEFAULT_TIMEOUT') ?: self::DEFAULT_TIMEOUT);
+    }
+
+    /**
      * Test an element for visibility.
      *
      * @param Element $element Element to test
@@ -247,9 +257,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function findCss(
         Element $page,
         $selector,
-        $timeout = self::DEFAULT_TIMEOUT,
+        $timeout = null,
         $index = 0
     ) {
+        $timeout = $timeout ?? $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
@@ -275,8 +286,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function waitStatement($statement, $timeout = self::DEFAULT_TIMEOUT)
+    protected function waitStatement($statement, $timeout = null)
     {
+        $timeout = $timeout ?? $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $this->assertTrue(
             $session->wait(
@@ -300,9 +312,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function unFindCss(
         Element $page,
         $selector,
-        $timeout = self::DEFAULT_TIMEOUT,
+        $timeout = null,
         $index = 0
     ) {
+        $timeout = $timeout ?? $this->getDefaultTimeout();
         $startTime = microtime(true);
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
             $elements = $page->findAll('css', $selector);
@@ -327,7 +340,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function clickCss(
         Element $page,
         $selector,
-        $timeout = self::DEFAULT_TIMEOUT,
+        $timeout = null,
         $index = 0
     ) {
         $e = null;
@@ -365,9 +378,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         Element $page,
         $selector,
         $value,
-        $timeout = self::DEFAULT_TIMEOUT,
+        $timeout = null,
         $retries = 6
     ) {
+        $timeout = $timeout ?? $this->getDefaultTimeout();
         $field = $this->findCss($page, $selector, $timeout, 0);
 
         $session = $this->getMinkSession();
@@ -444,8 +458,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function assertEqualsWithTimeout(
         $expected,
         callable $callback,
-        int $timeout = self::DEFAULT_TIMEOUT
+        int $timeout = null
     ) {
+        $timeout = $timeout ?? $this->getDefaultTimeout();
         $result = null;
         $startTime = microtime(true);
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
@@ -491,8 +506,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function waitForPageLoad(
         Element $page,
-        int $timeout = self::DEFAULT_TIMEOUT
+        int $timeout = null
     ) {
+        $timeout = $timeout ?? $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
