@@ -95,10 +95,12 @@ class ThemeConfig extends AbstractHelper
             $this->cache->setItem($cacheKey, $cached);
         }
 
+        // Follow the path
+        $nextNode = $cached;
         foreach ($path as $p) {
-            $cached = $cached[$p] ?? null;
+            $nextNode = $nextNode[$p] ?? null;
         }
 
-        return $cached;
+        return $nextNode;
     }
 }
