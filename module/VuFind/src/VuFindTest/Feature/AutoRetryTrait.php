@@ -107,8 +107,10 @@ trait AutoRetryTrait
                 // Execute callbacks for interrupted test, unless this is the
                 // last round of testing:
                 if ($this->retriesLeft > 0) {
-                    $logMethod = $annotations['method']['retryLogMethod']
-                        ?? [$this, 'logWarning'];
+                    $logMethod = [
+                        $this,
+                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning'
+                    ];
                     if (is_callable($logMethod)) {
                         call_user_func(
                             $logMethod,
