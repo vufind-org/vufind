@@ -262,7 +262,7 @@ return [
             'user-list-remove' => 'Alias:ui-remove',
             'user-loan-history' => 'FontAwesome:history',
             'user-public-list-indicator' => 'FontAwesome:globe',
-            'user-storage-retrievals' => 'FontAwesome:flag',
+            'user-storage-retrievals' => 'FontAwesome:archive',
             'view-grid' => 'FontAwesome:th',
             'view-list' => 'FontAwesome:list',
             'view-visual' => 'FontAwesome:visual',
