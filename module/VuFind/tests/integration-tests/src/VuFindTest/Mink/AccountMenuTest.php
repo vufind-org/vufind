@@ -326,7 +326,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             $this->setJSStorage($item);
             $session->reload();
             $page = $session->getPage();
-            $this->findCss($page, '#account-icon' . $checkClass);
+            $this->findCss($page, '#account-icon ' . $checkClass);
             foreach ($item as $key => $value) {
                 $session->evaluateScript('VuFind.account.clearCache("' . $key . '");');
             }
@@ -351,7 +351,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             // Storage Retrievals in transit only
             ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0]]
         ];
-        $this->checkIcon($storage, '.fa-user-circle');
+        $this->checkIcon($storage, '.account-status-none');
     }
 
     /**
@@ -370,7 +370,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             // Storage Retrievals available
             ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]]
         ];
-        $this->checkIcon($storage, '.fa-bell.text-success');
+        $this->checkIcon($storage, '.account-status-good');
     }
 
     /**
@@ -385,7 +385,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             // Checked out due soon
             ['checkedOut' => ['warn' => 1]]
         ];
-        $this->checkIcon($storage, '.fa-bell.text-warning');
+        $this->checkIcon($storage, '.account-status-warning');
     }
 
     /**
@@ -402,7 +402,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             // Checkedout overdue
             ['checkedOut' => ['overdue' => 1]],
         ];
-        $this->checkIcon($storage, '.fa-exclamation-triangle');
+        $this->checkIcon($storage, '.account-status-danger');
     }
 
     /**
@@ -418,7 +418,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         // Danger overrides warning
         $this->checkIcon(
             [['checkedOut' => ['warn' => 2, 'overdue' => 1]]],
-            '.fa-exclamation-triangle'
+            '.account-status-danger'
         );
         // Danger overrides good
         $this->checkIcon(
@@ -428,7 +428,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                     'holds' => ['available' => 1]
                 ]
             ],
-            '.fa-exclamation-triangle'
+            '.account-status-danger'
         );
         // Warning overrides good
         $this->checkIcon(
@@ -438,7 +438,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                     'holds' => ['available' => 1]
                 ]
             ],
-            '.fa-bell.text-warning'
+            '.account-status-warning'
         );
         // Good overrides none
         $this->checkIcon(
@@ -448,7 +448,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                     'fines' => ['value' => 0, 'display' => 'none']
                 ]
             ],
-            '.fa-bell.text-success'
+            '.account-status-good'
         );
     }
 
