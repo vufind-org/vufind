@@ -45,9 +45,9 @@ return [
             'export-rtl' => 'Fugue:link_go_rtl.png',
             'external-link' => 'Fugue:link.png',
             'facet-applied' => 'Fugue:tick.png',
-            'facet-checked' => 'Fugue:tick.png',
+            // 'facet-checked' => inherited from parent theme
             'facet-exclude' => 'Fugue:cross.png',
-            'facet-unchecked' => 'Fugue:tick_faded.png',
+            // 'facet-unchecked' => inherited from parent theme
             'feedback' => 'Fugue:email.png',
             'format-atlas' => 'Fugue:map.png',
             'format-book' => 'Fugue:book.png',
