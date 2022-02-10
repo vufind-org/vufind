@@ -721,7 +721,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button->click();
         $this->checkForNonSelectedMessage($page);
 
-        // Now do it for real -- we should get redirected.
+        // Now do it for real:
         $this->selectAllItemsInList($page);
         $button->click();
         $this->clickCss($page, '.modal-body .btn.btn-primary');
