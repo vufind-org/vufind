@@ -319,13 +319,25 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     ) {
         $timeout = $timeout ?? $this->getDefaultTimeout();
         $startTime = microtime(true);
+        $exception = null;
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
-            $elements = $page->findAll('css', $selector);
-            if (!isset($elements[$index])) {
-                return;
+            try {
+                $elements = $page->findAll('css', $selector);
+                if (!isset($elements[$index])) {
+                    return;
+                }
+            } catch (\Exception $e) {
+                // This may happen e.g. if the page is reloaded right in the middle
+                // due to an event. Store the exception and throw later if we don't
+                // succeed with retries:
+                $exception = $exception ?? $e;
             }
             usleep(50000);
         }
+        if (null !== $exception) {
+            throw $exception;
+        }
+
         throw new \Exception("Selector '$selector' remains accessible");
     }
 
@@ -628,16 +640,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $filename = $this->getName() . '-' . $this->retriesLeft . '-'
                 . hrtime(true);
 
-            // Save image screenshot
-            $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
-            if (!empty($imageData)) {
-                if (!file_exists($imageDir)) {
-                    mkdir($imageDir);
-                }
-
-                file_put_contents($imageDir . '/' . $filename . '.png', $imageData);
-            }
-
             // Save HTML snapshot
             $snapshot = $this->getMinkSession()->getPage()->getOuterHtml();
             if (!empty($snapshot)) {
@@ -646,6 +648,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 }
 
                 file_put_contents($imageDir . '/' . $filename . '.html', $snapshot);
+            }
+
+            // Save image screenshot
+            $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
+            if (!empty($imageData)) {
+                if (!file_exists($imageDir)) {
+                    mkdir($imageDir);
+                }
+
+                file_put_contents($imageDir . '/' . $filename . '.png', $imageData);
             }
         }
 
