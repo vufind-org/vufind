@@ -624,9 +624,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // AutoRetryTrait):
         if ($this->hasFailed()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
-            && $this->retriesLeft === 0
         ) {
-            $filename = $this->getName() . '-' . hrtime(true);
+            $filename = $this->getName() . '-' . $this->retriesLeft . '-'
+                . hrtime(true);
 
             // Save image screenshot
             $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
