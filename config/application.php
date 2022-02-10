@@ -1,16 +1,13 @@
 <?php
-require __DIR__ . '/constants.config.php';
-
-chdir(APPLICATION_PATH);
-
 // Composer autoloading
-if (file_exists('vendor/autoload.php')) {
-    $loader = include 'vendor/autoload.php';
+$autoloader = __DIR__ . '/../vendor/autoload.php';
+if (file_exists($autoloader)) {
+    $loader = include $autoloader;
 }
 
-if (!class_exists('Laminas\Loader\AutoloaderFactory')) {
+if (!class_exists(\Laminas\Loader\AutoloaderFactory::class)) {
     throw new RuntimeException('Unable to load Laminas autoloader.');
 }
 
 // Return the application!
-return Laminas\Mvc\Application::init(require 'config/application.config.php');
+return Laminas\Mvc\Application::init(require __DIR__ . '/application.config.php');
