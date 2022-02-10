@@ -47,7 +47,7 @@ class ThemeConfig extends AbstractHelper
      *
      * @var StorageInterface
      */
-    protected $cache = [];
+    protected $cache;
 
     /**
      * ThemeInfo object to access themeConfig
