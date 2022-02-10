@@ -112,13 +112,13 @@ trait AutoRetryTrait
                         $annotations['method']['retryLogMethod'][0] ?? 'logWarning'
                     ];
                     if (is_callable($logMethod)) {
+                        $method = get_class($this) . '::' . $this->getName(false);
                         call_user_func(
                             $logMethod,
-                            'RETRY ' . $this->getName(false)
-                            . " ({$this->retriesLeft} left)."
+                            "RETRY $method ({$this->retriesLeft} left)."
                             . ' See PHP error log for details.',
-                            'RETRY TEST ' . $this->getName(false)
-                            . ' after exception: ' . $e->getTraceAsString()
+                            "RETRY TEST $method after exception: "
+                            . $e->getTraceAsString()
                         );
                     }
                     foreach ($retryCallbacks as $callback) {
