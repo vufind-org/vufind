@@ -1,10 +1,10 @@
 <?php
 /**
- * Summon record fallback loader factory
+ * Solr record fallback loader factory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,10 +31,9 @@ use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Summon record fallback loader factory
+ * Solr record fallback loader factory
  *
  * @category VuFind
  * @package  Record
@@ -42,7 +41,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SummonFactory implements FactoryInterface
+class SolrFactory extends AbstractFallbackLoaderFactory
 {
     /**
      * Create an object
@@ -63,12 +62,11 @@ class SummonFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
-            $container->get(\VuFindSearch\Service::class)
-        );
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('searches');
+        $legacyIdField = $config->General->fallback_id_field ?? null;
+        $finalOptions = $options ?? [];
+        array_unshift($finalOptions, $legacyIdField);
+        return parent::__invoke($container, $requestedName, $finalOptions);
     }
 }

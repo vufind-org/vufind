@@ -96,7 +96,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
-
+      
         $this->assertEquals(
             'Search saved successfully.',
             $this->findCss($page, '.alert.alert-success')->getText()

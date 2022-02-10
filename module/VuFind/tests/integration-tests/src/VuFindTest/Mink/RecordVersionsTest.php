@@ -73,9 +73,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click on the "other versions" link:
         $this->clickCss($page, 'div.record-versions a');
-        $this->snooze();
 
         // Confirm that we've landed on an other versions tab:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Other Versions (3)',
             $this->findCss($page, 'li.record-tab.active')->getText()
@@ -83,9 +83,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click the "see all versions" link:
         $this->clickCss($page, 'div.search-controls a.more-link');
-        $this->snooze();
 
         // Confirm that all four versions are now visible in the versions display:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()
@@ -142,10 +142,10 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click on the "all versions" link:
         $this->clickCss($page, 'div.record-versions a');
-        $this->snooze();
 
         // Confirm that we have jumped directly to the "show all versions" screen
         // and that all four versions are now visible in the versions display:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()

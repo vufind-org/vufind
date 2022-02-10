@@ -1,10 +1,10 @@
 <?php
 /**
- * Abstract base class for commands that take relative paths as parameters.
+ * Functionality to implement "previous unique ID" behavior.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,41 +20,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFindConsole\Command;
-
-use Symfony\Component\Console\Command\Command;
+namespace VuFind\RecordDriver\Feature;
 
 /**
- * Abstract base class for commands that take relative paths as parameters.
+ * Functionality to implement "previous unique ID" behavior.
  *
  * @category VuFind
- * @package  Console
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-abstract class RelativeFileAwareCommand extends Command
+trait PreviousUniqueIdTrait
 {
     /**
-     * Constructor
+     * Previous unique ID (if applicable).
      *
-     * @param string|null $name The name of the command; passing null means it
-     * must be set in configure()
+     * @var string
      */
-    public function __construct($name = null)
-    {
-        // Switch the context back to the original working directory so that
-        // relative paths work as expected. (This constant is set in
-        // public/index.php)
-        if (defined('ORIGINAL_WORKING_DIRECTORY')) {
-            chdir(ORIGINAL_WORKING_DIRECTORY);
-        }
+    protected $previousUniqueId = null;
 
-        parent::__construct($name);
+    /**
+     * Get previous unique ID (or null if not applicable).
+     *
+     * @return string
+     */
+    public function getPreviousUniqueId()
+    {
+        return $this->previousUniqueId;
+    }
+
+    /**
+     * Set previous unique ID
+     *
+     * @param string $id ID to set
+     *
+     * @return void
+     */
+    public function setPreviousUniqueId($id)
+    {
+        $this->previousUniqueId = $id;
     }
 }

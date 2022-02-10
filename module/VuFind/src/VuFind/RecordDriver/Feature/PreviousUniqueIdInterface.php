@@ -1,10 +1,10 @@
 <?php
 /**
- * Generic base class for Solr commands.
+ * Interface to support "previous unique ID" behavior.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,44 +20,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFindConsole\Command\Util;
-
-use Symfony\Component\Console\Command\Command;
-use VuFind\Solr\Writer;
+namespace VuFind\RecordDriver\Feature;
 
 /**
- * Generic base class for Solr commands.
+ * Interface to support "previous unique ID" behavior.
  *
  * @category VuFind
- * @package  Console
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-abstract class AbstractSolrCommand extends Command
+interface PreviousUniqueIdInterface
 {
     /**
-     * Solr writer
+     * Get previous unique ID (or null if not applicable).
      *
-     * @var Writer
+     * @return string
      */
-    protected $solr;
+    public function getPreviousUniqueId();
 
     /**
-     * Constructor
+     * Set previous unique ID
      *
-     * @param Writer      $solr Solr writer
-     * @param string|null $name The name of the command; passing null means it
-     * must be set in configure()
+     * @param string $id ID to set
+     *
+     * @return void
      */
-    public function __construct(Writer $solr, $name = null)
-    {
-        $this->solr = $solr;
-        parent::__construct($name);
-    }
+    public function setPreviousUniqueId($id);
 }

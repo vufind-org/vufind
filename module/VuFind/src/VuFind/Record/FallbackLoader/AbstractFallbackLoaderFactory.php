@@ -1,6 +1,6 @@
 <?php
 /**
- * Summon record fallback loader
+ * Abstract record fallback loader factory
  *
  * PHP version 7
  *
@@ -27,11 +27,14 @@
  */
 namespace VuFind\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
-use VuFindSearch\ParamBag;
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Summon record fallback loader
+ * Abstract record fallback loader factory
  *
  * @category VuFind
  * @package  Record
@@ -39,34 +42,31 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Summon extends AbstractFallbackLoader
+class AbstractFallbackLoaderFactory implements FactoryInterface
 {
     /**
-     * Record source
+     * Create an object
      *
-     * @var string
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
+     *
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    protected $source = 'Summon';
-
-    /**
-     * Fetch a single record (null if not found).
-     *
-     * @param string $id ID to load
-     *
-     * @return \VuFindSearch\Response\RecordCollectionInterface
-     */
-    protected function fetchSingleRecord($id)
-    {
-        $resource = $this->table->findResource($id, 'Summon');
-        if ($resource && ($extra = json_decode($resource->extra_metadata, true))) {
-            $bookmark = $extra['bookmark'] ?? '';
-            if (strlen($bookmark) > 0) {
-                $params = new ParamBag(
-                    ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
-                );
-                return $this->searchService->retrieve('Summon', $bookmark, $params);
-            }
-        }
-        return new \VuFindSearch\Backend\Summon\Response\RecordCollection([]);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ) {
+        return new $requestedName(
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
+            $container->get(\VuFindSearch\Service::class),
+            ...$options ?? []
+        );
     }
 }

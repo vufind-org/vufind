@@ -38,10 +38,12 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     html.appendChild(item);
 
     if (!facet.isApplied && counts) {
-      var badge = document.createElement('span');
-      badge.className = 'badge';
-      badge.appendChild(document.createTextNode(facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator)));
-      html.appendChild(badge);
+      if (facet.count) {
+        var badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.appendChild(document.createTextNode(facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator)));
+        html.appendChild(badge);
+      }
       if (allowExclude) {
         var excludeUrl = currentPath + facet.exclude;
         var a = document.createElement('a');
