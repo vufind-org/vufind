@@ -17,6 +17,6 @@ xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_fields.xml > $DIR/sch
 # it also exits with a non-zero exit code, which is why we expicitly use exit 0
 xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_types.xml  > $DIR/schema_local_types.xml 2> /dev/null
 
-xmllint --xinclude --format $DIR/schema_vufind.xml > schema.xml
+xmllint --xinclude --format $DIR/schema_vufind.xml > $DIR/schema.xml
 
 exit 0
