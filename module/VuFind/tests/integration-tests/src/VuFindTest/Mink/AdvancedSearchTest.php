@@ -53,7 +53,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $path = '/Search/Advanced';
         $session->visit($this->getVuFindUrl() . $path);
-        return $session->getPage();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
     }
 
     /**
@@ -113,12 +115,10 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Add a group
         $session->executeScript("addGroup()");
-        $this->snooze();
         $this->findCss($page, '#group1');
 
         // Add a search term
         $session->executeScript("addSearch(0)"); // add_search_link_0 click
-        $this->snooze();
         $this->findCss($page, '#search0_3');
         // No visible x next to lonely search term
         $this->findCss($page, '#search1_0 .adv-term-remove.hidden');
@@ -207,7 +207,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
         $this->clickCss($page, '.language.dropdown li:not(.active) a');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
@@ -243,7 +243,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
         $this->clickCss($page, '.language.dropdown li:not(.active) a');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Buch E-Book Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',

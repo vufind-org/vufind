@@ -91,7 +91,6 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
-        $this->snooze();
         return $session->getPage();
     }
 
@@ -105,14 +104,12 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     protected function fillInAndSubmitFeedbackForm($page)
     {
         $this->clickCss($page, '#feedbackLink');
-        $this->snooze();
         $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
         $this->findCss($page, "#modal #form_FeedbackSite_message")
             ->setValue('test test test');
         $this->clickCss($page, '#modal input[type="submit"]');
-        $this->snooze();
     }
 
     /**
@@ -154,7 +151,6 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, 'form [name="demo_captcha"]')
             ->setValue('demo');
         $this->clickCss($page, '#modal input[type="submit"]');
-        $this->snooze();
         $this->assertEquals(
             'Thank you for your feedback.',
             $this->findCss($page, '#modal .alert-success')->getText()

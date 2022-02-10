@@ -125,16 +125,12 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '#loginOptions a');
         $this->assertEquals('Login', $element->getText());
         $element->click();
-        $this->snooze();
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
-        $this->snooze();
 
         // Log back in to confirm that creation worked
         $element = $this->findCss($page, '#loginOptions a');

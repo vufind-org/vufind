@@ -42,23 +42,6 @@ use Behat\Mink\Element\Element;
 trait UserCreationTrait
 {
     /**
-     * Mink support function: assert a warning message in the lightbox.
-     *
-     * @param Element $page    Page element
-     * @param string  $message Expected message
-     *
-     * @return void
-     */
-    protected function assertLightboxWarning(Element $page, $message)
-    {
-        $warning = $page->find('css', '.modal-body .alert-danger .message');
-        if (!$warning || strlen(trim($warning->getText())) == 0) {
-            $warning = $this->findCss($page, '.modal-body .alert-danger');
-        }
-        $this->assertEquals($message, $warning->getText());
-    }
-
-    /**
      * Mink support function: fill in the account creation form.
      *
      * @param Element $page      Page element.
@@ -159,6 +142,5 @@ trait UserCreationTrait
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
-        $this->snooze();
     }
 }
