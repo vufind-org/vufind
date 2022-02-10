@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<schema name="VuFind Authority Index" version="1.2">
+<schema name="VuFind Authority Index" version="1.2" xmlns:xi="http://www.w3.org/2001/XInclude">
   <types>
     <!-- Define fieldType long as it is needed by the _version_ field required by Solr 4.x -->
     <fieldType name="long" class="solr.LongPointField" positionIncrementGap="0"/>
@@ -20,6 +20,9 @@
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
+
+    <!-- TueFind custom field types -->
+    <xi:include href="schema_local_types.xml" xpointer="xpointer(descendant::fieldType)"/>
   </types>
   <fields>
     <!-- Required by Solr 4.x -->
@@ -71,6 +74,9 @@
     <dynamicField name="*_str_mv" type="string" indexed="true" stored="true" multiValued="true"/>
     <dynamicField name="*_txt" type="text" indexed="true" stored="true"/>
     <dynamicField name="*_txt_mv" type="text" indexed="true" stored="true" multiValued="true"/>
+
+    <!-- TueFind custom fields -->
+   <xi:include href="schema_local_fields.xml" xpointer="xpointer(descendant::field)"/>
   </fields>
 
   <uniqueKey>id</uniqueKey>
@@ -80,8 +86,6 @@
   <copyField source="use_for" dest="use_for_keywords" />
   <copyField source="see_also" dest="see_also_keywords" />
 
-  <!-- TueFind custom settings, field types and fields -->
-  <!-- the following files are not supposed to be in git, need to be symlinks to database description xml on machine -->
-  <xi:include href="schema_local_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
-  <xi:include href="schema_local_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  <!-- TueFind custom copyField instructions -->
+  <xi:include href="schema_local_fields.xml" xpointer="xpointer(descendant::copyField)"/>
 </schema>

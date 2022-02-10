@@ -16,5 +16,7 @@ xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_fields.xml > $DIR/sch
 # the following command issues a warning, which is why we redirect stdout to /dev/null
 # it also exits with a non-zero exit code, which is why we expicitly use exit 0
 xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_types.xml  > $DIR/schema_local_types.xml 2> /dev/null
-exit 0
 
+xmllint --xinclude --format $DIR/schema_vufind.xml > schema.xml
+
+exit 0
