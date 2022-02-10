@@ -113,12 +113,12 @@ trait AutoRetryTrait
                     ];
                     if (is_callable($logMethod)) {
                         $method = get_class($this) . '::' . $this->getName(false);
+                        $msg = "RETRY TEST $method ({$this->retriesLeft} left)"
+                            . ' after exception: ' . $e->getMessage() . '.';
                         call_user_func(
                             $logMethod,
-                            "RETRY $method ({$this->retriesLeft} left)."
-                            . ' See PHP error log for details.',
-                            "RETRY TEST $method after exception: "
-                            . $e->getTraceAsString()
+                            $msg . ' See PHP error log for details.',
+                            $msg . ' Stack: ' . $e->getTraceAsString()
                         );
                     }
                     foreach ($retryCallbacks as $callback) {
