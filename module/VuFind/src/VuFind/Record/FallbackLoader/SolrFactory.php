@@ -64,7 +64,7 @@ class SolrFactory extends AbstractFallbackLoaderFactory
     ) {
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('searches');
-        $legacyIdField = $config->General->legacy_id_field ?? null;
+        $legacyIdField = $config->General->fallback_id_field ?? null;
         $finalOptions = $options ?? [];
         array_unshift($finalOptions, $legacyIdField);
         return parent::__invoke($container, $requestedName, $finalOptions);
