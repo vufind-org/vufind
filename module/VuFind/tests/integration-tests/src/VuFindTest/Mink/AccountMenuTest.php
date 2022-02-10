@@ -93,6 +93,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     protected function setJSStorage($states)
     {
         $session = $this->getMinkSession();
+        $this->waitForPageLoad($session->getPage());
         $js = '';
         foreach ($states as $key => $state) {
             $js .= 'sessionStorage.setItem(\'vf-account-status-' . $key . '\', \'' . json_encode($state) . '\');';
@@ -130,7 +131,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
         $session = $this->getMinkSession();
         $session->reload();
-        $this->snooze();
+        $this->waitForPageLoad($session->getPage());
         return $session->getPage();
     }
 
@@ -149,12 +150,10 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
         $this->clickCss($page, '#loginOptions a');
-        $this->snooze();
         $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         // Seed some fines
         $page = $this->setUpFinesEnvironment();
@@ -186,7 +185,6 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->login();
-        $this->snooze();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(0, count($menu));
@@ -215,7 +213,6 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->login();
-        $this->snooze();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(1, count($menu));
@@ -244,12 +241,10 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->login();
-        $this->snooze();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(1, count($menu));
-        $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertEquals(0, count($stati));
+        $this->unFindCss($page, '.account-menu .fines-status.hidden');
     }
 
     /**
@@ -262,7 +257,6 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
-        $this->snooze();
         // Seed some fines
         $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
         // Clear different cache
@@ -305,10 +299,10 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
         $this->clickCss($page, '#loginOptions a');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         return $session;
     }
 
@@ -322,11 +316,11 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         foreach ($storage as $item) {
-            $this->snooze();
             $this->setJSStorage($item);
             $session->reload();
             $page = $session->getPage();
-            $this->findCss($page, '#account-icon ' . $checkClass);
+            $this->waitForPageLoad($page);
+            $this->findCss($page, '#account-icon' . $checkClass);
             foreach ($item as $key => $value) {
                 $session->evaluateScript('VuFind.account.clearCache("' . $key . '");');
             }
