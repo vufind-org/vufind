@@ -1,10 +1,10 @@
 <?php
 /**
- * Record fallback loader plugin manager
+ * Functionality to implement "previous unique ID" behavior.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,52 +20,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Record
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\Record\FallbackLoader;
+namespace VuFind\RecordDriver\Feature;
 
 /**
- * Record fallback loader plugin manager
+ * Functionality to implement "previous unique ID" behavior.
  *
  * @category VuFind
- * @package  Record
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+trait PreviousUniqueIdTrait
 {
     /**
-     * Default plugin aliases.
+     * Previous unique ID (if applicable).
      *
-     * @var array
+     * @var string
      */
-    protected $aliases = [
-        'solr' => Solr::class,
-        'summon' => Summon::class,
-    ];
+    protected $previousUniqueId = null;
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Solr::class => SolrFactory::class,
-        Summon::class => AbstractFallbackLoaderFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * Get previous unique ID (or null if not applicable).
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    public function getPreviousUniqueId()
     {
-        return FallbackLoaderInterface::class;
+        return $this->previousUniqueId;
+    }
+
+    /**
+     * Set previous unique ID
+     *
+     * @param string $id ID to set
+     *
+     * @return void
+     */
+    public function setPreviousUniqueId($id)
+    {
+        $this->previousUniqueId = $id;
     }
 }

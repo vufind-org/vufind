@@ -1,10 +1,10 @@
 <?php
 /**
- * Summon record fallback loader
+ * Solr record fallback loader
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,11 +27,11 @@
  */
 namespace VuFind\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
-use VuFindSearch\ParamBag;
+use VuFind\Db\Table\Resource;
+use VuFindSearch\Service;
 
 /**
- * Summon record fallback loader
+ * Solr record fallback loader
  *
  * @category VuFind
  * @package  Record
@@ -39,14 +39,38 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Summon extends AbstractFallbackLoader
+class Solr extends AbstractFallbackLoader
 {
     /**
      * Record source
      *
      * @var string
      */
-    protected $source = 'Summon';
+    protected $source = 'Solr';
+
+    /**
+     * Solr field containing legacy IDs.
+     *
+     * @param string
+     */
+    protected $legacyIdField;
+
+    /**
+     * Constructor
+     *
+     * @param Resource $table         Resource database table object
+     * @param Service  $searchService Search service
+     * @param ?string  $legacyIdField Solr field containing legacy IDs (null to
+     * disable lookups)
+     */
+    public function __construct(
+        Resource $table,
+        Service $searchService,
+        ?string $legacyIdField = 'previous_id_str_mv'
+    ) {
+        parent::__construct($table, $searchService);
+        $this->legacyIdField = $legacyIdField;
+    }
 
     /**
      * Fetch a single record (null if not found).
@@ -57,16 +81,15 @@ class Summon extends AbstractFallbackLoader
      */
     protected function fetchSingleRecord($id)
     {
-        $resource = $this->table->findResource($id, 'Summon');
-        if ($resource && ($extra = json_decode($resource->extra_metadata, true))) {
-            $bookmark = $extra['bookmark'] ?? '';
-            if (strlen($bookmark) > 0) {
-                $params = new ParamBag(
-                    ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
-                );
-                return $this->searchService->retrieve('Summon', $bookmark, $params);
-            }
+        // If there is no legacy ID field defined, short circuit the lookup:
+        if (null === $this->legacyIdField) {
+            return new \VuFindSearch\Backend\Solr\Response\Json\RecordCollection(
+                ['recordCount' => 0]
+            );
         }
-        return new \VuFindSearch\Backend\Summon\Response\RecordCollection([]);
+        $query = new \VuFindSearch\Query\Query(
+            $this->legacyIdField . ':"' . addcslashes($id, '"') . '"'
+        );
+        return $this->searchService->search('Solr', $query);
     }
 }
