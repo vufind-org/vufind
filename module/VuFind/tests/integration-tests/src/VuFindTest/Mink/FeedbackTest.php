@@ -190,7 +190,6 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 ]
             ]
         );
-        $this->snooze();
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
             'Thank you for your feedback.',
