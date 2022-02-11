@@ -1,7 +1,7 @@
 <?php $account = $this->auth()->getManager(); ?>
 
 <div class="banner container-fluid navbar">
-<div class="container-fluid brow">
+<div class="container-fluid brow">  
 <div class="container browNav">
     <div class="logoLock pull-left hidden-xs hidden-sm">
   <div class="libLogo"></div>
@@ -19,7 +19,7 @@
     <li><a href="https://askus.library.tamu.edu/">Help</a></li>
     </ul>
   </div>
-  <div class="browLinks center-block hidden-md hidden-lg">
+  <div class="browLinks center-block hidden-md hidden-lg"> 
     <ul>
 	<li><a href="https://library.tamu.edu/mylibrary/">MyLibrary</a></li>
     <li><a href="https://askus.library.tamu.edu/">Help</a></li>
@@ -29,7 +29,7 @@
 </div>
 <div class="container appTitle">
   <div class="navbar-header">
-    <h2><a href="<?=$this->url('home')?>">Libraries Catalog</a></h2>
+    <h2><a href="<?=$this->url('home')?>">Libraries Catalog</a></h2> 
 
   </div>
   <?php if (!isset($this->layout()->renderingError)): ?>
@@ -96,17 +96,20 @@
   <?php endif; ?>
 </div>
 <section>
-	<div class="yellowBox">
+	<div class="yellowBox alert alert-dismissible" role="alert">
 		<div>
 			<p>Welcome to our new Libraries Catalog!<br />Please explore and send us your <a href="https://tamu.qualtrics.com/jfe/form/SV_bynABaT7tFRIugu">feedback via this survey</a>.</p>
-		</div>
+		</div>	
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	</div>
-</section>
-<?php
-if (
-(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') === false) &&
-(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') === false) &&
-($this->layout()->searchbox !== false)):
+</section>	
+<?php 
+if ( 
+
+(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') === false) && 
+(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') === false) && 
+($this->layout()->searchbox !== false) ): 
+
 ?>
   <div class="search container navbar">
     <div class="nav searchbox hidden-print" role="search">
