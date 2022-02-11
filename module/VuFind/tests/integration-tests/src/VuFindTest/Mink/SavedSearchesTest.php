@@ -79,6 +79,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->performSearch('test');
         $this->clickCss($page, '.fa.fa-save');
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '.createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
