@@ -111,12 +111,12 @@ trait LiveDatabaseTrait
     }
 
     /**
-     * Static setup support function to fail if users already exist in the database.
-     * We want to ensure a clean state for each test!
+     * Static setup support function to fail if there is already data in the
+     * database. We want to ensure a clean state for each test!
      *
      * @return void
      */
-    protected static function failIfUsersExist(): void
+    protected static function failIfDataExists(): void
     {
         $test = new static();   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.
@@ -129,14 +129,27 @@ trait LiveDatabaseTrait
         if (!$test->continuousIntegrationRunning()) {
             return;
         }
-        // Fail if there are already users in the database (we don't want to run this
-        // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
-        if (count($userTable->select()) > 0) {
-            self::fail(
-                'Test cannot run with pre-existing user data!'
-            );
-            return;
+        // Fail if there are already records in the database (we don't want to run
+        // this on a real system -- it's only meant for the continuous integration
+        // server)
+        $checks = [
+            [
+                'table' => \VuFind\Db\Table\User::class,
+                'name' => 'users'
+            ],
+            [
+                'table' => \VuFind\Db\Table\Tags::class,
+                'name' => 'tags'
+            ],
+        ];
+        foreach ($checks as $check) {
+            $table = $test->getTable($check['table']);
+            if (count($table->select()) > 0) {
+                self::fail(
+                    "Test cannot run with pre-existing {$check['name']} in database!"
+                );
+                return;
+            }
         }
     }
 

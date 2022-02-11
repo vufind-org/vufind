@@ -224,6 +224,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get query string for the current page
+     *
+     * @return string
+     */
+    protected function getCurrentQueryString(): string
+    {
+        return str_replace(
+            ['%5B', '%5D', '%7C'],
+            ['[', ']', '|'],
+            parse_url($this->getMinkSession()->getCurrentUrl(), PHP_URL_QUERY)
+        );
+    }
+
+    /**
      * Restore configurations to the state they were in prior to a call to
      * changeConfig().
      *
@@ -357,23 +371,22 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $e = null;
-        $result = $this->findCss($page, $selector, $timeout, $index);
-        for ($tries = 1; $tries < 4; $tries++) {
+        $maxTries = 3;
+        for ($tries = 1; $tries <= $maxTries; $tries++) {
             try {
+                $result = $this->findCss($page, $selector, $timeout, $index);
                 $result->click();
                 return $result;
             } catch (\Exception $e) {
-                // Expected click didn't work... snooze and retry
-                $this->logWarning(
-                    "clickCss exception (try $tries)."
-                    . ' See PHP error log for details.',
-                    "clickCss exception (try $tries): " . $e->getTraceAsString()
-                );
+                // This may happen e.g. if the page is reloaded right in the middle
+                // due to an event. Snooze and retry unless this is the last loop:
+                if ($tries === $maxTries) {
+                    throw $e;
+                }
                 $this->snooze();
             }
         }
-        throw $e ?? new \Exception('Unexpected state reached.');
+        throw new \Exception('Unexpected state reached.');
     }
 
     /**
@@ -417,7 +430,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return;
             }
             $this->logWarning(
-                'setValue failed in ' . $this->getName(false) . "(try $i)."
+                'RETRY setValue after failure in ' . get_class($this) . '::'
+                . $this->getName(false) . "(try $i)."
             );
 
             $this->snooze();
@@ -545,6 +559,18 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session->wait(
             $timeout,
             "typeof $ !== 'undefined' && $(':animated').length === 0"
+        );
+        // Finally, make sure all jQuery ready handlers are done:
+        $session->evaluateScript(
+            <<<EOS
+if (window.__documentIsReady !== true) {
+    $(document).ready(function() { window.__documentIsReady = true; });
+}
+EOS
+        );
+        $session->wait(
+            $timeout,
+            "window.__documentIsReady === true"
         );
     }
 
