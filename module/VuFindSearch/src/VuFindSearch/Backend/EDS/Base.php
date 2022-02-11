@@ -269,10 +269,16 @@ abstract class Base
      */
     public function autocomplete($query, $type, $data, $raw = false)
     {
+
+        //filters is an array of filter objects
+        //filter object consists of name and an array of values (customer ids)
+        $filters[0]['name'] = 'custid';
+        $filters[0]['values'][] = $data['custid'];
+        
         $params = [];
         $params['idx'] = $type;
         $params['token'] = $data['token'];
-        $params['filters'] = '[{"name" : "custid", "values": ["'.$data['custid'].'"]}]';
+        $params['filters'] = json_encode($filters);
         $params['term'] = $query;
         
         $url = $data['url'].'?'.http_build_query($params);
