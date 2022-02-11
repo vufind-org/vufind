@@ -358,18 +358,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $index = 0
     ) {
         $e = null;
-        $result = $this->findCss($page, $selector, $timeout, $index);
         for ($tries = 1; $tries < 4; $tries++) {
             try {
+                $result = $this->findCss($page, $selector, $timeout, $index);
                 $result->click();
                 return $result;
             } catch (\Exception $e) {
-                // Expected click didn't work... snooze and retry
-                $this->logWarning(
-                    "clickCss exception (try $tries)."
-                    . ' See PHP error log for details.',
-                    "clickCss exception (try $tries): " . $e->getTraceAsString()
-                );
+                // This may happen e.g. if the page is reloaded right in the middle
+                // due to an event. Snooze and retry:
                 $this->snooze();
             }
         }
@@ -417,7 +413,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return;
             }
             $this->logWarning(
-                'setValue failed in ' . $this->getName(false) . "(try $i)."
+                'RETRY setValue after failure in ' . get_class($this) . '::'
+                . $this->getName(false) . "(try $i)."
             );
 
             $this->snooze();
