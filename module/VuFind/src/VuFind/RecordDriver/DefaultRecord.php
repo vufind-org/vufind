@@ -607,16 +607,6 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get an array of all the language notes associated with the record.
-     *
-     * @return array
-     */
-    public function getLanguageNote()
-    {
-        return (array)($this->fields['language-notes'] ?? []);
-    }
-
-    /**
      * Get a raw, unnormalized LCCN. (See getLCCN for normalization).
      *
      * @return string

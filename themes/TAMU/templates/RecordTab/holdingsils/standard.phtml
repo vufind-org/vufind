@@ -35,7 +35,7 @@
           <?php /* Begin Available Items (Holds) */ ?>
            <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
 
-      <?php if ( 1 == 2 ) { ?>
+      <?php if (1 == 2) { ?>
 
           <?php if ($item['link'] ?? false): ?>
             <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <?php if (!empty($item['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($item['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
@@ -47,7 +47,7 @@
             <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($item['storageRetrievalRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
           <?php endif; ?>
 
-      <?php if ( 1 == 2 ) { ?>
+      <?php if (1 == 2) { ?>
 
           <?php if ($item['ILLRequestLink'] ?? false): ?>
             <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($item['ILLRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
@@ -66,7 +66,7 @@
             <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($item['requests_placed'])?></span>
           <?php endif; ?>
 
-      <?php if ( 1 == 2 ) { ?>
+      <?php if (1 == 2) { ?>
 
           <?php if ($item['link'] ?? false): ?>
             <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($item['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($item['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>

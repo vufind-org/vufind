@@ -546,7 +546,6 @@ class Folio extends AbstractAPI implements
                 . '" NOT discoverySuppress==true)'
         ];
         $items = [];
-
         foreach ($this->getPagedResults(
             'holdingsRecords',
             '/holdings-storage/holdings',
@@ -585,57 +584,11 @@ class Folio extends AbstractAPI implements
             );
             $holdingCallNumber = $holding->callNumber ?? '';
             $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
-
-            $holdingItems = iterator_to_array($this->getPagedResults('items', '/item-storage/items', $query));
-
-            if ($holding->effectiveLocationId) {
-                $fallbackLocationId = $holding->effectiveLocationId;
-            } else if ($holding->permanentLocationId) {
-                $fallbackLocationId = $holding->permanentLocationId;
-            } else {
-                $fallbackLocationId = null;
-            }
-
-            //TAMU boundwith workaround
-            if (count($holdingItems) == 0 && $fallbackLocationId) {
-                $boundWithLocations = ['stk','blcc,stk','BookStacks','psel,stk','udoc','txdoc'];
-                $holdingLocationData = $this->getLocationData($fallbackLocationId);
-
-                if (in_array($holdingLocationData['code'], $boundWithLocations)) {
-                    $callNumberData = $this->chooseCallNumber(
-                        $holdingCallNumberPrefix,
-                        $holdingCallNumber,
-                        '',
-                        ''
-                    );
-                    $items[] = $callNumberData + [
-                        'id' => $bibId,
-                        'item_id' => 'bound-with-item',
-                        'item_hrid' => 'bound-with-item',
-                        'holding_id' => $holding->id,
-                        'holding_hrid' => $holding->hrid,
-                        'number' => 0,
-                        'barcode' => 'bound-with-item',
-                        'status' => null,
-                        'availability' => true,
-                        'is_holdable' => $this->isHoldable($holdingLocationData['name']),
-                        'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
-                        'item_notes' => null,
-                        'issues' => $holdingsStatements,
-                        'supplements' => $holdingsSupplements,
-                        'indexes' => $holdingsIndexes,
-                        'callnumber' => $holding->callNumber ?? '',
-                        'location' => $holdingLocationData['name'],
-                        'location_code' => $holdingLocationData['code'],
-                        'reserve' => 'TODO',
-                        'enumeration' => '',
-                        'item_chronology' => '',
-                        'addLink' => true
-                    ];
-                }
-            }
-
-            foreach ($holdingItems as $item) {
+            foreach ($this->getPagedResults(
+                'items',
+                '/item-storage/items',
+                $query
+            ) as $item) {
                 $itemNotes = array_filter(
                     array_map($notesFormatter, $item->notes ?? [])
                 );
@@ -652,9 +605,7 @@ class Folio extends AbstractAPI implements
                 $items[] = $callNumberData + [
                     'id' => $bibId,
                     'item_id' => $item->id,
-                    'item_hrid' => $item->hrid,
                     'holding_id' => $holding->id,
-                    'holding_hrid' => $holding->hrid,
                     'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
@@ -665,12 +616,9 @@ class Folio extends AbstractAPI implements
                     'issues' => $holdingsStatements,
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
-                    'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
-                    'enumeration' => $item->enumeration ?? '',
-                    'item_chronology' => $item->chronology ?? '',
                     'addLink' => true
                 ];
             }
@@ -1294,36 +1242,6 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Obtain a list of course resources, creating an id => value associative array.
-     *
-     * @param string $type        Type of resource to retrieve from the API.
-     * @param string $responseKey Key containing useful values in response (defaults
-     * to $type if unspecified)
-     * @param string $valueKey    Key containing value to extract from response
-     * (defaults to 'courseNumber') TAMU Customization
-     *
-     * @return array
-     */
-    protected function getCourseResourceListName(
-        $type,
-        $responseKey = null,
-        $valueKey = 'courseNumber'
-    ) {
-        $retVal = [];
-
-        // Results can be paginated, so let's loop until we've gotten everything:
-        foreach ($this->getPagedResults(
-            $responseKey ?? $type,
-            '/coursereserves/' . $type
-        ) as $item) {
-            $retVal[$item->id] = $item->$valueKey ?? '';
-        }
-
-        return $retVal;
-    }
-
-
-    /**
      * Get Departments
      *
      * Obtain a list of departments for use in limiting the reserves list.
@@ -1366,7 +1284,7 @@ class Folio extends AbstractAPI implements
      */
     public function getCourses()
     {
-        return $this->getCourseResourceListName('courses');
+        return $this->getCourseResourceList('courses');
     }
 
     /**
