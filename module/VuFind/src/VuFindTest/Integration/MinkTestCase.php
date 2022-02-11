@@ -224,6 +224,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get query string for the current page
+     *
+     * @return string
+     */
+    protected function getCurrentQueryString(): string
+    {
+        return str_replace(
+            ['%5B', '%5D', '%7C'],
+            ['[', ']', '|'],
+            parse_url($this->getMinkSession()->getCurrentUrl(), PHP_URL_QUERY)
+        );
+    }
+
+    /**
      * Restore configurations to the state they were in prior to a call to
      * changeConfig().
      *
