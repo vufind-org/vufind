@@ -269,11 +269,14 @@ abstract class Base
      */
     public function autocomplete($query, $type, $data, $raw = false)
     {
-        // build request
-        $url = $data['url'] . '?idx=' . urlencode($type) .
-            '&token=' . urlencode($data['token']) .
-            '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
-            urlencode($data['custid']) . '"]}]&term=' . urlencode($query);
+        $params = [];
+        $params['idx'] = $type;
+        $params['token'] = $data['token'];
+        $params['filters'] = '[{"name" : "custid", "values": ["'.$data['custid'].'"]}]';
+        $params['term'] = $query;
+        
+        $url = $data['url'].'?'.http_build_query($params);
+
         $this->debugPrint("Autocomplete URL: " . $url);
         $response = $this->call($url, null, null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
