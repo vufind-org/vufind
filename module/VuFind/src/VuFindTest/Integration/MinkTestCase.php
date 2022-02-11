@@ -543,6 +543,18 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $timeout,
             "typeof $ !== 'undefined' && $(':animated').length === 0"
         );
+        // Finally, make sure all jQuery ready handlers are done:
+        $session->evaluateScript(
+            <<<EOS
+if (window.__documentIsReady !== true) {
+    $(document).ready(function() { window.__documentIsReady = true; });
+}
+EOS
+        );
+        $session->wait(
+            $timeout,
+            "window.__documentIsReady === true"
+        );
     }
 
     /**
