@@ -371,19 +371,22 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $e = null;
-        for ($tries = 1; $tries < 4; $tries++) {
+        $maxTries = 3;
+        for ($tries = 1; $tries <= $maxTries; $tries++) {
             try {
                 $result = $this->findCss($page, $selector, $timeout, $index);
                 $result->click();
                 return $result;
             } catch (\Exception $e) {
                 // This may happen e.g. if the page is reloaded right in the middle
-                // due to an event. Snooze and retry:
+                // due to an event. Snooze and retry unless this is the last loop:
+                if ($tries === $maxTries) {
+                    throw $e;
+                }
                 $this->snooze();
             }
         }
-        throw $e ?? new \Exception('Unexpected state reached.');
+        throw new \Exception('Unexpected state reached.');
     }
 
     /**
