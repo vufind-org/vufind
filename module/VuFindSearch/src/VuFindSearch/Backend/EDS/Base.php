@@ -95,11 +95,9 @@ abstract class Base
      *
      * @param array $settings Associative array of setting to use in
      *                        conjunction with the EDS API
-     *    <ul>
-     *      <li>debug - boolean to control debug mode</li>
-     *      <li>orgid - Organization making calls to the EDS API </li>
-     *      <li>search_http_method - HTTP method for search API calls</li>
-     *    </ul>
+     *                        -- debug - boolean to control debug mode
+     *                        -- orgid - Organization making calls to the EDS API
+     *                        -- search_http_method - HTTP method for API calls
      */
     public function __construct($settings = [])
     {
@@ -183,13 +181,13 @@ abstract class Base
      * Retrieves a record specified by its identifiers
      *
      * @param string $an                  An of the record to retrieve from the
-     * EdsApi
+     *                                    EdsApi
      * @param string $dbId                Database identifier of the record to
-     * retrieve from the EdsApi
+     *                                    retrieve from the EdsApi
      * @param string $authenticationToken Authentication token
      * @param string $sessionToken        Session token
      * @param string $highlightTerms      Comma separated list of terms to highlight
-     * in the retrieved record responses
+     *                                    in the retrieved record responses
      * @param array  $extraQueryParams    Extra query string parameters
      *
      * @return array    The requested record
@@ -261,9 +259,10 @@ abstract class Base
      * @param string $query Search term
      * @param string $type  Autocomplete type (e.g. 'rawqueries' or 'holdings')
      * @param array  $data  Autocomplete API details (from authenticating with
-     * 'autocomplete' option set -- requires token, custid and url keys).
+     *                      'autocomplete' option set 
+     *                      -- requires token, custid and url keys).
      * @param bool   $raw   Should we return the results raw (true) or processed
-     * (false)?
+     *                      (false)?
      *
      * @return array An array of autocomplete terns as returned from the api
      */
