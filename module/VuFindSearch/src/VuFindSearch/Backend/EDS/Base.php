@@ -259,7 +259,7 @@ abstract class Base
      * @param string $query Search term
      * @param string $type  Autocomplete type (e.g. 'rawqueries' or 'holdings')
      * @param array  $data  Autocomplete API details (from authenticating with
-     *                      'autocomplete' option set 
+     *                      'autocomplete' option set
      *                      -- requires token, custid and url keys).
      * @param bool   $raw   Should we return the results raw (true) or processed
      *                      (false)?
@@ -271,16 +271,16 @@ abstract class Base
 
         //filters is an array of filter objects
         //filter object consists of name and an array of values (customer ids)
-        $filters[0]['name'] = 'custid';
-        $filters[0]['values'][] = $data['custid'];
-        
+
+        $filters = [['name' => 'custid', 'values' => [$data['custid']]]];
+
         $params = [];
         $params['idx'] = $type;
         $params['token'] = $data['token'];
         $params['filters'] = json_encode($filters);
         $params['term'] = $query;
-        
-        $url = $data['url'].'?'.http_build_query($params);
+
+        $url = $data['url'] . '?' . http_build_query($params);
 
         $this->debugPrint("Autocomplete URL: " . $url);
         $response = $this->call($url, null, null, 'GET', null);
