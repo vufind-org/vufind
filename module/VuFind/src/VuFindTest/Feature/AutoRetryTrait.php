@@ -118,7 +118,7 @@ trait AutoRetryTrait
                         call_user_func(
                             $logMethod,
                             $msg . ' See PHP error log for details.',
-                            $msg . ' Stack: ' . $e->getTraceAsString()
+                            $msg . ' Full exception: ' . (string)$e
                         );
                     }
                     foreach ($retryCallbacks as $callback) {

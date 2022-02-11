@@ -51,7 +51,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -489,8 +489,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Make sure we're printing
-        [, $params] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals('print=1', $params);
+        $this->assertEqualsWithTimeout(
+            'print=1',
+            [$this, 'getCurrentQueryString']
+        );
     }
 
     /**

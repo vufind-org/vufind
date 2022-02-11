@@ -54,7 +54,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -132,6 +132,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function placeIllRequestAndGoToIllScreen(Element $page): void
     {
         // Open the "place ILL request" dialog
+        $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placeILLRequest');
 
         // Set pickup location to a non-default value so we can confirm that
@@ -167,6 +168,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         Element $page
     ): void {
         // Open the "place storage request" dialog
+        $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placeStorageRetrievalRequest');
 
         // Set pickup location to a non-default value so we can confirm that
