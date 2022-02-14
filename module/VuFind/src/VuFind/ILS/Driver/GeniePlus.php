@@ -323,8 +323,8 @@ class GeniePlus extends AbstractAPI
      */
     protected function sanitizeQueryParam(string $value): string
     {
-        // Eliminate single quotes to avoid SQL-injection-style query manipulation.
-        return str_replace("'", '', $value);
+        // The query language used by GeniePlus doubles quotes to escape them.
+        return str_replace("'", "''", $value);
     }
 
     /**
