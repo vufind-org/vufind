@@ -103,12 +103,12 @@
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	</div>
 </section>	
-<?php 
-if ( 
+<?php
+if (
 
-(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') === false) && 
-(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') === false) && 
-($this->layout()->searchbox !== false) ): 
+(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') === false) &&
+(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') === false) &&
+($this->layout()->searchbox !== false)):
 
 ?>
   <div class="search container navbar">
