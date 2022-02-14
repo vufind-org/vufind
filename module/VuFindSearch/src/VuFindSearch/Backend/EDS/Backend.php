@@ -344,7 +344,7 @@ class Backend extends AbstractBackend
             }
         } catch(BackendException $e) {
             $response = [];
-	}
+        }
         $collection = $this->createRecordCollection(['Records' => $response]);
         $this->injectSourceIdentifier($collection);
         return $collection;
