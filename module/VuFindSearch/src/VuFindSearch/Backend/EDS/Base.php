@@ -269,7 +269,6 @@ abstract class Base
      */
     public function autocomplete($query, $type, $data, $raw = false)
     {
-
         // $filters is an array of filter objects
         // filter objects consist of name and an array of values (customer ids)
         $filters = [['name' => 'custid', 'values' => [$data['custid']]]];
