@@ -298,6 +298,22 @@ class GeniePlus extends AbstractAPI
                 'barcode' => $barcodes[$i] ?? '',
             ];
         }
+        $sortParts = array_map(
+            'trim',
+            explode(
+                ' ',
+                strtolower($this->config['Item']['sort'] ?? 'none')
+            )
+        );
+        $sortField = $sortParts[0];
+        if ($sortField !== 'none') {
+            $sortDirection = ($sortParts[1] ?? 'asc') === 'asc' ? 1 : -1;
+            $callback = function ($a, $b) use ($sortField, $sortDirection) {
+                return strnatcmp($a[$sortField] ?? '', $b[$sortField] ?? '')
+                    * $sortDirection;
+            };
+            usort($result, $callback);
+        }
         return $result;
     }
 
