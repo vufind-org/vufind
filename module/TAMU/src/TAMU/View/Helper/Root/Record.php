@@ -42,15 +42,22 @@ class Record extends \VuFind\View\Helper\Root\Record
      * TAMU Customization
      *
      * Get the full text button
+     *
+     * @param array  $issnParent   The marc parent field of the ISSN
+     * @param string $recordFormat The format of the record
+     *
+     * @return stdClass
      */
-    public function getFullTextButton($issnParent, $recordFormat) {
+    public function getFullTextButton($issnParent, $recordFormat)
+    {
         $fullTextData = new \stdClass();
         $fullTextData->issn = null;
         $fullTextData->title = null;
         $fullTextData->isValid = false;
 
         if ($issnParent && $recordFormat) {
-            $validFormats = isset($this->config->TAMU->full_text_formats) ? explode(":",$this->config->TAMU->full_text_formats):[];
+            $validFormats = isset($this->config->TAMU->full_text_formats) ?
+                explode(":", $this->config->TAMU->full_text_formats):[];
             $isValidFormat = false;
             foreach ($validFormats as $validFormat) {
                 if (str_contains($recordFormat, $validFormat)) {
@@ -59,11 +66,16 @@ class Record extends \VuFind\View\Helper\Root\Record
                 }
             }
 
-            $issnSubField = $issnParent[0]->getSubField("a") ? $issnParent[0]->getSubField("a"):$issnParent[0]->getSubField("y");
+            $issnSubField = $issnParent[0]->getSubField("a") ?
+                $issnParent[0]->getSubField("a"):$issnParent[0]->getSubField("y");
             if ($issnSubField) {
                 $fullTextData->issn = $issnSubField->getData();
                 $escapeHtml = $this->getView()->plugin('escapeHtml');
-                $fullTextData->title = $escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection());
+                $fullTextData->title = $escapeHtml(
+                    $this->driver->getShortTitle() . ' ' .
+                    $this->driver->getSubtitle() . ' ' .
+                    $this->driver->getTitleSection()
+                );
             }
         }
         return $fullTextData;
