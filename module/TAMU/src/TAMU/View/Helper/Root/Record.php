@@ -57,7 +57,7 @@ class Record extends \VuFind\View\Helper\Root\Record
 
         if ($issnParent && $recordFormat) {
             $validFormats = isset($this->config->TAMU->full_text_formats) ?
-                explode(":", $this->config->TAMU->full_text_formats): [];
+                explode(":", $this->config->TAMU->full_text_formats) : [];
             $isValidFormat = false;
             foreach ($validFormats as $validFormat) {
                 if (str_contains($recordFormat, $validFormat)) {
