@@ -274,11 +274,12 @@ abstract class Base
         // filter objects consist of name and an array of values (customer ids)
         $filters = [['name' => 'custid', 'values' => [$data['custid']]]];
 
-        $params = [];
-        $params['idx'] = $type;
-        $params['token'] = $data['token'];
-        $params['filters'] = json_encode($filters);
-        $params['term'] = $query;
+        $params = [
+            'idx' => $type,
+            'token' => $data['token'],
+            'filters' => json_encode($filters),
+            'term' => $query,
+        ];
 
         $url = $data['url'] . '?' . http_build_query($params);
 
