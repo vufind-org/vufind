@@ -53,7 +53,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -67,6 +67,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
+        $this->waitForPageLoad($page);
         // Hide autocomplete menu
         $this->clickCss($page, '#side-panel-format .title');
         return $page;
@@ -120,7 +121,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForLoginMessage(Element $page)
     {
-        $warning = $page->find('css', '.modal-body .alert-danger');
+        $warning = $this->findCss($page, '.modal-body .alert-danger');
         $this->assertTrue(is_object($warning));
         $this->assertEquals(
             'You must be logged in first',
@@ -138,24 +139,21 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     public function testBulkEmail()
     {
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-email');
 
         // First try clicking without selecting anything:
-        $button->click();
-        $this->snooze();
+        $this->clickCss($page, '#ribbon-email');
         $this->checkForNonSelectedMessage($page);
-        $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
+        $this->clickCss($page, '.modal-body .btn');
+        $this->waitForLightboxHidden();
 
         // Now do it for real -- we should get a login prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
-        $this->snooze();
+        $this->clickCss($page, '#ribbon-email');
         $this->checkForLoginMessage($page);
 
         // Create an account.
         $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
 
@@ -167,16 +165,11 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             'demian.katz@villanova.edu'
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
-        /* TODO: add back this check when everything is working (as of this
-         * writing, the pop-up message is inexplicably missing... but we should
-         * fix this soon!
-        // Check for confirmation message
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your item(s) were emailed',
             $this->findCss($page, '.modal-body .alert-success')->getText()
         );
-         */
     }
 
     /**
@@ -189,19 +182,17 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     public function testBulkSave()
     {
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-save');
 
         // First try clicking without selecting anything:
-        $button->click();
-        $this->snooze();
+        $this->clickCss($page, '#ribbon-save');
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
+        $this->waitForLightboxHidden();
 
         // Now do it for real -- we should get a login prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
-        $this->snooze();
+        $this->clickCss($page, '#ribbon-save');
+        $this->waitForPageLoad($page);
         $this->checkForLoginMessage($page);
 
         // Log in to account created in previous test.
@@ -209,8 +200,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submit]');
-        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
@@ -241,15 +232,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
 
         // Now do it for real -- we should get a lightbox prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
-        $this->snooze();
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
@@ -258,7 +246,6 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
-        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }
@@ -276,15 +263,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
 
         // Now do it for real -- we should get redirected.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
-        $this->snooze();
         [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',

@@ -55,7 +55,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -99,7 +99,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
-        return $session->getPage();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
     }
 
     /**
@@ -119,7 +121,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#profile_cat_username')->setValue($username);
         $this->findCss($page, '#profile_cat_password')->setValue($password);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
     }
 
     /**
@@ -136,8 +137,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         array $extras = []
     ): void {
         // Open the "place hold" dialog
+        $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placehold');
-        $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
@@ -145,17 +146,16 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $extras['#pickUpLocation'] = 'B';
         }
         // Add extra form field values:
+        $this->waitForPageLoad($page);
         foreach ($extras as $selector => $value) {
             $this->findCss($page, $selector)->setValue($value);
         }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
         // If successful, we should now have a link to review the hold:
         $link = $this->findCss($page, '.modal-body a');
         $this->assertEquals('Your Holds and Recalls', $link->getText());
         $link->click();
-        $this->snooze();
 
         // Make sure we arrived where we expected to:
         $this->assertEquals(
@@ -183,12 +183,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
-        $this->snooze();
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
 
         // Test invalid patron login
         $this->submitCatalogLoginForm($page, 'bad', 'incorrect');
@@ -199,7 +196,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test valid patron login
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
-        $this->snooze();
 
         // Create the hold and go to the holds screen:
         $this->placeHoldAndGoToHoldsScreen($page);
@@ -257,7 +253,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Click cancel but bail out with no... item should still be there.
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'No');
-        $this->snooze();
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -267,7 +262,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Now cancel for real:
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
         $this->assertEquals(
             '1 request(s) were successfully canceled',
             $this->findCss($page, '.alert.alert-success')->getText()
@@ -299,7 +293,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
@@ -323,7 +316,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
@@ -339,7 +331,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $elementText = $this->findCss($page, ".media-body")->getText();
         $this->assertTrue(
             false !== strstr($elementText, $expected),
-            "Missing expected text: $expected in $elementText"
+            "Missing expected text: '$expected' in '$elementText'"
         );
 
         return $page;
@@ -402,15 +394,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Open the edit dialog box using the link:
         $this->clickCss($page, '.hold-edit');
-        $this->snooze();
 
         // Release the hold and change the pickup location
         $this->findCss($page, '#frozen')->setValue('0');
         $this->findCss($page, '#pickup_location')->setValue('A');
         $this->findCss($page, '#modal .btn.btn-primary')->click();
-        $this->snooze();
 
         // Confirm that the values have changed
+        $this->waitForPageLoad($page);
         $this->assertTrue(false !== strstr($page->getContent(), 'Campus A'));
         $this->assertFalse(
             strstr($page->getContent(), 'Frozen (temporarily suspended) through ')
@@ -445,7 +436,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Open the edit dialog box using the button:
         $this->clickCss($page, '.checkbox-select-all');
         $this->clickCss($page, '#update_selected');
-        $this->snooze();
 
         // Confirm that the popup contains a warning message about mismatched
         // pickup locations:
@@ -457,17 +447,15 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Close the modal:
-        $this->findCss($page, '#modal .btn.btn-primary')->click();
-        $this->snooze();
+        $this->findCss($page, '#modal button.close')->click();
 
         // Change the first hold to location C so it matches the second one:
         $this->clickCss($page, '.hold-edit');
-        $this->snooze();
         $this->findCss($page, '#pickup_location')->setValue('C');
         $this->findCss($page, '#modal .btn.btn-primary')->click();
-        $this->snooze();
 
         // Locations should now match:
+        $this->waitForPageLoad($page);
         $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
 
@@ -480,12 +468,11 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.checkbox-select-item', 1000, 0);
         $this->clickCss($page, '.checkbox-select-item', 1000, 2);
         $this->clickCss($page, '#update_selected');
-        $this->snooze();
         $this->findCss($page, '#pickup_location')->setValue('C');
         $this->findCss($page, '#modal .btn.btn-primary')->click();
-        $this->snooze();
 
         // Confirm that it worked:
+        $this->waitForPageLoad($page);
         $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
         $this->assertFalse(strstr($page->getContent(), 'Campus A'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
@@ -509,23 +496,23 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpFrozenHold();
 
         // Open the edit dialog box using the button:
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '.checkbox-select-all');
         $this->clickCss($page, '#update_selected');
-        $this->snooze();
 
         // Revise the freeze date:
         $futureDate = date('m-d-Y', strtotime('+3 days'));
         $this->findCss($page, '#frozen')->setValue('1');
         $this->findCss($page, '#frozen_through')->setValue($futureDate);
         $this->findCss($page, '#modal .btn.btn-primary')->click();
-        $this->snooze();
 
         // Confirm that the values have changed
+        $this->waitForPageLoad($page);
         $expected = "Frozen (temporarily suspended) through $futureDate";
         $elementText = $this->findCss($page, ".media-body")->getText();
         $this->assertTrue(
             false !== strstr($elementText, $expected),
-            "Missing expected text: $expected in $elementText"
+            "Missing expected text: '$expected' in '$elementText'"
         );
 
         // Now cancel the hold (using the checkboxes, to test a variation on
@@ -533,7 +520,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.checkbox-select-all');
         $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
         $this->assertEquals(
             '1 request(s) were successfully canceled',
             $this->findCss($page, '.alert.alert-success')->getText()
@@ -569,16 +555,13 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Hold links should be visible
         $element = $this->findCss($page, 'a.placehold');
         $element->click();
-        $this->snooze();
         // Since we're not logged in...
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm(
             $page,
             ['username' => 'username2', 'email' => 'u2@vufind.org']
         );
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
 
         // Test valid patron login
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
@@ -586,17 +569,18 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Go directly to holds screen
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
+        $this->waitForPageLoad($page);
         $this->findCss($page, '#pickUpLocation')->setValue('B');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
         // If successful, we should now have a link to review the hold:
+        $this->waitForPageLoad($page);
         $link = $this->findCss($page, '.modal-body a');
         $this->assertEquals('Your Holds and Recalls', $link->getText());
         $link->click();
-        $this->snooze();
 
         // Make sure we arrived where we expected to:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your Holds and Recalls',
             $this->findCss($page, 'h2')->getText()
