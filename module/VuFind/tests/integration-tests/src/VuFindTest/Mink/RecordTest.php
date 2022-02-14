@@ -55,7 +55,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
-        $staffViewTab = $this->findCss($page, '.record-tabs .details');
+        $staffViewTab = $this->findCss($page, '.record-tabs .details a');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
         $this->assertEqualsWithTimeout(
@@ -87,7 +87,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
         $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
         $page = $session->getPage();
-        $staffViewTab = $this->findCss($page, '.record-tabs .holdings');
+        $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
         $this->assertEquals('Holdings', $staffViewTab->getText());
         $staffViewTab->click();
         $holdingsTabHeader = $this->findCss($page, '.record-tabs .holdings-tab h3');
