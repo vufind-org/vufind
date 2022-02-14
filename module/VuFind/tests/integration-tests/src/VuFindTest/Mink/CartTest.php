@@ -451,8 +451,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->checkEmptyCart($page);
 
         // Close the lightbox:
-        $close = $this->findCss($page, 'button.close');
-        $close->click();
+        $this->closeLightbox($page);
 
         // Confirm that the cart has truly been emptied:
         $this->waitStatement('$("#cartItems strong").text() === "0"');
@@ -476,8 +475,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->checkEmptyCart($page);
 
         // Close the lightbox:
-        $close = $this->findCss($page, 'button.close');
-        $close->click();
+        $this->closeLightbox($page);
 
         // Confirm that the cart has truly been emptied:
         $this->waitStatement('$("#cartItems strong").text() === "0"');
@@ -627,9 +625,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Click the close button.
-        $submit = $this->findCss($page, '.modal-body .btn');
-        $this->assertEquals('close', $submit->getText());
-        $submit->click();
+        $this->closeLightbox($page, true);
     }
 
     /**

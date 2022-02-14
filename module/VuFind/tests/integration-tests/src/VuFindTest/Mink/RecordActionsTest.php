@@ -111,7 +111,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
         // Click add comment without logging in
         // TODO Rewrite for comment and login coming
-        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
         $this->assertEquals(// Can Comment?
             'You must be logged in first',
@@ -122,8 +122,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
         $this->makeAccount($page, 'username1');
+        $this->waitForLightboxHidden();
         // Make sure page updated for login
-        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->clickCss($page, '.record-tabs .usercomments a');
         $this->waitForPageLoad($page);
         $this->assertEquals(// Can Comment?
             'Add your comment',
@@ -162,7 +163,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
         // Click add comment without logging in
         // TODO Rewrite for comment and login coming
-        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->clickCss($page, '.record-tabs .usercomments a');
         $this->findCss($page, '.comment-form');
         $this->assertEquals(// Can Comment?
             'You must be logged in first',
@@ -176,7 +177,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
         // Make sure page updated for login
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->clickCss($page, '.record-tabs .usercomments a');
         $this->assertEquals(// Can Comment?
             'Add your comment',
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
@@ -223,7 +224,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->makeAccount($page, 'username2');
         // Add tag exists?
         $this->findCss($page, '.modal #addtag_tag');
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         $this->clickCss($page, '.logoutOptions a.logout');
         // Login
         // $page = $this->gotoRecord();
@@ -236,7 +237,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $success = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals('Tags Saved', $success->getText());
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         // Count tags
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
@@ -339,7 +340,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $success = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals('Tags Saved', $success->getText());
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         // Count tags
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
@@ -382,7 +383,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-success');
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         // Logout
         $this->clickCss($page, '.logoutOptions a.logout');
 
@@ -397,7 +398,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure Lightbox redirects to email view
         $this->findCss($page, '.modal #email_to');
         // Close lightbox
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         // Click email
         $this->clickCss($page, '.mail-record');
         $this->findCss($page, '.modal #email_to');
@@ -407,7 +408,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message and close lightbox
         $this->findCss($page, '.modal .alert-success');
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         // Logout
         $this->clickCss($page, '.logoutOptions a.logout');
     }

@@ -143,11 +143,11 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // First try clicking without selecting anything:
         $this->clickCss($page, '#ribbon-email');
         $this->checkForNonSelectedMessage($page);
-        $this->clickCss($page, '.modal-body .btn');
-        $this->waitForLightboxHidden();
+        $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
         $this->clickCss($page, '#ribbon-email');
         $this->checkForLoginMessage($page);
 
@@ -186,8 +186,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // First try clicking without selecting anything:
         $this->clickCss($page, '#ribbon-save');
         $this->checkForNonSelectedMessage($page);
-        $page->find('css', '.modal-body .btn')->click();
-        $this->waitForLightboxHidden();
+        $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
@@ -215,9 +214,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Click the close button.
-        $submit = $this->findCss($page, '.modal-body .btn');
-        $this->assertEquals('close', $submit->getText());
-        $submit->click();
+        $this->closeLightbox($page, true);
     }
 
     /**
@@ -233,7 +230,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // First try clicking without selecting anything:
         $button->click();
         $this->checkForNonSelectedMessage($page);
-        $page->find('css', '.modal-body .btn')->click();
+        $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();

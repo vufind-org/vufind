@@ -575,13 +575,34 @@ EOS
     }
 
     /**
+     * Verify that lightbox title contains the expected value
+     *
+     * @param Element $page        Page element
+     * @param bool    $closeButton Whether there should be a close button in the
+     * modal body
+     *
+     * @return void
+     */
+    protected function closeLightbox(Element $page, $closeButton = false)
+    {
+        if ($closeButton) {
+            $button = $this->findCss($page, '#modal .modal-body .btn');
+            $this->assertEquals('close', $button->getText());
+        } else {
+            $button = $this->findCss($page, '#modal .modal-content > button.close');
+        }
+        $button->click();
+        $this->waitForLightboxHidden();
+    }
+
+    /**
      * Wait for Lightbox to become hidden if it isn't already.
      *
      * @return void
      */
     protected function waitForLightboxHidden()
     {
-        $this->waitStatement('$("#modal:visible").length === 0');
+        $this->waitStatement('$("#modal:visible").length === 0 && $("#modal .modal-body").html() === ""');
     }
 
     /**
