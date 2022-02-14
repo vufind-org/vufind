@@ -346,7 +346,7 @@ class Backend extends AbstractBackend
             if (!isset($parts[1])) {
                 $response = [];
             } else {
-                throw $e;                
+                throw $e;
             }
         }
         $collection = $this->createRecordCollection(['Records' => $response]);
