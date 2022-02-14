@@ -72,26 +72,12 @@
       $coreFields = $formatter->getData($driver, $formatter->getDefaults('core'));
     ?>
     <?php if (!empty($coreFields)): ?>
-      <?php
-      $issnParent = $this->driver->getMarcRecord()->getFields("22");
-      $sfxData = new stdClass();
-      $sfxData->issn = null;
-      $sfxData->title = null;
-      $sfxData->isValid = false;
-      if ($issnParent) {
-        $issnSubField = $issnParent[0]->getSubField("a") ? $issnParent[0]->getSubField("a"):$issnParent[0]->getSubField("y");
-        if ($issnSubField) {
-          $sfxData->issn = $issnSubField->getData();
-          $sfxData->title = $this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection());
-        }
-      }
-      ?>
       <table class="table table-striped">
         <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
         <?php foreach ($coreFields as $current): ?>
           <?php
-          if ($current['label'] == 'Format' && (str_contains($current['value'], 'Journal') || str_contains($current['value'], 'Serial'))) {
-            $sfxData->isValid = true;
+          if ($current['label'] == 'Format') {
+            $sfxData = $this->record($this->driver)->getFullTextButton($this->driver->getMarcRecord()->getFields("22"), $current['value']);
           }
           ?>
           <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
