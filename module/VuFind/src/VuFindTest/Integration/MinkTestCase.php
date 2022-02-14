@@ -602,7 +602,10 @@ EOS
      */
     protected function waitForLightboxHidden()
     {
-        $this->waitStatement('$("#modal:visible").length === 0 && $("#modal .modal-body").html() === ""');
+        $this->waitStatement(
+            '$("#modal:visible").length === 0'
+            . ' && $("#modal .modal-body").html() === ""'
+        );
     }
 
     /**
