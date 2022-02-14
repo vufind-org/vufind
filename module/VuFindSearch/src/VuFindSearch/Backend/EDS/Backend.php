@@ -342,7 +342,7 @@ class Backend extends AbstractBackend
             default:
                 throw $e;
             }
-        } catch(BackendException $e) {
+        } catch (BackendException $e) {
             $response = [];
         }
         $collection = $this->createRecordCollection(['Records' => $response]);
