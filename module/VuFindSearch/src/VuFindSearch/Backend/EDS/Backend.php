@@ -336,16 +336,11 @@ class Backend extends AbstractBackend
                 }
                 break;
             case 135:
+            case 132:
                 // DbId not in profile, fall through to treat as "record not found"
                 $response = [];
                 break;
             default:
-                throw $e;
-            }
-        } catch (BackendException $e) {
-            if (!isset($parts[1])) {
-                $response = [];
-            } else {
                 throw $e;
             }
         }
