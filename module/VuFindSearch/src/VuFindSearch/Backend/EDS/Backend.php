@@ -312,6 +312,7 @@ class Backend extends AbstractBackend
                 $extras
             );
         } catch (ApiException $e) {
+            // Error codes can be reviewed at https://connect.ebsco.com/s/article/EBSCO-Discovery-Service-API-Reference-Guide-Error-Codes
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
             case 104:
@@ -336,8 +337,11 @@ class Backend extends AbstractBackend
                 }
                 break;
             case 132:
+            case 133:
             case 135:
-                // DbId not in profile, fall through to treat as "record not found"
+                // 132 Record not found
+                // 133 Simultaneous User Limit Reached
+                // 135 DbId not in profile, fall through to treat as "record not found"
                 $response = [];
                 break;
             default:
