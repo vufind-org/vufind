@@ -41,6 +41,8 @@ use VuFind\I18n\ExtendedIniNormalizer;
  */
 class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test consistent normalization of translation files on disk. This tests not
      * only the functionality of ExtendedIniNormalizer but also the integrity of
@@ -53,6 +55,23 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
         $normalizer = new ExtendedIniNormalizer();
         $langDir = realpath(__DIR__ . '/../../../../../../../languages');
         $this->checkDirectory($normalizer, $langDir);
+    }
+
+    /**
+     * Test bypassing of non-language-files.
+     *
+     * @return void
+     */
+    public function testLanguageFileCheck()
+    {
+        $file = $this->getFixtureDir() . 'language/base/non-language.ini';
+        $normalizer = new ExtendedIniNormalizer();
+
+        $this->expectExceptionMessage(
+            "Cannot normalize a file with sections; $file line 1 contains: [Main]"
+        );
+
+        $normalizer->normalizeFileToString($file);
     }
 
     /**
