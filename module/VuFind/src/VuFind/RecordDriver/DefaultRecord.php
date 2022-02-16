@@ -890,7 +890,7 @@ class DefaultRecord extends AbstractBase
         foreach ($params as $key => $value) {
             $value = (array)$value;
             foreach ($value as $sub) {
-                $query[] = $key . '=' . urlencode($sub);
+                $query[] = urlencode($key) . '=' . urlencode($sub);
             }
         }
         return implode("&", $query);
