@@ -28,7 +28,7 @@ class SolrMarc extends SolrDefault
         // Try each MARC field one at a time:
         foreach ($this->subjectFields as $field => $fieldType) {
             // Do we have any results for the current field?  If not, try the next.
-            $results = $this->getMarcRecord()->getFields($field);
+            $results = $this->getMarcReader()->getFields($field);
             if (!$results) {
                 continue;
             }
@@ -39,17 +39,18 @@ class SolrMarc extends SolrDefault
                 $current = [];
 
                 // Get all the chunks and collect them together:
-                $subfields = $result->getSubfields();
+                $subfields = $this->getMarcReader()->getSubfields($result);
                 if ($subfields) {
                     foreach ($subfields as $subfield) {
                         // Numeric subfields are for control purposes and should not
                         // be displayed:
-                        if (!is_numeric($subfield->getCode())) {
-                            $current[] = $subfield->getData();
+                        if (!is_numeric($subfield['code'])) {
+                            $current[] = $subfield['data'];
                         }
                     }
                     // If we found at least one chunk, add a heading to our result:
                     if (!empty($current)) {
+                        /*
                         if ($extended) {
                             $sourceIndicator = $result->getIndicator(2);
                             $source = '';
@@ -66,16 +67,20 @@ class SolrMarc extends SolrDefault
                                 'type' => $fieldType,
                                 'source' => $source ?: ''
                             ];
+
                         } else {
                             $retval[] = $current;
                         }
+                         *
+                         */
+                      $retval[] = $current;
                     }
                 }
             }
         }
 
         // THIS IS WHERE THE KRIMDOK CODE STARTS => for 689 and LOK 689
-        $results = $this->getMarcRecord()->getFields('689');
+        $results = $this->getMarcReader()->getFields('689');
         if ($results) {
             $current = [];
             $currentID = 0;
@@ -107,7 +112,7 @@ class SolrMarc extends SolrDefault
                 $retval[] = $current;
             }
         }
-        $results = $this->getMarcRecord()->getFields('LOK');
+        $results = $this->getMarcReader()->getFields('LOK');
         if ($results) {
             foreach ($results as $result) {
                 $current = [];

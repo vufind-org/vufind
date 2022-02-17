@@ -11,7 +11,6 @@ trait MarcAdvancedTrait
     public function getSubfieldsWithCustomSeparator($currentField, $subfields, $subfieldSeparatorMap = null) {
         // Start building a line of text for the current field
         $matches = '';
-
         // Loop through all subfields, collecting results that match the whitelist;
         // note that it is important to retain the original MARC order here!
         $allSubfields = $currentField->getSubfields();
@@ -45,30 +44,43 @@ trait MarcAdvancedTrait
         // Loop through the field specification....
         foreach ($fieldInfo as $field => $subfields) {
             // Did we find any matching fields?
-            $series = $this->getMarcRecord()->getFields($field);
+            $series = $this->getMarcReader()->getFields($field);
+
             if (is_array($series)) {
                 foreach ($series as $currentField) {
-                    // Can we find a name using the specified subfield list?
-                    $name = $this->getSubfieldsWithCustomSeparator($currentField, $subfields, $seriesSeparators);
-                    if (isset($name)) {
+
+                    $name = '';
+                    foreach($currentField['subfields'] as $subFields) {
+                        $code = $subFields['code'];
+                        if (in_array($code, $subfields)) {
+                          $separator = !is_null($seriesSeparators) && isset($seriesSeparators[$code]) ? $seriesSeparators[$code] : ' ';
+                          // Grab the current subfield value and act on it if it is
+                          // non-empty:
+                          $data = trim($subFields['data']);
+                          if (!empty($data)) {
+                              $name .= !empty($name) ? $separator . $data : $data;
+                          }
+                        }
+                    }
+
+                    if (!empty($name)) {
                         $currentArray = ['name' => $name];
 
                         // Can we find a number in subfield v?  (Note that number is
                         // always in subfield v regardless of whether we are dealing
                         // with 440, 490, 800 or 830 -- hence the hard-coded array
                         // rather than another parameter in $fieldInfo).
-                        $number
-                            = $this->getSubfieldArray($currentField, ['v']);
+                        $number = $this->getMarcReader()->getSubfield($currentField, 'v');
                         if (isset($number[0])) {
                             $currentArray['number'] = $number[0];
                         }
-
                         // Save the current match:
                         $matches[] = $currentArray;
                     }
                 }
             }
         }
+
         return $matches;
     }
 
