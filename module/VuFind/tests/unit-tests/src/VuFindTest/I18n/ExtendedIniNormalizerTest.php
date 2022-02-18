@@ -68,6 +68,24 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
         $normalizer = new ExtendedIniNormalizer();
 
         $this->expectExceptionMessage(
+            "Equals sign not found in $file line 2: this is not a proper language"
+            . ' file'
+        );
+
+        $normalizer->normalizeFileToString($file);
+    }
+
+    /**
+     * Test bypassing of files with sections.
+     *
+     * @return void
+     */
+    public function testLanguageFileSectionCheck()
+    {
+        $file = $this->getFixtureDir() . 'language/base/non-language-section.ini';
+        $normalizer = new ExtendedIniNormalizer();
+
+        $this->expectExceptionMessage(
             "Cannot normalize a file with sections; $file line 1 contains: [Main]"
         );
 
