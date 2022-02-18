@@ -987,17 +987,15 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                             $result['description'] ?? $result['name']
                         )
                     ];
+                } elseif ($fieldsSkipped) {
+                    $results[$requestId] = [
+                        'success' => false,
+                        'status' => 'hold_error_update_blocked_status'
+                    ];
                 } else {
-                    if ($fieldsSkipped) {
-                        $results[$requestId] = [
-                            'success' => false,
-                            'status' => 'hold_error_update_blocked_status'
-                        ];
-                    } else {
-                        $results[$requestId] = [
-                            'success' => true
-                        ];
-                    }
+                    $results[$requestId] = [
+                        'success' => true
+                    ];
                 }
             }
         }
