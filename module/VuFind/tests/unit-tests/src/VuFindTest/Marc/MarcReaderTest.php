@@ -50,6 +50,7 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $marc = $this->getFixture('marc/marcreader.xml');
 
         $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals([], $reader->getWarnings());
 
         // Test round-trips
         $reader = new \VuFind\Marc\MarcReader($reader->toFormat('MARCXML'));
@@ -223,10 +224,11 @@ EOT;
     {
         $marc = '00123cam a22000854i 4500';
 
-        $this->expectExceptionMessageMatches(
-            '/Invalid MARC record \(end of field not found\)/'
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals(
+            ['Invalid MARC record (end of field not found)'],
+            $reader->getWarnings()
         );
-        new \VuFind\Marc\MarcReader($marc);
     }
 
     /**
