@@ -2,6 +2,9 @@
 
 namespace TueFind\Controller;
 
+use Laminas\Mail\Address;
+use VuFind\Exception\Mail as MailException;
+
 class FeedbackController extends \VuFind\Controller\FeedbackController
 {
     protected $overwritableFields = ['title'];
@@ -90,7 +93,8 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         foreach ($recipients as $recipient) {
             list($success, $errorMsg) = $this->sendEmail(
                 $recipient['name'], $recipient['email'], $senderName, $senderEmail,
-                $replyToName, $replyToEmail, $emailSubject, $emailMessage
+                $replyToName, $replyToEmail, $emailSubject, $emailMessage,
+                /*$enableSpamfilter=*/true
             );
 
             $sendSuccess = $sendSuccess && $success;
@@ -106,6 +110,44 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         }
 
         return $view;
+    }
+
+    /**
+     * Send form data as email.
+     *
+     * @param string $recipientName    Recipient name
+     * @param string $recipientEmail   Recipient email
+     * @param string $senderName       Sender name
+     * @param string $senderEmail      Sender email
+     * @param string $replyToName      Reply-to name
+     * @param string $replyToEmail     Reply-to email
+     * @param string $emailSubject     Email subject
+     * @param string $emailMessage     Email message
+     * @param bool   $enableSpamfilter TueFind: Enable Spamfilter
+     *
+     * @return array with elements success:boolean, errorMessage:string (optional)
+     */
+    protected function sendEmail(
+        $recipientName, $recipientEmail, $senderName, $senderEmail,
+        $replyToName, $replyToEmail, $emailSubject, $emailMessage,
+        $enableSpamfilter = false
+    ) {
+        try {
+            $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
+            $mailer->send(
+                new Address($recipientEmail, $recipientName),
+                new Address($senderEmail, $senderName),
+                $emailSubject,
+                $emailMessage,
+                null,
+                !empty($replyToEmail)
+                    ? new Address($replyToEmail, $replyToName) : null,
+                $enableSpamfilter
+            );
+            return [true, null];
+        } catch (MailException $e) {
+            return [false, $e->getMessage()];
+        }
     }
 
     public function prefillUrlInfo($form) {
