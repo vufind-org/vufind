@@ -55,7 +55,10 @@
 
                 <?php $routeParams = $this->tuefind()->getRouteParams();
                     if($routeParams['controller'] != "index" && $routeParams['action'] != "Home") {
-                      echo $this->render('search/searchboxForm');
+                      if($routeParams['controller'] != "Search") {
+                        echo $this->render('search/searchboxForm');
+                      }
+
                     }?>
 
             </div>
