@@ -53,7 +53,7 @@
                 <small><?=$this->transEsc("ixtheo_subtitle")?></small>
                 <br />
 
-                <?php $routeParams = $this->tuefind()->getRouteParams(); print_r($routeParams);
+                <?php $routeParams = $this->tuefind()->getRouteParams();
                     if($routeParams['controller'] != "index" && $routeParams['action'] != "Home") {
                       echo $this->render('search/searchboxForm');
                     }?>
