@@ -46,12 +46,18 @@
         <div class="panel-home">
             <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
 
-            <div class="visible-lg">
+            <div class="visible-lg visible-md visible-sm">
                 <h1>
                     <a href="<?=$this->url('home')?>" title="Index Theologicus">Index Theologicus</a>
                 </h1>
                 <small><?=$this->transEsc("ixtheo_subtitle")?></small>
                 <br />
+
+                <?php $routeParams = $this->tuefind()->getRouteParams(); print_r($routeParams);
+                    if($routeParams['controller'] != "index" && $routeParams['action'] != "Home") {
+                      echo $this->render('search/searchboxForm');
+                    }?>
+
             </div>
 
             <div class="searchbox col-12 mx-auto">
