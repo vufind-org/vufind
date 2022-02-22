@@ -313,7 +313,7 @@ public class TueFindBiblio extends TueFind {
      * @return Set of local subjects
      */
     public Set<String> getAllTopics(final Record record) {
-        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a:936a", "0");
+        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a:936a", "02");
         topics.addAll(getLocal689Topics(record));
         return topics;
     }

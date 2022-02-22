@@ -19,7 +19,7 @@ public class KrimDokBiblio extends TueFindBiblio {
     }
 
     public Set<String> getAllTopicsCloud(final Record record) {
-        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a", "0");
+        final Set<String> topics = getAllSubfieldsBut(record, "600:610:611:630:650:653:656:689a", "02");
         final List<String> excludeIndicators = Arrays.asList("rv", "bk");
         topics.addAll(getAllSubfieldsBut(record, "936a", "0", excludeIndicators));
         topics.addAll(getLocal689Topics(record));
