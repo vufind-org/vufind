@@ -29,6 +29,14 @@ trait ResultsTrait {
                     $list[$facetKey]['list'][$listKey]['displayText'] = $this->translate($prefix . $listItem['displayText']);
                 }
             }
+            if (preg_match('"^dewey-"i', $facetKey)) {
+                foreach ($facet['list'] as $listKey => $listItem) {
+                    if (preg_match('"^\d{3}\b"', $listItem['value'], $hits)) {
+                        $ddcNumber = $hits[0];
+                        $list[$facetKey]['list'][$listKey]['displayText'] = $ddcNumber . ' - ' . $this->translate(['DDC23', $ddcNumber]);
+                    }
+                }
+            }
         }
         return $list;
     }
