@@ -52,7 +52,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -320,7 +320,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             $session->reload();
             $page = $session->getPage();
             $this->waitForPageLoad($page);
-            $this->findCss($page, '#account-icon' . $checkClass);
+            $this->findCss($page, '#account-icon ' . $checkClass);
             foreach ($item as $key => $value) {
                 $session->evaluateScript('VuFind.account.clearCache("' . $key . '");');
             }

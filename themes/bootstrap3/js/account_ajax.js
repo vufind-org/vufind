@@ -238,12 +238,12 @@ $(document).ready(function registerAccountAjax() {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
         $element.html(
-          statusIcon("notification", "text-success", "account_requests_available")
+          statusIcon("my-account-notification", "text-success", "account_requests_available")
         );
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
         $element.html(
-          statusIcon("warning", "text-warning", "account_requests_in_transit")
+          statusIcon("my-account-warning", "text-warning", "account_requests_in_transit")
         );
       } else {
         $element.addClass("holds-status hidden");
@@ -263,12 +263,12 @@ $(document).ready(function registerAccountAjax() {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
         $element.html(
-          statusIcon("notification", "text-success", "account_requests_available")
+          statusIcon("my-account-notification", "text-success", "account_requests_available")
         );
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
         $element.html(
-          statusIcon("warning", "text-warning", "account_requests_in_transit")
+          statusIcon("my-account-warning", "text-warning", "account_requests_in_transit")
         );
       } else {
         $element.addClass("holds-status hidden");
@@ -288,12 +288,12 @@ $(document).ready(function registerAccountAjax() {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
         $element.html(
-          statusIcon("notification", "text-success", "account_requests_available")
+          statusIcon("my-account-notification", "text-success", "account_requests_available")
         );
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
         $element.html(
-          statusIcon("warning", "text-warning", "account_requests_in_transit")
+          statusIcon("my-account-warning", "text-warning", "account_requests_in_transit")
         );
       } else {
         $element.addClass("holds-status hidden");

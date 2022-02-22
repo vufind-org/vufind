@@ -29,6 +29,7 @@ namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -60,6 +61,13 @@ class NormalizeCommand extends AbstractCommand
             ->setDescription('Language file normalizer')
             ->setHelp(
                 'Normalizes a file or directory of language strings'
+            )->addOption(
+                'filter',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'file name pattern to use for filtering files to process'
+                . ' (applies only if target is a directory)',
+                '??.ini|??-??.ini'
             )->addArgument(
                 'target',
                 InputArgument::REQUIRED,
@@ -78,9 +86,10 @@ class NormalizeCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $target = $input->getArgument('target');
+        $filter = $input->getOption('filter');
 
         if (is_dir($target)) {
-            $this->normalizer->normalizeDirectory($target);
+            $this->normalizer->normalizeDirectory($target, $filter);
         } elseif (is_file($target)) {
             $this->normalizer->normalizeFile($target);
         } else {

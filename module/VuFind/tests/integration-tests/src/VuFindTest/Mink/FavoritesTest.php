@@ -28,7 +28,6 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
-use VuFindTest\Integration\MinkTestCase;
 
 /**
  * Mink favorites test class.
@@ -54,7 +53,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -163,6 +162,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .alert.alert-success');
         $this->clickCss($page, '.modal-body .btn.btn-default');
+        $this->waitForLightboxHidden();
+
         // Check list page
         $session = $this->getMinkSession();
         $recordURL = $this->stripHash($session->getCurrentUrl());
@@ -315,7 +316,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.alert.alert-success');
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         // Check list page
         $this->clickCss($page, '.result a.title');
         $session = $this->getMinkSession();
@@ -397,13 +398,13 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.alert.alert-success');
         // Test save status update on modal close
-        $this->clickCss($page, '#modal .close');
+        $this->closeLightbox($page);
         $this->waitForPageLoad($page);
         // Wait for save statuses to update:
         $this->findCss(
             $page,
             '.savedLists a',
-            MinkTestCase::DEFAULT_TIMEOUT,
+            null,
             $listCount
         );
         $savedLists = $page->findAll('css', '.savedLists a');
@@ -508,7 +509,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'No items were selected. Please click on a checkbox next to an item and try again.',
             $warning->getText()
         );
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
     }
 
     /**
@@ -539,8 +540,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // First try clicking without selecting anything:
         $this->clickCss($page, '[name=bulkActionForm] [name=email]');
         $this->checkForNonSelectedMessage($page);
-        $this->clickCss($page, '.modal .close');
-        $this->waitForLightboxHidden();
+        $this->closeLightbox($page);
 
         // Now do it for real.
         $this->selectAllItemsInList($page);
@@ -732,7 +732,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'Your saved item(s) were deleted.',
             $this->findCss($page, '.modal .alert-success')->getText()
         );
-        $this->clickCss($page, '.modal .close');
+        $this->closeLightbox($page);
         $this->unFindCss($page, '.result');
     }
 

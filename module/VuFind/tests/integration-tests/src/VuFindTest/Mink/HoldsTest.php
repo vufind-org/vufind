@@ -55,7 +55,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -447,7 +447,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Close the modal:
-        $this->findCss($page, '#modal button.close')->click();
+        $this->closeLightbox($page);
 
         // Change the first hold to location C so it matches the second one:
         $this->clickCss($page, '.hold-edit');

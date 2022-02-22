@@ -200,11 +200,11 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test holdings lookup
+     * Configure the driver to respond to a getHolding() call.
      *
      * @return void
      */
-    public function testGetHolding(): void
+    protected function setUpHoldingTest(): void
     {
         $response1 = $this->getMockResponse(
             $this->getFixture('genieplus/token.json')
@@ -234,6 +234,16 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 $response1,
                 $response2,
             );
+    }
+
+    /**
+     * Test holdings lookup with default sort
+     *
+     * @return void
+     */
+    public function testGetHoldingWithDefaultSort(): void
+    {
+        $this->setUpHoldingTest();
         $this->driver->setConfig($this->config);
         $this->driver->init();
         $this->assertEquals(
@@ -270,6 +280,108 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     'duedate' => '',
                     'number' => '2015 no.1',
                     'barcode' => 'barcode1',
+                ],
+            ],
+            $this->driver->getHolding('foo-id')
+        );
+    }
+
+    /**
+     * Test holdings lookup with custom ascending sort
+     *
+     * @return void
+     */
+    public function testGetHoldingWithNonDefaultAscendingSort(): void
+    {
+        $this->setUpHoldingTest();
+        $this->config['Item']['sort'] = 'number asc';
+        $this->driver->setConfig($this->config);
+        $this->driver->init();
+        $this->assertEquals(
+            [
+                [
+                    'id' => 'foo-id',
+                    'availability' => 1,
+                    'status' => 'Ready for Loans',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '',
+                    'number' => '2015 no.1',
+                    'barcode' => 'barcode1',
+                ],
+                [
+                    'id' => 'foo-id',
+                    'availability' => 0,
+                    'status' => 'On Loan',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '3/4/2022 11:59:59 PM',
+                    'number' => '2016 no.2',
+                    'barcode' => 'barcode2',
+                ],
+                [
+                    'id' => 'foo-id',
+                    'availability' => 1,
+                    'status' => 'Ready for Loans',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '',
+                    'number' => '2017 no.3',
+                    'barcode' => 'barcode3',
+                ],
+            ],
+            $this->driver->getHolding('foo-id')
+        );
+    }
+
+    /**
+     * Test holdings lookup with custom descending sort
+     *
+     * @return void
+     */
+    public function testGetHoldingWithNonDefaultDescendingSort(): void
+    {
+        $this->setUpHoldingTest();
+        $this->config['Item']['sort'] = 'status desc';
+        $this->driver->setConfig($this->config);
+        $this->driver->init();
+        $this->assertEquals(
+            [
+                [
+                    'id' => 'foo-id',
+                    'availability' => 1,
+                    'status' => 'Ready for Loans',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '',
+                    'number' => '2017 no.3',
+                    'barcode' => 'barcode3',
+                ],
+                [
+                    'id' => 'foo-id',
+                    'availability' => 1,
+                    'status' => 'Ready for Loans',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '',
+                    'number' => '2015 no.1',
+                    'barcode' => 'barcode1',
+                ],
+                [
+                    'id' => 'foo-id',
+                    'availability' => 0,
+                    'status' => 'On Loan',
+                    'location' => 'Second Floor',
+                    'reserve' => 'N',
+                    'callnumber' => 'KF4651 .A767',
+                    'duedate' => '3/4/2022 11:59:59 PM',
+                    'number' => '2016 no.2',
+                    'barcode' => 'barcode2',
                 ],
             ],
             $this->driver->getHolding('foo-id')

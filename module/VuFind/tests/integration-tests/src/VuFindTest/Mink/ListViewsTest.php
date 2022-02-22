@@ -53,7 +53,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -127,7 +127,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#save_list');
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->clickCss($page, '#modal .close');
+        $this->closeLightbox($page);
         // Check saved items status
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
@@ -161,7 +161,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->clickCss($page, '#modal .close');
+        $this->closeLightbox($page);
         // Check saved items status
         // Not visible, but still exists
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
@@ -192,12 +192,14 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Open it
         $this->clickCss($page, '.result a.title');
+        $this->waitForPageLoad($page);
         // Search for anything else
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('anything else');
         $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
         // Come back
         $page = $this->gotoSearch();
         // Did our result close after not being being in the last search?
