@@ -319,4 +319,23 @@ EOT;
         $reader2 = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
         $this->assertEquals([], $reader2->getFieldsSubfields('12', ['a']));
     }
+
+    /**
+     * Test long record overflowing the maximum ISO2709 record length
+     *
+     * @return void
+     */
+    public function testLongISO2709()
+    {
+        $marc = $this->getFixture('marc/longrecord.mrc');
+
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals(
+            ['Invalid MARC record (end of field not found)'],
+            $reader->getWarnings()
+        );
+
+        $fields = $reader->getFields('852');
+        $this->assertEquals(2046, count($fields));
+    }
 }
