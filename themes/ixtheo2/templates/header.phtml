@@ -1,7 +1,18 @@
-<!--<div class="container-fluid bg-white">-->
+
+<div class="cover-header screen-height screen-width bg-image bg-attachment-fixed">
+  <div class="cover-header-inner-wrapper">
+    <div class="cover-header-inner">
+      <div class="cover-color-overlay color-accent opacity-60 blend-mode-normal"></div>
+      <div class="section-inner fade-block" style="opacity: 1;">
+        <header class="hidden-print">
+          <div class="container-fluid px-0">
+            <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+            <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+          <?php endif; ?>
+          <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+            <!--<div class="container-fluid bg-white">-->
     <div class="row">
         <div class="col-12">
-            <?php $account = $this->auth()->getManager(); ?>
 
             <!-- Begin section Navbar -->
             <nav class="navbar navbar-expand-lg navbar-light justify-content-between ix-fixed-top">
@@ -23,39 +34,35 @@
 
                             <!-- Begin section Main Menu -->
                             <!-- Home -->
+                            <?php /*?>
                             <li class="nav-item active">
                                 <a class="nav-link" href="<?=$this->url('home')?>" >
                                     <i class="fa fa-home" aria-hidden="true"> </i>
                                     <?=$this->transEsc('Home');?>
                                 </a>
                             </li>
+                            <?php */?>
 
-                            <!-- TueFind extension template -->
-                            <?=$this->render('header/extensions');?>
 
-                            <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-                              <li class="logoutOptions<?php if($account->dropdownEnabled()): ?> with-dropdown<?php endif ?><?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
-                                <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>"><i id="account-icon" class="fa fa-user-circle" aria-hidden="true"></i> <?=$this->transEsc("Your Account")?></a>
-                              </li>
-                              <?php if($account->dropdownEnabled()): ?>
-                                <li id="login-dropdown" class="dropdown<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
-                                  <a href="#" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>
-                                  <div class="dropdown-menu">
-                                    <?=$this->render('myresearch/menu'); ?>
-                                  </div>
-                                </li>
-                              <?php endif; ?>
-                              <li class="logoutOptions<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
-                                <a href="<?=$this->url('myresearch-logout')?>" class="logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></a>
-                              </li>
-                              <li id="loginOptions"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
-                                <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-                                  <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
-                                <?php else: ?>
-                                  <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?></a>
-                                <?php endif; ?>
-                              </li>
-                            <?php endif; ?>
+                            <!-- ixtheo2 search button box -->
+                            <!-- FAQ -->
+
+                            <li class="language dropdown">
+                                <a class="nav-link" href="/Search/Advanced"><i class='fa fa-search-plus'></i> Search <span class="caret"></span></a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'ixtheo_content']) ?>"><?=$this->transEsc('FID-Content')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'index_biblicus']) ?>"><?=$this->transEsc('Digitale Quellen')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'theology_digital']) ?>"><?=$this->transEsc('Theologie digital')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'canon_law']) ?>"><?=$this->transEsc('Historische Drucke')?></a></li>
+                                  <li><a class="dropdown-item" href="https://relbib.de/"><?=$this->transEsc('RelBib')?></a></li>
+                                  <li><a class="dropdown-item" href="https://bible.ixtheo.de/"><?=$this->transEsc('Index Biblicus')?></a></li>
+                                  <li><a class="dropdown-item" href="https://churchlaw.ixtheo.de/"><?=$this->transEsc('Kirchenrecht')?></a></li>
+                                </ul>
+                            </li>
+
+
+                            <!-- ixtheo2 login button box -->
+                            <?=$this->render('header/login');?>
 
                             <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
                               <li class="theme dropdown">
@@ -74,7 +81,7 @@
 
                             <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
                               <li class="language dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class='fa fa-globe' ></i> <?=$this->transEsc("Language")?><b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                   <?php
                                     //TueFind: Basic VuFind functionality changed, removed author ID from URL
@@ -94,6 +101,8 @@
                                 </ul>
                               </li>
                             <?php endif; ?>
+
+                            <?=$this->render('header/menu');?>
 
                         <!-- End section Main Menu -->
                         </ul>
@@ -120,3 +129,35 @@ if(isset($this->layout()->headerImage)) {
 }
 ?>
 <!-- End header image -->
+
+          </div>
+
+            <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+              && !empty($this->layout()->breadcrumbs)
+              && $this->layout()->breadcrumbs !== false
+            ): ?>
+              <div class="container breadcrumb-wrapper hidden-print">
+                <?php if(is_array($this->layout()->breadcrumbs)): ?>
+                  <?php if(count($this->layout()->breadcrumbs) > 1): ?>
+                    <?=$this->render('breadcrumbs/multi.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title' => $this->layout()->title,
+                        'from' => $this->layout()->from
+                      ]) ?>
+                  <?php else: ?>
+                    <?=$this->render('breadcrumbs/default.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title' => $this->layout()->title
+                      ]) ?>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <?=$this->render('breadcrumbs/simple.phtml'); ?>
+                  <?=$this->render('search/searchboxForm');?>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
+        </header>
+      </div><!-- .section-inner -->
+    </div><!-- .cover-header-inner -->
+  </div><!-- .cover-header-inner-wrapper -->
+</div>

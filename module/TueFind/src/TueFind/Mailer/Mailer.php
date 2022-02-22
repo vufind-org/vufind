@@ -19,17 +19,18 @@ class Mailer extends \VuFind\Mailer\Mailer {
     /**
      * Send an email message, append custom footer to body
      *
-     * @param string|Address|AddressList $to      Recipient email address (or
+     * @param string|Address|AddressList $to                Recipient email address (or
      * delimited list)
-     * @param string|Address             $from    Sender name and email address
-     * @param string                     $subject Subject line for message
-     * @param string                     $body    Message body
-     * @param string                     $cc      CC recipient (null for none)
+     * @param string|Address             $from              Sender name and email address
+     * @param string                     $subject           Subject line for message
+     * @param string                     $body              Message body
+     * @param string                     $cc                CC recipient (null for none)
+     * @param bool                       $enableSpamfilter  TueFind: Add header to use anti spam. Postfix must be configured accordingly.
      *
      * @throws MailException
      * @return void
      */
-    public function send($to, $from, $subject, $body, $cc = null, $reply_to = null)
+    public function send($to, $from, $subject, $body, $cc = null, $reply_to = null, $enableSpamfilter = false)
     {
         $config = $this->container->get('VuFind\Config')->get('config');
         $email = $config->Site->email;
@@ -45,6 +46,13 @@ class Mailer extends \VuFind\Mailer\Mailer {
         }
 
         $message = $this->assembleMail($to, $from, $subject, $body, $cc, $reply_to);
+
+        // TueFind: Add header for spamfilter
+        if ($enableSpamfilter) {
+            $headers = $message->getHeaders();
+            $headers->addHeaderLine('X-TueFind-Spamfilter', 'enabled');
+        }
+
         try {
             $this->getTransport()->send($message);
         } catch (\Exception $e) {

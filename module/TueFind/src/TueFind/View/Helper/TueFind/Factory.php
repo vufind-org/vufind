@@ -14,7 +14,7 @@ class Factory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        return new TueFind(
+        return new $requestedName(
             $container
         );
     }

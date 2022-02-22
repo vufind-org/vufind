@@ -24,12 +24,16 @@
     <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
     <field name="fulltext_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_toc_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_toc_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_toc_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_abstract_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_abstract_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_abstract_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_summary_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_summary_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
 
 
     <!-- COMMON copyFields -->
@@ -37,4 +41,17 @@
 
     <!-- CUSTOM copyFields - only IxTheo/RelBib -->
     <copyField source="topic" dest="topic_browse"/>
+    <!--  CopyFields for Fulltext Synonyms -->
+    <copyField source="fulltext" dest="fulltext_synonyms_de"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_en"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_all"/>
+    <copyField source="fulltext_toc" dest="fulltext_toc_synonyms_de"/>
+    <copyField source="fulltext_toc" dest="fulltext_toc_synonyms_en"/>
+    <copyField source="fulltext_toc" dest="fulltext_toc_synonyms_all"/>
+    <copyField source="fulltext_abstract" dest="fulltext_abstract_synonyms_de"/>
+    <copyField source="fulltext_abstract" dest="fulltext_abstract_synonyms_en"/>
+    <copyField source="fulltext_abstract" dest="fulltext_abstract_synonyms_all"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_de"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_en"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_all"/>
 </fields>

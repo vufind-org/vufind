@@ -319,16 +319,15 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             $this->fields['prefix4_key_word_chain_bag'] : '';
     }
 
-    public function getTopics($language=null): array
+    public function getTopicsForCloud($language=null): array
     {
         $key = 'topic_cloud';
         if (isset($language))
             $key .= '_' . $language;
-        return isset($this->fields[$key]) ?
-            $this->fields[$key] : [];
+        return array_unique($this->fields[$key] ?? []);
     }
 
-    
+
     public function isAvailableForPDA()
     {
         return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];

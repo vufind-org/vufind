@@ -92,9 +92,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getBibliographicalReferences(AuthorityRecordDriver &$driver): string
+    public function getBiographicalReferences(AuthorityRecordDriver &$driver): string
     {
-        $references = $driver->getBibliographicalReferences();
+        $references = $driver->getBiographicalReferences();
         if (count($references) == 0)
             return '';
 
@@ -503,9 +503,19 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $chartData;
     }
 
+    /**
+     * This will be overridden in the corresponding IxTheo View Helper to
+     * consider the correct fields based on the translatorLocale.
+     */
+    public function getTopicsCloudFieldname($translatorLocale=null): string
+    {
+        return 'topic_cloud';
+    }
+
     public function getTopicsData(AuthorityRecordDriver &$driver): array
     {
         $translatorLocale = $this->getTranslatorLocale();
+        $topicsCloudFieldname = $this->getTopicsCloudFieldname($translatorLocale);
 
         $settings = [
             'maxNumber' => 10,
@@ -514,10 +524,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'firstTopicWidth' => 10,
             'maxTopicRows' => 20,
             'minWeight' => 0,
-            'filter' => 'topic_cloud',
+            'filter' => $topicsCloudFieldname,
             'paramBag' => [
                 'sort' => 'publishDate DESC',
-                'fl' => 'id,topic_cloud_'.$translatorLocale
+                'fl' => 'id,'.$topicsCloudFieldname,
              ],
             'searchType' => 'AllFields'
         ];
@@ -534,7 +544,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
 
-            $keywords = $titleRecord->getTopics($translatorLocale);
+            $keywords = $titleRecord->getTopicsForCloud($translatorLocale);
             foreach ($keywords as $keyword) {
                 if(strpos($keyword, "\\") !== false) {
                     $keyword = str_replace("\\", "", $keyword);
