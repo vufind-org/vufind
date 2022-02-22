@@ -1787,40 +1787,40 @@ public class TueFindBiblio extends TueFind {
         return validFourDigitYearMatcher.matches() ? fourDigitYear : "";
     }
 
-    protected String yyMMDateToString(final String controlNumber, final String yyMMDate) {
+    protected String yyMMDateToYear(final String controlNumber, final String yyMMDate) {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         int yearTwoDigit = currentYear - 2000;  // If extraction fails later we fall back to current year
         try {
             yearTwoDigit = Integer.parseInt(yyMMDate.substring(0, 1));
         }
         catch (NumberFormatException e) {
-            logger.severe("in yyMMDateToString: expected date in YYMM format, found \"" + yyMMDate
+            logger.severe("in yyMMDateToYear: expected date in YYMM format, found \"" + yyMMDate
                           + "\" instead! (Control number was " + controlNumber + ")");
         }
         return Integer.toString(yearTwoDigit < (currentYear - 2000) ? (2000 + yearTwoDigit) : (1900 + yearTwoDigit));
     }
 
     /**
-     * Get all available dates from the record.
+     * Get all available years from the record.
      *
      * @param record MARC record
      *
      * @return set of dates
      */
 
-    public Set<String> getDatesBasedOnRecordType(final Record record) {
-        final Set<String> dates = new LinkedHashSet<>();
+    public Set<String> getYearsBasedOnRecordType(final Record record) {
+        final Set<String> years = new LinkedHashSet<>();
         final Set<String> format = getFormats(record);
 
         // Case 1 [Website]
         if (format.contains("Website")) {
             final ControlField _008_field = (ControlField) record.getVariableField("008");
             if (_008_field == null) {
-                logger.severe("getDatesBasedOnRecordType [No 008 Field for Website " + record.getControlNumber() + "]");
-                return dates;
+                logger.severe("getYearsBasedOnRecordType [No 008 Field for Website " + record.getControlNumber() + "]");
+                return years;
             }
-            dates.add(yyMMDateToString(record.getControlNumber(), _008_field.getData()));
-            return dates;
+            years.add(yyMMDateToYear(record.getControlNumber(), _008_field.getData()));
+            return years;
         }
 
         // Case 2 [Reproduction] (Reproductions have the publication date of the original work in 534$c.)
@@ -1830,11 +1830,11 @@ public class TueFindBiblio extends TueFind {
             final Subfield cSubfield = dataField.getSubfield('c');
             if (cSubfield != null) {
                 // strip non-digits at beginning and end (e.g. "©")
-                String date = cSubfield.getData();
-                date = date.replaceAll("^[^0-9]+", "");
-                date = date.replaceAll("[^0-9]+$", "");
-                dates.add(date);
-                return dates;
+                String year = cSubfield.getData();
+                year = year.replaceAll("^[^0-9]+", "");
+                year = year.replaceAll("[^0-9]+$", "");
+                years.add(year);
+                return years;
             }
         }
 
@@ -1856,11 +1856,11 @@ public class TueFindBiblio extends TueFind {
                     yearOrYearRange = yearOrYearRange.replaceAll("^[\\D\\[\\]]+", "");
                     // Make sure we do away with brackets
                     yearOrYearRange = yearOrYearRange.replaceAll("[\\[|\\]]", "");
-                    dates.add(yearOrYearRange.length() > 4 ? yearOrYearRange.substring(0, 4) : yearOrYearRange);
+                    years.add(yearOrYearRange.length() > 4 ? yearOrYearRange.substring(0, 4) : yearOrYearRange);
                 }
             }
-            if (!dates.isEmpty())
-                return dates;
+            if (!years.isEmpty())
+                return years;
         }
 
         // Case 4:
@@ -1871,19 +1871,19 @@ public class TueFindBiblio extends TueFind {
             final DataField _190Field = (DataField) _190VField;
             final Subfield jSubfield = _190Field.getSubfield('j');
             if (jSubfield != null)
-                dates.add(jSubfield.getData());
+                years.add(jSubfield.getData());
             else
-                logger.severe("getDatesBasedOnRecordType [No 190j subfield for PPN " + record.getControlNumber() + "]");
+                logger.severe("getYearsBasedOnRecordType [No 190j subfield for PPN " + record.getControlNumber() + "]");
 
-            return dates;
+            return years;
         }
 
         // Case 5:
         // Use the sort date given in the 008-Field
         final ControlField _008_field = (ControlField) record.getVariableField("008");
         if (_008_field == null) {
-            logger.severe("getDatesBasedOnRecordType [Could not find 008 field for PPN:" + record.getControlNumber() + "]");
-            return dates;
+            logger.severe("getYearsBasedOnRecordType [Could not find 008 field for PPN:" + record.getControlNumber() + "]");
+            return years;
         }
         final String _008FieldContents = _008_field.getData();
         final String yearExtracted = _008FieldContents.substring(7, 11);
@@ -1891,12 +1891,12 @@ public class TueFindBiblio extends TueFind {
         final String year = checkValidYear(yearExtracted);
         // log error if year is empty or not a year like "19uu"
         if (year.isEmpty() && !VALID_YEAR_RANGE_PATTERN.matcher(yearExtracted).matches())
-            logger.severe("getDatesBasedOnRecordType [\"" + yearExtracted + "\" is not a valid year for PPN "
+            logger.severe("getYearsBasedOnRecordType [\"" + yearExtracted + "\" is not a valid year for PPN "
                           + record.getControlNumber() + "]");
         else
-            dates.add(year);
+            years.add(year);
 
-        return dates;
+        return years;
     }
 
     public String isSuperiorWork(final Record record) {
@@ -2557,38 +2557,38 @@ public class TueFindBiblio extends TueFind {
     }
 
     /**
-     * Helper to calculate the first publication date
+     * Helper to calculate the first publication year
      *
-     * @param dates
-     *            String of possible publication dates
-     * @return the first publication date
+     * @param years
+     *            String of possible publication years
+     * @return the first publication year
      */
 
-    public String calculateFirstPublicationDate(Set<String> dates) {
-        String firstPublicationDate = null;
-        for (final String current : dates) {
-            if (firstPublicationDate == null || current != null
-                && Integer.parseInt(current) < Integer.parseInt(firstPublicationDate))
-                firstPublicationDate = current;
+    public String calculateFirstPublicationYear(Set<String> years) {
+        String firstPublicationYear = null;
+        for (final String current : years) {
+            if (firstPublicationYear == null || current != null
+                && Integer.parseInt(current) < Integer.parseInt(firstPublicationYear))
+                firstPublicationYear = current;
         }
-        return firstPublicationDate;
+        return firstPublicationYear;
     }
 
     /**
-     * Helper to calculate the most recent publication date
+     * Helper to calculate the most recent publication year
      *
-     * @param dates
-     *            String of possible publication dates
-     * @return the first publication date
+     * @param year
+     *            String of possible publication years
+     * @return the last publication year
      */
 
-    public String calculateLastPublicationDate(Set<String> dates) {
-        String lastPublicationDate = null;
-        for (final String current : dates) {
-            if (lastPublicationDate == null || current != null && Integer.parseInt(current) > Integer.parseInt(lastPublicationDate))
-                lastPublicationDate = current;
+    public String calculateLastPublicationYear(Set<String> years) {
+        String lastPublicationYear = null;
+        for (final String current : years) {
+            if (lastPublicationYear == null || current != null && Integer.parseInt(current) > Integer.parseInt(lastPublicationYear))
+                lastPublicationYear = current;
         }
-        return lastPublicationDate;
+        return lastPublicationYear;
     }
 
     /**
@@ -2607,19 +2607,19 @@ public class TueFindBiblio extends TueFind {
     }
 
     /**
-     * Determine the publication date for "date ascending/descending" sorting in
+     * Determine the publication year for "date ascending/descending" sorting in
      * accordance with the rules stated in issue 227
      *
      * @param record
      *            MARC record
-     * @return the publication date to be used for
+     * @return the publication year to be used for
      */
-    public String getPublicationSortDate(final Record record) {
-        final Set<String> dates = getDatesBasedOnRecordType(record);
-        if (dates.isEmpty())
+    public String getPublicationSortYear(final Record record) {
+        final Set<String> years = getYearsBasedOnRecordType(record);
+        if (years.isEmpty())
             return "";
 
-        return calculateLastPublicationDate(dates);
+        return calculateLastPublicationYear(years);
     }
 
     public Set<String> getRecordSelectors(final Record record) {
