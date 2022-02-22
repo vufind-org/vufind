@@ -838,9 +838,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             // Allow the user to attempt update if freezing is enabled or the hold
             // is not available or in transit. Checking if the hold can be freezed
             // up front is slow, so defer it to when update is requested.
-            if ($freezeEnabled || (!$available && !$inTransit)) {
-                $updateDetails = $requestId;
-            }
+            $updateDetails = ($freezeEnabled || (!$available && !$inTransit))
+                ? $requestId : '';
             $cancelDetails = $this->allowCancelingAvailableRequests
                 || (!$available && !$inTransit) ? $requestId : '';
             $holds[] = [
