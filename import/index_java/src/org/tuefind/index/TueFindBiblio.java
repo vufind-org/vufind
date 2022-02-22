@@ -1830,10 +1830,10 @@ public class TueFindBiblio extends TueFind {
             final Subfield cSubfield = dataField.getSubfield('c');
             if (cSubfield != null) {
                 // strip non-digits at beginning and end (e.g. "©")
-                String date = cSubfield.getData();
-                date = date.replaceAll("^[^0-9]+", "");
-                date = date.replaceAll("[^0-9]+$", "");
-                years.add(date);
+                String year = cSubfield.getData();
+                year = year.replaceAll("^[^0-9]+", "");
+                year = year.replaceAll("[^0-9]+$", "");
+                years.add(year);
                 return years;
             }
         }
