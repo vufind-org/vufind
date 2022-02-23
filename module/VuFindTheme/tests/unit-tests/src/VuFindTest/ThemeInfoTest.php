@@ -311,6 +311,30 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getMergedConfig() with string return
+     *
+     * @return void
+     */
+    public function testGetMergedConfigReturnString()
+    {
+        $ti = $this->getThemeInfo();
+        $doctype = $ti->getMergedConfig('doctype');
+        $this->assertEquals(['HTML5'], $doctype);
+    }
+
+    /**
+     * Test getMergedConfig() with no key (return all)
+     *
+     * @return void
+     */
+    public function testGetMergedConfigNoKey()
+    {
+        $ti = $this->getThemeInfo();
+        $config = $ti->getMergedConfig();
+        $this->assertEquals('HTML5', $config['doctype']);
+    }
+
+    /**
      * Get a test object
      *
      * @return ThemeInfo
