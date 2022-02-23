@@ -37,7 +37,7 @@
         "laminas/laminas-eventmanager": "3.3.1",
         "laminas/laminas-feed": "2.14.1",
         "laminas/laminas-filter": "2.11.1",
-        "laminas/laminas-form": "3.0.1",
+        "laminas/laminas-form": "3.0.2",
         "laminas/laminas-http": "2.14.3",
         "laminas/laminas-i18n": "2.11.2",
         "laminas/laminas-loader": "2.7.0",
