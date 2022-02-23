@@ -92,6 +92,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertNotNull($saveLink);
         $saveLink->click();
+        $this->waitForPageLoad($page);
 
         $this->clickCss($page, '.createAccountLink');
         $this->fillInAccountForm($page);

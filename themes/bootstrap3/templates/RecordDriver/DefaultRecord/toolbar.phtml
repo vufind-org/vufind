@@ -74,7 +74,7 @@
     <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
 
     <li role="none">
-      <a class="permalink-record toolbar-btn btn-type-permalink" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Permalink'))?>" rel="nofollow">
+      <a class="permalink-record toolbar-btn" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Permalink'))?>" rel="nofollow">
         <?=$this->icon('external-link') ?><?=$this->transEsc('permanent_link')?>
       </a>
     </li>

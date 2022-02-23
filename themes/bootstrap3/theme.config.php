@@ -265,6 +265,7 @@ return [
             'user-storage-retrievals' => 'FontAwesome:flag',
             'view-grid' => 'FontAwesome:th',
             'view-list' => 'FontAwesome:list',
+            'view-visual' => 'FontAwesome:visual',
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
     ],
