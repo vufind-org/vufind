@@ -44,8 +44,8 @@ return [
             'currency-yen' => 'Fugue:money_yen.png',
             // 'dropdown-caret' => inherited from parent theme
             'export' => 'Fugue:link_go.png',
-            'external-link' => 'Fugue:link_go.png',
-            'external-link-rtl' => 'Fugue:link_go_rtl.png',
+            'export-rtl' => 'Fugue:link_go_rtl.png',
+            'external-link' => 'Fugue:link.png',
             'facet-checked' => 'Fugue:tick.png',
             'facet-exclude' => 'Fugue:cross.png',
             'facet-unchecked' => 'Fugue:tick_faded.png',
