@@ -197,7 +197,7 @@ class ThemeInfo
      *
      * @return array
      */
-    public function getMergedConfig(string $key, bool $flatten = false): array
+    public function getMergedConfig(string $key = '', bool $flatten = false): array
     {
         $currentTheme = $this->getTheme();
         $allThemeInfo = $this->getThemeInfo();
@@ -223,9 +223,15 @@ class ThemeInfo
                 $allThemeInfo[$currentTheme]['mixins'] ?? [],
             );
             foreach ($currentThemeSet as $theme) {
-                if (isset($allThemeInfo[$theme][$key])) {
+                if (isset($allThemeInfo[$theme])
+                    && (empty($key) || isset($allThemeInfo[$theme][$key]))
+                ) {
                     $merged = $deepFunc(
-                        $allThemeInfo[$theme][$key],
+                        (array) (
+                            empty($key)
+                                ? $allThemeInfo[$theme]
+                                : $allThemeInfo[$theme][$key]
+                        ),
                         $merged,
                     );
                 }

@@ -85,7 +85,7 @@ class ThemeConfig extends AbstractHelper
         // Ensure path is an array
         $path = (array)$path;
 
-        $key = array_shift($path);
+        $key = array_shift($path) ?? '';
 
         $cacheKey = $this->themeInfo->getTheme() . $key;
         $cached = $this->cache->getItem($cacheKey);
