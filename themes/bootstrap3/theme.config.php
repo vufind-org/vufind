@@ -129,7 +129,7 @@ return [
             'currency-yen' => 'FontAwesome:yen',
             'dropdown-caret' => 'FontAwesome:caret-down',
             'export' => 'FontAwesome:external-link',
-            'external-link' => 'FontAwesome:external-link',
+            'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
             'facet-exclude' => 'FontAwesome:times',
