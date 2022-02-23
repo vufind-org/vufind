@@ -173,7 +173,7 @@ return [
             'user-ill-request' => 'FontAwesome:exchange',
             'user-ill-requests' => 'Fugue:arrow_switch.png',
             'user-list' => 'Fugue:star.png',
-            'user-list-add' => 'Fugue:book-bookmark',
+            'user-list-add' => 'Fugue:book-bookmark.png',
             // 'user-list-delete' => 'Alias:ui-delete',
             // 'user-list-edit' => 'Alias:ui-edit',
             // 'user-list-entry-edit' => 'Alias:ui-edit',

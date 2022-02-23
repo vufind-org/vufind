@@ -78,11 +78,26 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     public function testSaveSearch()
     {
         $page = $this->performSearch('test');
-        $this->clickCss($page, '.fa.fa-save');
+
+        $links = $page->findAll('css', '.searchtools a');
+        $saveLink = null;
+        foreach ($links as $link) {
+            if ($this->checkVisibility($link)
+                && str_contains($link->getHtml(), 'Save Search')
+            ) {
+                $saveLink = $link;
+                break;
+            }
+        }
+
+        $this->assertNotNull($saveLink);
+        $saveLink->click();
         $this->waitForPageLoad($page);
+
         $this->clickCss($page, '.createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
+
         $this->assertEquals(
             'Search saved successfully.',
             $this->findCss($page, '.alert.alert-success')->getText()
