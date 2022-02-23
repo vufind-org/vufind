@@ -227,7 +227,7 @@ class ThemeInfo
                     && (empty($key) || isset($allThemeInfo[$theme][$key]))
                 ) {
                     $merged = $deepFunc(
-                        (array) (
+                        (array)(
                             empty($key)
                                 ? $allThemeInfo[$theme]
                                 : $allThemeInfo[$theme][$key]
