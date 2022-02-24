@@ -224,7 +224,12 @@ class MarcXml extends AbstractSerializationFile implements SerializationInterfac
         $xml->endElement();
         $xml->endDocument();
 
-        return $xml->outputMemory(true);
+        // Strip illegal characters from XML:
+        return preg_replace(
+            '/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u',
+            '',
+            $xml->outputMemory(true)
+        );
     }
 
     /**

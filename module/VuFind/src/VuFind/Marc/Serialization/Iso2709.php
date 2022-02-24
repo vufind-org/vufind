@@ -137,6 +137,7 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
         $fields = [];
         $dataStart = 0 + (int)substr($marc, 12, 5);
         $dirLen = $dataStart - self::LEADER_LEN - 1;
+        $invalid = false;
 
         $offset = 0;
         while ($offset < $dirLen) {
@@ -150,9 +151,7 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
             if (substr($tagData, -1, 1) == self::END_OF_FIELD) {
                 $tagData = substr($tagData, 0, -1);
             } else {
-                throw new \Exception(
-                    "Invalid MARC record (end of field not found): $marc"
-                );
+                $invalid = true;
             }
 
             if (ctype_digit($tag) && $tag < 10) {
@@ -180,7 +179,11 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
             $offset += 12;
         }
 
-        return [$leader, $fields];
+        return [
+            $leader,
+            $fields,
+            $invalid ? ['Invalid MARC record (end of field not found)'] : []
+        ];
     }
 
     /**

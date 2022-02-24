@@ -72,6 +72,13 @@ class MarcReader
     protected $fields;
 
     /**
+     * Any warnings encountered when parsing a record
+     *
+     * @var array
+     */
+    protected $warnings;
+
+    /**
      * Constructor
      *
      * @param string|array $data MARC record in MARCXML or ISO2709 format, or an
@@ -105,9 +112,13 @@ class MarcReader
         }
         $leader = null;
         $valid = false;
+        $this->warnings = [];
         foreach ($this->serializations as $serialization) {
             if ($serialization::canParse($data)) {
-                [$leader, $this->fields] = $serialization::fromString($data);
+                $result = $serialization::fromString($data);
+                $leader = $result[0];
+                $this->fields = $result[1];
+                $this->warnings = $result[2] ?? [];
                 $valid = true;
                 break;
             }
@@ -593,6 +604,16 @@ class MarcReader
         }
 
         return $subfields;
+    }
+
+    /**
+     * Get any warnings encountered when parsing a record
+     *
+     * @return array
+     */
+    public function getWarnings(): array
+    {
+        return $this->warnings;
     }
 
     /**
