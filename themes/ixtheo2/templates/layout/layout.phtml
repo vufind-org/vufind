@@ -170,12 +170,15 @@ JS;
     ?>
 
     <?=$this->render('header.phtml');?>
-
+    <?php $routeParams = $this->tuefind()->getRouteParams(); $searchResults = "";
+    if($routeParams['controller'] == "Search" && $routeParams['action'] == "Results") {
+      $searchResults = "searchResults";
+    }?>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 px-0 pt-5 pb-5 justify-content-center">
-                <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
-                  <?php $showContainerBlock = true; $routeParams = $this->tuefind()->getRouteParams();
+                <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$searchResults;?>">
+                  <?php $showContainerBlock = true;
                   if($routeParams['controller'] == 'index') {
                       $showContainerBlock = false;
                   }?>
