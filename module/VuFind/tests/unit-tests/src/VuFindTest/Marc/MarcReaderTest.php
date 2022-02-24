@@ -335,6 +335,27 @@ EOT;
             $reader->getWarnings()
         );
 
+        // Check for correct data in early fields:
+        $this->assertEquals(
+            ['1569008'],
+            $reader->getFields('001')
+        );
+        $this->assertEquals(
+            ['Federal reporter 1st Series (1-300), 2nd (1-830)'],
+            $reader->getFieldsSubfields('245', ['a'])
+        );
+        $this->assertEquals(
+            [
+                'Law Library',
+                'Second Floor',
+                'KF105 .F3',
+                '33940000424836'
+            ],
+            $reader->getSubfields($reader->getField('852'))
+        );
+
+        // We can't check for e.g. the last 852 since it will be garbled due to the
+        // ISO2709 directory overflowing, but at least we can check the field count:
         $fields = $reader->getFields('852');
         $this->assertEquals(2046, count($fields));
     }
