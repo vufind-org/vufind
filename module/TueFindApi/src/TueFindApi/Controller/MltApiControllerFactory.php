@@ -34,8 +34,6 @@ class MltApiControllerFactory implements FactoryInterface
         $controller = new $requestedName($container,
                                          $container->get(\VuFindApi\Formatter\RecordFormatter::class),
                                          $container->get(\VuFindApi\Formatter\FacetFormatter::class));
-        //$controller->addApi($container->get('ControllerManager')->get('MltApi'));
-       // $controller->addApi($this);
         return $controller;
     }
 }
