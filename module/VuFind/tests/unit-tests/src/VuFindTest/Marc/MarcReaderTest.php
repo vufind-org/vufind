@@ -358,5 +358,9 @@ EOT;
         // ISO2709 directory overflowing, but at least we can check the field count:
         $fields = $reader->getFields('852');
         $this->assertEquals(2046, count($fields));
+
+        // Test that the records can still be serialized to MARCXML:
+        $xml = $reader->toFormat('MARCXML');
+        $this->assertIsObject(simplexml_load_string($xml));
     }
 }
