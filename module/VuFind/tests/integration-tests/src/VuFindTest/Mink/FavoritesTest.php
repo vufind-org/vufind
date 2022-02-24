@@ -700,11 +700,11 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         // The "Future List" should NOT be public:
         $this->clickCss($page, 'a[href="' . $hrefs[0] . '"]');
-        $this->unFindCss($page, 'mainbody .user-list__public-icon');
+        $this->unFindCss($page, '.mainbody .user-list__public-icon');
 
         // The "Test List" SHOULD be public:
         $this->clickCss($page, 'a[href="' . $hrefs[2] . '"]');
-        $this->waitStatement('$("mainbody .user-list__public-icon").length === 1');
+        $this->waitStatement('$(".mainbody .user-list__public-icon").length === 1');
     }
 
     /**

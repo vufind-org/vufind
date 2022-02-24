@@ -33,7 +33,7 @@
   <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
 
   <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
-    <?=$this->icon('user-public-list-indicator', ['class' => 'user-list__public-icon', 'title' => $this->transEscAttr('public_list_indicator')]) ?>
+    <strong><?=$this->icon('user-public-list-indicator', 'user-list__public-icon') ?><?=$this->transEscAttr('public_list_indicator') ?></strong>
   <?php endif; ?>
 
   <?=$this->flashmessages()?>
