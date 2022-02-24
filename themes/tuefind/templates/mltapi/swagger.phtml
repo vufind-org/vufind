@@ -83,6 +83,45 @@
                 }
             }
         },
+       "/<?=$mltRoute?>": {
+          "get": {
+                "summary": "Fetch similar records from <?=$this->indexLabel?> index",
+                "description": "For a given id return similar records from <?=$this->indexLabel?> index.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "A single record ID",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "prettyPrint",
+                        "in": "query",
+                        "description": "Whether to pretty-print the response. Useful for observing the results in a browser.",
+                        "type": "boolean",
+                        "default": false
+                    }
+             ],
+                "tags": [
+                    "Similar"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Response containing result count and records",
+                        "schema": {
+                            "$ref": "#/definitions/<?=$this->modelPrefix?>SearchResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
         "/<?=$searchRoute?>": {
             "get": {
                 "summary": "Search <?=$this->indexLabel?> index",
@@ -370,5 +409,6 @@
                 }
             }
         }
+
     }
 }

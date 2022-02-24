@@ -7,14 +7,7 @@ use VuFindApi\Formatter\RecordFormatter;
 
 class MltApiController extends \VuFindApi\Controller\SearchApiController
 {
-
-    /**
-     * Search route uri
-     *
-     * @var string
-     */
-    protected $searchRoute = 'mlt';
-
+    protected $mltRoute = 'mlt';
 
     public function similarAction() {
          // Disable session writes
@@ -67,5 +60,40 @@ class MltApiController extends \VuFindApi\Controller\SearchApiController
 
         return $this->output($response, self::STATUS_OK);
     }
+
+
+
+    public function getSwaggerSpecFragment()
+    {
+        $config = $this->getConfig();
+        $results = $this->getResultsManager()->get($this->searchClassId);
+        $options = $results->getOptions();
+        $params = $results->getParams();
+
+        error_log("SWAGGER CALLED");
+        $viewParams = [
+            'config' => $config,
+            'version' => \VuFind\Config\Version::getBuildVersion(),
+            'searchTypes' => $options->getBasicHandlers(),
+            'defaultSearchType' => $options->getDefaultHandler(),
+            'recordFields' => $this->recordFormatter->getRecordFieldSpec(),
+            'defaultFields' => $this->defaultRecordFields,
+            'facetConfig' => $params->getFacetConfig(),
+            'sortOptions' => $options->getSortOptions(),
+            'defaultSort' => $options->getDefaultSortByHandler(),
+            'recordRoute' => $this->recordRoute,
+            'searchRoute' => $this->searchRoute,
+            'mltRoute' => $this->mltRoute,
+            'searchIndex' => $this->searchClassId,
+            'indexLabel' => $this->indexLabel,
+            'modelPrefix' => $this->modelPrefix,
+            'maxLimit' => $this->maxLimit,
+        ];
+        $json = $this->getViewRenderer()->render(
+            'mltapi/swagger', $viewParams
+        );
+        return $json;
+    }
+
 }
 ?>

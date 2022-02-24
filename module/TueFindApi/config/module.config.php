@@ -4,10 +4,12 @@ namespace TueFindApi\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'TueFindApi\Controller\MltApiController' => 'TueFindApi\Controller\ApiControllerFactory'
+            'TueFindApi\Controller\ApiController' => 'TueFindApi\Controller\ApiControllerFactory',
+            'TueFindApi\Controller\MltApiController' => 'TueFindApi\Controller\MltApiControllerFactory'
         ],
         'aliases' => [
-            'MltApi' => 'TueFindApi\Controller\MltApiController'
+            'MltApi' => 'TueFindApi\Controller\MltApiController',
+            'Api' => 'TueFindApi\Controller\ApiController'
         ],
      ],
      'router' => [
@@ -21,10 +23,10 @@ $config = [
                           'controller' => 'MltApi',
                           'action'     => 'similar',
                       ]
-              ],
-          ],
-      ],
-   ], 
+                  ],
+             ],
+         ],
+     ],
 ];
 
 return $config;

@@ -25,8 +25,6 @@ class ApiController extends \VuFindApi\Controller\ApiController
             'specs' => $this->getApiSpecs()
         ];
         $json = $this->getViewRenderer()->render('api/swagger', $params);
-        //error_log(implode($this->apiControllers, " XXXXX "));
-        //var_dump($json);
         $response->setContent($json);
         return $response;
     }
