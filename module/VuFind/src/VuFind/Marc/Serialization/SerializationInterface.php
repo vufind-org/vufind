@@ -82,10 +82,9 @@ interface SerializationInterface
      * Convert record to a string representing the format supported by the
      * serialization class
      *
-     * @param string $leader Leader
-     * @param array  $fields Record fields
+     * @param array $data Record data
      *
      * @return string
      */
-    public static function toString(string $leader, array $fields): string;
+    public static function toString(array $data): string;
 }

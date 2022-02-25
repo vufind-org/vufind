@@ -54,7 +54,19 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
 
         // Test round-trips
         $reader = new \VuFind\Marc\MarcReader($reader->toFormat('MARCXML'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
         $reader = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
+        $reader = new \VuFind\Marc\MarcReader($reader->toFormat('JSON'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
+
+        // Verify JSON schema
+        $validator = new \Opis\JsonSchema\Validator();
+        $result = $validator->validate(
+            json_decode($reader->toFormat('JSON')),
+            $this->getFixture('marc/marc_schema.json')
+        );
+        $this->assertTrue($result->isValid());
 
         $this->assertMatchesRegularExpression(
             '/^\d{5}cam a22\d{5}4i 4500$/',
@@ -173,7 +185,7 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $input = <<<EOT
 <collection xmlns="http://www.loc.gov/MARC21/slim">
   <record>
-    <leader>00047       00037       </leader>
+    <leader>00047cam a22000374i 4500</leader>
     <datafield tag="245" ind1=" " ind2=" ">
       <subfield code="a">Foo</subfield>
       <subfield code="b"></subfield>
@@ -188,7 +200,7 @@ EOT;
     xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
 >
   <record>
-    <leader>00047       00037       </leader>
+    <leader>00000cam a22000004i 4500</leader>
     <datafield tag="245" ind1=" " ind2=" ">
       <subfield code="a">Foo</subfield>
     </datafield>
