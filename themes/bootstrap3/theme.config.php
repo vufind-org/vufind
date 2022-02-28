@@ -104,7 +104,6 @@ return [
              * All of the items below have been specified with FontAwesome to allow
              * for a strong inheritance safety net but this is not required.
              */
-            // UI
             'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
             'cart' => 'FontAwesome:suitcase',
@@ -199,7 +198,7 @@ return [
             'overdrive-help' => 'FontAwesome:question-circle',
             'overdrive-return' => 'FontAwesome:arrow-right',
             'overdrive-return-rtl' => 'FontAwesome:arrow-left',
-            'overdrive-success' => 'Alias:check',
+            'overdrive-success' => 'FontAwesome:check',
             'overdrive-warning' => 'Alias:warning',
             'page-first' => 'FontAwesome:angle-double-left',
             'page-first-rtl' => 'FontAwesome:angle-double-right',

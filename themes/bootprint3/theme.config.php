@@ -18,14 +18,12 @@ return [
             ],
         ],
         'aliases' => [
-            // UI
             'addthis-bookmark' => 'Fugue:bookmark_add.png',
             // 'barcode' => inherited from parent theme
             'cart' => 'Fugue:bookbag.png',
             'cart-add' => 'Fugue:bookbag_add.png',
             'cart-empty' => 'Fugue:bookbag_empty.png',
             'cart-remove' => 'Fugue:bookbag_delete.png',
-            'check' => 'Fugue:tick.png',
             'cite' => 'Fugue:asterisk_orange.png',
             // 'collapse' => inherited from parent theme
             'collapse-close' => 'Fugue:bullet_arrow_up.png',
@@ -46,6 +44,7 @@ return [
             'export' => 'Fugue:link_go.png',
             'export-rtl' => 'Fugue:link_go_rtl.png',
             'external-link' => 'Fugue:link.png',
+            'facet-applied' => 'Fugue:tick.png',
             'facet-checked' => 'Fugue:tick.png',
             'facet-exclude' => 'Fugue:cross.png',
             'facet-unchecked' => 'Fugue:tick_faded.png',
@@ -62,8 +61,8 @@ return [
             'format-drawing' => 'Fugue:edit.png',
             'format-ebook' => 'Fugue:book_link.png',
             'format-electronic' => 'Fugue:page_white_zip.png',
-            'format-filmstrip' => 'Fugue:film.png',
             'format-file' => 'Fugue:page.png',
+            'format-filmstrip' => 'Fugue:film.png',
             'format-flashcard' => 'Fugue:lightning.png',
             'format-floppydisk' => 'Fugue:disk.png',
             'format-folder' => 'Fugue:folder.png',
@@ -114,7 +113,7 @@ return [
             // 'overdrive-help' => inherited from parent theme,
             'overdrive-return' => 'Fugue:arrow_right.png',
             'overdrive-return-rtl' => 'Fugue:arrow_left.png',
-            // 'overdrive-success' => 'Alias:check',
+            'overdrive-success' => 'Fugue:accept.png',
             // 'overdrive-warning' => 'Alias:warning',
             'page-first' => 'Fugue:resultset_first.png',
             'page-first-rtl' => 'Fugue:resultset_last.png',
@@ -164,14 +163,15 @@ return [
             'ui-delete' => 'Fugue:bin.png',
             // 'ui-dots-menu' => inherited from parent theme
             'ui-edit' => 'Fugue:edit.png',
+            'ui-failure' => 'Fugue:exclamation.png',
             // 'ui-menu' => inherited from parent theme
             'ui-remove' => 'Fugue:cross.png',
             'ui-save' => 'Fugue:disk.png',
+            'ui-success' => 'Fugue:accept.png',
             'user-checked-out' => 'Fugue:book.png',
             'user-favorites' => 'Fugue:star.png',
             'user-holds' => 'Fugue:flag_red.png',
             'user-holds-rtl' => 'Fugue:flag_red_rtl.png',
-            'user-ill-request' => 'FontAwesome:exchange',
             'user-ill-requests' => 'Fugue:arrow_switch.png',
             'user-list' => 'Fugue:list.png',
             'user-list-add' => 'Fugue:book-bookmark.png',
@@ -184,6 +184,7 @@ return [
             'user-storage-retrievals' => 'Fugue:lorry.png',
             'view-grid' => 'Fugue:view_grid.png',
             'view-list' => 'Fugue:view_list.png',
+            'view-visual' => 'Fugue:view_visual.png',
             'warning' => 'Fugue:error.png',
         ]
     ]
