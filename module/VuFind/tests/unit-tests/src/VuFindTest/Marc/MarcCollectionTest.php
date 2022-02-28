@@ -51,7 +51,8 @@ class MarcCollectionTest extends \PHPUnit\Framework\TestCase
     {
         return [
             ['marc/marc_collection.xml'],
-            ['marc/marc_collection.mrc']
+            ['marc/marc_collection.mrc'],
+            ['marc/marc_collection.json'],
         ];
     }
 

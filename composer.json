@@ -25,6 +25,7 @@
     "require": {
         "php": ">=7.4.0",
         "ahand/mobileesp": "dev-master",
+        "pcrov/jsonreader": "1.0.2",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.12.1",
         "composer/package-versions-deprecated": "1.11.99.2",
@@ -96,6 +97,7 @@
         "behat/mink-selenium2-driver": "1.5.0",
         "dmore/chrome-mink-driver": "2.8.0",
         "friendsofphp/php-cs-fixer": "3.4.0",
+        "opis/json-schema": "2.3.0",
         "phploc/phploc": "7.0.2",
         "phpmd/phpmd": "2.11.1",
         "phpstan/phpstan": "1.2.0",
