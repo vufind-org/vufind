@@ -1,5 +1,9 @@
-
-<div class="cover-header screen-height screen-width bg-image bg-attachment-fixed">
+<?php $routeParams = $this->tuefind()->getRouteParams(); $advancedSearch = "";
+  if($routeParams['controller'] == "Search" && $routeParams['action'] == "Advanced") {
+    $advancedSearch = "advancedSearch";
+  }
+?>
+<div class="cover-header screen-height screen-width bg-image bg-attachment-fixed <?=$advancedSearch;?>">
   <div class="cover-header-inner-wrapper">
     <div class="cover-header-inner">
       <div class="cover-color-overlay color-accent opacity-60 blend-mode-normal"></div>
@@ -85,7 +89,6 @@
                                 <ul class="dropdown-menu">
                                   <?php
                                     //TueFind: Basic VuFind functionality changed, removed author ID from URL
-                                    $routeParams = $this->tuefind()->getRouteParams();
                                     foreach ($this->layout()->allLangs as $langCode => $langName): ?>
                                       <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
                                         <?php $langURL = $this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode]));
@@ -136,7 +139,7 @@ if(isset($this->layout()->headerImage)) {
               && !empty($this->layout()->breadcrumbs)
               && $this->layout()->breadcrumbs !== false
             ): ?>
-              <div class="container breadcrumb-wrapper hidden-print">
+              <div class="container breadcrumb-wrapper hidden-print <?=$advancedSearch;?>">
                 <?php if(is_array($this->layout()->breadcrumbs)): ?>
                   <?php if(count($this->layout()->breadcrumbs) > 1): ?>
                     <?=$this->render('breadcrumbs/multi.phtml', [
