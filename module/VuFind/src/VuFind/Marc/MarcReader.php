@@ -45,6 +45,7 @@ class MarcReader
      */
     protected $serializations = [
         'ISO2709' => Serialization\Iso2709::class,
+        'JSON' => Serialization\MarcInJson::class,
         'MARCXML' => Serialization\MarcXml::class,
     ];
 
@@ -56,25 +57,45 @@ class MarcReader
     protected $leader;
 
     /**
-     * MARC is stored in a multidimensional array:
-     *  [001] - "12345"
-     *  [245] - i1: '0'
-     *          i2: '1'
-     *          s:  [
-     *                  ['a' => 'Title'],
-     *                  ['k' => 'Form'],
-     *                  ['k' => 'Another'],
-     *                  ['p' => 'Part'],
-     *              ]
+     * MARC is stored in a multidimensional array resembling MARC-in-JSON
+     * specification by Ross Singer:
+     * [
+     *     'leader' => '...',
+     *     'fields' => [
+     *         [
+     *             '001' => '12345'
+     *         ],
+     *         [
+     *             '245' => [
+     *                 'ind1' => '0',
+     *                 'ind2' => '1',
+     *                 'subfields' => [
+     *                      ['a' => 'Title'],
+     *                      ['k' => 'Form'],
+     *                      ['k' => 'Another'],
+     *                      ['p' => 'Part'],
+     *                 ]
+     *             ]
+     *         ]
+     *     ]
+     * ]
+     *
+     * @var array
+     * @see https://web.archive.org/web/20151112001548/http://dilettantes.code4lib.org/blog/2010/09/a-proposal-to-serialize-marc-in-json/
+     */
+    protected $data;
+
+    /**
+     * Any warnings encountered when parsing a record
      *
      * @var array
      */
-    protected $fields;
+    protected $warnings;
 
     /**
      * Constructor
      *
-     * @param string|array $data MARC record in MARCXML or ISO2709 format, or an
+     * @param string|array $data MARC record in one of the supported formats, or an
      * associative array with 'leader' and 'fields' in the internal format
      */
     public function __construct($data)
@@ -85,7 +106,7 @@ class MarcReader
     /**
      * Set MARC record data
      *
-     * @param string|array $data MARC record in MARCXML or ISO2709 format, or an
+     * @param string|array $data MARC record in one of the supported formats, or an
      * associative array with 'leader' and 'fields' in the internal format
      *
      * @throws Exception
@@ -99,15 +120,18 @@ class MarcReader
             ) {
                 throw new \Exception('Invalid data array format provided');
             }
-            $this->leader = $data['leader'];
-            $this->fields = $data['fields'];
+            $this->data = $data;
             return;
         }
-        $leader = null;
         $valid = false;
+        $this->warnings = [];
         foreach ($this->serializations as $serialization) {
             if ($serialization::canParse($data)) {
-                [$leader, $this->fields] = $serialization::fromString($data);
+                $this->data = $serialization::fromString($data);
+                if (isset($this->data['warnings'])) {
+                    $this->warnings = $this->data['warnings'];
+                    unset($this->data['warnings']);
+                }
                 $valid = true;
                 break;
             }
@@ -115,8 +139,12 @@ class MarcReader
         if (!$valid) {
             throw new \Exception('MARC record format not recognized');
         }
-        // Make sure leader is 24 characters
-        $this->leader = $leader ? str_pad(substr($leader, 0, 24), 24) : '';
+        // Make sure leader is 24 characters, and reset meaningless offsets:
+        if ($this->data['leader']) {
+            $leader = str_pad(substr($this->data['leader'] ?? '', 0, 24), 24);
+            $this->data['leader'] = '00000' . substr($leader, 5, 7) . '00000'
+                . substr($leader, 17);
+        }
     }
 
     /**
@@ -132,7 +160,7 @@ class MarcReader
         if (null === $serialization) {
             throw new \Exception("Unknown MARC format '$format' requested");
         }
-        return $serialization::toString($this->getLeader(), $this->fields);
+        return $serialization::toString($this->data);
     }
 
     /**
@@ -142,7 +170,7 @@ class MarcReader
      */
     public function getLeader(): string
     {
-        return $this->leader;
+        return $this->data['leader'];
     }
 
     /**
@@ -174,14 +202,18 @@ class MarcReader
     {
         $result = [];
 
-        foreach ($this->fields[$fieldTag] ?? [] as $field) {
+        foreach ($this->data['fields'] as $fieldData) {
+            if ($fieldTag && $fieldTag !== (string)key($fieldData)) {
+                continue;
+            }
+            $field = current($fieldData);
             if (!is_array($field)) {
                 // Control field
                 $result[] = $field;
                 continue;
             }
             $subfields = [];
-            foreach ($field['s'] ?? [] as $subfield) {
+            foreach ($field['subfields'] ?? [] as $subfield) {
                 if ($subfieldCodes
                     && !in_array((string)key($subfield), $subfieldCodes)
                 ) {
@@ -195,8 +227,8 @@ class MarcReader
             if ($subfields) {
                 $result[] = [
                     'tag' => $fieldTag,
-                    'i1' => $field['i1'],
-                    'i2' => $field['i2'],
+                    'i1' => $field['ind1'],
+                    'i2' => $field['ind2'],
                     'subfields' => $subfields
                 ];
             }
@@ -223,25 +255,35 @@ class MarcReader
     public function getAllFields()
     {
         $result = [];
-        foreach (array_keys($this->fields) as $tag) {
-            $fields = array_map(
-                function ($field) use ($tag) {
-                    // Convert control fields to arrays:
-                    if (is_string($field)) {
-                        return [
-                            'tag' => $tag,
-                            'data' => $field
-                        ];
-                    }
-                    return $field;
-                },
-                $this->getFields($tag)
-            );
-            $result = array_merge(
-                $result,
-                $fields
-            );
+
+        foreach ($this->data['fields'] as $fieldData) {
+            $tag = (string)key($fieldData);
+            $field = current($fieldData);
+            if (is_string($field)) {
+                // Control field
+                $result[] = [
+                    'tag' => $tag,
+                    'data' => $field
+                ];
+                continue;
+            }
+            $subfields = [];
+            foreach ($field['subfields'] ?? [] as $subfield) {
+                $subfields[] = [
+                    'code' => (string)key($subfield),
+                    'data' => current($subfield),
+                ];
+            }
+            if ($subfields) {
+                $result[] = [
+                    'tag' => $tag,
+                    'i1' => $field['ind1'],
+                    'i2' => $field['ind2'],
+                    'subfields' => $subfields
+                ];
+            }
         }
+
         return $result;
     }
 
@@ -307,12 +349,12 @@ class MarcReader
     ): array {
         $result = [];
 
-        foreach ($this->fields[$fieldTag] ?? [] as $field) {
-            if (!isset($field['s'])) {
+        foreach ($this->getInternalFields($fieldTag) as $field) {
+            if (!isset($field['subfields'])) {
                 continue;
             }
             $subfields = [];
-            foreach ($field['s'] ?? [] as $subfield) {
+            foreach ($field['subfields'] ?? [] as $subfield) {
                 if ($subfieldCodes
                     && !in_array((string)key($subfield), $subfieldCodes)
                 ) {
@@ -377,8 +419,8 @@ class MarcReader
     ): array {
         $result = [];
 
-        foreach ($this->fields[$fieldTag] ?? [] as $field) {
-            if (!is_array($field)) {
+        foreach ($this->getInternalFields($fieldTag) as $field) {
+            if (is_string($field)) {
                 // Control field
                 continue;
             }
@@ -388,7 +430,7 @@ class MarcReader
                 continue;
             }
             $subfields = [];
-            foreach ($field['s'] ?? [] as $subfield) {
+            foreach ($field['subfields'] ?? [] as $subfield) {
                 if ($subfieldCodes
                     && !in_array((string)key($subfield), $subfieldCodes)
                 ) {
@@ -402,8 +444,8 @@ class MarcReader
             if ($subfields) {
                 $result[] = [
                     'tag' => $fieldTag,
-                    'i1' => $field['i1'],
-                    'i2' => $field['i2'],
+                    'i1' => $field['ind1'],
+                    'i2' => $field['ind2'],
                     'subfields' => $subfields,
                     'link' => $link
                 ];
@@ -516,28 +558,31 @@ class MarcReader
     public function getFilteredRecord(array $rules): MarcReader
     {
         $resultFields = [];
-        foreach ($this->fields as $tag => $fields) {
+        foreach ($this->data['fields'] as $fieldData) {
+            $tag = (string)key($fieldData);
+            $field = current($fieldData);
             $fieldRules = $this->getFilteringRulesForTag($rules, $tag);
             if ($fieldRules) {
-                foreach ($fields as $field) {
-                    if (!isset($field['s'])) {
-                        // Control field, filter out completely
-                        continue;
-                    }
-                    $field['s'] = $this->filterSubfields($fieldRules, $field['s']);
-                    if (!$field['s']) {
-                        // No subfields left, drop the field
-                        continue;
-                    }
-                    $resultFields[$tag][] = $field;
+                if (is_string($field)) {
+                    // Control field, filter out completely
+                    continue;
                 }
+                $field['subfields'] = $this->filterSubfields(
+                    $fieldRules,
+                    $field['subfields']
+                );
+                if (!$field['subfields']) {
+                    // No subfields left, drop the field
+                    continue;
+                }
+                $resultFields[] = [$tag => $field];
             } else {
-                $resultFields[$tag] = $fields;
+                $resultFields[] = [$tag => $field];
             }
         }
         return new MarcReader(
             [
-                'leader' => $this->leader,
+                'leader' => $this->data['leader'],
                 'fields' => $resultFields
             ]
         );
@@ -581,7 +626,7 @@ class MarcReader
             }
             $remaining = [];
             foreach ($subfields as $subfield) {
-                $code = key($subfield);
+                $code = (string)key($subfield);
                 if (!preg_match('/' . $rule['subfields'] . '/', $code)) {
                     $remaining[] = $subfield;
                 }
@@ -596,6 +641,35 @@ class MarcReader
     }
 
     /**
+     * Get any warnings encountered when parsing a record
+     *
+     * @return array
+     */
+    public function getWarnings(): array
+    {
+        return $this->warnings;
+    }
+
+    /**
+     * Return fields by tag in internal format
+     *
+     * @param string $tag Field tag
+     *
+     * @return array
+     */
+    protected function getInternalFields(string $tag): array
+    {
+        $result = [];
+        foreach ($this->data['fields'] as $field) {
+            $fieldTag = (string)key($field);
+            if ($fieldTag === $tag) {
+                $result[] = current($field);
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Return first subfield with the given code in the internal MARC field
      *
      * @param array  $field        Internal MARC field
@@ -607,8 +681,8 @@ class MarcReader
         array $field,
         string $subfieldCode
     ): string {
-        foreach ($field['s'] ?? [] as $subfield) {
-            if (key($subfield) == $subfieldCode) {
+        foreach ($field['subfields'] ?? [] as $subfield) {
+            if ((string)key($subfield) === $subfieldCode) {
                 return trim(current($subfield));
             }
         }

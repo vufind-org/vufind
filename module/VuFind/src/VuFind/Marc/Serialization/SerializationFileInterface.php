@@ -62,13 +62,17 @@ interface SerializationFileInterface
      * @param string $file File name
      *
      * @return void
+     *
+     * @throws \Exception
      */
     public function openCollectionFile(string $file): void;
 
     /**
      * Rewind the collection file
      *
-     * @return void;
+     * @return void
+     *
+     * @throws \Exception
      */
     public function rewind(): void;
 
@@ -76,6 +80,8 @@ interface SerializationFileInterface
      * Get next record from the file or an empty string on EOF
      *
      * @return string
+     *
+     * @throws \Exception
      */
     public function getNextRecord(): string;
 }

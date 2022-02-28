@@ -17,9 +17,9 @@
       </li>
     <?php else: ?>
       <?php if ($this->scrollData['firstRecord']): ?>
-        <li class="disabled" aria-hidden="true" role="none"><a href="#"><?=$this->icon('page-first') ?> <?=$this->transEsc('First')?></a></li>
+        <li class="disabled" aria-hidden="true" role="none"><a disabled><?=$this->icon('page-first') ?> <?=$this->transEsc('First')?></a></li>
       <?php endif; ?>
-      <li class="disabled" aria-hidden="true" role="none"><a href="#"><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
+      <li class="disabled" aria-hidden="true" role="none"><a disabled><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
     <?php endif; ?>
 
     <?=$this->transEsc('of_num_results', [
@@ -43,9 +43,9 @@
         </li>
       <?php endif; ?>
     <?php else: ?>
-      <li class="disabled" aria-hidden="true" role="none"><a href="#"><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
+      <li class="disabled" aria-hidden="true" role="none"><a disabled><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
       <?php if ($this->scrollData['lastRecord']): ?>
-        <li class="disabled" aria-hidden="true" role="none"><a href="#"><?=$this->transEsc('Last')?> <?=$this->icon('page-last') ?></a></li>
+        <li class="disabled" aria-hidden="true" role="none"><a disabled><?=$this->transEsc('Last')?> <?=$this->icon('page-last') ?></a></li>
       <?php endif; ?>
     <?php endif; ?>
   </ul>

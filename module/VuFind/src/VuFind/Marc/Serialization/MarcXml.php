@@ -145,33 +145,32 @@ class MarcXml extends AbstractSerializationFile implements SerializationInterfac
         $fields = [];
 
         foreach ($xml->controlfield as $field) {
-            $tag = (string)$field['tag'];
-            $fields[$tag][] = (string)$field;
+            $fields[] = [(string)$field['tag'] => (string)$field];
         }
 
         foreach ($xml->datafield as $field) {
             $newField = [
-                'i1' => str_pad((string)$field['ind1'], 1),
-                'i2' => str_pad((string)$field['ind2'], 1)
+                'ind1' => str_pad((string)$field['ind1'], 1),
+                'ind2' => str_pad((string)$field['ind2'], 1)
             ];
             foreach ($field->subfield as $subfield) {
-                $newField['s'][] = [(string)$subfield['code'] => (string)$subfield];
+                $newField['subfields'][]
+                    = [(string)$subfield['code'] => (string)$subfield];
             }
-            $fields[(string)$field['tag']][] = $newField;
+            $fields[] = [(string)$field['tag'] => $newField];
         }
 
-        return [$leader, $fields];
+        return compact('leader', 'fields');
     }
 
     /**
      * Convert record to a MARCXML string
      *
-     * @param string $leader Leader
-     * @param array  $fields Record fields
+     * @param array $record Record data
      *
      * @return string
      */
-    public static function toString(string $leader, array $fields): string
+    public static function toString(array $record): string
     {
         $xml = new \XMLWriter();
         $xml->openMemory();
@@ -188,43 +187,46 @@ class MarcXml extends AbstractSerializationFile implements SerializationInterfac
             . ' http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd'
         );
         $xml->startElement('record');
-        if ($leader) {
-            $xml->writeElement('leader', $leader);
+        if ($record['leader']) {
+            $xml->writeElement('leader', $record['leader']);
         }
 
-        foreach ($fields as $tag => $fields) {
-            foreach ($fields as $data) {
-                if (!is_array($data)) {
-                    $xml->startElement('controlfield');
-                    $xml->writeAttribute('tag', $tag);
-                    $xml->text($data);
-                    $xml->endElement();
-                } else {
-                    $xml->startElement('datafield');
-                    $xml->writeAttribute('tag', $tag);
-                    $xml->writeAttribute('ind1', $data['i1']);
-                    $xml->writeAttribute('ind2', $data['i2']);
-                    if (isset($data['s'])) {
-                        foreach ($data['s'] as $subfield) {
-                            $subfieldData = current($subfield);
-                            $subfieldCode = key($subfield);
-                            if ($subfieldData == '') {
-                                continue;
-                            }
-                            $xml->startElement('subfield');
-                            $xml->writeAttribute('code', $subfieldCode);
-                            $xml->text($subfieldData);
-                            $xml->endElement();
-                        }
+        foreach ($record['fields'] as $fieldData) {
+            $tag = (string)key($fieldData);
+            $field = current($fieldData);
+            if (is_string($field)) {
+                $xml->startElement('controlfield');
+                $xml->writeAttribute('tag', $tag);
+                $xml->text($field);
+                $xml->endElement();
+            } else {
+                $xml->startElement('datafield');
+                $xml->writeAttribute('tag', $tag);
+                $xml->writeAttribute('ind1', $field['ind1']);
+                $xml->writeAttribute('ind2', $field['ind2']);
+                foreach ($field['subfields'] ?? [] as $subfield) {
+                    $subfieldData = current($subfield);
+                    $subfieldCode = (string)key($subfield);
+                    if ($subfieldData == '') {
+                        continue;
                     }
+                    $xml->startElement('subfield');
+                    $xml->writeAttribute('code', $subfieldCode);
+                    $xml->text($subfieldData);
                     $xml->endElement();
                 }
+                $xml->endElement();
             }
         }
         $xml->endElement();
         $xml->endDocument();
 
-        return $xml->outputMemory(true);
+        // Strip illegal characters from XML:
+        return preg_replace(
+            '/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u',
+            '',
+            $xml->outputMemory(true)
+        );
     }
 
     /**
@@ -278,6 +280,8 @@ class MarcXml extends AbstractSerializationFile implements SerializationInterfac
      * @param string $file File name
      *
      * @return void
+     *
+     * @throws \Exception
      */
     public function openCollectionFile(string $file): void
     {
@@ -293,7 +297,9 @@ class MarcXml extends AbstractSerializationFile implements SerializationInterfac
     /**
      * Rewind the collection file
      *
-     * @return void;
+     * @return void
+     *
+     * @throws \Exception
      */
     public function rewind(): void
     {
@@ -307,6 +313,8 @@ class MarcXml extends AbstractSerializationFile implements SerializationInterfac
      * Get next record from the file or an empty string on EOF
      *
      * @return string
+     *
+     * @throws \Exception
      */
     public function getNextRecord(): string
     {

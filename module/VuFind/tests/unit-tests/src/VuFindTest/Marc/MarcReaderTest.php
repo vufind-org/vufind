@@ -50,10 +50,23 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $marc = $this->getFixture('marc/marcreader.xml');
 
         $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals([], $reader->getWarnings());
 
         // Test round-trips
         $reader = new \VuFind\Marc\MarcReader($reader->toFormat('MARCXML'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
         $reader = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
+        $reader = new \VuFind\Marc\MarcReader($reader->toFormat('JSON'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
+
+        // Verify JSON schema
+        $validator = new \Opis\JsonSchema\Validator();
+        $result = $validator->validate(
+            json_decode($reader->toFormat('JSON')),
+            $this->getFixture('marc/marc_schema.json')
+        );
+        $this->assertTrue($result->isValid());
 
         $this->assertMatchesRegularExpression(
             '/^\d{5}cam a22\d{5}4i 4500$/',
@@ -172,7 +185,7 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $input = <<<EOT
 <collection xmlns="http://www.loc.gov/MARC21/slim">
   <record>
-    <leader>00047       00037       </leader>
+    <leader>00047cam a22000374i 4500</leader>
     <datafield tag="245" ind1=" " ind2=" ">
       <subfield code="a">Foo</subfield>
       <subfield code="b"></subfield>
@@ -187,7 +200,7 @@ EOT;
     xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
 >
   <record>
-    <leader>00047       00037       </leader>
+    <leader>00000cam a22000004i 4500</leader>
     <datafield tag="245" ind1=" " ind2=" ">
       <subfield code="a">Foo</subfield>
     </datafield>
@@ -226,10 +239,11 @@ EOT;
     {
         $marc = '00123cam a22000854i 4500';
 
-        $this->expectExceptionMessageMatches(
-            '/Invalid MARC record \(end of field not found\)/'
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals(
+            ['Invalid MARC record (end of field not found)'],
+            $reader->getWarnings()
         );
-        new \VuFind\Marc\MarcReader($marc);
     }
 
     /**
@@ -370,5 +384,49 @@ EOT;
     {
         $this->expectExceptionMessage("Invalid data array format provided");
         new \VuFind\Marc\MarcReader([]);
+    }
+
+    /**
+     * Test long record overflowing the maximum ISO2709 record length
+     *
+     * @return void
+     */
+    public function testLongISO2709()
+    {
+        $marc = $this->getFixture('marc/longrecord.mrc');
+
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals(
+            ['Invalid MARC record (end of field not found)'],
+            $reader->getWarnings()
+        );
+
+        // Check for correct data in early fields:
+        $this->assertEquals(
+            ['1569008'],
+            $reader->getFields('001')
+        );
+        $this->assertEquals(
+            ['Federal reporter 1st Series (1-300), 2nd (1-830)'],
+            $reader->getFieldsSubfields('245', ['a'])
+        );
+        $this->assertEquals(
+            [
+                'Law Library',
+                'Second Floor',
+                'KF105 .F3',
+                '33940000424836'
+            ],
+            $reader->getSubfields($reader->getField('852'))
+        );
+
+        // We can't check for e.g. the last 852 since it will be garbled due to the
+        // ISO2709 directory overflowing, but at least we can check the field count:
+        $fields = $reader->getFields('852');
+        $this->assertEquals(2046, count($fields));
+
+        // Test that the records can still be serialized to MARCXML:
+        $xml = $reader->toFormat('MARCXML');
+        $this->assertIsObject(simplexml_load_string($xml));
     }
 }

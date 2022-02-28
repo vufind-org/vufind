@@ -124,7 +124,7 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
     }
 
     /**
-     * Wrapper for parsing an ISO2709 string
+     * Parse an ISO2709 string
      *
      * @param string $marc ISO2709
      *
@@ -137,6 +137,7 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
         $fields = [];
         $dataStart = 0 + (int)substr($marc, 12, 5);
         $dirLen = $dataStart - self::LEADER_LEN - 1;
+        $invalid = false;
 
         $offset = 0;
         while ($offset < $dirLen) {
@@ -150,17 +151,15 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
             if (substr($tagData, -1, 1) == self::END_OF_FIELD) {
                 $tagData = substr($tagData, 0, -1);
             } else {
-                throw new \Exception(
-                    "Invalid MARC record (end of field not found): $marc"
-                );
+                $invalid = true;
             }
 
             if (ctype_digit($tag) && $tag < 10) {
-                $fields[$tag][] = $tagData;
+                $fields[] = [$tag => $tagData];
             } else {
                 $newField = [
-                    'i1' => $tagData[0] ?? ' ',
-                    'i2' => $tagData[1] ?? ' '
+                    'ind1' => $tagData[0] ?? ' ',
+                    'ind2' => $tagData[1] ?? ' '
                 ];
                 $subfields = explode(
                     self::SUBFIELD_INDICATOR,
@@ -170,66 +169,65 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
                     if ('' === $subfield) {
                         continue;
                     }
-                    $newField['s'][] = [
+                    $newField['subfields'][] = [
                         (string)$subfield[0] => substr($subfield, 1)
                     ];
                 }
-                $fields[$tag][] = $newField;
+                $fields[] = [$tag => $newField];
             }
 
             $offset += 12;
         }
 
-        return [$leader, $fields];
+        $result = compact('leader', 'fields');
+        if ($invalid) {
+            $result['warnings'] = ['Invalid MARC record (end of field not found)'];
+        }
+        return $result;
     }
 
     /**
-     * Convert record to ISO2709 string
+     * Convert record to an ISO2709 string
      *
-     * @param string $leader Leader
-     * @param array  $fields Record fields
+     * @param array $record Record data
      *
      * @return string
      */
-    public static function toString(string $leader, array $fields): string
+    public static function toString(array $record): string
     {
         $directory = '';
         $data = '';
         $datapos = 0;
-        foreach ($fields as $tag => $fields) {
-            if (strlen($tag) != 3) {
-                continue;
+        foreach ($record['fields'] as $fieldData) {
+            $tag = (string)key($fieldData);
+            $field = current($fieldData);
+            if (is_array($field)) {
+                $fieldStr = str_pad(substr($field['ind1'], 0, 1), 1)
+                    . str_pad(substr($field['ind2'], 0, 1), 1);
+                foreach ((array)($field['subfields'] ?? []) as $subfield) {
+                    $subfieldCode = (string)key($subfield);
+                    $fieldStr .= self::SUBFIELD_INDICATOR
+                        . $subfieldCode . current($subfield);
+                }
+            } else {
+                $fieldStr = $field;
             }
-            foreach ($fields as $field) {
-                if (is_array($field)) {
-                    $fieldStr = $field['i1'] . $field['i2'];
-                    if (isset($field['s']) && is_array($field['s'])) {
-                        foreach ($field['s'] as $subfield) {
-                            $subfieldCode = key($subfield);
-                            $fieldStr .= self::SUBFIELD_INDICATOR
-                                . $subfieldCode . current($subfield);
-                        }
-                    }
-                } else {
-                    $fieldStr = $field;
-                }
-                $fieldStr .= self::END_OF_FIELD;
-                $len = strlen($fieldStr);
-                if ($len > 9999) {
-                    return '';
-                }
-                if ($datapos > 99999) {
-                    return '';
-                }
-                $directory .= $tag . str_pad($len, 4, '0', STR_PAD_LEFT)
-                    . str_pad($datapos, 5, '0', STR_PAD_LEFT);
-                $datapos += $len;
-                $data .= $fieldStr;
+            $fieldStr .= self::END_OF_FIELD;
+            $len = strlen($fieldStr);
+            if ($len > 9999) {
+                return '';
             }
+            if ($datapos > 99999) {
+                return '';
+            }
+            $directory .= $tag . str_pad($len, 4, '0', STR_PAD_LEFT)
+                . str_pad($datapos, 5, '0', STR_PAD_LEFT);
+            $datapos += $len;
+            $data .= $fieldStr;
         }
         $directory .= self::END_OF_FIELD;
         $data .= self::END_OF_RECORD;
-        $leader = str_pad(substr($leader, 0, 24), 24);
+        $leader = str_pad(substr($record['leader'], 0, 24), 24);
         $dataStart = 24 + strlen($directory);
         $recordLen = $dataStart + strlen($data);
         if ($recordLen > 99999) {
@@ -250,6 +248,8 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
      * @param string $file File name
      *
      * @return void
+     *
+     * @throws \Exception
      */
     public function openCollectionFile(string $file): void
     {
@@ -261,7 +261,9 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
     /**
      * Rewind the collection file
      *
-     * @return void;
+     * @return void
+     *
+     * @throws \Exception
      */
     public function rewind(): void
     {
@@ -275,6 +277,8 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
      * Get next record from the file or an empty string on EOF
      *
      * @return string
+     *
+     * @throws \Exception
      */
     public function getNextRecord(): string
     {

@@ -26,7 +26,7 @@
         </a>
       </li>
     <?php else: ?>
-      <li class="disabled" aria-hidden="true"><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></li>
+      <li class="disabled" aria-hidden="true"><a disabled><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
     <?php endif; ?>
 
     <?php if (isset($this->nextpage)): ?>
@@ -37,7 +37,7 @@
         </a>
       </li>
     <?php else: ?>
-      <li class="disabled" aria-hidden="true"><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></li>
+      <li class="disabled" aria-hidden="true"><a disabled><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
     <?php endif; ?>
   </ul>
 <?php $pageLinks = ob_get_contents(); ?>
