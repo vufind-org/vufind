@@ -248,6 +248,8 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
      * @param string $file File name
      *
      * @return void
+     *
+     * @throws \Exception
      */
     public function openCollectionFile(string $file): void
     {
@@ -259,7 +261,9 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
     /**
      * Rewind the collection file
      *
-     * @return void;
+     * @return void
+     *
+     * @throws \Exception
      */
     public function rewind(): void
     {
@@ -273,6 +277,8 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
      * Get next record from the file or an empty string on EOF
      *
      * @return string
+     *
+     * @throws \Exception
      */
     public function getNextRecord(): string
     {

@@ -27,6 +27,8 @@
  */
 namespace VuFind\Marc\Serialization;
 
+use pcrov\JsonReader\JsonReader;
+
 /**
  * MARC-in-JSON format support class.
  *
@@ -39,18 +41,18 @@ namespace VuFind\Marc\Serialization;
 class MarcInJson extends AbstractSerializationFile implements SerializationInterface
 {
     /**
-     * Current collection file
+     * Current file
      *
-     * @var array
+     * @var string
      */
-    protected $collection = null;
+    protected $fileName = '';
 
     /**
-     * Current position in collection file
+     * JSON Reader for current file
      *
-     * @var int
+     * @var JsonReader
      */
-    protected $position = 0;
+    protected $reader = null;
 
     /**
      * Check if this class can parse the given MARC string
@@ -135,8 +137,77 @@ class MarcInJson extends AbstractSerializationFile implements SerializationInter
      */
     public static function toString(array $record): string
     {
-        // We need to cast any subfield with '0' as key to an object to, otherwise
-        // it would be encoded as a simple array instead of an object:
+        return self::jsonEncode($record);
+    }
+
+    /**
+     * Open a collection file
+     *
+     * @param string $file File name
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function openCollectionFile(string $file): void
+    {
+        $this->fileName = $file;
+        $this->reader = new JsonReader();
+        $this->reader->open($file);
+        // Move into the record array:
+        $this->reader->read();
+    }
+
+    /**
+     * Rewind the collection file
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function rewind(): void
+    {
+        if ('' === $this->fileName) {
+            throw new \Exception('Collection file not open');
+        }
+        $this->openCollectionFile($this->fileName);
+    }
+
+    /**
+     * Get next record from the file or an empty string on EOF
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    public function getNextRecord(): string
+    {
+        if (null === $this->reader) {
+            throw new \Exception('Collection file not open');
+        }
+        // We have to rely on the depth since the elements are anonymous:
+        if ($this->reader->depth() === 0) {
+            // Level 0 is the array enclosing the record objects, read into it:
+            $this->reader->read();
+        } else {
+            // Level 1 is an object, get the next one:
+            $this->reader->next();
+        }
+        $value = $this->reader->value();
+        return $value ? self::jsonEncode($value) : '';
+    }
+
+    /**
+     * Convert a record array to a JSON string
+     *
+     * @param array $record Record
+     *
+     * @return string
+     */
+    protected static function jsonEncode(array $record): string
+    {
+        // We need to cast any subfield with '0' as key to an object; otherwise it
+        // would be encoded as a simple array instead of an object:
         foreach ($record['fields'] as &$fieldData) {
             $field = current($fieldData);
             if (!is_array($field)) {
@@ -152,51 +223,5 @@ class MarcInJson extends AbstractSerializationFile implements SerializationInter
         }
         unset($fieldData);
         return json_encode($record, JSON_UNESCAPED_UNICODE);
-    }
-
-    /**
-     * Open a collection file
-     *
-     * @param string $file File name
-     *
-     * @return void
-     */
-    public function openCollectionFile(string $file): void
-    {
-        $data = file_get_contents($file);
-        if (false === $data) {
-            throw new \Exception("Cannot open file '$file' for reading");
-        }
-        $this->collection = json_decode($data, true);
-        if (null === $this->collection) {
-            throw
-                new \Exception("File '$file' is invalid: " . json_last_error_msg());
-        }
-        $this->position = -1;
-    }
-
-    /**
-     * Rewind the collection file
-     *
-     * @return void;
-     */
-    public function rewind(): void
-    {
-        if (null === $this->collection) {
-            throw new \Exception('Collection not available');
-        }
-        $this->position = -1;
-    }
-
-    /**
-     * Get next record from the file or an empty string on EOF
-     *
-     * @return string
-     */
-    public function getNextRecord(): string
-    {
-        ++$this->position;
-        return isset($this->collection[$this->position])
-            ? self::toString($this->collection[$this->position]) : '';
     }
 }
