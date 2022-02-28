@@ -153,7 +153,9 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'enumeration' => '',
                         'item_chronology' => '',
                         'addLink' => true,
-                        'call_number_formatted' => $this->buildFormattedCallNumber($callNumberData)
+                        'call_number_formatted' => $this->_buildFormattedCallNumber(
+                            $callNumberData
+                        )
                     ];
                 } else {
                     //TAMU Customization zero item
@@ -181,7 +183,9 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'enumeration' => '',
                         'item_chronology' => '',
                         'addLink' => true,
-                        'call_number_formatted' => $this->buildFormattedCallNumber($callNumberData)
+                        'call_number_formatted' => $this->_buildFormattedCallNumber(
+                            $callNumberData
+                        )
                     ];
                 }
             }
@@ -222,14 +226,24 @@ class Folio extends \VuFind\ILS\Driver\Folio
                     'enumeration' => $item->enumeration ?? '',
                     'item_chronology' => $item->chronology ?? '',
                     'addLink' => true,
-                    'call_number_formatted' => $this->buildFormattedCallNumber($callNumberData)
+                    'call_number_formatted' => $this->_buildFormattedCallNumber(
+                        $callNumberData
+                    )
                 ];
             }
         }
         return $items;
     }
 
-    private function buildFormattedCallNumber($callNumberData) {
+    /**
+     * TAMU method to build the full call number from its component parts
+     *
+     * @param array $callNumberData The call number data
+     *
+     * @return array A string representng the full call number
+     */
+    private function _buildFormattedCallNumber($callNumberData)
+    {
         return implode(" ", $callNumberData);
     }
 
