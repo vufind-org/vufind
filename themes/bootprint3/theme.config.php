@@ -101,6 +101,7 @@ return [
             'format-videodisc' => 'Fugue:cd.png',
             'format-videoreel' => 'Fugue:film.png',
             'hierarchy-tree' => 'Fugue:treeCurrent.png',
+            // 'lightbox-close' => inherited from parent theme,
             'more' => 'Fugue:arrow_right.png',
             'more-rtl' => 'Fugue:arrow_left.png',
             'my-account' => 'Fugue:user.png',
