@@ -15,7 +15,7 @@
   ?>
   <tr vocab="http://schema.org/" typeof="Offer">
       <td class="copy-number">
-        <?=$this->escapeHtmlAttr($item['callnumber'])?> <?=$this->escapeHtml($item['enumeration'])?>
+        <?=$this->escapeHtmlAttr($item['call_number_formatted'])?> <?=$this->escapeHtml($item['enumeration'])?>
       <?php if ($item['enumchron'] ?? false): ?>
         <span class="enumchron">(<?=$this->escapeHtml($item['enumchron'])?>)</span>
       <?php endif; ?>

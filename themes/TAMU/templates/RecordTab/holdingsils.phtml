@@ -123,7 +123,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
 </h3>
 <table class="table table-striped">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
-  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
   <tr>
     <th colspan="2"><?=$this->transEsc("Call Number")?>: </th>
     <td width="50%">
@@ -131,7 +131,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
         <?php if ($this->callnumberHandler): ?>
           <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo) ?>"><?=$this->escapeHtml($callNo)?></a>
         <?php else: ?>
-          <?=$this->escapeHtml($callNo)?>
+          <?=$this->escapeHtml($callNo['display'])?>
         <?php endif; ?>
         <br />
       <?php endforeach; ?>
@@ -159,7 +159,10 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
   ?>
 
   <?php foreach ($holding['items'] as $item): ?>
-  <?php $hold_id = $item['holding_id']; ?>
+  <?php
+    $hold_id = $item['holding_id'];
+    $fullCallNumber = $item['callnumber_prefix']." ".$item['callnumber'];
+  ?>
   <?php
 
     if ($tmp_hold_id != $hold_id) {
@@ -169,7 +172,7 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
   <?php
       if (count($item['issues']) > 0) {
   ?>
-            <span>Library Owns: <?=$item['callnumber']?></span>
+            <span>Library Owns: <?=$fullCallNumber?></span>
   <?php
       } else {
   ?>

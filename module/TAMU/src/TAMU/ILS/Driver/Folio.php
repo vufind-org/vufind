@@ -152,7 +152,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'reserve' => 'TODO',
                         'enumeration' => '',
                         'item_chronology' => '',
-                        'addLink' => true
+                        'addLink' => true,
+                        'call_number_formatted' => $this->buildFormattedCallNumber($callNumberData)
                     ];
                 } else {
                     //TAMU Customization zero item
@@ -174,13 +175,13 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'issues' => $holdingsStatements,
                         'supplements' => $holdingsSupplements,
                         'indexes' => $holdingsIndexes,
-                        'callnumber' => $holding->callNumber ?? '',
                         'location' => $holdingLocationData['name'],
                         'location_code' => $holdingLocationData['code'],
                         'reserve' => 'TODO',
                         'enumeration' => '',
                         'item_chronology' => '',
-                        'addLink' => true
+                        'addLink' => true,
+                        'call_number_formatted' => $this->buildFormattedCallNumber($callNumberData)
                     ];
                 }
             }
@@ -196,8 +197,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 $callNumberData = $this->chooseCallNumber(
                     $holdingCallNumberPrefix,
                     $holdingCallNumber,
-                    $item->itemLevelCallNumberPrefix ?? '',
-                    $item->itemLevelCallNumber ?? ''
+                    $item->effectiveCallNumberComponents->prefix ?? '',
+                    $item->effectiveCallNumberComponents->callNumber ?? ''
                 );
                 $items[] = $callNumberData + [
                     'id' => $bibId,
@@ -215,17 +216,21 @@ class Folio extends \VuFind\ILS\Driver\Folio
                     'issues' => $holdingsStatements,
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
-                    'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
                     'enumeration' => $item->enumeration ?? '',
                     'item_chronology' => $item->chronology ?? '',
-                    'addLink' => true
+                    'addLink' => true,
+                    'call_number_formatted' => $this->buildFormattedCallNumber($callNumberData)
                 ];
             }
         }
         return $items;
+    }
+
+    private function buildFormattedCallNumber($callNumberData) {
+        return implode(" ", $callNumberData);
     }
 
     /**
