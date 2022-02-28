@@ -155,7 +155,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'addLink' => true,
                         'call_number_formatted' => $this->_buildFormattedCallNumber(
                             $callNumberData
-                        )
+                        ),
+                        'holding_shelving_title' => $holding->shelvingTitle ?? ''
                     ];
                 } else {
                     //TAMU Customization zero item
@@ -185,7 +186,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         'addLink' => true,
                         'call_number_formatted' => $this->_buildFormattedCallNumber(
                             $callNumberData
-                        )
+                        ),
+                        'holding_shelving_title' => $holding->shelvingTitle ?? ''
                     ];
                 }
             }
@@ -228,7 +230,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
                     'addLink' => true,
                     'call_number_formatted' => $this->_buildFormattedCallNumber(
                         $callNumberData
-                    )
+                    ),
+                    'holding_shelving_title' => $holding->shelvingTitle ?? ''
                 ];
             }
         }

@@ -123,6 +123,14 @@ array_multisort($sort_holding_id, SORT_DESC, $sort_enumeration_id, SORT_ASC, SOR
 </h3>
 <table class="table table-striped">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
+  <?php if ($holding['items'][0]['holding_shelving_title']): ?>
+  <tr>
+    <th colspan="2"><?=$this->transEsc("Shelving Title")?>: </th>
+    <td>
+      <?=$this->escapeHtml($holding['items'][0]['holding_shelving_title'])?>
+    </td>
+  </tr>
+  <?php endif; ?>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
   <tr>
     <th colspan="2"><?=$this->transEsc("Call Number")?>: </th>
