@@ -8,7 +8,7 @@ var TueFind = {
 
         $('a').each(function() {
             let href = $(this).attr('href');
-            if (href != undefined && !href.includes('#')) {
+            if (href != undefined && !href.includes('#') && !$(this).hasClass('not-anchor')) {
                 if (href.match(/\/Content\//) || href.match(/\?subpage=/)) {
                     if (href.match(/[?&]lng=/)) {
                         // when switching the language, we want to keep the current anchor
