@@ -181,7 +181,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $oclc = $ids['oclc'] ?? null;
         $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
         $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
-        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid']);
+        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid'] ?? '');
         $uuid = null;
         if (isset($ids['uuid'])) {
             $uuid = (substr($ids['uuid'], 0, 5) === 'uuid:')
@@ -223,7 +223,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         if (strpos($recordid, '.') !== false) {
             [, $recordid] = explode('.', $recordid, 2);
         }
-        return empty($this->sigla) ? null :
+        return (empty($this->sigla) || empty($recordid)) ? null :
             $this->sigla . '-' . str_replace('-', '', $recordid);
     }
 
