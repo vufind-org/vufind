@@ -105,12 +105,12 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Get Swagger specification JSON fragment for services provided by the
+     * Get API specification JSON fragment for services provided by the
      * controller
      *
      * @return string
      */
-    public function getSwaggerSpecFragment()
+    public function getApiSpecFragment()
     {
         $spec = [];
         if (!$this->isAccessDenied($this->cacheAccessPermission)) {
@@ -125,25 +125,36 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
                         'description' => 'Caches to clear. By default the following'
                             . " caches are cleared: $defaultCaches",
                         'required' => false,
-                        'type' => 'array',
-                        'collectionFormat' => 'multi',
-                        'items' => [
-                            'type' => 'string'
-                        ]
+                        'style' => 'form',
+                        'explode' => true,
+                        'schema' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'string'
+                            ]
+                        ],
                     ]
                 ],
                 'tags' => ['admin'],
                 'responses' => [
                     '200' => [
                         'description' => 'An OK response',
-                        'schema' => [
-                            '$ref' => '#/definitions/Success'
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/Success'
+                                ]
+                            ]
                         ]
                     ],
                     'default' => [
                         'description' => 'Error',
-                        'schema' => [
-                            '$ref' => '#/definitions/Error'
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/Error'
+                                ]
+                            ]
                         ]
                     ]
                 ]
