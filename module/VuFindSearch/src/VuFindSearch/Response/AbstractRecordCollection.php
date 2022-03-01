@@ -123,12 +123,29 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      * @param string $identifier Backend identifier
      *
      * @return void
+     * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier)
     {
         $this->source = $identifier;
         foreach ($this->records as $record) {
             $record->setSourceIdentifier($identifier);
+        }
+    }
+
+    /**
+     * Set the source backend identifiers.
+     *
+     * @param string $recordSourceId  Record source identifier
+     * @param string $searchBackendId Search backend identifier
+     *
+     * @return void
+     */
+    public function setSourceIdentifiers($recordSourceId, $searchBackendId)
+    {
+        $this->source = $searchBackendId;
+        foreach ($this->records as $record) {
+            $record->setSourceIdentifiers($recordSourceId, $searchBackendId);
         }
     }
 

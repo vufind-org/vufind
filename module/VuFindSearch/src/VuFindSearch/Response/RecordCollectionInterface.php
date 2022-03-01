@@ -84,8 +84,19 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @param string $identifier Backend identifier
      *
      * @return void
+     * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier);
+
+    /**
+     * Set the source backend identifiers.
+     *
+     * @param string $identifier      Record source identifier
+     * @param string $searchBackendId Search backend identifier
+     *
+     * @return void
+     */
+    public function setSourceIdentifiers($identifier, $searchBackendId);
 
     /**
      * Return the source backend identifier.

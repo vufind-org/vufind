@@ -47,8 +47,19 @@ interface RecordInterface
      * @param string $identifier Backend identifier
      *
      * @return void
+     * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier);
+
+    /**
+     * Set the source backend identifiers.
+     *
+     * @param string $recordSourceId  Record source identifier
+     * @param string $searchBackendId Search backend identifier
+     *
+     * @return void
+     */
+    public function setSourceIdentifiers($recordSourceId, $searchBackendId);
 
     /**
      * Return the source backend identifier.
@@ -56,4 +67,11 @@ interface RecordInterface
      * @return string
      */
     public function getSourceIdentifier();
+
+    /**
+     * Return the search backend identifier used to find the record.
+     *
+     * @return string
+     */
+    public function getSearchBackendIdentifier();
 }
