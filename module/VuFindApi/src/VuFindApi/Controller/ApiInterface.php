@@ -43,10 +43,10 @@ interface ApiInterface
     public const STATUS_ERROR = 'ERROR';            // bad
 
     /**
-     * Get Swagger specification JSON fragment for services provided by the
+     * Get API specification JSON fragment for services provided by the
      * controller
      *
      * @return string
      */
-    public function getSwaggerSpecFragment();
+    public function getApiSpecFragment();
 }

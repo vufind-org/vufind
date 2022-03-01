@@ -309,7 +309,7 @@
       <filterchain>
         <replaceregexp>
           <regexp pattern="defaultModelRendering: 'schema'" replace="defaultModelRendering: 'model'" />
-          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?swagger&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
