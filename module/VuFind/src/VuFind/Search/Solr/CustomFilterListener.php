@@ -122,33 +122,31 @@ class CustomFilterListener
     public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getContext() !== 'search') {
-            return $event;
-        }
-        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
-            if ($params = $command->getSearchParameters()) {
-                $invertedFiltersMatched = [];
-                $finalFilters = [];
-                foreach ($params->get($this->filterParam) ?? [] as $filter) {
-                    if (isset($this->invertedFilters[$filter])) {
-                        // Make note of matched inverted filters for later:
-                        $invertedFiltersMatched[$filter] = true;
-                    } elseif (isset($this->normalFilters[$filter])) {
-                        // Translate normal custom filters:
-                        $finalFilters[] = $this->normalFilters[$filter];
-                    } else {
-                        // Keep all unmatched filters:
-                        $finalFilters[] = $filter;
-                    }
+        if ($command->getContext() === 'search'
+            && $command->getTargetIdentifier() === $this->backend->getIdentifier()
+            && ($params = $command->getSearchParameters())
+        ) {
+            $invertedFiltersMatched = [];
+            $finalFilters = [];
+            foreach ($params->get($this->filterParam) ?? [] as $filter) {
+                if (isset($this->invertedFilters[$filter])) {
+                    // Make note of matched inverted filters for later:
+                    $invertedFiltersMatched[$filter] = true;
+                } elseif (isset($this->normalFilters[$filter])) {
+                    // Translate normal custom filters:
+                    $finalFilters[] = $this->normalFilters[$filter];
+                } else {
+                    // Keep all unmatched filters:
+                    $finalFilters[] = $filter;
                 }
-                // Now apply any inverted filters that were not matched above:
-                foreach ($this->invertedFilters as $placeholder => $result) {
-                    if (!($invertedFiltersMatched[$placeholder] ?? false)) {
-                        $finalFilters[] = $result;
-                    }
-                }
-                $params->set($this->filterParam, $finalFilters);
             }
+            // Now apply any inverted filters that were not matched above:
+            foreach ($this->invertedFilters as $placeholder => $result) {
+                if (!($invertedFiltersMatched[$placeholder] ?? false)) {
+                    $finalFilters[] = $result;
+                }
+            }
+            $params->set($this->filterParam, $finalFilters);
         }
         return $event;
     }

@@ -116,6 +116,48 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that we don't apply changes to the wrong backend.
+     *
+     * @return void
+     */
+    public function testMismatchedBackendIsIgnored(): void
+    {
+        $normal = [
+            '__custom__:"normal"' => "field1:normal OR field2:alsoNormal",
+        ];
+        $listener = $this->getListener($normal);
+        $params = new ParamBag(['fq' => ['foo:"bar"', '__custom__:"normal"']]);
+        $command = $this->getMockSearchCommand($params, 'search', 'Search2');
+        $event = new Event(null, null, compact('command'));
+        $listener->onSearchPre($event);
+        $this->assertEquals(
+            ['foo:"bar"', '__custom__:"normal"'],
+            $params->get('fq')
+        );
+    }
+
+    /**
+     * Test that we don't apply changes to the wrong context.
+     *
+     * @return void
+     */
+    public function testWrongContextIsIgnored(): void
+    {
+        $normal = [
+            '__custom__:"normal"' => "field1:normal OR field2:alsoNormal",
+        ];
+        $listener = $this->getListener($normal);
+        $params = new ParamBag(['fq' => ['foo:"bar"', '__custom__:"normal"']]);
+        $command = $this->getMockSearchCommand($params, 'weird', 'Solr');
+        $event = new Event(null, null, compact('command'));
+        $listener->onSearchPre($event);
+        $this->assertEquals(
+            ['foo:"bar"', '__custom__:"normal"'],
+            $params->get('fq')
+        );
+    }
+
+    /**
      * Test inverted filter functionality (part 1) -- if the inverted filter is
      * not set, the filter should be applied.
      *
