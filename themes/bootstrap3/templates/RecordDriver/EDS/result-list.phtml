@@ -54,6 +54,8 @@
         <?php endif; ?>
 
       <div class="resultItemLine4 custom-links">
+        <?=$this->record($this->driver)->getLabelList() ?>
+
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
         if (!empty($customLinks)): ?>
           <?php foreach ($customLinks as $customLink): ?>

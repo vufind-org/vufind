@@ -1,10 +1,10 @@
 <?php
 /**
- * A minimal record class for wrapping an array of fields
+ * Blender aspect of the Search Multi-class (Options)
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,61 +20,57 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Sitemap
+ * @package  Search_Solr
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFindSearch\Response;
+namespace VuFind\Search\Blender;
 
 /**
- * A minimal record class for wrapping an array of fields
+ * Blender Search Options
  *
  * @category VuFind
- * @package  Sitemap
+ * @package  Search_Solr
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SimpleRecord implements RecordInterface
+class Options extends \VuFind\Search\Solr\Options
 {
-    use \VuFindSearch\Response\RecordTrait;
-
-    /**
-     * Field data
-     *
-     * @var array
-     */
-    protected $fields = [];
-
-    /**
-     * Labels for the record
-     *
-     * @var array
-     */
-    protected $labels = [];
-
     /**
      * Constructor
      *
-     * @param array $fields Raw data
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct($fields)
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        $this->fields = $fields;
-        $this->sourceIdentifier = $this->searchBackendIdentifier
-            = DEFAULT_SEARCH_BACKEND;
+        $this->facetsIni = $this->searchIni = 'Blender';
+        parent::__construct($configLoader);
+        // Make sure first-last navigation is never enabled since we cannot support:
+        $this->firstlastNavigation = false;
     }
 
     /**
-     * Get field contents.
+     * Return the route name for the search results action.
      *
-     * @param string $field Field to get
-     *
-     * @return mixed
+     * @return string
      */
-    public function get($field)
+    public function getSearchAction()
     {
-        return $this->fields[$field] ?? null;
+        return 'search-blended';
+    }
+
+    /**
+     * Return the route name of the action used for performing advanced searches.
+     * Returns false if the feature is not supported.
+     *
+     * @return string|bool
+     */
+    public function getAdvancedSearchAction()
+    {
+        return false;
     }
 }

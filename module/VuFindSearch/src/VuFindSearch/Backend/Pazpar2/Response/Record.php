@@ -42,26 +42,14 @@ use VuFindSearch\Response\RecordInterface;
  */
 class Record implements RecordInterface
 {
+    use \VuFindSearch\Response\RecordTrait;
+
     /**
      * XML record.
      *
      * @var SimpleXMLElement
      */
     protected $xml;
-
-    /**
-     * Source identifier.
-     *
-     * @var string
-     */
-    protected $sourceIdentifier;
-
-    /**
-     * Used for identifying the search backend used to find the record
-     *
-     * @var string
-     */
-    protected $searchBackendIdentifier = 'Pazpar2';
 
     /**
      * Constructor.
@@ -73,53 +61,7 @@ class Record implements RecordInterface
     public function __construct(SimpleXMLElement $xml)
     {
         $this->xml = $xml;
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     * @deprecated Use setSourceIdentifiers instead
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        $this->setSourceIdentifiers($identifier, $identifier);
-    }
-
-    /**
-     * Set the source backend identifiers.
-     *
-     * @param string $recordSourceId  Record source identifier
-     * @param string $searchBackendId Search backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId)
-    {
-        $this->sourceIdentifier = $recordSourceId;
-        $this->searchBackendIdentifier = $searchBackendId;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier()
-    {
-        return $this->source;
-    }
-
-    /**
-     * Return the search backend identifier used to find the record.
-     *
-     * @return string
-     */
-    public function getSearchBackendIdentifier()
-    {
-        return $this->searchBackendIdentifier;
+        $this->sourceIdentifier = $this->searchBackendIdentifier = 'Pazpar2';
     }
 
     /**

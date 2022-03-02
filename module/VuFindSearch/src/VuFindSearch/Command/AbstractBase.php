@@ -107,6 +107,18 @@ abstract class AbstractBase implements CommandInterface
     }
 
     /**
+     * Set target backend identifier.
+     *
+     * @param string $identifier New identifier
+     *
+     * @return void
+     */
+    public function setTargetIdentifier(string $identifier): void
+    {
+        $this->backendId = $identifier;
+    }
+
+    /**
      * Save a result, flag the command as executed, and return the command object;
      * useful as the final step in execute() implementations.
      *

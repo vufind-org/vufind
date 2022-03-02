@@ -65,6 +65,13 @@ interface RecordCollectionInterface extends \Countable, \Iterator
     public function getRecords();
 
     /**
+     * Return any errors.
+     *
+     * @return array
+     */
+    public function getErrors();
+
+    /**
      * Return offset in the total search result set.
      *
      * @return int
@@ -84,6 +91,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @param string $identifier Backend identifier
      *
      * @return void
+     *
      * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier);

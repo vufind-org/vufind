@@ -164,7 +164,9 @@ VuFind.register('sideFacets', function SideFacets() {
     // if the data element is undefined, we assume we are handling a click.
     var href = typeof data === "undefined" || typeof data.node.data.url === "undefined"
       ? $(this).attr('href') : data.node.data.url;
-    window.location.assign(href);
+    if (typeof href !== 'undefined') {
+      window.location.assign(href);
+    }
     return false;
   }
 

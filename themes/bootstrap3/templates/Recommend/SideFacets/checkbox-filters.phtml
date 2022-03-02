@@ -1,6 +1,18 @@
 <?php foreach ($checkboxFilters as $current): ?>
-  <div class="facet" >
-    <a class="checkbox-filter<?php if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?>" href="<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
+  <div class="facet">
+    <?php
+      $classes = [];
+      if (!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])) {
+        $classes[] = 'hidden';
+      }
+      if (!empty($current['disabled'])) {
+        $href = '';
+        $classes[] = 'disabled';
+      } else {
+        $href = 'href="' . ($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])) . '"';
+      }
+    ?>
+    <a class="checkbox-filter <?=implode(' ', $classes)?>" <?=$href ?: 'aria-disabled="true"'?> data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
       <?php if ($current['selected']): ?>
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
       <?php endif; ?>

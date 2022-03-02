@@ -46,20 +46,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Used for identifying record source backend
-     *
-     * @var string
-     */
-    protected $sourceIdentifier = 'Solr';
-
-    /**
-     * Used for identifying the search backend used to find the record
-     *
-     * @var string
-     */
-    protected $searchBackendIdentifier = 'Solr';
+    use \VuFindSearch\Response\RecordTrait;
 
     /**
      * For storing extra data with record
@@ -90,13 +77,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     protected $fields = [];
 
     /**
-     * Labels for the record
-     *
-     * @var array
-     */
-    protected $labels = [];
-
-    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
@@ -108,6 +88,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig ?? $mainConfig;
+        $this->sourceIdentifier = $this->searchBackendIdentifier = 'Solr';
     }
 
     /**
@@ -289,53 +270,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $this->getSourceIdentifier(),
             $user_id
         );
-    }
-
-    /**
-     * Set the record source backend identifier.
-     *
-     * @param string $identifier Record source identifier
-     *
-     * @return void
-     * @deprecated Use setSourceIdentifiers instead
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        $this->setSourceIdentifiers($identifier, $identifier);
-    }
-
-    /**
-     * Set the source backend identifiers.
-     *
-     * @param string $recordSourceId  Record source identifier
-     * @param string $searchBackendId Search backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId)
-    {
-        $this->sourceIdentifier = $recordSourceId;
-        $this->searchBackendIdentifier = $searchBackendId;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier()
-    {
-        return $this->sourceIdentifier;
-    }
-
-    /**
-     * Return the search backend identifier used to find the record.
-     *
-     * @return string
-     */
-    public function getSearchBackendIdentifier()
-    {
-        return $this->searchBackendIdentifier;
     }
 
     /**

@@ -123,6 +123,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      * @param string $identifier Backend identifier
      *
      * @return void
+     *
      * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier)
