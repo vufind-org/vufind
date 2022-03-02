@@ -32,6 +32,7 @@ use Interop\Container\ContainerInterface;
 
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
@@ -279,6 +280,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $filterFieldConversionListener->attach($events);
         }
 
+        // Attach custom filter listener if needed:
+        if ($cfListener = $this->getCustomFilterListener($backend, $facets)) {
+            $cfListener->attach($events);
+        }
+    
         // Attach hide facet value listener:
         if ($hfvListener = $this->getHideFacetValueListener($backend, $facet)) {
             $hfvListener->attach($events);
@@ -481,6 +487,31 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             'datasources',
             $enabled
         );
+    }
+
+    /**
+     * Get a custom filter listener for the backend (or null if not needed).
+     *
+     * @param BackendInterface $backend Search backend
+     * @param Config           $facet   Configuration of facets
+     *
+     * @return mixed null|CustomFilterListener
+     */
+    protected function getCustomFilterListener(
+        BackendInterface $backend,
+        Config $facet
+    ) {
+        $customField = $facet->CustomFilters->custom_filter_field ?? '__custom__';
+        $normal = $inverted = [];
+        foreach ($facet->CustomFilters->translated_filters as $value => $filter) {
+            $normal[$customField . ':"' . $value . '"'] = $filter;
+        }
+        foreach ($facet->CustomFilters->inverted_filters as $value => $filter) {
+            $inverted[$customField . ':"' . $value . '"'] = $filter;
+        }
+        return empty($normal) && empty($inverted)
+            ? null
+            : new CustomFilterListener($backend, $normal, $inverted);
     }
 
     /**
