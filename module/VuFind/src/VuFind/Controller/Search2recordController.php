@@ -48,7 +48,7 @@ class Search2recordController extends AbstractRecord
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->searchClassId = 'Search2';
+        $this->sourceId = 'Search2';
         $this->fallbackDefaultTab = 'Description';
         parent::__construct($sm);
     }

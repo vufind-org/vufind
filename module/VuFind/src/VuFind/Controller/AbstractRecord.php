@@ -83,7 +83,7 @@ class AbstractRecord extends AbstractBase
      *
      * @var string
      */
-    protected $searchClassId = 'Solr';
+    protected $sourceId = 'Solr';
 
     /**
      * Record driver
@@ -102,8 +102,9 @@ class AbstractRecord extends AbstractBase
     protected function createViewModel($params = null)
     {
         $view = parent::createViewModel($params);
-        $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
         $view->driver = $this->loadRecord();
+        $this->layout()->searchClassId = $view->searchClassId
+            = $view->driver->getSearchBackendIdentifier();
         return $view;
     }
 
@@ -687,7 +688,7 @@ class AbstractRecord extends AbstractBase
             }
             $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
-                $this->searchClassId,
+                $this->sourceId,
                 false,
                 $params
             );
