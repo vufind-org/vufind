@@ -82,7 +82,10 @@ class CustomFilterListener
     /**
      * Constructor.
      *
-     * @param BackendInterface $backend Backend
+     * @param BackendInterface $backend  Backend
+     * @param array            $normal   Normal custom filters (placeholder => full
+     * filter)
+     * @param array            $inverted Inverted custom filters (applied unless set)
      *
      * @return void
      */
