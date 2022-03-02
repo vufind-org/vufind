@@ -284,7 +284,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if ($cfListener = $this->getCustomFilterListener($backend, $facets)) {
             $cfListener->attach($events);
         }
-    
+
         // Attach hide facet value listener:
         if ($hfvListener = $this->getHideFacetValueListener($backend, $facet)) {
             $hfvListener->attach($events);
