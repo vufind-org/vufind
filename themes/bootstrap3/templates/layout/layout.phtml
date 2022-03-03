@@ -116,6 +116,9 @@ JS;
       <?php endif; ?>
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
+      <div id="browser-outdated" class="container-fluid system-message hidden">
+        <?=$this->translate('outdated_browser_message_html');?>
+      </div>
     </header>
     <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
       <div class="container">

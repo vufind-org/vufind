@@ -34,6 +34,19 @@
   }
 }
 
+// General purpose system message style
+.system-message {
+  background-color: @state-warning-bg;
+  padding-top: 0.6em;
+  padding-bottom: 0.6em;
+  text-align: center;
+  z-index: 1;
+  @media (max-width: @grid-float-breakpoint) {
+    position: relative;
+    top: @navbar-height;
+  }
+}
+
 // Dismissible alerts
 //
 // Expand the right padding and account for the close button's positioning.

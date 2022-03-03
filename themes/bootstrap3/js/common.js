@@ -479,7 +479,40 @@ function setupQRCodeLinks(_container) {
   });
 }
 
+/**
+ * Function to check if browser supports current js.
+ */
+function checkForBrowserSupport() {
+  /* jshint ignore:start */
+  /* eslint-disable */
+  try {
+    // Arrow functions support
+    () => { };
+    // Class support
+    class __ES6FeatureDetectionTest { };
+    // Object initializer property and method shorthands
+    let a = true;
+    let b = { 
+      a,
+      c() { return true; },
+      d: [1, 2, 3],
+    };
+    // Object destructuring
+    let {c, d} = b;
+    // Spread operator
+    let e = [...d, 4];
+  } catch (exception) {
+    var outdated = document.getElementById('browser-outdated');
+    if (outdated) {
+      outdated.classList.remove('hidden');
+    }
+  }
+  /* eslint-enable */
+  /* jshint ignore:end */
+}
+
 $(document).ready(function commonDocReady() {
+  checkForBrowserSupport();
   // Start up all of our submodules
   VuFind.init();
   // Setup search autocomplete
