@@ -123,7 +123,7 @@ JS;
     </nav>
     <div role="main" class="main">
       <div id="content" class="container">
-        <?=$this->layout()->content?>
+        <?=$this->layout()->content ?>
       </div>
     </div>
     <?=$this->render('footer.phtml')?>
@@ -139,9 +139,9 @@ JS;
       </div>
     </div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
-    <?=$this->googleanalytics() ?>
-    <?=$this->piwik() ?>
-    <?=$this->matomo() ?>
+    <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
+    <?=$this->matomo()?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
     <?php endforeach; ?>
