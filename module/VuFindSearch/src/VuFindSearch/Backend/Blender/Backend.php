@@ -145,18 +145,20 @@ class Backend extends AbstractBackend
 
         // Handle the blender_backend pseudo-facet
         $fq = $params->get('fq');
+        $filteredActiveBackends = [];
         foreach ($fq ?? [] as $key => $current) {
             if (strncmp($current, 'blender_backend:', 16) === 0) {
-                $active = substr($current, 16);
+                $active = trim(substr($current, 16), '"');
                 if (!isset($activeBackends[$active])) {
                     throw new \Exception("Invalid blender_backend filter: $active");
                 }
-                $activeBackends = [
-                    $active => $activeBackends[$active]
-                ];
+                $filteredActiveBackends[$active] = $activeBackends[$active];
                 unset($fq[$key]);
                 $params->set('fq', $fq);
             }
+        }
+        if ($filteredActiveBackends) {
+            $activeBackends = $filteredActiveBackends;
         }
         $facetFields = $params->get('facet.field');
         foreach ($facetFields ?? [] as $key => $current) {

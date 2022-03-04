@@ -291,32 +291,4 @@ class Params extends \VuFind\Search\Solr\Params
 
         return $resultValues;
     }
-
-    /**
-     * Get information on the current state of the boolean checkbox facets.
-     *
-     * @param array $allowed List of checkbox filters to return (null for all)
-     *
-     * @return array
-     */
-    public function getCheckboxFacets(array $allowed = null)
-    {
-        $facets = parent::getCheckboxFacets($allowed);
-
-        // Mark other backend filters disabled if one is enabled
-        foreach ($facets as $details) {
-            [$field] = $this->parseFilter($details['filter']);
-            if ('blender_backend' === $field && $details['selected']) {
-                foreach ($facets as $key => $current) {
-                    [$field] = $this->parseFilter($current['filter']);
-                    if ('blender_backend' === $field && !$current['selected']) {
-                        $facets[$key]['disabled'] = true;
-                    }
-                }
-                break;
-            }
-        }
-
-        return $facets;
-    }
 }
