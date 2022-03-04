@@ -501,6 +501,7 @@ function checkForBrowserSupport() {
     let {c, d} = b;
     // Spread operator
     let e = [...d, 4];
+    a = e || c;
   } catch (exception) {
     var outdated = document.getElementById('browser-outdated');
     if (outdated) {
