@@ -500,7 +500,7 @@ function checkForBrowserSupport() {
     // Object destructuring
     let {c, d} = b;
     // Spread operator
-    let e = [...d, 4, c]; // lgtm [js/unused-local-variable]
+    [...d, 4, c];
   } catch (exception) {
     var outdated = document.getElementById('browser-outdated');
     if (outdated) {
