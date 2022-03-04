@@ -74,7 +74,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             $this->recordFactory = $recordFactory;
         }
         $this->collectionClass = null === $collectionClass
-            ? 'VuFindSearch\Backend\Blender\Response\Json\RecordCollection'
+            ? \VuFindSearch\Backend\Blender\Response\Json\RecordCollection::class
             : $collectionClass;
     }
 
@@ -96,10 +96,8 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             );
         }
         $collection = new $this->collectionClass($response);
-        if (isset($response['response']['docs'])) {
-            foreach ($response['response']['docs'] as $doc) {
-                $collection->add(call_user_func($this->recordFactory, $doc));
-            }
+        foreach ($response['response']['docs'] ?? [] as $doc) {
+            $collection->add(call_user_func($this->recordFactory, $doc));
         }
         return $collection;
     }
