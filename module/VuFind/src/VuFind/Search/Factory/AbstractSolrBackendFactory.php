@@ -503,11 +503,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     ) {
         $customField = $facet->CustomFilters->custom_filter_field ?? 'vufind';
         $normal = $inverted = [];
-        foreach ($facet->CustomFilters->translated_filters as $value => $filter) {
-            $normal[$customField . ':"' . $value . '"'] = $filter;
+
+        foreach ($facet->CustomFilters->translated_filters ?? [] as $key => $val) {
+            $normal[$customField . ':"' . $key . '"'] = $val;
         }
-        foreach ($facet->CustomFilters->inverted_filters as $value => $filter) {
-            $inverted[$customField . ':"' . $value . '"'] = $filter;
+        foreach ($facet->CustomFilters->inverted_filters ?? [] as $key => $val) {
+            $inverted[$customField . ':"' . $key . '"'] = $val;
         }
         return empty($normal) && empty($inverted)
             ? null
