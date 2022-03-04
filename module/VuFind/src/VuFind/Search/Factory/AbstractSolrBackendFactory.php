@@ -501,7 +501,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         BackendInterface $backend,
         Config $facet
     ) {
-        $customField = $facet->CustomFilters->custom_filter_field ?? '__custom__';
+        $customField = $facet->CustomFilters->custom_filter_field ?? 'vufind';
         $normal = $inverted = [];
         foreach ($facet->CustomFilters->translated_filters as $value => $filter) {
             $normal[$customField . ':"' . $value . '"'] = $filter;

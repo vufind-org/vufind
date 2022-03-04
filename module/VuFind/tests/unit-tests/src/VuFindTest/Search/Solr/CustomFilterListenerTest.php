@@ -102,10 +102,10 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testRemapping(): void
     {
         $normal = [
-            '__custom__:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
         ];
         $listener = $this->getListener($normal);
-        $params = new ParamBag(['fq' => ['foo:"bar"', '__custom__:"normal"']]);
+        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
         $command = $this->getMockSearchCommand($params, 'search', 'Solr');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
@@ -123,15 +123,15 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testMismatchedBackendIsIgnored(): void
     {
         $normal = [
-            '__custom__:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
         ];
         $listener = $this->getListener($normal);
-        $params = new ParamBag(['fq' => ['foo:"bar"', '__custom__:"normal"']]);
+        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
         $command = $this->getMockSearchCommand($params, 'search', 'Search2');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
-            ['foo:"bar"', '__custom__:"normal"'],
+            ['foo:"bar"', 'vufind:"normal"'],
             $params->get('fq')
         );
     }
@@ -144,15 +144,15 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testWrongContextIsIgnored(): void
     {
         $normal = [
-            '__custom__:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
         ];
         $listener = $this->getListener($normal);
-        $params = new ParamBag(['fq' => ['foo:"bar"', '__custom__:"normal"']]);
+        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
         $command = $this->getMockSearchCommand($params, 'weird', 'Solr');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
-            ['foo:"bar"', '__custom__:"normal"'],
+            ['foo:"bar"', 'vufind:"normal"'],
             $params->get('fq')
         );
     }
@@ -166,7 +166,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testMissingInvertedFilterAddsContent(): void
     {
         $inverted = [
-            '__custom__:"inverted"' => 'field3:invertedFilter',
+            'vufind:"inverted"' => 'field3:invertedFilter',
         ];
         $listener = $this->getListener([], $inverted);
         $params = new ParamBag(['fq' => ['foo:"bar"']]);
@@ -188,10 +188,10 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testInvertedFilterPreventsAdditionOfContent(): void
     {
         $inverted = [
-            '__custom__:"inverted"' => 'field3:invertedFilter',
+            'vufind:"inverted"' => 'field3:invertedFilter',
         ];
         $listener = $this->getListener([], $inverted);
-        $params = new ParamBag(['fq' => ['foo:"bar"', '__custom__:"inverted"']]);
+        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"inverted"']]);
         $command = $this->getMockSearchCommand($params, 'search', 'Solr');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
