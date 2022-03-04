@@ -217,7 +217,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Return record field specs for the Swagger specification
+     * Return record field specs for the API specification
      *
      * @return array
      */

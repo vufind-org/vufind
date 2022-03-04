@@ -531,6 +531,14 @@ class AbstractRecord extends AbstractBase
         $view->useCaptcha = $this->captcha()->active('sms');
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+            // Do CSRF check
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');

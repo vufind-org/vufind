@@ -67,7 +67,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
     /**
      * Index action
      *
-     * Return Swagger specification or redirect to Swagger UI
+     * Return API specification or redirect to Swagger UI
      *
      * @return \Laminas\Http\Response
      */
@@ -76,11 +76,12 @@ class ApiController extends \VuFind\Controller\AbstractBase
         // Disable session writes
         $this->disableSessionWrites();
 
-        if (null === $this->getRequest()->getQuery('swagger')) {
+        if (null === $this->getRequest()->getQuery('swagger')
+            && null === $this->getRequest()->getQuery('openapi')
+        ) {
             $urlHelper = $this->getViewRenderer()->plugin('url');
             $base = rtrim($urlHelper('home'), '/');
-            $url = "$base/swagger-ui/?url="
-                . urlencode("$base/api?swagger");
+            $url = "$base/swagger-ui/?url=" . urlencode("$base/api?openapi");
             return $this->redirect()->toUrl($url);
         }
         $response = $this->getResponse();
@@ -92,18 +93,18 @@ class ApiController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Get Swagger specification JSON fragment for the root nodes
+     * Get API specification JSON fragment for the root nodes
      *
      * @return string
      */
-    protected function getSwaggerSpecFragment()
+    protected function getApiSpecFragment()
     {
         $config = $this->getConfig();
         $params = [
             'config' => $config,
             'version' => \VuFind\Config\Version::getBuildVersion()
         ];
-        return $this->getViewRenderer()->render('api/swagger', $params);
+        return $this->getViewRenderer()->render('api/openapi', $params);
     }
 
     /**
@@ -116,17 +117,24 @@ class ApiController extends \VuFind\Controller\AbstractBase
         $results = [];
 
         foreach (array_merge([$this], $this->apiControllers) as $controller) {
-            $api = $controller->getSwaggerSpecFragment();
+            $api = $controller->getApiSpecFragment();
             $specs = json_decode($api, true);
             if (null === $specs) {
                 throw new \Exception(
-                    'Could not parse Swagger spec fragment of '
-                    . get_class($controller)
+                    'Could not parse API spec fragment of '
+                    . get_class($controller) . ': ' . json_last_error_msg()
                 );
             }
             foreach ($specs as $key => $spec) {
                 if (isset($results[$key])) {
-                    $results[$key] = array_merge($results[$key], $spec);
+                    if ('components' === $key) {
+                        $results['components']['schemas'] = array_merge(
+                            $results['components']['schemas'] ?? [],
+                            $spec['schemas'] ?? []
+                        );
+                    } else {
+                        $results[$key] = array_merge($results[$key], $spec);
+                    }
                 } else {
                     $results[$key] = $spec;
                 }

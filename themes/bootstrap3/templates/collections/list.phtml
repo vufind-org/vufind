@@ -4,7 +4,7 @@
       <strong><?=$this->escapeHtml($item['displayText'])?></strong>
       <span class="badge">
         <?=$item['count']?> <?=$this->transEsc('items')?>
-        <?=$this->icon('more', ['title' => $this->transEscAttr('Find More')]) ?>
+        <?=$this->icon('page-next', ['title' => $this->translate('Find More')]) ?>
       </span>
     </a>
   <?php endforeach; ?>
