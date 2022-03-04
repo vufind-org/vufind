@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Simple JSON-based record collection.
+ * JSON-based record collection for records from multiple sources.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,11 +29,11 @@
  */
 namespace VuFindSearch\Backend\Blender\Response\Json;
 
+use VuFindSearch\Backend\EDS\Response\RecordCollection as EDSRecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
-use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
- * Simple JSON-based record collection.
+ * JSON-based record collection for records from multiple sources.
  *
  * @category VuFind
  * @package  Search
@@ -60,6 +60,13 @@ class RecordCollection
     protected $mappings;
 
     /**
+     * Backends to be used for initial results
+     *
+     * @var array
+     */
+    protected $initialResults;
+
+    /**
      * Any errors encountered
      *
      * @var array
@@ -77,138 +84,96 @@ class RecordCollection
         $this->config = $config;
         $this->mappings = $mappings;
         $this->response = static::$template;
+        $this->initialResults = isset($this->config['Blending']['initialResults'])
+            ? $this->config['Blending']['initialResults']->toArray()
+            : [];
     }
 
     /**
      * Initialize blended results
      *
-     * @param RecordCollectionInterface $primaryCollection   Primary record
-     * collection
-     * @param RecordCollectionInterface $secondaryCollection Secondary record
-     * collection
-     * @param int                       $offset              Results list offset
-     * @param int                       $limit               Result limit
-     * @param int                       $blockSize           Record block size
+     * Creates a record list from 0 to $limit
      *
-     * @return void
+     * @param array $collections Array of record collections
+     * @param int   $limit       Result limit
+     * @param int   $blockSize   Blending block size
+     *
+     * @return array Remaining records keyed by backend identifier
      */
     public function initBlended(
-        RecordCollectionInterface $primaryCollection = null,
-        RecordCollectionInterface $secondaryCollection = null,
-        $offset,
-        $limit,
-        $blockSize
-    ) {
+        array $collections,
+        int $limit,
+        int $blockSize
+    ): array {
         $this->response = static::$template;
-        $this->response['response']['numFound']
-            = ($primaryCollection ? $primaryCollection->getTotal() : 0)
-            + ($secondaryCollection ? $secondaryCollection->getTotal() : 0);
-        $this->offset = $this->response['response']['start'] = $offset;
+        foreach ($collections as $collection) {
+            $this->response['response']['numFound'] += $collection->getTotal();
+        }
         $this->rewind();
 
-        $primaryRecords = $primaryCollection ? $primaryCollection->getRecords() : [];
-        $secondaryRecords = $secondaryCollection
-            ? $secondaryCollection->getRecords() : [];
+        $backendRecords = [];
+        foreach ($collections as $backendId => $collection) {
+            $records = $collection->getRecords();
+            $label = $this->config['Backends'][$backendId];
+            foreach ($records as $record) {
+                $record->setSourceIdentifiers(
+                    $record->getSourceIdentifier(),
+                    $backendId
+                );
+                if ($label) {
+                    $record->addLabel($label, 'source');
+                }
+                $backendRecords[$backendId][] = $record;
+            }
 
-        $label = $this->config['Primary']['label'] ?? '';
-        foreach ($primaryRecords as &$record) {
-            $record->setExtraDetail('blendSource', 'primary');
-            $record->setSourceIdentifiers(
-                $record->getSourceIdentifier(),
-                $primaryCollection->getSourceIdentifier()
-            );
-            if ($label) {
-                $record->addLabel($label, 'source');
+            foreach ($collection->getErrors() as $error) {
+                $this->addError($error);
             }
         }
-        unset($record);
-
-        $label = $this->config['Secondary']['label'] ?? '';
-        foreach ($secondaryRecords as &$record) {
-            $record->setExtraDetail('blendSource', 'secondary');
-            $record->setSourceIdentifiers(
-                $record->getSourceIdentifier(),
-                $secondaryCollection->getSourceIdentifier()
-            );
-            if ($label) {
-                $record->addLabel($label, 'source');
-            }
-        }
-        unset($record);
 
         $records = [];
-        for ($pos = 0; $pos <= $offset + $limit; $pos++) {
-            if ($this->isPrimaryAtOffset($pos, $blockSize) && $primaryRecords) {
-                $records[] = array_shift($primaryRecords);
-            } elseif ($secondaryRecords) {
-                $records[] = array_shift($secondaryRecords);
+        $backendIds = array_keys($backendRecords);
+        for ($pos = 0; $pos < $limit; $pos++) {
+            $backendId = $this->getBackendAtPosition($pos, $blockSize, $backendIds);
+            if (!empty($backendRecords[$backendId])) {
+                $this->add(array_shift($backendRecords[$backendId]), false);
             }
         }
 
-        $this->records = array_slice(
-            $records,
-            $offset,
-            $limit
-        );
+        $this->mergeFacets($collections);
 
-        $this->mergeFacets($primaryCollection, $secondaryCollection);
-
-        if (null === $primaryCollection || null === $secondaryCollection) {
-            $this->errors = ['search_backend_partial_failure'];
-        } else {
-            $this->errors = array_merge(
-                $primaryCollection->getErrors(),
-                $secondaryCollection->getErrors()
-            );
-            if ($this->errors
-                && !($primaryCollection->getErrors()
-                && $secondaryCollection->getErrors())
-            ) {
-                array_unshift($this->errors, 'search_backend_partial_failure');
-            }
-        }
+        return $backendRecords;
     }
 
     /**
-     * Calculate if the record at given offset should be from the primary source
+     * Slice the record collection
      *
-     * Note: This does not take into account whether there are enough records in the
-     * source.
+     * @param int $offset Offset
+     * @param int $limit  Limit
      *
-     * @param int $offset    Offset
-     * @param int $blockSize Record block size
-     *
-     * @return int
+     * @return void
      */
-    public function isPrimaryAtOffset($offset, $blockSize)
+    public function slice(int $offset, int $limit): void
     {
-        // Account for configuration being 1-based
-        $boostPos = ($this->config['Blending']['boostPosition'] ?? $blockSize) - 1;
-        $boostCount = $this->config['Blending']['boostCount'] ?? 0;
-        $maxBoostedPos = $boostPos + $boostCount;
-        $maxAffectedPos = ceil($maxBoostedPos / $blockSize) * $blockSize
-            + $boostCount - 1;
-        if ($offset < $boostPos
-            || 0 === $boostCount
-            || $offset > $maxAffectedPos
-            || $maxBoostedPos > $blockSize
-        ) {
-            // We're outside the blocks affected by boosting, calculate by block
-            $currentBlock = floor($offset / $blockSize);
-            return $currentBlock % 2 === 0;
-        }
+        $this->records = array_slice(
+            $this->records,
+            $offset,
+            $limit
+        );
+    }
 
-        // Check if we're in a boost block
-        if ($boostCount > 0
-            && $offset >= $boostPos && $offset < $boostPos + $boostCount
-        ) {
-            return false;
+    /**
+     * Add an error message
+     *
+     * @param string $error Error message
+     *
+     * @return void
+     */
+    public function addError(string $error): void
+    {
+        if (!in_array($error, $this->errors)) {
+            $this->errors[] = $error;
         }
-        // Check if we're in the first primary block
-        if ($offset < $blockSize + $boostCount) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -234,84 +199,106 @@ class RecordCollection
     }
 
     /**
+     * Calculate the backend to be used for the record at a given position
+     *
+     * Note: This does not take into account whether there are enough records in the
+     * source.
+     *
+     * @param int   $position   Position
+     * @param int   $blockSize  Record block size
+     * @param array $backendIds Available backends
+     *
+     * @return string
+     */
+    protected function getBackendAtPosition(
+        int $position,
+        int $blockSize,
+        array $backendIds
+    ): string {
+        if (isset($this->initialResults[$position])) {
+            return $this->initialResults[$position];
+        }
+
+        // We're outside the blocks affected by boosting, calculate by block
+        $currentBlock = floor($position / $blockSize);
+        $backendCount = count($backendIds);
+        return $backendIds[$currentBlock % $backendCount];
+    }
+
+    /**
      * Merge facets
      *
-     * @param RecordCollectionInterface $primaryCollection   Primary record
-     * collection
-     * @param RecordCollectionInterface $secondaryCollection Secondary record
-     * collection
+     * @param array $collections Result collections
      *
      * @return void
      */
-    protected function mergeFacets(
-        $primaryCollection = null,
-        $secondaryCollection = null
-    ) {
-        $facets = $primaryCollection ? $primaryCollection->getFacets() : [];
-        if ($facets instanceof Facets) {
-            $facets = $facets->getFieldFacets();
-        }
-        $secondary = $secondaryCollection ? $secondaryCollection->getFacets() : [];
-        if ($secondary instanceof \VuFindSearch\Backend\Solr\Response\Json\Facets) {
-            $secondary = $secondary->getFieldFacets();
-        }
-        foreach ($facets as $facet => &$values) {
-            if (is_object($values)) {
-                $values = $values->toArray();
-            }
-        }
-        unset($values);
+    protected function mergeFacets(array $collections): void
+    {
+        $mergedFacets = [];
 
-        // Iterate through mappings and merge secondary values.
-        // It is vital to do it this way since multiple facets may map to a secondary
-        // facet in checkbox facets.
-        foreach ($this->mappings['Facets'] as $facet => $settings) {
-            $secondaryFacet = $settings['Secondary'];
-            $mappings = $settings['Values'] ?? [];
-            $facetType = $settings['Type'] ?? '';
-
-            $values = $secondary[$secondaryFacet] ?? [];
-            if (is_object($values)) {
-                $values = $values->toArray();
-            }
-            if (empty($values)) {
-                continue;
-            }
-
-            $list = $facets[$facet] ?? [];
-            foreach ($values as $field => $count) {
-                if (isset($mappings[$field])) {
-                    $field = $mappings[$field];
-                    if ('boolean' === $facetType) {
-                        $field = $field ? 'true' : 'false';
+        // Iterate through mappings and merge values. It is important to do it this
+        // way since multiple facets may to a single one.
+        foreach ($this->mappings['Facets']['Fields'] as $facetField => $settings) {
+            $list = [];
+            foreach ($collections as $backendId => $collection) {
+                $facets = $collection->getFacets();
+                if ($facets instanceof Facets) {
+                    $facets = $facets->getFieldFacets();
+                } elseif ($collection instanceof EDSRecordCollection) {
+                    // Convert EDS facets:
+                    $converted = [];
+                    foreach ($facets as $field => $facetData) {
+                        $valueCounts = [];
+                        foreach ($facetData['counts'] as $count) {
+                            $valueCounts[$count['displayText']] = $count['count'];
+                        }
+                        $converted[$field] = $valueCounts;
                     }
-                } elseif ('hierarchical' === $facetType) {
-                    $field = "0/$field/";
-                } elseif ('boolean' === $facetType) {
-                    // No mapping for boolean facet, ignore the value
+                    $facets = $converted;
+                }
+
+                $facetType = $settings['Type'] ?? 'normal';
+                if (!($mappings = $settings['Mappings'][$backendId] ?? [])) {
                     continue;
                 }
-                if (isset($list[$field])) {
-                    $list[$field] += $count;
-                } else {
-                    $list[$field] = $count;
-                }
+                $backendFacetField = $mappings['Field'];
+                $valueMap = $mappings['Values'] ?? [];
 
-                if ('hierarchical' === $facetType) {
-                    $parts = explode('/', $field);
-                    $level = array_shift($parts);
-                    for ($i = $level - 1; $i >= 0; $i--) {
-                        $key = $i . '/'
-                            . implode('/', array_slice($parts, 0, $i + 1))
-                            . '/';
-                        if (isset($list[$key])) {
-                            $list[$key] += $count;
-                        } else {
-                            $list[$key] = $count;
+                foreach ($facets[$backendFacetField] ?? [] as $field => $count) {
+                    if (isset($valueMap[$field])) {
+                        $field = $valueMap[$field];
+                        if ('boolean' === $facetType) {
+                            $field = $field ? 'true' : 'false';
+                        }
+                    } elseif ('hierarchical' === $facetType) {
+                        $field = "0/$field/";
+                    } elseif ('boolean' === $facetType) {
+                        // No mapping for boolean facet, ignore the value
+                        continue;
+                    }
+                    if (isset($list[$field])) {
+                        $list[$field] += $count;
+                    } else {
+                        $list[$field] = $count;
+                    }
+
+                    if ('hierarchical' === $facetType) {
+                        $parts = explode('/', $field);
+                        $level = array_shift($parts);
+                        for ($i = $level - 1; $i >= 0; $i--) {
+                            $key = $i . '/'
+                                . implode('/', array_slice($parts, 0, $i + 1))
+                                . '/';
+                            if (isset($list[$key])) {
+                                $list[$key] += $count;
+                            } else {
+                                $list[$key] = $count;
+                            }
                         }
                     }
                 }
             }
+
             // Re-sort the list
             uasort(
                 $list,
@@ -320,18 +307,19 @@ class RecordCollection
                 }
             );
 
-            $facets[$facet] = $list;
+            $mergedFacets[$facetField] = $list;
         }
 
-        $facets['blender_backend'] = [
-            'primary' => $primaryCollection ? $primaryCollection->getTotal() : 0,
-            'secondary' => $secondaryCollection
-                ? $secondaryCollection->getTotal() : 0
-        ];
+        $mergedFacets['blender_backend'] = [];
+        foreach (array_keys($this->config['Backends']->toArray()) as $backendId) {
+            $mergedFacets['blender_backend'][$backendId]
+                = isset($collections[$backendId])
+                ? $collections[$backendId]->getTotal() : 0;
+        }
 
         // Break the keyed array back to Solr-style array with two elements
         $facetFields = [];
-        foreach ($facets as $facet => $values) {
+        foreach ($mergedFacets as $facet => $values) {
             $list = [];
             foreach ($values as $key => $value) {
                 $list[] = [$key, $value];

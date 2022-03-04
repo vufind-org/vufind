@@ -1,83 +1,164 @@
-# Facet Mappings
-# First level is facet name in the primary backend
-# "Secondary" defines the name in secondary backend
-# "Type" may be hierarchical to denote a hierarchical facet or boolean for checkbox
-#   facet
-# "Values" contain mappings from secondary backend to primary backend
+# Fields in each configuration provide mappings from field names used in Blender.ini
+# to field names used in each backend.
+# By default the field names and behavior match those used with Solr.
+# Any missing mapping means that the backend does not support the field. For facets
+# this means that any filter is ignored for the backend. For searches and sorting
+# enabling a field that is not supported by all backends should be avoided as any
+# missing fields are set to empty.
+
+# In Facets Type indicates what kind of processing the facet needs. Allowed values
+# are normal (default), hierarchical and boolean (checkbox facet).
 Facets:
-  building:
-    Secondary: domain
-  format:
-    Secondary: rtype
-    #Type: hierarchical
-    Values:
-      articles: "Article"
-      audios: "Audio"
-      book_chapters: "Book Chapter"
-      books: "eBook"
-      conference_proceedings: "Conference Proceeding"
-      databases: "Database"
-      dissertations: "Thesis"
-      government_documents: "Government Document"
-      images: "Image"
-      journals: "Journal"
-      legal_documents: "Legal Document"
-      maps: "Map"
-      media: "Media"
-      newspaper_articles: "Newspaper Article"
-      other: "Other"
-      patents: "Patent"
-      reference_entrys: "Reference Entries"
-      reports: "Reports"
-      research_datasets: "Research Data"
-      reviews: "Review"
-      scores: "Score"
-      statistical_data_sets: "Data Set"
-      technical_reports: "Technical Report"
-      text_resources: "Text"
-      web_resources: "Web Resource"
-  author_facet:
-    Secondary: creator
-  topic:
-    Secondary: topic
-  publish_date:
-    Secondary: creationdate
-  language:
-    Secondary: lang
-  online_boolean:
-    Secondary: tlevel
-    Type: boolean
-    Values:
-      online_resources: true
-  open_access_boolean:
-    Secondary: tlevel
-    Type: boolean
-    Values:
-      open_access: true
-  peer_reviewed_boolean:
-    Secondary: tlevel
-    Type: boolean
-    Values:
-      peer_reviewed: true
+  Fields:
+    building:
+      Mappings:
+        Solr:
+          Field: building
+        Primo:
+          Field: domain
+        EDS:
+          Field: ContentProvider
+    format:
+      #Type: hierarchical
+      Mappings:
+        EDS:
+          Field: SourceType
+          Values:
+            Academic Journals: Journal
+            Magazines: Article
+            Books: Book
+            Conference Materials: Conference Proceeding
+            Reviews: Review
+            Trade Publications: Trade Publications
+            Reports: Report
+            Electronic Resources: Electronic
+            eBooks: eBook
+            Non-print Resources: Text
+            Biographies: Biography
+            Dissertations: Thesis
+            Audio: Audio
+            Music Scores: Music Score
+            Video: Video
+            Primary Source Documents: Primary Source Document
+            Maps: Map
+            Research Starters: Research Starter
+            Audiobooks: Audiobook
+        Solr:
+          Field: format
+        Primo:
+          Field: rtype
+          Values:
+            articles: Article
+            audios: Audio
+            book_chapters: Book Chapter
+            books: Book
+            conference_proceedings: Conference Proceeding
+            databases: Database
+            dissertations: Thesis
+            government_documents: Government Document
+            images: Image
+            journals: Journal
+            legal_documents: Legal Document
+            maps: Map
+            media: Media
+            newspaper_articles: Newspaper Article
+            other: Other
+            patents: Patent
+            reference_entrys: Reference Entry
+            reports: Report
+            research_datasets: Research Data
+            reviews: Review
+            scores: Score
+            statistical_data_sets: Data Set
+            technical_reports: Technical Report
+            text_resources: Text
+            web_resources: Web Resource
+    author_facet:
+      Mappings:
+        Solr:
+          Field: author_facet
+        Primo:
+          Field: creator
+    topic:
+      Mappings:
+        Solr:
+          Field: topic
+        Primo:
+          Field: topic
+    publish_date:
+      Mappings:
+        Solr:
+          Field: publish_date
+        Primo:
+          Field: creationdate
+    language:
+      Mappings:
+        Solr:
+          Field: language
+        Primo:
+          Field: lang
+    online_boolean:
+      Type: boolean
+      Mappings:
+        Solr:
+          Field: online_boolean
+        Primo:
+          Field: tlevel
+          Values:
+            online_resources: true
+    open_access_boolean:
+      Type: boolean
+      Mappings:
+        Solr:
+          Field: open_access_boolean
+        Primo:
+          Field: tlevel
+          Values:
+            open_access: true
+    peer_reviewed_boolean:
+      Type: boolean
+      Mappings:
+        Solr:
+          Field: peer_reviewed_boolean
+        Primo:
+          Field: tlevel
+          Values:
+            peer_reviewed: true
 # Search type mappings between backends
 Search:
   Fields:
-    - Primary: AllFields
-      Secondary: AllFields
-    - Primary: Title
-      Secondary: Title
-    - Primary: Author
-      Secondary: Author
-    - Primary: Subject
-      Secondary: Subject
+    AllFields:
+      Mappings:
+        Solr: AllFields
+        Primo: AllFields
+    Title:
+      Mappings:
+        Solr: Title
+        Primo: Title
+    Author:
+      Mappings:
+        Solr: Author
+        Primo: Author
+    Subject:
+      Mappings:
+        Solr: Subject
+        Primo: Subject
 # Sort mappings between backends
 Sorting:
   Fields:
-    - Primary: relevance
-      Secondary: relevance
-    - Primary: publish_date desc
-      Secondary: scdate
-    - Primary: author
-      Secondary: screator
-    - Primary: title
-      Secondary: title
+    relevance:
+      Mappings:
+        Solr: relevance
+        Primo: relevance
+    publish_date desc:
+      Mappings:
+        Solr: publish_date desc
+        Primo: scdate
+    author:
+      Mappings:
+        Solr: author
+        Primo: screator
+    title:
+      Mappings:
+        Solr: title
+        Primo: title

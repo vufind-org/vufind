@@ -4,8 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Solr
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Blender
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -37,8 +36,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * Factory for Solr search params objects.
  *
  * @category VuFind
- * @package  Search_Solr
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Blender
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -66,28 +65,27 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $facetHelper
-            = $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
         $blenderConfig = $configLoader->get('Blender');
-        if (!isset($blenderConfig['Secondary']['backend'])) {
-            throw new \Exception('Secondary backend not defined in blender.ini');
+        if (empty($blenderConfig['Backends'])) {
+            throw new \Exception('No backends enabled in blender.ini');
         }
-        $secondary = $blenderConfig['Secondary']['backend'];
+
+        $facetHelper
+            = $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+
+        $searchParams = [];
+        $paramsManager = $container->get(\VuFind\Search\Params\PluginManager::class);
+        foreach (array_keys($blenderConfig['Backends']->toArray()) as $backendId) {
+            $searchParams[] = $paramsManager->get($backendId);
+        }
+
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $blenderMappings = $yamlReader->get("BlenderMappings$secondary.yaml");
-        if (empty($blenderMappings)) {
-            $blenderMappings = $yamlReader->get("BlenderMappings.yaml");
-        }
-        $paramsMgr = $container->get(\VuFind\Search\Params\PluginManager::class);
-        $secondaryParams = $paramsMgr->get(
-            'VuFind\\Search\\' . $blenderConfig['Secondary']['backend']
-            . '\\Params'
-        );
+        $blenderMappings = $yamlReader->get('BlenderMappings.yaml');
         return parent::__invoke(
             $container,
             $requestedName,
-            [$facetHelper, $secondaryParams, $blenderConfig, $blenderMappings]
+            [$facetHelper, $searchParams, $blenderConfig, $blenderMappings]
         );
     }
 }

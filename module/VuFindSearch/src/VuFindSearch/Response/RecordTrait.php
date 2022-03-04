@@ -122,6 +122,19 @@ trait RecordTrait
     }
 
     /**
+     * Set the labels for the record
+     *
+     * @param array $labels An array of associative arrays with keys 'label' and
+     * 'class'
+     *
+     * @return void
+     */
+    public function setLabels(array $labels)
+    {
+        $this->labels = $labels;
+    }
+
+    /**
      * Return all labels for the record
      *
      * @return array An array of associative arrays with keys 'label' and 'class'

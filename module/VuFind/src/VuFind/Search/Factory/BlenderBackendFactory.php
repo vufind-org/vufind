@@ -6,7 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013-2019.
+ * Copyright (C) The National Library of Finland 2013-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -50,11 +50,11 @@ use VuFindSearch\Backend\Solr\Backend as SolrBackend;
 class BlenderBackendFactory implements FactoryInterface
 {
     /**
-     * Superior service manager.
+     * Service manager.
      *
      * @var ContainerInterface
      */
-    protected $serviceLocator;
+    protected $container;
 
     /**
      * VuFind configuration reader
@@ -99,29 +99,26 @@ class BlenderBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->container = $sm;
         $this->config = $sm->get(\VuFind\Config\PluginManager::class);
         $yamlReader = $sm->get(\VuFind\Config\YamlReader::class);
         $blenderConfig = $this->config->get($this->searchConfig);
-        if (!isset($blenderConfig['Primary']['backend'])) {
-            throw new \Exception('Primary backend not configured in blender.ini');
+
+        if (empty($blenderConfig['Backends'])) {
+            throw new \Exception('No backends enabled in blender.ini');
         }
-        if (!isset($blenderConfig['Secondary']['backend'])) {
-            throw new \Exception('Secondary backend not configured in blender.ini');
+        $backends = [];
+        $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
+        foreach (array_keys($blenderConfig['Backends']->toArray()) as $backendId) {
+            $backend = $backendManager->get($backendId);
+            if ($backend instanceof SolrBackend) {
+                $this->createListeners($backend);
+            }
+            $backends[$backendId] = $backend;
         }
         $blenderMappings = $yamlReader->get('BlenderMappings.yaml');
-        $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
-        $primary = $backendManager->get($blenderConfig['Primary']['backend']);
-        $secondary = $backendManager->get($blenderConfig['Secondary']['backend']);
-        if ($primary instanceof SolrBackend) {
-            $this->createListeners($primary);
-        }
-        if ($secondary instanceof SolrBackend) {
-            $this->createListeners($secondary);
-        }
         $backend = new Backend(
-            $primary,
-            $secondary,
+            $backends,
             $blenderConfig,
             $blenderMappings,
             new EventManager($sm->get('SharedEventManager'))
@@ -139,7 +136,7 @@ class BlenderBackendFactory implements FactoryInterface
      */
     protected function attachEvents(Backend $backend)
     {
-        $manager = $this->serviceLocator->get('SharedEventManager');
+        $manager = $this->container->get('SharedEventManager');
 
         $manager->attach('VuFind\Search', 'pre', [$backend, 'onSearchPre']);
         $manager->attach('VuFind\Search', 'post', [$backend, 'onSearchPost']);
@@ -157,7 +154,7 @@ class BlenderBackendFactory implements FactoryInterface
         // Apply deduplication also if it's not enabled by default (could be enabled
         // by a special filter):
         $search = $this->config->get($this->searchConfig);
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->container->get('SharedEventManager');
         $this->getDeduplicationListener(
             $backend,
             $search->Records->deduplication ?? false
@@ -176,7 +173,7 @@ class BlenderBackendFactory implements FactoryInterface
     {
         return new DeduplicationListener(
             $backend,
-            $this->serviceLocator,
+            $this->container,
             $this->searchConfig,
             'datasources',
             $enabled

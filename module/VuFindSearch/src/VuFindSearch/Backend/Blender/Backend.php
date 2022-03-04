@@ -32,12 +32,13 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Blender\Response\Json\RecordCollection;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\Query;
 use VuFindSearch\Response\RecordCollectionInterface;
+use VuFindSearch\Response\RecordInterface;
 
 /**
  * Blender backend.
@@ -51,18 +52,11 @@ use VuFindSearch\Response\RecordCollectionInterface;
 class Backend extends AbstractBackend implements RetrieveBatchInterface
 {
     /**
-     * Primary backend
+     * Actual backends
      *
-     * @var AbstractBackend
+     * @var array
      */
-    protected $primaryBackend;
-
-    /**
-     * Secondary backend
-     *
-     * @var AbstractBackend
-     */
-    protected $secondaryBackend;
+    protected $backends;
 
     /**
      * Limit for number of records to blend
@@ -79,7 +73,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     protected $blockSize;
 
     /**
-     * Configuration
+     * Blender configuration
      *
      * @var \Laminas\Config\Config
      */
@@ -102,30 +96,28 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     /**
      * Constructor.
      *
-     * @param AbstractBackend        $primary   Primary backend
-     * @param AbstractBackend        $secondary Secondary backend
-     * @param \Laminas\Config\Config $config    Blender configuration
-     * @param array                  $mappings  Mappings configuration
-     * @param EventManager           $events    Event manager
+     * @param array                  $backends Actual backends
+     * @param \Laminas\Config\Config $config   Blender configuration
+     * @param array                  $mappings Mappings configuration
+     * @param EventManager           $events   Event manager
      *
      * @return void
      */
     public function __construct(
-        AbstractBackend $primary,
-        AbstractBackend $secondary,
+        array $backends,
         \Laminas\Config\Config $config,
         $mappings,
         EventManager $events
     ) {
-        $this->primaryBackend = $primary;
-        $this->secondaryBackend = $secondary;
+        $this->backends = $backends;
         $this->config = $config;
         $this->mappings = $mappings;
         $this->setEventManager($events);
 
-        $boost = ($this->config['Blending']['boostPosition'] ?? 0)
-            + ($this->config['Blending']['boostCount'] ?? 0);
-        $this->blendLimit = max(20, $boost);
+        $boostMax = isset($this->config['Blending']['initialResults'])
+            ? count($this->config['Blending']['initialResults']->toArray())
+            : 0;
+        $this->blendLimit = max(20, $boostMax);
         $this->blockSize = $this->config['Blending']['blockSize'] ?? 10;
     }
 
@@ -150,22 +142,19 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
             $this->mappings
         );
 
-        $secondaryQuery = $this->translateQuery($query);
-        $secondaryParams = $params->get('secondary_backend')[0];
-        $params->remove('secondary_backend');
-
-        $usePrimary = true;
-        $useSecondary = true;
+        $activeBackends = $this->backends;
 
         // Handle the blender_backend pseudo-facet
         $fq = $params->get('fq');
         foreach ($fq ?? [] as $key => $current) {
             if (strncmp($current, 'blender_backend:', 16) === 0) {
-                if (substr($current, 16) === '"primary"') {
-                    $useSecondary = false;
-                } elseif (substr($current, 16) === '"secondary"') {
-                    $usePrimary = false;
+                $active = substr($current, 16);
+                if (!isset($activeBackends[$active])) {
+                    throw new \Exception("Invalid blender_backend filter: $active");
                 }
+                $activeBackends = [
+                    $active => $activeBackends[$active]
+                ];
                 unset($fq[$key]);
                 $params->set('fq', $fq);
             }
@@ -179,151 +168,109 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
             }
         }
 
-        $primaryCollection = null;
-        $secondaryCollection = null;
+        $collections = [];
 
-        // If offset is less than the limit, fetch from both backends
-        // up to the limit first.
         $blendLimit = $this->blendLimit;
         if ($limit === 0) {
             $blendLimit = 0;
         }
         $exception = null;
-        if ($offset <= $this->blendLimit) {
+        // If offset is less than the limit, fetch from backends up to the limit
+        // first:
+        $fetchLimit = $offset <= $this->blendLimit ? $blendLimit : 0;
+        foreach ($activeBackends as $backendId => $backend) {
             try {
-                $primaryCollection = $usePrimary ? $this->primaryBackend->search(
-                    $query,
+                $collections[$backendId] = $backend->search(
+                    $this->translateQuery($query, $backendId),
                     0,
-                    $blendLimit,
-                    $params
-                ) : new RecordCollection();
+                    $fetchLimit,
+                    $params->get("params_$backendId")[0]
+                );
             } catch (\Exception $e) {
                 $exception = $e;
-                $primaryCollection = null;
             }
-
-            try {
-                $secondaryCollection = $useSecondary
-                    ? $this->secondaryBackend->search(
-                        $secondaryQuery,
-                        0,
-                        $blendLimit,
-                        $secondaryParams
-                    ) : new RecordCollection();
-            } catch (\Exception $e) {
-                if (null !== $exception) {
-                    // Both searches failed, throw the previous exception
-                    throw $exception;
-                }
-                $exception = $e;
-                $secondaryCollection = null;
-            }
-
-            $mergedCollection->initBlended(
-                $primaryCollection,
-                $secondaryCollection,
-                $offset,
-                $limit,
-                $this->blockSize
-            );
-        } else {
-            try {
-                $primaryCollection = $usePrimary ? $this->primaryBackend->search(
-                    $query,
-                    0,
-                    0,
-                    $params
-                ) : new RecordCollection();
-            } catch (\Exception $e) {
-                $exception = $e;
-                $primaryCollection = null;
-            }
-
-            try {
-                $secondaryCollection = $useSecondary
-                    ? $this->secondaryBackend->search(
-                        $secondaryQuery,
-                        0,
-                        0,
-                        $secondaryParams
-                    ) : new RecordCollection();
-            } catch (\Exception $e) {
-                if (null !== $exception) {
-                    // Both searches failed, throw the previous exception
-                    throw $exception;
-                }
-                $exception = $e;
-                $secondaryCollection = null;
-            }
-
-            $mergedCollection->initBlended(
-                $primaryCollection,
-                $secondaryCollection,
-                $offset,
-                $limit,
-                $this->blockSize
-            );
         }
 
-        // Fill up to the required records in a round-robin fashion
-        if ($offset + $limit > $this->blendLimit) {
-            $primaryTotal = $primaryCollection ? $primaryCollection->getTotal() : 0;
-            $secondaryTotal = $secondaryCollection
-                ? $secondaryCollection->getTotal() : 0;
-            $primaryCollectionOffset = 0;
-            $secondaryCollectionOffset = 0;
-            $primaryOffset = 0;
-            $secondaryOffset = 0;
+        if ($exception) {
+            if (!$collections) {
+                // No results and an exception previously encountered, raise it now:
+                throw $exception;
+            }
+            $mergedCollection->addError('search_backend_partial_failure');
+        }
 
-            // First iterate through the records before the offset to calculate
-            // proper source offsets
-            for ($pos = 0; $pos < $offset; $pos++) {
-                if ($mergedCollection->isPrimaryAtOffset($pos, $this->blockSize)
-                    && $primaryOffset < $primaryTotal
-                ) {
-                    ++$primaryOffset;
-                } elseif ($secondaryOffset < $secondaryTotal) {
-                    ++$secondaryOffset;
-                }
+        $backendRecords = $mergedCollection->initBlended(
+            $collections,
+            $offset + $limit,
+            $this->blockSize
+        );
+
+        // Fill up to the required records in a round-robin fashion
+        if ($offset + $limit > $mergedCollection->count()) {
+            $backendOffsets = [];
+            $collectionOffsets = [];
+            $backendTotals = [];
+            $availableBackendIds = array_keys($collections);
+            foreach ($availableBackendIds as $backendId) {
+                $backendOffsets[$backendId] = 0;
+                $collectionOffsets[$backendId] = 0;
+                $backendTotals[$backendId] = $collections[$backendId]->getTotal();
+            }
+            // First iterate through the merged records before the offset to
+            // calculate proper backend offsets for further records:
+            $records = $mergedCollection->getRecords();
+            $pos = 0;
+            foreach ($records as $record) {
+                ++$pos;
+                ++$backendOffsets[$record->getSearchBackendIdentifier()];
             }
 
             // Fetch records
-            for ($pos = $offset; $pos < $limit + $offset; $pos++) {
-                $primary = $mergedCollection
-                    ->isPrimaryAtOffset($pos, $this->blockSize);
-                if ($primary && $pos >= $primaryTotal) {
-                    if ($pos >= $secondaryTotal) {
-                        break;
+            $backendCount = count($availableBackendIds);
+            for (; $pos < $limit + $offset; $pos++) {
+                $currentBlock = floor($pos / $this->blockSize);
+                $backendAtPos = $availableBackendIds[$currentBlock % $backendCount];
+
+                $offsetOk = $backendOffsets[$backendAtPos]
+                    < $backendTotals[$backendAtPos];
+                $record = $offsetOk ? $this->getRecord(
+                    $activeBackends[$backendAtPos],
+                    $params->get("params_$backendAtPos")[0],
+                    $this->translateQuery($query, $backendAtPos),
+                    $backendRecords[$backendAtPos],
+                    $backendOffsets[$backendAtPos]++
+                ) : null;
+
+                if (null === $record) {
+                    // Try other backends:
+                    foreach ($availableBackendIds as $backendId) {
+                        if ($backendId === $backendAtPos) {
+                            continue;
+                        }
+                        $offsetOk = $backendOffsets[$backendId]
+                            < $backendTotals[$backendId];
+                        $record = $offsetOk ? $this->getRecord(
+                            $activeBackends[$backendId],
+                            $params->get("params_$backendId")[0],
+                            $this->translateQuery($query, $backendId),
+                            $backendRecords[$backendId],
+                            $backendOffsets[$backendId]++
+                        ) : null;
+
+                        if (null !== $record) {
+                            break;
+                        }
                     }
-                    $primary = false;
                 }
-                if ($primary && $primaryCollection) {
-                    $record = $this->getRecord(
-                        $this->primaryBackend,
-                        $params,
-                        $query,
-                        $primaryCollection,
-                        $primaryCollectionOffset,
-                        $primaryOffset
-                    );
-                    ++$primaryOffset;
-                } elseif ($secondaryCollection) {
-                    $record = $this->getRecord(
-                        $this->secondaryBackend,
-                        $secondaryParams,
-                        $query,
-                        $secondaryCollection,
-                        $secondaryCollectionOffset,
-                        $secondaryOffset
-                    );
-                    ++$secondaryOffset;
+
+                if (null === $record) {
+                    break;
                 }
-                if (null !== $record) {
-                    $mergedCollection->add($record);
-                }
+                $mergedCollection->add($record, false);
             }
         }
 
+        $mergedCollection->slice($offset, $limit);
         $mergedCollection->setSourceIdentifier($this->identifier);
 
         return $mergedCollection;
@@ -415,45 +362,51 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     /**
      * Get a record from the given backend by offset
      *
-     * @param AbstractBackend           $backend          Backend
-     * @param ParamBag                  $params           Search params
-     * @param AbstractQuery             $query            Query
-     * @param RecordCollectionInterface $collection       Record collection
-     * @param int                       $collectionOffset Start offset of the
-     * collection
-     * @param int                       $offset           Record offset
+     * @param AbstractBackend $backend        Backend
+     * @param ParamBag        $params         Search params
+     * @param AbstractQuery   $query          Query
+     * @param array           $backendRecords Record buffer
+     * @param int             $offset         Record offset
      *
-     * @return array
+     * @return RecordInterface|null
      */
     protected function getRecord(
         AbstractBackend $backend,
         ParamBag $params,
         AbstractQuery $query,
-        RecordCollectionInterface &$collection,
-        &$collectionOffset,
+        array &$backendRecords,
         $offset
-    ) {
-        $records = $collection->getRecords();
-        if ($offset >= $collectionOffset
-            && $offset < $collectionOffset + count($records)
-        ) {
-            return $records[$offset - $collectionOffset];
+    ): RecordInterface {
+        if (!$backendRecords) {
+            $collection
+                = $backend->search($query, $offset, $this->blockSize, $params);
+            $backendRecords = $collection->getRecords();
         }
-        $collection = $backend->search($query, $offset, $this->blockSize, $params);
-        $collectionOffset = $offset;
-        $records = $collection->getRecords();
-        return $records[0] ?? null;
+        return $backendRecords ? array_shift($backendRecords) : null;
     }
 
     /**
-     * Translate query from the primary backend format to secondary backend format
+     * Translate query to backend format
      *
-     * @param AbstractQuery $query Query
+     * @param AbstractQuery $query     Query
+     * @param string        $backendId Backend identifier
      *
      * @return AbstractQuery
      */
-    protected function translateQuery(AbstractQuery $query)
-    {
+    protected function translateQuery(
+        AbstractQuery $query,
+        string $backendId
+    ): AbstractQuery {
+        if ($query instanceof Query) {
+            $handler = $query->getHandler();
+            if (null !== $handler) {
+                $mappings = $this->config['Search']['Fields'][$handler]['Mappings']
+                    ?? [];
+                if ($newHandler = $mappings[$backendId] ?? '') {
+                    $query->setHandler($newHandler);
+                }
+            }
+        }
         return $query;
     }
 
@@ -485,18 +438,14 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
             return $event;
         }
 
-        // Trigger the event for the primary backend:
-        $this->convertSearchEvent($event, $this->primaryBackend);
-        $this->events->triggerEvent($event);
+        // Trigger the event for all backends:
+        foreach ($this->backends as $backend) {
+            $this->convertSearchEvent($event, $backend);
+            $this->events->triggerEvent($event);
+        }
 
-        // Trigger the event for the secondary backend with the results from the
-        // primary one:
-        $this->convertSearchEvent($event, $this->secondaryBackend);
-        $this->events->triggerEvent($event);
-
-        // Put it all back together:
-        $this->convertSearchEvent($event, $this);
-        return $event;
+        // Restore the event and return it:
+        return $this->convertSearchEvent($event, $this);
     }
 
     /**
@@ -513,14 +462,13 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
             return $event;
         }
 
-        $this->events->triggerEvent(
-            $this->convertSearchEvent($event, $this->primaryBackend)
-        );
+        // Trigger the event for all backends:
+        foreach ($this->backends as $backend) {
+            $this->convertSearchEvent($event, $backend);
+            $this->events->triggerEvent($event);
+        }
 
-        $this->events->triggerEvent(
-            $this->convertSearchEvent($event, $this->secondaryBackend)
-        );
-
+        // Restore the event and return it:
         return $this->convertSearchEvent($event, $this);
     }
 

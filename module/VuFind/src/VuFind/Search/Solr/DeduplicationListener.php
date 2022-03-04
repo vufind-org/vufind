@@ -327,6 +327,7 @@ class DeduplicationListener
             );
             $foundLocalRecord->setRawData($localRecordData);
             $foundLocalRecord->setHighlightDetails($record->getHighlightDetails());
+            $foundLocalRecord->setLabels($record->getLabels());
             $result->replace($record, $foundLocalRecord);
         }
     }

@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2019.
+ * Copyright (C) The National Library of Finland 2015-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Solr
+ * @package  Search_Blender
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -28,13 +28,15 @@
  */
 namespace VuFind\Search\Blender;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
+use VuFindSearch\ParamBag;
 
 /**
  * Blender Search Parameters
  *
  * @category VuFind
- * @package  Search_Solr
+ * @package  Search_Blender
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -43,11 +45,11 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
-     * Secondary search params
+     * Search params for backends
      *
      * @var \VuFind\Search\Base\Params
      */
-    protected $secondaryParams;
+    protected $searchParams;
 
     /**
      * Blender configuration
@@ -66,18 +68,18 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options         Options to use
-     * @param \VuFind\Config\PluginManager $configLoader    Config loader
-     * @param HierarchicalFacetHelper      $facetHelper     Hierarchical facet helper
-     * @param \VuFind\Search\Base\Params   $secondaryParams Secondary search params
-     * @param \Laminas\Config\Config       $blenderConfig   Blender configuration
-     * @param array                        $mappings        Blender mappings
+     * @param \VuFind\Search\Base\Options  $options       Options to use
+     * @param \VuFind\Config\PluginManager $configLoader  Config loader
+     * @param HierarchicalFacetHelper      $facetHelper   Hierarchical facet helper
+     * @param array                        $searchParams  Search params for backends
+     * @param \Laminas\Config\Config       $blenderConfig Blender configuration
+     * @param array                        $mappings      Blender mappings
      */
     public function __construct(
         \VuFind\Search\Base\Options $options,
         \VuFind\Config\PluginManager $configLoader,
         HierarchicalFacetHelper $facetHelper,
-        \VuFind\Search\Base\Params $secondaryParams,
+        array $searchParams,
         \Laminas\Config\Config $blenderConfig,
         $mappings
     ) {
@@ -87,7 +89,7 @@ class Params extends \VuFind\Search\Solr\Params
             $facetHelper
         );
 
-        $this->secondaryParams = $secondaryParams;
+        $this->searchParams = $searchParams;
         $this->blenderConfig = $blenderConfig;
         $this->mappings = $mappings;
     }
@@ -103,52 +105,60 @@ class Params extends \VuFind\Search\Solr\Params
     public function initFromRequest($request)
     {
         parent::initFromRequest($request);
-        $this->secondaryParams->initFromRequest($this->translateRequest($request));
+        foreach ($this->searchParams as $params) {
+            $params->initFromRequest(
+                $this->translateRequest(
+                    $request,
+                    $params->getOptions()->getSearchClassId()
+                )
+            );
+        }
     }
 
     /**
      * Create search backend parameters for advanced features.
      *
-     * @return \VuFindSearch\ParamBag
+     * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
-        $params = parent::getBackendParameters();
-        if (!is_callable([$this->secondaryParams, 'getBackendParameters'])) {
-            throw new \Exception(
-                'Secondary backend missing support for getBackendParameters'
+        $result = parent::getBackendParameters();
+        foreach ($this->searchParams as $params) {
+            if (!is_callable([$params, 'getBackendParameters'])) {
+                throw new \Exception(
+                    'Backend ' . $params->getBackendId()
+                    . ' missing support for getBackendParameters'
+                );
+            }
+            $result->set(
+                'params_' . $params->getOptions()->getSearchClassId(),
+                $params->getBackendParameters()
             );
         }
-        $secondaryParams = $this->secondaryParams->getBackendParameters();
-        $params->set(
-            'secondary_backend',
-            $secondaryParams
-        );
-        return $params;
+        return $result;
     }
 
     /**
-     * Translate a request for the secondary backend
+     * Translate a request for a backend
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
-     * request.
+     * @param Parameters $request   Parameter object representing user request.
+     * @param string     $backendId Backend identifier
      *
-     * @return \Laminas\Stdlib\Parameters
+     * @return Parameters
      */
-    protected function translateRequest($request)
-    {
-        $secondary = $this->blenderConfig['Secondary']['backend'];
-        $mappings = $this->mappings['Facets'] ?? [];
+    protected function translateRequest(
+        Parameters $request,
+        string $backendId
+    ): Parameters {
+        // Clone request to avoid tampering with the original one:
+        $request = clone $request;
+        $facets = $this->mappings['Facets'] ?? [];
         $filters = $request->get('filter');
         if (!empty($filters)) {
-            $hierarchicalFacets = [];
-            $options = $this->getOptions();
-            if (is_callable([$options, 'getHierarchicalFacets'])) {
-                $hierarchicalFacets = $options->getHierarchicalFacets();
-            }
             $newFilters = [];
             foreach ((array)$filters as $filter) {
                 [$field, $value] = $this->parseFilter($filter);
+                // Ignore special blender_backend filters here:
                 if ('blender_backend' === $field) {
                     continue;
                 }
@@ -158,75 +168,19 @@ class Params extends \VuFind\Search\Solr\Params
                     $field = substr($field, 1);
                 }
                 $values = [$value];
-                if (isset($mappings[$field]['Secondary'])) {
-                    // Map facet value
-                    $facetType = $mappings[$field]['Type'] ?? '';
-                    if ('boolean' === $facetType) {
-                        $value = (bool)$value;
-                    }
-                    $resultValues = [];
-                    $valueMappings = $mappings[$field]['Values'] ?? [];
-                    if ($valueMappings) {
-                        foreach ($valueMappings as $k => $v) {
-                            if ('boolean' === $facetType) {
-                                $v = (bool)$v;
-                            }
-                            if ($value === $v) {
-                                $resultValues[] = $k;
-                            }
-                        }
-                        // Check also higher levels when converting hierarchical
-                        // facets:
-                        if (in_array($field, $hierarchicalFacets)) {
-                            $levelOffset = -1;
-                            do {
-                                $levelGood = false;
-                                foreach ($valueMappings as $k => $v) {
-                                    $parts = explode('/', $v);
-                                    $partCount = count($parts);
-                                    if ($parts[0] <= 0 || $partCount <= 2) {
-                                        continue;
-                                    }
-                                    $level = $parts[0] + $levelOffset;
-                                    if ($level < 0) {
-                                        continue;
-                                    }
-                                    $levelGood = true;
-                                    $levelValue = $level . '/'
-                                        . implode(
-                                            '/',
-                                            array_slice($parts, 1, $level + 1)
-                                        ) . '/';
-                                    if ($value === $levelValue) {
-                                        $resultValues[] = $k;
-                                    }
-                                }
-                                --$levelOffset;
-                            } while ($levelGood);
-                        }
-                    }
-                    foreach ($mappings[$field]['RegExp'] ?? [] as $regexp) {
-                        $search = $regexp['Search'] ?? '';
-                        $replace = $regexp['Replace'] ?? '';
-                        if ($search) {
-                            $resultValues[]
-                                = preg_replace("/$search/", $replace, $value);
-                        }
-                    }
-                    if ($resultValues) {
-                        $values = $resultValues;
-                    }
-                    // Map facet type (only after $field is no longer needed)
-                    if (isset($mappings[$field]['Secondary'])) {
-                        $field = $mappings[$field]['Secondary'];
-                    } else {
-                        // Facet not supported by secondary
-                        continue;
-                    }
+
+                $resultValues = $this->translateFilter($field, $value, $backendId);
+                if ($resultValues) {
+                    $values = $resultValues;
+                }
+                $field = $facets['Fields'][$field]['Mappings'][$backendId]['Field']
+                    ?? '';
+                if (!$field) {
+                    continue;
                 }
 
                 // EDS special case:
-                if ('EDS' === $secondary) {
+                if ('EDS' === $backendId) {
                     array_map(
                         [
                             '\VuFindSearch\Backend\EDS\SearchRequestModel',
@@ -242,27 +196,100 @@ class Params extends \VuFind\Search\Solr\Params
             $request->set('filter', $newFilters);
         }
 
-        $type = $request->get('type');
-        if (!empty($type)) {
-            foreach ($this->mappings['Search']['Fields'] ?? [] as $field) {
-                if ($type === $field['Primary']) {
-                    $request->set('type', $field['Secondary']);
-                    break;
-                }
-            }
+        // Map search type:
+        if ($type = $request->get('type')) {
+            $request->set(
+                'type',
+                $this->mappings['Search']['Fields'][$type][$backendId] ?? ''
+            );
         }
 
-        $sort = $request->get('sort');
-        if (!empty($sort)) {
-            foreach ($this->mappings['Sorting']['Fields'] ?? [] as $field) {
-                if ($type === $field['Primary']) {
-                    $request->set('sort', $field['Secondary']);
-                    break;
-                }
-            }
+        // Map sort option:
+        if ($sort = $request->get('sort')) {
+            $request->set(
+                'sort',
+                $this->mappings['Sorting']['Fields'][$sort][$backendId] ?? ''
+            );
         }
 
         return $request;
+    }
+
+    /**
+     * Translate a facet filter
+     *
+     * @param string $field     Filter field
+     * @param string $value     Filter value
+     * @param string $backendId Backend ID
+     *
+     * @return array
+     */
+    protected function translateFilter(
+        string $field,
+        string $value,
+        string $backendId
+    ): array {
+        $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
+        $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
+        if (!$mappings || empty($mappings['Field'])) {
+            // Facet not supported by the backend
+            return [];
+        }
+
+        // Map facet value
+        $facetType = $fieldConfig['Type'] ?? 'normal';
+        if ('boolean' === $facetType) {
+            $value = (bool)$value;
+        }
+        $resultValues = [];
+        foreach ($mappings['Values'] ?? [] as $k => $v) {
+            if ('boolean' === $facetType) {
+                $v = (bool)$v;
+            }
+            if ($value === $v) {
+                $resultValues[] = $k;
+            }
+        }
+        // Check also higher levels when converting hierarchical facets:
+        if ('hierarchical' === $facetType) {
+            $levelOffset = -1;
+            do {
+                $levelGood = false;
+                foreach ($mappings['Values'] ?? [] as $k => $v) {
+                    $parts = explode('/', $v);
+                    $partCount = count($parts);
+                    if ($parts[0] <= 0 || $partCount <= 2) {
+                        continue;
+                    }
+                    $level = $parts[0] + $levelOffset;
+                    if ($level < 0) {
+                        continue;
+                    }
+                    $levelGood = true;
+                    $levelValue = $level . '/'
+                        . implode(
+                            '/',
+                            array_slice($parts, 1, $level + 1)
+                        ) . '/';
+                    if ($value === $levelValue) {
+                        $resultValues[] = $k;
+                    }
+                }
+                --$levelOffset;
+            } while ($levelGood);
+        }
+
+        // Apply any RegExp mappings:
+        foreach ($mappings['RegExp'] ?? [] as $regexp) {
+            $search = $regexp['Search'] ?? '';
+            $replace = $regexp['Replace'] ?? '';
+            if ($search) {
+                $resultValues[]
+                    = preg_replace("/$search/", $replace, $value);
+            }
+        }
+
+        return $resultValues;
     }
 
     /**
