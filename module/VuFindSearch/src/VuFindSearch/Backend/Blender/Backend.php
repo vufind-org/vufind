@@ -32,11 +32,9 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\Query;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordInterface;
 
