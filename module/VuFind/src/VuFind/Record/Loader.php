@@ -164,7 +164,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
             $record->setRawData(['id' => $id]);
-            $record->setSourceIdentifiers($source, $source);
+            $record->setSourceIdentifiers($source);
             return $record;
         }
         throw new RecordMissingException(
@@ -280,7 +280,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $fields['id'] = $details['id'];
         $record = $this->recordFactory->get('Missing');
         $record->setRawData($fields);
-        $record->setSourceIdentifiers($details['source'], $details['source']);
+        $record->setSourceIdentifiers($details['source']);
         return $record;
     }
 

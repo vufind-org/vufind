@@ -48,13 +48,6 @@ class SimpleRecord implements RecordInterface
     protected $fields = [];
 
     /**
-     * Labels for the record
-     *
-     * @var array
-     */
-    protected $labels = [];
-
-    /**
      * Constructor
      *
      * @param array $fields Raw data
@@ -62,8 +55,7 @@ class SimpleRecord implements RecordInterface
     public function __construct($fields)
     {
         $this->fields = $fields;
-        $this->sourceIdentifier = $this->searchBackendIdentifier
-            = DEFAULT_SEARCH_BACKEND;
+        $this->setSourceIdentifiers(DEFAULT_SEARCH_BACKEND);
     }
 
     /**

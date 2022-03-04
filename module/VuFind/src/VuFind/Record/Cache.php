@@ -283,7 +283,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
             $driver->setRawData($doc);
         }
 
-        $driver->setSourceIdentifiers($source, $source);
+        $driver->setSourceIdentifiers($source);
 
         return $driver;
     }

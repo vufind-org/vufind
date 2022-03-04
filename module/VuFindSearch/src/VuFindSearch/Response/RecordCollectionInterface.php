@@ -100,11 +100,12 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * Set the source backend identifiers.
      *
      * @param string $identifier      Record source identifier
-     * @param string $searchBackendId Search backend identifier
+     * @param string $searchBackendId Search backend identifier (if different from
+     * $recordSourceId)
      *
      * @return void
      */
-    public function setSourceIdentifiers($identifier, $searchBackendId);
+    public function setSourceIdentifiers($identifier, $searchBackendId = '');
 
     /**
      * Return the source backend identifier.

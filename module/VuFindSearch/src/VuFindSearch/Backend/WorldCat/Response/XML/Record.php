@@ -61,7 +61,7 @@ class Record implements RecordInterface
     public function __construct(MarcReader $marc)
     {
         $this->marc = $marc;
-        $this->sourceIdentifier = $this->searchBackendIdentifier = 'WorldCat';
+        $this->setSourceIdentifiers('WorldCat');
     }
 
     /**

@@ -56,11 +56,12 @@ interface RecordInterface
      * Set the source backend identifiers.
      *
      * @param string $recordSourceId  Record source identifier
-     * @param string $searchBackendId Search backend identifier
+     * @param string $searchBackendId Search backend identifier (if different from
+     * $recordSourceId)
      *
      * @return void
      */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId);
+    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '');
 
     /**
      * Return the source backend identifier.

@@ -138,15 +138,19 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      * Set the source backend identifiers.
      *
      * @param string $recordSourceId  Record source identifier
-     * @param string $searchBackendId Search backend identifier
+     * @param string $searchBackendId Search backend identifier (if different from
+     * $recordSourceId)
      *
      * @return void
      */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId)
+    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '')
     {
         $this->source = $searchBackendId;
         foreach ($this->records as $record) {
-            $record->setSourceIdentifiers($recordSourceId, $searchBackendId);
+            $record->setSourceIdentifiers(
+                $recordSourceId,
+                $searchBackendId ?: $recordSourceId
+            );
         }
     }
 

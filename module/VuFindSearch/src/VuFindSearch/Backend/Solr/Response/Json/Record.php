@@ -63,7 +63,7 @@ class Record implements RecordInterface
     public function __construct(array $fields)
     {
         $this->fields = $fields;
-        $this->sourceIdentifier = $this->searchBackendIdentifier = 'Solr';
+        $this->setSourceIdentifiers('Solr');
     }
 
     /**
