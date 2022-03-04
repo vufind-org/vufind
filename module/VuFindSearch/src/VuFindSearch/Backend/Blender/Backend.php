@@ -286,9 +286,11 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      */
     public function retrieve($id, ParamBag $params = null)
     {
-        $result = $this->primaryBackend->retrieve($id, $params);
-        if ($result->count() === 0) {
-            $result = $this->secondaryBackend->retrieve($id, $params);
+        foreach ($this->backends as $backend) {
+            $result = $backend->retrieve($id, $params);
+            if ($result->count() > 0) {
+                break;
+            }
         }
         return $result;
     }
@@ -303,6 +305,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      */
     public function retrieveBatch($ids, ParamBag $params = null)
     {
+        // TODO: Do we actually need this? Broken at the moment!
         if ($this->primaryBackend instanceof RetrieveBatchInterface) {
             $results = $this->primaryBackend->retrieveBatch($ids, $params);
         } else {
