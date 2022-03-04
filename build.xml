@@ -325,6 +325,16 @@
         <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
       </then>
     </if>
+
+    <!-- fail if a local config.ini already exists -->
+    <property name="local_config_ini" value="${srcdir}/local/config/vufind/config.ini" />
+    <if>
+      <available file="${local_config_ini}" />
+      <then>
+        <fail>${local_config_ini} already exists</fail>
+      </then>
+    </if>
+
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
@@ -466,6 +476,19 @@
 
   <!-- Uninstall and Deactivate VuFind -->
   <target name="shutdown" description="deactivate and uninstall demo">
+
+    <exec command="git status --porcelain --untracked-files=no" outputProperty="git_status" />
+    <if>
+      <not>
+        <equals arg1="${git_status}" arg2="" />
+      </not>
+      <then>
+        <fail>
+          Changed detected in tracked files:
+${git_status}
+        </fail>
+      </then>
+    </if>
 
     <!-- Remove Apache settings (if Apache was enabled) -->
     <if>
