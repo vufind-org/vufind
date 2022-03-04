@@ -500,7 +500,10 @@ function checkForBrowserSupport() {
     // Object destructuring
     let {c, d} = b;
     // Spread operator
-    [...d, 4, c];
+    let e = [...d, 4, c];
+    if (e.length !== 5) {
+      throw new Error('Unexpected result');
+    }
   } catch (exception) {
     var outdated = document.getElementById('browser-outdated');
     if (outdated) {
