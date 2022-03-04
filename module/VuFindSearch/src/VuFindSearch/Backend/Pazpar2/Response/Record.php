@@ -61,7 +61,7 @@ class Record implements RecordInterface
     public function __construct(SimpleXMLElement $xml)
     {
         $this->xml = $xml;
-        $this->setSourceIdentifiers('Pazpar2')
+        $this->setSourceIdentifiers('Pazpar2');
     }
 
     /**
