@@ -764,6 +764,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     $value
                 );
             }
+            // Unset reference:
+            unset($value);
             $record[$field] = is_array($fieldData) ? $values : $values[0];
 
             if ($highlight) {
