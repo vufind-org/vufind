@@ -104,12 +104,12 @@ class BlenderBackendFactory implements FactoryInterface
         $yamlReader = $sm->get(\VuFind\Config\YamlReader::class);
         $blenderConfig = $this->config->get($this->searchConfig);
 
-        if (empty($blenderConfig['Backends'])) {
+        if (empty($blenderConfig->Backends)) {
             throw new \Exception('No backends enabled in blender.ini');
         }
         $backends = [];
         $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
-        foreach (array_keys($blenderConfig['Backends']->toArray()) as $backendId) {
+        foreach (array_keys($blenderConfig->Backends->toArray()) as $backendId) {
             $backend = $backendManager->get($backendId);
             if ($backend instanceof SolrBackend) {
                 $this->createListeners($backend);

@@ -113,11 +113,11 @@ class Backend extends AbstractBackend
         $this->mappings = $mappings;
         $this->setEventManager($events);
 
-        $boostMax = isset($this->config['Blending']['initialResults'])
-            ? count($this->config['Blending']['initialResults']->toArray())
+        $boostMax = isset($this->config->Blending->initialResults)
+            ? count($this->config->Blending->initialResults->toArray())
             : 0;
         $this->blendLimit = max(20, $boostMax);
-        $this->blockSize = $this->config['Blending']['blockSize'] ?? 10;
+        $this->blockSize = $this->config->Blending->blockSize ?? 10;
     }
 
     /**
@@ -349,7 +349,7 @@ class Backend extends AbstractBackend
         if ($query instanceof Query) {
             $handler = $query->getHandler();
             if (null !== $handler) {
-                $mappings = $this->config['Search']['Fields'][$handler]['Mappings']
+                $mappings = $this->mappings['Search']['Fields'][$handler]['Mappings']
                     ?? [];
                 if ($newHandler = $mappings[$backendId] ?? '') {
                     $query->setHandler($newHandler);

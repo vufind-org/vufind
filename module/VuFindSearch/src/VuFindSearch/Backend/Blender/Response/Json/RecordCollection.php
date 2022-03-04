@@ -84,8 +84,8 @@ class RecordCollection
         $this->config = $config;
         $this->mappings = $mappings;
         $this->response = static::$template;
-        $this->initialResults = isset($this->config['Blending']['initialResults'])
-            ? $this->config['Blending']['initialResults']->toArray()
+        $this->initialResults = isset($this->config->Blending->initialResults)
+            ? $this->config->Blending->initialResults->toArray()
             : [];
     }
 
@@ -114,7 +114,7 @@ class RecordCollection
         $backendRecords = [];
         foreach ($collections as $backendId => $collection) {
             $records = $collection->getRecords();
-            $label = $this->config['Backends'][$backendId];
+            $label = $this->config->Backends[$backendId];
             foreach ($records as $record) {
                 $record->setSourceIdentifiers(
                     $record->getSourceIdentifier(),
@@ -311,7 +311,7 @@ class RecordCollection
         }
 
         $mergedFacets['blender_backend'] = [];
-        foreach (array_keys($this->config['Backends']->toArray()) as $backendId) {
+        foreach (array_keys($this->config->Backends->toArray()) as $backendId) {
             $mergedFacets['blender_backend'][$backendId]
                 = isset($collections[$backendId])
                 ? $collections[$backendId]->getTotal() : 0;
