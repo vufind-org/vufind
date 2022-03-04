@@ -145,11 +145,11 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function setSourceIdentifiers($recordSourceId, $searchBackendId = '')
     {
-        $this->source = $searchBackendId;
+        $this->source = $searchBackendId ?: $recordSourceId;
         foreach ($this->records as $record) {
             $record->setSourceIdentifiers(
                 $recordSourceId,
-                $searchBackendId ?: $recordSourceId
+                $this->source
             );
         }
     }
