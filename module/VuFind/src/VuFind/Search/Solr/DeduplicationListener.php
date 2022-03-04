@@ -274,7 +274,10 @@ class DeduplicationListener
                 ];
             }
             $fields['dedup_id'] = $dedupId;
-            $idList[] = $dedupId;
+            $idList[] = [
+                'source' => $record->getSourceIdentifier(),
+                'id' => $dedupId
+            ];
 
             // Sort dedupData by priority:
             uasort(
@@ -291,7 +294,8 @@ class DeduplicationListener
         }
 
         // Fetch records and assign them to the result:
-        $localRecords = $this->backend->retrieveBatch($idList)->getRecords();
+        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $localRecords = $loader->loadBatch($idList, true);
         foreach ($result->getRecords() as $record) {
             $dedupRecordData = $record->getRawData();
             if (!isset($dedupRecordData['dedup_id'])) {
@@ -299,8 +303,11 @@ class DeduplicationListener
             }
             // Find the corresponding local record in the results:
             $foundLocalRecord = null;
+            $dedupSource = $record->getSourceIdentifier();
             foreach ($localRecords as $localRecord) {
-                if ($localRecord->getUniqueID() == $dedupRecordData['dedup_id']) {
+                if ($localRecord->getUniqueID() == $dedupRecordData['dedup_id']
+                    && $localRecord->getSourceIdentifier() === $dedupSource
+                ) {
                     $foundLocalRecord = $localRecord;
                     break;
                 }
