@@ -32,6 +32,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -169,6 +170,13 @@ class Backend extends AbstractBackend
             }
         }
 
+        $translatedQueries = [];
+        $translatedParams = [];
+        foreach (array_keys($activeBackends) as $backendId) {
+            $translatedQueries[$backendId] = $params->get("query_$backendId")[0];
+            $translatedParams[$backendId] = $params->get("params_$backendId")[0];
+        }
+
         $collections = [];
 
         $blendLimit = $this->blendLimit;
@@ -182,10 +190,10 @@ class Backend extends AbstractBackend
         foreach ($activeBackends as $backendId => $backend) {
             try {
                 $collections[$backendId] = $backend->search(
-                    $this->translateQuery($query, $backendId),
+                    $translatedQueries[$backendId],
                     0,
                     $fetchLimit,
-                    $params->get("params_$backendId")[0]
+                    $translatedParams[$backendId]
                 );
             } catch (\Exception $e) {
                 $exception = $e;
@@ -236,8 +244,8 @@ class Backend extends AbstractBackend
                     < $backendTotals[$backendAtPos];
                 $record = $offsetOk ? $this->getRecord(
                     $activeBackends[$backendAtPos],
-                    $params->get("params_$backendAtPos")[0],
-                    $this->translateQuery($query, $backendAtPos),
+                    $translatedQueries[$backendAtPos],
+                    $translatedParams[$backendAtPos],
                     $backendRecords[$backendAtPos],
                     $backendOffsets[$backendAtPos]++
                 ) : null;
@@ -252,8 +260,8 @@ class Backend extends AbstractBackend
                             < $backendTotals[$backendId];
                         $record = $offsetOk ? $this->getRecord(
                             $activeBackends[$backendId],
-                            $params->get("params_$backendId")[0],
-                            $this->translateQuery($query, $backendId),
+                            $translatedQueries[$backendAtPos],
+                            $translatedParams[$backendAtPos],
                             $backendRecords[$backendId],
                             $backendOffsets[$backendId]++
                         ) : null;
@@ -312,8 +320,8 @@ class Backend extends AbstractBackend
      * Get a record from the given backend by offset
      *
      * @param AbstractBackend $backend        Backend
-     * @param ParamBag        $params         Search params
      * @param AbstractQuery   $query          Query
+     * @param ParamBag        $params         Search params
      * @param array           $backendRecords Record buffer
      * @param int             $offset         Record offset
      *
@@ -321,8 +329,8 @@ class Backend extends AbstractBackend
      */
     protected function getRecord(
         AbstractBackend $backend,
-        ParamBag $params,
         AbstractQuery $query,
+        ParamBag $params,
         array &$backendRecords,
         $offset
     ): RecordInterface {
@@ -332,31 +340,6 @@ class Backend extends AbstractBackend
             $backendRecords = $collection->getRecords();
         }
         return $backendRecords ? array_shift($backendRecords) : null;
-    }
-
-    /**
-     * Translate query to backend format
-     *
-     * @param AbstractQuery $query     Query
-     * @param string        $backendId Backend identifier
-     *
-     * @return AbstractQuery
-     */
-    protected function translateQuery(
-        AbstractQuery $query,
-        string $backendId
-    ): AbstractQuery {
-        if ($query instanceof Query) {
-            $handler = $query->getHandler();
-            if (null !== $handler) {
-                $mappings = $this->mappings['Search']['Fields'][$handler]['Mappings']
-                    ?? [];
-                if ($newHandler = $mappings[$backendId] ?? '') {
-                    $query->setHandler($newHandler);
-                }
-            }
-        }
-        return $query;
     }
 
     /**

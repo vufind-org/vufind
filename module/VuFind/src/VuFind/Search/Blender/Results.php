@@ -61,36 +61,15 @@ class Results extends \VuFind\Search\Solr\Results
         $params = $this->getParams()->getBackendParameters();
         $searchService = $this->getSearchService();
 
-        try {
-            $command = new SearchCommand(
-                $this->backendId,
-                $query,
-                $offset,
-                $limit,
-                $params
-            );
-            $searchService->invoke($command);
-            $collection = $command->getResult();
-        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            // If the query caused a parser error, see if we can clean it up:
-            if ($e->hasTag('VuFind\Search\ParserError')
-                && $newQuery = $this->fixBadQuery($query)
-            ) {
-                // We need to get a fresh command, since the previous one was
-                // manipulated by the previous search.
-                $command = new SearchCommand(
-                    $this->backendId,
-                    $newQuery,
-                    $offset,
-                    $limit,
-                    $params
-                );
-                $searchService->invoke($command);
-                $collection = $command->getResult();
-            } else {
-                throw $e;
-            }
-        }
+        $command = new SearchCommand(
+            $this->backendId,
+            $query,
+            $offset,
+            $limit,
+            $params
+        );
+        $searchService->invoke($command);
+        $collection = $command->getResult();
 
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();

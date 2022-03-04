@@ -124,14 +124,18 @@ class Params extends \VuFind\Search\Solr\Params
     {
         $result = parent::getBackendParameters();
         foreach ($this->searchParams as $params) {
+            $backendId = $params->getOptions()->getSearchClassId();
             if (!is_callable([$params, 'getBackendParameters'])) {
                 throw new \Exception(
-                    'Backend ' . $params->getBackendId()
-                    . ' missing support for getBackendParameters'
+                    "Backend $backendId missing support for getBackendParameters"
                 );
             }
             $result->set(
-                'params_' . $params->getOptions()->getSearchClassId(),
+                "query_$backendId",
+                $params->getQuery()
+            );
+            $result->set(
+                "params_$backendId",
                 $params->getBackendParameters()
             );
         }
