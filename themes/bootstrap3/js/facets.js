@@ -23,9 +23,9 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     icon.className = "hierarchy-facet-icon";
     if (facet.operator === 'OR') {
       if (facet.isApplied) {
-        icon.innerHTML = VuFind.icon("facet-unchecked");
-      } else {
         icon.innerHTML = VuFind.icon("facet-checked");
+      } else {
+        icon.innerHTML = VuFind.icon("facet-unchecked");
       }
     } else if (facet.isApplied) {
       icon.innerHTML = VuFind.icon("facet-checked", { class: "pull-right", title: selected });
@@ -50,7 +50,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         a.className = 'exclude';
         a.setAttribute('href', excludeUrl);
         a.setAttribute('title', excludeTitle);
-        a.append(VuFind.icon("ui-close"));
+        a.innerHTML = VuFind.icon("facet-exclude");
         html.appendChild(a);
       }
     }
