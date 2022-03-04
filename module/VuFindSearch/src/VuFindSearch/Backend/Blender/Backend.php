@@ -33,7 +33,6 @@ use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Command\SearchCommand;
-use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
@@ -49,7 +48,7 @@ use VuFindSearch\Response\RecordInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Backend extends AbstractBackend implements RetrieveBatchInterface
+class Backend extends AbstractBackend
 {
     /**
      * Actual backends
@@ -293,61 +292,6 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
             }
         }
         return $result;
-    }
-
-    /**
-     * Retrieve a batch of documents.
-     *
-     * @param array    $ids    Array of document identifiers
-     * @param ParamBag $params Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     */
-    public function retrieveBatch($ids, ParamBag $params = null)
-    {
-        // TODO: Do we actually need this? Broken at the moment!
-        if ($this->primaryBackend instanceof RetrieveBatchInterface) {
-            $results = $this->primaryBackend->retrieveBatch($ids, $params);
-        } else {
-            $results = null;
-            foreach ($ids as $id) {
-                $primaryResults = $this->primaryBackend->retrieve($id, $params);
-                if (null === $results) {
-                    $results = $primaryResults;
-                } else {
-                    $records = $primaryResults->getRecords();
-                    if ($records) {
-                        $results->add($records[0]);
-                    }
-                }
-            }
-        }
-        $found = [];
-        foreach ($results->getRecords() as $record) {
-            $found[] = $record->getUniqueID();
-        }
-        $missing = array_diff($ids, $found);
-        if ($missing) {
-            if ($this->secondaryBackend instanceof RetrieveBatchInterface) {
-                $secondResults = $this->secondaryBackend->retrieveBatch(
-                    $missing,
-                    $params
-                );
-                foreach ($secondResults->getRecords() as $record) {
-                    $results->add($record);
-                }
-            } else {
-                foreach ($missing as $id) {
-                    $secondResults = $this->secondaryBackend->retrieve($id, $params);
-                    $records = $secondResults->getRecords();
-                    if ($records) {
-                        $results->add($records[0]);
-                    }
-                }
-            }
-        }
-
-        return $results;
     }
 
     /**
