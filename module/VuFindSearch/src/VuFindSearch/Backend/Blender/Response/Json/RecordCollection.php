@@ -133,8 +133,23 @@ class RecordCollection
 
         $records = [];
         $backendIds = array_keys($backendRecords);
+        // Filter out unavailable backends from initial results source list:
+        $initialResults = array_values(
+            array_filter(
+                $this->initialResults,
+                function ($s) use ($backendIds)
+                {
+                    return in_array($s, $backendIds);
+                }
+            )
+        );
         for ($pos = 0; $pos < $limit; $pos++) {
-            $backendId = $this->getBackendAtPosition($pos, $blockSize, $backendIds);
+            $backendId = $this->getBackendAtPosition(
+                $pos,
+                $blockSize,
+                $backendIds,
+                $initialResults
+            );
             if (!empty($backendRecords[$backendId])) {
                 $this->add(array_shift($backendRecords[$backendId]), false);
             }
@@ -204,19 +219,21 @@ class RecordCollection
      * Note: This does not take into account whether there are enough records in the
      * source.
      *
-     * @param int   $position   Position
-     * @param int   $blockSize  Record block size
-     * @param array $backendIds Available backends
+     * @param int   $position       Position
+     * @param int   $blockSize      Record block size
+     * @param array $backendIds     Available backends
+     * @param array $initialResults List of backends for initial result boosts
      *
      * @return string
      */
     protected function getBackendAtPosition(
         int $position,
         int $blockSize,
-        array $backendIds
+        array $backendIds,
+        array $initialResults
     ): string {
-        if (isset($this->initialResults[$position])) {
-            return $this->initialResults[$position];
+        if ($boostBackend = $initialResults[$position] ?? false) {
+            return $boostBackend;
         }
 
         // We're outside the blocks affected by boosting, calculate by block
