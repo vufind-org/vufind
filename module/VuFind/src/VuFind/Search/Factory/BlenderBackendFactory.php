@@ -104,7 +104,7 @@ class BlenderBackendFactory implements FactoryInterface
         $yamlReader = $sm->get(\VuFind\Config\YamlReader::class);
         $blenderConfig = $this->config->get($this->searchConfig);
 
-        if (empty($blenderConfig->Backends)) {
+        if ($blenderConfig->Backends->count() === 0) {
             throw new \Exception('No backends enabled in blender.ini');
         }
         $backends = [];

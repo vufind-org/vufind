@@ -106,10 +106,15 @@ class RecordCollection
         int $blockSize
     ): array {
         $this->response = static::$template;
+        $this->rewind();
+
+        if (!$collections) {
+            return [];
+        }
+
         foreach ($collections as $collection) {
             $this->response['response']['numFound'] += $collection->getTotal();
         }
-        $this->rewind();
 
         $backendRecords = [];
         foreach ($collections as $backendId => $collection) {

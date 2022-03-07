@@ -149,7 +149,9 @@ class Backend extends AbstractBackend
             if (strncmp($current, 'blender_backend:', 16) === 0) {
                 $active = trim(substr($current, 16), '"');
                 if (!isset($activeBackends[$active])) {
-                    throw new \Exception("Invalid blender_backend filter: $active");
+                    throw new \Exception(
+                        "Invalid blender_backend filter: Backend $active not enabled"
+                    );
                 }
                 $filteredActiveBackends[$active] = $activeBackends[$active];
                 unset($fq[$key]);
@@ -211,6 +213,10 @@ class Backend extends AbstractBackend
             $offset + $limit,
             $this->blockSize
         );
+
+        if (!$collections) {
+            return $mergedCollection;
+        }
 
         // Fill up to the required records in a round-robin fashion
         if ($offset + $limit > $mergedCollection->count()) {
