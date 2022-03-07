@@ -71,6 +71,13 @@ class Backend extends AbstractBackend
     protected $blockSize;
 
     /**
+     * Adaptive block sizes for interleaved records
+     *
+     * @var array
+     */
+    protected $adaptiveBlockSizes;
+
+    /**
      * Blender configuration
      *
      * @var \Laminas\Config\Config
@@ -116,7 +123,11 @@ class Backend extends AbstractBackend
             ? count($this->config->Blending->initialResults->toArray())
             : 0;
         $this->blendLimit = max(20, $boostMax);
-        $this->blockSize = $this->config->Blending->blockSize ?? 10;
+        $this->blockSize = intval($this->config->Blending->blockSize ?? 10);
+        $this->adaptiveBlockSizes
+            = isset($this->config->Blending->adaptiveBlockSizes)
+            ? $this->config->Blending->adaptiveBlockSizes->toArray()
+            : [];
     }
 
     /**
@@ -208,10 +219,17 @@ class Backend extends AbstractBackend
             $mergedCollection->addError('search_backend_partial_failure');
         }
 
+        $totalCount = 0;
+        foreach ($collections as $collection) {
+            $totalCount += $collection->getTotal();
+        }
+        $blockSize = $this->getBlockSize($totalCount);
+
         $backendRecords = $mergedCollection->initBlended(
             $collections,
             $offset + $limit,
-            $this->blockSize
+            $blockSize,
+            $totalCount
         );
 
         if (!$collections) {
@@ -241,7 +259,7 @@ class Backend extends AbstractBackend
             // Fetch records
             $backendCount = count($availableBackendIds);
             for (; $pos < $limit + $offset; $pos++) {
-                $currentBlock = floor($pos / $this->blockSize);
+                $currentBlock = floor($pos / $blockSize);
                 $backendAtPos = $availableBackendIds[$currentBlock % $backendCount];
 
                 $offsetOk = $backendOffsets[$backendAtPos]
@@ -251,7 +269,8 @@ class Backend extends AbstractBackend
                     $translatedQueries[$backendAtPos],
                     $translatedParams[$backendAtPos],
                     $backendRecords[$backendAtPos],
-                    $backendOffsets[$backendAtPos]++
+                    $backendOffsets[$backendAtPos]++,
+                    $blockSize
                 ) : null;
 
                 if (null === $record) {
@@ -267,7 +286,8 @@ class Backend extends AbstractBackend
                             $translatedQueries[$backendAtPos],
                             $translatedParams[$backendAtPos],
                             $backendRecords[$backendId],
-                            $backendOffsets[$backendId]++
+                            $backendOffsets[$backendId]++,
+                            $blockSize
                         ) : null;
 
                         if (null !== $record) {
@@ -328,6 +348,7 @@ class Backend extends AbstractBackend
      * @param ParamBag        $params         Search params
      * @param array           $backendRecords Record buffer
      * @param int             $offset         Record offset
+     * @param int             $blockSize      Blending block size
      *
      * @return RecordInterface|null
      */
@@ -336,14 +357,42 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         ParamBag $params,
         array &$backendRecords,
-        $offset
+        int $offset,
+        int $blockSize
     ): RecordInterface {
         if (!$backendRecords) {
             $collection
-                = $backend->search($query, $offset, $this->blockSize, $params);
+                = $backend->search($query, $offset, $blockSize, $params);
             $backendRecords = $collection->getRecords();
         }
         return $backendRecords ? array_shift($backendRecords) : null;
+    }
+
+    /**
+     * Get the block size for the given result count
+     *
+     * @param int $resultCount Result count
+     *
+     * @return int
+     */
+    protected function getBlockSize(int $resultCount): int
+    {
+        foreach ($this->adaptiveBlockSizes as $size) {
+            $parts = explode(':', $size, 2);
+            if (!isset($parts[1]) || intval($parts[1]) === 0) {
+                throw new \Exception("Invalid adaptive block size: $size");
+            }
+            $rangeParts = explode('-', $parts[0]);
+            if (!isset($rangeParts[1])) {
+                throw new \Exception("Invalid adaptive block size: $size");
+            }
+            if (intval($rangeParts[0]) <= $resultCount
+                && $resultCount <= intval($rangeParts[1])
+            ) {
+                return intval($parts[1]);
+            }
+        }
+        return $this->blockSize;
     }
 
     /**

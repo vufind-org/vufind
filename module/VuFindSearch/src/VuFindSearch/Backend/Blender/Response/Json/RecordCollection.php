@@ -97,23 +97,22 @@ class RecordCollection
      * @param array $collections Array of record collections
      * @param int   $limit       Result limit
      * @param int   $blockSize   Blending block size
+     * @param int   $totalCount  Total result count
      *
      * @return array Remaining records keyed by backend identifier
      */
     public function initBlended(
         array $collections,
         int $limit,
-        int $blockSize
+        int $blockSize,
+        int $totalCount
     ): array {
         $this->response = static::$template;
+        $this->response['response']['numFound'] = $totalCount;
         $this->rewind();
 
         if (!$collections) {
             return [];
-        }
-
-        foreach ($collections as $collection) {
-            $this->response['response']['numFound'] += $collection->getTotal();
         }
 
         $backendRecords = [];
