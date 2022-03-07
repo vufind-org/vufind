@@ -268,12 +268,8 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         }
 
         // Special option: escape content
-        $escapeContent = $options['escapeContent'] ?? true;
-
-        if ($escapeContent) {
-            return '<' . $tagName . $htmlAttrs . '>' .
-                $this->getView()->plugin('escapeHtml')($contents) .
-                '</' . $tagName . '>';
+        if ($options['escapeContent'] ?? true) {
+            $contents = $this->getView()->plugin('escapeHtml')($contents);
         }
 
         return '<' . $tagName . $htmlAttrs . '>' . $contents . '</' . $tagName . '>';
