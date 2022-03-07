@@ -311,7 +311,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() with string return
+     * Test getMergedConfig() on string value in config
      *
      * @return void
      */
