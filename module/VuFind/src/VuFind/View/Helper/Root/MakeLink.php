@@ -42,7 +42,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      * Combine attributes including proxy
      *
      * @param string       $href    Link destination (null to skip)
-     * @param string|array $attrs   Link attributes (associative array)
+     * @param string|array $attrs   Link attributes (class name or associative array)
      * @param array        $options Additional options
      *
      * @return array (associative) Combined attributes by key
@@ -86,7 +86,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string       $contents Link contents (must be properly-formed HTML)
      * @param string       $href     Link destination (null to skip)
-     * @param string|array $attrs    Link attributes (associative array)
+     * @param string|array $attrs    Link attributes (class name / associative array)
      * @param array        $options  Additional options
      *
      * @return string HTML for an anchor tag
