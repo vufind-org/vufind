@@ -124,7 +124,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         RecommendLinks::class => InjectConfigManagerFactory::class,
         RemoveFilters::class => InvokableFactory::class,
         SideFacets::class => SideFacetsFactory::class,
-        SideFacetsDeferred::class => InjectConfigManagerFactory::class,
+        SideFacetsDeferred::class => SideFacetsFactory::class,
         SpellingSuggestions::class => InvokableFactory::class,
         SummonBestBets::class => InjectResultsManagerFactory::class,
         SummonBestBetsDeferred::class => InvokableFactory::class,
