@@ -142,8 +142,7 @@ class RecordCollection
         $initialResults = array_values(
             array_filter(
                 $this->initialResults,
-                function ($s) use ($backendIds)
-                {
+                function ($s) use ($backendIds) {
                     return in_array($s, $backendIds);
                 }
             )
