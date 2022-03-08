@@ -290,12 +290,16 @@ class RecordCollection
                         if ('boolean' === $facetType) {
                             $field = $field ? 'true' : 'false';
                         }
-                    } elseif ('hierarchical' === $facetType) {
-                        $field = "0/$field/";
                     } elseif ('boolean' === $facetType) {
                         // No mapping for boolean facet, ignore the value
                         continue;
                     }
+                    if ('hierarchical' === $facetType
+                        && !preg_match('/^\d+\/.+\/$/', $field)
+                    ) {
+                        $field = "0/$field/";
+                    }
+
                     if (isset($list[$field])) {
                         $list[$field] += $count;
                     } else {
