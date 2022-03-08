@@ -36,7 +36,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
-
+use VuFind\RecordDriver\Missing;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
 
@@ -307,6 +307,7 @@ class DeduplicationListener
             foreach ($localRecords as $localRecord) {
                 if ($localRecord->getUniqueID() == $dedupRecordData['dedup_id']
                     && $localRecord->getSourceIdentifier() === $dedupSource
+                    && !($localRecord instanceof Missing)
                 ) {
                     $foundLocalRecord = $localRecord;
                     break;
