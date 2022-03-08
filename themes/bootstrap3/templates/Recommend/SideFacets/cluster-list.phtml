@@ -6,6 +6,16 @@
 <?php
   // If we always use the lightbox, we don't want to turn on truncation.
   $facetLightbox = $this->options->getFacetListAction();
+  $facetLightboxParams = http_build_query(
+      [
+          'facet' => $this->title,
+          'facetop' => $thisFacet['operator'],
+          'facetexclude' => $this->allowExclude ? 1 : 0,
+          'searchClassId' => $this->searchClassId
+      ],
+      '',
+      '&amp;'
+  );
   $alwaysUseLightbox = ($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox;
   $truncateSettings = $alwaysUseLightbox ? false : [
     'rows' => $this->facets_before_more,
@@ -21,7 +31,7 @@
     <?php if ($i == $this->facets_before_more): ?>
       <?php
         $moreUrl = $facetLightbox
-          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0)
+          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams"
           : '#';
       ?>
       <?php if ($alwaysUseLightbox): ?>
@@ -44,7 +54,7 @@
   <?php if (isset($i) && $i >= $this->facets_before_more): ?>
     <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
       <?php
-        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
+        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
         if (!empty($this->baseUriExtra)) {
           $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
         }
