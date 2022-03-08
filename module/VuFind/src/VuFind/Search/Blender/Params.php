@@ -28,7 +28,6 @@
  */
 namespace VuFind\Search\Blender;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
 
@@ -66,6 +65,13 @@ class Params extends \VuFind\Search\Solr\Params
     protected $mappings;
 
     /**
+     * Temporarily disabled backends
+     *
+     * @var array
+     */
+    protected $disabledBackends = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options       Options to use
@@ -83,15 +89,16 @@ class Params extends \VuFind\Search\Solr\Params
         \Laminas\Config\Config $blenderConfig,
         $mappings
     ) {
+        // Assign these first; they are needed during parent's construct:
+        $this->searchParams = $searchParams;
+        $this->blenderConfig = $blenderConfig;
+        $this->mappings = $mappings;
+
         parent::__construct(
             $options,
             $configLoader,
             $facetHelper
         );
-
-        $this->searchParams = $searchParams;
-        $this->blenderConfig = $blenderConfig;
-        $this->mappings = $mappings;
     }
 
     /**
@@ -104,15 +111,198 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function initFromRequest($request)
     {
-        parent::initFromRequest($request);
+        $this->disabledBackends = [];
+
+        // First do a basic init without filters, facets etc. that are processed via
+        // methods called by parent's initFromRequest:
+        $filteredParams = [
+            'lookfor',
+            'type',
+            'sort',
+            'filter',
+            'hiddenFilter'
+        ];
         foreach ($this->searchParams as $params) {
-            $params->initFromRequest(
-                $this->translateRequest(
-                    $request,
-                    $params->getOptions()->getSearchClassId()
-                )
-            );
+            $translatedRequest = clone $request;
+            foreach (array_keys($translatedRequest->getArrayCopy()) as $key) {
+                if (in_array($key, $filteredParams)) {
+                    $translatedRequest->offsetUnset($key);
+                }
+            }
+            $params->initFromRequest($translatedRequest);
         }
+        parent::initFromRequest($request);
+    }
+
+    /**
+     * Initialize the object's search settings from a request object.
+     *
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initSearch($request)
+    {
+        parent::initSearch($request);
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getOptions()->getSearchClassId();
+            // Clone request to avoid tampering the original one:
+            $translatedRequest = clone $request;
+            // Map search type:
+            if ($type = $translatedRequest->get('type')) {
+                $translatedRequest->set(
+                    'type',
+                    $this->mappings['Search']['Fields'][$type][$backendId] ?? ''
+                );
+            }
+            $params->initSearch($translatedRequest);
+        }
+    }
+
+    /**
+     * Get the value for which type of sorting to use
+     *
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initSort($request)
+    {
+        parent::initSort($request);
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getOptions()->getSearchClassId();
+            // Clone request to avoid tampering the original one:
+            $translatedRequest = clone $request;
+            // Map sort:
+            if ($sort = $translatedRequest->get('sort')) {
+                $translatedRequest->set(
+                    'sort',
+                    $this->mappings['Sorting']['Fields'][$sort][$backendId] ?? ''
+                );
+            }
+            $params->initSort($translatedRequest);
+        }
+    }
+
+    /**
+     * Take a filter string and add it into the protected
+     *   array checking for duplicates.
+     *
+     * @param string $newFilter A filter string from url : "field:value"
+     *
+     * @return void
+     */
+    public function addFilter($newFilter)
+    {
+        parent::addFilter($newFilter);
+        if ($this->isBlenderFilter($newFilter)) {
+            return;
+        }
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getOptions()->getSearchClassId();
+            if ($translated = $this->translateFilter($newFilter, $backendId)) {
+                foreach ($translated as $current) {
+                    if ('blender_ignore:true' !== $current) {
+                        $params->addFilter($current);
+                    }
+                }
+            } else {
+                // Disable the backend since it doesn't support the filter:
+                $this->disabledBackends[$backendId] = true;
+            }
+        }
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * @param string $newFilter A filter string from url : "field:value"
+     *
+     * @return void
+     */
+    public function addHiddenFilter($newFilter)
+    {
+        parent::addHiddenFilter($newFilter);
+        if ($this->isBlenderFilter($newFilter)) {
+            return;
+        }
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getOptions()->getSearchClassId();
+            if ($translated = $this->translateFilter($newFilter, $backendId)) {
+                foreach ($translated as $current) {
+                    if ('blender_ignore:true' !== $current) {
+                        $params->addHiddenFilter($current);
+                    }
+                }
+            } else {
+                // Disable the backend since it doesn't support the filter:
+                $this->disabledBackends[$backendId] = true;
+            }
+        }
+    }
+
+    /**
+     * Add a field to facet on.
+     *
+     * @param string $newField Field name
+     * @param string $newAlias Optional on-screen display label
+     * @param bool   $ored     Should we treat this as an ORed facet?
+     *
+     * @return void
+     */
+    public function addFacet($newField, $newAlias = null, $ored = false)
+    {
+        parent::addFacet($newField, $newAlias, $ored);
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getOptions()->getSearchClassId();
+            if ($translated = $this->translateFacet($newField, $backendId)) {
+                $params->addFacet($translated, $newAlias, $ored);
+            }
+        }
+    }
+
+    /**
+     * Add a checkbox facet.  When the checkbox is checked, the specified filter
+     * will be applied to the search.  When the checkbox is not checked, no filter
+     * will be applied.
+     *
+     * @param string $filter [field]:[value] pair to associate with checkbox
+     * @param string $desc   Description to associate with the checkbox
+     *
+     * @return void
+     */
+    public function addCheckboxFacet($filter, $desc)
+    {
+        parent::addCheckboxFacet($filter, $desc);
+        if ($this->isBlenderFilter($filter)) {
+            return;
+        }
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getOptions()->getSearchClassId();
+            if ($translated = $this->translateFilter($filter, $backendId)) {
+                foreach ($translated as $current) {
+                    if ('blender_ignore:true' !== $current) {
+                        $params->addCheckboxFacet($current, $desc);
+                    }
+                }
+            } else {
+                // Disable the backend since it doesn't support the filter:
+                $this->disabledBackends[$backendId] = true;
+            }
+        }
+    }
+
+    /**
+     * Reset the current facet configuration.
+     *
+     * @return void
+     */
+    public function resetFacetConfig()
+    {
+        $this->proxyMethod(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -123,6 +313,9 @@ class Params extends \VuFind\Search\Solr\Params
     public function getBackendParameters(): ParamBag
     {
         $result = parent::getBackendParameters();
+        foreach (array_keys($this->disabledBackends) as $backendId) {
+            $result->add('fq', "-blender_backend:$backendId");
+        }
         foreach ($this->searchParams as $params) {
             $backendId = $params->getOptions()->getSearchClassId();
             if (!is_callable([$params, 'getBackendParameters'])) {
@@ -143,110 +336,89 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a request for a backend
+     * Proxy a method call to parent class and all backend params classes
      *
-     * @param Parameters $request   Parameter object representing user request.
-     * @param string     $backendId Backend identifier
+     * @param string $method Method
+     * @param array  $params Method parameters
      *
-     * @return Parameters
+     * @return mixed
      */
-    protected function translateRequest(
-        Parameters $request,
-        string $backendId
-    ): Parameters {
-        // Clone request to avoid tampering with the original one:
-        $request = clone $request;
-        $facets = $this->mappings['Facets'] ?? [];
-        $filters = $request->get('filter');
-        if (!empty($filters)) {
-            $newFilters = [];
-            foreach ((array)$filters as $filter) {
-                [$field, $value] = $this->parseFilter($filter);
-                // Ignore special blender_backend filters here:
-                if ('blender_backend' === $field) {
-                    continue;
-                }
-                $prefix = '';
-                if (substr($field, 0, 1) === '~') {
-                    $prefix = '~';
-                    $field = substr($field, 1);
-                }
-                $values = [$value];
-
-                $resultValues = $this->translateFilter($field, $value, $backendId);
-                if ($resultValues) {
-                    $values = $resultValues;
-                }
-                $field = $facets['Fields'][$field]['Mappings'][$backendId]['Field']
-                    ?? '';
-                if (!$field) {
-                    continue;
-                }
-
-                // EDS special case:
-                if ('EDS' === $backendId) {
-                    array_map(
-                        [
-                            '\VuFindSearch\Backend\EDS\SearchRequestModel',
-                            'escapeSpecialCharacters'
-                        ],
-                        $values
-                    );
-                }
-                foreach ($values as $value) {
-                    $newFilters[] = $prefix . $field . ':"' . $value . '"';
-                }
-            }
-            $request->set('filter', $newFilters);
+    protected function proxyMethod(string $method, array $params)
+    {
+        $result = call_user_func_array(['parent', $method], $params);
+        foreach ($this->searchParams as $searchParams) {
+            $result = call_user_func_array([$searchParams, $method], $params);
         }
-
-        // Map search type:
-        if ($type = $request->get('type')) {
-            $request->set(
-                'type',
-                $this->mappings['Search']['Fields'][$type][$backendId] ?? ''
-            );
-        }
-
-        // Map sort option:
-        if ($sort = $request->get('sort')) {
-            $request->set(
-                'sort',
-                $this->mappings['Sorting']['Fields'][$sort][$backendId] ?? ''
-            );
-        }
-
-        return $request;
+        return $result;
     }
 
     /**
-     * Translate a facet filter
+     * Translate a facet
      *
-     * @param string $field     Filter field
-     * @param string $value     Filter value
+     * @param string $field     Facet field
+     * @param string $backendId Backend ID
+     *
+     * @return string
+     */
+    protected function translateFacet(string $field, string $backendId): string
+    {
+        $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
+        $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
+        return $mappings['Field'] ?? '';
+    }
+
+    /**
+     * Check if the filter is a special Blender filter
+     *
+     * @param string $filter Filter
+     *
+     * @return bool
+     */
+    protected function isBlenderFilter(string $filter): bool
+    {
+        [$field] = $this->parseFilter($filter);
+        if (substr($field, 0, 1) === '~') {
+            $field = substr($field, 1);
+        }
+        return 'blender_backend' === $field;
+    }
+
+    /**
+     * Translate a filter
+     *
+     * @param string $filter    Filter
      * @param string $backendId Backend ID
      *
      * @return array
      */
-    protected function translateFilter(
-        string $field,
-        string $value,
-        string $backendId
-    ): array {
+    protected function translateFilter(string $filter, string $backendId): array
+    {
+        [$field, $value] = $this->parseFilter($filter);
+        $prefix = '';
+        if (substr($field, 0, 1) === '~') {
+            $prefix = '~';
+            $field = substr($field, 1);
+        }
+
         $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
+        $translatedField = $fieldConfig['Mappings'][$backendId]['Field'] ?? '';
+        if (!$translatedField) {
+            return [];
+        }
+
         $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
         if (!$mappings || empty($mappings['Field'])) {
             // Facet not supported by the backend
             return [];
         }
 
-        // Map facet value
+        // Map filter value
         $facetType = $fieldConfig['Type'] ?? 'normal';
         if ('boolean' === $facetType) {
             $value = (bool)$value;
         }
         $resultValues = [];
-        foreach ($mappings['Values'] ?? [] as $k => $v) {
+        foreach ($mappings['Values'] ?? [$value => $value] as $k => $v) {
             if ('boolean' === $facetType) {
                 $v = (bool)$v;
             }
@@ -293,6 +465,11 @@ class Params extends \VuFind\Search\Solr\Params
             }
         }
 
-        return $resultValues;
+        $result = [];
+        foreach ($resultValues as $value) {
+            $result[] = $prefix . $translatedField . ':' . $value;
+        }
+
+        return $result;
     }
 }

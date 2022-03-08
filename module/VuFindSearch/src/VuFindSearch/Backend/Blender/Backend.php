@@ -32,6 +32,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -153,10 +154,10 @@ class Backend extends AbstractBackend
 
         $activeBackends = $this->backends;
 
-        // Handle the blender_backend pseudo-facet
-        $fq = $params->get('fq');
+        // Handle the blender_backend pseudo-filter
+        $fq = $params->get('fq') ?? [];
         $filteredActiveBackends = [];
-        foreach ($fq ?? [] as $key => $current) {
+        foreach ($fq as $current) {
             if (strncmp($current, 'blender_backend:', 16) === 0) {
                 $active = trim(substr($current, 16), '"');
                 if (!isset($activeBackends[$active])) {
@@ -165,19 +166,17 @@ class Backend extends AbstractBackend
                     );
                 }
                 $filteredActiveBackends[$active] = $activeBackends[$active];
-                unset($fq[$key]);
-                $params->set('fq', $fq);
             }
         }
         if ($filteredActiveBackends) {
             $activeBackends = $filteredActiveBackends;
         }
-        $facetFields = $params->get('facet.field');
-        foreach ($facetFields ?? [] as $key => $current) {
-            if ('{!ex=blender_backend_filter}blender_backend' === $current) {
-                unset($facetFields[$key]);
-                $params->set('facet.field', $facetFields);
-                break;
+        foreach ($fq as $current) {
+            if (strncmp($current, '-blender_backend:', 17) === 0) {
+                $disabled = trim(substr($current, 17), '"');
+                if (isset($activeBackends[$disabled])) {
+                    unset($activeBackends[$disabled]);
+                }
             }
         }
 
@@ -212,7 +211,9 @@ class Backend extends AbstractBackend
         }
 
         if ($exception) {
-            if (!$collections) {
+            // Throw exception right away if we didn't get any results or the query
+            // is invalid for a backend:
+            if (!$collections || ($exception instanceof RequestErrorException)) {
                 // No results and an exception previously encountered, raise it now:
                 throw $exception;
             }
