@@ -242,7 +242,7 @@ class RecordCollection
         // We're outside the blocks affected by boosting, calculate by block
         $currentBlock = floor($position / $blockSize);
         $backendCount = count($backendIds);
-        return $backendIds[$currentBlock % $backendCount];
+        return $backendCount ? $backendIds[$currentBlock % $backendCount] : '';
     }
 
     /**
