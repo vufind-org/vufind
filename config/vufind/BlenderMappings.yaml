@@ -10,16 +10,20 @@
 # are normal (default), hierarchical and boolean (checkbox facet).
 Facets:
   Fields:
-    building:
+    institution:
       Mappings:
         Solr:
-          Field: building
+          Field: institution
         Primo:
           Field: domain
         EDS:
           Field: ContentProvider
+    building:
+      Type: hierarchical
+      Mappings:
+        Solr:
+          Field: building
     format:
-      #Type: hierarchical
       Mappings:
         EDS:
           Field: SourceType
