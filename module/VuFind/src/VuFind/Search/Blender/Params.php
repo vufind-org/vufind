@@ -147,7 +147,7 @@ class Params extends \VuFind\Search\Solr\Params
     {
         parent::initSearch($request);
         foreach ($this->searchParams as $params) {
-            $backendId = $params->getOptions()->getSearchClassId();
+            $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
             $translatedRequest = clone $request;
             // Map search type:
@@ -173,7 +173,7 @@ class Params extends \VuFind\Search\Solr\Params
     {
         parent::initSort($request);
         foreach ($this->searchParams as $params) {
-            $backendId = $params->getOptions()->getSearchClassId();
+            $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
             $translatedRequest = clone $request;
             // Map sort:
@@ -202,7 +202,7 @@ class Params extends \VuFind\Search\Solr\Params
             return;
         }
         foreach ($this->searchParams as $params) {
-            $backendId = $params->getOptions()->getSearchClassId();
+            $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFilter($newFilter, $backendId)) {
                 foreach ($translated as $current) {
                     if ('blender_ignore:true' !== $current) {
@@ -231,7 +231,7 @@ class Params extends \VuFind\Search\Solr\Params
             return;
         }
         foreach ($this->searchParams as $params) {
-            $backendId = $params->getOptions()->getSearchClassId();
+            $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFilter($newFilter, $backendId)) {
                 foreach ($translated as $current) {
                     if ('blender_ignore:true' !== $current) {
@@ -258,7 +258,7 @@ class Params extends \VuFind\Search\Solr\Params
     {
         parent::addFacet($newField, $newAlias, $ored);
         foreach ($this->searchParams as $params) {
-            $backendId = $params->getOptions()->getSearchClassId();
+            $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFacet($newField, $backendId)) {
                 $params->addFacet($translated, $newAlias, $ored);
             }
@@ -282,7 +282,7 @@ class Params extends \VuFind\Search\Solr\Params
             return;
         }
         foreach ($this->searchParams as $params) {
-            $backendId = $params->getOptions()->getSearchClassId();
+            $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFilter($filter, $backendId)) {
                 foreach ($translated as $current) {
                     if ('blender_ignore:true' !== $current) {
@@ -318,7 +318,7 @@ class Params extends \VuFind\Search\Solr\Params
             $result->add('fq', "-blender_backend:$backendId");
         }
         foreach ($this->searchParams as $params) {
-            $backendId = $params->getOptions()->getSearchClassId();
+            $backendId = $params->getSearchClassId();
             if (!is_callable([$params, 'getBackendParameters'])) {
                 throw new \Exception(
                     "Backend $backendId missing support for getBackendParameters"
