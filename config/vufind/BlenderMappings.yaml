@@ -8,6 +8,36 @@
 
 # In Facets Type indicates what kind of processing the facet needs. Allowed values
 # are normal (default), hierarchical and boolean (checkbox facet).
+# Facets include filter mappings e.g. for checkbox facets.
+#
+# Settings:
+# Field         Field name in backend
+# Values        Mappings from backend values to VuFind
+# DefaultValue  Value used for the backend unless another value is provided. For
+#               example the pcAvailability filter by default limits results to those
+#               that have full text available, so a DefaultValue can be used to
+#               override it.
+#
+# Example:
+#
+# Facets:                             # Facet configuration section
+#   Fields:                           # Field configuration
+#     fulltext:                       # Field name in VuFind
+#       Type: boolean                 # Field type
+#       Mappings:                     # Mappings for backends
+#         Solr:                       # Solr backend
+#           Field: fulltext_boolean   # Use fulltext_boolean field with Solr
+#         Primo:                      # Primo backend
+#           Field: pcAvailability     # Use pcAvailability field with Primo
+#           Values:                   # Value mappings
+#             "false": 1              # Map 1 in VuFind to "false"
+#           DefaultValue: "true"      # If no filter set, use "pcAvailability=true"
+#         EDS:                        # EDS backend
+#           Field: "LIMIT|FT"         # Use limiter "LIMIT|FT" with EDS
+#           Values:                   # Map 1 in VuFind to "y"
+#             y: 1
+
+# Facet and filter mappings
 Facets:
   Fields:
     institution:
@@ -83,25 +113,45 @@ Facets:
           Field: author_facet
         Primo:
           Field: creator
+        EDS:
+          Field: "LIMIT|AU"
     topic:
       Mappings:
         Solr:
           Field: topic
         Primo:
           Field: topic
+        EDS:
+          Field: SubjectEDS
     publish_date:
       Mappings:
         Solr:
           Field: publish_date
         Primo:
           Field: creationdate
+        EDS:
+          Field: PublicationDate
     language:
       Mappings:
         Solr:
           Field: language
         Primo:
           Field: lang
-    online_boolean:
+    fulltext:
+      Type: boolean
+      Mappings:
+        Solr:
+          Field: fulltext_boolean
+        Primo:
+          Field: pcAvailability
+          Values:
+            "false": 1
+          DefaultValue: "true"
+        EDS:
+          Field: "LIMIT|FT"
+          Values:
+            "y": true
+    online:
       Type: boolean
       Mappings:
         Solr:
@@ -110,7 +160,7 @@ Facets:
           Field: tlevel
           Values:
             online_resources: true
-    open_access_boolean:
+    open_access:
       Type: boolean
       Mappings:
         Solr:
@@ -119,7 +169,7 @@ Facets:
           Field: tlevel
           Values:
             open_access: true
-    peer_reviewed_boolean:
+    peer_reviewed:
       Type: boolean
       Mappings:
         Solr:
@@ -128,6 +178,10 @@ Facets:
           Field: tlevel
           Values:
             peer_reviewed: true
+        EDS:
+          Field: "LIMIT|RV"
+          Values:
+            "y": true
 # Search type mappings between backends
 Search:
   Fields:
@@ -135,18 +189,22 @@ Search:
       Mappings:
         Solr: AllFields
         Primo: AllFields
+        EDS: AllFields
     Title:
       Mappings:
         Solr: Title
         Primo: Title
+        EDS: TI
     Author:
       Mappings:
         Solr: Author
         Primo: Author
+        EDS: AU
     Subject:
       Mappings:
         Solr: Subject
         Primo: Subject
+        EDS: SU
 # Sort mappings between backends
 Sorting:
   Fields:

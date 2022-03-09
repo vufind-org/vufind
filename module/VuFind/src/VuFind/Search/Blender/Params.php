@@ -28,6 +28,7 @@
  */
 namespace VuFind\Search\Blender;
 
+use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
 
@@ -323,6 +324,9 @@ class Params extends \VuFind\Search\Solr\Params
                     "Backend $backendId missing support for getBackendParameters"
                 );
             }
+
+            $this->addDefaultFilters($params, $backendId);
+
             $result->set(
                 "query_$backendId",
                 $params->getQuery()
@@ -333,6 +337,38 @@ class Params extends \VuFind\Search\Solr\Params
             );
         }
         return $result;
+    }
+
+    /**
+     * Add default filters to the given params
+     *
+     * @param BaseParams $params    Params
+     * @param string     $backendId Backend ID
+     *
+     * @return void
+     */
+    protected function addDefaultFilters(BaseParams $params, string $backendId): void
+    {
+        foreach ($this->mappings['Facets']['Fields'] as $field => $fieldConfig) {
+            $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
+            $defaultValue = $mappings['DefaultValue'] ?? null;
+            if (null !== $defaultValue) {
+                $translatedField = $mappings['Field'];
+                $filterList = $params->getFilterList();
+                $found = false;
+                foreach ($filterList as $filters) {
+                    foreach ($filters as $filter) {
+                        if ($filter['field'] === $translatedField) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!$found) {
+                    $params->addFilter("$translatedField:$defaultValue");
+                }
+            }
+        }
     }
 
     /**
