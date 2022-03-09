@@ -3,10 +3,12 @@
   $this->layout()->breadcrumbs = '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a>';
   $filterList = [];
   $filterString = '';
-  foreach ($filters['Other'] ?? [] as $filter) {
-    $filter['urlPart'] = $filter['field'] . ':' . $filter['value'];
-    $filterList[] = $filter;
-    $filterString .= '&' . urlencode('filter[]') . '=' . urlencode($filter['urlPart']);
+  foreach ($filters ?? [] as $label => $filterBatch) {
+    foreach ($filterBatch as $filter) {
+      $filter['urlPart'] = $filter['field'] . ':' . $filter['value'];
+      $filterList[] = $filter;
+      $filterString .= '&' . urlencode('filter[]') . '=' . urlencode($filter['urlPart']);
+    }
   }
 ?>
 
