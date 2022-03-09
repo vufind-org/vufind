@@ -151,59 +151,33 @@ class Backend extends AbstractBackend
             $this->config,
             $this->mappings
         );
+        $mergedCollection->setSourceIdentifier($this->identifier);
 
-        $activeBackends = $this->backends;
-
-        // Handle the blender_backend pseudo-filter
-        $fq = $params->get('fq') ?? [];
-        $filteredActiveBackends = [];
-        foreach ($fq as $current) {
-            if (strncmp($current, 'blender_backend:', 16) === 0) {
-                $active = trim(substr($current, 16), '"');
-                if (!isset($activeBackends[$active])) {
-                    throw new \Exception(
-                        "Invalid blender_backend filter: Backend $active not enabled"
-                    );
-                }
-                $filteredActiveBackends[$active] = $activeBackends[$active];
-            }
+        $backendDetails = [];
+        foreach ($this->getActiveBackends($params) as $backendId => $backend) {
+            $backendDetails[$backendId] = [
+                'backend' => $backend,
+                'query' => $params->get("query_$backendId")[0],
+                'params' => $params->get("params_$backendId")[0]
+            ];
         }
-        if ($filteredActiveBackends) {
-            $activeBackends = $filteredActiveBackends;
-        }
-        foreach ($fq as $current) {
-            if (strncmp($current, '-blender_backend:', 17) === 0) {
-                $disabled = trim(substr($current, 17), '"');
-                if (isset($activeBackends[$disabled])) {
-                    unset($activeBackends[$disabled]);
-                }
-            }
-        }
-
-        $translatedQueries = [];
-        $translatedParams = [];
-        foreach (array_keys($activeBackends) as $backendId) {
-            $translatedQueries[$backendId] = $params->get("query_$backendId")[0];
-            $translatedParams[$backendId] = $params->get("params_$backendId")[0];
-        }
-
-        $collections = [];
 
         $blendLimit = $this->blendLimit;
         if ($limit === 0) {
             $blendLimit = 0;
         }
-        $exceptions = [];
         // If offset is less than the limit, fetch from backends up to the limit
         // first:
         $fetchLimit = $offset <= $this->blendLimit ? $blendLimit : 0;
-        foreach ($activeBackends as $backendId => $backend) {
+        $collections = [];
+        $exceptions = [];
+        foreach ($backendDetails as $backendId => $details) {
             try {
-                $collections[$backendId] = $backend->search(
-                    $translatedQueries[$backendId],
+                $collections[$backendId] = $details['backend']->search(
+                    $details['query'],
                     0,
                     $fetchLimit,
-                    $translatedParams[$backendId]
+                    $details['params']
                 );
             } catch (\Exception $e) {
                 $exceptions[$backendId] = $e;
@@ -243,77 +217,105 @@ class Backend extends AbstractBackend
             return $mergedCollection;
         }
 
-        // Fill up to the required records in a round-robin fashion
-        if ($offset + $limit > $mergedCollection->count()) {
-            $backendOffsets = [];
-            $collectionOffsets = [];
-            $backendTotals = [];
-            $availableBackendIds = array_keys($collections);
-            foreach ($availableBackendIds as $backendId) {
-                $backendOffsets[$backendId] = 0;
-                $collectionOffsets[$backendId] = 0;
-                $backendTotals[$backendId] = $collections[$backendId]->getTotal();
-            }
-            // First iterate through the merged records before the offset to
-            // calculate proper backend offsets for further records:
-            $records = $mergedCollection->getRecords();
-            $pos = 0;
-            foreach ($records as $record) {
-                ++$pos;
-                ++$backendOffsets[$record->getSearchBackendIdentifier()];
-            }
-
-            // Fetch records
-            $backendCount = count($availableBackendIds);
-            for (; $pos < $limit + $offset; $pos++) {
-                $currentBlock = floor($pos / $blockSize);
-                $backendAtPos = $availableBackendIds[$currentBlock % $backendCount];
-
-                $offsetOk = $backendOffsets[$backendAtPos]
-                    < $backendTotals[$backendAtPos];
-                $record = $offsetOk ? $this->getRecord(
-                    $activeBackends[$backendAtPos],
-                    $translatedQueries[$backendAtPos],
-                    $translatedParams[$backendAtPos],
-                    $backendRecords[$backendAtPos],
-                    $backendOffsets[$backendAtPos]++,
-                    $blockSize
-                ) : null;
-
-                if (null === $record) {
-                    // Try other backends:
-                    foreach ($availableBackendIds as $backendId) {
-                        if ($backendId === $backendAtPos) {
-                            continue;
-                        }
-                        $offsetOk = $backendOffsets[$backendId]
-                            < $backendTotals[$backendId];
-                        $record = $offsetOk ? $this->getRecord(
-                            $activeBackends[$backendId],
-                            $translatedQueries[$backendAtPos],
-                            $translatedParams[$backendAtPos],
-                            $backendRecords[$backendId],
-                            $backendOffsets[$backendId]++,
-                            $blockSize
-                        ) : null;
-
-                        if (null !== $record) {
-                            break;
-                        }
-                    }
-                }
-
-                if (null === $record) {
-                    break;
-                }
-                $mergedCollection->add($record, false);
-            }
-        }
+        $this->fillMergedCollection(
+            $mergedCollection,
+            $collections,
+            $backendDetails,
+            $backendRecords,
+            $offset + $limit,
+            $blockSize
+        );
 
         $mergedCollection->slice($offset, $limit);
-        $mergedCollection->setSourceIdentifier($this->identifier);
 
         return $mergedCollection;
+    }
+
+    /**
+     * Add records to the merged collection in a round-robin fashion up to the
+     * specified limit
+     *
+     * @param RecordCollectionInterface $mergedCollection Merged collection
+     * @param array                     $collections      Source collections
+     * @param array                     $backendDetails   Active backend details
+     * @param array                     $backendRecords   Backend record buffer
+     * @param int                       $limit            Record limit
+     * @param int                       $blockSize        Block size
+     *
+     * @return void
+     */
+    protected function fillMergedCollection(
+        RecordCollectionInterface $mergedCollection,
+        array $collections,
+        array $backendDetails,
+        array $backendRecords,
+        int $limit,
+        int $blockSize
+    ): void {
+        // Fill up to the required records in a round-robin fashion
+        if ($limit <= $mergedCollection->count()) {
+            return;
+        }
+
+        $backendOffsets = [];
+        $collectionOffsets = [];
+        $backendTotals = [];
+        $availableBackendIds = array_keys($collections);
+        foreach ($availableBackendIds as $backendId) {
+            $backendOffsets[$backendId] = 0;
+            $collectionOffsets[$backendId] = 0;
+            $backendTotals[$backendId] = $collections[$backendId]->getTotal();
+        }
+        // First iterate through the merged records before the offset to
+        // calculate proper backend offsets for further records:
+        $records = $mergedCollection->getRecords();
+        $pos = 0;
+        foreach ($records as $record) {
+            ++$pos;
+            ++$backendOffsets[$record->getSearchBackendIdentifier()];
+        }
+
+        // Fetch records
+        $backendCount = count($availableBackendIds);
+        for (; $pos < $limit; $pos++) {
+            $currentBlock = floor($pos / $blockSize);
+            $backendAtPos = $availableBackendIds[$currentBlock % $backendCount];
+
+            $offsetOk = $backendOffsets[$backendAtPos]
+                < $backendTotals[$backendAtPos];
+            $record = $offsetOk ? $this->getRecord(
+                $backendDetails[$backendAtPos],
+                $backendRecords[$backendAtPos],
+                $backendOffsets[$backendAtPos]++,
+                $blockSize
+            ) : null;
+
+            if (null === $record) {
+                // Try other backends:
+                foreach ($availableBackendIds as $backendId) {
+                    if ($backendId === $backendAtPos) {
+                        continue;
+                    }
+                    $offsetOk = $backendOffsets[$backendId]
+                        < $backendTotals[$backendId];
+                    $record = $offsetOk ? $this->getRecord(
+                        $backendDetails[$backendId],
+                        $backendRecords[$backendId],
+                        $backendOffsets[$backendId]++,
+                        $blockSize
+                    ) : null;
+
+                    if (null !== $record) {
+                        break;
+                    }
+                }
+            }
+
+            if (null === $record) {
+                break;
+            }
+            $mergedCollection->add($record, false);
+        }
     }
 
     /**
@@ -348,28 +350,68 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Get active backends for a search
+     *
+     * @param ParamBag $params Search backend parameters
+     *
+     * @return array
+     */
+    protected function getActiveBackends(ParamBag $params): array
+    {
+        $activeBackends = $this->backends;
+
+        // Handle the blender_backend pseudo-filter
+        $fq = $params->get('fq') ?? [];
+        $filteredBackends = [];
+        foreach ($fq as $current) {
+            if (strncmp($current, 'blender_backend:', 16) === 0) {
+                $active = trim(substr($current, 16), '"');
+                if (!isset($activeBackends[$active])) {
+                    throw new \Exception(
+                        "Invalid blender_backend filter: Backend $active not enabled"
+                    );
+                }
+                $filteredBackends[$active] = $activeBackends[$active];
+            }
+        }
+        if ($filteredBackends) {
+            $activeBackends = $filteredBackends;
+        }
+        foreach ($fq as $current) {
+            if (strncmp($current, '-blender_backend:', 17) === 0) {
+                $disabled = trim(substr($current, 17), '"');
+                if (isset($activeBackends[$disabled])) {
+                    unset($activeBackends[$disabled]);
+                }
+            }
+        }
+
+        return $activeBackends;
+    }
+
+    /**
      * Get a record from the given backend by offset
      *
-     * @param AbstractBackend $backend        Backend
-     * @param AbstractQuery   $query          Query
-     * @param ParamBag        $params         Search params
-     * @param array           $backendRecords Record buffer
-     * @param int             $offset         Record offset
-     * @param int             $blockSize      Blending block size
+     * @param array $backendDetails Details for the backend
+     * @param array $backendRecords Record buffer
+     * @param int   $offset         Record offset
+     * @param int   $blockSize      Blending block size
      *
      * @return RecordInterface|null
      */
     protected function getRecord(
-        AbstractBackend $backend,
-        AbstractQuery $query,
-        ParamBag $params,
+        array $backendDetails,
         array &$backendRecords,
         int $offset,
         int $blockSize
     ): RecordInterface {
         if (!$backendRecords) {
-            $collection
-                = $backend->search($query, $offset, $blockSize, $params);
+            $collection = $backendDetails['backend']->search(
+                $backendDetails['query'],
+                $offset,
+                max($blockSize, 20),
+                $backendDetails['params']
+            );
             $backendRecords = $collection->getRecords();
         }
         return $backendRecords ? array_shift($backendRecords) : null;
