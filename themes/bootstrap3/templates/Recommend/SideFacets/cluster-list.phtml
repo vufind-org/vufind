@@ -20,16 +20,13 @@
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
     <?php if ($i == $this->facets_before_more): ?>
       <?php
-        $facetLightboxParams = http_build_query(
-            [
-                'facet' => $this->title,
-                'facetop' => $thisFacet['operator'],
-                'facetexclude' => $this->allowExclude ? 1 : 0,
-                'searchClassId' => $this->searchClassId
-            ],
-            '',
-            '&amp;'
-        );
+        $queryParams = [
+            'facet' => $this->title,
+            'facetop' => $thisFacet['operator'],
+            'facetexclude' => $this->allowExclude ? 1 : 0,
+            'searchClassId' => $this->searchClassId
+        ];
+        $facetLightboxParams = http_build_query($queryParams, '', '&amp;');
         $moreUrl = $facetLightbox
           ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams"
           : '#';
