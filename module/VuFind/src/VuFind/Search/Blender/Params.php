@@ -66,11 +66,11 @@ class Params extends \VuFind\Search\Solr\Params
     protected $mappings;
 
     /**
-     * Temporarily disabled backends
+     * Current filters not supported by a backend
      *
      * @var array
      */
-    protected $disabledBackends = [];
+    protected $unsupportedFilters = [];
 
     /**
      * Constructor
@@ -112,7 +112,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function initFromRequest($request)
     {
-        $this->disabledBackends = [];
+        $this->unsupportedFilters = [];
 
         // First do a basic init without filters, facets etc. that are processed via
         // methods called by parent's initFromRequest:
@@ -210,8 +210,9 @@ class Params extends \VuFind\Search\Solr\Params
                     }
                 }
             } else {
-                // Disable the backend since it doesn't support the filter:
-                $this->disabledBackends[$backendId] = true;
+                // Add the filter to the list of unsupported filters:
+                $this->unsupportedFilters[$backendId][]
+                    = $this->parseFilter($newFilter);
             }
         }
     }
@@ -239,8 +240,68 @@ class Params extends \VuFind\Search\Solr\Params
                     }
                 }
             } else {
-                // Disable the backend since it doesn't support the filter:
-                $this->disabledBackends[$backendId] = true;
+                // Add the filter to the list of unsupported filters:
+                $this->unsupportedFilters[$backendId][]
+                    = $this->parseFilter($newFilter);
+            }
+        }
+    }
+
+    /**
+     * Remove a filter from the list.
+     *
+     * @param string $oldFilter A filter string from url : "field:value"
+     *
+     * @return void
+     */
+    public function removeFilter($oldFilter)
+    {
+        // Update list of unsupported filters:
+        if ($this->unsupportedFilters) {
+            $parsed = $this->parseFilter($oldFilter);
+            foreach ($this->unsupportedFilters as $backendId => $filters) {
+                $updatedFilters = $filters;
+                foreach ($filters as $key => $filter) {
+                    if ($parsed === $filter) {
+                        unset($updatedFilters[$key]);
+                    }
+                }
+                $this->unsupportedFilters[$backendId] = $updatedFilters;
+            }
+        }
+
+        parent::removeFilter($oldFilter);
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getSearchClassId();
+            if ($translated = $this->translateFilter($oldFilter, $backendId)) {
+                foreach ($translated as $current) {
+                    $params->removeFilter($current);
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove all filters from the list.
+     *
+     * @param string $field Name of field to remove filters from (null to remove
+     * all filters from all fields)
+     *
+     * @return void
+     */
+    public function removeAllFilters($field = null)
+    {
+        $this->unsupportedFilters = [];
+        if (null === $field) {
+            $this->proxyMethod(__FUNCTION__, func_get_args());
+            return;
+        }
+
+        parent::removeAllFilters($field);
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getSearchClassId();
+            if ($translated = $this->translateFacet($field, $backendId)) {
+                $params->removeAllFilters($translated);
             }
         }
     }
@@ -314,8 +375,10 @@ class Params extends \VuFind\Search\Solr\Params
     public function getBackendParameters(): ParamBag
     {
         $result = parent::getBackendParameters();
-        foreach (array_keys($this->disabledBackends) as $backendId) {
-            $result->add('fq', "-blender_backend:$backendId");
+        foreach ($this->unsupportedFilters as $backendId => $filters) {
+            if ($filters) {
+                $result->add('fq', "-blender_backend:$backendId");
+            }
         }
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
