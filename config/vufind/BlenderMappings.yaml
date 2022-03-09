@@ -271,10 +271,12 @@ Sorting:
       Mappings:
         Solr: relevance
         Primo: relevance
+        EDS: relevance
     publish_date desc:
       Mappings:
         Solr: publish_date desc
         Primo: scdate
+        EDS: date
     author:
       Mappings:
         Solr: author
