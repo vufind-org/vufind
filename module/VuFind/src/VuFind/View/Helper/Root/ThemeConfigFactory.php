@@ -69,8 +69,6 @@ class ThemeConfigFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
-
         // As of release 1.1.0, the memory storage adapter has a flaw which can cause
         // unnecessary out of memory exceptions when a memory limit is enabled; we
         // can disable these problematic checks by setting memory_limit to -1.
@@ -78,6 +76,9 @@ class ThemeConfigFactory implements FactoryInterface
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);
 
-        return new $requestedName($themeInfo, $cache);
+        $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
+        $themeInfo->setCache($cache);
+
+        return new $requestedName($themeInfo);
     }
 }
