@@ -145,7 +145,6 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function initSearch($request)
     {
-        parent::initSearch($request);
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
@@ -159,6 +158,7 @@ class Params extends \VuFind\Search\Solr\Params
             }
             $params->initSearch($translatedRequest);
         }
+        parent::initSearch($request);
     }
 
     /**
@@ -171,7 +171,6 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function initSort($request)
     {
-        parent::initSort($request);
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
@@ -180,11 +179,30 @@ class Params extends \VuFind\Search\Solr\Params
             if ($sort = $translatedRequest->get('sort')) {
                 $translatedRequest->set(
                     'sort',
-                    $this->mappings['Sorting']['Fields'][$sort][$backendId] ?? ''
+                    $this->translateSort($sort, $backendId)
                 );
             }
             $params->initSort($translatedRequest);
         }
+        parent::initSort($request);
+    }
+
+    /**
+     * Set the sorting value (note: sort will be set to default if an illegal
+     * or empty value is passed in).
+     *
+     * @param string $sort  New sort value (null for default)
+     * @param bool   $force Set sort value without validating it?
+     *
+     * @return void
+     */
+    public function setSort($sort, $force = false)
+    {
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getSearchClassId();
+            $params->setSort($this->translateSort($sort, $backendId), $force);
+        }
+        parent::setSort($sort, $force);
     }
 
     /**
@@ -570,5 +588,19 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         return $result;
+    }
+
+    /**
+     * Translate a sort option
+     *
+     * @param string $sort      Sort option
+     * @param string $backendId Backend ID
+     *
+     * @return string
+     */
+    protected function translateSort(string $sort, string $backendId): string
+    {
+        $mappings = $this->mappings['Sorting']['Fields'][$sort]['Mappings'] ?? [];
+        return $mappings[$backendId] ?? '';
     }
 }
