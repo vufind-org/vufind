@@ -131,6 +131,12 @@ class RecordCollection
             }
 
             foreach ($collection->getErrors() as $error) {
+                if (is_string($error)) {
+                    $error = [
+                        'message' => $error,
+                        'details' => $label
+                    ];
+                }
                 $this->addError($error);
             }
         }
@@ -183,11 +189,11 @@ class RecordCollection
     /**
      * Add an error message
      *
-     * @param string $error Error message
+     * @param mixed $error Error
      *
      * @return void
      */
-    public function addError(string $error): void
+    public function addError($error): void
     {
         if (!in_array($error, $this->errors)) {
             $this->errors[] = $error;
@@ -196,6 +202,9 @@ class RecordCollection
 
     /**
      * Return any errors.
+     *
+     * Each error can be a translatable string or an array with keys 'message' and
+     * 'additional', both translatable strings.
      *
      * @return array
      */

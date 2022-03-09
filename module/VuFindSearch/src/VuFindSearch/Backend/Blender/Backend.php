@@ -193,7 +193,7 @@ class Backend extends AbstractBackend
         if ($limit === 0) {
             $blendLimit = 0;
         }
-        $exception = null;
+        $exceptions = [];
         // If offset is less than the limit, fetch from backends up to the limit
         // first:
         $fetchLimit = $offset <= $this->blendLimit ? $blendLimit : 0;
@@ -206,18 +206,24 @@ class Backend extends AbstractBackend
                     $translatedParams[$backendId]
                 );
             } catch (\Exception $e) {
-                $exception = $e;
+                $exceptions[$backendId] = $e;
             }
         }
 
-        if ($exception) {
+        foreach ($exceptions as $backendId => $exception) {
             // Throw exception right away if we didn't get any results or the query
             // is invalid for a backend:
             if (!$collections || ($exception instanceof RequestErrorException)) {
                 // No results and an exception previously encountered, raise it now:
                 throw $exception;
             }
-            $mergedCollection->addError('search_backend_partial_failure');
+            // Otherwise display an error to the user:
+            $mergedCollection->addError(
+                [
+                    'message' => 'search_backend_partial_failure',
+                    'details' => $this->config->Backends[$backendId]
+                ]
+            );
         }
 
         $totalCount = 0;

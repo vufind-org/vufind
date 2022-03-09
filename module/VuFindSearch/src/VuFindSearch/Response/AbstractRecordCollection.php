@@ -80,6 +80,9 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     /**
      * Return any errors.
      *
+     * Each error can be a translatable string or an array with keys 'message' and
+     * 'additional', both translatable strings.
+     *
      * @return array
      */
     public function getErrors()
