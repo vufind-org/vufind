@@ -153,12 +153,32 @@ class Params extends \VuFind\Search\Solr\Params
             if ($type = $translatedRequest->get('type')) {
                 $translatedRequest->set(
                     'type',
-                    $this->mappings['Search']['Fields'][$type][$backendId] ?? ''
+                    $this->translateSearchType($type, $backendId)
                 );
             }
             $params->initSearch($translatedRequest);
         }
         parent::initSearch($request);
+    }
+
+    /**
+     * Set a basic search query:
+     *
+     * @param string $lookfor The search query
+     * @param string $handler The search handler (null for default)
+     *
+     * @return void
+     */
+    public function setBasicSearch($lookfor, $handler = null)
+    {
+        foreach ($this->searchParams as $params) {
+            $backendId = $params->getSearchClassId();
+            $params->setBasicSearch(
+                $lookfor,
+                $this->translateSearchType($handler, $backendId)
+            );
+        }
+        parent::setBasicSearch($lookfor, $handler);
     }
 
     /**
@@ -369,8 +389,9 @@ class Params extends \VuFind\Search\Solr\Params
                     }
                 }
             } else {
-                // Disable the backend since it doesn't support the filter:
-                $this->disabledBackends[$backendId] = true;
+                // Add the filter to the list of unsupported filters:
+                $this->unsupportedFilters[$backendId][]
+                    = $this->parseFilter($filter);
             }
         }
     }
@@ -588,6 +609,20 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         return $result;
+    }
+
+    /**
+     * Translate a search type
+     *
+     * @param string $type      Search type
+     * @param string $backendId Backend ID
+     *
+     * @return string
+     */
+    protected function translateSearchType(string $type, string $backendId): string
+    {
+        $mappings = $this->mappings['Search']['Fields'][$type]['Mappings'] ?? [];
+        return $mappings[$backendId] ?? '';
     }
 
     /**
