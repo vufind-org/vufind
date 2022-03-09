@@ -107,6 +107,65 @@ Facets:
             technical_reports: Technical Report
             text_resources: Text
             web_resources: Web Resource
+
+    # Example mappings for a hierarchical format facet:
+    #format:
+    #  Type: hierarchical
+    #  Mappings:
+    #    EDS:
+    #      Field: SourceType
+    #      Values:
+    #        Academic Journals: "1/Journal/eJournal/"
+    #        Magazines: "1/Journal/eArticle/"
+    #        Books: "1/Book/eBook/"
+    #        Conference Materials: "1/OtherText/ConferenceProceeding/"
+    #        Reviews: "1/OtherText/Text/"
+    #        Trade Publications: "1/Other/Other/"
+    #        Reports: "1/OtherText/ResearchReport/"
+    #        Electronic Resources: "1/Other/Electronic/"
+    #        eBooks: "1/Book/eBook/"
+    #        Non-print Resources: "1/OtherText/Text/"
+    #        Biographies: "1/OtherText/Text/"
+    #        Dissertations: "1/Thesis/Thesis/"
+    #        Audio: "1/Sound/SoundRecording/"
+    #        Music Scores: "1/MusicalScore/MusicalScore/"
+    #        Video: "1/Video/Video/"
+    #        Primary Source Documents: "1/OtherText/Text/"
+    #        Maps: "1/Map/Map/"
+    #        Research Starters: "1/OtherText/Text/"
+    #        Audiobooks: "1/Sound/NonmusicalRecording/"
+    #    Solr:
+    #      Field: format
+    #    Primo:
+    #      Field: rtype
+    #      Values:
+    #        articles: "1/Journal/eArticle/"
+    #        audios: "1/Sound/SoundRecording/"
+    #        book_chapters: "1/Book/eBookSection/"
+    #        books: "1/Book/eBook/"
+    #        conference_proceedings: "1/OtherText/ConferenceProceeding/"
+    #        databases: "0/Database/"
+    #        dissertations: "1/Thesis/Thesis/"
+    #        government_documents: "1/OtherText/Text/"
+    #        images: "1/Image/Image/"
+    #        journals: "1/Journal/eJournal/"
+    #        legal_documents: "1/OtherText/Text/"
+    #        maps: "1/Map/Map/"
+    #        media: "1/Other/Electronic/"
+    #        newspaper_articles: "1/Journal/NewspaperArticle/"
+    #        other: "1/Other/Other/"
+    #        patents: "1/OtherText/Text/"
+    #        reference_entrys: "1/OtherText/Text/"
+    #        reports: "1/OtherText/ResearchReport/"
+    #        research_datasets: "1/Other/ResearchData/"
+    #        reviews: "1/OtherText/Text/"
+    #        scores: "1/MusicalScore/MusicalScore/"
+    #        statistical_data_sets: "1/Other/Other/"
+    #        technical_reports: "1/OtherText/Text/"
+    #        text_resources: "1/OtherText/Text/"
+    #        websites: "1/Other/Electronic/"
+    #        web_resources: "1/Other/Electronic/"
+
     author_facet:
       Mappings:
         Solr:
