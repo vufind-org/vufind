@@ -246,10 +246,12 @@ class Backend extends AbstractBackend
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
-        // Use special facet pcAvailabilty if it has been set
-        if (isset($params['filterList']['pcAvailability'])) {
+        // Use special pcAvailability filter if it has been set
+        if ($values = $params['filterList']['pcAvailability']['values'] ?? []) {
+            $options['pcAvailability'] = !in_array(false, $values, true)
+                && !in_array(0, $values, true)
+                && !in_array('false', $values, true);
             unset($options['filterList']['pcAvailability']);
-            $options['pcAvailability'] = true;
         }
 
         return $options;
