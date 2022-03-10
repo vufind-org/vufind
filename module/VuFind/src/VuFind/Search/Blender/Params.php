@@ -243,7 +243,7 @@ class Params extends \VuFind\Search\Solr\Params
             $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFilter($newFilter, $backendId)) {
                 foreach ($translated as $current) {
-                    if ('blender_ignore:true' !== $current) {
+                    if (null !== $current) {
                         $params->addFilter($current);
                     }
                 }
@@ -273,7 +273,7 @@ class Params extends \VuFind\Search\Solr\Params
             $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFilter($newFilter, $backendId)) {
                 foreach ($translated as $current) {
-                    if ('blender_ignore:true' !== $current) {
+                    if (null !== $current) {
                         $params->addHiddenFilter($current);
                     }
                 }
@@ -384,7 +384,7 @@ class Params extends \VuFind\Search\Solr\Params
             $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFilter($filter, $backendId)) {
                 foreach ($translated as $current) {
-                    if ('blender_ignore:true' !== $current) {
+                    if (null !== $current) {
                         $params->addCheckboxFacet($current, $desc);
                     }
                 }
@@ -542,6 +542,11 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
+        if ($ignore = $fieldConfig['Mappings'][$backendId]['Ignore'] ?? '') {
+            if (true === $ignore || in_array($value, (array)$ignore)) {
+                return [null];
+            }
+        }
         $translatedField = $fieldConfig['Mappings'][$backendId]['Field'] ?? '';
         if (!$translatedField) {
             return [];

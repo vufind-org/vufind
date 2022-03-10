@@ -101,6 +101,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                             'Field' => 'formatPrimo',
                             'Values' => [
                                 'barPrimo' => 'bar',
+                                'bazPrimo' => 'baz',
                             ],
                         ],
                     ],
@@ -270,9 +271,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params class
      *
+     * @param array $mappings Blender mappings, overrides defaults
+     *
      * @return Params
      */
-    protected function getParams(): Params
+    protected function getParams($mappings = null): Params
     {
         $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
         return new Params(
@@ -281,7 +284,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
             new Config($this->config),
-            $this->mappings
+            $mappings ?? $this->mappings
         );
     }
 
@@ -476,6 +479,79 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ]
             ],
             $primoParams->get('filterList')
+        );
+    }
+
+    /**
+     * Test that ignoring filters works as expected.
+     *
+     * @return void
+     */
+    public function testIgnoredFilters(): void
+    {
+        $params = $this->getParams();
+        $params->addHiddenFilter('format:bar');
+        $backendParams = $params->getBackendParameters();
+        // Make sure EDS is disabled since we don't have a mapping for it:
+        $this->assertEquals(
+            [
+                'format:"bar"',
+                '-blender_backend:EDS'
+            ],
+            $backendParams->get('fq')
+        );
+
+        // Test ignoring all values:
+        $mappings = $this->mappings;
+        $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
+            'Ignore' => true
+        ];
+        $params = $this->getParams($mappings);
+        $params->addHiddenFilter('format:bar');
+        $backendParams = $params->getBackendParameters();
+        // Make sure EDS is NOT disabled:
+        $this->assertEquals(
+            [
+                'format:"bar"',
+            ],
+            $backendParams->get('fq')
+        );
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertInstanceOf(ParamBag::class, $edsParams);
+        $this->assertNull($edsParams->get('filters'));
+
+        // Test ignoring one value:
+        $mappings = $this->mappings;
+        $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
+            'Ignore' => [
+                'bar'
+            ]
+        ];
+        $params = $this->getParams($mappings);
+        $params->addHiddenFilter('format:bar');
+        $backendParams = $params->getBackendParameters();
+        // Make sure EDS is NOT disabled but doesn't have filters either:
+        $this->assertEquals(
+            [
+                'format:"bar"',
+            ],
+            $backendParams->get('fq')
+        );
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertInstanceOf(ParamBag::class, $edsParams);
+        $this->assertNull($edsParams->get('filters'));
+
+        // Add another value and verify that EDS gets disabled:
+        $params->addHiddenFilter('format:baz');
+        $backendParams = $params->getBackendParameters();
+        // Make sure EDS is NOT disabled:
+        $this->assertEquals(
+            [
+                'format:"bar"',
+                'format:"baz"',
+                '-blender_backend:EDS',
+            ],
+            $backendParams->get('fq')
         );
     }
 
