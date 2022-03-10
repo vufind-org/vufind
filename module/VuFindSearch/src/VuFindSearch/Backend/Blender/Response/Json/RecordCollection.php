@@ -290,7 +290,9 @@ class RecordCollection
                 if (!($mappings = $settings['Mappings'][$backendId] ?? [])) {
                     continue;
                 }
-                $backendFacetField = $mappings['Field'];
+                if (!($backendFacetField = $mappings['Field'] ?? '')) {
+                    continue;
+                }
                 $valueMap = $mappings['Values'] ?? [];
 
                 foreach ($facets[$backendFacetField] ?? [] as $field => $count) {
