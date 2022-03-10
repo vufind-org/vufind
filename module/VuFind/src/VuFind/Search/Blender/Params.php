@@ -21,7 +21,6 @@
  *
  * @category VuFind
  * @package  Search_Blender
- * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -37,7 +36,6 @@ use VuFindSearch\ParamBag;
  *
  * @category VuFind
  * @package  Search_Blender
- * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -507,9 +505,14 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function translateFacet(string $field, string $backendId): string
     {
+        $prefix = '';
+        if (substr($field, 0, 1) === '~') {
+            $field = substr($field, 1);
+            $prefix = '~';
+        }
         $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
         $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
-        return $mappings['Field'] ?? '';
+        return !empty($mappings['Field']) ? ($prefix . $mappings['Field']) : '';
     }
 
     /**
@@ -551,13 +554,9 @@ class Params extends \VuFind\Search\Solr\Params
                 return [null];
             }
         }
-        $translatedField = $fieldConfig['Mappings'][$backendId]['Field'] ?? '';
-        if (!$translatedField) {
-            return [];
-        }
-
         $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
-        if (!$mappings || empty($mappings['Field'])) {
+        $translatedField = $mappings['Field'] ?? '';
+        if (!$mappings || !$translatedField) {
             // Facet not supported by the backend
             return [];
         }
@@ -567,7 +566,6 @@ class Params extends \VuFind\Search\Solr\Params
         if ('boolean' === $facetType) {
             $value = (bool)$value;
         }
-        $resultValues = [];
         foreach ($mappings['Values'] ?? [$value => $value] as $k => $v) {
             if ('boolean' === $facetType) {
                 $v = (bool)$v;
@@ -606,12 +604,20 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         // Apply any RegExp mappings:
-        foreach ($mappings['RegExp'] ?? [] as $regexp) {
-            $search = $regexp['Search'] ?? '';
-            $replace = $regexp['Replace'] ?? '';
-            if ($search) {
-                $resultValues[]
-                    = preg_replace("/$search/", $replace, $value);
+        if ($regexpMappings = $mappings['RegExp'] ?? []) {
+            $values = $resultValues;
+            $resultValues = [];
+            foreach ($regexpMappings as $regexp) {
+                $search = $regexp['Search'] ?? '';
+                $replace = $regexp['Replace'] ?? '';
+                if ('' !== $search) {
+                    foreach ($values as $val) {
+                        $res = preg_replace("/$search/", $replace, $val, -1, $count);
+                        if ($count) {
+                            $resultValues[] = $res;
+                        }
+                    }
+                }
             }
         }
 

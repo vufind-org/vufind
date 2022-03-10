@@ -363,15 +363,26 @@ class Backend extends AbstractBackend
         // Handle the blender_backend pseudo-filter
         $fq = $params->get('fq') ?? [];
         $filteredBackends = [];
-        foreach ($fq as $current) {
-            if (strncmp($current, 'blender_backend:', 16) === 0) {
-                $active = trim(substr($current, 16), '"');
-                if (!isset($activeBackends[$active])) {
-                    throw new \Exception(
-                        "Invalid blender_backend filter: Backend $active not enabled"
-                    );
+        foreach ($fq as $filter) {
+            $advanced = preg_match(
+                '/\{!tag=blender_backend_filter}blender_backend:\((.+)\)/',
+                $filter,
+                $matches
+            );
+            if ($advanced) {
+                $filter = explode(' OR ', $matches[1]);
+            }
+            foreach ((array)$filter as $current) {
+                if (strncmp($current, 'blender_backend:', 16) === 0) {
+                    $active = trim(substr($current, 16), '"');
+                    if (!isset($activeBackends[$active])) {
+                        throw new \Exception(
+                            "Invalid blender_backend filter: Backend $active not"
+                            . ' enabled'
+                        );
+                    }
+                    $filteredBackends[$active] = $activeBackends[$active];
                 }
-                $filteredBackends[$active] = $activeBackends[$active];
             }
         }
         if ($filteredBackends) {
