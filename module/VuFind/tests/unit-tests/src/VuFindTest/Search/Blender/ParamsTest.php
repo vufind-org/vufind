@@ -67,7 +67,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'EDS'
             ]
         ],
-        'blockSize' => 7
+        'blockSize' => 7,
+        'Facets' => [
+            'orFacets' => [
+                'building'
+            ],
+        ],
     ];
 
     /**
@@ -87,7 +92,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'EDS' => [
                             'Field' => 'building',
                             'Values' => [
-                                'main' => '0/Main/'
+                                'main' => '0/Main/',
+                                'sub' => '1/Sub/Fiction/',
                             ]
                         ]
                     ],
@@ -107,6 +113,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'fulltext' => [
+                    'Type' => 'boolean',
                     'Mappings' => [
                         'Solr' => [
                             'Field' => 'fulltext_boolean',
@@ -123,6 +130,27 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                             'Field' => 'LIMIT|FT',
                             'Values' => [
                                 'y' => '1'
+                            ],
+                        ],
+                    ],
+                ],
+                'regexp' => [
+                    'Mappings' => [
+                        'Solr' => [
+                            'Field' => 're',
+                            'RegExp' => [
+                                [
+                                    'Search' => 'a',
+                                    'Replace' => 'A'
+                                ],
+                                [
+                                    'Search' => 'b',
+                                    'Replace' => 'B',
+                                ],
+                                [
+                                    'Search' => 'c(\d)',
+                                    'Replace' => '$1',
+                                ],
                             ],
                         ],
                     ],
@@ -215,6 +243,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     protected $configManager = null;
 
     /**
+     * Test that we get the correct search class ID.
+     *
+     * @return void
+     */
+    public function testGetSearchClassId(): void
+    {
+        $this->assertEquals('Blender', $this->getParams()->getSearchClassId());
+    }
+
+    /**
      * Test that facets and filters work as expected.
      *
      * @return void
@@ -292,15 +330,15 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($backendParams->get('fq'));
 
         // Add multiple filters:
-        $params->addFilter('format:bar');
-        $params->addFilter('format:baz');
+        $params->addFilter('~format:bar');
+        $params->addFilter('~format:baz');
         $params->addFilter('fulltext:1');
-        $this->assertTrue($params->hasFilter('format:bar'));
-        $this->assertTrue($params->hasFilter('format:baz'));
+        $this->assertTrue($params->hasFilter('~format:bar'));
+        $this->assertTrue($params->hasFilter('~format:baz'));
         $this->assertTrue($params->hasFilter('fulltext:1'));
 
         // Remove format filters and verify:
-        $params->removeAllFilters('format');
+        $params->removeAllFilters('~format');
         $backendParams = $params->getBackendParameters();
         $this->assertEquals(['fulltext:"1"'], $backendParams->get('fq'));
 
@@ -315,7 +353,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => ['false']
                 ],
                 'formatPrimo' => [
-                    'facetOp' => 'AND',
+                    'facetOp' => 'OR',
                     'values' => []
                 ]
             ],
@@ -362,6 +400,51 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $primoParams->get('filterList')
         );
         $this->assertEquals(['LIMIT|FT:y'], $edsParams->get('filters'));
+
+        // A filter that no backend supports:
+        $params = $this->getParams();
+        $params->addFilter('nonexistent:1');
+        $backendParams = $params->getBackendParameters();
+        $this->assertEquals(
+            [
+                'nonexistent:"1"',
+                '-blender_backend:"Solr"',
+                '-blender_backend:"Primo"',
+                '-blender_backend:"EDS"',
+            ],
+            $backendParams->get('fq')
+        );
+    }
+
+    /**
+     * Data provider for testFilterRegExpMappings
+     *
+     * @return array
+     */
+    public function getFilterRegExpValues(): array
+    {
+        return [
+            ['a', 'A'],
+            ['b', 'B'],
+            ['c33', '33']
+        ];
+    }
+
+    /**
+     * Test that regular expresion mappings for filters work as expected.
+     *
+     * @dataProvider getFilterRegExpValues
+     *
+     * @return void
+     */
+    public function testFilterRegExpMappings(string $value, string $result): void
+    {
+        $params = $this->getParams();
+
+        $params->addFilter("regexp:$value");
+        $solrParams = $params->getBackendParameters()->get('params_Solr')[0];
+        $this->assertInstanceOf(ParamBag::class, $solrParams);
+        $this->assertEquals(["re:\"$result\""], $solrParams->get('fq'));
     }
 
     /**
@@ -432,10 +515,17 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Add as a hidden filter:
         $params = $this->getParams();
-        $params->addHiddenFilter('blender_backend:Primo');
+        $params->addHiddenFilter('~blender_backend:Primo');
+        $params->addHiddenFilter('~blender_backend:EDS');
         $backendParams = $params->getBackendParameters();
 
-        $this->assertEquals(['blender_backend:"Primo"'], $backendParams->get('fq'));
+        $this->assertEquals(
+            [
+                '{!tag=blender_backend_filter}blender_backend:('
+                . 'blender_backend:"Primo" OR blender_backend:"EDS")'
+            ],
+            $backendParams->get('fq')
+        );
         $solrParams = $backendParams->get('params_Solr')[0];
         $this->assertInstanceOf(ParamBag::class, $solrParams);
         $this->assertNull($solrParams->get('fq'));
@@ -502,7 +592,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
             'Ignore' => true
         ];
-        $params = $this->getParams($mappings);
+        $params = $this->getParams(null, $mappings);
         $params->addHiddenFilter('format:bar');
         $backendParams = $params->getBackendParameters();
         // Make sure EDS is NOT disabled:
@@ -523,7 +613,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'bar'
             ]
         ];
-        $params = $this->getParams($mappings);
+        $params = $this->getParams(null, $mappings);
         $params->addHiddenFilter('format:bar');
         $backendParams = $params->getBackendParameters();
         // Make sure EDS is NOT disabled but doesn't have filters either:
@@ -648,6 +738,23 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ],
             $edsParams->getArrayCopy()
         );
+
+        // Test sub-level facet mapping:
+        $params = $this->getParams();
+        $params->addFacet('building', 'Building', true);
+        $params->addFilter('building:0/Sub/');
+
+        $backendParams = $params->getBackendParameters();
+        $this->assertEquals(
+            [
+                'building:"0/Sub/"',
+                '-blender_backend:"Primo"'
+            ],
+            $backendParams->get('fq')
+        );
+
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertEquals(['building:sub'], $edsParams->get('filters'));
     }
 
     /**
@@ -753,13 +860,32 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we get the correct search class ID.
+     * Test that an invalid backend in configuration is handled properly.
      *
      * @return void
      */
-    public function testGetSearchClassId(): void
+    public function testInvalidBackend(): void
     {
-        $this->assertEquals('Blender', $this->getParams()->getSearchClassId());
+        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
+        $baseParams = new \VuFind\Search\EmptySet\Params(
+            new \VuFind\Search\EmptySet\Options($configMgr),
+            $configMgr
+        );
+        $params = new Params(
+            new Options($configMgr),
+            $configMgr,
+            new HierarchicalFacetHelper(),
+            [
+                'Base' => $baseParams,
+            ],
+            new Config($config ?? $this->config),
+            $mappings ?? $this->mappings
+        );
+
+        $this->expectExceptionMessage(
+            'Backend EmptySet missing support for getBackendParameters'
+        );
+        $params->getBackendParameters();
     }
 
     /**
@@ -819,19 +945,20 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params class
      *
+     * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults
      *
      * @return Params
      */
-    protected function getParams($mappings = null): Params
+    protected function getParams($config = null, $mappings = null): Params
     {
-        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
         return new Params(
-            new Options($configMock),
-            $configMock,
+            new Options($configMgr),
+            $configMgr,
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
-            new Config($this->config),
+            new Config($config ?? $this->config),
             $mappings ?? $this->mappings
         );
     }
