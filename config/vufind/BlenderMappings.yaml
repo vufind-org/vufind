@@ -1,6 +1,8 @@
 # Fields in each configuration provide mappings from field names used in Blender.ini
 # to field names used in each backend.
-# By default the field names and behavior match those used with Solr.
+# This example configuration is designed with the assumption that Solr is the primary
+# search backend used, so the field names are based on the Solr fields. There is no
+# dependency on Solr; it can be thought of as simply a naming convention.
 # Any missing mapping means that the backend does not support the field. For facets
 # this means that any filter is ignored for the backend. For searches and sorting
 # enabling a field that is not supported by all backends should be avoided as any
