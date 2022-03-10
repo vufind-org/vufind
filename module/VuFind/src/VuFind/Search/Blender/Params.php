@@ -543,8 +543,9 @@ class Params extends \VuFind\Search\Solr\Params
     {
         [$field, $value] = $this->parseFilter($filter);
         $prefix = '';
-        if (substr($field, 0, 1) === '~') {
-            $prefix = '~';
+        $firstChar = substr($field, 0, 1);
+        if (in_array($firstChar, ['~', '-'])) {
+            $prefix = $firstChar;
             $field = substr($field, 1);
         }
 
@@ -603,22 +604,10 @@ class Params extends \VuFind\Search\Solr\Params
             } while ($levelGood);
         }
 
-        // Apply any RegExp mappings:
-        if ($regexpMappings = $mappings['RegExp'] ?? []) {
-            $values = $resultValues;
-            $resultValues = [];
-            foreach ($regexpMappings as $regexp) {
-                $search = $regexp['Search'] ?? '';
-                $replace = $regexp['Replace'] ?? '';
-                if ('' !== $search) {
-                    foreach ($values as $val) {
-                        $res = preg_replace("/$search/", $replace, $val, -1, $count);
-                        if ($count) {
-                            $resultValues[] = $res;
-                        }
-                    }
-                }
-            }
+        // If the result is more than one value, make sure they're handled as OR
+        // or NOT:
+        if ('' === $prefix && count($resultValues) > 1) {
+            $prefix = '~';
         }
 
         $result = [];

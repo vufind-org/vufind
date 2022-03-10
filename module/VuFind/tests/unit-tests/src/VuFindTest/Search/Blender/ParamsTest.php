@@ -68,11 +68,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ]
         ],
         'blockSize' => 7,
-        'Facets' => [
-            'orFacets' => [
-                'building'
-            ],
-        ],
     ];
 
     /**
@@ -108,6 +103,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                             'Values' => [
                                 'barPrimo' => 'bar',
                                 'bazPrimo' => 'baz',
+                                'double1' => 'double',
+                                'double2' => 'double',
                             ],
                         ],
                     ],
@@ -130,27 +127,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                             'Field' => 'LIMIT|FT',
                             'Values' => [
                                 'y' => '1'
-                            ],
-                        ],
-                    ],
-                ],
-                'regexp' => [
-                    'Mappings' => [
-                        'Solr' => [
-                            'Field' => 're',
-                            'RegExp' => [
-                                [
-                                    'Search' => 'a',
-                                    'Replace' => 'A'
-                                ],
-                                [
-                                    'Search' => 'b',
-                                    'Replace' => 'B',
-                                ],
-                                [
-                                    'Search' => 'c(\d)',
-                                    'Replace' => '$1',
-                                ],
                             ],
                         ],
                     ],
@@ -414,37 +390,46 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ],
             $backendParams->get('fq')
         );
-    }
 
-    /**
-     * Data provider for testFilterRegExpMappings
-     *
-     * @return array
-     */
-    public function getFilterRegExpValues(): array
-    {
-        return [
-            ['a', 'A'],
-            ['b', 'B'],
-            ['c33', '33']
-        ];
-    }
+        // Add a filter that maps to two values:
+        $params->addFilter('format:double');
+        $primoParams = $params->getBackendParameters()->get('params_Primo')[0];
+        $this->assertEquals(
+            [
+                'formatPrimo' => [
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'double1',
+                        'double2'
+                    ]
+                ],
+                'pcAvailability' => [
+                    'facetOp' => 'AND',
+                    'values' => ['true']
+                ]
+            ],
+            $primoParams->get('filterList')
+        );
 
-    /**
-     * Test that regular expresion mappings for filters work as expected.
-     *
-     * @dataProvider getFilterRegExpValues
-     *
-     * @return void
-     */
-    public function testFilterRegExpMappings(string $value, string $result): void
-    {
-        $params = $this->getParams();
-
-        $params->addFilter("regexp:$value");
-        $solrParams = $params->getBackendParameters()->get('params_Solr')[0];
-        $this->assertInstanceOf(ParamBag::class, $solrParams);
-        $this->assertEquals(["re:\"$result\""], $solrParams->get('fq'));
+        // Add a NOT filter that maps to two values:
+        $params->addFilter('-format:double');
+        $primoParams = $params->getBackendParameters()->get('params_Primo')[0];
+        $this->assertEquals(
+            [
+                'formatPrimo' => [
+                    'facetOp' => 'NOT',
+                    'values' => [
+                        'double1',
+                        'double2'
+                    ]
+                ],
+                'pcAvailability' => [
+                    'facetOp' => 'AND',
+                    'values' => ['true']
+                ]
+            ],
+            $primoParams->get('filterList')
+        );
     }
 
     /**
