@@ -294,6 +294,11 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function removeFilter($oldFilter)
     {
+        parent::removeFilter($oldFilter);
+        if ($this->isBlenderFilter($oldFilter)) {
+            return;
+        }
+
         // Update list of unsupported filters:
         if ($this->unsupportedFilters) {
             $parsed = $this->parseFilter($oldFilter);
@@ -308,7 +313,6 @@ class Params extends \VuFind\Search\Solr\Params
             }
         }
 
-        parent::removeFilter($oldFilter);
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             if ($translated = $this->translateFilter($oldFilter, $backendId)) {
@@ -416,7 +420,7 @@ class Params extends \VuFind\Search\Solr\Params
         $result = parent::getBackendParameters();
         foreach ($this->unsupportedFilters as $backendId => $filters) {
             if ($filters) {
-                $result->add('fq', "-blender_backend:$backendId");
+                $result->add('fq', "-blender_backend:\"$backendId\"");
             }
         }
         foreach ($this->searchParams as $params) {

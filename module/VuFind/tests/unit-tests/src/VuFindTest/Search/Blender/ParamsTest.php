@@ -215,80 +215,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     protected $configManager = null;
 
     /**
-     * Get mock config manager
-     *
-     * @return object
-     */
-    protected function getConfigManager()
-    {
-        $configs = [
-            'EDS' => new Config($this->edsConfig),
-            'Primo' => new Config($this->primoConfig)
-        ];
-
-        $callback = function (string $configName) use ($configs) {
-            return $configs[$configName] ?? null;
-        };
-
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-        $configManager
-            ->expects($this->any())
-            ->method('get')
-            ->will($this->returnCallback($callback));
-
-        return $configManager;
-    }
-
-    /**
-     * Get params classes for an array of backends
-     *
-     * @return array
-     */
-    protected function getParamsClassesArray(): array
-    {
-        $solrConfigMgr = $this->createMock(\VuFind\Config\PluginManager::class);
-        $configMgr = $this->getConfigManager();
-
-        $result = [];
-        $result[] = new \VuFind\Search\Solr\Params(
-            new \VuFind\Search\Solr\Options($solrConfigMgr),
-            $solrConfigMgr
-        );
-        $result[] = new \VuFind\Search\Primo\Params(
-            new \VuFind\Search\Primo\Options($configMgr),
-            $configMgr
-        );
-        $result[] = new \VuFind\Search\EDS\Params(
-            new \VuFind\Search\EDS\Options($configMgr, $this->edsApiConfig),
-            $configMgr
-        );
-
-        return $result;
-    }
-
-    /**
-     * Get Params class
-     *
-     * @param array $mappings Blender mappings, overrides defaults
-     *
-     * @return Params
-     */
-    protected function getParams($mappings = null): Params
-    {
-        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
-        return new Params(
-            new Options($configMock),
-            $configMock,
-            new HierarchicalFacetHelper(),
-            $this->getParamsClassesArray(),
-            new Config($this->config),
-            $mappings ?? $this->mappings
-        );
-    }
-
-    /**
      * Test that facets and filters work as expected.
      *
      * @return void
@@ -332,7 +258,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:EDS'
+                '-blender_backend:"EDS"'
             ],
             $backendParams->get('fq')
         );
@@ -453,7 +379,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:EDS'
+                '-blender_backend:"EDS"'
             ],
             $backendParams->get('fq')
         );
@@ -483,6 +409,76 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that special blender_backend filters work as expected.
+     *
+     * @return void
+     */
+    public function testBlenderFilters(): void
+    {
+        // Add as a normal filter:
+        $params = $this->getParams();
+        $params->addFilter('blender_backend:Primo');
+        $backendParams = $params->getBackendParameters();
+
+        $this->assertEquals(['blender_backend:"Primo"'], $backendParams->get('fq'));
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $this->assertInstanceOf(ParamBag::class, $solrParams);
+        $this->assertNull($solrParams->get('fq'));
+
+        // Remove the filter and check:
+        $params->removeFilter('blender_backend:Primo');
+        $backendParams = $params->getBackendParameters();
+        $this->assertNull($backendParams->get('fq'));
+
+        // Add as a hidden filter:
+        $params = $this->getParams();
+        $params->addHiddenFilter('blender_backend:Primo');
+        $backendParams = $params->getBackendParameters();
+
+        $this->assertEquals(['blender_backend:"Primo"'], $backendParams->get('fq'));
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $this->assertInstanceOf(ParamBag::class, $solrParams);
+        $this->assertNull($solrParams->get('fq'));
+    }
+
+    /**
+     * Test that special blender_backend checkbox facets work as expected.
+     *
+     * @return void
+     */
+    public function testBlenderFacets(): void
+    {
+        $params = $this->getParams();
+        $params->addCheckboxFacet('blender_backend:Primo', 'Primo');
+        $this->assertEquals(
+            [
+                [
+                    'desc' => 'Primo',
+                    'filter' => 'blender_backend:Primo',
+                    'selected' => false,
+                    'alwaysVisible' => false,
+                ],
+            ],
+            $params->getCheckboxFacets()
+        );
+        $backendParams = $params->getBackendParameters();
+
+        // Make sure no backend was disabled:
+        $this->assertNull($backendParams->get('fq'));
+        $primoParams = $backendParams->get('params_Primo')[0];
+        $this->assertInstanceOf(ParamBag::class, $primoParams);
+        $this->assertEquals(
+            [
+                'pcAvailability' => [
+                    'facetOp' => 'AND',
+                    'values' => ['true']
+                ]
+            ],
+            $primoParams->get('filterList')
+        );
+    }
+
+    /**
      * Test that ignoring filters works as expected.
      *
      * @return void
@@ -496,7 +492,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:EDS'
+                '-blender_backend:"EDS"'
             ],
             $backendParams->get('fq')
         );
@@ -549,7 +545,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'format:"bar"',
                 'format:"baz"',
-                '-blender_backend:EDS',
+                '-blender_backend:"EDS"',
             ],
             $backendParams->get('fq')
         );
@@ -579,6 +575,10 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'bar'));
         $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
         $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+
+        // Check that reset works:
+        $params->resetFacetConfig();
+        $this->assertEquals([], $params->getFacetConfig());
     }
 
     /**
@@ -596,7 +596,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'building:"0/Main/"',
-                '-blender_backend:Primo'
+                '-blender_backend:"Primo"'
             ],
             $backendParams->get('fq')
         );
@@ -760,5 +760,79 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     public function testGetSearchClassId(): void
     {
         $this->assertEquals('Blender', $this->getParams()->getSearchClassId());
+    }
+
+    /**
+     * Get mock config manager
+     *
+     * @return object
+     */
+    protected function getConfigManager()
+    {
+        $configs = [
+            'EDS' => new Config($this->edsConfig),
+            'Primo' => new Config($this->primoConfig)
+        ];
+
+        $callback = function (string $configName) use ($configs) {
+            return $configs[$configName] ?? null;
+        };
+
+        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+        $configManager
+            ->expects($this->any())
+            ->method('get')
+            ->will($this->returnCallback($callback));
+
+        return $configManager;
+    }
+
+    /**
+     * Get params classes for an array of backends
+     *
+     * @return array
+     */
+    protected function getParamsClassesArray(): array
+    {
+        $solrConfigMgr = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configMgr = $this->getConfigManager();
+
+        $result = [];
+        $result[] = new \VuFind\Search\Solr\Params(
+            new \VuFind\Search\Solr\Options($solrConfigMgr),
+            $solrConfigMgr
+        );
+        $result[] = new \VuFind\Search\Primo\Params(
+            new \VuFind\Search\Primo\Options($configMgr),
+            $configMgr
+        );
+        $result[] = new \VuFind\Search\EDS\Params(
+            new \VuFind\Search\EDS\Options($configMgr, $this->edsApiConfig),
+            $configMgr
+        );
+
+        return $result;
+    }
+
+    /**
+     * Get Params class
+     *
+     * @param array $mappings Blender mappings, overrides defaults
+     *
+     * @return Params
+     */
+    protected function getParams($mappings = null): Params
+    {
+        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        return new Params(
+            new Options($configMock),
+            $configMock,
+            new HierarchicalFacetHelper(),
+            $this->getParamsClassesArray(),
+            new Config($this->config),
+            $mappings ?? $this->mappings
+        );
     }
 }
