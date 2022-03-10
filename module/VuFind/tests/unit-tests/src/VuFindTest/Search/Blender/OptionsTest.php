@@ -27,13 +27,7 @@
  */
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Config\Config;
-use Laminas\Stdlib\Parameters;
 use VuFind\Search\Blender\Options;
-use VuFind\Search\Blender\Params;
-use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFindSearch\ParamBag;
-use VuFindSearch\Query\Query;
 
 /**
  * Blender Options Test
