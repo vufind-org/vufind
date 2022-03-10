@@ -31,6 +31,7 @@ namespace VuFindSearch\Backend\Blender\Response\Json;
 
 use VuFindSearch\Backend\EDS\Response\RecordCollection as EDSRecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * JSON-based record collection for records from multiple sources.
@@ -164,7 +165,8 @@ class RecordCollection
             }
         }
 
-        $this->mergeFacets($collections);
+        $this->response['facet_counts']['facet_fields']
+            = $this->getMergedFacets($collections);
 
         return $backendRecords;
     }
@@ -259,9 +261,9 @@ class RecordCollection
      *
      * @param array $collections Result collections
      *
-     * @return void
+     * @return array
      */
-    protected function mergeFacets(array $collections): void
+    protected function getMergedFacets(array $collections): array
     {
         $mergedFacets = [];
 
@@ -270,55 +272,29 @@ class RecordCollection
         foreach ($this->mappings['Facets']['Fields'] as $facetField => $settings) {
             $list = [];
             foreach ($collections as $backendId => $collection) {
-                $facets = $collection->getFacets();
-                if ($facets instanceof Facets) {
-                    $facets = $facets->getFieldFacets();
-                } elseif ($collection instanceof EDSRecordCollection) {
-                    // Convert EDS facets:
-                    $converted = [];
-                    foreach ($facets as $field => $facetData) {
-                        $valueCounts = [];
-                        foreach ($facetData['counts'] as $count) {
-                            $valueCounts[$count['displayText']] = $count['count'];
-                        }
-                        $converted[$field] = $valueCounts;
-                    }
-                    $facets = $converted;
-                }
+                $facets = $this->convertFacets($collection);
 
                 $facetType = $settings['Type'] ?? 'normal';
-                if (!($mappings = $settings['Mappings'][$backendId] ?? [])) {
-                    continue;
-                }
-                if (!($backendFacetField = $mappings['Field'] ?? '')) {
+                $mappings = $settings['Mappings'][$backendId] ?? [];
+                $backendFacetField = $mappings['Field'] ?? '';
+                if (!$mappings || !$backendFacetField) {
                     continue;
                 }
                 $valueMap = $mappings['Values'] ?? [];
-
-                foreach ($facets[$backendFacetField] ?? [] as $field => $count) {
-                    if (isset($valueMap[$field])) {
-                        $field = $valueMap[$field];
-                        if ('boolean' === $facetType) {
-                            $field = $field ? 'true' : 'false';
-                        }
-                    } elseif ('boolean' === $facetType) {
-                        // No mapping for boolean facet, ignore the value
+                foreach ($facets[$backendFacetField] ?? [] as $value => $count) {
+                    $value = $this->convertFacetValue($value, $facetType, $valueMap);
+                    if ('' === $value) {
                         continue;
                     }
-                    if ('hierarchical' === $facetType
-                        && !preg_match('/^\d+\/.+\/$/', $field)
-                    ) {
-                        $field = "0/$field/";
-                    }
 
-                    if (isset($list[$field])) {
-                        $list[$field] += $count;
+                    if (isset($list[$value])) {
+                        $list[$value] += $count;
                     } else {
-                        $list[$field] = $count;
+                        $list[$value] = intval($count);
                     }
 
                     if ('hierarchical' === $facetType) {
-                        $parts = explode('/', $field);
+                        $parts = explode('/', $value);
                         $level = array_shift($parts);
                         for ($i = $level - 1; $i >= 0; $i--) {
                             $key = $i . '/'
@@ -327,7 +303,7 @@ class RecordCollection
                             if (isset($list[$key])) {
                                 $list[$key] += $count;
                             } else {
-                                $list[$key] = $count;
+                                $list[$key] = intval($count);
                             }
                         }
                     }
@@ -345,14 +321,9 @@ class RecordCollection
             $mergedFacets[$facetField] = $list;
         }
 
-        $mergedFacets['blender_backend'] = [];
-        foreach (array_keys($this->config->Backends->toArray()) as $backendId) {
-            $mergedFacets['blender_backend'][$backendId]
-                = isset($collections[$backendId])
-                ? $collections[$backendId]->getTotal() : 0;
-        }
+        $mergedFacets['blender_backend'] = $this->getBlenderFacetStats($collections);
 
-        // Break the keyed array back to Solr-style array with two elements
+        // Convert the array back to Solr-style array with two elements
         $facetFields = [];
         foreach ($mergedFacets as $facet => $values) {
             $list = [];
@@ -362,6 +333,89 @@ class RecordCollection
             $facetFields[$facet] = $list;
         }
 
-        $this->response['facet_counts']['facet_fields'] = $facetFields;
+        return $facetFields;
+    }
+
+    /**
+     * Get facet counts for Blender backend facet
+     *
+     * @param array $collections Collections
+     *
+     * @return array
+     */
+    protected function getBlenderFacetStats(array $collections): array
+    {
+        $result = [];
+        foreach (array_keys($this->config->Backends->toArray()) as $backendId) {
+            $result[$backendId]
+                = isset($collections[$backendId])
+                ? $collections[$backendId]->getTotal() : 0;
+        }
+        return $result;
+    }
+
+    /**
+     * Convert facets into an associative array format for processing
+     *
+     * @param RecordCollectionInterface $collection Collection
+     *
+     * @return array
+     */
+    protected function convertFacets(RecordCollectionInterface $collection)
+    {
+        $facets = $collection->getFacets();
+        if ($facets instanceof Facets) {
+            return $facets->getFieldFacets();
+        }
+        if ($collection instanceof EDSRecordCollection) {
+            // Convert EDS facets:
+            $converted = [];
+            foreach ($facets as $field => $facetData) {
+                $valueCounts = [];
+                foreach ($facetData['counts'] as $count) {
+                    $valueCounts[$count['displayText']] = $count['count'];
+                }
+                $converted[$field] = $valueCounts;
+            }
+            return $converted;
+        }
+
+        if (!is_array($facets)) {
+            throw new \Exception(
+                'Unhandled facet format for ' . get_class($collection)
+            );
+        }
+
+        return $facets;
+    }
+
+    /**
+     * Convert a facet value from a backend
+     *
+     * @param string $value    Facet value
+     * @param string $type     Facet type
+     * @param array  $valueMap Value map for the field
+     *
+     * @return string
+     */
+    protected function convertFacetValue(
+        string $value,
+        string $type,
+        array $valueMap
+    ): string {
+        if (isset($valueMap[$value])) {
+            $value = $valueMap[$value];
+            if ('boolean' === $type) {
+                $value = $value ? 'true' : 'false';
+            }
+        } elseif ('boolean' === $type) {
+            // No mapping defined for boolean facet, ignore the value
+            return '';
+        }
+        if ('hierarchical' === $type && !preg_match('/^\d+\/.+\/$/', $value)) {
+            $value = "0/$value/";
+        }
+
+        return $value;
     }
 }
