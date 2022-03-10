@@ -277,12 +277,12 @@ Sorting:
         EDS: relevance
     year:
       Mappings:
-        Solr: year # This is special for Solr
+        Solr: year # This is mapped to the actual Solr field by VuFind
         Primo: scdate
         EDS: date
     "year asc":
       Mappings:
-        Solr: year asc # This is special for Solr
+        Solr: year asc # This is mapped to the actual Solr field by VuFind
         Primo: scdate2
         EDS: date2
     author:
