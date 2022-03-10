@@ -427,6 +427,9 @@ class Params extends \VuFind\Search\Solr\Params
                 );
             }
 
+            // Clone params so that adding any default filters does not affect the
+            // original instance:
+            $params = clone $params;
             $this->addDefaultFilters($params, $backendId);
 
             $result->set(
