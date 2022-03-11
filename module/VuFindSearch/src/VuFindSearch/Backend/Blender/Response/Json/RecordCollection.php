@@ -269,7 +269,9 @@ class RecordCollection
 
         // Iterate through mappings and merge values. It is important to do it this
         // way since multiple facets may to a single one.
-        foreach ($this->mappings['Facets']['Fields'] as $facetField => $settings) {
+        foreach ($this->mappings['Facets']['Fields'] ?? []
+            as $facetField => $settings
+        ) {
             $list = [];
             foreach ($collections as $backendId => $collection) {
                 $facets = $this->convertFacets($collection);
