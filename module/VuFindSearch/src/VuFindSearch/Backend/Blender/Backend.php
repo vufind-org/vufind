@@ -328,13 +328,7 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
-        foreach ($this->backends as $backend) {
-            $result = $backend->retrieve($id, $params);
-            if ($result->count() > 0) {
-                break;
-            }
-        }
-        return $result;
+        throw new \Exception('Blender does not support retrieve');
     }
 
     /**
