@@ -1,6 +1,6 @@
 <?php
 /**
- * Unit tests for Blendere backend.
+ * Unit tests for Blender backend.
  *
  * PHP version 7
  *
