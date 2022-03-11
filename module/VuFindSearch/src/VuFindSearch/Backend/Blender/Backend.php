@@ -433,17 +433,18 @@ class Backend extends AbstractBackend
     {
         foreach ($this->adaptiveBlockSizes as $size) {
             $parts = explode(':', $size, 2);
-            if (!isset($parts[1]) || intval($parts[1]) === 0) {
+            $blockSize = intval($parts[1] ?? 0);
+            if ($blockSize === 0) {
                 throw new \Exception("Invalid adaptive block size: $size");
             }
             $rangeParts = explode('-', $parts[0]);
-            if (!isset($rangeParts[1])) {
+            $from = intval($rangeParts[0]);
+            $to = intval($rangeParts[1] ?? 0);
+            if ($from > $to) {
                 throw new \Exception("Invalid adaptive block size: $size");
             }
-            if (intval($rangeParts[0]) <= $resultCount
-                && $resultCount <= intval($rangeParts[1])
-            ) {
-                return intval($parts[1]);
+            if ($from <= $resultCount && $resultCount <= $to) {
+                return $blockSize;
             }
         }
         return $this->blockSize;
