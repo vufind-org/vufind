@@ -67,7 +67,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'EDS'
             ]
         ],
-        'blockSize' => 7,
     ];
 
     /**
