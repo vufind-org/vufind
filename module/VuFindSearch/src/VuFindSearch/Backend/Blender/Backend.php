@@ -161,6 +161,9 @@ class Backend extends AbstractBackend
                 'params' => $params->get("params_$backendId")[0]
             ];
         }
+        if (!$backendDetails) {
+            return $mergedCollection;
+        }
 
         $blendLimit = $this->blendLimit;
         if ($limit === 0) {
@@ -208,23 +211,21 @@ class Backend extends AbstractBackend
 
         $backendRecords = $mergedCollection->initBlended(
             $collections,
-            $offset + $limit,
+            $blendLimit,
             $blockSize,
             $totalCount
         );
 
-        if (!$collections) {
-            return $mergedCollection;
+        if ($limit) {
+            $this->fillMergedCollection(
+                $mergedCollection,
+                $collections,
+                $backendDetails,
+                $backendRecords,
+                $offset + $limit,
+                $blockSize
+            );
         }
-
-        $this->fillMergedCollection(
-            $mergedCollection,
-            $collections,
-            $backendDetails,
-            $backendRecords,
-            $offset + $limit,
-            $blockSize
-        );
 
         $mergedCollection->slice($offset, $limit);
 
