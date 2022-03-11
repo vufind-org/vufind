@@ -26,12 +26,13 @@
 <?php if (count($hierarchyTreeList) > 0): ?>
   <div id="treeSelector">
     <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
-      Beep
+      <?php if($activeTree == $hierarchy): ?>
         <?=$this->icon('hierarchy-tree') ?>
         <?=$this->escapeHtml($hierarchyTitle)?>
-        Boop
+      <?php else: ?>
         <?=$this->icon('hierarchy-tree', ['class' => 'text-muted']) ?>
         <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+      <?php endif; ?>
     <?php endforeach; ?>
   </div>
 <?php endif; ?>
