@@ -23,7 +23,7 @@
   $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
   echo $this->inlineScript();
 ?>
-<?php if (count($hierarchyTreeList) > 1): ?>
+<?php if (count($hierarchyTreeList) > 0): ?>
   <div id="treeSelector">
     <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
       <?php if($activeTree == $hierarchy): ?>

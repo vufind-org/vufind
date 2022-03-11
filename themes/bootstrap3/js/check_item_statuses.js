@@ -58,14 +58,14 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           if (result.locationList[x].location) {
             locationListHTML +=
               '<span class="text-warning">' +
-                VuFind.icon("status-indicator") +
+                VuFind.icon("status-indicator") + " " +
                 result.locationList[x].location +
               '</span> ';
           }
         } else {
           locationListHTML +=
             '<span class="text-danger">' +
-              VuFind.icon('ui-failure') +
+              VuFind.icon('ui-failure') + " " +
               result.locationList[x].location +
             '</span> ';
         }
