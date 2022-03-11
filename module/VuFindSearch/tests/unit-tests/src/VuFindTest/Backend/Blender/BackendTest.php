@@ -259,7 +259,23 @@ class BackendTest extends TestCase
             '5000-100000:5'
         ];
 
+        $expectedRecordsNoBoost = array_merge(
+            array_slice($solrRecords, 0, 7),
+            array_slice($edsRecords, 0, 7),
+            array_slice($solrRecords, 7, 7),
+            array_slice($edsRecords, 7, 7),
+            array_slice($solrRecords, 14, 7),
+            array_slice($edsRecords, 14, 5),
+        );
+        $noBoostConfig = $this->config;
+        unset($noBoostConfig['Blending']['initialResults']);
+
         return [
+            [
+                0,
+                0,
+                []
+            ],
             [
                 0,
                 20,
@@ -289,6 +305,12 @@ class BackendTest extends TestCase
                 0,
                 40,
                 array_slice($expectedRecords, 0, 40)
+            ],
+            [
+                0,
+                40,
+                array_slice($expectedRecordsNoBoost, 0, 40),
+                $noBoostConfig
             ],
             [
                 0,
@@ -329,6 +351,14 @@ class BackendTest extends TestCase
                     '{!tag=blender_backend_filter}blender_backend:'
                     . '(blender_backend:"Solr" OR blender_backend:"EDS")'
                 ]
+            ],
+            [
+                0,
+                20,
+                [],
+                null,
+                ['-blender_backend:Solr', '-blender_backend:EDS'],
+                0
             ],
         ];
     }
@@ -496,8 +526,16 @@ class BackendTest extends TestCase
         $callback = function ($handler, ParamBag $params, bool $cacheable = false) {
             $start = $params->get('start')[0];
             $rows = $params->get('rows')[0];
-            $fixture = "blender/response/solr/search-$start-$rows.json";
-            return $this->getFixture($fixture, 'VuFindSearch');
+            $results = $this->getJsonFixture(
+                'blender/response/solr/search.json',
+                'VuFindSearch'
+            );
+            $results['response']['docs'] = array_slice(
+                $results['response']['docs'],
+                $start,
+                $rows
+            );
+            return json_encode($results);
         };
         $map = new \VuFindSearch\Backend\Solr\HandlerMap(
             ['select' => ['fallback' => true]]
@@ -537,8 +575,17 @@ class BackendTest extends TestCase
             $json = json_decode($message, true);
             $rows = $json['RetrievalCriteria']['ResultsPerPage'];
             $page = $json['RetrievalCriteria']['PageNumber'];
-            $fixture = "blender/response/eds/search-$page-$rows.json";
-            return json_decode($this->getFixture($fixture, 'VuFindSearch'), true);
+            $results = $this->getJsonFixture(
+                'blender/response/eds/search.json',
+                'VuFindSearch'
+            );
+            $results['SearchResult']['Data']['Records'] = array_slice(
+                $results['SearchResult']['Data']['Records'],
+                ($page - 1) * $rows,
+                $rows
+            );
+
+            return $results;
         };
         $client = $this->createMock(\Laminas\Http\Client::class);
         $connector = $this

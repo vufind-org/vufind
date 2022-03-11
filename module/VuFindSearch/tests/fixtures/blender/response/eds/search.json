@@ -372,6 +372,2050 @@
                                 ],
                                 "Titles": [
                                     {
+                                        "TitleFull": "Title 1",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "21",
+                                                    "M": "07",
+                                                    "Text": "07\/21\/2014",
+                                                    "Type": "published",
+                                                    "Y": "2014"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 2,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201407220007PR.NEWS.USPR.MM73937",
+                        "RelevancyScore": "2406",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201407220007PR.NEWS.USPR.MM73937",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20140722&atitle=This+Is+a+Test+From+PR+Newswire+-+July+21%2c+2014+-+This+Is+a+Test+From+PR+Newswire+-+6&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; - July 21, 2014 - This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; - 6"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PRN-&lt;highlight&gt;TEST&lt;\/highlight&gt;-&lt;highlight&gt;TEST&lt;\/highlight&gt;-&lt;highlight&gt;TEST&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 07\/22\/2014."
+                        },
+                        {
+                            "Name": "SubjectGeographic",
+                            "Label": "Geographic Terms",
+                            "Group": "Su",
+                            "Data": "&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Ohio%22&quot;&gt;Ohio&lt;\/searchLink&gt;"
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Subjects": [
+                                    {
+                                        "SubjectFull": "Ohio",
+                                        "Type": "general"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 2",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "22",
+                                                    "M": "07",
+                                                    "Text": "07\/22\/2014",
+                                                    "Type": "published",
+                                                    "Y": "2014"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 3,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 3",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 4,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 4",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 5,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 5",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 6,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 6",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 7,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 7",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 8,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 8",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 9,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 9",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 10,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 10",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 11,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 11",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 12,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 12",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 13,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 13",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 14,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 14",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 15,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 15",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 16,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 16",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 17,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 17",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 18,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 18",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 19,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 19",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 20,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201305180751PR.NEWS.USPR.HS16615",
+                        "RelevancyScore": "2338",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201305180751PR.NEWS.USPR.HS16615",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20130518&atitle=This+Is+a+Test+From+PR+Newswire+24&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; 24"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PR-&lt;highlight&gt;Newswire&lt;\/highlight&gt;-&lt;highlight&gt;Test&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 05\/18\/2013."
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
+                                        "TitleFull": "Title 20",
+                                        "Type": "main"
+                                    }
+                                ]
+                            },
+                            "BibRelationships": {
+                                "HasContributorRelationships": [
+                                    {
+                                        "PersonEntity": {
+                                            "Name": {
+                                                "NameFull": "PR Newswire"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "IsPartOfRelationships": [
+                                    {
+                                        "BibEntity": {
+                                            "Dates": [
+                                                {
+                                                    "D": "18",
+                                                    "M": "05",
+                                                    "Text": "05\/18\/2013",
+                                                    "Type": "published",
+                                                    "Y": "2013"
+                                                }
+                                            ],
+                                            "Titles": [
+                                                {
+                                                    "TitleFull": "PR Newswire US",
+                                                    "Type": "main"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "ResultId": 1,
+                    "Header": {
+                        "DbId": "bwh",
+                        "DbLabel": "",
+                        "An": "201407212251PR.NEWS.USPR.MM73898",
+                        "RelevancyScore": "2415",
+                        "PubType": "News",
+                        "PubTypeId": "newspaperArticle"
+                    },
+                    "PLink": "http:\/\/ezproxy.villanova.edu\/login?URL=http:\/\/search.ebscohost.com\/login.aspx?direct=true&site=eds-live&scope=site&db=bwh&AN=201407212251PR.NEWS.USPR.MM73898",
+                    "CustomLinks": [
+                        {
+                            "Url": "http:\/\/NC2SY9RN9H.search.serialssolutions.com?genre=article&issn=&title=PR+Newswire+US&volume=&issue=&date=20140721&atitle=This+Is+a+Test+From+PR+Newswire+-+This+Is+a+Test+From+PR+Newswire+-+July+21%2c+2014+-+This+Is+a+Test+From+PR+Newswire&spage=&pages=&sid=EBSCO:Regional+Business+News&au=PR+Newswire",
+                            "Name": "Serials Solutions 360 Link",
+                            "Category": "other",
+                            "Text": "Check for Full Text",
+                            "Icon": "https:\/\/library.villanova.edu\/VU\/images\/ico_go.gif"
+                        }
+                    ],
+                    "FullText": {
+                        "Text": {
+                            "Availability": "1"
+                        }
+                    },
+                    "Items": [
+                        {
+                            "Name": "Title",
+                            "Label": "Title",
+                            "Group": "Ti",
+                            "Data": "This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; - This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; - July 21, 2014 - This Is a &lt;highlight&gt;Test&lt;\/highlight&gt; From PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "TitleAlt",
+                            "Label": "Alternate Title",
+                            "Group": "TiAlt",
+                            "Data": "PRN-&lt;highlight&gt;TEST&lt;\/highlight&gt;-&lt;highlight&gt;TEST&lt;\/highlight&gt;-&lt;highlight&gt;TEST&lt;\/highlight&gt;"
+                        },
+                        {
+                            "Name": "Author",
+                            "Label": "Authors",
+                            "Group": "Au",
+                            "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22PR+Newswire%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt;&lt;\/searchLink&gt;"
+                        },
+                        {
+                            "Name": "TitleSource",
+                            "Label": "Source",
+                            "Group": "Src",
+                            "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22PR+Newswire+US%22&quot;&gt;PR &lt;highlight&gt;Newswire&lt;\/highlight&gt; US&lt;\/searchLink&gt;. 07\/21\/2014."
+                        },
+                        {
+                            "Name": "SubjectGeographic",
+                            "Label": "Geographic Terms",
+                            "Group": "Su",
+                            "Data": "&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Ohio%22&quot;&gt;Ohio&lt;\/searchLink&gt;"
+                        }
+                    ],
+                    "RecordInfo": {
+                        "BibRecord": {
+                            "BibEntity": {
+                                "Languages": [
+                                    {
+                                        "Text": "English"
+                                    }
+                                ],
+                                "Subjects": [
+                                    {
+                                        "SubjectFull": "Ohio",
+                                        "Type": "general"
+                                    }
+                                ],
+                                "Titles": [
+                                    {
                                         "TitleFull": "Title 21",
                                         "Type": "main"
                                     }
