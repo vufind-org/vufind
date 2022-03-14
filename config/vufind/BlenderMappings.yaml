@@ -9,18 +9,27 @@
 # missing fields are set to empty.
 
 # In Facets Type indicates what kind of processing the facet needs. Allowed values
-# are normal (default), hierarchical and boolean (checkbox facet).
-# Facets include filter mappings e.g. for checkbox facets.
+# are normal (default) and boolean (checkbox facet).
+# Facet settings include filter mappings e.g. for checkbox facets.
 #
-# Settings:
+# Settings for mappings:
 # Field         Field name in backend
-# Values        Mappings from backend values to VuFind.
-# Ignore        true to ignore all values for the filter, or an array of values to
+# Values        Mappings from backend values to VuFind for facets and the other way
+#               for active filters.
+# Hierarchical  Boolean setting indicating that the values should be mapped to a
+#               hierarchical facet. This ensures that when a value is mapped to
+#               a sub-level hierarchy item, facet counts for its parents get
+#               incremented as well.
+# Unmapped      How to handle values with no mappings when building facets. Possible
+#               values:
+#               "keep" - Use the values as is (default)
+#               "drop" - Drop the values from facets
+# Ignore        true to ignore all values for a filter, or an array of values to
 #               ignore. Otherwise any filter value that does not have a field and
 #               value mapping causes the backend to be disabled for the search.
-# DefaultValue  Value used for the backend unless another value is provided. For
-#               example the pcAvailability filter by default limits results to those
-#               that have full text available, so a DefaultValue can be used to
+# DefaultValue  Filter value used for the backend unless a filter is active.
+#               For example the pcAvailability filter by default limits results to
+#               those that have full text available, so a DefaultValue can be used to
 #               override it.
 #
 # Example:
@@ -115,10 +124,10 @@ Facets:
 
     # Example mappings for a hierarchical format facet:
     #format:
-    #  Type: hierarchical
     #  Mappings:
     #    EDS:
     #      Field: SourceType
+    #      Hierarchical: true
     #      Values:
     #        Academic Journals: "1/Journal/eJournal/"
     #        Magazines: "1/Journal/eArticle/"
@@ -143,6 +152,7 @@ Facets:
     #      Field: format
     #    Primo:
     #      Field: rtype
+    #      Hierarchical: true
     #      Values:
     #        articles: "1/Journal/eArticle/"
     #        audios: "1/Sound/SoundRecording/"

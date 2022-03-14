@@ -283,8 +283,16 @@ class RecordCollection
                     continue;
                 }
                 $valueMap = $mappings['Values'] ?? [];
+                $unmappedRule = $mappings['Unmapped'] ?? 'keep';
+                $hierarchical = $mappings['Hierarchical'] ?? false;
                 foreach ($facets[$backendFacetField] ?? [] as $value => $count) {
-                    $value = $this->convertFacetValue($value, $facetType, $valueMap);
+                    $value = $this->convertFacetValue(
+                        $value,
+                        $facetType,
+                        $unmappedRule,
+                        $valueMap,
+                        $hierarchical
+                    );
                     if ('' === $value) {
                         continue;
                     }
@@ -295,7 +303,7 @@ class RecordCollection
                         $list[$value] = intval($count);
                     }
 
-                    if ('hierarchical' === $facetType) {
+                    if ($hierarchical) {
                         $parts = explode('/', $value);
                         $level = array_shift($parts);
                         for ($i = $level - 1; $i >= 0; $i--) {
@@ -394,27 +402,32 @@ class RecordCollection
     /**
      * Convert a facet value from a backend
      *
-     * @param string $value    Facet value
-     * @param string $type     Facet type
-     * @param array  $valueMap Value map for the field
+     * @param string $value        Facet value
+     * @param string $type         Facet type
+     * @param string $unmapped     Unmapped facet handling rule
+     * @param array  $valueMap     Value map for the field
+     * @param bool   $hierarchical Whether the facet is hierarchical
      *
      * @return string
      */
     protected function convertFacetValue(
         string $value,
         string $type,
-        array $valueMap
+        string $unmapped,
+        array $valueMap,
+        bool $hierarchical
     ): string {
         if (isset($valueMap[$value])) {
             $value = $valueMap[$value];
             if ('boolean' === $type) {
                 $value = $value ? 'true' : 'false';
             }
-        } elseif ('boolean' === $type) {
-            // No mapping defined for boolean facet, ignore the value
+        } elseif ('boolean' === $type || 'drop' === $unmapped) {
+            // No mapping defined for boolean facet or "drop" as the Unmapped rule;
+            // ignore the value:
             return '';
         }
-        if ('hierarchical' === $type && !preg_match('/^\d+\/.+\/$/', $value)) {
+        if ($hierarchical && !preg_match('/^\d+\/.+\/$/', $value)) {
             $value = "0/$value/";
         }
 

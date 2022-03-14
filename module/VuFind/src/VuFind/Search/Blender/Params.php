@@ -567,6 +567,7 @@ class Params extends \VuFind\Search\Solr\Params
         if ('boolean' === $facetType) {
             $value = (bool)$value;
         }
+        $resultValues = [];
         foreach ($mappings['Values'] ?? [$value => $value] as $k => $v) {
             if ('boolean' === $facetType) {
                 $v = (bool)$v;
@@ -576,7 +577,7 @@ class Params extends \VuFind\Search\Solr\Params
             }
         }
         // Check also higher levels when converting hierarchical facets:
-        if ('hierarchical' === $facetType) {
+        if ($mappings['Hierarchical'] ?? false) {
             $levelOffset = -1;
             do {
                 $levelGood = false;
