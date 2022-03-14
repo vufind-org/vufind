@@ -186,6 +186,18 @@ abstract class AbstractBase implements CommandInterface
     }
 
     /**
+     * Set search parameters.
+     *
+     * @param ParamBag $params Params
+     *
+     * @return void
+     */
+    public function setSearchParameters(ParamBag $params): void
+    {
+        $this->params = $params;
+    }
+
+    /**
      * Return command context.
      *
      * @return mixed

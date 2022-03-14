@@ -73,6 +73,18 @@ trait QueryOffsetLimitTrait
     }
 
     /**
+     * Set search query.
+     *
+     * @param QueryInterface $query Query
+     *
+     * @return void
+     */
+    public function setQuery(QueryInterface $query): void
+    {
+        $this->query = $query;
+    }
+
+    /**
      * Return search offset.
      *
      * @return int

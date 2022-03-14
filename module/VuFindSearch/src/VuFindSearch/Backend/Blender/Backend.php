@@ -472,21 +472,9 @@ class Backend extends AbstractBackend
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
-        $command = $event->getParam('command');
-        if ($command->getTargetIdentifier() !== $this->getIdentifier()) {
-            return $event;
-        }
-
-        // Trigger the event for all backends:
-        foreach ($this->backends as $backend) {
-            $this->convertSearchEvent($event, $backend);
-            $this->events->triggerEvent($event);
-        }
-
-        // Restore the event and return it:
-        return $this->convertSearchEvent($event, $this);
+        return $this->triggerSearchEvent($event);
     }
 
     /**
@@ -496,41 +484,89 @@ class Backend extends AbstractBackend
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
+    {
+        return $this->triggerSearchEvent($event);
+    }
+
+    /**
+     * Trigger pre-search events for both backends.
+     *
+     * @param EventInterface $event Event
+     *
+     * @return EventInterface
+     */
+    protected function triggerSearchEvent(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetIdentifier() !== $this->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->getIdentifier()
+            || !($command instanceof SearchCommand)
+        ) {
             return $event;
         }
 
         // Trigger the event for all backends:
-        foreach ($this->backends as $backend) {
-            $this->convertSearchEvent($event, $backend);
+        foreach ($this->backends as $id => $backend) {
+            $this->convertSearchEvent($event, $command, $backend);
             $this->events->triggerEvent($event);
+            $this->collectEventResults($command, $event->getParam('command'), $id);
         }
 
         // Restore the event and return it:
-        return $this->convertSearchEvent($event, $this);
+        $event->setParam('command', $command);
+        $event->setParam('backend', $this->getIdentifier());
+        $event->setTarget($this);
+        return $event;
+    }
+
+    /**
+     * Collect results back into the Command after an event has been processed
+     *
+     * @param SearchCommand $command        Search command
+     * @param SearchCommand $backendCommand Backend-specific command
+     * @param string        $backendId      Backend identifier
+     *
+     * @return void
+     */
+    protected function collectEventResults(
+        SearchCommand $command,
+        SearchCommand $backendCommand,
+        string $backendId
+    ): void {
+        $command->getSearchParameters()->set(
+            "query_$backendId",
+            $backendCommand->getQuery()
+        );
+        $command->getSearchParameters()->set(
+            "params_$backendId",
+            $backendCommand->getSearchParameters()
+        );
     }
 
     /**
      * Convert a search event to another backend
      *
      * @param EventInterface   $event   Event
+     * @param SearchCommand    $command Search command
      * @param BackendInterface $backend Target backend
      *
      * @return EventInterface
      */
     protected function convertSearchEvent(
         EventInterface $event,
+        SearchCommand $command,
         BackendInterface $backend
     ): EventInterface {
-        $command = $event->getParam('command');
-        if (!($command instanceof SearchCommand)) {
-            throw new \Exception('Invalid command class');
-        }
-        $command->setTargetIdentifier($backend->getIdentifier());
-        $event->setParam('backend', $backend->getIdentifier());
+        $backendId = $backend->getIdentifier();
+
+        $newCommand = clone $command;
+        $newCommand->setTargetIdentifier($backendId);
+        $params = $command->getSearchParameters();
+        $newCommand->setQuery($params->get("query_$backendId")[0]);
+        $newCommand->setSearchParameters($params->get("params_$backendId")[0]);
+
+        $event->setParam('command', $newCommand);
+        $event->setParam('backend', $backendId);
         $event->setTarget($backend);
         return $event;
     }
