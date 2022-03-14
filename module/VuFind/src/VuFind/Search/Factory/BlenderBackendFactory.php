@@ -138,8 +138,16 @@ class BlenderBackendFactory implements FactoryInterface
     {
         $manager = $this->container->get('SharedEventManager');
 
-        $manager->attach('VuFind\Search', 'pre', [$backend, 'onSearchPre']);
-        $manager->attach('VuFind\Search', 'post', [$backend, 'onSearchPost']);
+        $manager->attach(
+            'VuFind\Search',
+            \VuFindSearch\Service::EVENT_PRE,
+            [$backend, 'onSearchPre']
+        );
+        $manager->attach(
+            'VuFind\Search',
+            \VuFindSearch\Service::EVENT_POST,
+            [$backend, 'onSearchPost']
+        );
     }
 
     /**
