@@ -1852,10 +1852,10 @@
         ["MyInstitution",240]],
       "building":
       [
-        ["geo.mrc",231],
-        ["weird_ids.mrc",7],
-        ["deweybrowse.mrc",1],
-        ["testpubfields.mrc",1]],
+        ["0/Main/", 231],
+        ["1/Main/Sub/", 7],
+        ["0/Sub/",1],
+        ["1/Sub/Foo/",1]],
       "format":
       [
         ["Book Chapter",177],

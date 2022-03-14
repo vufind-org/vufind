@@ -28,11 +28,17 @@
 namespace VuFindTest\Backend\Blender;
 
 use Laminas\Config\Config;
+use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
+use Laminas\EventManager\SharedEventManager;
 use PHPUnit\Framework\TestCase;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
+use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Backend\Solr\QueryBuilder;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection as SolrRecordCollection;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
@@ -57,7 +63,7 @@ class BackendTest extends TestCase
     protected $config = [
         'Backends' => [
             'Solr' => 'Local',
-            'EDS' => 'EBSCO'
+            'EDS' => 'Electronic Stuff'
         ],
         'Blending' => [
             'initialResults' => [
@@ -79,16 +85,18 @@ class BackendTest extends TestCase
         'Facets' => [
             'Fields' => [
                 'building' => [
-                    'Type' => 'hierarchical',
                     'Mappings' => [
                         'Solr' => [
                             'Field' => 'building',
                         ],
                         'EDS' => [
-                            'Field' => 'building',
+                            'Field' => 'ContentProvider',
+                            'Unmapped' => 'drop',
+                            'Hierarchical' => true,
                             'Values' => [
-                                'main' => '0/Main/',
-                                'sub' => '1/Sub/Fiction/',
+                                'Business Source Premier' => 'Main',
+                                'Communication Abstracts' => '1/Main/Sub/',
+                                'EconLit with Full Text' => '1/Econlit/Foo/'
                             ]
                         ]
                     ],
@@ -96,15 +104,32 @@ class BackendTest extends TestCase
                 'format' => [
                     'Mappings' => [
                         'Solr' => [
-                            'Field' => 'formatSolr',
+                            'Field' => 'format',
                         ],
-                        'Primo' => [
-                            'Field' => 'formatPrimo',
+                        'EDS' => [
+                            'Field' => 'SourceType',
                             'Values' => [
-                                'barPrimo' => 'bar',
-                                'bazPrimo' => 'baz',
-                                'double1' => 'double',
-                                'double2' => 'double',
+                                'Academic Journals' => 'Journal',
+                                'Magazines' => 'Article',
+                                'Books' => 'Book',
+                                'Conference Materials' => 'Conference Proceeding',
+                                'Reviews' => 'Review',
+                                'Trade Publications' => 'Trade Publications',
+                                'Reports' => 'Report',
+                                'Electronic Resources' => 'Electronic',
+                                'eBooks' => 'eBook',
+                                'Non-print Resources' => 'Text',
+                                'Biographies' => 'Biography',
+                                'Dissertations' => 'Thesis',
+                                'Audio' => 'Audio',
+                                'Music Scores' => 'Music Score',
+                                'Video' => 'Video',
+                                'Primary Source Documents'
+                                    => 'Primary Source Document',
+                                'Maps' => 'Map',
+                                'Research Starters' => 'Research Starter',
+                                'Audiobooks' => 'Audiobook',
+                                'News' => '',
                             ],
                         ],
                     ],
@@ -131,6 +156,13 @@ class BackendTest extends TestCase
                         ],
                     ],
                 ],
+                'language' => [
+                    'Mappings' => [
+                        'EDS' => [
+                            'Field' => ''
+                        ]
+                    ]
+                ]
             ],
         ],
         'Search' => [
@@ -170,6 +202,23 @@ class BackendTest extends TestCase
             ],
         ],
     ];
+
+    /**
+     * Event manager
+     *
+     * @var SharedEventManager
+     */
+    protected $sharedEventManager = null;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->sharedEventManager = new SharedEventManager();
+    }
 
     /**
      * Data provider for testSearch
@@ -265,10 +314,22 @@ class BackendTest extends TestCase
             array_slice($solrRecords, 7, 7),
             array_slice($edsRecords, 7, 7),
             array_slice($solrRecords, 14, 7),
-            array_slice($edsRecords, 14, 5),
+            array_slice($edsRecords, 14, 5)
         );
         $noBoostConfig = $this->config;
         unset($noBoostConfig['Blending']['initialResults']);
+
+        $expectedRecordsTitleSearch = array_merge(
+            array_slice($solrRecords, 0, 2),
+            array_slice($edsRecords, 0, 2),
+            array_slice($solrRecords, 2, 3),
+            array_slice($edsRecords, 2, 13)
+        );
+
+        $expectedRecordsAuthorSearch = array_merge(
+            array_slice($solrRecords, 0, 2),
+            array_slice($edsRecords, 0, 6)
+        );
 
         return [
             [
@@ -324,7 +385,8 @@ class BackendTest extends TestCase
                 array_slice($solrRecords, 0, 20),
                 $adaptiveConfig,
                 ['blender_backend:Solr'],
-                240
+                240,
+                0
             ],
             [
                 0,
@@ -332,7 +394,8 @@ class BackendTest extends TestCase
                 array_slice($solrRecords, 0, 20),
                 $adaptiveConfig,
                 ['-blender_backend:EDS'],
-                240
+                240,
+                0
             ],
             [
                 0,
@@ -340,6 +403,7 @@ class BackendTest extends TestCase
                 array_slice($edsRecords, 0, 20),
                 $adaptiveConfig,
                 ['blender_backend:EDS'],
+                0,
                 65924
             ],
             [
@@ -358,7 +422,28 @@ class BackendTest extends TestCase
                 [],
                 null,
                 ['-blender_backend:Solr', '-blender_backend:EDS'],
+                0,
                 0
+            ],
+            [
+                0,
+                20,
+                $expectedRecordsTitleSearch,
+                null,
+                [],
+                5,
+                65924,
+                new Query('foo', 'Title')
+            ],
+            [
+                0,
+                20,
+                $expectedRecordsAuthorSearch,
+                null,
+                [],
+                2,
+                6,
+                new Query('foo', 'Author')
             ],
         ];
     }
@@ -376,16 +461,18 @@ class BackendTest extends TestCase
         $expectedRecords,
         $config = null,
         $filters = [],
-        $expectedTotal = 66164
-    ) {
+        $expectedSolr = 240,
+        $expectedEDS = 65924,
+        $query = null
+    ): void {
         $backend = $this->getBackend($config);
 
         $this->assertNull($backend->getRecordCollectionFactory());
 
-        $params = $this->getSearchParams($filters);
-        $result = $backend->search(new Query(), $start, $limit, $params);
+        $params = $this->getSearchParams($filters, $query);
+        $result = $backend->search($query ?? new Query(), $start, $limit, $params);
         $this->assertEquals([], $result->getErrors());
-        $this->assertEquals($expectedTotal, $result->getTotal());
+        $this->assertEquals($expectedSolr + $expectedEDS, $result->getTotal());
 
         $records = $result->getRecords();
         $this->assertIsArray($records);
@@ -402,6 +489,212 @@ class BackendTest extends TestCase
                 "Record $i title"
             );
         }
+
+        // Check facet counts if we expect results:
+        if ($expectedSolr + $expectedEDS > 0) {
+            $facets = $result->getFacets()->getFieldFacets();
+            $this->assertInstanceOf(\ArrayObject::class, $facets);
+            $backendFacet = $facets['blender_backend']->toArray();
+            $this->assertEquals($expectedSolr, $backendFacet['Solr']);
+            $this->assertEquals($expectedEDS, $backendFacet['EDS']);
+
+            $expectedFacets = [
+                'building' => [
+                    'Solr' => [
+                        '0/Main/' => 231,
+                        '1/Main/Sub/' => 7,
+                        '0/Sub/' => 1,
+                        '1/Sub/Foo/' => 1
+                    ],
+                    'EDS' => [
+                        '0/Main/' => 1861 + 2,
+                        '1/Main/Sub/' => 2,
+                        '0/Econlit/' => 402,
+                        '1/Econlit/Foo/' => 402,
+                    ],
+                ],
+                'format' => [
+                    'Solr' => [
+                        'Journal' => 0,
+                        'Article' => 0,
+                        'Book Chapter' => 177,
+                        'Book' => 63,
+                        'eBook' => 0,
+                        'Report' => 0,
+                        'Conference Proceeding' => 0,
+                    ],
+                    'EDS' => [
+                        'Journal' => 2855,
+                        'Article' => 783,
+                        'Book Chapter' => 0,
+                        'Book' => 226,
+                        'eBook' => 208,
+                        'Report' => 47,
+                        'Conference Proceeding' => 2,
+                        'Review' => 5,
+                    ],
+                ],
+            ];
+
+            $active = [];
+            if ($expectedSolr > 0) {
+                $active[] = 'Solr';
+            }
+            if ($expectedEDS > 0) {
+                $active[] = 'EDS';
+            }
+
+            foreach ($expectedFacets as $facet => $expectedCountsForSources) {
+                $this->assertIsObject($facets[$facet]);
+                $facetCounts = $facets[$facet]->toArray();
+                $expectedCounts = [];
+                foreach ($active as $source) {
+                    foreach ($expectedCountsForSources[$source]
+                        as $field => $count
+                    ) {
+                        $expectedCounts[$field] =
+                            ($expectedCounts[$field] ?? 0) + $count;
+                    }
+                }
+                $expectedCounts = array_filter($expectedCounts);
+                $this->assertEquals($expectedCounts, $facetCounts, $facet);
+            }
+        }
+    }
+
+    /**
+     * Test search with a partial failure
+     *
+     * @return void
+     */
+    public function testSearchPartialFailure(): void
+    {
+        $backend = $this->getBackend(
+            null,
+            null,
+            [
+                'Solr' => $this->getSolrBackend(),
+                'EDS' => $this->getEDSBackendMock('')
+            ]
+        );
+
+        $params = $this->getSearchParams([]);
+        $result = $backend->search(new Query(), 0, 20, $params);
+        $this->assertEquals(
+            [
+                [
+                    'message' => 'search_backend_partial_failure',
+                    'details' => 'Electronic Stuff',
+                ]
+            ],
+            $result->getErrors()
+        );
+        $this->assertEquals(240, $result->getTotal());
+
+        $records = $result->getRecords();
+        $this->assertIsArray($records);
+        $this->assertCount(20, $records);
+        foreach ($records as $record) {
+            $this->assertInstanceOf(SolrRecord::class, $record);
+        }
+    }
+
+    /**
+     * Test search with a total failure
+     *
+     * @return void
+     */
+    public function testSearchTotalFailure()
+    {
+        $backend = $this->getBackend(
+            null,
+            null,
+            [
+                'Solr' => $this->getSolrBackend(''),
+                'EDS' => $this->getEDSBackendMock('')
+            ]
+        );
+
+        $params = $this->getSearchParams([]);
+
+        $this->expectExceptionMessage('Simulated Solr failure');
+        $backend->search(new Query(), 0, 20, $params);
+    }
+
+    /**
+     * Test search with a partial failure
+     *
+     * @return void
+     */
+    public function testSearchCollectionError(): void
+    {
+        $backend = $this->getBackend(
+            null,
+            null,
+            [
+                'Solr' => $this->getSolrBackend(),
+                'EDS' => $this->getBackendForFacetsAndErrors([], ['Example Error']),
+            ]
+        );
+
+        $params = $this->getSearchParams([]);
+        $result = $backend->search(new Query(), 0, 20, $params);
+        $this->assertEquals(
+            [
+                [
+                    'message' => 'Example Error',
+                    'details' => 'Electronic Stuff',
+                ]
+            ],
+            $result->getErrors()
+        );
+    }
+
+    /**
+     * Test search with array facet format
+     *
+     * @return void
+     */
+    public function testArrayFacetFormat(): void
+    {
+        $backend = $this->getBackend(
+            null,
+            null,
+            [
+                'Solr' => $this->getSolrBackend(),
+                'EDS' => $this->getBackendForFacetsAndErrors([], [])
+            ]
+        );
+
+        $params = $this->getSearchParams([]);
+
+        $results = $backend->search(new Query(), 0, 20, $params);
+        $this->assertInstanceOf(
+            \VuFindSearch\Backend\Solr\Response\Json\Facets::class,
+            $results->getFacets()
+        );
+    }
+
+    /**
+     * Test search with an unsupported facet format
+     *
+     * @return void
+     */
+    public function testUnsupportedFacetFormat(): void
+    {
+        $backend = $this->getBackend(
+            null,
+            null,
+            [
+                'Solr' => $this->getSolrBackend(),
+                'EDS' => $this->getBackendForFacetsAndErrors(new \StdClass(), [])
+            ]
+        );
+
+        $params = $this->getSearchParams([]);
+
+        $this->expectExceptionMessageMatches('/^Unhandled facet format for Mock/');
+        $backend->search(new Query(), 0, 20, $params);
     }
 
     /**
@@ -409,7 +702,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $backend = $this->getBackend();
 
@@ -422,7 +715,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testInvalidFilter()
+    public function testInvalidFilter(): void
     {
         $backend = $this->getBackend();
         $params = $this->getSearchParams(['blender_backend:Foo']);
@@ -460,7 +753,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testInvalidAdaptiveBlockSize($blockSizes)
+    public function testInvalidAdaptiveBlockSize($blockSizes): void
     {
         $config = $this->config;
         $config['Blending']['adaptiveBlockSizes'] = $blockSizes;
@@ -474,19 +767,178 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Test event handling
+     *
+     * @return void
+     */
+    public function testEvents(): void
+    {
+        $preEventParams = [];
+        $postEventParams = [];
+
+        $onSearchPre = function (EventInterface $event) use (&$preEventParams) {
+            $command = $event->getParam('command');
+            $params = $command->getSearchParameters();
+            $backend = $event->getParam('backend');
+
+            if ('Solr' === $backend) {
+                $params->add('fq', 'SolrFilter');
+            } elseif ('EDS' === $backend) {
+                $query = $command->getQuery();
+                $query->setString('EDSQuery');
+            }
+
+            $preEventParams[$command->getTargetIdentifier()] = [
+                'target' => $event->getTarget(),
+                'query' => $command->getQuery(),
+                'params' => $params,
+                'backend' => $backend,
+            ];
+        };
+
+        $onSearchPost = function (EventInterface $event) use (&$postEventParams) {
+            $command = $event->getParam('command');
+            $postEventParams[$command->getTargetIdentifier()] = [
+                'target' => $event->getTarget(),
+                'params' => $command->getSearchParameters(),
+                'backend' => $event->getParam('backend')
+            ];
+        };
+
+        $this->sharedEventManager->attach(
+            'VuFind\Search',
+            \VuFindSearch\Service::EVENT_PRE,
+            $onSearchPre
+        );
+        $this->sharedEventManager->attach(
+            'VuFind\Search',
+            \VuFindSearch\Service::EVENT_POST,
+            $onSearchPost
+        );
+
+        $solr = $this->getSolrBackend();
+        $eds = $this->getEDSBackendMock();
+        $backend = $this->getBackend(
+            null,
+            null,
+            [
+                'Solr' => $solr,
+                'EDS' => $eds,
+            ]
+        );
+        $this->sharedEventManager->attach(
+            'VuFindSearch',
+            \VuFindSearch\Service::EVENT_PRE,
+            [$backend, 'onSearchPre']
+        );
+        $this->sharedEventManager->attach(
+            'VuFindSearch',
+            \VuFindSearch\Service::EVENT_POST,
+            [$backend, 'onSearchPost']
+        );
+
+        $params = $this->getSearchParams([]);
+        $command = new SearchCommand(
+            'Blender',
+            new Query(),
+            0,
+            20,
+            $params
+        );
+        $args = [
+            'backend' => 'Blender',
+            'command' => $command,
+            'params' => $params,
+        ];
+        $eventManager = new EventManager($this->sharedEventManager);
+        $eventManager->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
+        $eventManager->trigger(
+            \VuFindSearch\Service::EVENT_PRE,
+            $backend,
+            $args
+        );
+
+        $eventManager->trigger(
+            \VuFindSearch\Service::EVENT_POST,
+            $backend,
+            $args
+        );
+
+        $this->assertNotEmpty($preEventParams);
+        $this->assertSame($backend, $preEventParams['Blender']['target']);
+        $this->assertSame($solr, $preEventParams['Solr']['target']);
+        $this->assertSame($eds, $preEventParams['EDS']['target']);
+        $this->assertEquals(
+            ['SolrFilter'],
+            $preEventParams['Solr']['params']->get('fq')
+        );
+        $this->assertEquals(
+            'EDSQuery',
+            $preEventParams['EDS']['query']->getString()
+        );
+        $this->assertEquals(
+            ['SolrFilter'],
+            $command->getSearchParameters()->get('params_Solr')[0]->get('fq')
+        );
+        $this->assertEquals(
+            'EDSQuery',
+            $command->getSearchParameters()->get('query_EDS')[0]->getString()
+        );
+
+        $this->assertNotEmpty($postEventParams);
+        $this->assertSame($backend, $postEventParams['Blender']['target']);
+        $this->assertSame($solr, $postEventParams['Solr']['target']);
+        $this->assertSame($eds, $postEventParams['EDS']['target']);
+    }
+
+    /**
+     * Create a backend that returns the given values for facets and errors
+     *
+     * @return object
+     */
+    protected function getBackendForFacetsAndErrors($facets, $errors)
+    {
+        // Use Solr collection since it doesn't have class name based special
+        // processing:
+        $collection = $this->getMockBuilder(SolrRecordCollection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $collection->expects($this->once())
+            ->method('getErrors')
+            ->will($this->returnValue($errors));
+        $collection->expects($this->once())
+            ->method('getRecords')
+            ->will($this->returnValue([]));
+        $collection->expects($this->any())
+            ->method('getFacets')
+            ->will($this->returnValue($facets));
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $backend->expects($this->once())
+            ->method('search')
+            ->will($this->returnValue($collection));
+
+        return $backend;
+    }
+
+    /**
      * Return search params
      *
-     * @param array $filters Blender filters
+     * @param array $filters   Blender filters
+     * @param Query $query     Query
      *
      * @return ParamBag
      */
-    protected function getSearchParams(array $filters): ParamBag
-    {
+    protected function getSearchParams(
+        array $filters,
+        Query $query = null
+    ): ParamBag {
         return new ParamBag(
             [
                 'fq' => $filters,
-                'query_Solr' => [new Query()],
-                'query_EDS' => [new Query()],
+                'query_Solr' => [$query ?? new Query()],
+                'query_EDS' => [$query ?? new Query()],
                 'params_Solr' => [new ParamBag()],
                 'params_EDS' => [new ParamBag()]
             ]
@@ -498,38 +950,62 @@ class BackendTest extends TestCase
      *
      * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults
+     * @param array $backend  Actual backends, overrides defaults
      *
      * @return Backend
      */
-    protected function getBackend($config = null, $mappings = null): Backend
-    {
-        $backends = [
-            'Solr' => $this->getSolrBackend(),
-            'EDS' => $this->getEDSBackendMock()
-        ];
-        $events = new EventManager();
-        return new Backend(
+    protected function getBackend(
+        $config = null,
+        $mappings = null,
+        $backends = []
+    ): Backend {
+        if (!$backends) {
+            $backends = [
+                'Solr' => $this->getSolrBackend(),
+                'EDS' => $this->getEDSBackendMock()
+            ];
+        }
+        $eventManager = new EventManager($this->sharedEventManager);
+        $backend = new Backend(
             $backends,
             new Config($config ?? $this->config),
-            $mappings,
-            $events
+            $mappings ?? $this->mappings,
+            $eventManager
         );
+        $backend->setIdentifier('Blender');
+        return $backend;
     }
 
     /**
-     * Return Solr backend.
+     * Return Solr connector mock.
      *
-     * @return \VuFindSearch\Backend\Solr\Backend
+     * @param string $fixture Fixture to use for results, overrides default. Use
+     * empty string for failure.
+     *
+     * @return object
      */
-    protected function getSolrBackend(): \VuFindSearch\Backend\Solr\Backend
-    {
-        $callback = function ($handler, ParamBag $params, bool $cacheable = false) {
+    protected function getSolrConnector(
+        $fixture = null
+    ) {
+        $callback = function (
+            $handler,
+            ParamBag $params,
+            bool $cacheable = false
+        ) use ($fixture) {
+            if ('' === $fixture) {
+                throw new BackendException('Simulated Solr failure');
+            }
+            if (null === $fixture) {
+                $field = $params->get('qf')[0] ?? '';
+                $type = '';
+                if (in_array($field, ['title', 'author'])) {
+                    $type = "-$field";
+                }
+                $fixture = "blender/response/solr/search$type.json";
+            }
             $start = $params->get('start')[0];
             $rows = $params->get('rows')[0];
-            $results = $this->getJsonFixture(
-                'blender/response/solr/search.json',
-                'VuFindSearch'
-            );
+            $results = $this->getJsonFixture($fixture, 'VuFindSearch');
             $results['response']['docs'] = array_slice(
                 $results['response']['docs'],
                 $start,
@@ -550,19 +1026,56 @@ class BackendTest extends TestCase
             ->method('query')
             ->will($this->returnCallback($callback));
 
-        $backend = new \VuFindSearch\Backend\Solr\Backend($connector);
+        return $connector;
+    }
+
+    /**
+     * Return Solr backend.
+     *
+     * @param string $fixture Fixture to use for results, overrides default. Use
+     * empty string for failure.
+     *
+     * @return \VuFindSearch\Backend\Solr\Backend
+     */
+    protected function getSolrBackend(
+        $fixture = null
+    ): \VuFindSearch\Backend\Solr\Backend {
+        $backend = new \VuFindSearch\Backend\Solr\Backend(
+            $this->getSolrConnector($fixture)
+        );
         $backend->setRecordCollectionFactory(
             $this->getSolrRecordCollectionFactory()
         );
+        $qb = new QueryBuilder(
+            [
+                'Title' => [
+                    'DismaxFields' => [
+                        'title'
+                    ],
+                    'DismaxHandler' => 'edismax'
+                ],
+                'Author' => [
+                    'DismaxFields' => [
+                        'author'
+                    ],
+                    'DismaxHandler' => 'edismax'
+                ],
+            ]
+        );
+        $backend->setQueryBuilder($qb);
+        $backend->setIdentifier('Solr');
         return $backend;
     }
 
     /**
      * Return EDS backend mock.
      *
+     * @param string $fixture Fixture to use for results, overrides default. Use
+     * empty string for failure.
+     *
      * @return object
      */
-    protected function getEDSBackendMock()
+    protected function getEDSBackendMock($fixture = null)
     {
         $callback = function (
             $baseUrl,
@@ -571,12 +1084,20 @@ class BackendTest extends TestCase
             $method = 'GET',
             $message = null,
             $messageFormat = ""
-        ) {
+        ) use ($fixture) {
+            if ('' === $fixture) {
+                throw new BackendException('Simulated EDS failure');
+            }
             $json = json_decode($message, true);
+            if (null === $fixture) {
+                $field = $json['SearchCriteria']['Queries'][0]['FieldCode'] ?? '';
+                $type = 'Author' === $field ? '-author' : '';
+                $fixture = "blender/response/eds/search$type.json";
+            }
             $rows = $json['RetrievalCriteria']['ResultsPerPage'];
             $page = $json['RetrievalCriteria']['PageNumber'];
             $results = $this->getJsonFixture(
-                'blender/response/eds/search.json',
+                $fixture,
                 'VuFindSearch'
             );
             $results['SearchResult']['Data']['Records'] = array_slice(
@@ -620,6 +1141,8 @@ class BackendTest extends TestCase
         $backend->expects($this->any())
             ->method('getSessionToken')
             ->will($this->returnValue('sess1234'));
+
+        $backend->setIdentifier('EDS');
         return $backend;
     }
 

@@ -78,13 +78,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         'Facets' => [
             'Fields' => [
                 'building' => [
-                    'Type' => 'hierarchical',
                     'Mappings' => [
                         'Solr' => [
                             'Field' => 'building',
                         ],
                         'EDS' => [
                             'Field' => 'building',
+                            'Hierarchical' => true,
                             'Values' => [
                                 'main' => '0/Main/',
                                 'sub' => '1/Sub/Fiction/',
