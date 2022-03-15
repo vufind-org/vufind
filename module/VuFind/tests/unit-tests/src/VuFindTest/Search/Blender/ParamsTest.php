@@ -860,7 +860,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Query::class, $solrQuery);
         $this->assertInstanceOf(Query::class, $primoQuery);
         $this->assertInstanceOf(Query::class, $edsQuery);
-
     }
 
     /**
