@@ -113,7 +113,7 @@ class YamlReader
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
         // Generate cache key:
-        $cacheKey = realpath($defaultFile) . '-'
+        $cacheKey = $defaultFile . '-'
             . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
         if (!empty($customFile)) {
             $cacheKey .= '-local-' . filemtime($customFile);
