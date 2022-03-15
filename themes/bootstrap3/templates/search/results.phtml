@@ -33,6 +33,8 @@
     && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
+  // Create a css class for results from the search class:
+  $this->resultsClass = strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $this->params->getSearchClassId()));
 
   $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
 

@@ -8,6 +8,12 @@ $thumbnail-width-large:  160px;
   list-style: none;
   padding: 0;
   margin: 0;
+
+  &.solr-auth {
+    .media-left, .media-right {
+      display: none;
+    }
+  }
 }
 
 // Hide these on mobile
