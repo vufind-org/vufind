@@ -456,7 +456,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function addDefaultFilters(BaseParams $params, string $backendId): void
     {
-        foreach ($this->mappings['Facets']['Fields'] as $field => $fieldConfig) {
+        foreach ($this->mappings['Facets']['Fields'] ?? [] as $fieldConfig) {
             $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
             $defaultValue = $mappings['DefaultValue'] ?? null;
             if (null !== $defaultValue) {
