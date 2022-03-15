@@ -281,6 +281,7 @@ Search:
         EDS: AU
         Primo: Author
         Solr: Author
+        SolrAuth: Heading
     Subject:
       Mappings:
         EDS: SU
@@ -291,6 +292,7 @@ Search:
         EDS: TI
         Primo: Title
         Solr: Title
+        SolrAuth: Heading
 # Sort mappings between backends
 Sorting:
   Fields:
@@ -298,6 +300,7 @@ Sorting:
       Mappings:
         Primo: screator
         Solr: author
+        solrAuth: heading
     relevance:
       Mappings:
         EDS: relevance
@@ -307,6 +310,7 @@ Sorting:
       Mappings:
         Primo: title
         Solr: title
+        solrAuth: heading
     year:
       Mappings:
         EDS: date
