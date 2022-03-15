@@ -33,9 +33,7 @@ namespace VuFind\Search\Factory;
 use Interop\Container\ContainerInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use VuFind\Search\Solr\DeduplicationListener;
 use VuFindSearch\Backend\Blender\Backend;
-use VuFindSearch\Backend\Solr\Backend as SolrBackend;
 
 /**
  * Factory for Blender backend.
@@ -110,11 +108,7 @@ class BlenderBackendFactory implements FactoryInterface
         $backends = [];
         $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
         foreach (array_keys($blenderConfig->Backends->toArray()) as $backendId) {
-            $backend = $backendManager->get($backendId);
-            if ($backend instanceof SolrBackend) {
-                $this->createListeners($backend);
-            }
-            $backends[$backendId] = $backend;
+            $backends[$backendId] = $backendManager->get($backendId);
         }
         $blenderMappings = $yamlReader->get('BlenderMappings.yaml');
         $backend = new Backend(
@@ -147,44 +141,6 @@ class BlenderBackendFactory implements FactoryInterface
             'VuFind\Search',
             \VuFindSearch\Service::EVENT_POST,
             [$backend, 'onSearchPost']
-        );
-    }
-
-    /**
-     * Create Solr listeners.
-     *
-     * @param SolrBackend $backend Backend
-     *
-     * @return void
-     */
-    protected function createListeners(SolrBackend $backend)
-    {
-        // Apply deduplication also if it's not enabled by default (could be enabled
-        // by a special filter):
-        $search = $this->config->get($this->searchConfig);
-        $events = $this->container->get('SharedEventManager');
-        $this->getDeduplicationListener(
-            $backend,
-            $search->Records->deduplication ?? false
-        )->attach($events);
-    }
-
-    /**
-     * Get a deduplication listener for the backend
-     *
-     * @param SolrBackend $backend Search backend
-     * @param bool        $enabled Whether deduplication is enabled
-     *
-     * @return DeduplicationListener
-     */
-    protected function getDeduplicationListener(SolrBackend $backend, $enabled)
-    {
-        return new DeduplicationListener(
-            $backend,
-            $this->container,
-            $this->searchConfig,
-            'datasources',
-            $enabled
         );
     }
 }
