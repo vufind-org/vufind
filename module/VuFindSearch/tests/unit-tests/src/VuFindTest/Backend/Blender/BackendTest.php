@@ -35,6 +35,7 @@ use PHPUnit\Framework\TestCase;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
+use VuFindSearch\Backend\Blender\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection as SolrRecordCollection;
@@ -889,6 +890,20 @@ class BackendTest extends TestCase
         $this->assertSame($backend, $postEventParams['Blender']['target']);
         $this->assertSame($solr, $postEventParams['Solr']['target']);
         $this->assertSame($eds, $postEventParams['EDS']['target']);
+    }
+
+    /**
+     * Test initialization of an empty collection array
+     *
+     * @return void
+     */
+    public function testEmptyCollectionArray(): void
+    {
+        $collection = new RecordCollection();
+        $remaining = $collection->initBlended([], 20, 7, 20);
+        $this->assertIsArray($remaining);
+        $this->assertEmpty($remaining);
+        $this->assertEquals(20, $collection->getTotal());
     }
 
     /**
