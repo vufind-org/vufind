@@ -74,9 +74,9 @@ class YamlReader
     /**
      * Return a configuration
      *
-     * @param string  $filename        Config file name
-     * @param boolean $useLocalConfig  Use local configuration if available
-     * @param boolean $forceReload     Reload even if config has been internally
+     * @param string  $filename       Config file name
+     * @param boolean $useLocalConfig Use local configuration if available
+     * @param boolean $forceReload    Reload even if config has been internally
      * cached in the class.
      *
      * @return array
