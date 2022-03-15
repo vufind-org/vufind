@@ -841,6 +841,26 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Title', $primoQuery->getHandler());
         $this->assertEquals('foo', $edsQuery->getString());
         $this->assertEquals('TI', $edsQuery->getHandler());
+
+        // Test empty request:
+        $params = $this->getParams();
+        $params->initFromRequest(new Parameters([]));
+        $backendParams = $params->getBackendParameters();
+
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $primoParams = $backendParams->get('params_Primo')[0];
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertInstanceOf(ParamBag::class, $solrParams);
+        $this->assertInstanceOf(ParamBag::class, $primoParams);
+        $this->assertInstanceOf(ParamBag::class, $edsParams);
+
+        $solrQuery = $backendParams->get('query_Solr')[0];
+        $primoQuery = $backendParams->get('query_Primo')[0];
+        $edsQuery = $backendParams->get('query_EDS')[0];
+        $this->assertInstanceOf(Query::class, $solrQuery);
+        $this->assertInstanceOf(Query::class, $primoQuery);
+        $this->assertInstanceOf(Query::class, $edsQuery);
+
     }
 
     /**
