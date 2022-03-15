@@ -469,7 +469,7 @@ class QueryBuilder implements QueryBuilderInterface
             $searchString = $reduced
                 ? sprintf('(%s)', implode(" {$component->getOperator()} ", $reduced))
                 : '';
-            if ($component->isNegated()) {
+            if ($component->isNegated() && !empty($searchString)) {
                 $searchString = '(*:* NOT ' . $searchString . ')';
             }
         } else {
