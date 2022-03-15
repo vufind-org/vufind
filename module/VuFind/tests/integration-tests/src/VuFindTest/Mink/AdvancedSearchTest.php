@@ -108,7 +108,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAdvancedSearch()
+    public function testAdvancedSearchForm()
     {
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
@@ -188,6 +188,72 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.adv-submit .clear-btn')->press();
         $this->assertEquals('', $this->findCss($page, '#search_lookfor0_0')->getValue());
         $this->assertEquals(0, count($multiSel->getValue()));
+    }
+
+    /**
+     * Test that the advanced search form works correctly with a NOT group combined
+     * with another group.
+     *
+     * @return void
+     */
+    public function testAdvancedMultiGroupSearchWithNotOperator()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Add a group
+        $session->executeScript("addGroup()");
+        $this->findCss($page, '#group1');
+
+        // Enter search criteria
+        $this->findCss($page, '#search_lookfor0_0')->setValue('building:"journals.mrc"');
+        $this->findCss($page, '#search_type1_0')->selectOption('Title');
+        $this->findCss($page, '#search_lookfor1_0')->setValue('rational');
+        $this->findCss($page, '#search_bool1')->selectOption('NOT');
+
+        // Submit search form
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search and result count
+        $this->assertEquals(
+            '(All Fields:building:"journals.mrc") NOT ((Title:rational))',
+            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+        );
+        $this->assertMatchesRegularExpression(
+            '/Showing 1 - 7 results of 7, query time: .*/',
+            trim($this->findCss($page, '.search-stats')->getText())
+        );
+    }
+
+    /**
+     * Test that a pure NOT search gives us results.
+     *
+     * @return void
+     */
+    public function testAdvancedSingleGroupSearchWithNotOperator()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Enter search criteria
+        $this->findCss($page, '#search_type0_0')->selectOption('Title');
+        $this->findCss($page, '#search_lookfor0_0')->setValue('rational');
+        $this->findCss($page, '#search_bool0')->selectOption('NOT');
+
+        // Submit search form
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search and result count
+        $this->assertEquals(
+            '() NOT ((Title:rational))',
+            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+        );
+        preg_match(
+            '/Showing \d+ - \d+ results of (\d+), query time: .*/',
+            trim($this->findCss($page, '.search-stats')->getText()),
+            $matches
+        );
+        $this->assertTrue($matches[1] > 0);
     }
 
     /**
