@@ -76,14 +76,18 @@ class YamlReader
      *
      * @param string  $filename        Config file name
      * @param boolean $useLocalConfig  Use local configuration if available
-     * @param boolean $ignoreFileCache Read from file even if config has been cached.
+     * @param boolean $forceReload     Reload even if config has been internally
+     * cached in the class.
      *
      * @return array
      */
-    public function get($filename, $useLocalConfig = true, $ignoreFileCache = false)
+    public function get($filename, $useLocalConfig = true, $forceReload = false)
     {
-        // Load data if it is not already in the object's cache:
-        if ($ignoreFileCache || !isset($this->files[$filename])) {
+        // Load data if it is not already in the object's cache (note that, because
+        // the disk-based cache is keyed based on modification time, we don't need
+        // to pass $forceReload down another level to load an updated file if
+        // something has changed -- it's enough to force a cache recheck).
+        if ($forceReload || !isset($this->files[$filename])) {
             $this->files[$filename] = $this->getFromPaths(
                 Locator::getBaseConfigPath($filename),
                 ($useLocalConfig ? Locator::getLocalConfigPath($filename) : null)
@@ -109,7 +113,7 @@ class YamlReader
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
         // Generate cache key:
-        $cacheKey = basename($defaultFile) . '-'
+        $cacheKey = realpath($defaultFile) . '-'
             . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
         if (!empty($customFile)) {
             $cacheKey .= '-local-' . filemtime($customFile);
@@ -130,7 +134,7 @@ class YamlReader
     /**
      * Process a YAML file (and its parent, if necessary).
      *
-     * @param string $file          YAML file to load (will evaluate to empty array
+     * @param string $file          YAML file to load (will evaluate to null
      * if file does not exist).
      * @param string $defaultParent Parent YAML file from which $file should
      * inherit (unless overridden by a specific directive in $file). None by
