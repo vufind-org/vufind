@@ -218,7 +218,10 @@ class Params extends \VuFind\Search\Solr\Params
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
-            $params->setSort($this->translateSort($sort, $backendId), $force);
+            $params->setSort(
+                $sort ? $this->translateSort($sort, $backendId) : $sort,
+                $force
+            );
         }
         parent::setSort($sort, $force);
     }
