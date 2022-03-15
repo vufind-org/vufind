@@ -1,10 +1,10 @@
 <?php
 /**
- * Config SearchSpecsReader Test Class
+ * Config YamlReader Test Class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,12 +31,11 @@ use Laminas\Cache\Storage\Adapter\AbstractAdapter;
 use VuFind\Config\YamlReader;
 
 /**
- * Config SearchSpecsReader Test Class
+ * Config YamlReader Test Class
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -129,8 +128,8 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs([$manager])
             ->getMock();
         $reader->expects($this->never())->method('parseYaml');
-        // Test twice to confirm that cache is only called once (due to secondary
-        // cache inside the reader object):
+        // Test twice to confirm that cache is re-checked in response to third
+        // get() parameter.
         $this->assertEquals($yamlData, $reader->get('searchspecs.yaml'));
         $this->assertEquals($yamlData, $reader->get('searchspecs.yaml', true, true));
     }
