@@ -235,7 +235,6 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
 
-
         // Enter search criteria
         $this->findCss($page, '#search_type0_0')->selectOption('Title');
         $this->findCss($page, '#search_lookfor0_0')->setValue('rational');
