@@ -190,7 +190,6 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(0, count($multiSel->getValue()));
     }
 
-
     /**
      * Test that the advanced search form works correctly with a NOT group
      *
