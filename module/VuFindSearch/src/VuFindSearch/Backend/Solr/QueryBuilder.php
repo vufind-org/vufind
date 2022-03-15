@@ -460,7 +460,7 @@ class QueryBuilder implements QueryBuilderInterface
                 [$this, 'reduceQueryGroupComponents'],
                 $component->getQueries()
             );
-            $searchString = $component->isNegated() ? 'NOT ' : '';
+            $searchString = '';
             $reduced = array_filter(
                 $reduced,
                 function ($s) {
@@ -472,6 +472,9 @@ class QueryBuilder implements QueryBuilderInterface
                     '(%s)',
                     implode(" {$component->getOperator()} ", $reduced)
                 );
+            }
+            if ($component->isNegated()) {
+                $searchString = '(*:* NOT ' . $searchString . ')';
             }
         } else {
             $searchString = $this->getNormalizedQueryString($component);
