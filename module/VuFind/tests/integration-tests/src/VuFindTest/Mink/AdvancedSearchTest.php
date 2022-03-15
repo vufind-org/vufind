@@ -191,11 +191,12 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that the advanced search form works correctly with a NOT group
+     * Test that the advanced search form works correctly with a NOT group combined
+     * with another group.
      *
      * @return void
      */
-    public function testAdvancedSearchWithNotOperator()
+    public function testAdvancedMultiGroupSearchWithNotOperator()
     {
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
@@ -222,6 +223,38 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             '/Showing 1 - 7 results of 7, query time: .*/',
             trim($this->findCss($page, '.search-stats')->getText())
         );
+    }
+
+    /**
+     * Test that a pure NOT search gives us results.
+     *
+     * @return void
+     */
+    public function testAdvancedSingleGroupSearchWithNotOperator()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+
+        // Enter search criteria
+        $this->findCss($page, '#search_type0_0')->selectOption('Title');
+        $this->findCss($page, '#search_lookfor0_0')->setValue('rational');
+        $this->findCss($page, '#search_bool0')->selectOption('NOT');
+
+        // Submit search form
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search and result count
+        $this->assertEquals(
+            '() NOT ((Title:rational))',
+            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+        );
+        preg_match(
+            '/Showing \d+ - \d+ results of (\d+), query time: .*/',
+            trim($this->findCss($page, '.search-stats')->getText()),
+            $matches
+        );
+        $this->assertTrue($matches[1] > 0);
     }
 
     /**
