@@ -185,6 +185,7 @@ return [
             'format-videodisc' => 'FontAwesome:laptop',
             'format-videoreel' => 'FontAwesome:video-camera',
             'hierarchy-tree' => 'FontAwesome:sitemap',
+            'lightbox-close' => 'FontAwesome:times',
             'more' => 'FontAwesome:long-arrow-right',
             'more-rtl' => 'FontAwesome:long-arrow-left',
             'my-account' => 'FontAwesome:user-circle-o',
