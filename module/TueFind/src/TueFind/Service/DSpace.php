@@ -224,7 +224,7 @@ class DSpace {
         // Since this is a POST operation it requires a crsfToken before using it,
         // so we just call another GET/HEAD operation in case it is missing so far.
         if (!isset($this->csrfToken))
-            $this->hasMetadataSchema(1);
+            $this->getCommunities();
 
         $params = ['user' => $this->username, 'password' => $this->password];
         $postData = http_build_query($params);
