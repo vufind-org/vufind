@@ -112,7 +112,7 @@
           $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <span class="hidden-xs">
-          <i class="fa fa-fw fa-qrcode" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+          <?=$this->icon('qrcode') ?> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
           <div class="qrcode hidden">
             <script type="text/template" class="qrCodeImgTag">
               <img alt="<?=$this->transEscAttr('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
@@ -127,7 +127,7 @@
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php /* Add to favorites */ ?>
-        <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEscAttr('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <?=$this->icon('user-list-add') ?> <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEscAttr('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
         <?php /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
@@ -140,7 +140,7 @@
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
+            <?=$this->icon('tree-context') ?>
             <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>">
               <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
             </a>
