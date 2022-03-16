@@ -199,6 +199,11 @@ class DSpace {
         return $this->call(self::ENDPOINT_CORE_ITEMS . '/' . urlencode($id), self::METHOD_GET);
     }
 
+    public function getMetadataSchemas()
+    {
+        return $this->call(self::ENDPOINT_CORE_METADATASCHEMAS, self::METHOD_GET);
+    }
+
     public function getMetadataSchema(string $id)
     {
         return $this->call(self::ENDPOINT_CORE_METADATASCHEMAS . '/' . urlencode($id), self::METHOD_GET);
