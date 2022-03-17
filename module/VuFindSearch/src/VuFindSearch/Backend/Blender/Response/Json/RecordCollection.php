@@ -132,10 +132,10 @@ class RecordCollection
             }
 
             foreach ($collection->getErrors() as $error) {
-                if (is_string($error)) {
+                if (is_string($error) && $label) {
                     $error = [
-                        'message' => $error,
-                        'details' => $label
+                        'msg' => $error,
+                        'suffix' => " -- $label"
                     ];
                 }
                 $this->addError($error);

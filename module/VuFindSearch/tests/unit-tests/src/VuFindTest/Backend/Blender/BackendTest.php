@@ -584,8 +584,8 @@ class BackendTest extends TestCase
         $this->assertEquals(
             [
                 [
-                    'message' => 'search_backend_partial_failure',
-                    'details' => 'Electronic Stuff',
+                    'msg' => 'search_backend_partial_failure',
+                    'tokens' => ['%%sources%%' => 'Electronic Stuff'],
                 ]
             ],
             $result->getErrors()
@@ -643,8 +643,8 @@ class BackendTest extends TestCase
         $this->assertEquals(
             [
                 [
-                    'message' => 'Example Error',
-                    'details' => 'Electronic Stuff',
+                    'msg' => 'Example Error',
+                    'suffix' => ' -- Electronic Stuff',
                 ]
             ],
             $result->getErrors()

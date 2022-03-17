@@ -356,16 +356,7 @@ class AbstractSearch extends AbstractBase
             }
 
             foreach ($results->getErrors() as $error) {
-                if (is_array($error)) {
-                    $msg = $this->translate($error['message']);
-                    $details = $this->translate($error['details']);
-                    if ($details) {
-                        $msg .= " -- $details";
-                    }
-                    $this->flashMessenger()->addErrorMessage($msg);
-                } else {
-                    $this->flashMessenger()->addErrorMessage($error);
-                }
+                $this->flashMessenger()->addErrorMessage($error);
             }
         }
 

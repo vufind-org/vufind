@@ -32,7 +32,6 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -187,18 +186,25 @@ class Backend extends AbstractBackend
             }
         }
 
+        $failedBackends = [];
         foreach ($exceptions as $backendId => $exception) {
             // Throw exception right away if we didn't get any results or the query
             // is invalid for a backend:
-            if (!$collections || ($exception instanceof RequestErrorException)) {
+            if (!$collections) {
                 // No results and an exception previously encountered, raise it now:
                 throw $exception;
             }
-            // Otherwise display an error to the user:
+            // Log the errors and collect a list to display to the user:
+            $this->logError("Search in $backendId failed: " . (string)$exception);
+            $failedBackends[] = $this->config->Backends[$backendId];
+        }
+        if ($failedBackends) {
             $mergedCollection->addError(
                 [
-                    'message' => 'search_backend_partial_failure',
-                    'details' => $this->config->Backends[$backendId]
+                    'msg' => 'search_backend_partial_failure',
+                    'tokens' => [
+                        '%%sources%%' => implode(', ', $failedBackends)
+                    ]
                 ]
             );
         }

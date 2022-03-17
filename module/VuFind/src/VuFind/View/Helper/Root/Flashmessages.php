@@ -117,6 +117,9 @@ class Flashmessages extends AbstractHelper
                     $default = $msg['default'] ?? null;
                     $html .= $helper
                         ? $helper($msg['msg'], $tokens, $default) : $msg['msg'];
+                    if ($suffix = $msg['suffix'] ?? null) {
+                        $html .= $helper ? $helper($suffix) : $suffix;
+                    }
                 } else {
                     // Basic default string:
                     $transEsc = $this->getView()->plugin('transEsc');
