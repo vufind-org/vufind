@@ -321,10 +321,13 @@ class Results extends \VuFind\Search\Base\Results
             $list[$field]['list']  = [];
             // Should we translate values for the current facet?
             $translateTextDomain = '';
+            $translateFormat = '';
             $translate = in_array($field, $translatedFacets);
             if ($translate) {
                 $translateTextDomain = $this->getOptions()
                     ->getTextDomainForTranslatedFacet($field);
+                $translateFormat = $this->getOptions()
+                    ->getFormatForTranslatedFacet($field);
             }
             $hierarchical = in_array($field, $hierarchicalFacets);
             // Loop through values:
@@ -349,6 +352,18 @@ class Results extends \VuFind\Search\Base\Results
                 $currentSettings['displayText'] = $translate
                     ? $this->translate([$translateTextDomain, $displayText])
                     : $displayText;
+                $currentSettings['displayText'] = $displayText;
+                if ($translate) {
+                    $translated = $this->translate([$translateTextDomain, $displayText]);
+                    // Apply a format to the translation (if available)
+                    if ($translateFormat) {
+                        $translatedValue = $translateFormat;
+                        $translatedValue = str_replace('%raw%', $displayText, $translatedValue);
+                        $translatedValue = str_replace('%translated%', $translated, $translatedValue);
+                        $translated = $translatedValue;
+                    }
+                    $currentSettings['displayText'] = $translated;
+                }
 
                 $currentSettings['count'] = $count;
                 $currentSettings['operator']

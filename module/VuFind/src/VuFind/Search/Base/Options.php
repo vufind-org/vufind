@@ -186,6 +186,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $translatedFacetsTextDomains = [];
 
     /**
+     * Formats for translated facets
+     *
+     * @var array
+     */
+    protected $translatedFacetsFormats = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -642,7 +649,7 @@ abstract class Options implements TranslatorAwareInterface
     public function setTranslatedFacets($facets)
     {
         // Reset properties:
-        $this->translatedFacets = $this->translatedFacetsTextDomains = [];
+        $this->translatedFacets = $this->translatedFacetsTextDomains = $this->translatedFacetsPlaceholders = [];
 
         // Fill in new data:
         foreach ($facets as $current) {
@@ -650,6 +657,9 @@ abstract class Options implements TranslatorAwareInterface
             $this->translatedFacets[] = $parts[0];
             if (isset($parts[1])) {
                 $this->translatedFacetsTextDomains[$parts[0]] = $parts[1];
+            }
+            if (isset($parts[2])) {
+                $this->translatedFacetsFormats[$parts[0]] = $parts[2];
             }
         }
     }
@@ -665,6 +675,19 @@ abstract class Options implements TranslatorAwareInterface
     public function getTextDomainForTranslatedFacet($field)
     {
         return $this->translatedFacetsTextDomains[$field] ?? 'default';
+    }
+
+    /**
+     * Look up the format for use when translating a particular facet
+     * field.
+     *
+     * @param string $field Field name being translated
+     *
+     * @return string
+     */
+    public function getFormatForTranslatedFacet($field)
+    {
+        return $this->translatedFacetsFormats[$field] ?? null;
     }
 
     /**
