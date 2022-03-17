@@ -643,8 +643,13 @@ class BackendTest extends TestCase
         $this->assertEquals(
             [
                 [
-                    'msg' => 'Example Error',
-                    'suffix' => ' -- Electronic Stuff',
+                    'msg' => '%%error%% -- %%label%%',
+                    'tokens' => [
+                        '%%error%%' => 'Example Error',
+                        '%%label%%' => 'Electronic Stuff',
+                    ],
+                    'translate' => true,
+                    'translateTokens' => true,
                 ]
             ],
             $result->getErrors()

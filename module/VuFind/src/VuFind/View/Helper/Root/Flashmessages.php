@@ -111,15 +111,21 @@ class Flashmessages extends AbstractHelper
                         $helper = (isset($msg['html']) && $msg['html'])
                             ? false : 'escapeHtml';
                     }
-                    $helper = $helper
-                        ? $this->getView()->plugin($helper) : false;
+                    $helper = $helper ? $this->getView()->plugin($helper) : false;
                     $tokens = $msg['tokens'] ?? [];
+                    if ($tokens && $mode = ($msg['translateTokens'] ?? false)) {
+                        // Escape translated tokens unless html is requested or the
+                        // main message is translated:
+                        $translator = 'html' === $mode || empty($msg['html'])
+                            ? 'translate' : 'transEsc';
+                        $tokens = array_map(
+                            $this->getView()->plugin($translator),
+                            $tokens
+                        );
+                    }
                     $default = $msg['default'] ?? null;
                     $html .= $helper
                         ? $helper($msg['msg'], $tokens, $default) : $msg['msg'];
-                    if ($suffix = $msg['suffix'] ?? null) {
-                        $html .= $helper ? $helper($suffix) : $suffix;
-                    }
                 } else {
                     // Basic default string:
                     $transEsc = $this->getView()->plugin('transEsc');

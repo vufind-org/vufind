@@ -134,8 +134,13 @@ class RecordCollection
             foreach ($collection->getErrors() as $error) {
                 if (is_string($error) && $label) {
                     $error = [
-                        'msg' => $error,
-                        'suffix' => " -- $label"
+                        'msg' => '%%error%% -- %%label%%',
+                        'tokens' => [
+                            '%%error%%' => $error,
+                            '%%label%%' => $label
+                        ],
+                        'translate' => true,
+                        'translateTokens' => true,
                     ];
                 }
                 $this->addError($error);
