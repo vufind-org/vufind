@@ -354,12 +354,18 @@ class Results extends \VuFind\Search\Base\Results
                     : $displayText;
                 $currentSettings['displayText'] = $displayText;
                 if ($translate) {
-                    $translated = $this->translate([$translateTextDomain, $displayText]);
+                    $translated = $this->translate(
+                        [$translateTextDomain, $displayText]
+                    );
                     // Apply a format to the translation (if available)
                     if ($translateFormat) {
                         $translatedValue = $translateFormat;
-                        $translatedValue = str_replace('%raw%', $displayText, $translatedValue);
-                        $translatedValue = str_replace('%translated%', $translated, $translatedValue);
+                        $translatedValue = str_replace(
+                            '%raw%', $displayText, $translatedValue
+                        );
+                        $translatedValue = str_replace(
+                            '%translated%', $translated, $translatedValue
+                        );
                         $translated = $translatedValue;
                     }
                     $currentSettings['displayText'] = $translated;
