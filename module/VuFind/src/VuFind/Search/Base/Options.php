@@ -650,7 +650,7 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Reset properties:
         $this->translatedFacets = $this->translatedFacetsTextDomains
-            = $this->translatedFacetsPlaceholders = [];
+            = $this->translatedFacetsFormats = [];
 
         // Fill in new data:
         foreach ($facets as $current) {
