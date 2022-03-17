@@ -166,7 +166,7 @@ class Params extends \VuFind\Search\Base\Params
         // Define Filter Query
         $filterQuery = [];
         $orFilters = [];
-        $filterList = array_merge(
+        $filterList = array_merge_recursive(
             $this->getHiddenFilters(),
             $this->filterList
         );

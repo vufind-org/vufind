@@ -906,8 +906,8 @@ class Params
     {
         if ($field == null) {
             $this->filterList = [];
-        } else {
-            $this->filterList[$field] = [];
+        } elseif (isset($this->filterList[$field])) {
+            unset($this->filterList[$field]);
         }
     }
 

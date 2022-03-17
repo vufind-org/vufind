@@ -130,7 +130,7 @@ class Params extends \VuFind\Search\Base\Params
     public function getFilterSettings()
     {
         $result = [];
-        $filterList = array_merge(
+        $filterList = array_merge_recursive(
             $this->getHiddenFilters(),
             $this->filterList
         );
