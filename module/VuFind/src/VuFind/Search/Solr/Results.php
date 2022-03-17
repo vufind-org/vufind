@@ -361,10 +361,14 @@ class Results extends \VuFind\Search\Base\Results
                     if ($translateFormat) {
                         $translatedValue = $translateFormat;
                         $translatedValue = str_replace(
-                            '%raw%', $displayText, $translatedValue
+                            '%raw%',
+                            $displayText,
+                            $translatedValue
                         );
                         $translatedValue = str_replace(
-                            '%translated%', $translated, $translatedValue
+                            '%translated%',
+                            $translated,
+                            $translatedValue
                         );
                         $translated = $translatedValue;
                     }
