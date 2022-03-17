@@ -44,6 +44,8 @@ class DSpace {
     const METHOD_POST = 'POST';
     const METHOD_PUT = 'PUT';
 
+    const PAGINATION_LIMIT = 999999; // If we do not add this to our requests, default limit will be 20.
+
     protected $baseUrl;
     protected $username;
     protected $password;
@@ -181,17 +183,17 @@ class DSpace {
         return $result;
     }
 
-    public function getCollections(string $communityId=null)
+    public function getCollections(string $communityId=null, $limit=self::PAGINATION_LIMIT)
     {
         if (isset($communityId))
-            return $this->call(self::ENDPOINT_CORE_COMMUNITIES . '/' . urlencode($communityId) . '/collections', self::METHOD_GET);
+            return $this->call(self::ENDPOINT_CORE_COMMUNITIES . '/' . urlencode($communityId) . '/collections?size=' . self::PAGINATION_LIMIT, self::METHOD_GET);
         else
-            return $this->call(self::ENDPOINT_CORE_COLLECTIONS, self::METHOD_GET);
+            return $this->call(self::ENDPOINT_CORE_COLLECTIONS . '?size=' . $limit, self::METHOD_GET);
     }
 
-    public function getCommunities()
+    public function getCommunities($limit=self::PAGINATION_LIMIT)
     {
-        return $this->call(self::ENDPOINT_CORE_COMMUNITIES, self::METHOD_GET);
+        return $this->call(self::ENDPOINT_CORE_COMMUNITIES . '?size=' . $limit, self::METHOD_GET);
     }
 
     public function getItem(string $id)
@@ -199,9 +201,9 @@ class DSpace {
         return $this->call(self::ENDPOINT_CORE_ITEMS . '/' . urlencode($id), self::METHOD_GET);
     }
 
-    public function getMetadataSchemas()
+    public function getMetadataSchemas($limit=self::PAGINATION_LIMIT)
     {
-        return $this->call(self::ENDPOINT_CORE_METADATASCHEMAS, self::METHOD_GET);
+        return $this->call(self::ENDPOINT_CORE_METADATASCHEMAS . '?size=' . $limit, self::METHOD_GET);
     }
 
     public function getMetadataSchema(string $id)
