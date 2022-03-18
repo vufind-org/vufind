@@ -59,7 +59,7 @@ class DeduplicationListener
     protected $backend;
 
     /**
-     * Superior service manager.
+     * Service container.
      *
      * @var ContainerInterface
      */

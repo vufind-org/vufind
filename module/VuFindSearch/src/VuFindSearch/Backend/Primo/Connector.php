@@ -378,8 +378,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Translate Primo's XML into array of arrays.
      *
-     * @param string $data   The raw xml from Primo
-     * @param array  $params Request parameters
+     * @param array $data   The raw xml from Primo
+     * @param array $params Request parameters
      *
      * @return array      The processed response from Primo
      */
@@ -454,7 +454,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 = substr((string)$prefix->PrimoNMBib->record->control->recordid, 3);
             $item['title']
                 = (string)$prefix->PrimoNMBib->record->display->title;
-            // Format -- Make it an array for TranslatableString support:
+            // Format -- Convert to displayable words and return as an array:
             $format = ucwords(
                 str_replace(
                     '_',

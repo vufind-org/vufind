@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2021.
+ * Copyright (C) The National Library of Finland 2021-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,6 +28,7 @@
  */
 namespace VuFindTest\Search\Primo;
 
+use VuFind\Search\Primo\Options;
 use VuFind\Search\Primo\Params;
 
 /**
@@ -48,9 +49,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testFixPrimoFacetValue()
     {
-        $optionsMock = $this->createMock(\VuFind\Search\Primo\Options::class);
-        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
-        $params = new \VuFind\Search\Primo\Params($optionsMock, $configMock);
+        $params = $this->getParams();
         $this->assertEquals(
             'Foo Bar',
             $params->fixPrimoFacetValue('foo bar')
@@ -66,6 +65,119 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             '维普资讯 (Chongqing)',
             $params->fixPrimoFacetValue('维普资讯 (Chongqing)')
+        );
+    }
+
+    /**
+     * Test that filters work as expected.
+     *
+     * @return void
+     */
+    public function testFilters(): void
+    {
+        $params = $this->getParams();
+        $params->addFacet('format', 'format_label');
+        $params->addFacet('building', 'building_label');
+
+        // No filters:
+        $this->assertEquals(null, $params->getBackendParameters()->get('fq'));
+
+        // Add multiple filters:
+        $params->addFilter('~format:foo');
+        $params->addFilter('~format:bar');
+        $params->addFilter('building:main');
+        $this->assertEquals(
+            [
+                'format' => [
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'foo',
+                        'bar',
+                    ]
+                ],
+                'building' => [
+                    'facetOp' => 'AND',
+                    'values' => [
+                        'main',
+                    ]
+                ],
+            ],
+            $params->getBackendParameters()->get('filterList')
+        );
+
+        // Add a hidden filter:
+        $params->addHiddenFilter('building:sub');
+        $this->assertEquals(
+            [
+                'format' => [
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'foo',
+                        'bar',
+                    ]
+                ],
+                'building' => [
+                    'facetOp' => 'AND',
+                    'values' => [
+                        'sub',
+                        'main',
+                    ]
+                ],
+            ],
+            $params->getBackendParameters()->get('filterList')
+        );
+
+        // Remove format filters:
+        $params->removeAllFilters('~format');
+        $this->assertEquals(
+            [
+                'building' => [
+                    'facetOp' => 'AND',
+                    'values' => [
+                        'sub',
+                        'main',
+                    ]
+                ],
+            ],
+            $params->getBackendParameters()->get('filterList')
+        );
+
+        // Remove building filter:
+        $params->removeFilter('building:main');
+        $this->assertEquals(
+            [
+                'building' => [
+                    'facetOp' => 'AND',
+                    'values' => [
+                        'sub',
+                    ]
+                ],
+            ],
+            $params->getBackendParameters()->get('filterList')
+        );
+    }
+
+    /**
+     * Test that we get a mock search class ID while testing.
+     *
+     * @return void
+     */
+    public function testGetSearchClassId(): void
+    {
+        $this->assertEquals('Primo', $this->getParams()->getSearchClassId());
+    }
+
+    /**
+     * Get Params object
+     *
+     * @return Params
+     */
+    protected function getParams(): Params
+    {
+        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        return new Params(
+            new Options($configMock),
+            $configMock
         );
     }
 }
