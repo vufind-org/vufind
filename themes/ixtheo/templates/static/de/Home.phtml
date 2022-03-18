@@ -15,7 +15,6 @@
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
 
-
 <div class="col-md-12 ix-panel-news tf-rss-block">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -31,14 +30,13 @@
               <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
                   <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
                   <a href="<?=$this->url('rssfeed-full')?>" class="read-more-trigger" role="button">
-                      Read more
+                      Weiterlesen
                   </a>
               <?php endif;?>
             </div>
         </div>
     </div>
 </div>
-
 
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
