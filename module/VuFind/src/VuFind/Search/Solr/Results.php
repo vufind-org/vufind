@@ -359,18 +359,11 @@ class Results extends \VuFind\Search\Base\Results
                     );
                     // Apply a format to the translation (if available)
                     if ($translateFormat) {
-                        $translatedValue = $translateFormat;
-                        $translatedValue = str_replace(
-                            '%raw%',
-                            $displayText,
-                            $translatedValue
+                        $translated = str_replace(
+                            ['%raw%', '%translated%'],
+                            [$displayText, $translated],
+                            $translateFormat
                         );
-                        $translatedValue = str_replace(
-                            '%translated%',
-                            $translated,
-                            $translatedValue
-                        );
-                        $translated = $translatedValue;
                     }
                     $currentSettings['displayText'] = $translated;
                 }
