@@ -378,10 +378,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Translate Primo's XML into array of arrays.
      *
-     * @param array $data   The raw xml from Primo
-     * @param array $params Request parameters
+     * @param string $data   The raw xml from Primo
+     * @param array  $params Request parameters
      *
-     * @return array      The processed response from Primo
+     * @return array The processed response from Primo
      */
     protected function process($data, $params = [])
     {
