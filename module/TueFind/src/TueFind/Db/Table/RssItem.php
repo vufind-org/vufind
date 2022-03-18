@@ -24,6 +24,15 @@ class RssItem extends RssBase
         return $this->selectWith($select);
     }
 
+    public function getItemsSortedByPubDateAll()
+    {
+        $select = $this->getSql()->select();
+        $select->join('tuefind_rss_feeds', 'tuefind_rss_items.rss_feeds_id = tuefind_rss_feeds.id', Select::SQL_STAR, SELECT::JOIN_LEFT);
+        //$select->where->like('tuefind_rss_feeds.subsystem_types', '%' . $this->instance . '%');
+        $select->order('pub_date DESC');
+        return $this->selectWith($select);
+    }
+
     public function getItemsForUserSortedByPubDate($userId) {
         $select = $this->getSql()->select();
         $select->join('tuefind_rss_feeds', 'tuefind_rss_items.rss_feeds_id = tuefind_rss_feeds.id', Select::SQL_STAR, SELECT::JOIN_LEFT);

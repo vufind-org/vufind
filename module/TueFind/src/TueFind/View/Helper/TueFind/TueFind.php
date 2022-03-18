@@ -261,12 +261,15 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
      */
     public function getRssNewsEntries(int $maxItemCount=null, bool $onlyNewestItemPerFeed=false) {
         $rssTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('rss_item');
-        $rssItems = $rssTable->getItemsSortedByPubDate($this->getTueFindInstance());
+        //$rssItems = $rssTable->getItemsSortedByPubDate($this->getTueFindInstance());
+        $rssItems = $rssTable->getItemsSortedByPubDateAll();
 
         $rssItemsToReturn = [];
         $i = 0;
         $processedFeeds = [];
+
         foreach ($rssItems as $rssItem) {
+
             if ($maxItemCount !== null && $i >= $maxItemCount)
                 break;
 
