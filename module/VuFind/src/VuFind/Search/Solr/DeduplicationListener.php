@@ -273,10 +273,7 @@ class DeduplicationListener
                 ];
             }
             $fields['dedup_id'] = $dedupId;
-            $idList[] = [
-                'source' => $record->getSourceIdentifier(),
-                'id' => $dedupId
-            ];
+            $idList[] = $dedupId;
 
             // Sort dedupData by priority:
             uasort(
@@ -293,8 +290,7 @@ class DeduplicationListener
         }
 
         // Fetch records and assign them to the result:
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-        $localRecords = $loader->loadBatch($idList, true);
+        $localRecords = $this->backend->retrieveBatch($idList)->getRecords();
         foreach ($result->getRecords() as $record) {
             $dedupRecordData = $record->getRawData();
             if (!isset($dedupRecordData['dedup_id'])) {
@@ -302,11 +298,8 @@ class DeduplicationListener
             }
             // Find the corresponding local record in the results:
             $foundLocalRecord = null;
-            $dedupSource = $record->getSourceIdentifier();
             foreach ($localRecords as $localRecord) {
-                if ($localRecord->getUniqueID() == $dedupRecordData['dedup_id']
-                    && $localRecord->getSourceIdentifier() === $dedupSource
-                ) {
+                if ($localRecord->getUniqueID() == $dedupRecordData['dedup_id']) {
                     $foundLocalRecord = $localRecord;
                     break;
                 }
@@ -332,10 +325,7 @@ class DeduplicationListener
                 $sourcePriority
             );
             $foundLocalRecord->setRawData($localRecordData);
-            if (is_callable([$foundLocalRecord, 'setHighlightDetails'])) {
-                $foundLocalRecord
-                    ->setHighlightDetails($record->getHighlightDetails());
-            }
+            $foundLocalRecord->setHighlightDetails($record->getHighlightDetails());
             $foundLocalRecord->setLabels($record->getLabels());
             $result->replace($record, $foundLocalRecord);
         }
