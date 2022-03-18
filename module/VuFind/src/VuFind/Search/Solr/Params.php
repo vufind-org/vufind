@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -35,6 +36,7 @@ use VuFindSearch\ParamBag;
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -166,7 +168,7 @@ class Params extends \VuFind\Search\Base\Params
         // Define Filter Query
         $filterQuery = [];
         $orFilters = [];
-        $filterList = array_merge(
+        $filterList = array_merge_recursive(
             $this->getHiddenFilters(),
             $this->filterList
         );
