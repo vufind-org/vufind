@@ -311,6 +311,35 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($params->hasFilter('~format:bar'));
         $this->assertTrue($params->hasFilter('~format:baz'));
         $this->assertTrue($params->hasFilter('fulltext:1'));
+        $backendParams = $params->getBackendParameters();
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $primoParams = $backendParams->get('params_Primo')[0];
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertEquals(
+            [
+                'fulltext_boolean:"1"',
+                '{!tag=formatSolr_filter}formatSolr:(formatSolr:"bar"'
+                    . ' OR formatSolr:"baz")'
+            ],
+            $solrParams->get('fq')
+        );
+        $this->assertEquals(
+            [
+                'pcAvailability' => [
+                    'facetOp' => 'AND',
+                    'values' => ['false']
+                ],
+                'formatPrimo' => [
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'barPrimo',
+                        'bazPrimo'
+                    ]
+                ]
+            ],
+            $primoParams->get('filterList')
+        );
+        $this->assertEquals(['LIMIT|FT:y'], $edsParams->get('filters'));
 
         // Remove format filters and verify:
         $params->removeAllFilters('~format');
@@ -328,7 +357,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => ['false']
                 ],
                 'formatPrimo' => [
-                    'facetOp' => 'OR',
+                    'facetOp' => 'AND',
                     'values' => []
                 ]
             ],
