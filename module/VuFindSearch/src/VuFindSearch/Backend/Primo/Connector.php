@@ -454,14 +454,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 = substr((string)$prefix->PrimoNMBib->record->control->recordid, 3);
             $item['title']
                 = (string)$prefix->PrimoNMBib->record->display->title;
-            // format
-            $item['format'] = ucwords(
+            // Format -- Convert to displayable words and return as an array:
+            $format = ucwords(
                 str_replace(
                     '_',
                     ' ',
                     (string)$prefix->PrimoNMBib->record->display->type
                 )
             );
+            $item['format'] = [$format];
             // creators
             $creator
                 = trim((string)$prefix->PrimoNMBib->record->display->creator);
@@ -763,6 +764,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     $value
                 );
             }
+            // Unset reference:
+            unset($value);
             $record[$field] = is_array($fieldData) ? $values : $values[0];
 
             if ($highlight) {
