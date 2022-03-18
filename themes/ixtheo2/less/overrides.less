@@ -345,8 +345,7 @@
 }
 
 .ix-networking-block {
-  padding-bottom: 170px;
-  padding-top: 115px;
+  padding-bottom: 300px;
 }
 
 .ix-recommend-link {
@@ -427,4 +426,110 @@
 
 .ix-footer-background-block {
   background-color: #9d9d9d;
+}
+
+/* new design ixtheo2 */
+/* Only enabled when no touch events are detected */
+.bg-attachment-fixed {
+	background-attachment: fixed;
+}
+
+@supports ( -webkit-overflow-scrolling: touch ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+.bg-image {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+@supports ( -webkit-overflow-scrolling: touch ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+.ix-navbar a{
+    color:white;
+}
+
+.ix-navbar a.navbar-brand, .ix-navbar nav>.nav>li>a {
+    color: #495057;
+}
+
+.bg-attachment-fixed {
+  background-image: url(/themes/ixtheo2/images/searchbar.jpg);
+  min-height: 650px;
+}
+
+
+@media (max-width: 767px) {
+  .bg-attachment-fixed {
+    min-height: 250px
+  }
+  .panel-home {
+    min-height: 100px !important;
+  }
+  .panel-home h1 {
+    font-size:40px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .bg-attachment-fixed {
+    min-height: 450px
+  }
+  .panel-home {
+    min-height: 200px;
+  }
+}
+
+@media (min-width: 767px) {
+    .panel-home h1 {
+    font-size:40px;
+  }
+}
+
+@media (min-width: 992px) {
+  .panel-home h1 {
+    font-size:60px;
+  }
+}
+
+
+@media (min-width: 1200px) {
+  .panel-home h1 {
+    font-size:70px;
+  }
+}
+
+.nav-tabs>li>a {
+  background: rgba(235, 230, 227, 0.4) 10%;
+}
+
+.bg-attachment-fixed.advancedSearch {
+  min-height: 50px !important;
+}
+
+.breadcrumb-wrapper.advancedSearch {
+  display:none;
+}
+
+.main.searchResults .mainbody {
+  margin-top:20px;
 }

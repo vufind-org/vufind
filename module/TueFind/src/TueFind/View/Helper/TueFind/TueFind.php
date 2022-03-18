@@ -266,7 +266,9 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         $rssItemsToReturn = [];
         $i = 0;
         $processedFeeds = [];
+
         foreach ($rssItems as $rssItem) {
+
             if ($maxItemCount !== null && $i >= $maxItemCount)
                 break;
 

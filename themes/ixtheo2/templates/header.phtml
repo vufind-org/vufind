@@ -1,9 +1,25 @@
-<!--<div class="container-fluid bg-white">-->
+<?php $routeParams = $this->tuefind()->getRouteParams(); $advancedSearch = "";
+  if($routeParams['controller'] == "Search" && $routeParams['action'] == "Advanced") {
+    $advancedSearch = "advancedSearch";
+  }
+?>
+<div class="cover-header screen-height screen-width bg-image bg-attachment-fixed <?=$advancedSearch;?>">
+  <div class="cover-header-inner-wrapper">
+    <div class="cover-header-inner">
+      <div class="cover-color-overlay color-accent opacity-60 blend-mode-normal"></div>
+      <div class="section-inner fade-block" style="opacity: 1;">
+        <header class="hidden-print">
+          <div class="container-fluid px-0">
+            <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+            <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+          <?php endif; ?>
+          <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+            <!--<div class="container-fluid bg-white">-->
     <div class="row">
         <div class="col-12">
 
             <!-- Begin section Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light justify-content-between ix-fixed-top">
+            <nav class="navbar ix-navbar navbar-expand-lg navbar-light justify-content-between ix-fixed-top">
 
                 <!-- TueFind extension template -->
                 <?=$this->render('header/logo');?>
@@ -73,7 +89,6 @@
                                 <ul class="dropdown-menu">
                                   <?php
                                     //TueFind: Basic VuFind functionality changed, removed author ID from URL
-                                    $routeParams = $this->tuefind()->getRouteParams();
                                     foreach ($this->layout()->allLangs as $langCode => $langName): ?>
                                       <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
                                         <?php $langURL = $this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode]));
@@ -117,3 +132,35 @@ if(isset($this->layout()->headerImage)) {
 }
 ?>
 <!-- End header image -->
+
+          </div>
+
+            <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+              && !empty($this->layout()->breadcrumbs)
+              && $this->layout()->breadcrumbs !== false
+            ): ?>
+              <div class="container breadcrumb-wrapper hidden-print <?=$advancedSearch;?>">
+                <?php if(is_array($this->layout()->breadcrumbs)): ?>
+                  <?php if(count($this->layout()->breadcrumbs) > 1): ?>
+                    <?=$this->render('breadcrumbs/multi.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title' => $this->layout()->title,
+                        'from' => $this->layout()->from
+                      ]) ?>
+                  <?php else: ?>
+                    <?=$this->render('breadcrumbs/default.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title' => $this->layout()->title
+                      ]) ?>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <?=$this->render('breadcrumbs/simple.phtml'); ?>
+                  <?=$this->render('search/searchboxForm');?>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
+        </header>
+      </div><!-- .section-inner -->
+    </div><!-- .cover-header-inner -->
+  </div><!-- .cover-header-inner-wrapper -->
+</div>

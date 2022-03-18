@@ -74,17 +74,19 @@
 
         $part_img = '<img src="' . $url_img_proxy . '" alt="JOP Icons should be here"/>';
         ?>
-        <div style="color:grey" id="<?= $jop_icons_id ?>">
-            <a href="<?= $url_html ?>" target="_blank">
-                <?= $part_img ?>
-            </a>
-            <?php if (count($issns_and_additional_information) > 1): ?>
-                <span><?= $title ?></span>
-            <?php endif; ?>
+        <div class="tf-one-JOP-block">
+          <div id="<?= $jop_icons_id ?>">
+              <a href="<?= $url_html ?>" target="_blank">
+                  <?= $part_img ?>
+              </a>
+              <?php if (count($issns_and_additional_information) > 1): ?>
+                  <span><?= $title ?></span>
+              <?php endif; ?>
+          </div>
+          <div id="<?= $jop_place_holder_id ?>"><?= $this->transEsc("Loading") ?>...</div>
+          <?php $jsParams = [$jop_place_holder_id, $jop_icons_id, $url_ajax_proxy, $url_html, $part_img, $this->transEsc('Available online'), $this->transEsc('Check Availability')]; ?>
+          <?php $jsSnippet = 'TueFind.GetJOPInformation(\'' . implode("', '", $jsParams) . '\');'; ?>
+          <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
         </div>
-        <div style="color:grey" id="<?= $jop_place_holder_id ?>"><?= $this->transEsc("Loading") ?>...</div>
-        <?php $jsParams = [$jop_place_holder_id, $jop_icons_id, $url_ajax_proxy, $url_html, $part_img, $this->transEsc('Available online'), $this->transEsc('Check Availability')]; ?>
-        <?php $jsSnippet = 'TueFind.GetJOPInformation(\'' . implode("', '", $jsParams) . '\');'; ?>
-        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
     <?php endif; ?>
 <?php endforeach; ?>

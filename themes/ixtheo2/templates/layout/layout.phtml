@@ -157,7 +157,7 @@ JS;
     ?>
     <?=$this->headScript()?>
   </head>
-  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+  <body class="not-anchor template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <?php // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
@@ -169,177 +169,16 @@ JS;
       }
     ?>
 
-
-    <style>
-  /* Only enabled when no touch events are detected */
-.bg-attachment-fixed {
-	background-attachment: fixed;
-}
-
-@supports ( -webkit-overflow-scrolling: touch ) {
-    .bg-attachment-fixed {
-        background-attachment: scroll;
-    }
-}
-
-@media ( prefers-reduced-motion: reduce ) {
-    .bg-attachment-fixed {
-        background-attachment: scroll;
-    }
-}
-
-.faux-image {
-	position: relative;
-}
-
-a.faux-image {
-	display: block;
-}
-
-.faux-image:after {
-	content: "";
-	display: block;
-	padding-top: 62.5%;
-	width: 100%;
-}
-
-.faux-image.aspect-ratio-16x9:after { padding-top: 56.25%; }
-.faux-image.aspect-ratio-16x10:after { padding-top: 62.5%; }
-.faux-image.aspect-ratio-4x3:after { padding-top: 75%; }
-.faux-image.aspect-ratio-1x1:after { padding-top: 100%; }
-.faux-image.aspect-ratio-3x4:after { padding-top: 133.33%; }
-.faux-image.aspect-ratio-10x16:after { padding-top: 160%; }
-.faux-image.aspect-ratio-9x16:after { padding-top: 177.77%; }
-
-.faux-image img {
-	position: absolute;
-		left: -9999rem;
-}
-
-
-
-  .faux-image,
-.bg-image {
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: cover;
-}
-
-.bg-contain {
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: contain;
-}
-
-/* Only enabled when no touch events are detected */
-.no-touchevents .bg-attachment-fixed {
-	background-attachment: fixed;
-}
-
-@supports ( -webkit-overflow-scrolling: touch ) {
-    .bg-attachment-fixed {
-        background-attachment: scroll;
-    }
-}
-
-@media ( prefers-reduced-motion: reduce ) {
-    .bg-attachment-fixed {
-        background-attachment: scroll;
-    }
-}
-
-.faux-image {
-	position: relative;
-}
-
-a.faux-image {
-	display: block;
-}
-
-.faux-image:after {
-	content: "";
-	display: block;
-	padding-top: 62.5%;
-	width: 100%;
-}
-
-.faux-image.aspect-ratio-16x9:after { padding-top: 56.25%; }
-.faux-image.aspect-ratio-16x10:after { padding-top: 62.5%; }
-.faux-image.aspect-ratio-4x3:after { padding-top: 75%; }
-.faux-image.aspect-ratio-1x1:after { padding-top: 100%; }
-.faux-image.aspect-ratio-3x4:after { padding-top: 133.33%; }
-.faux-image.aspect-ratio-10x16:after { padding-top: 160%; }
-.faux-image.aspect-ratio-9x16:after { padding-top: 177.77%; }
-
-.faux-image img {
-	position: absolute;
-		left: -9999rem;
-}
-
-.navbar a{
-    color:white;
-}
-
-.navbar a.navbar-brand, .navbar nav>.nav>li>a {
-    color: #495057;
-}
-
-.bg-attachment-fixed {
-  background-image: url(/themes/ixtheo2/images/searchbar_2.jpg);
-  min-height: 650px;
-}
-</style>
-
-
-<div class="cover-header screen-height screen-width bg-image bg-attachment-fixed">
-  <div class="cover-header-inner-wrapper">
-    <div class="cover-header-inner">
-      <div class="cover-color-overlay color-accent opacity-60 blend-mode-normal"></div>
-      <div class="section-inner fade-block" style="opacity: 1;">
-        <header class="hidden-print">
-          <div class="container-fluid px-0">
-            <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-            <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
-          <?php endif; ?>
-          <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-            <?=$this->render('header.phtml')?>
-          </div>
-
-            <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
-              && !empty($this->layout()->breadcrumbs)
-              && $this->layout()->breadcrumbs !== false
-            ): ?>
-              <div class="container breadcrumb-wrapper hidden-print">
-                <?php if(is_array($this->layout()->breadcrumbs)): ?>
-                  <?php if(count($this->layout()->breadcrumbs) > 1): ?>
-                    <?=$this->render('breadcrumbs/multi.phtml', [
-                        'parents' => $this->layout()->breadcrumbs,
-                        'title' => $this->layout()->title,
-                        'from' => $this->layout()->from
-                      ]) ?>
-                  <?php else: ?>
-                    <?=$this->render('breadcrumbs/default.phtml', [
-                        'parents' => $this->layout()->breadcrumbs,
-                        'title' => $this->layout()->title
-                      ]) ?>
-                  <?php endif; ?>
-                <?php else: ?>
-                  <?=$this->render('breadcrumbs/simple.phtml'); ?>
-                  <?=$this->render('search/searchboxForm');?>
-                <?php endif; ?>
-              </div>
-            <?php endif; ?>
-        </header>
-      </div><!-- .section-inner -->
-    </div><!-- .cover-header-inner -->
-  </div><!-- .cover-header-inner-wrapper -->
-</div>
-
+    <?=$this->render('header.phtml');?>
+    <?php $routeParams = $this->tuefind()->getRouteParams(); $searchResults = "";
+    if($routeParams['controller'] == "Search" && $routeParams['action'] == "Results") {
+      $searchResults = "searchResults";
+    }?>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 px-0 pt-5 pb-5 justify-content-center">
-                <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
-                  <?php $showContainerBlock = true; $routeParams = $this->tuefind()->getRouteParams();
+                <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$searchResults;?>">
+                  <?php $showContainerBlock = true;
                   if($routeParams['controller'] == 'index') {
                       $showContainerBlock = false;
                   }?>

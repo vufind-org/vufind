@@ -44,6 +44,8 @@ class DSpace {
     const METHOD_POST = 'POST';
     const METHOD_PUT = 'PUT';
 
+    const PAGINATION_LIMIT = 999999; // If we do not add this to our requests, default limit will be 20.
+
     protected $baseUrl;
     protected $username;
     protected $password;
@@ -75,6 +77,30 @@ class DSpace {
      */
     protected $csrfToken;
 
+    /**
+     * Headers of the last request, for debbuging purposes.
+     * @var array
+     */
+    protected $requestHeaders = [];
+
+    /**
+     * Body of the last request, for debbuging purposes.
+     * @var string
+     */
+    protected $requestBody = '';
+
+    /**
+     * Headers of the last response, for debbuging purposes.
+     * @var array
+     */
+    protected $responseHeaders = [];
+
+    /**
+     * Body of the last response, for debbuging purposes.
+     * @var string
+     */
+    protected $responseBody = '';
+
     public function __construct(string $baseUrl, string $username, string $password)
     {
         $this->baseUrl = $baseUrl;
@@ -98,21 +124,36 @@ class DSpace {
      * @param string $collectionId
      * @param string $documentUrl
      */
-    public function addWorkspaceItem(string $documentUrl, string $collectionId=null)
+    public function addWorkspaceItem(string $documentUrl, string $collectionId)
     {
         $endpointUrl = self::ENDPOINT_WORKSPACE_ITEM;
-        if ($collectionId != null)
-            $endpointUrl .= '?owningCollection=' . urlencode($collectionId);
 
-        // Direct approach: pass URL
-        return $this->call($endpointUrl, self::METHOD_POST, [self::HEADER_CONTENT_TYPE => 'text/uri-list'], $documentUrl);
-
-        // Indirect approach: POST the whole file
+        // POST the whole file
         $fileHandle = fopen($documentUrl, "rb");
         $fileContents = stream_get_contents($fileHandle);
         fclose($fileHandle);
 
-        return $this->call($endpointUrl, self::METHOD_POST, [self::HEADER_CONTENT_TYPE => 'multipart/form-data'], $fileContents);
+        $requestData = '';
+        $boundary = '---------------------------6549703717952841723022740979';
+
+        $requestData = '--' . $boundary . "\r\n";
+        $requestData .= 'Content-Disposition: form-data; name="owningCollection"' . "\r\n\r\n";
+        $requestData .= $collectionId . "\r\n";
+
+        $requestData .= '--' . $boundary . "\r\n";
+        $requestData .= 'Content-Disposition: form-data; name="file"; filename="' . basename($documentUrl) . '"' . "\r\n";
+        $requestData .= 'Content-Type: application/pdf' . "\r\n\r\n";
+        $requestData .= 'Content-Transfer-encoding: binary' . "\r\n\r\n";
+        $requestData .= $fileContents . "\r\n\r\n";
+        $requestData .= '--' . $boundary . '--' . "\r\n";
+
+        $headers = [self::HEADER_CONTENT_TYPE => 'multipart/form-data; boundary=' . $boundary,
+                    'Content-Length' => strlen($requestData),
+                    self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer,
+        ];
+
+        $result = $this->call($endpointUrl, self::METHOD_POST, $headers, $requestData);
+        return $result->_embedded->workspaceitems[0];
     }
 
     public function getAuthenticationStatus()
@@ -142,22 +183,27 @@ class DSpace {
         return $result;
     }
 
-    public function getCollections(string $communityId=null)
+    public function getCollections(string $communityId=null, $limit=self::PAGINATION_LIMIT)
     {
         if (isset($communityId))
-            return $this->call(self::ENDPOINT_CORE_COMMUNITIES . '/' . urlencode($communityId) . '/collections', self::METHOD_GET);
+            return $this->call(self::ENDPOINT_CORE_COMMUNITIES . '/' . urlencode($communityId) . '/collections?size=' . self::PAGINATION_LIMIT, self::METHOD_GET);
         else
-            return $this->call(self::ENDPOINT_CORE_COLLECTIONS, self::METHOD_GET);
+            return $this->call(self::ENDPOINT_CORE_COLLECTIONS . '?size=' . $limit, self::METHOD_GET);
     }
 
-    public function getCommunities()
+    public function getCommunities($limit=self::PAGINATION_LIMIT)
     {
-        return $this->call(self::ENDPOINT_CORE_COMMUNITIES, self::METHOD_GET);
+        return $this->call(self::ENDPOINT_CORE_COMMUNITIES . '?size=' . $limit, self::METHOD_GET);
     }
 
     public function getItem(string $id)
     {
         return $this->call(self::ENDPOINT_CORE_ITEMS . '/' . urlencode($id), self::METHOD_GET);
+    }
+
+    public function getMetadataSchemas($limit=self::PAGINATION_LIMIT)
+    {
+        return $this->call(self::ENDPOINT_CORE_METADATASCHEMAS . '?size=' . $limit, self::METHOD_GET);
     }
 
     public function getMetadataSchema(string $id)
@@ -185,7 +231,7 @@ class DSpace {
         // Since this is a POST operation it requires a crsfToken before using it,
         // so we just call another GET/HEAD operation in case it is missing so far.
         if (!isset($this->csrfToken))
-            $this->hasMetadataSchema(1);
+            $this->getCommunities();
 
         $params = ['user' => $this->username, 'password' => $this->password];
         $postData = http_build_query($params);
@@ -231,6 +277,8 @@ class DSpace {
             foreach ($headers as $headerName => $headerValue)
                 $headerString .= $headerName . ': ' . $headerValue . "\r\n";
             $opts['http']['header'] .= $headerString;
+            $this->requestHeaders = $headers;
+            $this->requestBody = $data;
         }
 
         $context = stream_context_create($opts);
@@ -240,16 +288,9 @@ class DSpace {
         // or on any other response, but will not send it in all requests.
         // But whenever he sends one back, we need to use the new one from now on.
         $responseHeaders = get_headers($fullUrl, true, $context);
-        /*
-        print "<br><br><br>\n\n\n" . $endpoint . "<br><br><br>\n\n\n";
-        print_r($responseHeaders);
-        if (str_contains($endpoint, self::ENDPOINT_WORKSPACE_ITEM)) {
-            print 'WORKSPACE ITEM';
-            print '<pre>';
-            print_r($json);
-            print '</pre>';
-            die();
-        }*/
+        $this->responseHeaders = $responseHeaders;
+        $this->responseBody = $json;
+
         if (isset($responseHeaders[self::HEADER_CSRF_RESPONSE]))
             $this->csrfToken = $responseHeaders[self::HEADER_CSRF_RESPONSE];
         if (isset($responseHeaders[self::HEADER_COOKIE_RESPONSE])) {
@@ -267,6 +308,42 @@ class DSpace {
         }
 
         return json_decode($json);
+    }
+
+    /**
+     * Get last request headers for debugging purposes.
+     * @return array
+     */
+    public function getRequestHeaders(): array
+    {
+        return $this->requestHeaders;
+    }
+
+    /**
+     * Get last request body for debugging purposes.
+     * @return array
+     */
+    public function getRequestBody(): string
+    {
+        return $this->requestBody;
+    }
+
+    /**
+     * Get last response headers for debugging purposes.
+     * @return array
+     */
+    public function getResponseHeaders(): array
+    {
+        return $this->responseHeaders;
+    }
+
+    /**
+     * Get last response body for debugging purposes.
+     * @return array
+     */
+    public function getResponseBody(): string
+    {
+        return $this->responseBody;
     }
 
 }
