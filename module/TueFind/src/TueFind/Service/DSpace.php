@@ -218,7 +218,7 @@ class DSpace {
 
     public function getWorkspaceItem(string $id)
     {
-        return $this->call(self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($id), self::METHOD_GET);
+        return $this->call(self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($id), self::METHOD_GET, [self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer]);
     }
 
     /**

@@ -24,9 +24,9 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
         </tr>
         <?php foreach ($this->publications as $publication): ?>
           <tr>
-            <td><?=$publication['external_document_id']?></td>
-            <td>???</td>
-            <td>???</td>
+            <td><?=$publication['db']['external_document_id']?></td>
+            <td><?=$publication['dspace']->_embedded->item->name?></td>
+            <td></td>
           </tr>
         <?php endforeach; ?>
       </table>
