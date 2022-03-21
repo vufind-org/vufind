@@ -154,11 +154,29 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                             'tokens' => [
                                 '%%ph%%' => 'paragraph',
                             ],
-                            'translateTokens' => 'html'
+                            'translateTokens' => true,
+                            'tokensHtml' => true,
                         ]
                     ]
                 ],
                 '<div role="alert" class="success">foo Tag <p></div>'
+            ],
+            [
+                [
+                    'success' => [
+                        [
+                            'msg' => 'foo_placeholder',
+                            'translate' => true,
+                            'html' => true,
+                            'tokens' => [
+                                '%%ph%%' => '<b>bold</b>',
+                            ],
+                            'translateTokens' => false,
+                            'tokensHtml' => true,
+                        ]
+                    ]
+                ],
+                '<div role="alert" class="success">foo <b>bold</b></div>'
             ],
             [
                 [

@@ -102,30 +102,38 @@ class Flashmessages extends AbstractHelper
                 $html .= '>';
                 // Advanced form:
                 if (is_array($msg)) {
-                    // Use a different translate helper depending on whether
-                    // or not we're in HTML mode.
-                    if (!isset($msg['translate']) || $msg['translate']) {
-                        $helper = (isset($msg['html']) && $msg['html'])
-                            ? 'translate' : 'transEsc';
-                    } else {
-                        $helper = (isset($msg['html']) && $msg['html'])
-                            ? false : 'escapeHtml';
+                    $msgHtml = $msg['html'] ?? false;
+                    $message = $msg['msg'];
+                    $escapeHtml = $this->getView()->plugin('escapeHtml');
+                    // Process tokens and translate the message unless requested not
+                    // to:
+                    if ($msg['translate'] ?? true) {
+                        $translate = $this->getView()->plugin('translate');
+                        $tokens = $msg['tokens'] ?? [];
+                        if ($tokens) {
+                            if ($msg['translateTokens'] ?? false) {
+                                $tokens = array_map(
+                                    $translate,
+                                    $tokens
+                                );
+                            }
+                            // Escape tokens if the main message is HTML, unless
+                            // requested not to by setting tokensHtml to true:
+                            if ($msgHtml && !($msg['tokensHtml'] ?? false)) {
+                                $tokens = array_map($escapeHtml, $tokens);
+                            }
+                        }
+                        $default = $msg['default'] ?? null;
+
+                        // Translate the message:
+                        $message = $translate($message, $tokens, $default);
                     }
-                    $helper = $helper ? $this->getView()->plugin($helper) : false;
-                    $tokens = $msg['tokens'] ?? [];
-                    if ($tokens && $mode = ($msg['translateTokens'] ?? false)) {
-                        // Escape translated tokens unless html is requested or the
-                        // main message is translated:
-                        $translator = 'html' === $mode || empty($msg['html'])
-                            ? 'translate' : 'transEsc';
-                        $tokens = array_map(
-                            $this->getView()->plugin($translator),
-                            $tokens
-                        );
+                    // Escape the message unless requested not to:
+                    if (!$msgHtml) {
+                        $message = $escapeHtml($message);
                     }
-                    $default = $msg['default'] ?? null;
-                    $html .= $helper
-                        ? $helper($msg['msg'], $tokens, $default) : $msg['msg'];
+
+                    $html .= $message;
                 } else {
                     // Basic default string:
                     $transEsc = $this->getView()->plugin('transEsc');
