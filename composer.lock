@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fefd4195da68ba239396bad275587d3a",
+    "content-hash": "09e8f0e3c0b551e43b19d71d16d83eee",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2439,16 +2439,16 @@
         },
         {
             "name": "laminas/laminas-form",
-            "version": "3.0.1",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-form.git",
-                "reference": "2cb637d246d44fcb2a55aa6735df6769c5c0f0cb"
+                "reference": "6e6e8210ef7b54fdecc0eb31c8ad30613b4ab299"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/2cb637d246d44fcb2a55aa6735df6769c5c0f0cb",
-                "reference": "2cb637d246d44fcb2a55aa6735df6769c5c0f0cb",
+                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/6e6e8210ef7b54fdecc0eb31c8ad30613b4ab299",
+                "reference": "6e6e8210ef7b54fdecc0eb31c8ad30613b4ab299",
                 "shasum": ""
             },
             "require": {
@@ -2532,7 +2532,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-06-23T05:46:05+00:00"
+            "time": "2022-02-01T07:38:24+00:00"
         },
         {
             "name": "laminas/laminas-http",
@@ -11750,5 +11750,5 @@
     "platform-overrides": {
         "php": "7.3.0"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }

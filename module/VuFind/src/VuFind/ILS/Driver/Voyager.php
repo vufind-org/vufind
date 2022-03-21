@@ -1037,6 +1037,44 @@ EOT;
     }
 
     /**
+     * Support method for processHoldingData: format a due date for inclusion in
+     * holdings data.
+     *
+     * @param array $row Row to process
+     *
+     * @return string|bool
+     */
+    protected function processHoldingDueDate(array $row)
+    {
+        if (!empty($row['DUEDATE'])) {
+            return $this->dateFormat->convertToDisplayDate(
+                "m-d-y",
+                $row['DUEDATE']
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Support method for processHoldingData: format a return date for inclusion in
+     * holdings data.
+     *
+     * @param array $row Row to process
+     *
+     * @return string|bool
+     */
+    protected function processHoldingReturnDate(array $row)
+    {
+        if (!empty($row['RETURNDATE'])) {
+            return $this->dateFormat->convertToDisplayDateAndTime(
+                'm-d-y H:i',
+                $row['RETURNDATE']
+            );
+        }
+        return false;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array  $data   Item Data
@@ -1073,22 +1111,6 @@ EOT;
                         = $this->pickStatus($availability['otherStatuses']);
                 }
 
-                // Convert Voyager Format to display format
-                $dueDate = false;
-                if (!empty($row['DUEDATE'])) {
-                    $dueDate = $this->dateFormat->convertToDisplayDate(
-                        "m-d-y",
-                        $row['DUEDATE']
-                    );
-                }
-                $returnDate = false;
-                if (!empty($row['RETURNDATE'])) {
-                    $returnDate = $this->dateFormat->convertToDisplayDateAndTime(
-                        'm-d-y H:i',
-                        $row['RETURNDATE']
-                    );
-                }
-
                 $requests_placed = $row['HOLDS_PLACED'] ?? 0;
                 if (isset($row['RECALLS_PLACED'])) {
                     $requests_placed += $row['RECALLS_PLACED'];
@@ -1105,10 +1127,10 @@ EOT;
                     'availability' => $availability['available'],
                     'enumchron' => isset($row['ITEM_ENUM'])
                         ? utf8_encode($row['ITEM_ENUM']) : null,
-                    'duedate' => $dueDate,
+                    'duedate' => $this->processHoldingDueDate($row),
                     'number' => $number,
                     'requests_placed' => $requests_placed,
-                    'returnDate' => $returnDate,
+                    'returnDate' => $this->processHoldingReturnDate($row),
                     'purchase_history' => $purchases
                 ];
 
