@@ -290,20 +290,16 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     public function testGetCheckboxFacetSetReturnsValueWhenAppropriate(): void
     {
         $configLoader = $this->getMockConfigLoader(
-            [
-                'Checkboxes' => [
-                    'description' => 'foo:bar',
-                ]
-            ]
+            ['Checkboxes' => ['foo' => 'bar']]
         );
         $checkboxData = ['fake result'];
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['description']))
+            ->with($this->equalTo(['foo']))
             ->will($this->returnValue($checkboxData));
         $params->expects($this->once())->method('addCheckboxFacet')
-            ->with($this->equalTo('description'), $this->equalTo('foo:bar'));
+            ->with($this->equalTo('foo'), $this->equalTo('bar'));
         $sf = $this->getSideFacets($configLoader, $results, ':Checkboxes');
         $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
     }
