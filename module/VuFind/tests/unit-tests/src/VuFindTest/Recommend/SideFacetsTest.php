@@ -130,7 +130,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')
             ->with(
-                $this->equalTo('format'), $this->equalTo('Format'),
+                $this->equalTo('format'),
+                $this->equalTo('Format'),
                 $this->equalTo(true)
             );
         $params->expects($this->once())
@@ -148,7 +149,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     public function testGetFacetOperator(): void
     {
         $this->assertEquals(
-            'AND', $this->getSideFacets()->getFacetOperator('format')
+            'AND',
+            $this->getSideFacets()->getFacetOperator('format')
         ); // default
         $configLoader = $this->getMockConfigLoader(
             [
