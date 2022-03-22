@@ -213,7 +213,8 @@ class ThemeInfo
     /**
      * Get a configuration element, merged to reflect theme inheritance.
      *
-     * @param string $key     Configuration key to retrieve
+     * @param string $key     Configuration key to retrieve (or empty string to
+     * retrieve full configuration)
      * @param bool   $flatten Use array_replace to flatten values
      *
      * @return array
