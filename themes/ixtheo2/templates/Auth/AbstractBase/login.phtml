@@ -17,7 +17,7 @@
               </div>
               <div class="col-6">
               <?php if ($account->supportsRecovery()): ?>
-                <a class="btn btn-outline-secondary btn-sm" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>" data-lightbox-ignore><?=$this->transEsc('Forgot Password')?></a>
+                <a class="btn btn-outline-secondary btn-sm" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>" data-lightbox><?=$this->transEsc('Forgot Password')?></a>
              <?php endif; ?>
               </div>
           </div>
