@@ -103,7 +103,7 @@ class BlenderBackendFactory implements FactoryInterface
         $blenderConfig = $this->config->get($this->searchConfig);
 
         if ($blenderConfig->Backends->count() === 0) {
-            throw new \Exception('No backends enabled in blender.ini');
+            throw new \Exception('No backends enabled in Blender.ini');
         }
         $backends = [];
         $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
