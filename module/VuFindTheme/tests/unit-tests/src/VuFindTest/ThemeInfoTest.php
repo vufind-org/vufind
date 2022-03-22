@@ -333,6 +333,10 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $config = $ti->getMergedConfig();
         $this->assertEquals('HTML5', $config['doctype']);
+        $this->assertEqualsCanonicalizing(
+            ['doctype', 'extends', 'js', 'helpers'],
+            array_keys($config)
+        );
     }
 
     /**
