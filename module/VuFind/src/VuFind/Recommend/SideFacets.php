@@ -256,6 +256,10 @@ class SideFacets extends AbstractFacets
      */
     public function getCheckboxFacetSet()
     {
+        // If no checkboxes are configured, return nothing:
+        if (empty($this->checkboxFacets)) {
+            return [];
+        }
         return $this->results->getParams()
             ->getCheckboxFacets(array_keys($this->checkboxFacets));
     }
