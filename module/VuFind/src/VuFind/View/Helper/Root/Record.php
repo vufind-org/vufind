@@ -341,7 +341,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
         $link .= $this->getView()->plugin('searchTabs')
-            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+            ->getCurrentHiddenFilterParams(
+                $this->driver->getSearchBackendIdentifier()
+            );
         return $link;
     }
 

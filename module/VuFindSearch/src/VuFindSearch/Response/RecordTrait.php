@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Record interface file.
+ * Record trait that implements common interface methods.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2022
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,35 +22,57 @@
  *
  * @category Search
  * @package  Service
- * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindSearch\Response;
 
 /**
- * Record interface.
- *
- * Every record must implement this.
+ * Record trait that implements common interface methods.
  *
  * @category Search
  * @package  Service
- * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
-interface RecordInterface
+trait RecordTrait
 {
     /**
-     * Set the source backend identifier.
+     * Used for identifying record source backend
      *
-     * @param string $identifier Backend identifier
+     * @var string
+     */
+    protected $sourceIdentifier;
+
+    /**
+     * Used for identifying the search backend used to find the record
+     *
+     * @var string
+     */
+    protected $searchBackendIdentifier;
+
+    /**
+     * Labels for the record
+     *
+     * @var array
+     */
+    protected $labels = [];
+
+    /**
+     * Set the record source backend identifier.
+     *
+     * @param string $identifier Record source identifier
      *
      * @return void
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier($identifier);
+    public function setSourceIdentifier($identifier)
+    {
+        $this->setSourceIdentifiers($identifier, $identifier);
+    }
 
     /**
      * Set the source backend identifiers.
@@ -61,21 +83,31 @@ interface RecordInterface
      *
      * @return void
      */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '');
+    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '')
+    {
+        $this->sourceIdentifier = $recordSourceId;
+        $this->searchBackendIdentifier = $searchBackendId ?: $recordSourceId;
+    }
 
     /**
      * Return the source backend identifier.
      *
      * @return string
      */
-    public function getSourceIdentifier();
+    public function getSourceIdentifier()
+    {
+        return $this->sourceIdentifier;
+    }
 
     /**
      * Return the search backend identifier used to find the record.
      *
      * @return string
      */
-    public function getSearchBackendIdentifier();
+    public function getSearchBackendIdentifier()
+    {
+        return $this->searchBackendIdentifier;
+    }
 
     /**
      * Add a label for the record
@@ -85,7 +117,10 @@ interface RecordInterface
      *
      * @return void
      */
-    public function addLabel(string $label, string $class);
+    public function addLabel(string $label, string $class)
+    {
+        $this->labels[] = compact('label', 'class');
+    }
 
     /**
      * Set the labels for the record
@@ -95,12 +130,18 @@ interface RecordInterface
      *
      * @return void
      */
-    public function setLabels(array $labels);
+    public function setLabels(array $labels)
+    {
+        $this->labels = $labels;
+    }
 
     /**
      * Return all labels for the record
      *
      * @return array An array of associative arrays with keys 'label' and 'class'
      */
-    public function getLabels();
+    public function getLabels()
+    {
+        return $this->labels;
+    }
 }

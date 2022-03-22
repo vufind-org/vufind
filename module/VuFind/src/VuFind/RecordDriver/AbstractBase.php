@@ -46,13 +46,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Used for identifying search backends
-     *
-     * @var string
-     */
-    protected $sourceIdentifier = 'Solr';
+    use \VuFindSearch\Response\RecordTrait;
 
     /**
      * For storing extra data with record
@@ -94,6 +88,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig ?? $mainConfig;
+        $this->setSourceIdentifiers('Solr');
     }
 
     /**
@@ -275,28 +270,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $this->getSourceIdentifier(),
             $user_id
         );
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        $this->sourceIdentifier = $identifier;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier()
-    {
-        return $this->sourceIdentifier;
     }
 
     /**

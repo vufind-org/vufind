@@ -1,2 +1,2 @@
-<?php $searchRoute = $this->searchOptions($this->driver->getSourceIdentifier())->getSearchAction(); ?>
+<?php $searchRoute = $this->searchOptions($this->driver->getSearchBackendIdentifier())->getSearchAction(); ?>
 <?=$this->url($searchRoute)?>?lookfor=%22<?=urlencode($this->lookfor)?>%22&amp;type=Subject
