@@ -173,7 +173,8 @@ class Params extends \VuFind\Search\Solr\Params
             $backendId = $params->getSearchClassId();
             $params->setBasicSearch(
                 $lookfor,
-                $this->translateSearchType($handler, $backendId)
+                $handler
+                    ? $this->translateSearchType($handler, $backendId) : $handler
             );
         }
         parent::setBasicSearch($lookfor, $handler);
