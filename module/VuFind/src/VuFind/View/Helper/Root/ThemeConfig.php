@@ -27,7 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\AbstractHelper;
 use VuFindTheme\ThemeInfo;
 
@@ -43,13 +42,6 @@ use VuFindTheme\ThemeInfo;
 class ThemeConfig extends AbstractHelper
 {
     /**
-     * Cache for merged configs
-     *
-     * @var StorageInterface
-     */
-    protected $cache;
-
-    /**
      * ThemeInfo object to access themeConfig
      *
      * @var ThemeInfo
@@ -59,13 +51,11 @@ class ThemeConfig extends AbstractHelper
     /**
      * Constructor
      *
-     * @param ThemeInfo        $themeInfo ThemeInfo
-     * @param StorageInterface $cache     StorageInterface
+     * @param ThemeInfo $themeInfo ThemeInfo
      */
-    public function __construct(ThemeInfo $themeInfo, StorageInterface $cache)
+    public function __construct(ThemeInfo $themeInfo)
     {
         $this->themeInfo = $themeInfo;
-        $this->cache = $cache;
     }
 
     /**
@@ -84,19 +74,12 @@ class ThemeConfig extends AbstractHelper
     {
         // Ensure path is an array
         $path = (array)$path;
+        $key = array_shift($path) ?? '';
 
-        $key = array_shift($path);
-
-        $cacheKey = $this->themeInfo->getTheme() . $key;
-        $cached = $this->cache->getItem($cacheKey);
-
-        if ($cached == null) {
-            $cached = $this->themeInfo->getMergedConfig($key, true);
-            $this->cache->setItem($cacheKey, $cached);
-        }
+        $mergedConfig = $this->themeInfo->getMergedConfig($key, true);
 
         // Follow the path
-        $nextNode = $cached;
+        $nextNode = $mergedConfig;
         foreach ($path as $p) {
             $nextNode = $nextNode[$p] ?? null;
         }
