@@ -20,15 +20,8 @@
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
     <?php if ($i == $this->facets_before_more): ?>
       <?php
-        $queryParams = [
-            'facet' => $this->title,
-            'facetop' => $thisFacet['operator'],
-            'facetexclude' => $this->allowExclude ? 1 : 0,
-            'searchClassId' => $this->searchClassId
-        ];
-        $facetLightboxParams = http_build_query($queryParams, '', '&amp;');
         $moreUrl = $facetLightbox
-          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams"
+          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0)
           : '#';
       ?>
       <?php if ($alwaysUseLightbox): ?>
@@ -51,7 +44,7 @@
   <?php if (isset($i) && $i >= $this->facets_before_more): ?>
     <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
       <?php
-        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
         if (!empty($this->baseUriExtra)) {
           $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
         }

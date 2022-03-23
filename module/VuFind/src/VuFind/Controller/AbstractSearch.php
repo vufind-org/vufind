@@ -776,9 +776,7 @@ class AbstractSearch extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // Get results
-        $searchClassId = $this->getRequest()
-            ->getQuery('searchClassId', $this->searchClassId);
-        $results = $this->getResultsManager()->get($searchClassId);
+        $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
