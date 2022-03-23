@@ -259,7 +259,6 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $back->search(new Query('foo'), 0, 10, $params);
     }
 
-
     /// Internal API
 
     /**
