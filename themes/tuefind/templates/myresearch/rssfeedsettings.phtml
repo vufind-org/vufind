@@ -6,11 +6,11 @@
 ?>
 
 <div class="mainbody left">
-  <h2>RSS Feeds</h2>
+  <h2><?=$this->transEsc('RSS feeds')?></h2>
   <table class="search-history-table">
     <tr>
-      <th>Feed</th>
-      <th>Subscribed?</th>
+      <th><?=$this->transEsc('RSS feed')?></th>
+      <th><?=$this->transEsc('Subscribe')?></th>
     </tr>
     <?php foreach($rssFeeds as $rssFeed): ?>
       <tr>
@@ -35,10 +35,10 @@
   </table>
 
   <?php if (count($subscribedFeedIds) > 0): ?>
-    <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>">Show personal RSS feed</a></p>
+    <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>"><?=$this->transEsc('Show personal RSS feed')?></a></p>
     <p>
       <form method="post">
-        Would you like to receive new entries via e-mail?
+        <?=$this->transEsc('rss_subscribe_email')?>
         <label class="switch" onclick="this.form.submit()">
           <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
             <input type="hidden" name="action" value="unsubscribe_email">
@@ -51,7 +51,7 @@
         </label>
 
         <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
-            <br>You will receive all entries newer than <?=$this->user->tuefind_rss_feed_last_notification?>.
+            <br><?=$this->transEsc('rss_email_min_timestamp')?> <?=$this->user->tuefind_rss_feed_last_notification?>.
         <?php endif; ?>
       </form>
     </p>
