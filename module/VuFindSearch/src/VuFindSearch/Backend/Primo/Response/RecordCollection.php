@@ -97,8 +97,8 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Return any errors.
      *
-     * Each error can be a translatable string or an array with keys 'message' and
-     * 'additional', both translatable strings.
+     * Each error can be a translatable string or an array that the Flashmessages
+     * view helper understands.
      *
      * @return array
      */
