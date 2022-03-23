@@ -85,7 +85,7 @@
         <?php
           if ($sfxData->isValid && $sfxData->issn && $sfxData->title) {
         ?>
-          <tr id="sfxRow"><th><?=$this->transEsc("Available Online")?>:</th><td><a href="http://proxy.library.tamu.edu/login?url=http://linkresolver.tamu.edu/tamu?sid=Endeavor:CitationServer&amp;rft.jtitle=<?=$sfxData->title?>&amp;issn=<?=$sfxData->issn?>"><img alt="Full Text @ TAMU" src="<?php echo $this->imageLink("sfx.gif");?>" id="SFXButton"></a></td></tr>
+          <tr id="sfxRow"><th><?=$this->transEsc("Available Online")?>:</th><td><a class="hidden" href="http://proxy.library.tamu.edu/login?url=http://linkresolver.tamu.edu/tamu?sid=Endeavor:CitationServer&amp;rft.jtitle=<?=$sfxData->title?>&amp;issn=<?=$sfxData->issn?>"><img alt="Full Text @ TAMU" src="<?php echo $this->imageLink("sfx.gif");?>" id="SFXButton"></a></td></tr>
         <?php
           }
         ?>
