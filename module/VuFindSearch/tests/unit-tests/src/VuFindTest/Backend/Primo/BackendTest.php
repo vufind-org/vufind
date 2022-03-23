@@ -191,6 +191,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
+                '',
+                true
+            ],
+            [
                 true,
                 true
             ],
