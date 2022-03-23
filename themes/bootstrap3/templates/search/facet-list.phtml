@@ -1,21 +1,11 @@
 <?php
   $options = $this->results->getParams()->getOptions();
   $facetLightbox = $options->getFacetListAction();
-  $facetLightboxParams = http_build_query(
-      [
-          'facet' => $this->facet,
-          'facetexclude' => $this->exclude,
-          'facetop' => $this->operator,
-          'searchClassId' => $options->getSearchClassId()
-      ],
-      '',
-      '&amp;'
-  );
   if (empty($this->sortOptions)) {
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
-  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . urlencode($this->exclude) . '&amp;facetop=' . urlencode($this->operator);
   $searchAction = $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
