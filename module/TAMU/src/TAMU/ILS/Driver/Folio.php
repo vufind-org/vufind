@@ -142,7 +142,8 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 if ($isPurchase) {
                     $synthItemType = 'purchase-it';
                 } else if (in_array(
-                    $holdingLocationData['code'], $boundWithLocations
+                    $holdingLocationData['code'],
+                    $boundWithLocations
                 )
                 ) {
                     $synthItemType = 'bound-with-item';
