@@ -127,7 +127,9 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 );
 
                 $isPurchase = false;
-                if ($holdingLocationData['code'] == 'pda,print' && $hasHoldingNotes) {
+                if ($holdingLocationData['code'] == 'pda,print'
+                    && $hasHoldingNotes
+                ) {
                     foreach ($holding->notes as $note) {
                         if (stripos($note->note, "Purchase It For Me") !== false) {
                             $isPurchase = true;
@@ -139,7 +141,10 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 $synthItemType = null;
                 if ($isPurchase) {
                     $synthItemType = 'purchase-it';
-                } else if (in_array($holdingLocationData['code'], $boundWithLocations)) {
+                } else if (in_array(
+                    $holdingLocationData['code'], $boundWithLocations
+                )
+                ) {
                     $synthItemType = 'bound-with-item';
                 } else {
                     $synthItemType = 'itemless-holding';
