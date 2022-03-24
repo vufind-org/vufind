@@ -141,7 +141,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 $synthItemType = null;
                 if ($isPurchase) {
                     $synthItemType = 'purchase-it';
-                } else if (in_array(
+                } elseif (in_array(
                     $holdingLocationData['code'],
                     $boundWithLocations
                 )
@@ -181,7 +181,6 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         ),
                         'holding_shelving_title' => $holding->shelvingTitle ?? ''
                     ];
-
                 }
             }
 
