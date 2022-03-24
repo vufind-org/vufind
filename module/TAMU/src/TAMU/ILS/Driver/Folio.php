@@ -113,7 +113,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
                 $fallbackLocationId = null;
             }
 
-            //TAMU Customization boundwith and zero item workarounds
+            //TAMU Customization purchase, boundwith and zero item workarounds
             if (count($holdingItems) == 0 && $fallbackLocationId) {
                 $boundWithLocations = ['stk','blcc,stk','BookStacks',
                                         'psel,stk','udoc','txdoc'];
@@ -126,48 +126,34 @@ class Folio extends \VuFind\ILS\Driver\Folio
                     ''
                 );
 
-                //TAMU Customization boundwith
-                if (in_array($holdingLocationData['code'], $boundWithLocations)) {
-                    $items[] = $callNumberData + [
-                        'id' => $bibId,
-                        'item_id' => 'bound-with-item',
-                        'item_hrid' => 'bound-with-item',
-                        'holding_id' => $holding->id,
-                        'holding_hrid' => $holding->hrid,
-                        'number' => 0,
-                        'barcode' => 'bound-with-item',
-                        'status' => null,
-                        'availability' => true,
-                        'is_holdable' => $this->isHoldable(
-                            $holdingLocationData['name']
-                        ),
-                        'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
-                        'item_notes' => null,
-                        'issues' => $holdingsStatements,
-                        'supplements' => $holdingsSupplements,
-                        'indexes' => $holdingsIndexes,
-                        'callnumber' => $holding->callNumber ?? '',
-                        'location' => $holdingLocationData['name'],
-                        'location_code' => $holdingLocationData['code'],
-                        'reserve' => 'TODO',
-                        'enumeration' => '',
-                        'item_chronology' => '',
-                        'addLink' => true,
-                        'call_number_formatted' => $this->_buildFormattedCallNumber(
-                            $callNumberData
-                        ),
-                        'holding_shelving_title' => $holding->shelvingTitle ?? ''
-                    ];
+                $isPurchase = false;
+                if ($holdingLocationData['code'] == 'pda,print' && $hasHoldingNotes) {
+                    foreach ($holding->notes as $note) {
+                        if (stripos($note->note, "Purchase It For Me") !== false) {
+                            $isPurchase = true;
+                            break;
+                        }
+                    }
+                }
+
+                $synthItemType = null;
+                if ($isPurchase) {
+                    $synthItemType = 'purchase-it';
+                } else if (in_array($holdingLocationData['code'], $boundWithLocations)) {
+                    $synthItemType = 'bound-with-item';
                 } else {
-                    //TAMU Customization zero item
+                    $synthItemType = 'itemless-holding';
+                }
+
+                if ($synthItemType) {
                     $items[] = $callNumberData + [
                         'id' => $bibId,
-                        'item_id' => 'itemless-holding',
-                        'item_hrid' => 'itemless-holding',
+                        'item_id' => $synthItemType,
+                        'item_hrid' => $synthItemType,
                         'holding_id' => $holding->id,
                         'holding_hrid' => $holding->hrid,
                         'number' => 0,
-                        'barcode' => 'itemless-holding',
+                        'barcode' => $synthItemType,
                         'status' => null,
                         'availability' => true,
                         'is_holdable' => $this->isHoldable(
@@ -189,6 +175,7 @@ class Folio extends \VuFind\ILS\Driver\Folio
                         ),
                         'holding_shelving_title' => $holding->shelvingTitle ?? ''
                     ];
+
                 }
             }
 
