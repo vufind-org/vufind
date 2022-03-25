@@ -15,20 +15,22 @@
     'wrapper-class' => false,
     'wrapper-tagname' => 'div',
   ];
+  $facetLightboxParams = http_build_query(
+      [
+          'facet' => $this->title,
+          'facetop' => $thisFacet['operator'],
+          'facetexclude' => $this->allowExclude ? 1 : 0,
+      ],
+      '',
+      '&amp;'
+  );
 ?>
 <div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
     <?php if ($i == $this->facets_before_more): ?>
       <?php
-        $queryParams = [
-            'facet' => $this->title,
-            'facetop' => $thisFacet['operator'],
-            'facetexclude' => $this->allowExclude ? 1 : 0,
-            'searchClassId' => $this->searchClassId
-        ];
-        $facetLightboxParams = http_build_query($queryParams, '', '&amp;');
         $moreUrl = $facetLightbox
-          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0)
+          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams"
           : '#';
       ?>
       <?php if ($alwaysUseLightbox): ?>
@@ -51,7 +53,7 @@
   <?php if (isset($i) && $i >= $this->facets_before_more): ?>
     <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
       <?php
-        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
+        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
         if (!empty($this->baseUriExtra)) {
           $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
         }
