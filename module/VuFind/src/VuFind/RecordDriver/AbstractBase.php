@@ -88,7 +88,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig ?? $mainConfig;
-        $this->setSourceIdentifiers('Solr');
+        $this->setSourceIdentifiers(DEFAULT_SEARCH_BACKEND);
     }
 
     /**
