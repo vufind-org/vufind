@@ -1,7 +1,33 @@
+<?php if(!empty($uploadInfos)): ?>
+  <div class="col-md-12 ix-panel-news tf-rss-block">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title color-red">
+                 Upload Info
+            </h4>
+        </div>
+        <div class="panel-collapse">
+            <div class="panel-body">
+              <?php foreach($uploadInfos as $info):?>
+                <p class="<?=$info[1];?>" >
+                  <?=$info[0];?>
+                </p>
+              <?php endforeach;?>
+            </div>
+        </div>
+    </div>
+  </div>
+<?php endif;?>
+
+
+
+
 <h3>Upload new publication</h3>
 
 <?php /* DSpace needs Dublin Core metadata as minimum: https://www.dublincore.org/specifications/dublin-core/dces/ */ ?>
+<?php /*?>
 <form method="post" enctype="multipart/form-data">
+
   <!-- DC.title -->
   <div class="form-group">
     <label>title</label>
@@ -120,7 +146,31 @@
     <label>identifier</label>
     <input class="form-control" name="identifier" placeholder="A DOI/HANDLE will be generated automatically" disabled>
   </div>
-
+<?php */?>
   <!-- Submit -->
+<form method="post" enctype="multipart/form-data">
+  <!-- DC.creator -->
+  <div class="form-group">
+    <label>creator</label>
+    <select class="form-control" name="creator" required>
+      <?php foreach ($this->userAuthorities as $userAuthority): ?>
+        <?php $authorityRecord = $this->authorityRecords[$userAuthority['authority_id']]?>
+        <option value="<?=$authorityRecord->getGNDNumber()?>"><?=htmlspecialchars($authorityRecord->getTitle() . ' (GND: ' .  $authorityRecord->getGNDNumber() . ')')?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+
+  <!-- File -->
+  <div class="form-group">
+    <label>file</label>
+    <input class="form-control" type="file" name="file" required>
+  </div>
+  <div>
+    <label><?=$termFile['fileName'];?></label>
+  </div>
+  <div class="form-group">
+    <label>term agree</label>
+    <input type="checkbox" value="term" name="term">
+  </div>
   <button type="submit" class="btn btn-primary" name="action" value="publish">Submit</button>
 </form>

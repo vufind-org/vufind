@@ -72,35 +72,168 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $this->forceLogin();
         }
 
+        $uploadInfos = [];
+        $uploadError = 0;
+
         $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
         $dspace->login();
         $config = $this->getConfig('tuefind');
 
         $existingRecord = null;
         $dublinCore = null;
+        $controlNumber = null;
         $existingRecordId = $this->params()->fromRoute('record_id', null);
         if ($existingRecordId != null) {
             $existingRecord = $this->getRecordLoader()->load($existingRecordId);
             $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
+            $controlNumber = $dublinCore['DC.identifier'][0];
         }
 
         $action = $this->params()->fromPost('action');
+
+        $termFileData = $this->getLatestTermFile();
+
         if ($action == 'publish') {
+
             $uploadedFile = $this->params()->fromFiles('file');
 
+            $userFileName = $dublinCore['DC.title'][0];
+
+            $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
+            $dspace->login();
             // TODO: Upload PDF file to DSpace
+
             $collectionName = $config->Publication->collection_name;
-            $collection = $this->dspace->getCollectionByName($collectionName);
-            $workspaceItem = $this->dspace->addWorkspaceItem($uploadedFile, $collection->id);
 
-            // TODO: Add metadata
+            $uploadInfos[] = ["Collection name: ".$collectionName,"text-secondary"];
 
-            // TODO: Start workflow
+            $collectionID = "";
+
+            $collections = $dspace->getCollections();
+
+            foreach($collections->_embedded->collections as $collection) {
+                if($collection->name == $collectionName) {
+                    $collectionID = $collection->id;
+                    $uploadInfos[] = ["Collection ID: ".$collectionID,"text-secondary"];
+                }
+                //print $collection->name ." - " .$collection->id."<br />";
+            }
+
+            if($uploadedFile['type'] != "application/pdf") {
+                $uploadInfos[] = ["Invalid file type!: ".$uploadedFile['type'],"text-danger"];
+                $uploadError = 1;
+            }else{
+                $uploadInfos[] = ["File type correct: ".$uploadedFile['type'],"text-success"];
+            }
+
+            if($uploadedFile['size'] >  500000) {
+                $uploadInfos[] = ["File is too big! size:".$uploadedFile['size'],"text-danger"];
+                $uploadError = 1;
+            }else{
+                $uploadInfos[] = ["File size correct:".$uploadedFile['size'],"text-success"];
+            }
+
+            $uploaddir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace/';
+
+            if (!file_exists($uploaddir)) {
+              $uploadInfos[] = ["Download directory does not exist","text-danger"];
+              $uploadError = 1;
+            }else{
+              $uploadInfos[] = ["Download directory 'dspace' exist","text-success"];
+            }
+
+            //$uploadfile = $uploaddir . basename($uploadedFile['name']);
+            $customFileName = strtotime("now").".pdf";
+            $uploadfile = $uploaddir . $customFileName;
+
+            print_r($uploadedFile);
+
+
+            if (move_uploaded_file($uploadedFile['tmp_name'], $uploadfile) && $uploadError == 0) {
+
+              if (!file_exists($uploadfile)) {
+                $uploadInfos[] = ["Upload File does not exist","text-danger"];
+                $uploadError = 1;
+              }else{
+                $uploadInfos[] = ["Upload File exist: ".$customFileName,"text-success"];
+              }
+
+              $workspaceItem = $dspace->addWorkspaceItem($uploadfile, $collectionID);
+
+              $itemID = $workspaceItem->id;
+              $uploadInfos[] = ["WorkspaceItem ID: ".$itemID,"text-success"];
+
+              $dbPublications = $this->getTable('publication')->addPublication($user->id, $controlNumber, $itemID, $termFileData['termDate']);
+              //$itemID = "134863";
+              /*
+              $metaArray = [
+                  "type"=>"Article",
+                  "language"=>"en",
+                  "author"=>"Kilian-Yasin, Katharina;02a88394-6161-44ce-a0c0-5f1640137bf4",
+                  "identifiers"=> "issn;identifiers text",
+                  "title"=>"Title test",
+                  "title.alternative"=>"Alternative Title test",
+                  "publisher"=>"Publisher text",
+                  "citation"=>"citation text",
+                  "ispartofseries"=> "Series/Report No. 1 test; Series/Report No. 2 test",
+                  "date.issued"=> "2022-03-18",
+                  "subject.keywords" => "Research Subject Categories::SOCIAL SCIENCES::Other social sciences::Labour market research",
+                  "abstract" => "Abstract text",
+                  "sponsorship" => "Sponsors text",
+                  "description" => "Description text"
+                  ];
+              */
+
+              $languege = 'en';
+              if(isset($dublinCore['DC.language'][0])) {
+                switch($dublinCore['DC.language'][0]){
+                  case"German":
+                    $languege = 'de';
+                  break;
+                }
+              }
+
+              $metaArray = [
+                  "title"=>$userFileName,
+                  "language"=>$languege,
+                  "publisher"=>$dublinCore['DC.publisher'][0],
+                  "author"=>$dublinCore['DC.creator'][0].";02a88394-6161-44ce-a0c0-5f1640137bf4",
+                  "identifiers"=>"issn;".$controlNumber
+
+              ];
+
+              $item = $dspace->editMetaData($itemID,$metaArray);
+
+              $uploadInfos[] = ["add created meta data","text-success"];
+
+            } else {
+                $uploadInfos[] = ["file not uploaded","text-danger"];
+                $uploadError = 1;
+            }
+
+            if($uploadError == 0) {
+              /*
+              $metaArray = [
+                "publisher"=>"Published text test"
+              ];
+
+              $item2update = $dspace->editMetaData($itemID,$metaArray);
+
+              $uploadInfos[] = ["updated meta data","text-success"];
+              */
+              // delete file after upload to Dspace
+              $this->removeDspaceFile();
+
+              $uploadInfos[] = ["temp file deleted!","text-success"];
+            }
+
         }
 
         $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
         $view->existingRecord = $existingRecord;
         $view->dublinCore = $dublinCore;
+        $view->uploadInfos = $uploadInfos;
+        $view->termFile = $termFileData;
         return $view;
     }
 
@@ -169,4 +302,52 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $response->setContent($rssFeedContentString);
         return $response;
     }
+
+    private function getLatestTermFile(): array {
+
+        $termsDir =  $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/docs/publication_terms/';
+        $files = scandir($termsDir);
+        $latestTermFileData = [];
+        $latestTermData = [];
+        foreach($files as $file){
+            if(strlen($file) > 3) {
+              preg_match_all('/(\d{4})(\d{2})(\d{2})/',$file,$matches,PREG_PATTERN_ORDER);
+              if(isset($matches[0])){
+                $formatedDate = $matches[1][0]."-".$matches[2][0]."-".$matches[3][0];
+                $timeStamp = strtotime($formatedDate);
+                $latestTermData[] = [
+                    "milliseconds"=>$timeStamp,
+                    "termDate"=>$formatedDate,
+                    "fileName"=>$file
+                ];
+              }
+            }
+        }
+        if(!empty($latestTermData)) {
+          $this->arraySortByColumn($latestTermData, 'milliseconds');
+          $latestTermFileData = $latestTermData[0];
+        }
+        return $latestTermFileData;
+    }
+
+    private function arraySortByColumn(&$arr, $col, $dir = SORT_DESC): void {
+      $sort_col = array();
+      foreach ($arr as $key => $row) {
+          $sort_col[$key] = $row[$col];
+      }
+      array_multisort($sort_col, $dir, $arr);
+    }
+
+    private function removeDspaceFile(): void {
+
+      $dspaceDir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace/';
+      $files = scandir($dspaceDir);
+      foreach($files as $file){
+        if(strlen($file) > 3) {
+           unlink($dspaceDir.$file);
+        }
+      }
+
+    }
+
 }

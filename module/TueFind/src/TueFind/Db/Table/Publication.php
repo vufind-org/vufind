@@ -19,4 +19,10 @@ class Publication extends \VuFind\Db\Table\Gateway {
     {
         return $this->select(['user_id' => $userId]);
     }
+
+    public function addPublication(int $userId, string $controlNumber, int $documntId, string $termsDate): bool
+    {
+        $this->insert(['user_id' => $userId, 'control_number' => $controlNumber, 'external_document_id' => $documntId, 'terms_date' => $termsDate]);
+        return true;
+    }
 }

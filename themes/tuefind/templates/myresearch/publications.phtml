@@ -20,13 +20,19 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
         <tr>
           <th>ID in external repository</th>
           <th>Title</th>
-          <th>Status</th>
+          <th>Collection ID</th>
+          <th>Collection Name</th>
+          <th>Created</th>
+          <th>Terms Date</th>
         </tr>
         <?php foreach ($this->publications as $publication): ?>
           <tr>
             <td><?=$publication['db']['external_document_id']?></td>
             <td><?=$publication['dspace']->_embedded->item->name?></td>
-            <td></td>
+            <th><?=$publication['dspace']->sections->collection?></th>
+            <th><?=$publication['dspace']->_embedded->collection->name?></th>
+            <td><?=date("d.m.Y H:i:s",strtotime($publication['dspace']->_embedded->item->lastModified))?></td>
+            <td><?=date("d.m.Y",strtotime($publication['db']['terms_date']));?></td>
           </tr>
         <?php endforeach; ?>
       </table>
