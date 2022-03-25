@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
@@ -110,15 +111,69 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that checkbox filters are always visible (or not) as appropriate.
+     *
+     * @return void
+     */
+    public function testCheckboxVisibility()
+    {
+        $emptyConfig = new Config([]);
+        $facetConfig = new Config(
+            [
+                'CheckboxFacets' => [
+                    'format:book' => 'Book filter',
+                    'vufind:inverted' => 'Inverted filter',
+                ],
+                'CustomFilters' => [
+                    'inverted_filters' => [
+                        'inverted' => 'foo:bar',
+                    ],
+                ],
+            ]
+        );
+        $configManager = $this->createMock(PluginManager::class);
+        $callback = function ($config) use ($emptyConfig, $facetConfig) {
+            return $config === 'facets' ? $facetConfig : $emptyConfig;
+        };
+        $configManager->expects($this->any())->method('get')
+            ->will($this->returnCallback($callback));
+        $params = $this->getParams(null, $configManager);
+        // We expect "normal" filters to NOT be always visible, and inverted
+        // filters to be always visible.
+        $this->assertEquals(
+            [
+                [
+                    'desc' => 'Book filter',
+                    'filter' => 'format:book',
+                    'selected' => false,
+                    'alwaysVisible' => false,
+                ],
+                [
+                    'desc' => 'Inverted filter',
+                    'filter' => 'vufind:inverted',
+                    'selected' => false,
+                    'alwaysVisible' => true,
+                ],
+            ],
+            $params->getCheckboxFacets()
+        );
+    }
+
+    /**
      * Get Params object
+     *
+     * @param Options       $options    Options object (null to create)
+     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
      *
      * @return Params
      */
-    protected function getParams(): Params
-    {
-        $mockConfig = $this->createMock(PluginManager::class);
+    protected function getParams(
+        Options $options = null,
+        PluginManager $mockConfig = null
+    ): Params {
+        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
         return new Params(
-            new Options($mockConfig),
+            $options ?? new Options($mockConfig),
             $mockConfig
         );
     }
