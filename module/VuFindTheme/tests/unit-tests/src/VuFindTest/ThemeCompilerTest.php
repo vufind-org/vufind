@@ -122,6 +122,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
                     'xyzzy' => 'Xyzzy',
                 ]
             ],
+            'doctype' => 'HTML5',
         ];
         $mergedConfig = include "{$this->targetPath}/theme.config.php";
         $this->assertEquals($expectedConfig, $mergedConfig);
@@ -180,6 +181,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
                     'xyzzy' => 'Xyzzy',
                 ]
             ],
+            'doctype' => 'HTML5',
         ];
         $mergedConfig = include "{$this->targetPath}/theme.config.php";
         $this->assertEquals($expectedConfig, $mergedConfig);

@@ -246,11 +246,12 @@ class Backend extends AbstractBackend
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
-        // Use special pcAvailability filter if it has been set
+        // Use special pcAvailability filter if it has been set:
         if ($values = $params['filterList']['pcAvailability']['values'] ?? []) {
-            $options['pcAvailability'] = !in_array(false, $values, true)
-                && !in_array(0, $values, true)
-                && !in_array('false', $values, true);
+            $value = reset($values);
+            // Note that '' is treated as true for the simple case with no value
+            $options['pcAvailability']
+                = !in_array($value, [false, 0, '0', 'false'], true);
             unset($options['filterList']['pcAvailability']);
         }
 
