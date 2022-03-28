@@ -668,4 +668,36 @@ class Params extends \VuFind\Search\Base\Params
 
         return $filter;
     }
+
+    /**
+     * Get information on the current state of the boolean checkbox facets.
+     *
+     * @param array $include List of checkbox filters to return (null for all)
+     *
+     * @return array
+     */
+    public function getCheckboxFacets(array $include = null)
+    {
+        // Grab checkbox facet details using the standard method:
+        $facets = parent::getCheckboxFacets($include);
+
+        $config = $this->configLoader->get($this->getOptions()->getFacetsIni());
+        $filterField = $config->CustomFilters->custom_filter_field ?? 'vufind';
+
+        // Special case -- inverted checkbox facets should always appear, even on
+        // the "no results" screen, since setting them actually EXPANDS rather than
+        // reduces the result set.
+        foreach ($facets as $i => $facet) {
+            // Append colon on end to ensure that $customFilter is always set.
+            [$field, $customFilter] = explode(':', $facet['filter'] . ':');
+            if ($field == $filterField
+                && isset($config->CustomFilters->inverted_filters[$customFilter])
+            ) {
+                $facets[$i]['alwaysVisible'] = true;
+            }
+        }
+
+        // Return modified list:
+        return $facets;
+    }
 }
