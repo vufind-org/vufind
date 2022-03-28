@@ -40,7 +40,7 @@
 </div>
 <?php $emailFormScript = <<<'JS'
     $('#email_to, #email_from, #email_subject').on('invalid', function($e) {
-        $('#modal .fa-spinner').remove();
+        $('#modal .loading-spinner').remove();
     });
 JS;
 ?>
