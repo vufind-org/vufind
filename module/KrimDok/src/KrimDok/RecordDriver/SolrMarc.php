@@ -26,28 +26,25 @@ class SolrMarc extends SolrDefault
 
         // Add custom headings
         $customHeadings = [];
-        $results = $this->getMarcRecord()->getFields('689');
+        $fields = $this->getMarcReader()->getFields('689');
         $current = [];
         $currentID = 0;
-        foreach ($results as $result) {
-            $id = $result->getIndicator(1);
+        foreach ($fields as $field) {
+            $id = $field['i1'];
             if ($id != $currentID && !empty($current)) {
                 $customHeadings[] = $current;
                 $current = [];
             }
-            $subfields = $result->getSubfields();
-            if ($subfields) {
-                foreach ($subfields as $subfield) {
-                    if (!is_numeric($subfield->getCode()) && strlen($subfield->getData()) > 2) {
-                        if (!$extended) {
-                            $current[] = $subfield->getData();
-                        } else {
-                            $current[] = [
-                                'heading' => $subfield->getData(),
-                                'type' => 'subject',
-                                'source' => '',
-                            ];
-                        }
+            foreach ($field['subfields'] as $subfield) {
+                if (!is_numeric($subfield['code']) && strlen($subfield['data']) > 2) {
+                    if (!$extended) {
+                        $current[] = $subfield['data'];
+                    } else {
+                        $current[] = [
+                            'heading' => $subfield['data'],
+                            'type' => 'subject',
+                            'source' => '',
+                        ];
                     }
                 }
             }
@@ -57,18 +54,19 @@ class SolrMarc extends SolrDefault
             $customHeadings[] = $current;
         }
 
-        $results = $this->getMarcRecord()->getFields('LOK');
-        foreach ($results as $result) {
+        $fields = $this->getMarcReader()->getFields('LOK');
+        foreach ($fields as $field) {
             $current = [];
-            $subfields = $result->getSubfields();
-            if ($subfields && $subfields->bottom()->getData() === '689  ') {
+            $subfields = $field['subfields'];
+            $firstSubfieldData = $subfields[0]['data'] ?? null;
+            if ($firstSubfieldData === '689  ') {
                 foreach ($subfields as $subfield) {
-                    if ($subfield->getCode() === 'a' && strlen($subfield->getData()) > 1) {
+                    if ($subfield['code'] === 'a' && strlen($subfield['data']) > 1) {
                         if (!$extended) {
-                            $current[] = $subfield->getData();
+                            $current[] = $subfield['data'];
                         } else {
                             $current[] = [
-                                'heading' => $subfield->getData(),
+                                'heading' => $subfield['data'],
                                 'type' => 'subject',
                                 'source' => '',
                             ];
@@ -81,10 +79,15 @@ class SolrMarc extends SolrDefault
             }
         }
 
-        // merge (+unique), sort & return headings
+        // merge, unique, sort
         $headings = array_merge($defaultHeadings, $customHeadings);
-        sort($headings);
         $headings = array_unique($headings, SORT_REGULAR);
+        uasort($headings, function($a, $b) {
+            $aSortKey = implode('#', $a);
+            $bSortKey = implode('#', $b);
+            return strnatcmp($aSortKey, $bSortKey);
+        });
+
         return $headings;
     }
 }
