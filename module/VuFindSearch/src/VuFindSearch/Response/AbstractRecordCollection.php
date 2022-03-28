@@ -80,6 +80,9 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     /**
      * Return any errors.
      *
+     * Each error can be a translatable string or an array that the Flashmessages
+     * view helper understands.
+     *
      * @return array
      */
     public function getErrors()
@@ -123,12 +126,34 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      * @param string $identifier Backend identifier
      *
      * @return void
+     *
+     * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier)
     {
         $this->source = $identifier;
         foreach ($this->records as $record) {
             $record->setSourceIdentifier($identifier);
+        }
+    }
+
+    /**
+     * Set the source backend identifiers.
+     *
+     * @param string $recordSourceId  Record source identifier
+     * @param string $searchBackendId Search backend identifier (if different from
+     * $recordSourceId)
+     *
+     * @return void
+     */
+    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '')
+    {
+        $this->source = $searchBackendId ?: $recordSourceId;
+        foreach ($this->records as $record) {
+            $record->setSourceIdentifiers(
+                $recordSourceId,
+                $this->source
+            );
         }
     }
 
