@@ -66,7 +66,7 @@ elseif ($avail->data):
                 $button = new stdClass();
                 $button->class = "returnTitle";
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm";
-                $button->icon = "sign-in";
+                $button->icon = "overdrive-return";
                 $button->text = $this->transEsc('od_but_return');
             endif;
 
@@ -74,7 +74,7 @@ elseif ($avail->data):
             $button2 = new stdClass();
             $button2->class = "getTitle";
             $button2->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm";
-            $button2->icon = "download";
+            $button2->icon = "overdrive-download";
             $button2->text = $this->transEsc('od_but_gettitle');
 
         //this title is on hold
@@ -100,7 +100,7 @@ elseif ($avail->data):
             $button = new stdClass();
             $button->class = "cancelHold";
             $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm";
-            $button->icon = "flag";
+            $button->icon = "overdrive-cancel-hold";
             $button->text = $this->transEsc('od_but_cancel_hold');
 
         else:
@@ -112,7 +112,7 @@ elseif ($avail->data):
                 $button = new stdClass();
                 $button->class = "checkout";
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=checkoutConfirm";
-                $button->icon = "arrow-left";
+                $button->icon = "overdrive-checkout";
                 $button->text = $this->transEsc('od_but_checkout');
 
             else:
@@ -120,7 +120,7 @@ elseif ($avail->data):
                 $button = new stdClass();
                 $button->class = "placehold";
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm";
-                $button->icon = "flag";
+                $button->icon = "overdrive-place-hold";
                 $button->text = $this->transEsc('od_but_hold');
             endif;
         endif;  //end if checked out
