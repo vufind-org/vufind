@@ -147,12 +147,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'format:book',
                     'selected' => false,
                     'alwaysVisible' => false,
+                    'dynamic' => false,
                 ],
                 [
                     'desc' => 'Inverted filter',
                     'filter' => 'vufind:inverted',
                     'selected' => false,
                     'alwaysVisible' => true,
+                    'dynamic' => false,
                 ],
             ],
             $params->getCheckboxFacets()

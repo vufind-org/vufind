@@ -278,7 +278,9 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getMockResults();
         $params = $results->getParams();
-        $params->expects($this->never())->method('getCheckboxFacets');
+        $params->expects($this->once())->method('getCheckboxFacets')
+            ->with($this->equalTo([]), $this->equalTo(true))
+            ->will($this->returnValue([]));
         $params->expects($this->never())->method('addCheckboxFacet');
         $sf = $this->getSideFacets(null, $results);
         $this->assertEquals([], $sf->getCheckboxFacetSet());
@@ -298,7 +300,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['foo']))
+            ->with($this->equalTo(['foo']), $this->equalTo(true))
             ->will($this->returnValue($checkboxData));
         $params->expects($this->once())->method('addCheckboxFacet')
             ->with($this->equalTo('foo'), $this->equalTo('bar'));
