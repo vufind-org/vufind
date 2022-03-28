@@ -44,14 +44,14 @@ trait RecordTrait
      *
      * @var string
      */
-    protected $sourceIdentifier;
+    protected $sourceIdentifier = '';
 
     /**
      * Used for identifying the search backend used to find the record
      *
      * @var string
      */
-    protected $searchBackendIdentifier;
+    protected $searchBackendIdentifier = '';
 
     /**
      * Labels for the record
