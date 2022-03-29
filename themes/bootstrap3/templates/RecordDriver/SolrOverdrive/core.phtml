@@ -14,21 +14,20 @@ $button = false;
 $button2 = false;
 
 //if we didn't get availability, we can't show the proper action buttons
-if ($avail->code == 'od_code_login_for_avail'):
+if ($avail->code == 'od_code_login_for_avail') {
     $message = $this->transEsc('od_code_login_for_avail');
     $alert_level = "info";
-elseif ($avail->code == 'od_account_noaccess'):
+} elseif($avail->code == 'od_account_noaccess') {
     $message = $this->transEsc('od_code_contentnotavail');
     $alert_level = "info";
-elseif ($avail->data):
+} elseif($avail->data) {
     $checkedOut = $isOnHold = false;
     $checkedOutResult = $this->driver->isCheckedOut();
-    if (!$checkedOutResult->status && $user):
-        if ($checkedOutResult->code == 'od_account_noaccess'):
+    if (!$checkedOutResult->status && $user) {
+        if ($checkedOutResult->code == 'od_account_noaccess') {
             $message = $this->translate("od_code_contentnotavail");
             $alert_level = "warning";
-
-        elseif ($checkedOutResult->code == 'od_account_problem'):
+        } elseif ($checkedOutResult->code == 'od_account_problem') {
             $link = "<a href=\"" . $this->url(
                 'overdrive-mycontent',
                 [],
@@ -39,36 +38,35 @@ elseif ($avail->data):
                 ["%%message%%" => $message]
             );
             $alert_level = "warning";
-
-        else:
+        } else {
             //if the result of the check is false and the user is logged in, that
             //probably means that there was a connection failure
             $message = $this->transEsc("od_code_connection_failed");
             $alert_level = "warning";
 
-        endif;
-    else:
+        }
+    } else {
         $checkedOut = $checkedOutResult->data;
-        if (!$checkedOut):
+        if (!$checkedOut) {
             $hold = $this->driver->isHeld($user);
-        endif;
+        }
 
         //this title is checked out
-        if ($checkedOut):
+        if ($checkedOut) {
             $message = $this->transEsc(
                 "od_is_checkedout",
                 ["%%due_date%%" => $checkedOut->expires]
             );
             $alert_level = "info";
 
-            if ($checkedOut->isReturnable):
+            if ($checkedOut->isReturnable) {
                 //early return button
                 $button = new stdClass();
                 $button->class = "returnTitle";
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm";
                 $button->icon = "overdrive-return";
                 $button->text = $this->transEsc('od_but_return');
-            endif;
+            }
 
             //download button
             $button2 = new stdClass();
@@ -76,18 +74,17 @@ elseif ($avail->data):
             $button2->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm";
             $button2->icon = "overdrive-download";
             $button2->text = $this->transEsc('od_but_gettitle');
-
-        //this title is on hold
-        elseif ($hold):
+        } elseif ($hold) {
+            //this title is on hold
             $message = $this->transEsc('od_is_on_hold');
             $alert_level = "info";
 
-            if ($hold->holdReadyForCheckout):
+            if ($hold->holdReadyForCheckout) {
                 $message .= $this->transEsc(
                     "od_hold_now_avail",
                     ["%%expireDate%%" => $hold->holdExpires]
                 );
-            else:
+            } else {
                 $message .= $this->transEsc(
                     "od_hold_queue",
                     [
@@ -95,58 +92,56 @@ elseif ($avail->data):
                         "%%numberOfHolds%%" => $hold->numberOfHolds
                     ]
                 );
-            endif;
+            }
 
             $button = new stdClass();
             $button->class = "cancelHold";
             $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm";
             $button->icon = "overdrive-cancel-hold";
             $button->text = $this->transEsc('od_but_cancel_hold');
-
-        else:
+        } else {
             //user does not already have it on hold or checked out.
             /*NOTE: its possible to have no copies owned which means that the
             library needs to add it back to the collection */
-            if ($avail->data->copiesAvailable):
+            if ($avail->data->copiesAvailable) {
                 //Checkout button
                 $button = new stdClass();
                 $button->class = "checkout";
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=checkoutConfirm";
                 $button->icon = "overdrive-checkout";
                 $button->text = $this->transEsc('od_but_checkout');
-
-            else:
+            } else {
                 //Place a request button
                 $button = new stdClass();
                 $button->class = "placehold";
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm";
                 $button->icon = "overdrive-place-hold";
                 $button->text = $this->transEsc('od_but_hold');
-            endif;
-        endif;  //end if checked out
-    endif; //end checkedout result
+            }
+        }  //end if checked out
+    } //end checkedout result
 
-    if($message):
+    if ($message) {
       $notification = "<div class=\"alert alert-$alert_level\">$message</div>";
-    endif;
+    }
 
-    if($button):
+    if ($button) {
+        $button1Icon = $this->icon($button->icon);
         $button1Markup = <<<BTN1MARKUP
             <a class="btn btn-primary {$button->class}"
                data-lightbox title="{$button->text}"
-               href="{$button->url}"><?=$this->icon('{$button->icon}') ?>&nbsp;
-               {$button->text}</a>
+               href="{$button->url}">{$button1Icon}&nbsp;{$button->text}</a>
 BTN1MARKUP;
-    endif;
+    }
 
-    if($button2):
+    if ($button2) {
+        $button2Icon = $this->icon($button2->icon);
         $button2Markup = <<<BTN2MARKUP
              <a class="btn btn-primary {$button2->class}"
                 data-lightbox title="{$button2->text}"
-                href="{$button2->url}"><?=$this->icon('{$button2->icon}') ?>&nbsp;
-                {$button2->text}</a>
+                href="{$button2->url}">{$button2Icon}&nbsp;{$button2->text}</a>
 BTN2MARKUP;
-    endif;
+    }
 
     $extraControls['actionControls'] = <<<ACTIONMARKUP
         <div class="pull-right">
@@ -167,7 +162,7 @@ ACTIONMARKUP;
         </div>";
 
     $this->extraControls = $extraControls;
-endif; //end if avail
+} //end if avail
 
 if ($previews->url) {
     $this->previewOverride = "<a href=\"{$previews->url}\" target=\"_blank\" class=\"btn btn-primary\">Sample</a>";

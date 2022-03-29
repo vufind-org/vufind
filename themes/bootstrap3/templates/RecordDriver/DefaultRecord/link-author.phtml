@@ -1,4 +1,4 @@
-<?php $searchRoute = $this->searchOptions($this->driver->getSourceIdentifier())->getSearchAction(); ?>
+<?php $searchRoute = $this->searchOptions($this->driver->getSearchBackendIdentifier())->getSearchAction(); ?>
 <?php if ($searchRoute === 'search-results'): // override search-results with author module ?>
   <?=$this->url('author-home')?>?author=<?=urlencode($this->lookfor)?>
 <?php else: ?>

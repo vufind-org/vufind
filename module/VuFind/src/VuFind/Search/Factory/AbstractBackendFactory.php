@@ -43,7 +43,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 abstract class AbstractBackendFactory implements FactoryInterface
 {
     /**
-     * Superior service manager.
+     * Service container.
      *
      * @var ContainerInterface
      */

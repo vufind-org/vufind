@@ -30,6 +30,8 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\Log\LoggerInterface;
+use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\ParamBag;
@@ -48,6 +50,8 @@ use VuFindSearch\Service;
  */
 class InjectSpellingListener
 {
+    use LoggerAwareTrait;
+
     /**
      * Backend.
      *
@@ -74,13 +78,18 @@ class InjectSpellingListener
      *
      * @param BackendInterface $backend      Backend
      * @param array            $dictionaries Spelling dictionaries to use.
+     * @param LoggerInterface  $logger       Logger
      *
      * @return void
      */
-    public function __construct(BackendInterface $backend, array $dictionaries)
-    {
+    public function __construct(
+        BackendInterface $backend,
+        array $dictionaries,
+        LoggerInterface $logger = null
+    ) {
         $this->backend = $backend;
         $this->dictionaries = $dictionaries;
+        $this->setLogger($logger);
     }
 
     /**
@@ -192,8 +201,18 @@ class InjectSpellingListener
             $params->set('spellcheck', 'true');
             $params->set('spellcheck.dictionary', current($this->dictionaries));
             $queryObj = new Query($query, 'AllFields');
-            $collection = $this->backend->search($queryObj, 0, 0, $params);
-            $spellcheck->mergeWith($collection->getSpellcheck());
+            try {
+                $collection = $this->backend->search($queryObj, 0, 0, $params);
+                $spellcheck->mergeWith($collection->getSpellcheck());
+            } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+                // Don't let exceptions cause the whole search to fail
+                if ($this->logger instanceof \VuFind\Log\Logger) {
+                    $this->logger->logException(
+                        $e,
+                        new \Laminas\Stdlib\Parameters()
+                    );
+                }
+            }
         }
     }
 }

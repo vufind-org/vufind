@@ -298,7 +298,8 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($ssLimiters as $ssLimiter) {
             $this->addCheckboxFacet(
                 $ssLimiter['selectedvalue'],
-                $ssLimiter['description']
+                $ssLimiter['description'],
+                true
             );
         }
     }
@@ -316,7 +317,8 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($availableExpanders as $expander) {
             $this->addCheckboxFacet(
                 $expander['selectedvalue'],
-                $expander['description']
+                $expander['description'],
+                true
             );
         }
     }

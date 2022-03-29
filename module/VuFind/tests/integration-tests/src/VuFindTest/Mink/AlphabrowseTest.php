@@ -1,10 +1,10 @@
 <?php
 /**
- * Pazpar2 Record Controller
+ * Mink test class for alphabetic browse.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,39 +20,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
-namespace VuFind\Controller;
-
-use Laminas\ServiceManager\ServiceLocatorInterface;
+namespace VuFindTest\Mink;
 
 /**
- * Pazpar2 Record Controller
+ * Mink test class for alphabetic browse.
  *
  * @category VuFind
- * @package  Controller
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
+ * @retry    4
  */
-class Pazpar2recordController extends AbstractRecord
+class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Constructor
+     * Test that extra attributes are escaped correctly.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @return void
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    public function testExtraAttributeEscaping()
     {
-        throw new \Exception('Pazpar2 record view not supported.');
-
-        // Override some defaults:
-        $this->sourceId = 'Pazpar2';
-
-        // Call standard record controller initialization:
-        parent::__construct($sm);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=lcc&from=PS3552.R878+T47+2011');
+        $page = $session->getPage();
+        $extras = $this->findCss($page, 'table.alphabrowse td.lcc ~ td');
+        $text = $extras->getText();
+        $this->assertTrue(
+            strpos($text, '<HTML> The Basics') !== false,
+            "Could not find '<HTML> The Basics' in '$text'"
+        );
     }
 }

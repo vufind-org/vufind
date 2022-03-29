@@ -128,6 +128,7 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
         $recordConfig = null,
         $searchSettings = null
     ) {
+        $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
         $this->snippet = !isset($searchSettings->General->snippets)
             ? false : $searchSettings->General->snippets;
