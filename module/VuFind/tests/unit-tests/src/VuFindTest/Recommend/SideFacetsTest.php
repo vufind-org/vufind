@@ -309,6 +309,29 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that dynamic checkboxes can be disabled.
+     *
+     * @return void
+     */
+    public function testDynamicCheckboxesCanBeDisabled(): void
+    {
+        $configLoader = $this->getMockConfigLoader(
+            ['Checkboxes' => ['foo' => 'bar']]
+        );
+        $checkboxData = ['fake result'];
+        $results = $this->getMockResults();
+        $params = $results->getParams();
+        $params->expects($this->once())->method('getCheckboxFacets')
+            ->with($this->equalTo(['foo']), $this->equalTo(false))
+            ->will($this->returnValue($checkboxData));
+        $params->expects($this->once())->method('addCheckboxFacet')
+            ->with($this->equalTo('foo'), $this->equalTo('bar'));
+        $settings = 'Results:Checkboxes:facets:false';
+        $sf = $this->getSideFacets($configLoader, $results, $settings);
+        $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
+    }
+
+    /**
      * Get a fully configured module
      *
      * @param \VuFind\Config\PluginManager $configLoader config loader
