@@ -76,8 +76,8 @@ if ($authors = $mergeAuthors($this->driver->tryMethod('getPrimaryAuthors', [], [
     echo "author = {{$authors}},\n";
 }
 
-if ($authors = $mergeAuthors($this->driver->tryMethod('getSecondaryAuthors', [], []))) {
-    echo "editor = {{$authors}},\n";
+if ($editors = $mergeAuthors($this->driver->tryMethod('getSecondaryAuthors', [], []))) {
+    echo "editor = {{$editors}},\n";
 }
 
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
