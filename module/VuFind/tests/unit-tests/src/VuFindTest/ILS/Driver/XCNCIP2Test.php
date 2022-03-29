@@ -470,31 +470,32 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     protected $placeHoldTests
         = [
             [
-                'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
-                'success' => true, 'sysMessage' => 'Request Successful.'
-            ],
+                'file' => 'RequestItemResponseAcceptedWithItemId.xml',
+                'result' => [
+                  'success' => true,
+                ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
-                    'success' => true, 'sysMessage' => 'Request Successful.'
+                    'success' => true,
                 ],
             ], [
                 'file' => 'RequestItemResponseDenied.xml', 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false, 'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
                 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false, 'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
                 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false, 'sysMessage' => 'User Blocked'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
-                    'success' => false, 'sysMessage' => 'Request Not Successful.'
+                    'success' => false,
                 ],
             ],
         ];
@@ -509,35 +510,32 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
                 'success' => true,
-                'sysMessage' => 'Storage Retrieval Request Successful.'
             ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
                     'success' => true,
-                    'sysMessage' => 'Storage Retrieval Request Successful.'
                 ],
             ], [
                 'file' => 'RequestItemResponseDenied.xml', 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
+                    'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
                 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
+                    'sysMessage' => 'Temporary Processing Failure'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
                 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
+                    'sysMessage' => 'User Blocked'
                 ],
             ], [
                 'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
                     'success' => false,
-                    'sysMessage' => 'Storage Retrieval Request Not Successful.'
                 ],
             ],
         ];
@@ -1436,6 +1434,57 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'My University|Item1',
             ],
         ]);
+    }
+
+    /**
+     * Test invalidateResponseCache
+     *
+     * @return void
+     * @throws \ReflectionException
+     */
+    public function testInvalidateResponseCache()
+    {
+        $this->configureDriver();
+        $method = new \ReflectionMethod(
+            '\VuFind\ILS\Driver\XCNCIP2',
+            'invalidateResponseCache'
+        );
+        $method->setAccessible(true);
+        $patron = [
+            'cat_username' => 'my_login', 'cat_password' => 'my_password',
+            'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+        ];
+        $this->mockResponse('lookupUserResponse.xml');
+        $profile = $this->driver->getMyProfile($patron);
+        $this->assertEquals('John', $profile['firstname']);
+
+        // Invalidate response cache
+        $method->invokeArgs($this->driver, ['LookupUser', 'my_login']);
+
+        $this->mockResponse('lookupUserResponse2.xml');
+        $profile = $this->driver->getMyProfile($patron);
+        $this->assertEquals('James', $profile['firstname']);
+    }
+
+    /**
+     * Test getBib method
+     *
+     * @throws \ReflectionException
+     */
+    public function testGetBib()
+    {
+        $this->configureDriver();
+        $method = new \ReflectionMethod(
+            '\VuFind\ILS\Driver\XCNCIP2',
+            'getBibs'
+        );
+        $method->setAccessible(true);
+        $this->mockResponse(['lookupItemSetNextItemToken.xml', 'lookupItemSet.xml']);
+        $bibs = $method->invokeArgs($this->driver, [['id1'], ['agency1']]);
+        $this->assertEquals(8, count($bibs));
+        $this->mockResponse(['lookupItemSetNextItemTokenEmpty.xml','lookupItemSet.xml']);
+        $bibs = $method->invokeArgs($this->driver, [['id1'], ['agency1']]);
+        $this->assertEquals(4, count($bibs));
     }
 
     /**

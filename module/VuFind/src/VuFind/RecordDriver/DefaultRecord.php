@@ -1234,11 +1234,15 @@ class DefaultRecord extends AbstractBase
         if ($ismn = $this->getCleanISMN()) {
             $arr['ismn'] = $ismn;
         }
+        if ($uuid = $this->getCleanUuid()) {
+            $arr['uuid'] = $uuid;
+        }
 
         // If an ILS driver has injected extra details, check for IDs in there
         // to fill gaps:
         if ($ilsDetails = $this->getExtraDetail('ils_details')) {
-            foreach (['isbn', 'issn', 'oclc', 'upc', 'nbn', 'ismn'] as $key) {
+            $idTypes = ['isbn', 'issn', 'oclc', 'upc', 'nbn', 'ismn', 'uuid'];
+            foreach ($idTypes as $key) {
                 if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
                     $arr[$key] = $ilsDetails[$key];
                 }
@@ -1309,6 +1313,30 @@ class DefaultRecord extends AbstractBase
     public function getUPC()
     {
         return (array)($this->fields['upc_str_mv'] ?? []);
+    }
+
+    /**
+     * Get UUIDs (Universally unique identifier). These are commonly used in, for
+     * example, digital library or repository systems and can be a useful match
+     * point with third party systems.
+     *
+     * @return array
+     */
+    public function getUuids()
+    {
+        return (array)($this->fields['uuid_str_mv'] ?? []);
+    }
+
+    /**
+     * Get just the first listed UUID (Universally unique identifier), or false if
+     * none available.
+     *
+     * @return mixed
+     */
+    public function getCleanUuid()
+    {
+        $uuids = $this->getUuids();
+        return empty($uuids) ? false : $uuids[0];
     }
 
     /**

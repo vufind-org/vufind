@@ -31,7 +31,7 @@ namespace VuFind\Search\Factory;
 use Interop\Container\ContainerInterface;
 
 use Laminas\Config\Config;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
@@ -41,7 +41,6 @@ use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
-
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
 use VuFindSearch\Backend\BackendInterface;
@@ -49,10 +48,11 @@ use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-
 use VuFindSearch\Backend\Solr\QueryBuilder;
-
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Abstract factory for SOLR backends.
@@ -63,7 +63,7 @@ use VuFindSearch\Backend\Solr\SimilarBuilder;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-abstract class AbstractSolrBackendFactory implements FactoryInterface
+abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -71,13 +71,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Primary configuration file identifier.
@@ -143,10 +136,25 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $backendClass = Backend::class;
 
     /**
+     * Record collection class for RecordCollectionFactory
+     *
+     * @var string
+     */
+    protected $recordCollectionClass = RecordCollection::class;
+
+    /**
+     * Record collection factory class
+     *
+     * @var string
+     */
+    protected $recordCollectionFactoryClass = RecordCollectionFactory::class;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        parent::__construct();
     }
 
     /**
@@ -162,7 +170,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->setup($sm);
         $this->config = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
@@ -198,6 +206,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
+        $backend->setRecordCollectionFactory($this->createRecordCollectionFactory());
         return $backend;
     }
 
@@ -240,7 +249,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if ($config->Spelling->enabled ?? true) {
             $dictionaries = ($config->Spelling->simple ?? false)
                 ? ['basicSpell'] : ['default', 'basicSpell'];
-            $spellingListener = new InjectSpellingListener($backend, $dictionaries);
+            $spellingListener = new InjectSpellingListener(
+                $backend,
+                $dictionaries,
+                $this->logger
+            );
             $spellingListener->attach($events);
         }
 
@@ -277,6 +290,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $facets->LegacyFields->toArray()
             );
             $filterFieldConversionListener->attach($events);
+        }
+
+        // Attach custom filter listener if needed:
+        if ($cfListener = $this->getCustomFilterListener($backend, $facets)) {
+            $cfListener->attach($events);
         }
 
         // Attach hide facet value listener:
@@ -377,16 +395,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
-        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
-        $client = $httpService->createClient();
-
         $connector = new $this->connectorClass(
             $this->getSolrUrl(),
             new HandlerMap($handlers),
-            $this->uniqueKey,
-            $client
+            $this->createHttpClient($config->Index->timeout ?? 30),
+            $this->uniqueKey
         );
-        $connector->setTimeout($config->Index->timeout ?? 30);
 
         if ($this->logger) {
             $connector->setLogger($this->logger);
@@ -402,7 +416,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $options['ttl'] = 300;
             }
             $settings = [
-                'name' => $cacheConfig['adapter'],
+                'adapter' => $cacheConfig['adapter'],
                 'options' => $options,
             ];
             $cache = $this->serviceLocator
@@ -426,18 +440,22 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
-        $search = $this->config->get($this->searchConfig);
-        $caseSensitiveBooleans
-            = $search->General->case_sensitive_bools ?? true;
-        $caseSensitiveRanges
-            = $search->General->case_sensitive_ranges ?? true;
-        $helper = new LuceneSyntaxHelper(
-            $caseSensitiveBooleans,
-            $caseSensitiveRanges
-        );
-        $builder->setLuceneHelper($helper);
+        $builder->setLuceneHelper($this->createLuceneSyntaxHelper());
 
         return $builder;
+    }
+
+    /**
+     * Create Lucene syntax helper.
+     *
+     * @return LuceneSyntaxHelper
+     */
+    protected function createLuceneSyntaxHelper()
+    {
+        $search = $this->config->get($this->searchConfig);
+        $caseSensitiveBooleans = $search->General->case_sensitive_bools ?? true;
+        $caseSensitiveRanges = $search->General->case_sensitive_ranges ?? true;
+        return new LuceneSyntaxHelper($caseSensitiveBooleans, $caseSensitiveRanges);
     }
 
     /**
@@ -451,6 +469,32 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $this->config->get($this->searchConfig),
             $this->uniqueKey
         );
+    }
+
+    /**
+     * Create the record collection factory.
+     *
+     * @return RecordCollectionFactoryInterface
+     */
+    protected function createRecordCollectionFactory()
+        : RecordCollectionFactoryInterface
+    {
+        return new $this->recordCollectionFactoryClass(
+            $this->getCreateRecordCallback(),
+            $this->recordCollectionClass
+        );
+    }
+
+    /**
+     * Get the callback for creating a record.
+     *
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
+     */
+    protected function getCreateRecordCallback(): ?callable
+    {
+        return null;
     }
 
     /**
@@ -481,6 +525,32 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             'datasources',
             $enabled
         );
+    }
+
+    /**
+     * Get a custom filter listener for the backend (or null if not needed).
+     *
+     * @param BackendInterface $backend Search backend
+     * @param Config           $facet   Configuration of facets
+     *
+     * @return mixed null|CustomFilterListener
+     */
+    protected function getCustomFilterListener(
+        BackendInterface $backend,
+        Config $facet
+    ) {
+        $customField = $facet->CustomFilters->custom_filter_field ?? 'vufind';
+        $normal = $inverted = [];
+
+        foreach ($facet->CustomFilters->translated_filters ?? [] as $key => $val) {
+            $normal[$customField . ':"' . $key . '"'] = $val;
+        }
+        foreach ($facet->CustomFilters->inverted_filters ?? [] as $key => $val) {
+            $inverted[$customField . ':"' . $key . '"'] = $val;
+        }
+        return empty($normal) && empty($inverted)
+            ? null
+            : new CustomFilterListener($backend, $normal, $inverted);
     }
 
     /**

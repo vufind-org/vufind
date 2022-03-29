@@ -30,7 +30,6 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\WorldCat\Backend;
 use VuFindSearch\Backend\WorldCat\Connector;
 use VuFindSearch\Backend\WorldCat\QueryBuilder;
@@ -46,7 +45,7 @@ use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class WorldCatBackendFactory implements FactoryInterface
+class WorldCatBackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -54,13 +53,6 @@ class WorldCatBackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * VuFind configuration
@@ -89,7 +81,7 @@ class WorldCatBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->setup($sm);
         $this->config = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class)
             ->get('config');
@@ -128,9 +120,11 @@ class WorldCatBackendFactory implements FactoryInterface
         $wsKey = $this->config->WorldCat->apiKey ?? null;
         $connectorOptions = isset($this->wcConfig->Connector)
             ? $this->wcConfig->Connector->toArray() : [];
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient();
-        $connector = new Connector($wsKey, $client, $connectorOptions);
+        $connector = new Connector(
+            $wsKey,
+            $this->createHttpClient(),
+            $connectorOptions
+        );
         $connector->setLogger($this->logger);
         return $connector;
     }

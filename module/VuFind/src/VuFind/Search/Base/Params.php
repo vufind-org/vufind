@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -41,6 +42,7 @@ use VuFindSearch\Query\QueryGroup;
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -906,8 +908,8 @@ class Params
     {
         if ($field == null) {
             $this->filterList = [];
-        } else {
-            $this->filterList[$field] = [];
+        } elseif (isset($this->filterList[$field])) {
+            unset($this->filterList[$field]);
         }
     }
 

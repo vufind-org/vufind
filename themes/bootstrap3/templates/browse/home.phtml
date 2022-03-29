@@ -15,7 +15,7 @@
     <?php foreach ($this->browseOptions as $item => $currentOption): ?>
       <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="browse-item<?php if($currentOption['action'] == $this->currentAction): ?> active<?php endif; ?>">
         <?=$this->transEsc($currentOption['description']) ?>
-        <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEscAttr('more') ?>"></i></span>
+        <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
       </a>
     <?php endforeach; ?>
   </div>
@@ -26,7 +26,7 @@
         <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=urlencode($this->browse()->getSolrField($findby, $this->currentAction)) ?>" class="browse-item<?php if (!is_string($category)): ?> with-badge<?php endif; ?><?php if ($this->findby == $findby): ?> active<?php endif; ?>">
           <?php if(is_string($category)): ?>
             <?=$this->transEsc($category)?>
-            <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEscAttr('more') ?>"></i></span>
+            <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
           <?php else: ?>
             <?=$this->transEsc($category['text'])?>
             <span class="badge"><?=number_format($category['count'])?></span>
@@ -58,7 +58,7 @@
         <?php if ($hasBadge): ?>
           <span class="badge"><?=number_format($secondary['count']) ?></span>
         <?php else: ?>
-          <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEscAttr('more') ?>"></i></span>
+          <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
         <?php endif; ?>
       </a>
       <?php if($viewRecord): ?>

@@ -70,6 +70,9 @@ class ConnectorTest extends TestCase
         $result = $conn->getRecord('crossref10.2202/2151-7509.1009');
         $this->assertEquals(1, $result['recordCount']);
         $this->assertEquals('Abstract Test', $result['documents'][0]['title']);
+        $result = $conn->getRecord('');
+        $this->assertEquals(0, $result['recordCount']);
+        $this->assertEquals('empty_search_disallowed', $result['error']);
     }
 
     /**

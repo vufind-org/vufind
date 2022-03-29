@@ -302,8 +302,7 @@
 .active-filters .filters .filter-value {
   border-radius: 2px;
 }
-.active-filters .search-filter-remove::after {
-  content: "\f00d"; /* fa-close */
+.active-filters .search-filter-remove {
   color: $mid-gray;
 }
 .search-filter-dropdown .btn {

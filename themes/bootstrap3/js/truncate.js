@@ -1,19 +1,22 @@
 /* global VuFind */
 
 VuFind.register('truncate', function Truncate() {
-  const defaultSettings = {
-    'btn-class': '',
-    'in-place-toggle': false,
-    'label': null,
-    'less-label': VuFind.translate('show_less'),
-    'more-label': VuFind.translate('show_more'),
-    'rows': 3,
-    'top-toggle': Infinity,
-    'wrapper-class': '', // '' will glean from element, false or null will exclude a class
-    'wrapper-tagname': null, // falsey values will glean from element
-  };
-
   function initTruncate(_container, _element, _fill) {
+    const defaultSettings = {
+      'btn-class': '',
+      'in-place-toggle': false,
+      'label': null,
+      'less-icon': 'truncate-less',
+      'less-label': VuFind.translate('less'),
+      'more-icon': 'truncate-more',
+      'more-label': VuFind.translate('more'),
+      'rows': 3,
+      'top-toggle': Infinity,
+      'wrapper-class': '', // '' will glean from element, false or null will exclude a class
+      'wrapper-tagname': null, // falsey values will glean from element
+      'label-icons': 'before' // 'after' = icon after label, 'before' = icon before label, false = no icons
+    };
+
     var zeroHeightContainers = [];
 
     $(_container).not('.truncate-done').each(function truncate() {
@@ -98,8 +101,16 @@ VuFind.register('truncate', function Truncate() {
       }
 
       if (shouldTruncate) {
-        var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button>';
-        var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+        var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">'
+          + (settings['label-icons'] === 'before' ? VuFind.icon(settings['more-icon']) + ' ' : '')
+          + '<span>' + moreLabel + '</span>'
+          + (settings['label-icons'] === 'after' ? ' ' + VuFind.icon(settings['more-icon']) : '')
+          + '</button>';
+        var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">'
+          + (settings['label-icons'] === 'before' ? VuFind.icon(settings['less-icon']) + ' ' : '')
+          + '<span>' + lessLabel + '</span>'
+          + (settings['label-icons'] === 'after' ? ' ' + VuFind.icon(settings['less-icon']) : '')
+          + '</button>';
 
         wrapperClass = wrapperClass ? ' ' + wrapperClass : '';
         wrapperTagName = wrapperTagName || 'div';

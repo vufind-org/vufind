@@ -23,13 +23,15 @@
   $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
   echo $this->inlineScript();
 ?>
-<?php if (count($hierarchyTreeList) > 1): ?>
+<?php if (count($hierarchyTreeList) > 0): ?>
   <div id="treeSelector">
     <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
       <?php if($activeTree == $hierarchy): ?>
-        <i class="fa fa-sitemap" aria-hidden="true"></i> <?=$this->escapeHtml($hierarchyTitle)?>
+        <?=$this->icon('hierarchy-tree') ?>
+        <?=$this->escapeHtml($hierarchyTitle)?>
       <?php else: ?>
-        <i class="fa fa-sitemap text-muted" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <?=$this->icon('hierarchy-tree', ['class' => 'text-muted']) ?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
       <?php endif; ?>
     <?php endforeach; ?>
   </div>

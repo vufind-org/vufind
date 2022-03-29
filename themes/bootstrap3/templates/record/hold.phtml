@@ -76,7 +76,7 @@
     ?>
     <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
-        <label id="pickUpLocationLabel" class="control-label"><?=$this->icon('spinner', 'loading-icon hidden')?></span> <?=$this->transEsc("pick_up_location")?>:
+        <label id="pickUpLocationLabel" class="control-label"><?=$this->icon('spinner', 'loading-icon hidden')?> <?=$this->transEsc("pick_up_location")?>:
           <?php if (in_array("requestGroup", $this->extraHoldFields)): ?>
             <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
           <?php endif; ?>

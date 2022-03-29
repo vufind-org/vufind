@@ -123,6 +123,7 @@ class Results extends \VuFind\Search\Base\Results
                 }
 
                 // Should we translate values for the current facet?
+                $transTextDomain = '';
                 if ($translate = in_array($field, $translatedFacets)) {
                     $transTextDomain = $this->getOptions()
                         ->getTextDomainForTranslatedFacet($field);

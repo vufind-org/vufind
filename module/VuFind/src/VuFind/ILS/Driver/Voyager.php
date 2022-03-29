@@ -30,13 +30,13 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC;
 use Laminas\Validator\EmailAddress as EmailAddressValidator;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Marc\MarcReader;
 use Yajra\Pdo\Oci8;
 
 /**
@@ -873,14 +873,14 @@ EOT;
     /**
      * Get specified fields from an MFHD MARC Record
      *
-     * @param object       $record     File_MARC object
+     * @param MarcReader   $record     Marc reader
      * @param array|string $fieldSpecs Array or colon-separated list of
      * field/subfield specifications (3 chars for field code and then subfields,
      * e.g. 866az)
      *
-     * @return string|string[] Results as a string if single, array if multiple
+     * @return string|array Results as a string if single, array if multiple
      */
-    protected function getMFHDData($record, $fieldSpecs)
+    protected function getMFHDData(MarcReader $record, $fieldSpecs)
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
@@ -891,16 +891,17 @@ EOT;
             $subfieldCodes = substr($fieldSpec, 3);
             if ($fields = $record->getFields($fieldCode)) {
                 foreach ($fields as $field) {
-                    if ($subfields = $field->getSubfields()) {
+                    if ($subfields = $field['subfields'] ?? []) {
                         $line = '';
-                        foreach ($subfields as $code => $subfield) {
-                            if (false === strpos($subfieldCodes, (string)$code)) {
+                        foreach ($subfields as $subfield) {
+                            if (false === strpos($subfieldCodes, $subfield['code'])
+                            ) {
                                 continue;
                             }
                             if ($line) {
                                 $line .= ' ';
                             }
-                            $line .= $subfield->getData();
+                            $line .= $subfield['data'];
                         }
                         if ($line) {
                             if (!$results) {
@@ -931,49 +932,44 @@ EOT;
         $marcDetails = [];
 
         try {
-            $marc = new File_MARC(
-                str_replace(["\n", "\r"], '', $recordSegment),
-                File_MARC::SOURCE_STRING
+            $record = new MarcReader(str_replace(["\n", "\r"], '', $recordSegment));
+            // Get Notes
+            $data = $this->getMFHDData(
+                $record,
+                $this->config['Holdings']['notes'] ?? '852z'
             );
-            if ($record = $marc->next()) {
-                // Get Notes
+            if ($data) {
+                $marcDetails['notes'] = $data;
+            }
+
+            // Get Summary (may be multiple lines)
+            $data = $this->getMFHDData(
+                $record,
+                $this->config['Holdings']['summary'] ?? '866a'
+            );
+            if ($data) {
+                $marcDetails['summary'] = $data;
+            }
+
+            // Get Supplements
+            if (isset($this->config['Holdings']['supplements'])) {
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['notes'] ?? '852z'
+                    $this->config['Holdings']['supplements']
                 );
                 if ($data) {
-                    $marcDetails['notes'] = $data;
+                    $marcDetails['supplements'] = $data;
                 }
+            }
 
-                // Get Summary (may be multiple lines)
+            // Get Indexes
+            if (isset($this->config['Holdings']['indexes'])) {
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['summary'] ?? '866a'
+                    $this->config['Holdings']['indexes']
                 );
                 if ($data) {
-                    $marcDetails['summary'] = $data;
-                }
-
-                // Get Supplements
-                if (isset($this->config['Holdings']['supplements'])) {
-                    $data = $this->getMFHDData(
-                        $record,
-                        $this->config['Holdings']['supplements']
-                    );
-                    if ($data) {
-                        $marcDetails['supplements'] = $data;
-                    }
-                }
-
-                // Get Indexes
-                if (isset($this->config['Holdings']['indexes'])) {
-                    $data = $this->getMFHDData(
-                        $record,
-                        $this->config['Holdings']['indexes']
-                    );
-                    if ($data) {
-                        $marcDetails['indexes'] = $data;
-                    }
+                    $marcDetails['indexes'] = $data;
                 }
             }
         } catch (\Exception $e) {
@@ -1037,6 +1033,44 @@ EOT;
     }
 
     /**
+     * Support method for processHoldingData: format a due date for inclusion in
+     * holdings data.
+     *
+     * @param array $row Row to process
+     *
+     * @return string|bool
+     */
+    protected function processHoldingDueDate(array $row)
+    {
+        if (!empty($row['DUEDATE'])) {
+            return $this->dateFormat->convertToDisplayDate(
+                "m-d-y",
+                $row['DUEDATE']
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Support method for processHoldingData: format a return date for inclusion in
+     * holdings data.
+     *
+     * @param array $row Row to process
+     *
+     * @return string|bool
+     */
+    protected function processHoldingReturnDate(array $row)
+    {
+        if (!empty($row['RETURNDATE'])) {
+            return $this->dateFormat->convertToDisplayDateAndTime(
+                'm-d-y H:i',
+                $row['RETURNDATE']
+            );
+        }
+        return false;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array  $data   Item Data
@@ -1073,22 +1107,6 @@ EOT;
                         = $this->pickStatus($availability['otherStatuses']);
                 }
 
-                // Convert Voyager Format to display format
-                $dueDate = false;
-                if (!empty($row['DUEDATE'])) {
-                    $dueDate = $this->dateFormat->convertToDisplayDate(
-                        "m-d-y",
-                        $row['DUEDATE']
-                    );
-                }
-                $returnDate = false;
-                if (!empty($row['RETURNDATE'])) {
-                    $returnDate = $this->dateFormat->convertToDisplayDateAndTime(
-                        'm-d-y H:i',
-                        $row['RETURNDATE']
-                    );
-                }
-
                 $requests_placed = $row['HOLDS_PLACED'] ?? 0;
                 if (isset($row['RECALLS_PLACED'])) {
                     $requests_placed += $row['RECALLS_PLACED'];
@@ -1105,10 +1123,10 @@ EOT;
                     'availability' => $availability['available'],
                     'enumchron' => isset($row['ITEM_ENUM'])
                         ? utf8_encode($row['ITEM_ENUM']) : null,
-                    'duedate' => $dueDate,
+                    'duedate' => $this->processHoldingDueDate($row),
                     'number' => $number,
                     'requests_placed' => $requests_placed,
-                    'returnDate' => $returnDate,
+                    'returnDate' => $this->processHoldingReturnDate($row),
                     'purchase_history' => $purchases
                 ];
 

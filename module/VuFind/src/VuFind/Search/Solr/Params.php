@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -35,6 +36,7 @@ use VuFindSearch\ParamBag;
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -102,6 +104,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetHelper;
 
     /**
+     * Are we searching by ID only (instead of a normal query)?
+     *
+     * @var bool
+     */
+    protected $searchingById = false;
+
+    /**
      * Config sections to search for facet labels if no override configuration
      * is set.
      *
@@ -159,7 +168,7 @@ class Params extends \VuFind\Search\Base\Params
         // Define Filter Query
         $filterQuery = [];
         $orFilters = [];
-        $filterList = array_merge(
+        $filterList = array_merge_recursive(
             $this->getHiddenFilters(),
             $this->filterList
         );
@@ -427,6 +436,7 @@ class Params extends \VuFind\Search\Base\Params
             return '"' . addcslashes($i, '"') . '"';
         };
         $ids = array_map($callback, $ids);
+        $this->searchingById = true;
         $this->setOverrideQuery('id:(' . implode(' OR ', $ids) . ')');
     }
 
@@ -541,7 +551,7 @@ class Params extends \VuFind\Search\Base\Params
             $sortFields = explode(',', $sort);
             $allTerms = trim($this->getQuery()->getAllTerms());
             if ('relevance' === $sortFields[0]
-                && ('' === $allTerms || '*:*' === $allTerms)
+                && ('' === $allTerms || '*:*' === $allTerms || $this->searchingById)
                 && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
             ) {
                 $sort = $relOv;

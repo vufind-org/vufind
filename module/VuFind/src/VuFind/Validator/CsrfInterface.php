@@ -1,10 +1,10 @@
 <?php
 /**
- * Abstract base class for commands that take relative paths as parameters.
+ * Interface for Csrf validator
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,41 +20,46 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindConsole\Command;
+namespace VuFind\Validator;
 
-use Symfony\Component\Console\Command\Command;
+use Laminas\Validator\ValidatorInterface;
 
 /**
- * Abstract base class for commands that take relative paths as parameters.
+ * Interface for Csrf validator
  *
  * @category VuFind
- * @package  Console
+ * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class RelativeFileAwareCommand extends Command
+interface CsrfInterface extends ValidatorInterface
 {
     /**
-     * Constructor
+     * Retrieve CSRF token
      *
-     * @param string|null $name The name of the command; passing null means it
-     * must be set in configure()
+     * If no CSRF token currently exists, or should be regenerated,
+     * generates one.
+     *
+     * @param bool $regenerate regenerate hash, default false
+     *
+     * @return string
      */
-    public function __construct($name = null)
-    {
-        // Switch the context back to the original working directory so that
-        // relative paths work as expected. (This constant is set in
-        // public/index.php)
-        if (defined('ORIGINAL_WORKING_DIRECTORY')) {
-            chdir(ORIGINAL_WORKING_DIRECTORY);
-        }
+    public function getHash($regenerate = false);
 
-        parent::__construct($name);
-    }
+    /**
+     * Keep only the most recent N tokens.
+     *
+     * @param int $limit Number of tokens to keep.
+     *
+     * @return void
+     */
+    public function trimTokenList($limit);
 }

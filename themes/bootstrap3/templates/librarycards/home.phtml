@@ -36,9 +36,9 @@
         <td><?=$this->escapeHtml($username)?></td>
         <td>
           <div class="btn-group">
-            <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Edit')?></a>
+            <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"><?=$this->icon('profile-card-edit') ?> <?=$this->transEsc('Edit')?></a>
             <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
-              <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc('Delete')?>
+              <?=$this->icon('profile-card-delete') ?> <?=$this->transEsc('Delete')?>
             </a>
             <ul class="dropdown-menu">
               <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1" data-clear-account-cache><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
@@ -53,9 +53,15 @@
 
   <div class="btn-group">
     <?php if ($this->allowConnectingCards): ?>
-      <a href="<?=$this->url('librarycards-connectcardlogin') ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card using login')?></a>
+      <a href="<?=$this->url('librarycards-connectcardlogin') ?>" class="btn btn-link">
+        <?=$this->icon('ui-add') ?>
+        <?=$this->transEsc('Add a Library Card using login')?>
+      </a>
     <?php endif;?>
-    <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card')?></a>
+    <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link">
+      <?=$this->icon('ui-add') ?>
+      <?=$this->transEsc('Add a Library Card')?>
+    </a>
   </div>
 </div>
 

@@ -1,10 +1,10 @@
 <?php
 /**
- * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Functionality to implement "previous unique ID" behavior.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,51 +20,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Validator
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\Validator;
+namespace VuFind\RecordDriver\Feature;
 
 /**
- * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
+ * Functionality to implement "previous unique ID" behavior.
  *
  * @category VuFind
- * @package  Solr
+ * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Csrf extends \Laminas\Validator\Csrf
+trait PreviousUniqueIdTrait
 {
     /**
-     * How many tokens are currently stored in the session?
+     * Previous unique ID (if applicable).
      *
-     * @return int
+     * @var string
      */
-    public function getTokenCount()
+    protected $previousUniqueId = null;
+
+    /**
+     * Get previous unique ID (or null if not applicable).
+     *
+     * @return string
+     */
+    public function getPreviousUniqueId()
     {
-        return count($this->getSession()->tokenList ?? []);
+        return $this->previousUniqueId;
     }
 
     /**
-     * Keep only the most recent N tokens.
+     * Set previous unique ID
      *
-     * @param int $limit Number of tokens to keep.
+     * @param string $id ID to set
      *
      * @return void
      */
-    public function trimTokenList($limit)
+    public function setPreviousUniqueId($id)
     {
-        $session = $this->getSession();
-        if ($limit < 1) {
-            // Reset the array if necessary:
-            $session->tokenList = [];
-        } elseif ($limit < $this->getTokenCount()) {
-            // Trim the array if necessary:
-            $session->tokenList
-                = array_slice($session->tokenList, -1 * $limit, null, true);
-        }
+        $this->previousUniqueId = $id;
     }
 }

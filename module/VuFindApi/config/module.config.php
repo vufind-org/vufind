@@ -4,12 +4,14 @@ namespace VuFindApi\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
+            'VuFindApi\Controller\AdminApiController' => 'VuFindApi\Controller\AdminApiControllerFactory',
             'VuFindApi\Controller\ApiController' => 'VuFindApi\Controller\ApiControllerFactory',
             'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
             'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\Search2ApiControllerFactory',
             'VuFindApi\Controller\WebApiController' => 'VuFindApi\Controller\WebApiControllerFactory',
         ],
         'aliases' => [
+            'AdminApi' => 'VuFindApi\Controller\AdminApiController',
             'Api' => 'VuFindApi\Controller\ApiController',
             'SearchApi' => 'VuFindApi\Controller\SearchApiController',
             'Search2Api' => 'VuFindApi\Controller\Search2ApiController',
@@ -24,8 +26,27 @@ $config = [
             'VuFindApi\Formatter\WebRecordFormatter' => 'VuFindApi\Formatter\WebRecordFormatterFactory',
         ],
     ],
+    'vufind_api' => [
+        'register_controllers' => [
+            \VuFindApi\Controller\AdminApiController::class,
+            \VuFindApi\Controller\SearchApiController::class,
+            \VuFindApi\Controller\Search2ApiController::class,
+            \VuFindApi\Controller\WebApiController::class,
+        ]
+    ],
     'router' => [
         'routes' => [
+            'adminClearCacheApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'delete,options',
+                'options' => [
+                    'route'    => '/api/v1/admin/cache',
+                    'defaults' => [
+                        'controller' => 'AdminApi',
+                        'action'     => 'clearCache',
+                    ]
+                ]
+            ],
             'apiHome' => [
                 'type' => 'Laminas\Router\Http\Segment',
                 'verb' => 'get,post,options',

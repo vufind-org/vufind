@@ -15,6 +15,7 @@
 ?>
 <div class="record-versions">
   <a href="<?=$this->escapeHtmlAttr($url)?>">
-    <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc($translationKey, ['%%count%%' => $versions])?>
+    <?=$this->icon('more') ?>
+    <?=$this->transEsc($translationKey, ['%%count%%' => $versions])?>
   </a>
 </div>

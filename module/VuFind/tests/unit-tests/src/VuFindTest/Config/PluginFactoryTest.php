@@ -112,7 +112,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
         }
 
         // Mark for cleanup:
-        self::$filesToDelete = [$parentPath, $childPath];
+        self::$filesToDelete = [$parentPath, $childPath, $child2Path];
     }
 
     /**
