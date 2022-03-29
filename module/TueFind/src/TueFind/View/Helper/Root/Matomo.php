@@ -8,8 +8,6 @@ class Matomo extends \VuFind\View\Helper\Root\Matomo {
 
     protected $auth;
 
-    const INVALID_SITE_ID = -1;
-
     /**
      * Constructor
      *
@@ -35,9 +33,15 @@ class Matomo extends \VuFind\View\Helper\Root\Matomo {
                 return $array;
             }, []);
             $http_host_without_port = preg_replace('":[^:]+$"', '', $_SERVER['HTTP_HOST']);
-            $this->siteId = array_key_exists($http_host_without_port, $siteIds) ? $siteIds[$http_host_without_port] : self::INVALID_SITE_ID;
+            if (isset($siteIds[$http_host_without_port])) {
+                $this->siteId = $siteIds[$http_host_without_port];
+            } else {
+                $this->url = ''; // set url to empty string so no JS code will be produced
+            }
+        } elseif (isset($config->Matomo->site_id)) {
+            $this->siteId = $config->Matomo->site_id;
         } else {
-            $this->siteId = $config->Matomo->site_id ?: self::INVALID_SITE_ID;
+            $this->url = ''; // set url to empty string so no JS code will be produced
         }
     }
 

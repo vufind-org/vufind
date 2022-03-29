@@ -2,6 +2,8 @@
 
 namespace TueFind\View\Helper\Root;
 
+use Interop\Container\ContainerInterface;
+
 class MatomoFactory extends \VuFind\View\Helper\Root\MatomoFactory {
     public function __invoke(
         ContainerInterface $container,
