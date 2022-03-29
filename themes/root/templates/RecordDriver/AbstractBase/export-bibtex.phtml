@@ -60,16 +60,12 @@ if (is_array($series)) {
     }
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
-if (!empty($author)) {
-    echo "author = {{$author}},\n";
+foreach ($this->driver->tryMethod('getPrimaryAuthors', [], []) as $current) {
+    echo "author = {{$current}},\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo "editor = {{$current}},\n";
-    }
+foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
+    echo "editor = {{$current}},\n";
 }
 
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
