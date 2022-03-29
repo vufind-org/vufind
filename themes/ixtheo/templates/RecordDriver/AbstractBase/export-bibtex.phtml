@@ -1,6 +1,6 @@
 <?php
 // TODO: fold this logic into record driver methods at some point:
-$marc = $this->driver->tryMethod('getMarcRecord');
+$marc = $this->driver->tryMethod('getMarcReader');
 if (is_object($marc)) {
     $marcPhdField = $marc->getField('502');
     $marcProceedingsField = $marc->getField('711');
@@ -111,7 +111,7 @@ if (!empty($edition)) {
     echo "edition = {{$edition}},\n";
 }
 
-if ($marcPhdField && $subfield = $marcPhdField->getSubfield('a')) {
+if ($marcPhdField && $subfield = $marc->getSubfield($marcPhdField, 'a')) {
     echo "school = {" . $subfield->getData() . "},\n";
 }
 
