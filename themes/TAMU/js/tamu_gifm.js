@@ -39,7 +39,7 @@ var buildButtons = function() {
                 if (button.itemKey) {
                   $("#getit_"+button.itemKey+" .buttons").append(buttonHtml);
                 } else {
-                  $("#getit_purchase .buttons").append(buttonHtml);
+                  $("#getit_purchase-it .buttons").append(buttonHtml);
                 }
               });
             }
