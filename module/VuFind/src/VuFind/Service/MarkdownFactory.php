@@ -276,7 +276,7 @@ class MarkdownFactory implements FactoryInterface
             $config['table']['wrap']['attributes'] = [];
         }
         foreach ($tableWrapAttributes as $attribute) {
-            $parts = array_map('trim',explode(':', $attribute));
+            $parts = array_map('trim', explode(':', $attribute));
             if (2 === count($parts)) {
                 $config['table']['wrap']['attributes'][$parts[0]] = $parts[1];
             }
