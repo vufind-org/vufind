@@ -429,6 +429,11 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         return ($user = $manager->isLoggedIn()) ? $user->lastname : "";
     }
 
+    public function isRssSubscriptionEnabled(): bool {
+        $setting = $this->getConfig()->General->rss_subscriptions ?? 'disabled';
+        return $setting == 'enabled';
+    }
+
     /**
      * Check if a searchbox tab is enabled, e.g. "SolrAuth".
      */

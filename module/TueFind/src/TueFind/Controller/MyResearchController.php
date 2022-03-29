@@ -23,77 +23,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return ['userAuthorities' => $userAuthorities, 'authorityRecords' => $authorityRecords];
     }
 
-    // METS:
-    // - Very complex documentation: https://mets.github.io/METS_Docs/mets.html
-    // - Simpler tutorial with DC examples: https://www.loc.gov/standards/mets/METSOverview.html
-    protected function generatePublishPackageFromPost(): string
-    {
-        $uploadedFile = $this->params()->fromFiles('file');
-
-        // Generate METS file
-        $mets = new \XMLWriter();
-        $mets->openMemory();
-        $mets->setIndent(true);
-
-        $mets->startDocument();
-        $mets->startElement('mets');
-        $mets->writeAttributeNs('xmlns', 'dc', null, 'http://purl.org/dc/elements/1.1/');
-
-        $mets->startElement('metsHdr');
-        $mets->writeAttribute('CREATEDATE', date('c'));
-        $mets->endElement();
-
-        $mets->startElement('dmdSec');
-        $mets->writeAttribute('ID', 'DMD001');
-        $mets->startElement('mdWrap');
-        $mets->writeAttribute('MIMETYPE', 'text/xml'); // This MIMETYPE is related to the DC metadata, not the file itself!
-        $mets->writeAttribute('MDTYPE', 'DC');
-        $mets->writeAttribute('LABEL', 'Dublin Core Metadata');
-        $mets->writeElementNs('dc', 'title', null, $this->params()->fromPost('title'));
-        $mets->writeElementNs('dc', 'creator', null, $this->params()->fromPost('creator'));
-        $mets->writeElementNs('dc', 'language', null, $this->params()->fromPost('language'));
-        $mets->writeElementNs('dc', 'format', null, $uploadedFile['type']);
-        $mets->endElement();
-        $mets->endElement();
-
-        $mets->writeElement('amdSec');
-
-        $mets->startElement('fileSec');
-        $mets->startElement('fileGrp');
-        $mets->writeAttribute('ID', 'VERS1');
-        $mets->startElement('file');
-        $mets->writeAttribute('ID', 'FILE001');
-        $mets->writeAttribute('MIMETYPE', $uploadedFile['type']);
-        $mets->writeAttribute('SIZE', $uploadedFile['size']);
-        $mets->startElement('FContent');
-        $mets->writeElement('binData', base64_encode(file_get_contents($uploadedFile['tmp_name'])));
-        $mets->endElement();
-        $mets->endElement();
-        $mets->endElement();
-        $mets->endElement();
-
-        $mets->writeElement('structMap');
-        $mets->writeElement('structLink');
-        $mets->writeElement('behaviorSec');
-
-        $mets->endElement();
-        $mets->endDocument();
-
-        $metsPath = tempnam(sys_get_temp_dir(), 'mets');
-        $metsAsString = $mets->outputMemory();
-        //print '<pre>' . htmlspecialchars($metsAsString) . '</pre>';
-        file_put_contents($metsPath, $metsAsString);
-
-        // Generate ZIP package
-        $zipPath = tempnam(sys_get_temp_dir(), 'zip');
-        $zip = new \ZipArchive();
-        $zip->open($zipPath, \ZIPARCHIVE::CREATE);
-        $zip->addFile($metsPath, 'mets.xml');
-        //$zip->addFile($uploadedFile['tmp_name'], $uploadedFile['name']);
-
-        return $zipPath;
-    }
-
     public function newsletterAction()
     {
         $user = $this->getUser();
@@ -116,8 +45,23 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $this->forceLogin();
         }
 
+        // Get information from DSpace for each DB publication item
+        $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
+        $dspace->login();
+
+        $publications = [];
+        $dbPublications = $this->getTable('publication')->getByUserId($user->id);
+        foreach ($dbPublications as $dbPublication) {
+            try {
+                $dspacePublication = $dspace->getWorkspaceItem($dbPublication->external_document_id);
+            } catch (exception $e) {
+                $dspacePublication = null;
+            }
+            $publications[] = ['db' => $dbPublication, 'dspace' => $dspacePublication];
+        }
+
         $viewParams = $this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true);
-        $viewParams['publications'] = $this->getTable('publication')->getByUserId($user->id);
+        $viewParams['publications'] = $publications;
         return $this->createViewModel($viewParams);
     }
 
@@ -127,6 +71,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($user == false) {
             return $this->forceLogin();
         }
+
+        $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
+        $dspace->login();
+        $config = $this->getConfig('tuefind');
 
         $existingRecord = null;
         $dublinCore = null;
@@ -138,11 +86,16 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $action = $this->params()->fromPost('action');
         if ($action == 'publish') {
-            $packagePath = $this->generatePublishPackageFromPost();
-            // TODO: post to sword2 and create DB entry
-            // copy to /tmp for debugging purposes
-            //copy($packagePath, '/tmp/package.zip');
+            $uploadedFile = $this->params()->fromFiles('file');
 
+            // TODO: Upload PDF file to DSpace
+            $collectionName = $config->Publication->collection_name;
+            $collection = $this->dspace->getCollectionByName($collectionName);
+            $workspaceItem = $this->dspace->addWorkspaceItem($uploadedFile, $collection->id);
+
+            // TODO: Add metadata
+
+            // TODO: Start workflow
         }
 
         $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));

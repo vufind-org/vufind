@@ -1,22 +1,97 @@
+<?php
+
+function renderPagination($currentPageNo, $maxPageNo, $itemsPerPage, $helpers) {
+    $minPageNo = 1;
+    $countPagesToShow = 9;
+    $countPagesLeftRight = floor($countPagesToShow / 2);
+
+    $minPageNoToShow = $currentPageNo - $countPagesLeftRight;
+    $maxPageNoToShow = $currentPageNo + $countPagesLeftRight;
+    if ($minPageNoToShow < $minPageNo) {
+        $maxPageNoToShow += ($minPageNo - $minPageNoToShow);
+        $minPageNoToShow = 1;
+    }
+    if ($maxPageNoToShow > $maxPageNo) {
+        $minPageNoToShow -= ($maxPageNoToShow - $maxPageNo);
+        $maxPageNoToShow = $maxPageNo;
+    }
+
+    if ($minPageNoToShow < 1)
+        $minPageNoToShow = 1;
+
+    if ($maxPageNoToShow > $maxPageNo)
+        $maxPageNoToShow = $maxPageNo;
+
+    $pagination = '<nav aria-label="pagination"><ul class="pagination">';
+    if ($minPageNoToShow != $minPageNo)
+        $pagination .= '<li class="page-item"><a class="page-link" href="?page=1#content">[1]</a></li>';
+
+    if ($currentPageNo != $minPageNo)
+        $pagination .= '<li class="page-item"><a class="page-link" href="?page=' . ($currentPageNo - 1) . '#content">« ' . $helpers->transEsc('Prev') . '</a></li>';
+
+    for ($i=$minPageNoToShow;$i<=$maxPageNoToShow;++$i) {
+        $pagination .= '<li class="page-item';
+        if ($i == $currentPageNo)
+            $pagination .= ' active';
+        $pagination .= '">';
+
+        if ($i == $currentPageNo)
+            $pagination .= '<span class="page-link">' . $i . '</span>';
+        else
+            $pagination .= '<a class="page-link" href="?page='.$i.'#content">' . $i . '</a>';
+
+        $pagination .= '</li>';
+    }
+
+    if ($currentPageNo != $maxPageNo)
+        $pagination .= '<li class="page-item"><a class="page-link" href="?page=' . ($currentPageNo + 1) . '#content">' . $helpers->transEsc('Next') . ' »</a></li>';
+
+    if ($maxPageNo != $maxPageNoToShow)
+        $pagination .= '<li class="page-item"><a class="page-link" href="?page=' . $maxPageNo . '#content">[' . $maxPageNo . ']</a></li>';
+
+    $pagination .= '</ul></nav>';
+    return $pagination;
+}
+
+?>
+
 <?php if (count($rssItems) == 0):?>
-  <h1><?=$this->translate('rss_news_missing')?></h1>
+    <h1><?=$this->translate('rss_news_missing')?></h1>
 <?php else:?>
-  <?php $redirectGroup = $this->tuefind()->getTueFindInstance() . '-rss-full'; ?>
-  <div id="tf-rss-full">
-    <?php foreach ($rssItems as $rssItem):?>
-      <div class="tf-rss-full-item">
-        <h1>
-          <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['item_url'], $redirectGroup)?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssItem['feed_name'])?>" height="20">&nbsp;<?=$rssItem['item_title']?></a>
-        </h1>
-        <p>
-          <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['website_url'], $redirectGroup)?>" target="_blank"><?=$rssItem['feed_name']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssItem['pub_date']))?>
-        </p>
-        <?php if (!empty($rssItem['item_description'])):?>
-          <p>
-            <?=$rssItem['item_description']?>
-          </p>
-         <?php endif;?>
-       </div>
-    <?php endforeach;?>
-  </div>
+    <?php $redirectGroup = $this->tuefind()->getTueFindInstance() . '-rss-full'; ?>
+    <div id="tf-rss-full">
+        <?php $itemsPerPage = 10;?>
+        <?php $itemCount = count($rssItems)?>
+        <?php $currentPageNo = $this->page ?? 1;?>
+        <?php $maxPageNo = ceil($itemCount / $itemsPerPage) ?>
+        <?php $minItemId = (($currentPageNo - 1) * $itemsPerPage) ?>
+        <?php $maxItemId = $minItemId + $itemsPerPage - 1 ?>
+        <?php $pagination = renderPagination($currentPageNo, $maxPageNo, $itemsPerPage, $this); ?>
+
+        <!-- top pagination -->
+        <?=$pagination?>
+
+        <?php $i = 0?>
+        <?php foreach ($rssItems as $rssItem):?>
+            <?php if ($minItemId <= $i && $maxItemId >= $i): ?>
+                <div class="tf-rss-full-item">
+                    <h2>
+                        <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['item_url'], $redirectGroup)?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssItem['feed_name'])?>" height="20">&nbsp;<?=$rssItem['item_title']?></a>
+                    </h2>
+                    <p>
+                        <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['website_url'], $redirectGroup)?>" target="_blank"><?=$rssItem['feed_name']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssItem['pub_date']))?>
+                    </p>
+                    <?php if (!empty($rssItem['item_description'])):?>
+                        <p>
+                            <?=$rssItem['item_description']?>
+                        </p>
+                    <?php endif;?>
+                </div>
+            <?php endif;?>
+            <?php ++$i?>
+        <?php endforeach;?>
+
+        <!-- bottom pagination -->
+        <?=$pagination?>
+    </div>
 <?php endif;?>

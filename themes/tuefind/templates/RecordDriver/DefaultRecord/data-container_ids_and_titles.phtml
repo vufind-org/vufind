@@ -9,12 +9,17 @@
 <?php if (!empty($pages)) { $infos[] = $this->transEsc('Pages') . ': ' . $this->escapeHtml($pages); }?>
 <?php $ids_and_titles = $this->driver->getContainerIDsAndTitles();?>
 <?php if (sizeof($ids_and_titles)): ?>
-   <?php foreach ($ids_and_titles as $id => $title): ?>
-     <a href="<?=$this->url("record", array("id" => $id));?>"><?=$this->escapeHtml($title[0])?></a>
-     <br/>
-   <?php endforeach; ?>
+  <?php foreach ($ids_and_titles as $id => $title): ?>
+    <a href="<?=$this->url("record", array("id" => $id));?>">
+      <?=$this->escapeHtml($title[0])?>
+      <?php if (isset($title[1])): ?>
+        (<?=$title[1]?>)
+      <?php endif; ?>
+    </a>
+    <br/>
+  <?php endforeach; ?>
 <?php elseif (!empty($this->driver->getSuperiorFrom773a())): ?>
-   <?=$this->driver->getSuperiorFrom773a();?>
-   <br/>
+  <?=$this->driver->getSuperiorFrom773a();?>
+  <br/>
 <?php endif; ?>
 <?=implode(', ', $infos);?>

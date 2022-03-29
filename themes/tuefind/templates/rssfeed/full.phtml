@@ -1,2 +1,9 @@
-<?php /*This is a tuefind extension template which will be used for additional content around the table in relbib.*/?>
-<?=$this->context($this)->renderInContext('rssfeed/full-items', ['rssItems' => $rssItems])?>
+<div class="row">
+    <div class="col-md-9">
+        <?=$this->HelpText()->render('rss_top', null, 'static'); ?>
+        <?=$this->context($this)->renderInContext('rssfeed/full-items', ['rssItems' => $rssItems])?>
+    </div>
+    <div class="col-md-3">
+        <?=$this->context($this)->renderInContext('rssfeed/side', ['rssFeeds' => $rssFeeds])?>
+    </div>
+</div>
