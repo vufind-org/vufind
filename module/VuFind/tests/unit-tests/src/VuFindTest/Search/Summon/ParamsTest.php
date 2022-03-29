@@ -33,7 +33,7 @@ use VuFind\Search\Summon\Options;
 use VuFind\Search\Summon\Params;
 
 /**
- * Solr Search Object Parameters Test
+ * Summon Search Object Parameters Test
  *
  * @category VuFind
  * @package  Tests
