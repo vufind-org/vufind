@@ -48,7 +48,7 @@ foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
     echo "A2 $current\n";
 }
 
-$languages = $this->driver->tryMethod('getLanguages', [], []);
+$languages = $this->driver->tryMethod('getLanguages');
 if (is_array($languages)) {
     foreach ($languages as $lang) {
         echo "LA $lang\n";
