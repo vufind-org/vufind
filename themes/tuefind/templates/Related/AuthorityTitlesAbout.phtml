@@ -4,7 +4,7 @@
   <h4><?=$this->transEsc('Newest Titles (about)')?></h4>
   <ul class="list-group">
     <?php foreach ($response as $record): ?>
-      <li class="list-group-item"><a href="<?=$this->recordLink()->getUrl($record)?>"><?=$record->getTitle()?></a></li>
+      <li class="list-group-item"><a href="<?=$this->recordLinker()->getUrl($record)?>"><?=$record->getTitle()?></a></li>
     <?php endforeach; ?>
   </ul>
   <?php if ($response->getTotal() > $titlePreviewLimit): ?>

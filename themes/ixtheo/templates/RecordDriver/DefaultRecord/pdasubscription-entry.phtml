@@ -13,7 +13,7 @@ $is_missing_record = get_class($this->driver) == "VuFind\RecordDriver\Missing";
     <div class="col-xs-9 middle">
         <?php if (!$is_missing_record):?>
             <div class="resultItemLine1">
-                <a href="<?= $this->recordLink()->getUrl($this->driver) ?>">
+                <a href="<?= $this->recordLinker()->getUrl($this->driver) ?>">
                     <?= $this->record($this->driver)->getTitleHtml() ?>
                 </a>
             </div>

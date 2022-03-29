@@ -1,4 +1,4 @@
 <?php if (!empty($data)): ?>
   <?php list($ppn, $following_title) = $data; ?>
-  <a href="<?=$this->recordLink()->getUrl($ppn)?>"><?=htmlspecialchars($following_title)?></a>
+  <a href="<?=$this->recordLinker()->getUrl($ppn)?>"><?=htmlspecialchars($following_title)?></a>
 <?php endif; ?>

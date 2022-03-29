@@ -5,7 +5,7 @@
   <?=$this->driver->getBreadcrumb()?>
 
   <?php $realm = basename(getenv('VUFIND_LOCAL_DIR'))?>
-<?=$this->translate('email_link_' . $realm)?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
+<?=$this->translate('email_link_' . $realm)?>: <?=$this->serverUrl($this->recordLinker()->getUrl($this->driver))?>
 
 ------------------------------------------------------------
 <?php if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
