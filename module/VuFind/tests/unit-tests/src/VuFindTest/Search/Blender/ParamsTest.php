@@ -246,7 +246,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'desc' => 'checkbox_label',
                     'filter' => 'format:bar',
                     'selected' => false,
-                    'alwaysVisible' => false
+                    'alwaysVisible' => false,
+                    'dynamic' => false
                 ]
             ],
             $params->getCheckboxFacets()
@@ -260,7 +261,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'desc' => 'checkbox_label',
                     'filter' => 'format:bar',
                     'selected' => true,
-                    'alwaysVisible' => false
+                    'alwaysVisible' => false,
+                    'dynamic' => false
                 ]
             ],
             $params->getCheckboxFacets()
@@ -560,6 +562,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'blender_backend:Primo',
                     'selected' => false,
                     'alwaysVisible' => false,
+                    'dynamic' => false
                 ],
             ],
             $params->getCheckboxFacets()

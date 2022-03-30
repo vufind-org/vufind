@@ -375,14 +375,16 @@ class Params extends \VuFind\Search\Solr\Params
      * will be applied to the search.  When the checkbox is not checked, no filter
      * will be applied.
      *
-     * @param string $filter [field]:[value] pair to associate with checkbox
-     * @param string $desc   Description to associate with the checkbox
+     * @param string $filter  [field]:[value] pair to associate with checkbox
+     * @param string $desc    Description to associate with the checkbox
+     * @param bool   $dynamic Is this being added dynamically (true) or in response
+     * to a user configuration (false)?
      *
      * @return void
      */
-    public function addCheckboxFacet($filter, $desc)
+    public function addCheckboxFacet($filter, $desc, $dynamic = false)
     {
-        parent::addCheckboxFacet($filter, $desc);
+        parent::addCheckboxFacet($filter, $desc, $dynamic);
         if ($this->isBlenderFilter($filter)) {
             return;
         }
@@ -391,7 +393,7 @@ class Params extends \VuFind\Search\Solr\Params
             if ($translated = $this->translateFilter($filter, $backendId)) {
                 foreach ($translated as $current) {
                     if (null !== $current) {
-                        $params->addCheckboxFacet($current, $desc);
+                        $params->addCheckboxFacet($current, $desc, $dynamic);
                     }
                 }
             } else {
