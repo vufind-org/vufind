@@ -122,6 +122,9 @@ class RecordCollection
         // Filter out unavailable backends from initial results source list:
         $initialResultsBackends
             = array_intersect($this->initialResultsBackends, $backendIds);
+        // Fill the initial results up to limit with records from correct backends
+        // (no need to care about missing ones as the list will be filled later on in
+        // Backend):
         for ($pos = 0; $pos < $limit; $pos++) {
             $backendId = $this->getBackendAtPosition(
                 $pos,
