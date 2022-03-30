@@ -11,7 +11,7 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
   <?php if (count($this->authorityRecords) == 0): ?>
     <p>You do not have access to any authority records yet. Please search for an authority record first and request access there.</p>
   <?php else: ?>
-    <p><a href="<?=$this->url('myresearch-publish')?>">Would you like to publish something?</a></p>
+    <p>If you like to publish something, please search for the matching record which is linked to your authority entry and use the "publish" button in the full view.</p>
     <?php if (count($this->publications) == 0): ?>
       <p>You did not upload any publications so far.</p>
     <?php else: ?>

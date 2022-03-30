@@ -103,88 +103,60 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $existingRecord = null;
         $dublinCore = null;
-        $controlNumber = null;
         $existingRecordId = $this->params()->fromRoute('record_id', null);
-        if ($existingRecordId != null) {
-            $existingRecord = $this->getRecordLoader()->load($existingRecordId);
-            $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
-            $controlNumber = $dublinCore['DC.identifier'][0];
-        }
 
-        if (empty($controlNumber)) {
+        if (empty($existingRecordId)) {
             $uploadInfos[] = ["Control Number empty!","text-danger"];
             $uploadError = 1;
-        }
+        } else {
+            $existingRecord = $this->getRecordLoader()->load($existingRecordId);
+            $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace')->getMappedData($existingRecord);
+            $termFileData = $this->getLatestTermFile();
+            $action = $this->params()->fromPost('action');
 
-        $action = $this->params()->fromPost('action');
-
-        $termFileData = $this->getLatestTermFile();
-
-        $dbPublications = $this->getTable('publication')->getByControlNumber($controlNumber);
-        if (!empty($dbPublications->external_document_id)) {
-            $uploadInfos[] = ["Publication File exist!","text-danger"];
-            $uploadError = 1;
-        }
-
-        if ($action == 'publish' && $uploadError == 0) {
-            $uploadedFile = $this->params()->fromFiles('file');
-            $userFileName = $dublinCore['DC.title'][0];
-
-            $collectionName = $config->Publication->collection_name;
-
-            $collection = $dspace->getCollectionByName($collectionName);
-            if (isset($collection->id)) {
-                $collectionID = $collection->id;
-            }
-
-            if ($uploadedFile['type'] != "application/pdf") {
-                $uploadInfos[] = ["Invalid file type!: " . $uploadedFile['type'],"text-danger"];
+            $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
+            if (!empty($dbPublications->external_document_id)) {
+                $uploadInfos[] = ["Publication File exist!","text-danger"];
                 $uploadError = 1;
-            }
+            } else if ($action == 'publish' && $uploadError == 0) {
+                $uploadedFile = $this->params()->fromFiles('file');
 
-            if ($uploadedFile['size'] > $uploadFileSize) {
-                $uploadInfos[] = ["File is too big!","text-danger"];
-                $uploadError = 1;
-            }
+                $collectionName = $config->Publication->collection_name;
 
-            $tmpdir = sys_get_temp_dir();
-            $tmpfile = $tmpdir . '/' . $uploadedFile['name'];
-
-            if ($uploadError == 0) {
-                if (is_file($tmpfile)) {
-                    unlink($tmpfile);
-                }
-                if (!move_uploaded_file($uploadedFile['tmp_name'], $tmpfile)) {
-                    throw new \Exception('Uploaded file could not be moved to tmp directory!');
+                $collection = $dspace->getCollectionByName($collectionName);
+                if (isset($collection->id)) {
+                    $collectionID = $collection->id;
                 }
 
-                $workspaceItem = $dspace->addWorkspaceItem($tmpfile, $collectionID);
-                $itemID = $workspaceItem->id;
-                $dbPublications = $this->getTable('publication')->addPublication($user->id, $controlNumber, $itemID, $termFileData['termDate']);
+                if ($uploadedFile['type'] != "application/pdf") {
+                    $uploadInfos[] = ["Invalid file type!: " . $uploadedFile['type'],"text-danger"];
+                    $uploadError = 1;
+                }
 
-                $language = 'en';
-                if (isset($dublinCore['DC.language'][0])) {
-                    switch ($dublinCore['DC.language'][0]) {
-                        case"German":
-                            $language = 'de';
-                        break;
+                if ($uploadedFile['size'] > $uploadFileSize) {
+                    $uploadInfos[] = ["File is too big!","text-danger"];
+                    $uploadError = 1;
+                }
+
+                if ($uploadError == 0) {
+                    $tmpdir = sys_get_temp_dir();
+                    $tmpfile = $tmpdir . '/' . $uploadedFile['name'];
+
+                    if (is_file($tmpfile)) {
+                        unlink($tmpfile);
                     }
-                }
+                    if (!move_uploaded_file($uploadedFile['tmp_name'], $tmpfile)) {
+                        throw new \Exception('Uploaded file could not be moved to tmp directory!');
+                    }
 
-                $metaArray = [
-                    "title"=>$userFileName,
-                    "language"=>$language,
-                    "publisher"=>$dublinCore['DC.publisher'][0],
-                    "author"=>$dublinCore['DC.creator'][0] . ";02a88394-6161-44ce-a0c0-5f1640137bf4",
-                    "identifiers"=>"issn;" . $controlNumber
-                ];
+                    $workspaceItem = $dspace->addWorkspaceItem($tmpfile, $collectionID);
+                    $itemID = $workspaceItem->id;
+                    $item = $dspace->updateWorkspaceItem($itemID, $dspaceMetadata);
 
-                $patchData = [];
-                foreach ($metaArray as $metaKey=>$metaValue) {
-                    $this->generateMetaData($metaKey, $metaValue, $patchData);
+                    $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $termFileData['termDate']);
+
+                    // TODO: Start publication process in DSpace after metadata is correct
                 }
-                $patchDataJson = json_encode($patchData);
-                $item = $dspace->updateWorkspaceItem($itemID, $patchDataJson);
             }
         }
 
@@ -289,93 +261,5 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $latestTermFileData = $latestTermData[0];
 
         return $latestTermFileData;
-    }
-
-    private function generateMetaData($metaKey, $metaValue, &$dataArray): void
-    {
-        $oneMetaArray = [];
-
-        $op = 'add';
-        $language = null;
-        $authority = null;
-        $confidence = -1;
-        $place = 0;
-        $otherInformation = null;
-        $path = '';
-
-        switch ($metaKey) {
-            case"title":
-                $path = '/sections/traditionalpageone/dc.title';
-            break;
-            case"title.alternative":
-                $path = '/sections/traditionalpageone/dc.title.alternative';
-            break;
-            case"publisher":
-                $path = '/sections/traditionalpageone/dc.publisher';
-            break;
-            case"citation":
-                $path = '/sections/traditionalpageone/dc.identifier.citation';
-            break;
-            case"ispartofseries":
-                $path = '/sections/traditionalpageone/dc.relation.ispartofseries';
-            break;
-            case"date.issued":
-                $path = '/sections/traditionalpageone/dc.date.issued';
-            break;
-            case"subject.keywords":
-                $path = '/sections/traditionalpagetwo/dc.subject';
-            break;
-            case"abstract":
-                $path = '/sections/traditionalpagetwo/dc.description.abstract';
-            break;
-            case"description":
-                $path = '/sections/traditionalpagetwo/dc.description';
-            break;
-            case"sponsorship":
-                $path = '/sections/traditionalpagetwo/dc.description.sponsorship';
-            break;
-            case"type":
-                $path = '/sections/traditionalpageone/dc.type';
-            break;
-            case"language":
-                $path = '/sections/traditionalpageone/dc.language.iso';
-            break;
-            case"author":
-                $path = '/sections/traditionalpageone/dc.contributor.author';
-                $confidence = 600;
-                $explodeValue = explode(';', $metaValue);
-                $metaValue = $explodeValue[0];
-                $authority = $explodeValue[1];
-            break;
-            case"identifiers":
-                $explodeValue = explode(';', $metaValue);
-                $metaValue = $explodeValue[1];
-                $identifierType = $explodeValue[0];
-                if ($identifierType == 'issn') {
-                    $path = '/sections/traditionalpageone/dc.identifier.issn';
-                } else {
-                    $path = '/sections/traditionalpageone/dc.identifier.other';
-                }
-            break;
-        }
-
-        $oneMetaArray = [
-            'op' => $op,
-            'path' => $path,
-            'value' =>
-              [
-                  [
-                      'value' => $metaValue,
-                      'language' => $language,
-                      'authority' => $authority,
-                      'display' => $metaValue,
-                      'confidence' => $confidence,
-                      'place' => $place,
-                      'otherInformation' => $otherInformation
-                  ]
-              ]
-        ];
-
-        $dataArray[] = $oneMetaArray;
     }
 }

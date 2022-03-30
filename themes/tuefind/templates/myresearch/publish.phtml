@@ -166,11 +166,11 @@
     <input class="form-control" type="file" name="file" required>
   </div>
   <div>
-    <label><?=$termFile['fileName'];?></label>
+    <label><a href="/publication_terms/<?=urlencode($termFile['fileName'])?>" target="_blank"><?=htmlspecialchars($termFile['fileName'])?></a></label>
   </div>
   <div class="form-group">
     <label>term agree</label>
-    <input type="checkbox" value="term" name="term">
+    <input type="checkbox" value="term" name="term" required="required">
   </div>
   <button type="submit" class="btn btn-primary" name="action" value="publish">Submit</button>
 </form>
