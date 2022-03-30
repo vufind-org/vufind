@@ -240,7 +240,10 @@ class Manager
      */
     protected function createNoCache($cacheName)
     {
-        $this->cacheSettings[$cacheName] = ['name' => 'blackhole', 'options' => []];
+        $this->cacheSettings[$cacheName] = [
+            'adapter' => \Laminas\Cache\Storage\Adapter\BlackHole::class,
+            'options' => []
+        ];
     }
 
     /**
@@ -293,7 +296,7 @@ class Manager
             throw new \Exception('$opts is neither array nor false');
         }
         $this->cacheSettings[$cacheName] = [
-            'name' => 'filesystem',
+            'adapter' => \Laminas\Cache\Storage\Adapter\Filesystem::class,
             'options' => $opts,
             'plugins' => [
                 ['name' => 'serializer'],

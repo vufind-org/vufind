@@ -44,8 +44,11 @@ use VuFind\Validator\CsrfInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
+class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Authentication modules
      *
@@ -649,6 +652,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                 $this->getAuth()->resetState();
+                $this->logWarning("Invalid CSRF token passed to login");
                 throw new AuthException('authentication_error_technical');
             } else {
                 // After successful token verification, clear list to shrink session:
@@ -668,11 +672,8 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         } catch (\Exception $e) {
             // Catch other exceptions, log verbosely, and treat them as technical
             // difficulties
-            error_log(
-                "Exception in " . get_class($this) . "::login: " . $e->getMessage()
-            );
-            error_log($e);
-            throw new AuthException('authentication_error_technical');
+            $this->logError((string)$e);
+            throw new AuthException('authentication_error_technical', 0, $e);
         }
 
         // Update user object

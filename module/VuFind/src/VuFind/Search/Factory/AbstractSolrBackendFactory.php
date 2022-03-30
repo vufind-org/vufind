@@ -31,6 +31,7 @@ namespace VuFind\Search\Factory;
 use Interop\Container\ContainerInterface;
 
 use Laminas\Config\Config;
+use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
@@ -248,7 +249,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         if ($config->Spelling->enabled ?? true) {
             $dictionaries = ($config->Spelling->simple ?? false)
                 ? ['basicSpell'] : ['default', 'basicSpell'];
-            $spellingListener = new InjectSpellingListener($backend, $dictionaries);
+            $spellingListener = new InjectSpellingListener(
+                $backend,
+                $dictionaries,
+                $this->logger
+            );
             $spellingListener->attach($events);
         }
 
@@ -285,6 +290,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
                 $facets->LegacyFields->toArray()
             );
             $filterFieldConversionListener->attach($events);
+        }
+
+        // Attach custom filter listener if needed:
+        if ($cfListener = $this->getCustomFilterListener($backend, $facets)) {
+            $cfListener->attach($events);
         }
 
         // Attach hide facet value listener:
@@ -406,7 +416,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
                 $options['ttl'] = 300;
             }
             $settings = [
-                'name' => $cacheConfig['adapter'],
+                'adapter' => $cacheConfig['adapter'],
                 'options' => $options,
             ];
             $cache = $this->serviceLocator
@@ -515,6 +525,32 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             'datasources',
             $enabled
         );
+    }
+
+    /**
+     * Get a custom filter listener for the backend (or null if not needed).
+     *
+     * @param BackendInterface $backend Search backend
+     * @param Config           $facet   Configuration of facets
+     *
+     * @return mixed null|CustomFilterListener
+     */
+    protected function getCustomFilterListener(
+        BackendInterface $backend,
+        Config $facet
+    ) {
+        $customField = $facet->CustomFilters->custom_filter_field ?? 'vufind';
+        $normal = $inverted = [];
+
+        foreach ($facet->CustomFilters->translated_filters ?? [] as $key => $val) {
+            $normal[$customField . ':"' . $key . '"'] = $val;
+        }
+        foreach ($facet->CustomFilters->inverted_filters ?? [] as $key => $val) {
+            $inverted[$customField . ':"' . $key . '"'] = $val;
+        }
+        return empty($normal) && empty($inverted)
+            ? null
+            : new CustomFilterListener($backend, $normal, $inverted);
     }
 
     /**

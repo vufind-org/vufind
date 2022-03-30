@@ -325,13 +325,7 @@ class Form extends \Laminas\Form\Form implements
             );
         }
 
-        return trim(
-            str_replace(
-                array_keys($mappings),
-                array_values($mappings),
-                $subject
-            )
-        );
+        return trim($this->translate($subject, $mappings));
     }
 
     /**

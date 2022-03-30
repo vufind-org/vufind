@@ -49,7 +49,7 @@
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="8.0.3" />
+  <property name="version" value="8.0.4" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -309,7 +309,7 @@
       <filterchain>
         <replaceregexp>
           <regexp pattern="defaultModelRendering: 'schema'" replace="defaultModelRendering: 'model'" />
-          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?swagger&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
@@ -339,6 +339,16 @@
         <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
       </then>
     </if>
+
+    <!-- fail if a local config.ini already exists -->
+    <property name="local_config_ini" value="${srcdir}/local/config/vufind/config.ini" />
+    <if>
+      <available file="${local_config_ini}" />
+      <then>
+        <fail>${local_config_ini} already exists</fail>
+      </then>
+    </if>
+
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
@@ -480,6 +490,19 @@
 
   <!-- Uninstall and Deactivate VuFind -->
   <target name="shutdown" description="deactivate and uninstall demo">
+
+    <exec command="git status --porcelain --untracked-files=no" outputProperty="git_status" />
+    <if>
+      <not>
+        <equals arg1="${git_status}" arg2="" />
+      </not>
+      <then>
+        <fail>
+          Changed detected in tracked files:
+${git_status}
+        </fail>
+      </then>
+    </if>
 
     <!-- Remove Apache settings (if Apache was enabled) -->
     <if>

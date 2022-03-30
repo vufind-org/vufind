@@ -212,6 +212,7 @@ module.exports = function(grunt) {
     for (var i in themeList) {
       var config = {
         options: {
+          implementation: require("node-sass"),
           outputStyle: 'compressed'
         },
         files: [{

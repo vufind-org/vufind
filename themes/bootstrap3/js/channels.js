@@ -7,9 +7,9 @@ VuFind.register('channels', function Channels() {
     }
     var $cont = $(
       '<div class="dropdown">' +
-      '  <button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
-      '    <i class="fa fa-caret-square-o-down"></i>' +
-      '   </button>' +
+        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+          VuFind.icon("ui-dots-menu") +
+        '</button>' +
       '</div>'
     );
     var $list = $('<ul class="dropdown-menu"></ul>');

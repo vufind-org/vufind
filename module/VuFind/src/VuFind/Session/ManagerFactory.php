@@ -173,6 +173,11 @@ class ManagerFactory implements FactoryInterface
             $storage->cookiePath = $sessionConfig->getCookiePath();
         }
 
+        // Set session start time:
+        if (empty($storage->sessionStartTime)) {
+            $storage->sessionStartTime = time();
+        }
+
         // Check if we need to immediately stop it based on the settings object
         // (which may have been informed by a controller that sessions should not
         // be written as part of the current process):

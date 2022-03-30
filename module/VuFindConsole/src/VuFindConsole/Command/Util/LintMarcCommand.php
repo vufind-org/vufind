@@ -27,10 +27,12 @@
  */
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFindConsole\Command\RelativeFileAwareCommand;
+use VuFind\Marc\MarcCollectionFile;
+use VuFind\Marc\MarcLint;
 
 /**
  * Console command: Lint MARC records.
@@ -41,7 +43,7 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LintMarcCommand extends RelativeFileAwareCommand
+class LintMarcCommand extends Command
 {
     /**
      * The name of the command (the part after "public/index.php")
@@ -74,14 +76,12 @@ class LintMarcCommand extends RelativeFileAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filename = $input->getArgument('filename');
-        $marc = substr($filename, -3) !== 'xml'
-            ? new \File_MARC($filename) : new \File_MARCXML($filename);
-        $linter = new \File_MARC_Lint();
+        $collection = new MarcCollectionFile($filename);
+        $linter = new MarcLint();
         $i = 0;
-        while ($record = $marc->next()) {
+        foreach ($collection as $record) {
             $i++;
-            $field001 = $record->getField('001');
-            $field001 = $field001 ? (string)$field001->getData() : 'undefined';
+            $field001 = $record->getField('001') ?: 'undefined';
             $output->writeln("Checking record $i (001 = $field001)...");
             $warnings = $linter->checkRecord($record);
             if (count($warnings) > 0) {

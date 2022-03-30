@@ -94,13 +94,44 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name) {
+  var icon = function icon(name, attrs = {}) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
 
     var html = _icons[name];
+
+    // Add additional attributes
+    function addAttrs(_html, _attrs = {}) {
+      var mod = String(_html);
+      for (var attr in _attrs) {
+        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
+          var sliceStart = html.indexOf(" ");
+          var sliceEnd = sliceStart;
+          var value = _attrs[attr];
+          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
+          var existing = html.match(regex);
+          if (existing) {
+            sliceStart = existing.index;
+            sliceEnd = sliceStart + existing[0].length;
+            value = existing[2] + " " + value;
+          }
+          mod = mod.slice(0, sliceStart) +
+              " " + attr + '="' + value + '"' +
+              mod.slice(sliceEnd);
+        }
+      }
+      return mod;
+    }
+
+    if (typeof attrs == "string") {
+      return addAttrs(html, { class: attrs });
+    }
+
+    if (Object.keys(attrs).length > 0) {
+      return addAttrs(html, attrs);
+    }
 
     return html;
   };

@@ -45,9 +45,11 @@ namespace VuFind\RecordDriver;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
+class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInterface,
+    Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;
+    use Feature\PreviousUniqueIdTrait;
     use Feature\VersionAwareTrait;
 
     /**
@@ -126,6 +128,7 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
         $recordConfig = null,
         $searchSettings = null
     ) {
+        $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
         $this->snippet = !isset($searchSettings->General->snippets)
             ? false : $searchSettings->General->snippets;

@@ -20,6 +20,7 @@ JS;
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf"/>
   <div class="form-group">
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
     <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control"/>

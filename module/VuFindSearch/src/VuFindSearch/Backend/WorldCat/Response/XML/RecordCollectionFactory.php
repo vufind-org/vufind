@@ -28,7 +28,7 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
-use File_MARCXML;
+use VuFind\Marc\MarcReader;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
@@ -69,8 +69,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     {
         if (null === $recordFactory) {
             $recordFactory = function ($i) {
-                $marc = new File_MARCXML($i, File_MARCXML::SOURCE_STRING);
-                return new Record($marc->next());
+                return new Record(new MarcReader($i));
             };
         } elseif (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');

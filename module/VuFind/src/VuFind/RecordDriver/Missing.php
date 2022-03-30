@@ -50,8 +50,8 @@ class Missing extends DefaultRecord
      */
     public function __construct($mainConfig = null, $recordConfig = null)
     {
-        $this->sourceIdentifier = 'missing';
         parent::__construct($mainConfig, $recordConfig);
+        $this->setSourceIdentifiers('missing');
     }
 
     /**
@@ -102,5 +102,15 @@ class Missing extends DefaultRecord
     {
         $title = parent::getShortTitle();
         return empty($title) ? $this->determineMissingTitle() : $title;
+    }
+
+    /**
+     * Get an array of all the formats associated with the record.
+     *
+     * @return array
+     */
+    public function getFormats()
+    {
+        return ['Unknown'];
     }
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -36,7 +36,7 @@ use VuFindCode\ISBN;
  * Unit tests for ContentCafe cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -48,7 +48,7 @@ class ContentCafeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidCoverLoading()
+    public function testValidCoverLoading(): void
     {
         $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
         $this->assertEquals(
@@ -67,9 +67,9 @@ class ContentCafeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingIsbn()
+    public function testMissingIsbn(): void
     {
         $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
-        $this->assertEquals(false, $loader->getUrl('mykey', 'small', []));
+        $this->assertFalse($loader->getUrl('mykey', 'small', []));
     }
 }
