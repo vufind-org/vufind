@@ -623,7 +623,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test search with a partial failure
+     * Test search with a error returned in a collection
      *
      * @return void
      */
