@@ -194,6 +194,9 @@ class RecordCollection
     public function setSourceIdentifier($identifier)
     {
         $this->source = $identifier;
+        // Don't touch the records here to keep their original source identifiers
+        // intact. We'll handle their search backend identifiers in
+        // collectBackendRecords below.
     }
 
     /**
