@@ -1,12 +1,10 @@
 <?php
-
 /**
  * Factory for Blender backend.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013-2022.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,7 +21,6 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -40,7 +37,6 @@ use VuFindSearch\Backend\Blender\Backend;
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -66,23 +62,21 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @var string
      */
-    protected $searchConfig;
+    protected $searchConfig = 'Blender';
 
     /**
      * Facet configuration file identifier.
      *
      * @var string
      */
-    protected $facetConfig;
+    protected $facetConfig = 'Blender';
 
     /**
-     * Constructor
+     * Mappings YAML configuration file identifier.
+     *
+     * @var string
      */
-    public function __construct()
-    {
-        $this->searchConfig = 'Blender';
-        $this->facetConfig = 'Blender';
-    }
+    protected $mappingsConfig = 'BlenderMappings.yaml';
 
     /**
      * Create service
@@ -103,14 +97,14 @@ class BlenderBackendFactory implements FactoryInterface
         $blenderConfig = $this->config->get($this->searchConfig);
 
         if ($blenderConfig->Backends->count() === 0) {
-            throw new \Exception('No backends enabled in Blender.ini');
+            throw new \Exception("No backends enabled in {$this->searchConfig}.ini");
         }
         $backends = [];
         $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
         foreach (array_keys($blenderConfig->Backends->toArray()) as $backendId) {
             $backends[$backendId] = $backendManager->get($backendId);
         }
-        $blenderMappings = $yamlReader->get('BlenderMappings.yaml');
+        $blenderMappings = $yamlReader->get($this->mappingsConfig);
         $backend = new Backend(
             $backends,
             $blenderConfig,
