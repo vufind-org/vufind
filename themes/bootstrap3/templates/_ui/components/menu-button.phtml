@@ -1,0 +1,24 @@
+<?php
+  $wrapperTag = $this->wrapperTag ?? 'li';
+  $wrapperClass = $this->wrapperClass ?? 'li';
+
+  $toggleTag = $this->toggleTag ?? 'a';
+  $toggleAttrs = $this->toggleAttrs ?? [];
+?>
+
+<<?=$wrapperTag ?> class="<?=$wrapperClass ?> dropdown">
+  <<?=$toggleTag ?> href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <?=$this->transEsc($this->toggleLabel)?>
+    <b class="caret"></b>
+  </<?=$toggleTag ?>>
+
+  <ul class="dropdown-menu">
+    <?php foreach ($this->menuItems as $current): ?>
+      <li<?php if ($current['selected']): ?> class="active"<?php endif ?>>
+        <a href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
+          <?=$current['label'] ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+</<?=$wrapperTag ?>>
