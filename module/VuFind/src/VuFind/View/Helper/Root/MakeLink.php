@@ -102,7 +102,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
         $mergedAttrs = $this->mergeAttributes($href, $attrs, $options);
 
         // Span instead of anchor when no href present
-        if (empty($mergedAttrs) || !($mergedAttrs['href'] ?? false)) {
+        if (empty($mergedAttrs['href'])) {
             return $makeTag('span', $contents, $mergedAttrs, $options);
         }
 

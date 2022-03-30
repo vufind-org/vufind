@@ -45,31 +45,30 @@ abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
      */
     protected function getViewWithHelpers()
     {
-        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
-        $escapehtmlattr = new \Laminas\View\Helper\EscapeHtmlAttr();
-        $htmlattributes = new \Laminas\View\Helper\HtmlAttributes();
-        $maketag = new \VuFind\View\Helper\Root\MakeTag();
-
-        $used = ['escapehtml', 'escapehtmlattr', 'htmlattributes', 'maketag'];
-        $usedMap = compact($used);
+        $helpers = [
+            'escapehtml' => new \Laminas\View\Helper\EscapeHtml(),
+            'escapehtmlattr' => new \Laminas\View\Helper\EscapeHtmlAttr(),
+            'htmlattributes' => new \Laminas\View\Helper\HtmlAttributes(),
+            'maketag' => new \VuFind\View\Helper\Root\MakeTag()
+        ];
 
         $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
         $view
             ->expects($this->atLeastOnce())
             ->method('plugin')
             ->with(
-                $this->matchesRegularExpression(
-                    '/^(' . implode('|', $used) . ')$/i'
-                )
+                $this->callback(function ($helper) use ($helpers) {
+                    return isset($helpers[strtolower($helper)]);
+                })
             )
             ->willReturnCallback(
-                function ($helper) use ($usedMap) {
-                    return $usedMap[strtolower($helper)];
+                function ($helper) use ($helpers) {
+                    return $helpers[strtolower($helper)];
                 }
             );
 
-        foreach ($usedMap as $dep) {
-            $dep->setView($view);
+        foreach ($helpers as $helper) {
+            $helper->setView($view);
         }
 
         return $view;

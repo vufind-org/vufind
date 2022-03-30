@@ -200,7 +200,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     protected function verifyTagName(string $tagName)
     {
         // Simplify check by making tag lowercase
-        $lowerTagName = strtolower($tagName);
+        $lowerTagName = mb_strtolower($tagName, 'UTF-8');
 
         // Existing tag?
         if (in_array($lowerTagName, $this->validBodyTags)) {
