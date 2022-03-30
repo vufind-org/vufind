@@ -1,10 +1,10 @@
 <?php
 /**
- * Solr Search Object Parameters Test
+ * Summon Search Object Parameters Test
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,95 +21,28 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Search\Solr;
+namespace VuFindTest\Search\Summon;
 
 use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
-use VuFind\Search\Solr\Options;
-use VuFind\Search\Solr\Params;
+use VuFind\Search\Summon\Options;
+use VuFind\Search\Summon\Params;
 
 /**
- * Solr Search Object Parameters Test
+ * Summon Search Object Parameters Test
  *
  * @category VuFind
  * @package  Tests
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Test that filters work as expected.
-     *
-     * @return void
-     */
-    public function testFilters(): void
-    {
-        $params = $this->getParams();
-        $params->addFacet('format', 'format_label');
-        $params->addFacet('building', 'building_label');
-
-        // No filters:
-        $this->assertEquals(null, $params->getBackendParameters()->get('fq'));
-
-        // Add multiple filters:
-        $params->addFilter('~format:bar');
-        $params->addFilter('~format:baz');
-        $params->addFilter('building:main');
-        $this->assertEquals(
-            [
-                'building:"main"',
-                '{!tag=format_filter}format:(format:"bar" OR format:"baz")',
-            ],
-            $params->getBackendParameters()->get('fq')
-        );
-
-        // Add a hidden filter:
-        $params->addHiddenFilter('building:sub');
-        $this->assertEquals(
-            [
-                'building:"sub"',
-                'building:"main"',
-                '{!tag=format_filter}format:(format:"bar" OR format:"baz")',
-            ],
-            $params->getBackendParameters()->get('fq')
-        );
-
-        // Remove format filters:
-        $params->removeAllFilters('~format');
-        $this->assertEquals(
-            [
-                'building:"sub"',
-                'building:"main"',
-            ],
-            $params->getBackendParameters()->get('fq')
-        );
-
-        // Remove building filter:
-        $params->removeFilter('building:main');
-        $this->assertEquals(
-            [
-                'building:"sub"',
-            ],
-            $params->getBackendParameters()->get('fq')
-        );
-    }
-
-    /**
-     * Test that we get a mock search class ID while testing.
-     *
-     * @return void
-     */
-    public function testGetSearchClassId(): void
-    {
-        $this->assertEquals('Solr', $this->getParams()->getSearchClassId());
-    }
-
     /**
      * Test that checkbox filters are always visible (or not) as appropriate.
      *
@@ -121,19 +54,15 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $facetConfig = new Config(
             [
                 'CheckboxFacets' => [
-                    'format:book' => 'Book filter',
-                    'vufind:inverted' => 'Inverted filter',
-                ],
-                'CustomFilters' => [
-                    'inverted_filters' => [
-                        'inverted' => 'foo:bar',
-                    ],
+                    'IsScholarly:true' => 'scholarly_limit',
+                    'holdingsOnly:false' => 'add_other_libraries',
+                    'queryExpansion:true' => 'include_synonyms',
                 ],
             ]
         );
         $configManager = $this->createMock(PluginManager::class);
         $callback = function ($config) use ($emptyConfig, $facetConfig) {
-            return $config === 'facets' ? $facetConfig : $emptyConfig;
+            return $config === 'Summon' ? $facetConfig : $emptyConfig;
         };
         $configManager->expects($this->any())->method('get')
             ->will($this->returnCallback($callback));
@@ -143,15 +72,22 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 [
-                    'desc' => 'Book filter',
-                    'filter' => 'format:book',
+                    'desc' => 'scholarly_limit',
+                    'filter' => 'IsScholarly:true',
                     'selected' => false,
                     'alwaysVisible' => false,
                     'dynamic' => false,
                 ],
                 [
-                    'desc' => 'Inverted filter',
-                    'filter' => 'vufind:inverted',
+                    'desc' => 'add_other_libraries',
+                    'filter' => 'holdingsOnly:false',
+                    'selected' => false,
+                    'alwaysVisible' => true,
+                    'dynamic' => false,
+                ],
+                [
+                    'desc' => 'include_synonyms',
+                    'filter' => 'queryExpansion:true',
                     'selected' => false,
                     'alwaysVisible' => true,
                     'dynamic' => false,

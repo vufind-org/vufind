@@ -111,7 +111,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'desc' => 'checkbox_label',
             'filter' => 'foo:bar',
             'selected' => false,
-            'alwaysVisible' => false
+            'alwaysVisible' => false,
+            'dynamic' => false,
         ];
         $expectedSelected['selected'] = true;
 
