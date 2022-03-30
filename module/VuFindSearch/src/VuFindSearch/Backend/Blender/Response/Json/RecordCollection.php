@@ -22,7 +22,6 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
@@ -38,7 +37,6 @@ use VuFindSearch\Response\RecordCollectionInterface;
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
