@@ -206,4 +206,16 @@ abstract class AbstractBase implements CommandInterface
     {
         return $this->context;
     }
+
+    /**
+     * Set command context.
+     *
+     * @param mixed $context Context
+     *
+     * @return void
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+    }
 }
