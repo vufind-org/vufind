@@ -1,5 +1,4 @@
 <?php
-
 namespace TueFind\Controller;
 
 class MyResearchController extends \VuFind\Controller\MyResearchController
@@ -11,8 +10,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $accessState = $onlyGranted ? 'granted' : null;
         $userAuthorities = $table->getByUserId($user->id, $accessState);
 
-        if ($exceptionIfEmpty && count($userAuthorities) == 0)
+        if ($exceptionIfEmpty && count($userAuthorities) == 0) {
             throw new \Exception('No authority linked to this user!');
+        }
 
         $authorityRecords = [];
         foreach ($userAuthorities as $userAuthority) {
@@ -31,8 +31,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $submitted = $this->formWasSubmitted('submit');
-        if ($submitted)
+        if ($submitted) {
             $user->setSubscribedToNewsletter(boolval($this->getRequest()->getPost()->subscribed));
+        }
 
         return $this->createViewModel(['subscribed' => $user->hasSubscribedToNewsletter(),
                                        'submitted'  => $submitted]);
@@ -110,7 +111,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $controlNumber = $dublinCore['DC.identifier'][0];
         }
 
-        if(empty($controlNumber)){
+        if (empty($controlNumber)) {
             $uploadInfos[] = ["Control Number empty!","text-danger"];
             $uploadError = 1;
         }
@@ -120,74 +121,70 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $termFileData = $this->getLatestTermFile();
 
         $dbPublications = $this->getTable('publication')->getByControlNumber($controlNumber);
-        if(!empty($dbPublications->external_document_id)){
+        if (!empty($dbPublications->external_document_id)) {
             $uploadInfos[] = ["Publication File exist!","text-danger"];
             $uploadError = 1;
         }
 
         if ($action == 'publish' && $uploadError == 0) {
-
             $uploadedFile = $this->params()->fromFiles('file');
             $userFileName = $dublinCore['DC.title'][0];
 
             $collectionName = $config->Publication->collection_name;
 
             $collection = $dspace->getCollectionByName($collectionName);
-            if(isset($collection->id)) {
-              $collectionID = $collection->id;
+            if (isset($collection->id)) {
+                $collectionID = $collection->id;
             }
 
-            if($uploadedFile['type'] != "application/pdf") {
-                $uploadInfos[] = ["Invalid file type!: ".$uploadedFile['type'],"text-danger"];
+            if ($uploadedFile['type'] != "application/pdf") {
+                $uploadInfos[] = ["Invalid file type!: " . $uploadedFile['type'],"text-danger"];
                 $uploadError = 1;
             }
 
-            if($uploadedFile['size'] >  $uploadFileSize) {
+            if ($uploadedFile['size'] > $uploadFileSize) {
                 $uploadInfos[] = ["File is too big!","text-danger"];
                 $uploadError = 1;
             }
 
-            $uploaddir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace';
+            $tmpdir = sys_get_temp_dir();
+            $tmpfile = $tmpdir . '/' . $uploadedFile['name'];
 
-            if (!is_dir($uploaddir)) {
-                $uploadError = 1;
-            }
-
-            $customFileName = strtotime("now").".pdf";
-            $uploadfile = $uploaddir ."/". $customFileName;
-
-            if (move_uploaded_file($uploadedFile['tmp_name'], $uploadfile) && $uploadError == 0) {
-                if (file_exists($uploadfile)) {
-                    $workspaceItem = $dspace->addWorkspaceItem($uploadfile, $collectionID);
-                    $itemID = $workspaceItem->id;
-                    $dbPublications = $this->getTable('publication')->addPublication($user->id, $controlNumber, $itemID, $termFileData['termDate']);
-
-                    $language = 'en';
-                    if(isset($dublinCore['DC.language'][0])) {
-                        switch($dublinCore['DC.language'][0]){
-                            case"German":
-                                $language = 'de';
-                            break;
-                        }
-                    }
-
-                    $metaArray = [
-                        "title"=>$userFileName,
-                        "language"=>$language,
-                        "publisher"=>$dublinCore['DC.publisher'][0],
-                        "author"=>$dublinCore['DC.creator'][0].";02a88394-6161-44ce-a0c0-5f1640137bf4",
-                        "identifiers"=>"issn;".$controlNumber
-
-                    ];
-
-                    $patchData = [];
-                    foreach($metaArray as $metaKey=>$metaValue) {
-                        $this->generateMetaData($metaKey,$metaValue,$patchData);
-                    }
-                    $patchDataJson = json_encode($patchData);
-                    $item = $dspace->updateWorkspaceItem($itemID,$patchDataJson);
-                    $this->removeDspaceFile();
+            if ($uploadError == 0) {
+                if (is_file($tmpfile)) {
+                    unlink($tmpfile);
                 }
+                if (!move_uploaded_file($uploadedFile['tmp_name'], $tmpfile)) {
+                    throw new \Exception('Uploaded file could not be moved to tmp directory!');
+                }
+
+                $workspaceItem = $dspace->addWorkspaceItem($tmpfile, $collectionID);
+                $itemID = $workspaceItem->id;
+                $dbPublications = $this->getTable('publication')->addPublication($user->id, $controlNumber, $itemID, $termFileData['termDate']);
+
+                $language = 'en';
+                if (isset($dublinCore['DC.language'][0])) {
+                    switch ($dublinCore['DC.language'][0]) {
+                        case"German":
+                            $language = 'de';
+                        break;
+                    }
+                }
+
+                $metaArray = [
+                    "title"=>$userFileName,
+                    "language"=>$language,
+                    "publisher"=>$dublinCore['DC.publisher'][0],
+                    "author"=>$dublinCore['DC.creator'][0] . ";02a88394-6161-44ce-a0c0-5f1640137bf4",
+                    "identifiers"=>"issn;" . $controlNumber
+                ];
+
+                $patchData = [];
+                foreach ($metaArray as $metaKey=>$metaValue) {
+                    $this->generateMetaData($metaKey, $metaValue, $patchData);
+                }
+                $patchDataJson = json_encode($patchData);
+                $item = $dspace->updateWorkspaceItem($itemID, $patchDataJson);
             }
         }
 
@@ -265,60 +262,48 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return $response;
     }
 
-    private function getLatestTermFile(): array {
-
-        $termsDir =  $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/publication_terms/';
+    private function getLatestTermFile(): array
+    {
+        $termsDir =  $_SERVER['CONTEXT_DOCUMENT_ROOT'] . '/publication_terms/';
         $files = scandir($termsDir);
         $latestTermFileData = [];
         $latestTermData = [];
-        foreach($files as $file){
-            if(strlen($file) > 3) { //remove system files (. ..)
-                preg_match_all('/(\d{4})(\d{2})(\d{2})/',$file,$matches,PREG_PATTERN_ORDER);
-                if(isset($matches[0])){
-                    $formatedDate = $matches[1][0]."-".$matches[2][0]."-".$matches[3][0];
-                    $timeStamp = strtotime($formatedDate);
-                    $latestTermData[] = [
-                        "milliseconds"=>$timeStamp,
-                        "termDate"=>$formatedDate,
-                        "fileName"=>$file
-                    ];
-                }
+        foreach ($files as $file) {
+            if (preg_match('/(\d{4})(\d{2})(\d{2})/', $file, $matches)) {
+                $formatedDate = $matches[1] . "-" . $matches[2] . "-" . $matches[3];
+                $timeStamp = strtotime($formatedDate);
+                $latestTermData[] = [
+                    "milliseconds"=>$timeStamp,
+                    "termDate"=>$formatedDate,
+                    "fileName"=>$file
+                ];
             }
         }
-        if(!empty($latestTermData)) {
-            usort($latestTermData, function ($a, $b) {
-            return strnatcmp($a['milliseconds'], $b['milliseconds']);
-            });
-            $latestTermFileData = $latestTermData[0];
+        if (empty($latestTermData)) {
+            throw new \Exception('Latest term file not found in: ' . $termsDir);
         }
+
+        usort($latestTermData, function ($a, $b) {
+            return strnatcmp($a['milliseconds'], $b['milliseconds']);
+        });
+        $latestTermFileData = $latestTermData[0];
+
         return $latestTermFileData;
     }
 
-    private function removeDspaceFile(): void {
-
-        $dspaceDir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace/';
-        $files = scandir($dspaceDir);
-        foreach($files as $file){
-            if(strlen($file) > 3) { //
-                unlink($dspaceDir.$file);
-            }
-        }
-
-    }
-
-    private function generateMetaData($metaKey,$metaValue,&$dataArray): void {
-
+    private function generateMetaData($metaKey, $metaValue, &$dataArray): void
+    {
         $oneMetaArray = [];
 
         $op = 'add';
-        $language = NULL;
-        $authority = NULL;
+        $language = null;
+        $authority = null;
         $confidence = -1;
         $place = 0;
-        $otherInformation = NULL;
+        $otherInformation = null;
         $path = '';
 
-        switch($metaKey) {
+        switch ($metaKey) {
             case"title":
                 $path = '/sections/traditionalpageone/dc.title';
             break;
@@ -358,17 +343,17 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             case"author":
                 $path = '/sections/traditionalpageone/dc.contributor.author';
                 $confidence = 600;
-                $explodeValue = explode(';',$metaValue);
+                $explodeValue = explode(';', $metaValue);
                 $metaValue = $explodeValue[0];
                 $authority = $explodeValue[1];
             break;
             case"identifiers":
-                $explodeValue = explode(';',$metaValue);
+                $explodeValue = explode(';', $metaValue);
                 $metaValue = $explodeValue[1];
                 $identifierType = $explodeValue[0];
-                if($identifierType == 'issn') {
+                if ($identifierType == 'issn') {
                     $path = '/sections/traditionalpageone/dc.identifier.issn';
-                }else{
+                } else {
                     $path = '/sections/traditionalpageone/dc.identifier.other';
                 }
             break;
@@ -393,5 +378,4 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $dataArray[] = $oneMetaArray;
     }
-
 }
