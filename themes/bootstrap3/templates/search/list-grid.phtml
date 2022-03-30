@@ -1,4 +1,4 @@
-<div class="search-grid <?=$this->escapeHtmlAttr($this->resultsClass ?? '')?>">
+<div class="<?=$this->escapeHtmlAttr(trim('search-grid ' . ($this->resultsClass ?? '')))?>">
   <?php $it = 0; ?>
   <?php foreach ($this->results->getResults() as $current): ?>
     <?=$this->record($current)->getSearchResult('grid')?>
