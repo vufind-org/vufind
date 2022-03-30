@@ -82,30 +82,25 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
-     * Return available facet information.
+     * Return available facets.
+     *
+     * Returns an associative array with the field name as key. The value is an
+     * associative array of available facets for the field, indexed by facet value.
      *
      * @return array
      */
     public function getFacets()
     {
-        $vufindFacetList = [];
+        $result = [];
         $facets = $this->response['SearchResult']['AvailableFacets'] ?? [];
         foreach ($facets as $facet) {
-            $vufindFacet['displayName'] = $facet['Id'];
-            $vufindFacet['displayText'] = $facet['Label'];
-            $vufindFacet['fieldName'] = $facet['Id'];
             $values = [];
-            foreach ($facet['AvailableFacetValues'] as $availableFacetValue) {
-                $values[] = [
-                    'value' => $availableFacetValue['Value'],
-                    'count' => $availableFacetValue['Count'],
-                    'displayText' => $availableFacetValue['Value']
-                ];
+            foreach ($facet['AvailableFacetValues'] as $facetValue) {
+                $values[$facetValue['Value']] = $facetValue['Count'];
             }
-            $vufindFacet['counts'] = $values;
-            $vufindFacetList[$facet['Id']] = $vufindFacet;
+            $result[$facet['Id']] = $values;
         }
-        return $vufindFacetList;
+        return $result;
     }
 
     /**

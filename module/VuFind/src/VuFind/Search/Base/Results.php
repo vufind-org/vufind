@@ -30,6 +30,7 @@ namespace VuFind\Search\Base;
 use Laminas\Paginator\Paginator;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -164,6 +165,13 @@ abstract class Results
      * @var UrlQueryHelperFactory
      */
     protected $urlQueryHelperFactory = null;
+
+    /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $hierarchicalFacetHelper = null;
 
     /**
      * Constructor
@@ -682,6 +690,18 @@ abstract class Results
     }
 
     /**
+     * Set hierarchical facet helper
+     *
+     * @param HierarchicalFacetHelper $helper Hierarchical facet helper
+     *
+     * @return void
+     */
+    public function setHierarchicalFacetHelper(HierarchicalFacetHelper $helper)
+    {
+        $this->hierarchicalFacetHelper = $helper;
+    }
+
+    /**
      * Get complete facet counts for several index fields
      *
      * @param array  $facetfields  name of the Solr fields to return facets for
@@ -734,5 +754,82 @@ abstract class Results
             $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
+    }
+
+    /**
+     * A helper method that converts the list of facets for the last search from
+     * RecordCollection's facet list.
+     *
+     * @param array $facetList Facet list
+     * @param array $filter    Array of field => on-screen description listing
+     * all of the desired facet fields; set to null to get all configured values.
+     *
+     * @return array Facets data arrays
+     */
+    protected function buildFacetList(array $facetList, array $filter = null): array
+    {
+        // If there is no filter, we'll use all facets as the filter:
+        if (null === $filter) {
+            $filter = $this->getParams()->getFacetConfig();
+        }
+
+        // Start building the facet list:
+        $result = [];
+
+        // Loop through every field returned by the result set
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        $hierarchicalFacets
+            = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
+            ? $this->getOptions()->getHierarchicalFacets()
+            : [];
+        foreach (array_keys($filter) as $field) {
+            $data = $facetList[$field] ?? [];
+            // Skip empty arrays:
+            if (count($data) < 1) {
+                continue;
+            }
+            // Initialize the settings for the current field
+            $result[$field] = [
+                'label' => $filter[$field],
+                'list' => []
+            ];
+            // Should we translate values for the current facet?
+            $translateTextDomain = '';
+            $translate = in_array($field, $translatedFacets);
+            if ($translate) {
+                $translateTextDomain = $this->getOptions()
+                    ->getTextDomainForTranslatedFacet($field);
+            }
+            $hierarchical = in_array($field, $hierarchicalFacets);
+            $facetOperator = $this->getParams()->getFacetOperator($field);
+            // Loop through values:
+            foreach ($data as $value => $count) {
+                $displayText = $this->getParams()
+                    ->getFacetValueDisplayText($field, $value);
+                if ($hierarchical) {
+                    if (!$this->hierarchicalFacetHelper) {
+                        throw new \Exception(
+                            get_class($this)
+                            . ': hierarchical facet helper unavailable'
+                        );
+                    }
+                    $displayText = $this->hierarchicalFacetHelper
+                        ->formatDisplayText($displayText);
+                }
+
+                // Store the collected values:
+                $result[$field]['list'][] = [
+                    'value' => $value,
+                    'displayText' => $translate
+                        ? $this->translate([$translateTextDomain, $displayText])
+                        : $displayText,
+                    'count' => $count,
+                    'operator' => $facetOperator,
+                    'isApplied' => $this->getParams()->hasFilter("$field:" . $value)
+                        || $this->getParams()->hasFilter("~$field:" . $value),
+                ];
+            }
+        }
+        return $result;
     }
 }
