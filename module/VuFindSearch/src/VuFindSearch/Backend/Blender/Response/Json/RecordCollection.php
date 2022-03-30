@@ -273,66 +273,20 @@ class RecordCollection
         $mergedFacets = [];
 
         // Iterate through mappings and merge values. It is important to do it this
-        // way since multiple facets may to a single one.
+        // way since multiple facets may map to a single one.
         foreach ($this->mappings['Facets']['Fields'] ?? []
             as $facetField => $settings
         ) {
-            $list = [];
-            foreach ($collections as $backendId => $collection) {
-                $facets = $this->convertFacets($collection);
-
-                $facetType = $settings['Type'] ?? 'normal';
-                $mappings = $settings['Mappings'][$backendId] ?? [];
-                $backendFacetField = $mappings['Field'] ?? '';
-                if (!$mappings || !$backendFacetField) {
-                    continue;
-                }
-                $valueMap = $mappings['Values'] ?? [];
-                $unmappedRule = $mappings['Unmapped'] ?? 'keep';
-                $hierarchical = $mappings['Hierarchical'] ?? false;
-                foreach ($facets[$backendFacetField] ?? [] as $value => $count) {
-                    $value = $this->convertFacetValue(
-                        $value,
-                        $facetType,
-                        $unmappedRule,
-                        $valueMap,
-                        $hierarchical
-                    );
-                    if ('' === $value) {
-                        continue;
-                    }
-
-                    if (isset($list[$value])) {
-                        $list[$value] += $count;
-                    } else {
-                        $list[$value] = intval($count);
-                    }
-
-                    if ($hierarchical) {
-                        $parts = explode('/', $value);
-                        $level = array_shift($parts);
-                        for ($i = $level - 1; $i >= 0; $i--) {
-                            $key = $i . '/'
-                                . implode('/', array_slice($parts, 0, $i + 1))
-                                . '/';
-                            if (isset($list[$key])) {
-                                $list[$key] += $count;
-                            } else {
-                                $list[$key] = intval($count);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Re-sort the list
+            // Get merged list of facet values:
+            $list = $this->mapFacetValues($collections, $settings);
+            // Re-sort the list:
+            // TODO: Could we support alphabetical order?
             uasort(
                 $list,
                 function ($a, $b) {
                     return $b - $a;
                 }
             );
-
             $mergedFacets[$facetField] = $list;
         }
 
@@ -349,6 +303,79 @@ class RecordCollection
         }
 
         return $facetFields;
+    }
+
+    /**
+     * Map facet values from the backends into a merged list
+     *
+     * @param array $collections Result collections
+     * @param array $settings    Settings for a single facet field
+     *
+     * @return array
+     */
+    protected function mapFacetValues(array $collections, array $settings): array
+    {
+        $result = [];
+        foreach ($collections as $backendId => $collection) {
+            $facets = $this->convertFacets($collection);
+            $facetType = $settings['Type'] ?? 'normal';
+            $mappings = $settings['Mappings'][$backendId] ?? [];
+            $backendFacetField = $mappings['Field'] ?? '';
+            if (!$mappings || !$backendFacetField) {
+                continue;
+            }
+            $valueMap = $mappings['Values'] ?? [];
+            $unmappedRule = $mappings['Unmapped'] ?? 'keep';
+            $hierarchical = $mappings['Hierarchical'] ?? false;
+            foreach ($facets[$backendFacetField] ?? [] as $value => $count) {
+                $value = $this->convertFacetValue(
+                    $value,
+                    $facetType,
+                    $unmappedRule,
+                    $valueMap,
+                    $hierarchical
+                );
+                if ('' === $value) {
+                    continue;
+                }
+
+                $result[$value] = ($result[$value] ?? 0) + intval($count);
+                if ($hierarchical) {
+                    foreach ($this->getHierarchyParentKeys($value) as $key) {
+                        $result[$key] = ($result[$key] ?? 0) + intval($count);
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get parent hierachy keys for a facet value
+     *
+     * For example with '2/Main/Sub/Shelf/' the result is:
+     * [
+     *   '1/Main/Sub/',
+     *   '0/Main/'
+     * ]
+     *
+     * @param string $value Hierarchical facet value
+     *
+     * @return array
+     */
+    protected function getHierarchyParentKeys(string $value): array
+    {
+        $parts = explode('/', $value);
+        $level = array_shift($parts);
+        if (empty($parts)) {
+            return [];
+        }
+        $result = [];
+        for ($i = intval($level) - 1; $i >= 0; $i--) {
+            $result[] = $i . '/' . implode('/', array_slice($parts, 0, $i + 1))
+                . '/';
+        }
+        return $result;
     }
 
     /**
