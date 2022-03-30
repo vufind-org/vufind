@@ -63,7 +63,7 @@ class RecordCollection
      *
      * @var array
      */
-    protected $initialResults;
+    protected $initialResultsBackends;
 
     /**
      * Any errors encountered
@@ -83,7 +83,8 @@ class RecordCollection
         $this->config = $config;
         $this->mappings = $mappings;
         $this->response = static::$template;
-        $this->initialResults = isset($this->config->Blending->initialResults)
+        $this->initialResultsBackends
+            = isset($this->config->Blending->initialResults)
             ? $this->config->Blending->initialResults->toArray()
             : [];
     }
@@ -119,20 +120,14 @@ class RecordCollection
 
         $backendIds = array_keys($backendRecords);
         // Filter out unavailable backends from initial results source list:
-        $initialResults = array_values(
-            array_filter(
-                $this->initialResults,
-                function ($s) use ($backendIds) {
-                    return in_array($s, $backendIds);
-                }
-            )
-        );
+        $initialResultsBackends
+            = array_intersect($this->initialResultsBackends, $backendIds);
         for ($pos = 0; $pos < $limit; $pos++) {
             $backendId = $this->getBackendAtPosition(
                 $pos,
                 $blockSize,
                 $backendIds,
-                $initialResults
+                $initialResultsBackends
             );
             if (!empty($backendRecords[$backendId])) {
                 $this->add(array_shift($backendRecords[$backendId]), false);
@@ -257,15 +252,16 @@ class RecordCollection
     }
 
     /**
-     * Calculate the backend to be used for the record at a given position
+     * Calculate the backend to be used for a record at the given position
      *
      * Note: This does not take into account whether there are enough records in the
      * source.
      *
-     * @param int   $position       Position
-     * @param int   $blockSize      Record block size
-     * @param array $backendIds     Available backends
-     * @param array $initialResults List of backends for initial result boosts
+     * @param int   $position               Position
+     * @param int   $blockSize              Record block size
+     * @param array $backendIds             Available backends
+     * @param array $initialResultsBackends List of backends for initial result
+     * boosts
      *
      * @return string
      */
@@ -273,9 +269,9 @@ class RecordCollection
         int $position,
         int $blockSize,
         array $backendIds,
-        array $initialResults
+        array $initialResultsBackends
     ): string {
-        if ($boostBackend = $initialResults[$position] ?? false) {
+        if ($boostBackend = $initialResultsBackends[$position] ?? false) {
             return $boostBackend;
         }
 
