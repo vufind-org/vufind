@@ -65,8 +65,34 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return $this->createViewModel($viewParams);
     }
 
+    public function build_sorter($key) {
+        return function ($a, $b) use ($key) {
+            return strnatcmp($a[$key], $b[$key]);
+        };
+    }
+
     public function publishAction()
     {
+
+        /*
+        $metaArray = [
+            "type"=>"Article",
+            "language"=>"en",
+            "author"=>"Kilian-Yasin, Katharina;02a88394-6161-44ce-a0c0-5f1640137bf4",
+            "identifiers"=> "issn;identifiers text",
+            "title"=>"Title test",
+            "title.alternative"=>"Alternative Title test",
+            "publisher"=>"Publisher text",
+            "citation"=>"citation text",
+            "ispartofseries"=> "Series/Report No. 1 test; Series/Report No. 2 test",
+            "date.issued"=> "2022-03-18",
+            "subject.keywords" => "Research Subject Categories::SOCIAL SCIENCES::Other social sciences::Labour market research",
+            "abstract" => "Abstract text",
+            "sponsorship" => "Sponsors text",
+            "description" => "Description text"
+            ];
+        */
+
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
@@ -74,6 +100,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $uploadInfos = [];
         $uploadError = 0;
+        $uploadFileSize = 500000;
 
         $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
         $dspace->login();
@@ -93,140 +120,76 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $termFileData = $this->getLatestTermFile();
 
+        $dbPublications = $this->getTable('publication')->getByControlNumber($controlNumber);
+        if(!empty($dbPublications->external_document_id)){
+            $uploadInfos[] = ["Publication File exist!","text-danger"];
+            $uploadError = 1;
+        }
+
         if ($action == 'publish') {
 
             $uploadedFile = $this->params()->fromFiles('file');
-
             $userFileName = $dublinCore['DC.title'][0];
-
-            $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
-            $dspace->login();
-            // TODO: Upload PDF file to DSpace
 
             $collectionName = $config->Publication->collection_name;
 
-            $uploadInfos[] = ["Collection name: ".$collectionName,"text-secondary"];
-
-            $collectionID = "";
-
-            $collections = $dspace->getCollections();
-
-            foreach($collections->_embedded->collections as $collection) {
-                if($collection->name == $collectionName) {
-                    $collectionID = $collection->id;
-                    $uploadInfos[] = ["Collection ID: ".$collectionID,"text-secondary"];
-                }
-                //print $collection->name ." - " .$collection->id."<br />";
+            $collection = $dspace->getCollectionByName($collectionName);
+            if(isset($collection->id)) {
+              $collectionID = $collection->id;
             }
 
             if($uploadedFile['type'] != "application/pdf") {
                 $uploadInfos[] = ["Invalid file type!: ".$uploadedFile['type'],"text-danger"];
                 $uploadError = 1;
-            }else{
-                $uploadInfos[] = ["File type correct: ".$uploadedFile['type'],"text-success"];
             }
 
-            if($uploadedFile['size'] >  500000) {
-                $uploadInfos[] = ["File is too big! size:".$uploadedFile['size'],"text-danger"];
+            if($uploadedFile['size'] >  $uploadFileSize) {
+                $uploadInfos[] = ["File is too big!","text-danger"];
                 $uploadError = 1;
-            }else{
-                $uploadInfos[] = ["File size correct:".$uploadedFile['size'],"text-success"];
             }
 
-            $uploaddir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace/';
+            $uploaddir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace';
 
-            if (!file_exists($uploaddir)) {
-              $uploadInfos[] = ["Download directory does not exist","text-danger"];
-              $uploadError = 1;
-            }else{
-              $uploadInfos[] = ["Download directory 'dspace' exist","text-success"];
+            if (!is_dir($uploaddir)) {
+                $uploadError = 1;
             }
 
-            //$uploadfile = $uploaddir . basename($uploadedFile['name']);
             $customFileName = strtotime("now").".pdf";
-            $uploadfile = $uploaddir . $customFileName;
-
-            print_r($uploadedFile);
-
+            $uploadfile = $uploaddir ."/". $customFileName;
 
             if (move_uploaded_file($uploadedFile['tmp_name'], $uploadfile) && $uploadError == 0) {
+                if (file_exists($uploadfile)) {
+                    $workspaceItem = $dspace->addWorkspaceItem($uploadfile, $collectionID);
+                    $itemID = $workspaceItem->id;
+                    $dbPublications = $this->getTable('publication')->addPublication($user->id, $controlNumber, $itemID, $termFileData['termDate']);
 
-              if (!file_exists($uploadfile)) {
-                $uploadInfos[] = ["Upload File does not exist","text-danger"];
-                $uploadError = 1;
-              }else{
-                $uploadInfos[] = ["Upload File exist: ".$customFileName,"text-success"];
-              }
+                    $language = 'en';
+                    if(isset($dublinCore['DC.language'][0])) {
+                        switch($dublinCore['DC.language'][0]){
+                            case"German":
+                                $language = 'de';
+                            break;
+                        }
+                    }
 
-              $workspaceItem = $dspace->addWorkspaceItem($uploadfile, $collectionID);
+                    $metaArray = [
+                        "title"=>$userFileName,
+                        "language"=>$language,
+                        "publisher"=>$dublinCore['DC.publisher'][0],
+                        "author"=>$dublinCore['DC.creator'][0].";02a88394-6161-44ce-a0c0-5f1640137bf4",
+                        "identifiers"=>"issn;".$controlNumber
 
-              $itemID = $workspaceItem->id;
-              $uploadInfos[] = ["WorkspaceItem ID: ".$itemID,"text-success"];
+                    ];
 
-              $dbPublications = $this->getTable('publication')->addPublication($user->id, $controlNumber, $itemID, $termFileData['termDate']);
-              //$itemID = "134863";
-              /*
-              $metaArray = [
-                  "type"=>"Article",
-                  "language"=>"en",
-                  "author"=>"Kilian-Yasin, Katharina;02a88394-6161-44ce-a0c0-5f1640137bf4",
-                  "identifiers"=> "issn;identifiers text",
-                  "title"=>"Title test",
-                  "title.alternative"=>"Alternative Title test",
-                  "publisher"=>"Publisher text",
-                  "citation"=>"citation text",
-                  "ispartofseries"=> "Series/Report No. 1 test; Series/Report No. 2 test",
-                  "date.issued"=> "2022-03-18",
-                  "subject.keywords" => "Research Subject Categories::SOCIAL SCIENCES::Other social sciences::Labour market research",
-                  "abstract" => "Abstract text",
-                  "sponsorship" => "Sponsors text",
-                  "description" => "Description text"
-                  ];
-              */
-
-              $languege = 'en';
-              if(isset($dublinCore['DC.language'][0])) {
-                switch($dublinCore['DC.language'][0]){
-                  case"German":
-                    $languege = 'de';
-                  break;
+                    $patchData = [];
+                    foreach($metaArray as $metaKey=>$metaValue) {
+                        $this->generateMetaData($metaKey,$metaValue,$patchData);
+                    }
+                    $patchDataJson = json_encode($patchData);
+                    $item = $dspace->updateWorkspaceItem($itemID,$patchDataJson);
+                    $this->removeDspaceFile();
                 }
-              }
-
-              $metaArray = [
-                  "title"=>$userFileName,
-                  "language"=>$languege,
-                  "publisher"=>$dublinCore['DC.publisher'][0],
-                  "author"=>$dublinCore['DC.creator'][0].";02a88394-6161-44ce-a0c0-5f1640137bf4",
-                  "identifiers"=>"issn;".$controlNumber
-
-              ];
-
-              $item = $dspace->editMetaData($itemID,$metaArray);
-
-              $uploadInfos[] = ["add created meta data","text-success"];
-
-            } else {
-                $uploadInfos[] = ["file not uploaded","text-danger"];
-                $uploadError = 1;
             }
-
-            if($uploadError == 0) {
-              /*
-              $metaArray = [
-                "publisher"=>"Published text test"
-              ];
-
-              $item2update = $dspace->editMetaData($itemID,$metaArray);
-
-              $uploadInfos[] = ["updated meta data","text-success"];
-              */
-              // delete file after upload to Dspace
-              $this->removeDspaceFile();
-
-              $uploadInfos[] = ["temp file deleted!","text-success"];
-            }
-
         }
 
         $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
@@ -305,49 +268,129 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
     private function getLatestTermFile(): array {
 
-        $termsDir =  $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/docs/publication_terms/';
+        $termsDir =  $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/publication_terms/';
         $files = scandir($termsDir);
         $latestTermFileData = [];
         $latestTermData = [];
         foreach($files as $file){
-            if(strlen($file) > 3) {
-              preg_match_all('/(\d{4})(\d{2})(\d{2})/',$file,$matches,PREG_PATTERN_ORDER);
-              if(isset($matches[0])){
-                $formatedDate = $matches[1][0]."-".$matches[2][0]."-".$matches[3][0];
-                $timeStamp = strtotime($formatedDate);
-                $latestTermData[] = [
-                    "milliseconds"=>$timeStamp,
-                    "termDate"=>$formatedDate,
-                    "fileName"=>$file
-                ];
-              }
+            if(strlen($file) > 3) { //remove system files (. ..)
+                preg_match_all('/(\d{4})(\d{2})(\d{2})/',$file,$matches,PREG_PATTERN_ORDER);
+                if(isset($matches[0])){
+                    $formatedDate = $matches[1][0]."-".$matches[2][0]."-".$matches[3][0];
+                    $timeStamp = strtotime($formatedDate);
+                    $latestTermData[] = [
+                        "milliseconds"=>$timeStamp,
+                        "termDate"=>$formatedDate,
+                        "fileName"=>$file
+                    ];
+                }
             }
         }
         if(!empty($latestTermData)) {
-          $this->arraySortByColumn($latestTermData, 'milliseconds');
-          $latestTermFileData = $latestTermData[0];
+            usort($latestTermData, $this->build_sorter('milliseconds'));
+            $latestTermFileData = $latestTermData[0];
         }
         return $latestTermFileData;
     }
 
-    private function arraySortByColumn(&$arr, $col, $dir = SORT_DESC): void {
-      $sort_col = array();
-      foreach ($arr as $key => $row) {
-          $sort_col[$key] = $row[$col];
-      }
-      array_multisort($sort_col, $dir, $arr);
-    }
-
     private function removeDspaceFile(): void {
 
-      $dspaceDir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace/';
-      $files = scandir($dspaceDir);
-      foreach($files as $file){
-        if(strlen($file) > 3) {
-           unlink($dspaceDir.$file);
+        $dspaceDir = $_SERVER['CONTEXT_DOCUMENT_ROOT'].'/dspace/';
+        $files = scandir($dspaceDir);
+        foreach($files as $file){
+            if(strlen($file) > 3) { //
+                unlink($dspaceDir.$file);
+            }
         }
-      }
 
+    }
+
+    private function generateMetaData($metaKey,$metaValue,&$dataArray): void {
+
+        $oneMetaArray = [];
+
+        $op = 'add';
+        $language = NULL;
+        $authority = NULL;
+        $confidence = -1;
+        $place = 0;
+        $otherInformation = NULL;
+        $path = '';
+
+        switch($metaKey) {
+            case"title":
+                $path = '/sections/traditionalpageone/dc.title';
+            break;
+            case"title.alternative":
+                $path = '/sections/traditionalpageone/dc.title.alternative';
+            break;
+            case"publisher":
+                $path = '/sections/traditionalpageone/dc.publisher';
+            break;
+            case"citation":
+                $path = '/sections/traditionalpageone/dc.identifier.citation';
+            break;
+            case"ispartofseries":
+                $path = '/sections/traditionalpageone/dc.relation.ispartofseries';
+            break;
+            case"date.issued":
+                $path = '/sections/traditionalpageone/dc.date.issued';
+            break;
+            case"subject.keywords":
+                $path = '/sections/traditionalpagetwo/dc.subject';
+            break;
+            case"abstract":
+                $path = '/sections/traditionalpagetwo/dc.description.abstract';
+            break;
+            case"description":
+                $path = '/sections/traditionalpagetwo/dc.description';
+            break;
+            case"sponsorship":
+                $path = '/sections/traditionalpagetwo/dc.description.sponsorship';
+            break;
+            case"type":
+                $path = '/sections/traditionalpageone/dc.type';
+            break;
+            case"language":
+                $path = '/sections/traditionalpageone/dc.language.iso';
+            break;
+            case"author":
+                $path = '/sections/traditionalpageone/dc.contributor.author';
+                $confidence = 600;
+                $explodeValue = explode(';',$metaValue);
+                $metaValue = $explodeValue[0];
+                $authority = $explodeValue[1];
+            break;
+            case"identifiers":
+                $explodeValue = explode(';',$metaValue);
+                $metaValue = $explodeValue[1];
+                $identifierType = $explodeValue[0];
+                if($identifierType == 'issn') {
+                    $path = '/sections/traditionalpageone/dc.identifier.issn';
+                }else{
+                    $path = '/sections/traditionalpageone/dc.identifier.other';
+                }
+            break;
+        }
+
+        $oneMetaArray = [
+            'op' => $op,
+            'path' => $path,
+            'value' =>
+              [
+                  [
+                      'value' => $metaValue,
+                      'language' => $language,
+                      'authority' => $authority,
+                      'display' => $metaValue,
+                      'confidence' => $confidence,
+                      'place' => $place,
+                      'otherInformation' => $otherInformation
+                  ]
+              ]
+        ];
+
+        $dataArray[] = $oneMetaArray;
     }
 
 }

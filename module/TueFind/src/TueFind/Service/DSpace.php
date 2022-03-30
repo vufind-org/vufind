@@ -156,15 +156,7 @@ class DSpace {
         return $result->_embedded->workspaceitems[0];
     }
 
-        public function editMetaData(string $id, array $metaArray) {
-
-        $patchData = [];
-
-        foreach($metaArray as $metaKey=>$metaValue) {
-          $this->generateMetaData($metaKey,$metaValue,$patchData);
-        }
-
-        $patchDataJson = json_encode($patchData);
+    public function updateWorkspaceItem(string $id, string $patchDataJson) {
 
         $headers = [
             'Content-Type' => 'application/json',
@@ -173,94 +165,6 @@ class DSpace {
 
         return $this->call(self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($id), self::METHOD_PATCH,$headers,$patchDataJson);
 
-    }
-
-    private function generateMetaData($metaKey,$metaValue,&$dataArray): void {
-
-        $oneMetaArray = [];
-
-        $op = 'add';
-        $language = NULL;
-        $authority = NULL;
-        $confidence = -1;
-        $place = 0;
-        $otherInformation = NULL;
-        $path = '';
-
-        switch($metaKey) {
-            case"title":
-                $path = '/sections/traditionalpageone/dc.title';
-            break;
-            case"title.alternative":
-                $path = '/sections/traditionalpageone/dc.title.alternative';
-            break;
-            case"publisher":
-                $path = '/sections/traditionalpageone/dc.publisher';
-            break;
-            case"citation":
-                $path = '/sections/traditionalpageone/dc.identifier.citation';
-            break;
-            case"ispartofseries":
-                $path = '/sections/traditionalpageone/dc.relation.ispartofseries';
-            break;
-            case"date.issued":
-                $path = '/sections/traditionalpageone/dc.date.issued';
-            break;
-            case"subject.keywords":
-                $path = '/sections/traditionalpagetwo/dc.subject';
-            break;
-            case"abstract":
-                $path = '/sections/traditionalpagetwo/dc.description.abstract';
-            break;
-            case"description":
-                $path = '/sections/traditionalpagetwo/dc.description';
-            break;
-            case"sponsorship":
-                $path = '/sections/traditionalpagetwo/dc.description.sponsorship';
-            break;
-            case"type":
-                $path = '/sections/traditionalpageone/dc.type';
-            break;
-            case"language":
-                $path = '/sections/traditionalpageone/dc.language.iso';
-            break;
-            case"author":
-                $path = '/sections/traditionalpageone/dc.contributor.author';
-                $confidence = 600;
-                $explodeValue = explode(';',$metaValue);
-                $metaValue = $explodeValue[0];
-                $authority = $explodeValue[1];
-            break;
-            case"identifiers":
-                $explodeValue = explode(';',$metaValue);
-                $metaValue = $explodeValue[1];
-                $identifierType = $explodeValue[0];
-                if($identifierType == 'issn') {
-                  $path = '/sections/traditionalpageone/dc.identifier.issn';
-                }else{
-                  $path = '/sections/traditionalpageone/dc.identifier.other';
-                }
-            break;
-        }
-
-        $oneMetaArray = [
-            'op' => $op,
-            'path' => $path,
-            'value' =>
-              [
-                [
-                  'value' => $metaValue,
-                  'language' => $language,
-                  'authority' => $authority,
-                  'display' => $metaValue,
-                  'confidence' => $confidence,
-                  'place' => $place,
-                  'otherInformation' => $otherInformation
-                ]
-              ]
-        ];
-
-        $dataArray[] = $oneMetaArray;
     }
 
     public function getAuthenticationStatus()
