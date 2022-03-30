@@ -116,6 +116,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'use_underscore' => false,
                 'unordered_list_markers' => ['`', '~'],
                 'max_nesting_level' => 10,
+                'extensions' => 'Table,VuFindTest\Markdown\ExampleExtension',
                 'renderer' => [
                     'block_separator' => "\r\n",
                     'inner_separator' => "\r\n",
@@ -135,6 +136,10 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     'tag' => 'div',
                     'attributes' => 'class:table-responsive,title:table',
                 ],
+            ],
+            'VuFindTest\Markdown\ExampleExtension' => [
+                'config_key' => 'example',
+                'example' => 'example',
             ],
         ];
         $customEnvironment2 = [
@@ -157,6 +162,9 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                         'title' => 'table',
                     ],
                 ],
+            ],
+            'example' => [
+                'example' => 'example',
             ],
             'renderer' => [
                 'block_separator' => "\r\n",
@@ -223,6 +231,17 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
                 ],
             ],
+            [ // Test custom extension
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => 'VuFindTest\Markdown\ExampleExtension',
+                    ],
+                ],
+                'expected' => [
+                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
+                    'VuFindTest\Markdown\ExampleExtension',
+                ],
+            ],
             [ // Test not valid extensions set
                 'config' => [
                     'Markdown' => [
@@ -281,8 +300,24 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMarkdownConverter(array $config): ConverterInterface
     {
+        $disabledServices = [
+            'League\CommonMark\Extension\Autolink\AutolinkExtension',
+            'League\CommonMark\Extension\Attributes\AttributesExtension',
+            'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
+            'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
+            'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
+            'League\CommonMark\Extension\Table\TableExtension',
+            'League\CommonMark\Extension\TaskList\TaskListExtension',
+        ];
         $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);
+        foreach ($disabledServices as $service) {
+            $container->disable($service);
+        }
+        $container->set(
+            'VuFindTest\Markdown\ExampleExtension',
+            new \VuFindTest\Markdown\ExampleExtension()
+        );
         $configManager = $container
             ->createMock(\VuFind\Config\PluginManager::class, ['get']);
         $configManager->expects($this->any())->method('get')
