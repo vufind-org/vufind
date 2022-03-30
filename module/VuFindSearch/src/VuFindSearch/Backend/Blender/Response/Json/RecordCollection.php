@@ -114,38 +114,9 @@ class RecordCollection
             return [];
         }
 
-        $backendRecords = [];
-        foreach ($collections as $backendId => $collection) {
-            $records = $collection->getRecords();
-            $label = $this->config->Backends[$backendId];
-            foreach ($records as $record) {
-                $record->setSourceIdentifiers(
-                    $record->getSourceIdentifier(),
-                    $backendId
-                );
-                if ($label) {
-                    $record->addLabel($label, 'source');
-                }
-                $backendRecords[$backendId][] = $record;
-            }
+        $backendRecords = $this->collectBackendRecords($collections);
+        $this->addErrorsFromBackends($collections);
 
-            foreach ($collection->getErrors() as $error) {
-                if (is_string($error) && $label) {
-                    $error = [
-                        'msg' => '%%error%% -- %%label%%',
-                        'tokens' => [
-                            '%%error%%' => $error,
-                            '%%label%%' => $label
-                        ],
-                        'translate' => true,
-                        'translateTokens' => true,
-                    ];
-                }
-                $this->addError($error);
-            }
-        }
-
-        $records = [];
         $backendIds = array_keys($backendRecords);
         // Filter out unavailable backends from initial results source list:
         $initialResults = array_values(
@@ -228,6 +199,61 @@ class RecordCollection
     public function setSourceIdentifier($identifier)
     {
         $this->source = $identifier;
+    }
+
+    /**
+     * Collect records from all backends to an associative array
+     *
+     * @param array $collections Array of record collections
+     *
+     * @return array
+     */
+    protected function collectBackendRecords(array $collections): array
+    {
+        $result = [];
+        foreach ($collections as $backendId => $collection) {
+            $records = $collection->getRecords();
+            $label = $this->config->Backends[$backendId];
+            foreach ($records as $record) {
+                $record->setSourceIdentifiers(
+                    $record->getSourceIdentifier(),
+                    $backendId
+                );
+                if ($label) {
+                    $record->addLabel($label, 'source');
+                }
+                $result[$backendId][] = $record;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Store errors from all backends
+     *
+     * @param array $collections Array of record collections
+     *
+     * @return void
+     */
+    protected function addErrorsFromBackends(array $collections): void
+    {
+        foreach ($collections as $backendId => $collection) {
+            foreach ($collection->getErrors() as $error) {
+                $label = $this->config->Backends[$backendId];
+                if (is_string($error) && $label) {
+                    $error = [
+                        'msg' => '%%error%% -- %%label%%',
+                        'tokens' => [
+                            '%%error%%' => $error,
+                            '%%label%%' => $label
+                        ],
+                        'translate' => true,
+                        'translateTokens' => true,
+                    ];
+                }
+                $this->addError($error);
+            }
+        }
     }
 
     /**
