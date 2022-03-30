@@ -144,23 +144,6 @@ class RecordCollection
     }
 
     /**
-     * Slice the record collection
-     *
-     * @param int $offset Offset
-     * @param int $limit  Limit
-     *
-     * @return void
-     */
-    public function slice(int $offset, int $limit): void
-    {
-        $this->records = array_slice(
-            $this->records,
-            $offset,
-            $limit
-        );
-    }
-
-    /**
      * Add an error message
      *
      * @param mixed $error Error
