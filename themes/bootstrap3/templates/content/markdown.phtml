@@ -5,7 +5,8 @@ $title = '';
 if ($content instanceof League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter) {
   $frontMatter = $content->getFrontMatter();
   $title = $frontMatter['title'] ?? '';
-} else {
+}
+if ($title === '') {
   $found = preg_match('/#+(.*)/', $this->data, $matches);
   if ($found) {
     $title = $matches[1];

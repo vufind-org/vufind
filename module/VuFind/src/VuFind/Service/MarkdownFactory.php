@@ -119,13 +119,7 @@ class MarkdownFactory implements FactoryInterface
                 explode(',', $this->config['Markdown']['extensions'])
             )
             : self::$defaultExtensions;
-        $this->extensions = array_filter(
-            $this->extensions,
-            function ($item) {
-                return $item !== '';
-            }
-        );
-        unset($this->config['Markdown']['extensions']);
+        $this->extensions = array_filter($this->extensions);
 
         return new MarkdownConverter($this->getEnvironment());
     }

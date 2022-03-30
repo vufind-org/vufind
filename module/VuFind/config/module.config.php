@@ -461,6 +461,7 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'League\CommonMark\MarkdownConverterInterface' => 'League\CommonMark\ConverterInterface',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
