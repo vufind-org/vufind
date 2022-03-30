@@ -146,11 +146,7 @@ class Backend extends AbstractBackend
         $limit,
         ParamBag $params = null
     ) {
-        $mergedCollection = new Response\Json\RecordCollection(
-            $this->config,
-            $this->mappings
-        );
-        $mergedCollection->setSourceIdentifier($this->identifier);
+        $mergedCollection = $this->createRecordCollection();
 
         $backendDetails = [];
         foreach ($this->getActiveBackends($params) as $backendId => $backend) {
@@ -236,6 +232,21 @@ class Backend extends AbstractBackend
         $mergedCollection->slice($offset, $limit);
 
         return $mergedCollection;
+    }
+
+    /**
+     * Create record collection.
+     *
+     * @return Response\Json\RecordCollection
+     */
+    protected function createRecordCollection(): Response\Json\RecordCollection
+    {
+        $collection = new Response\Json\RecordCollection(
+            $this->config,
+            $this->mappings
+        );
+        $collection->setSourceIdentifier($this->identifier);
+        return $collection;
     }
 
     /**
