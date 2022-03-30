@@ -45,11 +45,12 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFacetsAndFilters(): void
+    public function testOptions(): void
     {
         $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
         $options = new Options($configMgr);
         $this->assertEquals('search-blended', $options->getSearchAction());
         $this->assertFalse($options->getAdvancedSearchAction());
+        $this->assertFalse($options->getFacetListAction());
     }
 }
