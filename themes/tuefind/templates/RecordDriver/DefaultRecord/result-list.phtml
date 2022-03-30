@@ -51,33 +51,35 @@
           <?php endif; ?>
 
           <?php /* TueFind: Replace default container information by custom logic */ ?>
+          <?php $journal_issue = $this->driver->tryMethod('getJournalIssue'); ?>
           <?php $ids_and_titles_and_volume = $this->driver->getContainerIDsAndTitles(); ?>
-          <?php if (!empty($ids_and_titles_and_volume)): ?>
+          <?php // Option 1: We have a journal with issue information ?>
+          <?php if (is_array($journal_issue) && count($journal_issue) > 1): ?>
+            <?php $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
+            <?php $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
+            <?php unset($journal_issue[$superior_ppn_index]); ?>
+            <div>
+              <?php if(!empty($superior_ppn)): ?>
+                <?=$this->transEsc('in')?>:
+                <?php $journal_issue_display = preg_replace('/(\d+)(\()/','$1 $2', implode($journal_issue,  ", ")) ?>
+                <a href="<?=$this->url('record', array('id' => $superior_ppn)) ?>"><?=$journal_issue_display ?></a>
+              <?php else: ?>
+                <?php implode($journal_issue, " ") ?>
+              <?php endif; ?>
+            </div>
+          <?php // Option 2: We have any other kind of container (e.g. a series of books) ?>
+          <?php elseif (!empty($ids_and_titles_and_volume)): ?>
             <?php foreach ($ids_and_titles_and_volume as $id => $title_and_volume): ?>
-              <div>
-                <?php $journal_issue = $this->driver->tryMethod('getJournalIssue'); ?>
-                <?php if (is_array($journal_issue) && count($journal_issue) > 1): ?>
-                  <?php $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
-                  <?php $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
-                  <?php unset($journal_issue[$superior_ppn_index]); ?>
-                  <div>
-                    <?php if(!empty($superior_ppn)): ?>
-                      <?=$this->transEsc('in')?>:
-                      <?php $journal_issue_display = preg_replace('/(\d+)(\()/','$1 $2', implode($journal_issue,  ", ")) ?>
-                      <a href="<?=$this->url('record', array('id' => $superior_ppn)) ?>"><?=$journal_issue_display ?></a>
-                    <?php else: ?>
-                      <?php implode($journal_issue, " ") ?>
-                    <?php endif; ?>
-                  </div>
-                <?php else: ?>
-                  <div>
-                    <?php // Fill with non article handling code ?>
-                    <?=implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ") ?>
-                  </div>
-                <?php endif; ?>
-              </div>
+              <div><?=$this->transEsc('in')?>: <a href="<?=$this->url('record', ['id' => $id]) ?>"><?=$title_and_volume[0] . (isset($title_and_volume[1]) ? ' (' . $title_and_volume[1] . ')' : '')?></a></div>
             <?php endforeach; ?>
+          <?php // Option 3: We do not have any container at all ?>
+          <?php else: ?>
+            <div>
+              <?php // Fill with non article handling code ?>
+              <?=implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ") ?>
+            </div>
           <?php endif; ?>
+
         <?php endif; ?>
       </div>
 

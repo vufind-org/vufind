@@ -594,15 +594,179 @@ oclc_num:
     oclc_num:
       - [oclc_num, ~]
 
-Fulltext:
+FulltextOnly:
   DismaxFields:
-    - fulltext_unstemmed^10
-    - fulltext
+    - fulltext_unstemmed^750
+    - fulltext^750
+    - fulltext_toc^750
+    - fulltext_toc_unstemmed^750
+    - fulltext_abstract^750
+    - fulltext_abstract_unstemmed^750
+    - fulltext_summary^750
+    - fulltext_summary_unstemmed^750
   QueryFields:
     fulltext_unstemmed:
-      - [or, 10]
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
     fulltext:
+      - [onephrase, 50]
+      - [and, 50]
       - [or, ~]
+    fulltext_toc:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
+FulltextWithSynonyms:
+  DismaxFields:
+    - fulltext^750
+    - fulltext_unstemmed^750
+    - fulltext_synonyms^750
+    - fulltext_toc^750
+    - fulltext_toc_unstemmed^750
+    - fulltext_toc_synonyms^750
+    - fulltext_abstract^750
+    - fulltext_abstract_unstemmed^750
+    - fulltext_abstract_synonyms^750
+    - fulltext_summary^750
+    - fulltext_summary_unstemmed^750
+    - fulltext_summary_synonyms^750
+
+  QueryFields:
+    fulltext:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    fulltext_unstemmed:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    fulltext_synonyms:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc_synonyms:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract_synonyms:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary_synonyms:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
+FulltextAllSynonyms:
+  DismaxFields:
+    - fulltext^750
+    - fulltext_unstemmed^750
+    - fulltext_synonyms_all^750
+    - fulltext_toc^750
+    - fulltext_toc_unstemmed^750
+    - fulltext_toc_synonyms_all^750
+    - fulltext_abstract^750
+    - fulltext_abstract_unstemmed^750
+    - fulltext_abstract_synonyms_all^750
+    - fulltext_summary^750
+    - fulltext_summary_unstemmed^750
+    - fulltext_summary_synonyms_all^750
+  QueryFields:
+    fulltext:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    fulltext_unstemmed:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    fulltext_synonyms_all:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc_synonyms_all:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract_synonyms_all:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_summary_synonyms_all:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
 
 GND:
   DismaxFields:
