@@ -65,12 +65,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return $this->createViewModel($viewParams);
     }
 
-    public function build_sorter($key) {
-        return function ($a, $b) use ($key) {
-            return strnatcmp($a[$key], $b[$key]);
-        };
-    }
-
     public function publishAction()
     {
 
@@ -116,6 +110,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $controlNumber = $dublinCore['DC.identifier'][0];
         }
 
+        if(empty($controlNumber)){
+            $uploadInfos[] = ["Control Number empty!","text-danger"];
+            $uploadError = 1;
+        }
+
         $action = $this->params()->fromPost('action');
 
         $termFileData = $this->getLatestTermFile();
@@ -126,7 +125,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $uploadError = 1;
         }
 
-        if ($action == 'publish') {
+        if ($action == 'publish' && $uploadError == 0) {
 
             $uploadedFile = $this->params()->fromFiles('file');
             $userFileName = $dublinCore['DC.title'][0];
@@ -287,7 +286,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
         }
         if(!empty($latestTermData)) {
-            usort($latestTermData, $this->build_sorter('milliseconds'));
+            usort($latestTermData, function ($a, $b) {
+            return strnatcmp($a['milliseconds'], $b['milliseconds']);
+            });
             $latestTermFileData = $latestTermData[0];
         }
         return $latestTermFileData;
