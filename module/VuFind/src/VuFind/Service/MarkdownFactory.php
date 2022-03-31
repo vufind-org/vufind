@@ -81,7 +81,7 @@ class MarkdownFactory implements FactoryInterface
     /**
      * Markdown processor configuration
      *
-     * @var Config
+     * @var array
      */
     protected $config;
 
