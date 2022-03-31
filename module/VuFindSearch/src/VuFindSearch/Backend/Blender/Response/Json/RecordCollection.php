@@ -376,9 +376,6 @@ class RecordCollection
     {
         $parts = explode('/', $value);
         $level = array_shift($parts);
-        if (empty($parts)) {
-            return [];
-        }
         $result = [];
         for ($i = intval($level) - 1; $i >= 0; $i--) {
             $result[] = $i . '/' . implode('/', array_slice($parts, 0, $i + 1))
