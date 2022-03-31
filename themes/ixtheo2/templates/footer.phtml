@@ -3,13 +3,13 @@
   <?php if($routeParams['controller'] == "index" && $routeParams['action'] == "Home"): ?>
     <section class="ix-footer-section">
       <div class="container">
-        <?=$this->tuefind()->renderStaticTemplate('supporters')?>
+        <?=$this->content()->renderTranslated('snippets/supporters'); ?>
       </div>
     </section>
   <?php endif;?>
   <section class="ix-footer-section ix-footer-background-block">
     <div class="container">
-      <?=$this->tuefind()->renderStaticTemplate('footer')?>
+      <?=$this->content()->renderTranslated('snippets/footer'); ?>
     </div>
   </section>
   <a href="<?=$this->url('feedback-home')?>" data-lightbox="">

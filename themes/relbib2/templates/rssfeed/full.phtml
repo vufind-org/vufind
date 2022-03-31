@@ -1,9 +1,0 @@
-<div class="row">
-    <div class="col-md-9">
-        <?=$this->tuefind()->renderStaticTemplate('rss_top'); ?>
-        <?=$this->context($this)->renderInContext('rssfeed/full-items', ['rssItems' => $rssItems])?>
-    </div>
-    <div class="col-md-3">
-        <?=$this->tuefind()->renderStaticTemplate('rss_side', ['rssFeeds' => $rssFeeds]); ?>
-    </div>
-</div>
