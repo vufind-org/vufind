@@ -335,6 +335,9 @@ $config = [
             'storageRetrievalRequests' => 'VuFind\Controller\Plugin\StorageRetrievalRequests',
         ],
     ],
+    'listeners' => [
+        \VuFind\Mvc\PhpPostProcess::class,
+    ],
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
@@ -402,6 +405,7 @@ $config = [
             'VuFind\Log\Logger' => 'VuFind\Log\LoggerFactory',
             'VuFind\Mailer\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Mvc\PhpPostProcess' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Net\IpAddressUtils' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Net\UserIpReader' => 'VuFind\Net\UserIpReaderFactory',
             'VuFind\OAI\Server' => 'VuFind\OAI\ServerFactory',
