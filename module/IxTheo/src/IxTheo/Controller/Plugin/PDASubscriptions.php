@@ -196,10 +196,10 @@ class PDASubscriptions extends AbstractPlugin
         $opening = $this->controller->translate("Dear") . " " . $userData[0] . ",\r\n\r\n" .
                    $this->controller->translate("you triggered a PDA order") . ".\r\n";
         $renderer = $this->renderer;
-        $infoText = $renderer->render($this->controller->forward()->dispatch('StaticPage', array(
-            'action' => 'staticPage',
+        $infoText = $renderer->render($this->controller->forward()->dispatch('Content', [
+            'action' => 'content',
             'page' => 'PDASubscriptionMailInfoText'
-        )));
+        ]));
         $emailMessage = $opening . $bookInformation . $postalAddress . $infoText . "\r\n\r\n" . $this->getPDAClosing($userType);
         $this->sendEmail($recipientEmail, $recipientName, $senderData['email'], $senderData['name'], $emailSubject, $emailMessage);
     }
