@@ -1,14 +1,14 @@
 <div class="tf-background-body">
     <div id="content" class="container">
         <div class="row">
-            <?=$this->render('static/de/partials/krimdok_and_fid.phtml'); ?>
-            <?=$this->render('static/de/partials/news.phtml'); ?>
-            <?=$this->render('static/de/partials/fid_services.phtml'); ?>
+            <?=$this->content()->renderTranslated('panels/krimdok_and_fid'); ?>
+            <?=$this->content()->renderTranslated('panels/news'); ?>
+            <?=$this->content()->renderTranslated('panels/fid_services'); ?>
         </div>
         <div class="row">
-            <?=$this->render('static/de/partials/partners.phtml'); ?>
-            <?=$this->render('static/de/partials/acquisition.phtml'); ?>
-            <?=$this->render('static/de/partials/catalogs.phtml'); ?>
+            <?=$this->content()->renderTranslated('panels/partners'); ?>
+            <?=$this->content()->renderTranslated('panels/acquisition'); ?>
+            <?=$this->content()->renderTranslated('panels/catalogs'); ?>
         </div>
     </div>
 </div>
