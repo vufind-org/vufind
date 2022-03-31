@@ -15,18 +15,20 @@
     'wrapper-class' => false,
     'wrapper-tagname' => 'div',
   ];
-  $facetLightboxParams = http_build_query(
-      [
-          'facet' => $this->title,
-          'facetop' => $thisFacet['operator'],
-          'facetexclude' => $this->allowExclude ? 1 : 0,
-      ],
-      '',
-      '&amp;'
-  );
 ?>
 <div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
+    <?php
+      $facetLightboxParams = http_build_query(
+        [
+          'facet' => $this->title,
+          'facetop' => $thisFacet['operator'],
+          'facetexclude' => $this->allowExclude ? 1 : 0,
+        ],
+        '',
+        '&amp;'
+      );
+    ?>
     <?php if ($i == $this->facets_before_more): ?>
       <?php
         $moreUrl = $facetLightbox
