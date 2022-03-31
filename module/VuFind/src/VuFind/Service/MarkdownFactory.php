@@ -287,8 +287,7 @@ class MarkdownFactory implements FactoryInterface
     {
         $baseConfig = $this->getBaseConfig();
         $coreConfig = $this->getConfigForCoreExtension();
-        $markdownConfig = $this->config['Markdown'] ?? [];
-        $config = array_merge($markdownConfig, $baseConfig, $coreConfig);
+        $config = array_merge($baseConfig, $coreConfig);
         foreach ($this->extensions as $extension) {
             $extConfig = $this->getConfigForExtension($extension);
             $config = array_merge($config, $extConfig);
