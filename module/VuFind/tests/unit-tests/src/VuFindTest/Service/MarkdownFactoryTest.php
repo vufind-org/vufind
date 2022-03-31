@@ -30,7 +30,7 @@ namespace VuFindTest\Service;
 
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use League\CommonMark\MarkdownConverterInterface;
+use League\CommonMark\ConverterInterface;
 use VuFind\Service\MarkdownFactory;
 
 /**
@@ -106,11 +106,79 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
+        $customConfig2 = [
+            'Markdown' => [
+                'html_input' => 'escape',
+                'allow_unsafe_links' => true,
+                'enable_em' => false,
+                'enable_strong' => false,
+                'use_asterisk' => false,
+                'use_underscore' => false,
+                'unordered_list_markers' => ['`', '~'],
+                'max_nesting_level' => 10,
+                'renderer' => [
+                    'block_separator' => "\r\n",
+                    'inner_separator' => "\r\n",
+                    'soft_break' => "\r\n",
+                ],
+            ],
+            'CommonMarkCore' => [
+                'enable_em' => false,
+                'enable_strong' => false,
+                'use_asterisk' => false,
+                'use_underscore' => false,
+                'unordered_list_markers' => [';', '^'],
+            ],
+            'Table' => [
+                'wrap' => [
+                    'enabled' => true,
+                    'tag' => 'div',
+                    'attributes' => 'class:table-responsive,title:table',
+                ],
+            ],
+        ];
+        $customEnvironment2 = [
+            'html_input' => 'escape',
+            'allow_unsafe_links' => true,
+            'max_nesting_level' => 10,
+            'commonmark' => [
+                'enable_em' => false,
+                'enable_strong' => false,
+                'use_asterisk' => false,
+                'use_underscore' => false,
+                'unordered_list_markers' => [';', '^'],
+            ],
+            'table' => [
+                'wrap' => [
+                    'enabled' => true,
+                    'tag' => 'div',
+                    'attributes' => [
+                        'class' => 'table-responsive',
+                        'title' => 'table',
+                    ],
+                ],
+            ],
+            'renderer' => [
+                'block_separator' => "\r\n",
+                'inner_separator' => "\r\n",
+                'soft_break' => "\r\n",
+            ],
+        ];
+
         $result = $this->getMarkdownEnvironmentConfig($defaultConfig);
-        $this->assertEquals($defaultEnvironment, $result);
+        foreach ($defaultEnvironment as $option => $value) {
+            $this->assertEquals($value, $result->get($option), 'Test default option: ' . $option);
+        }
 
         $result = $this->getMarkdownEnvironmentConfig($customConfig);
-        $this->assertEquals($customEnvironment, $result);
+        foreach ($customEnvironment as $option => $value) {
+            $this->assertEquals($value, $result->get($option), 'Test custom option: ' . $option);
+        }
+
+        $result = $this->getMarkdownEnvironmentConfig($customConfig2);
+        foreach ($customEnvironment2 as $option => $value) {
+            $this->assertEquals($value, $result->get($option), 'Test custom option: ' . $option);
+        }
     }
 
     /**
@@ -128,7 +196,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
                     'League\CommonMark\Extension\Attributes\AttributesExtension',
                     'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
                     'League\CommonMark\Extension\Table\TableExtension',
@@ -137,7 +205,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             [ // Test default extension set
                 'config' => [],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
                     'League\CommonMark\Extension\Autolink\AutolinkExtension',
                     'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
                     'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
@@ -152,7 +220,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
                 ],
             ],
             [ // Test not valid extensions set
@@ -181,12 +249,12 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config Configuration settings
      *
-     * @return array
+     * @return \League\Config\ReadOnlyConfiguration
      */
-    protected function getMarkdownEnvironmentConfig(array $config): array
+    protected function getMarkdownEnvironmentConfig(array $config): \League\Config\ReadOnlyConfiguration
     {
         $markdown = $this->getMarkdownConverter($config);
-        return $markdown->getEnvironment()->getConfig();
+        return $markdown->getEnvironment()->getConfiguration();
     }
 
     /**
@@ -207,11 +275,11 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config
      *
-     * @return MarkdownConverterInterface
+     * @return ConverterInterface
      * @throws \Interop\Container\Exception\ContainerException
      * @throws \Throwable
      */
-    protected function getMarkdownConverter(array $config): MarkdownConverterInterface
+    protected function getMarkdownConverter(array $config): ConverterInterface
     {
         $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -221,10 +289,9 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($config));
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $markdownFactory = new MarkdownFactory();
-        $markdown = $markdownFactory(
+        return $markdownFactory(
             $container,
-            \League\CommonMark\MarkdownConverterInterface::class
+            \League\CommonMark\ConverterInterface::class
         );
-        return $markdown;
     }
 }
