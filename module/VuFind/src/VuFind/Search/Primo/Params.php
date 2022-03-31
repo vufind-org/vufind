@@ -107,9 +107,13 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function fixPrimoFacetValue($str)
     {
-        // Special case: odd spelling error in Primo results:
-        if ($str == 'reference_entrys') {
-            return 'Reference Entries';
+        // Special case: odd spelling errors in Primo results:
+        $replacements = [
+            'reference_entrys' => 'Reference Entries',
+            'newsletterarticle' => 'Newsletter Articles', // At least in CDI
+        ];
+        if ($replacement = $replacements[$str] ?? '') {
+            return $replacement;
         }
         return mb_convert_case(
             preg_replace('/_/u', ' ', $str),
