@@ -54,8 +54,6 @@
         <?php endif; ?>
 
       <div class="resultItemLine4 custom-links">
-        <?=$this->record($this->driver)->getLabelList() ?>
-
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
         if (!empty($customLinks)): ?>
           <?php foreach ($customLinks as $customLink): ?>
@@ -71,6 +69,10 @@
               </a>
             </span>
           <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if ($labels = trim($this->record($this->driver)->getLabelList())): ?>
+          <?=$customLinks ? '<br>' : '' ?>
+          <?=$labels?>
         <?php endif; ?>
       </div>
 
