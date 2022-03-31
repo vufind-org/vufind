@@ -107,9 +107,6 @@
   width: 100%;
   font-weight: bold;
   color: $text-color;
-  &.disabled {
-    cursor: $cursor-disabled;
-  }
 }
 .facet-group > .checkbox,
 .sidebar .facet.checkbox {
