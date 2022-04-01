@@ -53,11 +53,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $publications = [];
         $dbPublications = $this->getTable('publication')->getByUserId($user->id);
         foreach ($dbPublications as $dbPublication) {
-            try {
-                $dspacePublication = $dspace->getWorkspaceItem($dbPublication->external_document_id);
-            } catch (exception $e) {
+            //try {
+            //    $dspacePublication = $dspace->getWorkspaceItem($dbPublication->external_document_id);
+            //} catch (exception $e) {
                 $dspacePublication = null;
-            }
+            //}
             $publications[] = ['db' => $dbPublication, 'dspace' => $dspacePublication];
         }
 
