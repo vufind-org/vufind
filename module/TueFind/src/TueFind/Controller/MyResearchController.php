@@ -1,5 +1,4 @@
 <?php
-
 namespace TueFind\Controller;
 
 class MyResearchController extends \VuFind\Controller\MyResearchController
@@ -11,8 +10,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $accessState = $onlyGranted ? 'granted' : null;
         $userAuthorities = $table->getByUserId($user->id, $accessState);
 
-        if ($exceptionIfEmpty && count($userAuthorities) == 0)
+        if ($exceptionIfEmpty && count($userAuthorities) == 0) {
             throw new \Exception('No authority linked to this user!');
+        }
 
         $authorityRecords = [];
         foreach ($userAuthorities as $userAuthority) {
@@ -31,8 +31,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $submitted = $this->formWasSubmitted('submit');
-        if ($submitted)
+        if ($submitted) {
             $user->setSubscribedToNewsletter(boolval($this->getRequest()->getPost()->subscribed));
+        }
 
         return $this->createViewModel(['subscribed' => $user->hasSubscribedToNewsletter(),
                                        'submitted'  => $submitted]);
@@ -52,11 +53,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $publications = [];
         $dbPublications = $this->getTable('publication')->getByUserId($user->id);
         foreach ($dbPublications as $dbPublication) {
-            try {
-                $dspacePublication = $dspace->getWorkspaceItem($dbPublication->external_document_id);
-            } catch (exception $e) {
+            //try {
+            //    $dspacePublication = $dspace->getWorkspaceItem($dbPublication->external_document_id);
+            //} catch (exception $e) {
                 $dspacePublication = null;
-            }
+            //}
             $publications[] = ['db' => $dbPublication, 'dspace' => $dspacePublication];
         }
 
@@ -72,6 +73,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $this->forceLogin();
         }
 
+        $uploadInfos = [];
+        $uploadError = 0;
+        $uploadFileSize = 500000;
+
         $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
         $dspace->login();
         $config = $this->getConfig('tuefind');
@@ -79,28 +84,72 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $existingRecord = null;
         $dublinCore = null;
         $existingRecordId = $this->params()->fromRoute('record_id', null);
-        if ($existingRecordId != null) {
+
+        if (empty($existingRecordId)) {
+            $uploadInfos[] = ["Control Number empty!","text-danger"];
+            $uploadError = 1;
+        } else {
             $existingRecord = $this->getRecordLoader()->load($existingRecordId);
+            $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace')->getMappedData($existingRecord);
             $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
-        }
 
-        $action = $this->params()->fromPost('action');
-        if ($action == 'publish') {
-            $uploadedFile = $this->params()->fromFiles('file');
+            $termFileData = $this->getLatestTermFile();
+            $action = $this->params()->fromPost('action');
 
-            // TODO: Upload PDF file to DSpace
-            $collectionName = $config->Publication->collection_name;
-            $collection = $this->dspace->getCollectionByName($collectionName);
-            $workspaceItem = $this->dspace->addWorkspaceItem($uploadedFile, $collection->id);
+            $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
+            if (!empty($dbPublications->external_document_id)) {
+                $uploadInfos[] = ["Publication File exist!","text-danger"];
+                $uploadError = 1;
+            } else if ($action == 'publish' && $uploadError == 0) {
+                $uploadedFile = $this->params()->fromFiles('file');
 
-            // TODO: Add metadata
+                $collectionName = $config->Publication->collection_name;
 
-            // TODO: Start workflow
+                $collection = $dspace->getCollectionByName($collectionName);
+                if (isset($collection->id)) {
+                    $collectionID = $collection->id;
+                }
+
+                if ($uploadedFile['type'] != "application/pdf") {
+                    $uploadInfos[] = ["Invalid file type!: " . $uploadedFile['type'],"text-danger"];
+                    $uploadError = 1;
+                }
+
+                if ($uploadedFile['size'] > $uploadFileSize) {
+                    $uploadInfos[] = ["File is too big!","text-danger"];
+                    $uploadError = 1;
+                }
+
+                if ($uploadError == 0) {
+                    $tmpdir = sys_get_temp_dir();
+                    $tmpfile = $tmpdir . '/' . $uploadedFile['name'];
+
+                    if (is_file($tmpfile)) {
+                        unlink($tmpfile);
+                    }
+                    if (!move_uploaded_file($uploadedFile['tmp_name'], $tmpfile)) {
+                        throw new \Exception('Uploaded file could not be moved to tmp directory!');
+                    }
+
+                    $workspaceItem = $dspace->addWorkspaceItem($tmpfile, $collectionID);
+                    $itemID = $workspaceItem->id;
+                    $item = $dspace->updateWorkspaceItem($itemID, $dspaceMetadata);
+
+                    $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $termFileData['termDate']);
+
+                    $uploadInfos[] = ["Publication File success!","text-success"];
+
+                    // TODO: Start publication process in DSpace after metadata is correct
+                    //$dspace->addWorkflowItem($itemID);
+                }
+            }
         }
 
         $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
         $view->existingRecord = $existingRecord;
         $view->dublinCore = $dublinCore;
+        $view->uploadInfos = $uploadInfos;
+        $view->termFile = $termFileData;
         return $view;
     }
 
@@ -168,5 +217,34 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
         $response->setContent($rssFeedContentString);
         return $response;
+    }
+
+    private function getLatestTermFile(): array
+    {
+        $termsDir =  $_SERVER['CONTEXT_DOCUMENT_ROOT'] . '/publication_terms/';
+        $files = scandir($termsDir);
+        $latestTermFileData = [];
+        $latestTermData = [];
+        foreach ($files as $file) {
+            if (preg_match('/(\d{4})(\d{2})(\d{2})/', $file, $matches)) {
+                $formatedDate = $matches[1] . "-" . $matches[2] . "-" . $matches[3];
+                $timeStamp = strtotime($formatedDate);
+                $latestTermData[] = [
+                    "milliseconds"=>$timeStamp,
+                    "termDate"=>$formatedDate,
+                    "fileName"=>$file
+                ];
+            }
+        }
+        if (empty($latestTermData)) {
+            throw new \Exception('Latest term file not found in: ' . $termsDir);
+        }
+
+        usort($latestTermData, function ($a, $b) {
+            return strnatcmp($a['milliseconds'], $b['milliseconds']);
+        });
+        $latestTermFileData = $latestTermData[0];
+
+        return $latestTermFileData;
     }
 }

@@ -11,7 +11,7 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
   <?php if (count($this->authorityRecords) == 0): ?>
     <p>You do not have access to any authority records yet. Please search for an authority record first and request access there.</p>
   <?php else: ?>
-    <p><a href="<?=$this->url('myresearch-publish')?>">Would you like to publish something?</a></p>
+    <p>If you like to publish something, please search for the matching record which is linked to your authority entry and use the "publish" button in the full view.</p>
     <?php if (count($this->publications) == 0): ?>
       <p>You did not upload any publications so far.</p>
     <?php else: ?>
@@ -20,13 +20,17 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
         <tr>
           <th>ID in external repository</th>
           <th>Title</th>
-          <th>Status</th>
+          <th>Collection Name</th>
+          <th>Created</th>
+          <th>Terms Date</th>
         </tr>
         <?php foreach ($this->publications as $publication): ?>
           <tr>
             <td><?=$publication['db']['external_document_id']?></td>
-            <td><?=$publication['dspace']->_embedded->item->name?></td>
-            <td></td>
+            <td><?=$publication['dspace']->_embedded->item->name ?? ''?></td>
+            <th><?=$publication['dspace']->_embedded->collection->name ?? ''?></th>
+            <td><?=isset ($publication['dspace']->_embedded->item->lastModified) ? date("d.m.Y H:i:s",strtotime($publication['dspace']->_embedded->item->lastModified)) : ''?></td>
+            <td><?=date("d.m.Y",strtotime($publication['db']['terms_date']));?></td>
           </tr>
         <?php endforeach; ?>
       </table>
