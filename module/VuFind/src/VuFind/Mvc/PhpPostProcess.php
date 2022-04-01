@@ -74,8 +74,9 @@ class PhpPostProcess extends AbstractListenerAggregate
             return;
         }
         $contentTypeHeader = $response->getHeaders()->get('Content-Type');
-        $contentType = $contentTypeHeader ? $contentTypeHeader->getFieldValue() : '';
-        if (!$contentType || 'text/html' === $contentType) {
+        $contentType = $contentTypeHeader ? $contentTypeHeader->getFieldValue()
+            : ini_get('default_mimetype');
+        if ('text/html' === $contentType) {
             $content = $response->getContent();
             $response->setContent($this->postProcessHtml($response->getContent()));
         } elseif ('application/json' === $contentType) {
