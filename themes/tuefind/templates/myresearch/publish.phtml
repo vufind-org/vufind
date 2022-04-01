@@ -27,6 +27,7 @@
 <h4>Publication title: <?=$this->dublinCore['DC.title'][0]?> </h4>
 <?php /* DSpace needs Dublin Core metadata as minimum: https://www.dublincore.org/specifications/dublin-core/dces/ */ ?>
 
+<?php if($this->showForm):?>
 <form method="post" enctype="multipart/form-data">
   <!-- DC.creator -->
   <div class="form-group">
@@ -53,3 +54,4 @@
   </div>
   <button type="submit" class="btn btn-primary" name="action" value="publish">Submit</button>
 </form>
+<?php endif;?>

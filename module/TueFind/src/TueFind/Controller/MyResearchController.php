@@ -76,6 +76,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $uploadInfos = [];
         $uploadError = 0;
         $uploadFileSize = 500000;
+        $showForm = true;
 
         $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
         $dspace->login();
@@ -98,8 +99,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
             $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
             if (!empty($dbPublications->external_document_id)) {
-                $uploadInfos[] = ["Publication File exist!","text-danger"];
+                $guid = $dbPublications->external_document_guid;
+                $uploadInfos[] = ["Publication File exist! <br /> <a href='https://ub07.uni-tuebingen.de/items/".$guid."' target='_blank'>go to file</a>","text-danger"];
                 $uploadError = 1;
+                $showForm = false;
             } else if ($action == 'publish' && $uploadError == 0) {
                 $uploadedFile = $this->params()->fromFiles('file');
 
@@ -132,15 +135,19 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     }
 
                     $workspaceItem = $dspace->addWorkspaceItem($tmpfile, $collectionID);
+
+                    $externalDocumentGuid = $workspaceItem->_embedded->item->uuid;
                     $itemID = $workspaceItem->id;
+
                     $item = $dspace->updateWorkspaceItem($itemID, $dspaceMetadata);
 
-                    $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $termFileData['termDate']);
+                    $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $externalDocumentGuid, $termFileData['termDate']);
 
                     $uploadInfos[] = ["Publication File success!","text-success"];
 
                     // TODO: Start publication process in DSpace after metadata is correct
-                    //$dspace->addWorkflowItem($itemID);
+                    $dspace->addWorkflowItem($itemID);
+                    $showForm = false;
                 }
             }
         }
@@ -150,6 +157,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->dublinCore = $dublinCore;
         $view->uploadInfos = $uploadInfos;
         $view->termFile = $termFileData;
+        $view->showForm = $showForm;
         return $view;
     }
 
