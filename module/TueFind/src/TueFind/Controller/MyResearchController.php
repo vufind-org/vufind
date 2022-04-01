@@ -111,6 +111,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         } else {
             $existingRecord = $this->getRecordLoader()->load($existingRecordId);
             $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace')->getMappedData($existingRecord);
+            $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
+
             $termFileData = $this->getLatestTermFile();
             $action = $this->params()->fromPost('action');
 
@@ -155,7 +157,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
                     $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $termFileData['termDate']);
 
+                    $uploadInfos[] = ["Publication File success!","text-success"];
                     // TODO: Start publication process in DSpace after metadata is correct
+
+                    $dspace->addWorkflowItem($itemID);
+
                 }
             }
         }

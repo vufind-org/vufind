@@ -10,11 +10,14 @@ class DSpace extends \VuFind\MetadataVocabulary\AbstractBase
                                                 '/sections/traditionalpageone/dc.publisher' => 'publisher',
                                                 '/sections/traditionalpageone/dc.title' => 'title',
                                                 /*
-                                                'DC.relation.ispartof' => 'container_title',
-                                                'DC.citation.epage' => 'endpage',
-                                                'DC.citation.issue' => 'issue',
-                                                'DC.citation.spage' => 'startpage',
-                                                'DC.citation.volume' => 'volume',
+                                                '/sections/traditionalpageone/dc.title.alternative' => 'title.alternative',
+                                                '/sections/traditionalpageone/dc.identifier.citation' => 'citation',
+                                                '/sections/traditionalpageone/dc.relation.ispartofseries' => 'ispartofseries',
+                                                '/sections/traditionalpagetwo/dc.subject' => 'subject.keywords',
+                                                '/sections/traditionalpagetwo/dc.description.abstract' => 'abstract',
+                                                '/sections/traditionalpagetwo/dc.description' => 'description',
+                                                '/sections/traditionalpagetwo/dc.description.sponsorship' => 'sponsorship',
+                                                '/sections/traditionalpageone/dc.type' => 'type',
                                                 */
                                             ];
 
@@ -44,7 +47,7 @@ class DSpace extends \VuFind\MetadataVocabulary\AbstractBase
         $authorKey = '/sections/traditionalpageone/dc.contributor.author';
         if (isset($dspaceData[$authorKey])) {
             // TODO: Careful here, we might need to support multiple authors and also implement an ID lookup
-            $dspaceData[$authorKey] = $dspaceData[$authorKey][0] . ';' . '02a88394-6161-44ce-a0c0-5f1640137bf4';
+            $dspaceData[$authorKey] = $dspaceData[$authorKey] . ';' . '02a88394-6161-44ce-a0c0-5f1640137bf4';
         }
 
         $issn = $driver->tryMethod('getCleanISSN');
@@ -52,48 +55,6 @@ class DSpace extends \VuFind\MetadataVocabulary\AbstractBase
             $dspaceData['/sections/traditionalpageone/dc.identifier'] = "issn;" . $controlNumber;
         }
 
-        /*
-        switch ($metaKey) {
-            break;
-            case"title.alternative":
-                $path = '/sections/traditionalpageone/dc.title.alternative';
-            break;
-            case"citation":
-                $path = '/sections/traditionalpageone/dc.identifier.citation';
-            break;
-            case"ispartofseries":
-                $path = '/sections/traditionalpageone/dc.relation.ispartofseries';
-            break;
-            case"subject.keywords":
-                $path = '/sections/traditionalpagetwo/dc.subject';
-            break;
-            case"abstract":
-                $path = '/sections/traditionalpagetwo/dc.description.abstract';
-            break;
-            case"description":
-                $path = '/sections/traditionalpagetwo/dc.description';
-            break;
-            case"sponsorship":
-                $path = '/sections/traditionalpagetwo/dc.description.sponsorship';
-            break;
-            case"type":
-                $path = '/sections/traditionalpageone/dc.type';
-            break;
-            case"author":
-                $path = '/sections/traditionalpageone/dc.contributor.author';
-
-            break;
-            case"identifiers":
-                $explodeValue = explode(';', $metaValue);
-                $metaValue = $explodeValue[1];
-                $identifierType = $explodeValue[0];
-                if ($identifierType == 'issn') {
-                    $path = '/sections/traditionalpageone/dc.identifier.issn';
-                } else {
-                    $path = '/sections/traditionalpageone/dc.identifier.other';
-                }
-            break;
-        }*/
         return $dspaceData;
     }
 }

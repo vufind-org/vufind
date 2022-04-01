@@ -168,7 +168,7 @@ class DSpace {
 
         foreach ($metadata as $metaKey => $metaValue) {
             $valuesArray = ['value' => $metaValue, 'display' => $metaValue];
-            switch ($metadataKey) {
+            switch ($metaKey) {
                 case '/sections/traditionalpageone/dc.contributor.author':
                     $valuesArray['confidence'] = 600;
                     $explodeValue = explode(';', $metaValue);
@@ -183,7 +183,7 @@ class DSpace {
 
             $requestData[] = [
                 'op' => 'add',
-                'path' => $metadataKey,
+                'path' => $metaKey,
                 'value' =>
                     [
                         $valuesArray
@@ -199,6 +199,19 @@ class DSpace {
             ];
 
         return $this->call(self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($id), self::METHOD_PATCH, $headers, $requestDataJson);
+
+    }
+
+    public function depositItem(string $id) {
+
+        $requestData = 'projection=full';
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer
+            ];
+
+        return $this->call(self::ENDPOINT_WORKFLOW_ITEM . '/' . urlencode($id), self::METHOD_POST, $headers, $requestData);
 
     }
 
