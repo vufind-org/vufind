@@ -115,14 +115,19 @@ class DSpace {
      */
     public function addWorkflowItem(string $workspaceItemId)
     {
-        $this->call(self::ENDPOINT_WORKFLOW_ITEM, self::METHOD_POST, [self::HEADER_CONTENT_TYPE => 'text/uri-list'], self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($workspaceItemId));
+        // we need to use a POST operation and send a full URL of the workspace item as body (including its endpoint!!!)
+        $requestData = $this->baseUrl . '/' . self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($workspaceItemId);
+        return $this->call(self::ENDPOINT_WORKFLOW_ITEM, self::METHOD_POST,
+                            [self::HEADER_CONTENT_TYPE => 'text/uri-list',
+                            self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer],
+        $requestData);
     }
 
     /**
      * Add a workspace item (e.g. upload a PDF file)
      *
-     * @param string $collectionId
      * @param string $documentUrl
+     * @param string $collectionId
      */
     public function addWorkspaceItem(string $documentUrl, string $collectionId)
     {
@@ -199,19 +204,6 @@ class DSpace {
             ];
 
         return $this->call(self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($id), self::METHOD_PATCH, $headers, $requestDataJson);
-
-    }
-
-    public function depositItem(string $id) {
-
-        $requestData = 'projection=full';
-
-        $headers = [
-            'Content-Type' => 'application/json',
-            self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer
-            ];
-
-        return $this->call(self::ENDPOINT_WORKFLOW_ITEM . '/' . urlencode($id), self::METHOD_POST, $headers, $requestData);
 
     }
 

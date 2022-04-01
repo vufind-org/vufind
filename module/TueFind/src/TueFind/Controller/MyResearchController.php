@@ -68,26 +68,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
     public function publishAction()
     {
-
-        /*
-        $metaArray = [
-            "type"=>"Article",
-            "language"=>"en",
-            "author"=>"Kilian-Yasin, Katharina;02a88394-6161-44ce-a0c0-5f1640137bf4",
-            "identifiers"=> "issn;identifiers text",
-            "title"=>"Title test",
-            "title.alternative"=>"Alternative Title test",
-            "publisher"=>"Publisher text",
-            "citation"=>"citation text",
-            "ispartofseries"=> "Series/Report No. 1 test; Series/Report No. 2 test",
-            "date.issued"=> "2022-03-18",
-            "subject.keywords" => "Research Subject Categories::SOCIAL SCIENCES::Other social sciences::Labour market research",
-            "abstract" => "Abstract text",
-            "sponsorship" => "Sponsors text",
-            "description" => "Description text"
-            ];
-        */
-
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
@@ -158,10 +138,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $termFileData['termDate']);
 
                     $uploadInfos[] = ["Publication File success!","text-success"];
+
                     // TODO: Start publication process in DSpace after metadata is correct
-
-                    $dspace->addWorkflowItem($itemID);
-
+                    //$dspace->addWorkflowItem($itemID);
                 }
             }
         }
