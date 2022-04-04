@@ -98,6 +98,30 @@ class PhpPostProcess extends AbstractListenerAggregate
      */
     protected function postProcessHtml(string $content): string
     {
-        return preg_replace('/\s+<Consume-Whitespace\s*\/>\s+/', '', $content);
+        // Avoid doing any further processing if there isn't a <Consume-Whitespace>
+        // tag in any form in the response:
+        if (strpos($content, '<Consume-Whitespace') === false) {
+            return $content;
+        }
+        // Remove spaces around a self-closing Consume-Whitespace tag:
+        $content = preg_replace('/\s+<Consume-Whitespace\s*\/>\s+/', '', $content);
+        // Remove spaces between html elements inside a Consume-Whitespace tag:
+        $content = preg_replace_callback(
+            '/(<Consume-Whitespace\s*>.*?<\/Consume-Whitespace>)/s',
+            function (array $matches): string {
+                // First handle the spaces between tags, including the
+                // Consume-Whitespace tag:
+                $s = preg_replace('/>\s+</', '><', $matches[1]);
+                // Remove Consume-Whitespace tag:
+                $s = preg_replace(
+                    '/<Consume-Whitespace\s*>(.*)<\/Consume-Whitespace>/',
+                    "$1",
+                    $s
+                );
+                return $s;
+            },
+            $content
+        );
+        return $content;
     }
 }
