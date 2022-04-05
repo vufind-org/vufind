@@ -59,7 +59,7 @@
                 $themeMenuItems[] = $item;
               }
             ?>
-            <?=$this->render('_ui/components/menu-button', [
+            <?=$this->component('menu-button', [
               'toggleLabel' => 'Theme',
               'menuItems' => $themeMenuItems,
             ]) ?>
@@ -77,7 +77,7 @@
                 ];
               }
             ?>
-            <?=$this->render('_ui/components/menu-button', [
+            <?=$this->component('menu-button', [
               'wrapperClass' => 'language',
               'toggleLabel' => 'Language',
               'menuItems' => $langMenuItems,
