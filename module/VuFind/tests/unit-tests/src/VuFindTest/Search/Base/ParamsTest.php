@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Preetha Rao <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -39,6 +41,7 @@ use VuFind\Search\Base\Params;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Preetha Rao <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -104,33 +107,97 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockParams();
         $this->assertEquals([], $params->getCheckboxFacets());
 
+        $expectedSelected = $expectedUnselected = [
+            'desc' => 'checkbox_label',
+            'filter' => 'foo:bar',
+            'selected' => false,
+            'alwaysVisible' => false,
+            'dynamic' => false,
+        ];
+        $expectedSelected['selected'] = true;
+
         // Adding one works:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals(
-            [
-                [
-                    'desc' => 'checkbox_label',
-                    'filter' => 'foo:bar',
-                    'selected' => false,
-                    'alwaysVisible' => false
-                ]
-            ],
-            $params->getCheckboxFacets()
-        );
+        $this->assertEquals([$expectedUnselected], $params->getCheckboxFacets());
 
         // Selecting one works:
         $params->addFilter('foo:bar');
+        $this->assertEquals([$expectedSelected], $params->getCheckboxFacets());
+
+        // Removing one works:
+        $params->removeFilter('foo:bar');
+        $this->assertEquals([$expectedUnselected], $params->getCheckboxFacets());
+    }
+
+    /**
+     * Test that filters work as expected.
+     *
+     * @return void
+     */
+    public function testFilters(): void
+    {
+        $params = $this->getMockParams();
+        $params->addFacet('format', 'format_label');
+        $params->addFacet('building', 'building_label');
+
+        // No filters:
+        $this->assertEquals([], $params->getFilterList());
+
+        // Add multiple filters:
+        $params->addFilter('~format:bar');
+        $params->addFilter('~format:baz');
+        $params->addFilter('building:main');
+        $this->assertTrue($params->hasFilter('~format:bar'));
+        $this->assertTrue($params->hasFilter('~format:baz'));
+        $this->assertTrue($params->hasFilter('building:main'));
         $this->assertEquals(
             [
-                [
-                    'desc' => 'checkbox_label',
-                    'filter' => 'foo:bar',
-                    'selected' => true,
-                    'alwaysVisible' => false
+                'format_label' => [
+                    [
+                        'value' => 'bar',
+                        'displayText' => 'bar',
+                        'field' => 'format',
+                        'operator' => 'OR',
+                    ],
+                    [
+                        'value' => 'baz',
+                        'displayText' => 'baz',
+                        'field' => 'format',
+                        'operator' => 'OR',
+                    ]
+                ],
+                'building_label' => [
+                    [
+                        'value' => 'main',
+                        'displayText' => 'main',
+                        'field' => 'building',
+                        'operator' => 'AND',
+                    ]
                 ]
             ],
-            $params->getCheckboxFacets()
+            $params->getFilterList()
         );
+
+        // Remove format filters and verify:
+        $params->removeAllFilters('~format');
+        $this->assertEquals(
+            [
+                'building_label' => [
+                    [
+                        'value' => 'main',
+                        'displayText' => 'main',
+                        'field' => 'building',
+                        'operator' => 'AND',
+                    ]
+                ]
+
+            ],
+            $params->getFilterList()
+        );
+
+        // Remove last filter and verify:
+        $params->removeFilter('building:main');
+        $this->assertEquals([], $params->getFilterList());
     }
 
     /**

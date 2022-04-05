@@ -303,11 +303,7 @@ class Form extends \Laminas\Form\Form implements
             $translated["%%{$key}%%"] = implode(', ', $translatedVals);
         }
 
-        return str_replace(
-            array_keys($translated),
-            array_values($translated),
-            $subject
-        );
+        return $this->translate($subject, $translated);
     }
 
     /**

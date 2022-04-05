@@ -146,8 +146,7 @@ class Primo extends DefaultRecord
      */
     public function getFormats()
     {
-        return isset($this->fields['format'])
-            ? (array)$this->fields['format'] : [];
+        return (array)($this->fields['format'] ?? []);
     }
 
     /**

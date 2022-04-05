@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -41,6 +42,7 @@ use VuFindSearch\Query\QueryGroup;
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -906,8 +908,8 @@ class Params
     {
         if ($field == null) {
             $this->filterList = [];
-        } else {
-            $this->filterList[$field] = [];
+        } elseif (isset($this->filterList[$field])) {
+            unset($this->filterList[$field]);
         }
     }
 
@@ -948,18 +950,20 @@ class Params
      * will be applied to the search.  When the checkbox is not checked, no filter
      * will be applied.
      *
-     * @param string $filter [field]:[value] pair to associate with checkbox
-     * @param string $desc   Description to associate with the checkbox
+     * @param string $filter  [field]:[value] pair to associate with checkbox
+     * @param string $desc    Description to associate with the checkbox
+     * @param bool   $dynamic Is this being added dynamically (true) or in response
+     * to a user configuration (false)?
      *
      * @return void
      */
-    public function addCheckboxFacet($filter, $desc)
+    public function addCheckboxFacet($filter, $desc, $dynamic = false)
     {
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
         [$fieldName] = explode(':', $filter);
         $this->checkboxFacets[$fieldName][$filter]
-            = ['desc' => $desc, 'filter' => $filter];
+            = compact('desc', 'filter', 'dynamic');
     }
 
     /**
@@ -1144,20 +1148,26 @@ class Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $include List of checkbox filters to return (null for all)
+     * @param array $include        List of checkbox filters to return (null for all)
+     * @param bool  $includeDynamic Should we include dynamically-generated
+     * checkboxes that are not part of the include list above?
      *
      * @return array
      */
-    public function getCheckboxFacets(array $include = null)
-    {
+    public function getCheckboxFacets(
+        array $include = null,
+        bool $includeDynamic = true
+    ) {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
                 // If the current filter is not on the include list, skip it (but
-                // accept everything if the include list is empty).
-                if (!empty($include) && !in_array($facet['filter'], $include)) {
+                // accept everything if the include list is null).
+                if (($include !== null && !in_array($facet['filter'], $include))
+                    && !($includeDynamic && $facet['dynamic'])
+                ) {
                     continue;
                 }
                 $facet['selected'] = $this->hasFilter($facet['filter']);

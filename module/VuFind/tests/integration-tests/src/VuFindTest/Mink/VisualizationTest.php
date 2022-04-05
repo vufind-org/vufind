@@ -67,7 +67,7 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
             . '/Search/Results?filter[]=building%3A"journals.mrc"&view=visual'
         );
         $page = $session->getPage();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $text = $this->findCss($page, '#visualResults')->getText();
         // Confirm that some content has been dynamically loaded into the
         // visualization area:

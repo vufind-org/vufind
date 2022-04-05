@@ -51,7 +51,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -83,16 +83,12 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Create account
         $this->clickCss($page, '#loginOptions a');
-        $this->snooze();
         $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
-        $this->snooze();
 
         // Go to profile page:
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
@@ -101,16 +97,14 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         // Now click change password button:
         $this->findAndAssertLink($page, 'Change Password')->click();
-        $this->snooze();
 
         // Change the password (but get the old password wrong)
         $this->fillInChangePasswordForm($page, 'bad', 'good');
         $this->clickCss($page, '#newpassword .btn.btn-primary');
-        $this->snooze();
         $this->assertEquals(
             'Invalid login -- please try again.',
             $this->findCss($page, '.alert-danger')->getText()
@@ -119,7 +113,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Change the password successfully:
         $this->fillInChangePasswordForm($page, 'test', 'good');
         $this->clickCss($page, '#newpassword .btn.btn-primary');
-        $this->snooze();
         $this->assertEquals(
             'Your password has successfully been changed',
             $this->findCss($page, '.alert-success')->getText()
@@ -127,23 +120,21 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         // Log back in (using old credentials, which should now fail):
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
         $this->assertLightboxWarning($page, 'Invalid login -- please try again.');
 
         // Now log in successfully:
         $this->fillInLoginForm($page, 'username1', 'good');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         // One final log out (to confirm that log in really worked).
         $this->clickCss($page, '.logoutOptions a.logout');
-        $this->snooze();
     }
 
     /**
@@ -164,7 +155,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'good');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         // Now confirm that email button is absent:
         $link = $page->findLink('Change Email Address');
@@ -200,16 +191,16 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'good');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         // Now click change email button:
         $this->findAndAssertLink($page, 'Change Email Address')->click();
-        $this->snooze();
+        $this->waitForPageLoad($page);
 
         // Change the email:
         $this->findCssAndSetValue($page, '[name="email"]', 'new@email.com');
         $this->clickCss($page, '[name="submit"]');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your email address has been changed successfully',
             $this->findCss($page, '.alert-success')->getText()

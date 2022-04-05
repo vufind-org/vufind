@@ -52,8 +52,9 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'Primo';
+        parent::__construct($configLoader);
+
         // Load facet preferences:
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->Advanced_Facet_Settings->translated_facets)
