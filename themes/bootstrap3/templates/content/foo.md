@@ -1,3 +1,0 @@
-# Booga
-
-* woooo
