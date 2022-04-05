@@ -33,6 +33,7 @@ use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
 use VuFind\Search\Solr\SpellingProcessor;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -75,6 +76,35 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $results->setSpellingProcessor($mockProcessor);
         $this->assertEquals($mockProcessor, $results->getSpellingProcessor());
         $this->assertNotEquals($defaultProcessor, $mockProcessor);
+    }
+
+    /**
+     * Test retrieving a result count.
+     *
+     * @return void
+     */
+    public function testGetResultTotal(): void
+    {
+        $collection = new RecordCollection(['response' => ['numFound' => 5]]);
+        $searchService = $this->createMock(SearchService::class);
+        $searchService->expects($this->once())
+            ->method('search')
+            ->with(
+                $this->equalTo('Solr'),
+                $this->equalTo(new \VuFindSearch\Query\Query()),
+                $this->equalTo(0),
+                $this->equalTo(20),
+                $this->equalTo(
+                    new \VuFindSearch\ParamBag(
+                        [
+                            'spellcheck' => ['true'],
+                            'hl' => ['false'],
+                        ]
+                    )
+                )
+            )->will($this->returnValue($collection));
+        $results = $this->getResults(null, $searchService);
+        $this->assertEquals(5, $results->getResultTotal());
     }
 
     /**
