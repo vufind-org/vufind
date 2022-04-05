@@ -16,7 +16,7 @@
     <?php foreach ($this->menuItems as $current): ?>
       <li<?php if ($current['selected']): ?> class="active"<?php endif ?>>
         <a href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
-          <?=$current['label'] ?>
+          <?=$this->transEsc($current['label']) ?>
         </a>
       </li>
     <?php endforeach; ?>

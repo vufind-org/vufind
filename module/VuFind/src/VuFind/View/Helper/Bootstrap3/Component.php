@@ -46,9 +46,9 @@ class Component extends AbstractHelper
      * @param string $name   Component name that matches a template
      * @param array  $params Data for the component template
      *
-     * @return void
+     * @return string
      */
-    public function __invoke(string $name, $params = []): void
+    public function __invoke(string $name, $params = []): string
     {
         return $this->view->render('_ui/components/' . $name, $params);
     }
