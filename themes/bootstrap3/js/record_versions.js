@@ -13,7 +13,7 @@ VuFind.register('recordVersions', function recordVersions() {
       }
       $elem.addClass('loaded');
       $elem.removeClass('hidden');
-      $elem.append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
+      $elem.append('<span class="js-load">' + VuFind.translate('loading_ellipsis') + '</span>');
       var $item = $(this).parents('.result');
       var id = $item.find('.hiddenId')[0].value;
       var source = $item.find('.hiddenSource')[0].value;

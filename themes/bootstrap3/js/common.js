@@ -111,8 +111,10 @@ var VuFind = (function VuFind() {
   };
   var loading = function loading(text = null, extraClass = "") {
     let className = ("loading-spinner " + extraClass).trim();
-    let string = translate(text === null ? "loading" : text);
-    return '<span class="' + className + '">' + icon('spinner') + string + '...</span>';
+    let string = text === null
+      ? translate('loading_ellipsis')
+      : translate(text) + translate('eol_ellipsis');
+    return '<span class="' + className + '">' + icon('spinner') + string + '</span>';
   };
 
   /**
@@ -334,7 +336,7 @@ function setupAutocomplete() {
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
-    loadingString: VuFind.translate('loading') + '...',
+    loadingString: VuFind.translate('loading_ellipsis'),
     // Auto-submit selected item
     callback: acCallback,
     // AJAX call for autocomplete results

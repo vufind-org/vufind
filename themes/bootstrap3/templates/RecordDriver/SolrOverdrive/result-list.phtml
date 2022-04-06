@@ -80,7 +80,7 @@
         <div class="callnumAndLocation ajax-availability hidden">
       <?php if($this->driver->supportsAjaxStatus()):?>
           <div class="callnum ajax-availability hidden status">
-              <?=$this->transEsc('Loading')?>...<br/>
+              <?=$this->transEsc('loading_ellipsis')?><br/>
           </div>
 
       <?php elseif($avail = $this->driver->getOverdriveAvailability()): ?>

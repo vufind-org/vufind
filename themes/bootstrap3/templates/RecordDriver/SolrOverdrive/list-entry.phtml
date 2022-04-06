@@ -119,11 +119,11 @@
             <?php if ($this->driver->supportsAjaxStatus()): ?>
               <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
               <span class="callnumber ajax-availability hidden">
-                <?=$this->transEsc('Loading')?>...<br/>
+                <?=$this->transEsc('loading_ellipsis')?><br/>
               </span>
               <strong><?=$this->transEsc('Located')?>:</strong>
               <span class="location ajax-availability hidden">
-                <?=$this->transEsc('Loading')?>...
+                <?=$this->transEsc('loading_ellipsis')?>
               </span>
               <div class="locationDetails"></div>
             <?php else: ?>
@@ -168,7 +168,7 @@
           <?=$this->record($this->driver)->getFormatList() ?>
 
           <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
-            <span class="status ajax-availability hidden"><?=$this->transEsc('Loading')?>...</span>
+            <span class="status ajax-availability hidden"><?=$this->transEsc('loading_ellipsis')?></span>
             <br/><br/>
           <?php endif; ?>
           <?=$this->record($this->driver)->getPreviews()?>
