@@ -170,7 +170,6 @@ public class ConfigManager
     {
         Map<String, String> retVal = getConfigSection(filename, section);
         if (retVal == null) {
-            logger.warn(section + " section missing from " + filename);
             return new ConcurrentHashMap<String, String>();
         }
 
@@ -217,6 +216,9 @@ public class ConfigManager
             }
         }
 
+        if (retVal == null) {
+            logger.warn(section + " section missing from " + filename);
+        }
         return retVal;
     }
 
@@ -230,7 +232,6 @@ public class ConfigManager
     {
         String retVal = getConfigSetting(filename, section, setting);
         if (retVal == null) {
-            logger.warn(section + "." + setting + " setting missing from " + filename);
             return retVal;
         }
 
@@ -251,7 +252,15 @@ public class ConfigManager
     public String getConfigSetting(String filename, String section, String setting)
     {
         Map<String, String> sectionMap = getConfigSection(filename, section);
-        return sectionMap.get(setting);
+        if (sectionMap == null) {
+            return null;
+        }
+
+        String retVal = sectionMap.get(setting);
+        if (retVal == null) {
+            logger.warn(section + "." + setting + " setting missing from " + filename);
+        }
+        return retVal;
     }
 
     /**
