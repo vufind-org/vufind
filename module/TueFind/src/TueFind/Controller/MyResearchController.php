@@ -143,16 +143,37 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
                     $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $externalDocumentGuid, $termFileData['termDate']);
 
-                    $uploadInfos[] = ["Publication File success!","text-success"];
+                    $uploadInfos[] = ["Publication File success! <br /> <a href='https://ub07.uni-tuebingen.de/items/".$externalDocumentGuid."' target='_blank'>go to file</a>","text-success"];
 
                     // TODO: Start publication process in DSpace after metadata is correct
-                    $dspace->addWorkflowItem($itemID);
+                    //$dspace->addWorkflowItem($itemID);
                     $showForm = false;
                 }
             }
         }
 
         $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
+
+        $userAuthorities = [];
+        foreach($view->userAuthorities as $userAuthority) {
+            $selected = false;
+            $authorityRecord = $view->authorityRecords[$userAuthority['authority_id']];
+            $GNDNumber = $authorityRecord->getGNDNumber();
+            $authorityTitle = htmlspecialchars($authorityRecord->getTitle());
+            foreach($dublinCore['DC.creator'] as $creator) {
+                if($authorityTitle == $creator) {
+                    $selected = true;
+                }
+            }
+            $userAuthorities[] = [
+                'authority_id'=>$userAuthority['authority_id'],
+                'authority_title'=>$authorityTitle,
+                'authority_GNDNumber'=>$GNDNumber,
+                'select_title'=> $authorityTitle . ' (GND: ' .  $GNDNumber . ')',
+                'selected'=>$selected
+            ];
+        }
+        $view->userAuthorities = $userAuthorities;
         $view->existingRecord = $existingRecord;
         $view->dublinCore = $dublinCore;
         $view->uploadInfos = $uploadInfos;

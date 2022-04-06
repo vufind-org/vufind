@@ -34,8 +34,7 @@
     <label>creator</label>
     <select class="form-control" name="creator" required>
       <?php foreach ($this->userAuthorities as $userAuthority): ?>
-        <?php $authorityRecord = $this->authorityRecords[$userAuthority['authority_id']]?>
-        <option value="<?=$authorityRecord->getGNDNumber()?>"><?=htmlspecialchars($authorityRecord->getTitle() . ' (GND: ' .  $authorityRecord->getGNDNumber() . ')')?></option>
+        <option value="<?=$userAuthority['authority_GNDNumber'];?>" <?php echo $userAuthority['selected'] ? "selected" : "";?> ><?=$userAuthority['select_title'];?></option>
       <?php endforeach; ?>
     </select>
   </div>
