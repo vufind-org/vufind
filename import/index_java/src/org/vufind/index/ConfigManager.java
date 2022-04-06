@@ -173,10 +173,16 @@ public class ConfigManager
             logger.warn(section + " section missing from " + filename);
             return new ConcurrentHashMap<String, String>();
         }
-        for (String key : retVal.keySet()) {
-            retVal.put(key, sanitizeConfigSetting(retVal.get(key)));
+
+        // Return a copy of the section.
+        // We do not want the sanitizer to update the cache, because it might
+        // cause problems when executing them multiple times, like
+        // e.g. in multithreaded scenarios.
+        Map<String, String> retValCopy = new ConcurrentHashMap<>();
+        for (Map.Entry<String, String> entry : retVal.entrySet()) {
+            retValCopy.put(entry.getKey(), sanitizeConfigSetting(new String(entry.getValue())));
         }
-        return retVal;
+        return retValCopy;
     }
 
     /**
@@ -211,16 +217,29 @@ public class ConfigManager
             }
         }
 
-        // Return a copy of the section.
-        // If there are other operations performed later (e.g. sanitize)
-        // we do not want them to update the cache, because they might cause
-        // problems when executing them multiple times, like
-        // e.g. in multithreaded scenarios.
-        Map<String, String> retValCopy = new ConcurrentHashMap<>();
-        for (Map.Entry<String, String> entry : retVal.entrySet()) {
-            retValCopy.put(entry.getKey(), new String(entry.getValue()));
+        return retVal;
+    }
+
+    /**
+     * Get a setting from a VuFind configuration file and sanitize the value.
+     * @param filename configuration file name
+     * @param section section name within the file
+     * @param setting setting name within the section
+     */
+    public String getSanitizedConfigSetting(String filename, String section, String setting)
+    {
+        String retVal = getConfigSetting(filename, section, setting);
+        if (retVal == null) {
+            logger.warn(section + "." + setting + " setting missing from " + filename);
+            return retVal;
         }
-        return retValCopy;
+
+        // Return a copy of the string.
+        // We do not want the sanitizer to update the cache, because it might
+        // cause problems when executing them multiple times, like
+        // e.g. in multithreaded scenarios.
+        String retValCopy = new String(retVal);
+        return sanitizeConfigSetting(retValCopy);
     }
 
     /**
@@ -231,44 +250,8 @@ public class ConfigManager
      */
     public String getConfigSetting(String filename, String section, String setting)
     {
-        String retVal = null;
-
-        // Grab the ini file.
-        Ini ini = loadConfigFile(filename);
-
-        // Check to see if we need to worry about an override file:
-        String override = ini.get("Extra_Config", "local_overrides");
-        if (override != null) {
-            Ini overrideIni = loadConfigFile(override);
-            retVal = overrideIni.get(section, setting);
-            if (retVal != null) {
-                return sanitizeConfigSetting(retVal);
-            }
-        }
-
-        // Try to find the requested setting:
-        retVal = ini.get(section, setting);
-
-        //  No setting?  Check for a parent configuration:
-        while (retVal == null) {
-            String parent = ini.get("Parent_Config", "path");
-            if (parent !=  null) {
-                try {
-                    ini.load(new FileReader(new File(parent)));
-                } catch (Throwable e) {
-                    dieWithError(
-                        "Unable to access " + parent
-                        + " (" + e.getMessage() + ")"
-                    );
-                }
-                retVal = ini.get(section, setting);
-            } else {
-                break;
-            }
-        }
-
-        // Return the processed setting:
-        return retVal == null ? null : sanitizeConfigSetting(retVal);
+        Map<String, String> sectionMap = getConfigSection(filename, section);
+        return sectionMap.get(setting);
     }
 
     /**
