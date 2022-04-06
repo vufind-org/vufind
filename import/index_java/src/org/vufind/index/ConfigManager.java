@@ -210,7 +210,17 @@ public class ConfigManager
                 retVal.put(key, overrideSection.get(key));
             }
         }
-        return retVal;
+
+        // Return a copy of the section.
+        // If there are other operations performed later (e.g. sanitize)
+        // we do not want them to update the cache, because they might cause
+        // problems when executing them multiple times, like
+        // e.g. in multithreaded scenarios.
+        Map<String, String> retValCopy = new ConcurrentHashMap<>();
+        for (Map.Entry<String, String> entry : retVal.entrySet()) {
+            retValCopy.put(entry.getKey(), new String(entry.getValue()));
+        }
+        return retValCopy;
     }
 
     /**

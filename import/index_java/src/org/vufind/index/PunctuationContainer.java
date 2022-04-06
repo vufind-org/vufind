@@ -46,7 +46,7 @@ public class PunctuationContainer
     {
         // Populate set if empty:
         if (punctuationRegEx.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getConfigSection("author-classification.ini", "PunctuationRegExToStrip");
+            Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationRegExToStrip");
             punctuationRegEx = new LinkedHashSet<Pattern>();
             for (String pattern : all.values()) {
                 punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
