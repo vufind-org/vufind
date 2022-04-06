@@ -74,7 +74,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getParams($options);
         $results = $this->getResults($params);
         $facets = $results->getFacetList();
-        $this->assertEquals($list['dewey-raw']['list'][0]['displayText'] == '000 - Computer science, information, general works');
+        $this->assertEquals($list['dewey-raw']['list'][0]['displayText'], '000 - Computer science, information, general works');
     }
 
     /**
