@@ -97,10 +97,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $termFileData = $this->getLatestTermFile();
             $action = $this->params()->fromPost('action');
 
+            $dspaceServer = $config->Publication->dspace_url_base;
+
             $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
             if (!empty($dbPublications->external_document_id)) {
                 $guid = $dbPublications->external_document_guid;
-                $uploadInfos[] = ["Publication File exist! <br /> <a href='https://ub07.uni-tuebingen.de/items/".$guid."' target='_blank'>go to file</a>","text-danger"];
+                $uploadInfos[] = ["Publication File exist! <br /> <a href='".$dspaceServer."/items/".$guid."' target='_blank'>go to file</a>","text-danger"];
                 $uploadError = 1;
                 $showForm = false;
             } else if ($action == 'publish' && $uploadError == 0) {
@@ -143,16 +145,37 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
                     $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $externalDocumentGuid, $termFileData['termDate']);
 
-                    $uploadInfos[] = ["Publication File success!","text-success"];
+                    $uploadInfos[] = ["Publication File success! <br /> <a href='".$dspaceServer."/items/".$externalDocumentGuid."' target='_blank'>go to file</a>","text-success"];
 
                     // TODO: Start publication process in DSpace after metadata is correct
-                    $dspace->addWorkflowItem($itemID);
+                    //$dspace->addWorkflowItem($itemID);
                     $showForm = false;
                 }
             }
         }
 
         $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
+
+        $userAuthorities = [];
+        foreach($view->userAuthorities as $userAuthority) {
+            $selected = false;
+            $authorityRecord = $view->authorityRecords[$userAuthority['authority_id']];
+            $GNDNumber = $authorityRecord->getGNDNumber();
+            $authorityTitle = htmlspecialchars($authorityRecord->getTitle());
+            foreach($dublinCore['DC.creator'] as $creator) {
+                if($authorityTitle == $creator) {
+                    $selected = true;
+                }
+            }
+            $userAuthorities[] = [
+                'authority_id'=>$userAuthority['authority_id'],
+                'authority_title'=>$authorityTitle,
+                'authority_GNDNumber'=>$GNDNumber,
+                'select_title'=> $authorityTitle . ' (GND: ' .  $GNDNumber . ')',
+                'selected'=>$selected
+            ];
+        }
+        $view->userAuthorities = $userAuthorities;
         $view->existingRecord = $existingRecord;
         $view->dublinCore = $dublinCore;
         $view->uploadInfos = $uploadInfos;

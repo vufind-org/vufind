@@ -42,6 +42,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $this->container;
     }
 
+    public function getAllAuthorsGnds(): array
+    {
+        return array_merge($this->getPrimaryAuthorsGnds(), $this->getSecondaryAuthorsGnds(), $this->getCorporateAuthorsGnds());
+    }
+
+    public function getAllAuthorsIds(): array
+    {
+        return array_merge($this->getPrimaryAuthorsIds(), $this->getSecondaryAuthorsIds(), $this->getCorporateAuthorsIds());
+    }
+
     /**
      * Get all non-standardized topics
      */
