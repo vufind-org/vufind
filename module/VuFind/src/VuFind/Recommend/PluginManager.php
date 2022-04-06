@@ -113,7 +113,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         EuropeanaResultsDeferred::class => InvokableFactory::class,
         ExpandFacets::class => ExpandFacetsFactory::class,
         ExternalSearch::class => InvokableFactory::class,
-        FacetCloud::class => InvokableFactory::class,
+        FacetCloud::class => ExpandFacetsFactory::class,
         FavoriteFacets::class => FavoriteFacetsFactory::class,
         Libraryh3lp::class => InvokableFactory::class,
         MapSelection::class => MapSelectionFactory::class,
