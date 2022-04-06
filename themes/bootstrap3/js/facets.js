@@ -303,7 +303,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         $.ajax(button.href + '&layout=lightbox')
           .done(function facetSortTitleDone(data) {
             list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').html(VuFind.translate('more') + ' ...');
+            list.find('.js-facet-next-page').html(VuFind.translate('more_ellipsis'));
           });
       }
       $('.full-facet-list').addClass('hidden');
@@ -335,7 +335,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
             button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
-            button.html(VuFind.translate('more') + ' ...');
+            button.html(VuFind.translate('more_ellipsis'));
             button.removeAttr('disabled');
           } else {
             button.remove();

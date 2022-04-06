@@ -44,7 +44,7 @@
       <?php endif; ?>
       <?php if ($this->anotherPage): ?>
         <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page + 1) . '&amp;facetsort=' . urlencode($key) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
-          <span class="text"><?=$this->translate('more') ?> ...</span>
+          <span class="text"><?=$this->translate('more_ellipsis') ?></span>
         </a>
       <?php endif; ?>
     </div>
