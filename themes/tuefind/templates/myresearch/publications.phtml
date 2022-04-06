@@ -20,17 +20,17 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
         <tr>
           <th>ID in external repository</th>
           <th>Title</th>
-          <th>Collection Name</th>
+          <th>Dspace file</th>
           <th>Created</th>
           <th>Terms Date</th>
         </tr>
         <?php foreach ($this->publications as $publication): ?>
           <tr>
-            <td><?=$publication['db']['external_document_id']?></td>
-            <td><?=$publication['dspace']->_embedded->item->name ?? ''?></td>
-            <th><?=$publication['dspace']->_embedded->collection->name ?? ''?></th>
-            <td><?=isset ($publication['dspace']->_embedded->item->lastModified) ? date("d.m.Y H:i:s",strtotime($publication['dspace']->_embedded->item->lastModified)) : ''?></td>
-            <td><?=date("d.m.Y",strtotime($publication['db']['terms_date']));?></td>
+            <td><?=$publication['external_document_id']?></td>
+            <td><a href="/Record/<?=$publication['control_number']?>"><?=$publication['title'];?></a></td>
+            <td><a href="<?=$this->dspaceServer;?>/items/<?=$publication['external_document_guid']?>">Go to file</a></td>
+            <td><?=date("d.m.Y H:i:s",strtotime($publication['publication_datetime']));?></td>
+            <td><?=date("d.m.Y",strtotime($publication['terms_date']));?></td>
           </tr>
         <?php endforeach; ?>
       </table>

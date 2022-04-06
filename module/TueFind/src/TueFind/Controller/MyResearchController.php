@@ -50,19 +50,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
         $dspace->login();
 
+        $config = $this->getConfig('tuefind');
+        $dspaceServer = $config->Publication->dspace_url_base;
+
         $publications = [];
         $dbPublications = $this->getTable('publication')->getByUserId($user->id);
         foreach ($dbPublications as $dbPublication) {
-            //try {
-            //    $dspacePublication = $dspace->getWorkspaceItem($dbPublication->external_document_id);
-            //} catch (exception $e) {
-                $dspacePublication = null;
-            //}
-            $publications[] = ['db' => $dbPublication, 'dspace' => $dspacePublication];
+            $existingRecord = $this->getRecordLoader()->load($dbPublication->control_number);
+            $dbPublication['title'] = $existingRecord->getTitle();
+            $publications[] = $dbPublication;
         }
 
         $viewParams = $this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true);
         $viewParams['publications'] = $publications;
+        $viewParams['dspaceServer'] = $dspaceServer;
         return $this->createViewModel($viewParams);
     }
 
