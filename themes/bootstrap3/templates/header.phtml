@@ -48,39 +48,36 @@
           <?php endif; ?>
 
           <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-            <?php
-              $themeMenuItems = [];
-
-              foreach ($this->layout()->themeOptions as $current) {
-                $item = $current;
-                $item['label'] = $current['desc'];
-                $item['url'] = $this->url()->addQueryParameters(['ui' => $current['name']]);
-
-                $themeMenuItems[] = $item;
-              }
-            ?>
             <?=$this->component('menu-button', [
               'toggleLabel' => 'Theme',
-              'menuItems' => $themeMenuItems,
+              'menuItems' => array_map(
+                function ($current) {
+                  $item = $current;
+                  $item['label'] = $current['desc'];
+                  $item['url'] = $this->url()->addQueryParameters(['ui' => $current['name']]);
+
+                  return $item;
+                },
+                $this->layout()->themeOptions
+              )
             ]) ?>
           <?php endif; ?>
 
           <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-            <?php
-              $langMenuItems = [];
-
-              foreach ($this->layout()->allLangs as $langCode => $langName) {
-                $langMenuItems[] = [
-                  'label' => $this->displayLanguageOption($langName),
-                  'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
-                  'selected' => $this->layout()->userLang == $langCode,
-                ];
-              }
-            ?>
             <?=$this->component('menu-button', [
               'wrapperClass' => 'language',
               'toggleLabel' => 'Language',
-              'menuItems' => $langMenuItems,
+              'menuItems' => array_map(
+                function ($langCode, $langName) {
+                  return [
+                    'label' => $this->displayLanguageOption($langName),
+                    'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
+                    'selected' => $this->layout()->userLang == $langCode,
+                  ];
+                },
+                array_keys($this->layout()->allLangs),
+                array_values($this->layout()->allLangs),
+              ),
             ]) ?>
           <?php endif; ?>
         </ul>
