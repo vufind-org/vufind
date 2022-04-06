@@ -97,12 +97,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $termFileData = $this->getLatestTermFile();
             $action = $this->params()->fromPost('action');
 
-            $dspaceServer = $config->Publication->server_url;
+            $dspaceServer = $config->Publication->dspace_url_base;
 
             $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
             if (!empty($dbPublications->external_document_id)) {
                 $guid = $dbPublications->external_document_guid;
-                $uploadInfos[] = ["Publication File exist! <br /> <a href='".$dspaceServer.$guid."' target='_blank'>go to file</a>","text-danger"];
+                $uploadInfos[] = ["Publication File exist! <br /> <a href='".$dspaceServer."/items/".$guid."' target='_blank'>go to file</a>","text-danger"];
                 $uploadError = 1;
                 $showForm = false;
             } else if ($action == 'publish' && $uploadError == 0) {
@@ -145,7 +145,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
                     $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $externalDocumentGuid, $termFileData['termDate']);
 
-                    $uploadInfos[] = ["Publication File success! <br /> <a href='".$dspaceServer.$externalDocumentGuid."' target='_blank'>go to file</a>","text-success"];
+                    $uploadInfos[] = ["Publication File success! <br /> <a href='".$dspaceServer."/items/".$externalDocumentGuid."' target='_blank'>go to file</a>","text-success"];
 
                     // TODO: Start publication process in DSpace after metadata is correct
                     //$dspace->addWorkflowItem($itemID);
