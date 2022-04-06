@@ -60,6 +60,24 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test facet translation functionality.
+     *
+     * @return void
+     */
+    public function testFacetTranslations(): void
+    {
+        $mockConfig = $this->createMock(PluginManager::class);
+        $options = new Options($mockConfig);
+        $options->setTranslatedFacets([
+            'dewey-raw:DDC23:%raw% - %translated%'
+        ]);
+        $params = $this->getParams($options);
+        $results = $this->getResults($params);
+        $facets = $results->getFacetList();
+        $this->assertEquals($list['dewey-raw']['list'][0]['displayText'] == '000 - Computer science, information, general works');
+    }
+
+    /**
      * Test spelling processor support.
      *
      * @return void
