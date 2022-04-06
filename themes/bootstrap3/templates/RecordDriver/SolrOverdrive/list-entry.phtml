@@ -79,7 +79,11 @@
                   echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
                 }
                 if (!empty($snippet['snippet'])) {
-                  echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
+                  echo '<span class="quotestart">&#8220;</span>'
+                    . $this->transEsc('eol_ellipsis')
+                    . $this->highlight($snippet['snippet'])
+                    . $this->transEsc('eol_ellipsis')
+                    . '<span class="quoteend">&#8221;</span><br/>';
                 }
               }
             } ?>

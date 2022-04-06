@@ -73,7 +73,7 @@
             <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
           <?php endif; ?>
           <?php if (!empty($snippet['snippet'])): ?>
-            <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+            <span class="quotestart">&#8220;</span><?=$this->transEsc('eol_ellipsis')?><?=$this->highlight($snippet['snippet']) ?><?=$this->transEsc('eol_ellipsis')?><span class="quoteend">&#8221;</span><br/>
           <?php endif; ?>
         <?php endif; ?>
       <?php endif; ?>
