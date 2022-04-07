@@ -12,7 +12,7 @@
   <?php foreach ($ids_and_titles as $id => $title): ?>
     <a href="<?=$this->url("record", array("id" => $id));?>">
       <?=$this->escapeHtml($title[0])?>
-      <?php if (isset($title[1])): ?>
+      <?php if (!empty($title[1])): ?>
         (<?=$title[1]?>)
       <?php endif; ?>
     </a>
