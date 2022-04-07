@@ -68,7 +68,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     public function testFacetTranslations(): void
     {
         $mockTranslator = $this->createMock(TranslatorInterface::class);
-        $mockTranslator->expects($this->exactly(2))
+        $mockTranslator->expects($this->once())
             ->method('translate')
             ->with($this->equalTo('000'))
             ->will(
