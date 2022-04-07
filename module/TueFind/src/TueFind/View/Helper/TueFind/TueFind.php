@@ -501,7 +501,7 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         return $this->container->get(\TueFind\Service\KfL::class);
     }
 
-    public function getPublicationByControlNumber(int $controlNumber) {
+    public function getPublicationByControlNumber(string $controlNumber) {
         $publicationTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('publication');
         return $publicationTable->getByControlNumber($controlNumber);
     }
