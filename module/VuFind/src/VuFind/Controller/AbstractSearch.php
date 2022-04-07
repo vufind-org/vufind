@@ -364,8 +364,20 @@ class AbstractSearch extends AbstractBase
         if (isset($view->params) && $view->params->getView() == 'rss') {
             $response = $this->getResponse();
             $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
-            $feed = $this->getViewRenderer()->plugin('resultfeed');
-            $response->setContent($feed($view->results)->export('rss'));
+            $feedHelper = $this->getViewRenderer()->plugin('resultfeed');
+            $feed = $feedHelper($view->results);
+            $writer = new \Laminas\Feed\Writer\Renderer\Feed\Rss($feed);
+            $writer->render();
+            $xsl = 'todo';
+            $rssTitle = 'todo';
+            $writer->getElement()->parentNode->insertBefore(
+                $writer->getDomDocument()->createProcessingInstruction(
+                    'xml-stylesheet',
+                    'title="' . $rssTitle . '" type="text/xsl" href="' . $xsl . '"'
+                ),
+                $writer->getElement()
+            );
+            $response->setContent($writer->saveXml());
             return $response;
         }
 
