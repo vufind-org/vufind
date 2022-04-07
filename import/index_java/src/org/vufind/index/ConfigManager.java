@@ -109,21 +109,27 @@ public class ConfigManager
      */
     private String sanitizeConfigSetting(String str)
     {
+        // Work on a copy of the string.
+        // We do not want the sanitizer to update the cache, because it might
+        // cause problems when executing them multiple times, like
+        // e.g. in multithreaded scenarios.
+        String retVal = new String(str);
+
         // Drop comments if necessary; if the semi-colon is inside quotes, leave
         // it alone. TODO: handle complex cases with comment AND quoted semi-colon
-        int pos = str.indexOf(';');
-        if (pos >= 0 && !str.matches("\"[^\"]*;[^\"]*\"")) {
-            str = str.substring(0, pos).trim();
+        int pos = retVal.indexOf(';');
+        if (pos >= 0 && !retVal.matches("\"[^\"]*;[^\"]*\"")) {
+            retVal = retVal.substring(0, pos).trim();
         }
 
         // Strip wrapping quotes if necessary (the ini reader won't do this for us):
-        if (str.startsWith("\"")) {
-            str = str.substring(1, str.length());
+        if (retVal.startsWith("\"")) {
+            retVal = retVal.substring(1, retVal.length());
         }
-        if (str.endsWith("\"")) {
-            str = str.substring(0, str.length() - 1);
+        if (retVal.endsWith("\"")) {
+            retVal = retVal.substring(0, retVal.length() - 1);
         }
-        return str;
+        return retVal;
     }
 
     /**
@@ -179,7 +185,7 @@ public class ConfigManager
         // e.g. in multithreaded scenarios.
         Map<String, String> retValCopy = new ConcurrentHashMap<>();
         for (Map.Entry<String, String> entry : retVal.entrySet()) {
-            retValCopy.put(entry.getKey(), sanitizeConfigSetting(new String(entry.getValue())));
+            retValCopy.put(entry.getKey(), sanitizeConfigSetting(entry.getValue()));
         }
         return retValCopy;
     }
@@ -231,16 +237,7 @@ public class ConfigManager
     public String getSanitizedConfigSetting(String filename, String section, String setting)
     {
         String retVal = getConfigSetting(filename, section, setting);
-        if (retVal == null) {
-            return retVal;
-        }
-
-        // Return a copy of the string.
-        // We do not want the sanitizer to update the cache, because it might
-        // cause problems when executing them multiple times, like
-        // e.g. in multithreaded scenarios.
-        String retValCopy = new String(retVal);
-        return sanitizeConfigSetting(retValCopy);
+        return retVal == null ? retVal : sanitizeConfigSetting(retVal);
     }
 
     /**
