@@ -172,9 +172,9 @@ public class ConfigManager
      * @param filename configuration file name
      * @param section section name within the file
      */
-    public Map<String, String> getSanitizedConfigSection(String filename, String section)
+    public Map<String, String> getConfigSection(String filename, String section)
     {
-        Map<String, String> retVal = getConfigSection(filename, section);
+        Map<String, String> retVal = getRawConfigSection(filename, section);
         if (retVal == null) {
             return new ConcurrentHashMap<String, String>();
         }
@@ -195,7 +195,7 @@ public class ConfigManager
      * @param filename configuration file name
      * @param section section name within the file
      */
-    public Map<String, String> getConfigSection(String filename, String section)
+    public Map<String, String> getRawConfigSection(String filename, String section)
     {
         // Grab the ini file.
         Ini ini = loadConfigFile(filename);
@@ -229,14 +229,22 @@ public class ConfigManager
     }
 
     /**
+     * @deprecated
+     */
+    public Map<String, String> getSanitizedConfigSection(String filename, String section)
+    {
+        return getConfigSection(filename, section);
+    }
+
+    /**
      * Get a setting from a VuFind configuration file and sanitize the value.
      * @param filename configuration file name
      * @param section section name within the file
      * @param setting setting name within the section
      */
-    public String getSanitizedConfigSetting(String filename, String section, String setting)
+    public String getConfigSetting(String filename, String section, String setting)
     {
-        String retVal = getConfigSetting(filename, section, setting);
+        String retVal = getRawConfigSetting(filename, section, setting);
         return retVal == null ? retVal : sanitizeConfigSetting(retVal);
     }
 
@@ -246,7 +254,7 @@ public class ConfigManager
      * @param section section name within the file
      * @param setting setting name within the section
      */
-    public String getConfigSetting(String filename, String section, String setting)
+    public String getRawConfigSetting(String filename, String section, String setting)
     {
         Map<String, String> sectionMap = getConfigSection(filename, section);
         if (sectionMap == null) {
@@ -258,6 +266,14 @@ public class ConfigManager
             logger.warn(section + "." + setting + " setting missing from " + filename);
         }
         return retVal;
+    }
+
+    /**
+     * @deprecated
+     */
+    public String getSanitizedConfigSetting(String filename, String section, String setting)
+    {
+        return getConfigSetting(filename, section, setting);
     }
 
     /**
