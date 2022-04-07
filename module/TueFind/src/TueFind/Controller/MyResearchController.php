@@ -148,8 +148,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
                     $uploadInfos[] = ["Publication File success! <br /> <a href='".$dspaceServer."/items/".$externalDocumentGuid."' target='_blank'>go to file</a>","text-success"];
 
-                    // TODO: Start publication process in DSpace after metadata is correct
-                    //$dspace->addWorkflowItem($itemID);
+                    // Start publication process in DSpace after metadata is correct
+                    // (Note: If you test many times in a row, please disable this, so
+                    // we don't generate that many Test Handles on the DSpace server)
+                    $dspace->addWorkflowItem($itemID);
                     $showForm = false;
                 }
             }
