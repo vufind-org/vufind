@@ -54,6 +54,20 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test date formatting.
+     *
+     * @return void
+     */
+    public function testDateFormatting(): void
+    {
+        $time = 1649275905;
+        $this->assertEquals(
+            '04-06-2022',
+            $this->callMethod($this->driver, 'formatDateTime', [$time])
+        );
+    }
+
+    /**
      * Test MARC holdings parsing.
      *
      * @return void
