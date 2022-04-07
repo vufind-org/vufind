@@ -174,8 +174,8 @@ public class ConfigManager
      */
     public Map<String, String> getConfigSection(String filename, String section)
     {
-        Map<String, String> retVal = getRawConfigSection(filename, section);
-        if (retVal == null) {
+        Map<String, String> rawSection = getRawConfigSection(filename, section);
+        if (rawSection == null) {
             return new ConcurrentHashMap<String, String>();
         }
 
@@ -183,11 +183,11 @@ public class ConfigManager
         // We do not want the sanitizer to update the cache, because it might
         // cause problems when executing them multiple times, like
         // e.g. in multithreaded scenarios.
-        Map<String, String> retValCopy = new ConcurrentHashMap<>();
-        for (Map.Entry<String, String> entry : retVal.entrySet()) {
-            retValCopy.put(entry.getKey(), sanitizeConfigSetting(entry.getValue()));
+        Map<String, String> retVal = new ConcurrentHashMap<>();
+        for (Map.Entry<String, String> entry : rawSection.entrySet()) {
+            retVal.put(entry.getKey(), sanitizeConfigSetting(entry.getValue()));
         }
-        return retValCopy;
+        return retVal;
     }
 
     /**
@@ -256,16 +256,8 @@ public class ConfigManager
      */
     public String getRawConfigSetting(String filename, String section, String setting)
     {
-        Map<String, String> sectionMap = getConfigSection(filename, section);
-        if (sectionMap == null) {
-            return null;
-        }
-
-        String retVal = sectionMap.get(setting);
-        if (retVal == null) {
-            logger.warn(section + "." + setting + " setting missing from " + filename);
-        }
-        return retVal;
+        Map<String, String> sectionMap = getRawConfigSection(filename, section);
+        return sectionMap == null ? null : sectionMap.get(setting);
     }
 
     /**
