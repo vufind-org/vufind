@@ -230,8 +230,10 @@ public class ConfigManager
     }
 
     /**
-     * @deprecated
+     * @deprecated Please use getConfigSection instead, or getRawConfigSection
+     *             if you would like to get the non-sanitized values.
      */
+    @Deprecated
     public Map<String, String> getSanitizedConfigSection(String filename, String section)
     {
         return getConfigSection(filename, section);
@@ -262,8 +264,10 @@ public class ConfigManager
     }
 
     /**
-     * @deprecated
+     * @deprecated Please use getConfigSetting instead, or getRawConfigSetting
+     *             if you would like to get the non-sanitized value.
      */
+    @Deprecated
     public String getSanitizedConfigSetting(String filename, String section, String setting)
     {
         return getConfigSetting(filename, section, setting);
