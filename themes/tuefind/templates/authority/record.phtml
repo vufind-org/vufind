@@ -24,7 +24,7 @@
     <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'granted'): ?>
       This authority record is linked to your user account.
       <?php if ($this->user != false && $this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
-        <br><a href="<?=$this->url('myresearch-publish')?>">Would you like to publish something?</a>
+        <br><a href="<?=$this->url('myresearch-publications')?>">Would you like to publish something?</a>
       <?php endif; ?>
     <?php endif; ?>
   </div>

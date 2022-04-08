@@ -501,6 +501,11 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         return $this->container->get(\TueFind\Service\KfL::class);
     }
 
+    public function getPublicationByControlNumber(string $controlNumber) {
+        $publicationTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('publication');
+        return $publicationTable->getByControlNumber($controlNumber);
+    }
+
     /**
      * Render an old-style static template from templates/static/<language>/template.phtml
      *

@@ -115,14 +115,19 @@ class DSpace {
      */
     public function addWorkflowItem(string $workspaceItemId)
     {
-        $this->call(self::ENDPOINT_WORKFLOW_ITEM, self::METHOD_POST, [self::HEADER_CONTENT_TYPE => 'text/uri-list'], self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($workspaceItemId));
+        // we need to use a POST operation and send a full URL of the workspace item as body (including its endpoint!!!)
+        $requestData = $this->baseUrl . '/' . self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($workspaceItemId);
+        return $this->call(self::ENDPOINT_WORKFLOW_ITEM, self::METHOD_POST,
+                            [self::HEADER_CONTENT_TYPE => 'text/uri-list',
+                            self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer],
+        $requestData);
     }
 
     /**
      * Add a workspace item (e.g. upload a PDF file)
      *
-     * @param string $collectionId
      * @param string $documentUrl
+     * @param string $collectionId
      */
     public function addWorkspaceItem(string $documentUrl, string $collectionId)
     {
@@ -154,6 +159,52 @@ class DSpace {
 
         $result = $this->call($endpointUrl, self::METHOD_POST, $headers, $requestData);
         return $result->_embedded->workspaceitems[0];
+    }
+
+    /**
+     * Update metadata for an existing item
+     *
+     * @param string $id       The DSpace-ID of the existing workspace item
+     * @param array $metadata  The metadata, as produced by TueFind\MetadataVocabulary\DSpace.
+     */
+    public function updateWorkspaceItem(string $id, array $metadata) {
+
+        $requestData = [];
+
+        foreach ($metadata as $metaKey => $metaValue) {
+            $valuesArray = ['value' => $metaValue, 'display' => $metaValue];
+            switch ($metaKey) {
+                case '/sections/traditionalpageone/dc.contributor.author':
+                    $valuesArray['confidence'] = 600;
+                    $explodeValue = explode(';', $metaValue);
+                    $valuesArray['value'] = $explodeValue[0];
+                    $valuesArray['display'] = $explodeValue[0];
+                    $valuesArray['authority'] = $explodeValue[1];
+                    break;
+                case '/sections/traditionalpageone/dc.language.iso':
+                    $valuesArray['language'] = $metaValue;
+                    break;
+            }
+
+            $requestData[] = [
+                'op' => 'add',
+                'path' => $metaKey,
+                'value' =>
+                    [
+                        $valuesArray
+                    ]
+            ];
+        }
+
+        $requestDataJson = json_encode($requestData);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer
+            ];
+
+        return $this->call(self::ENDPOINT_WORKSPACE_ITEM . '/' . urlencode($id), self::METHOD_PATCH, $headers, $requestDataJson);
+
     }
 
     public function getAuthenticationStatus()

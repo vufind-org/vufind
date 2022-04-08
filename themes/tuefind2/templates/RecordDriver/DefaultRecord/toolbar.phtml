@@ -45,9 +45,7 @@
     <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
 
     <!-- TueFind: Publish button -->
-    <?php if ($this->auth()->isLoggedIn() && ($this->accountCapabilities()->getPublicationSetting() === 'enabled')): ?>
-      <li><a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Publish')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a></li>
-    <?php endif; ?>
+    <?=$this->render('RecordDriver/DefaultRecord/toolbar-publish.phtml'); ?>
   </ul>
 </nav>
 

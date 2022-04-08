@@ -1,0 +1,9 @@
+<?php if ($this->auth()->isLoggedIn() && ($this->accountCapabilities()->getPublicationSetting() === 'enabled')): ?>
+  <li>
+    <?php if($this->showDspaceLink) {?>
+      <a class="toolbar-btn btn-type-publish" href="<?=$this->dspacelink;?>">go to file</a>
+    <?php }else{ ?>
+      <a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Publish')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a>
+    <?php } ?>
+  </li>
+<?php endif; ?>
