@@ -349,7 +349,7 @@ class Results extends \VuFind\Search\Base\Results
                     $displayText = $this->hierarchicalFacetHelper
                         ->formatDisplayText($displayText);
                 }
-                $currentSettings['displayText'] = $displayText;
+
                 if ($translate) {
                     $translated = $this->translate(
                         [$translateTextDomain, $displayText]
@@ -363,6 +363,8 @@ class Results extends \VuFind\Search\Base\Results
                         );
                     }
                     $currentSettings['displayText'] = $translated;
+                } else {
+                    $currentSettings['displayText'] = $displayText;
                 }
 
                 $currentSettings['count'] = $count;
