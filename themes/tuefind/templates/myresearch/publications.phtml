@@ -12,6 +12,29 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
     <p>You do not have access to any authority records yet. Please search for an authority record first and request access there.</p>
   <?php else: ?>
     <p>If you like to publish something, please search for the matching record which is linked to your authority entry and use the "publish" button in the full view.</p>
+
+    <?php if (count($this->authorityUsers) == 0): ?>
+      <p>No user has requested access to any authority record so far.</p>
+    <?php else: ?>
+      <table class="table">
+        <tr>
+          <th><?=$this->transEsc('Email Address')?></th>
+          <th><?=$this->transEsc('Author')?></th>
+          <th><?=$this->transEsc('Status')?></th>
+        </tr>
+        <?php foreach ($this->authorityUsers as $user): ?>
+          <tr>
+            <td><?=$user['email']?></td>
+            <td><a href="/Authority/<?=urlencode($user['id'])?>"><?=$user['title']." (".$user['id'].")";?></a></td>
+            <td><?=$user['access_state']?></td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endif; ?>
+
+    <p>&nbsp;</p>
+    <hr />
+
     <?php if (count($this->publications) == 0): ?>
       <p>You did not upload any publications so far.</p>
     <?php else: ?>
