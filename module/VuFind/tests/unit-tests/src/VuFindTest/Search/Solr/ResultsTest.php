@@ -42,7 +42,7 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Service as SearchService;
 
 /**
- * Solr Search Object Parameters Test
+ * Solr Search Object Results Test
  *
  * @category VuFind
  * @package  Tests
