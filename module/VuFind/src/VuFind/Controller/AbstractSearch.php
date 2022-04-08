@@ -368,15 +368,19 @@ class AbstractSearch extends AbstractBase
             $feed = $feedHelper($view->results);
             $writer = new \Laminas\Feed\Writer\Renderer\Feed\Rss($feed);
             $writer->render();
-            // TODO: search themes for file:
-            $xsl = $this->url()->fromRoute('home') . 'themes/root/assets/xsl/rss.xsl';
-            $writer->getElement()->parentNode->insertBefore(
-                $writer->getDomDocument()->createProcessingInstruction(
-                    'xml-stylesheet',
-                    'type="text/xsl" href="' . $xsl . '"'
-                ),
-                $writer->getElement()
-            );
+            $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
+            $themeHits = $themeInfo->findInThemes('assets/xsl/rss.xsl');
+            if (count($themeHits) > 0) {
+                $xsl = $this->url()->fromRoute('home') . 'themes/'
+                    . $themeHits[0]['theme'] . '/' . $themeHits[0]['relativeFile'];
+                $writer->getElement()->parentNode->insertBefore(
+                    $writer->getDomDocument()->createProcessingInstruction(
+                        'xml-stylesheet',
+                        'type="text/xsl" href="' . $xsl . '"'
+                    ),
+                    $writer->getElement()
+                );
+            }
             $response->setContent($writer->saveXml());
             return $response;
         }
