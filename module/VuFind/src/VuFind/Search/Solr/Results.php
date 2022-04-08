@@ -356,10 +356,10 @@ class Results extends \VuFind\Search\Base\Results
                     );
                     // Apply a format to the translation (if available)
                     if ($translateFormat) {
-                        $translated = str_replace(
-                            ['%raw%', '%translated%'],
-                            [$displayText, $translated],
-                            $translateFormat
+                        $translated = $this->translate(
+                            $translateFormat,
+                            ['%%raw%%' => $displayText,
+                            '%%translated%%' => $translated]
                         );
                     }
                     $currentSettings['displayText'] = $translated;

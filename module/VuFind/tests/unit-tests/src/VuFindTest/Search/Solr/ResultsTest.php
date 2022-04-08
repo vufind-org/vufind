@@ -68,11 +68,12 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     public function testFacetTranslations(): void
     {
         $mockTranslator = $this->createMock(TranslatorInterface::class);
-        $mockTranslator->expects($this->once())
+        $mockTranslator->expects($this->atLeastOnce())
             ->method('translate')
-            ->with($this->equalTo('000'))
-            ->will(
-                $this->returnValue('Computer science, information, general works')
+            ->withConsecutive([$this->equalTo('000')], [$this->equalTo('%raw% - %translated%')])
+            ->willReturnOnConsecutiveCalls(
+                'Computer science, information, general works',
+                '000 - Computer science, information, general works'
             );
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
