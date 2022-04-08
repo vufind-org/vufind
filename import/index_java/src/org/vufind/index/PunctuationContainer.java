@@ -54,7 +54,7 @@ public class PunctuationContainer
         if (punctuationRegEx.isEmpty()) {
             String configSection = "PunctuationRegExToStrip";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
-            if (all == null) {
+            if (all.isEmpty()) {
                 logger.warn(configSection + " section missing from " + configFilename);
             } else {
                 for (String pattern : all.values()) {
@@ -71,7 +71,7 @@ public class PunctuationContainer
         if (punctuationPairs.isEmpty()) {
             String configSection = "PunctuationMatchedChars";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
-            if (all == null) {
+            if (all.isEmpty()) {
                 logger.warn(configSection + " section missing from " + configFilename);
             } else {
                 punctuationPairs = new LinkedHashSet<String>(all.values());
@@ -86,7 +86,11 @@ public class PunctuationContainer
         if (untrimmedAbbreviations.isEmpty()) {
             String configSection = "PunctuationUntrimmedAbbreviations";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
-            untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
+            if (all.isEmpty()) {
+                logger.warn(configSection + " section missing from " + configFilename);
+            } else {
+                untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
+            }
         }
         return untrimmedAbbreviations;
     }

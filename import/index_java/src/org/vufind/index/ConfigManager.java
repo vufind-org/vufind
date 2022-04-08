@@ -36,7 +36,8 @@ public class ConfigManager
 {
     // Initialize logging category
     static Logger logger = Logger.getLogger(ConfigManager.class.getName());
-    private static ConcurrentHashMap<String, Ini> configCache = new ConcurrentHashMap<String, Ini>();
+    private static Map<String, Ini> configCache = new ConcurrentHashMap<>();
+    private static Map<String, ConcurrentHashMap<String, String>> sanitizedConfigCache = new ConcurrentHashMap<>();
     private Properties vuFindConfigs = null;
     private static ThreadLocal<ConfigManager> managerCache =
         new ThreadLocal<ConfigManager>()
@@ -174,20 +175,23 @@ public class ConfigManager
      */
     public Map<String, String> getConfigSection(String filename, String section)
     {
-        Map<String, String> rawSection = getRawConfigSection(filename, section);
-        if (rawSection == null) {
-            return new ConcurrentHashMap<String, String>();
-        }
+        String sanitizedCacheKey = filename + "#" + section;
+        return sanitizedConfigCache.computeIfAbsent(sanitizedCacheKey, retVal -> {
+            Map<String, String> rawSection = getRawConfigSection(filename, section);
+            if (rawSection == null) {
+                return new ConcurrentHashMap<>();
+            }
 
-        // Return a copy of the section.
-        // We do not want the sanitizer to update the cache, because it might
-        // cause problems when executing them multiple times, like
-        // e.g. in multithreaded scenarios.
-        Map<String, String> retVal = new ConcurrentHashMap<>();
-        for (Map.Entry<String, String> entry : rawSection.entrySet()) {
-            retVal.put(entry.getKey(), sanitizeConfigSetting(entry.getValue()));
-        }
-        return retVal;
+            // Sanitize a copy of the section.
+            // We do not want the sanitizer to update the cache, because it might
+            // cause problems when executing them multiple times, like
+            // e.g. in multithreaded scenarios.
+            ConcurrentHashMap<String, String> sanitizedSection = new ConcurrentHashMap<>();
+            for (Map.Entry<String, String> entry : rawSection.entrySet()) {
+                sanitizedSection.put(entry.getKey(), sanitizeConfigSetting(entry.getValue()));
+            }
+            return sanitizedSection;
+        });
     }
 
     /**
