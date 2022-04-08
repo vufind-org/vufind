@@ -222,9 +222,6 @@ public class ConfigManager
             }
         }
 
-        if (retVal == null) {
-            logger.warn(section + " section missing from " + filename);
-        }
         return retVal;
     }
 

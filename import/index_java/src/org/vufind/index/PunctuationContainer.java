@@ -22,12 +22,16 @@ import java.util.LinkedHashSet;
 import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
  * Singleton for storing punctuation configuration information.
  */
 public class PunctuationContainer
 {
+    // Initialize logging category
+    static Logger logger = Logger.getLogger(ConfigManager.class.getName());
+
     private static ThreadLocal<PunctuationContainer> containerCache =
         new ThreadLocal<PunctuationContainer>()
         {
@@ -38,6 +42,8 @@ public class PunctuationContainer
             }
         };
 
+    private static String configFilename = "author-classification.ini";
+
     private Set<Pattern> punctuationRegEx = new LinkedHashSet<Pattern>();
     private Set<String> punctuationPairs = new LinkedHashSet<String>();
     private Set<String> untrimmedAbbreviations = new LinkedHashSet<String>();
@@ -45,11 +51,15 @@ public class PunctuationContainer
     public Set<Pattern> getPunctuationRegEx()
     {
         // Populate set if empty:
-        if (punctuationRegEx.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getConfigSection("author-classification.ini", "PunctuationRegExToStrip");
-            punctuationRegEx = new LinkedHashSet<Pattern>();
-            for (String pattern : all.values()) {
-                punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
+        if (punctuationRegEx.isEmpty()) {
+            String configSection = "PunctuationRegExToStrip";
+            Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
+            if (all == null) {
+                logger.warn(configSection + " section missing from " + configFilename);
+            } else {
+                for (String pattern : all.values()) {
+                    punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
+                }
             }
         }
         return punctuationRegEx;
@@ -58,9 +68,14 @@ public class PunctuationContainer
     public Set<String> getPunctuationPairs()
     {
         // Populate set if empty:
-        if (punctuationPairs.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getConfigSection("author-classification.ini", "PunctuationMatchedChars");
-            punctuationPairs = new LinkedHashSet<String>(all.values());
+        if (punctuationPairs.isEmpty()) {
+            String configSection = "PunctuationMatchedChars";
+            Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
+            if (all == null) {
+                logger.warn(configSection + " section missing from " + configFilename);
+            } else {
+                punctuationPairs = new LinkedHashSet<String>(all.values());
+            }
         }
         return punctuationPairs;
     }
@@ -68,8 +83,9 @@ public class PunctuationContainer
     public Set<String> getUntrimmedAbbreviations()
     {
         // Populate set if empty:
-        if (untrimmedAbbreviations.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getConfigSection("author-classification.ini", "PunctuationUntrimmedAbbreviations");
+        if (untrimmedAbbreviations.isEmpty()) {
+            String configSection = "PunctuationUntrimmedAbbreviations";
+            Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
             untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
         }
         return untrimmedAbbreviations;
