@@ -27,8 +27,11 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
+use VuFind\I18n\TranslatableString;
 use VuFind\Record\Loader;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
@@ -108,6 +111,230 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test retrieving facets.
+     *
+     * @return void
+     */
+    public function testGetFacetList(): void
+    {
+        $config = $this->getMockBuilder(PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $config->expects($this->any())
+            ->method('get')
+            ->will(
+                $this->returnValue(
+                    new Config(
+                        [
+                            'SpecialFacets' => [
+                                'hierarchical' => [
+                                    'building',
+                                ],
+                            ],
+                        ]
+                    )
+                )
+            );
+
+        $results = $this->getResultsFromResponse(
+            [
+                'response' => [
+                    'numFound' => 5
+                ],
+                'facet_counts' => [
+                    'facet_fields' => [
+                        'topic_facet' => [
+                            ['Research', 16],
+                            ['Psychotherapy', 8],
+                        ],
+                        'building' => [
+                            ['0/Main/', 11],
+                            ['1/Main/Fiction/', 5],
+                            ['0/Sub/', 2],
+                        ]
+                    ]
+                ]
+            ],
+            $this->getParams(null, $config)
+        );
+
+        // No facets configured:
+        $facets = $results->getFacetList();
+        $this->assertIsArray($facets);
+        $this->assertEmpty($facets);
+
+        // Invalid facet:
+        $facets = $results->getFacetList(['format' => 'Format']);
+        $this->assertIsArray($facets);
+        $this->assertEmpty($facets);
+
+        // Valid facet, no configuration:
+        $facets = $results->getFacetList(['topic_facet' => 'Topic']);
+        $this->assertEquals(
+            [
+                'topic_facet' => [
+                    'label' => 'Topic',
+                    'list' => [
+                        [
+                            'value' => 'Research',
+                            'displayText' => 'Research',
+                            'count' => 16,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => 'Psychotherapy',
+                            'displayText' => 'Psychotherapy',
+                            'count' => 8,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ]
+            ],
+            $facets
+        );
+
+        // Make it an OR facet:
+        $results->getParams()->addFacet('topic_facet', 'Topic', true);
+        $facets = $results->getFacetList();
+        $this->assertEquals(
+            [
+                'topic_facet' => [
+                    'label' => 'Topic',
+                    'list' => [
+                        [
+                            'value' => 'Research',
+                            'displayText' => 'Research',
+                            'count' => 16,
+                            'operator' => 'OR',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => 'Psychotherapy',
+                            'displayText' => 'Psychotherapy',
+                            'count' => 8,
+                            'operator' => 'OR',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ]
+            ],
+            $facets
+        );
+
+        // Add a filter:
+        $results->getParams()->addFilter('~topic_facet:Research');
+        $facets = $results->getFacetList();
+        $this->assertEquals(
+            [
+                'topic_facet' => [
+                    'label' => 'Topic',
+                    'list' => [
+                        [
+                            'value' => 'Research',
+                            'displayText' => 'Research',
+                            'count' => 16,
+                            'operator' => 'OR',
+                            'isApplied' => true,
+                        ],
+                        [
+                            'value' => 'Psychotherapy',
+                            'displayText' => 'Psychotherapy',
+                            'count' => 8,
+                            'operator' => 'OR',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ]
+            ],
+            $facets
+        );
+
+        // Clone results so that we can test missing hierarchical facet helper later:
+        $resultsNoHelper = clone $results;
+
+        // Test hierarchical facet:
+        $results->setHierarchicalFacetHelper(new HierarchicalFacetHelper());
+        $facets = $results->getFacetList(['building' => 'Building']);
+        $this->assertEquals(
+            [
+                'building' => [
+                    'label' => 'Building',
+                    'list' => [
+                        [
+                            'value' => '0/Main/',
+                            'displayText'
+                                => new TranslatableString('0/Main/', 'Main'),
+                            'count' => 11,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Main/Fiction/',
+                            'displayText' => new TranslatableString(
+                                '1/Main/Fiction/',
+                                'Fiction'
+                            ),
+                            'count' => 5,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '0/Sub/',
+                            'displayText'
+                                => new TranslatableString('0/Sub/', 'Sub'),
+                            'count' => 2,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ]
+            ],
+            $facets
+        );
+
+        // Make the building facet translated:
+        $results->getOptions()->setTranslatedFacets(['building']);
+        $facets = $results->getFacetList(['building' => 'Building']);
+        $this->assertEquals(
+            [
+                'building' => [
+                    'label' => 'Building',
+                    'list' => [
+                        [
+                            'value' => '0/Main/',
+                            'displayText' => 'Main',
+                            'count' => 11,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Main/Fiction/',
+                            'displayText' => 'Fiction',
+                            'count' => 5,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '0/Sub/',
+                            'displayText' => 'Sub',
+                            'count' => 2,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ]
+            ],
+            $facets
+        );
+
+        // Test missing hierarchical facet helper:
+        $this->expectExceptionMessage('hierarchical facet helper unavailable');
+        $facets = $resultsNoHelper->getFacetList(['building' => 'Building']);
+    }
+
+    /**
      * Get Results object
      *
      * @return Results
@@ -122,6 +349,26 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $searchService ?? $this->createMock(SearchService::class),
             $loader ?? $this->createMock(Loader::class)
         );
+    }
+
+    /**
+     * Get Results objects from a response array
+     *
+     * @param array  $response Solr response array
+     * @param Params $params   Params
+     *
+     * @return Results
+     */
+    protected function getResultsFromResponse(
+        array $response,
+        Params $params
+    ): Results {
+        $collection = new RecordCollection($response);
+        $searchService = $this->createMock(SearchService::class);
+        $searchService->expects($this->once())
+            ->method('search')
+            ->will($this->returnValue($collection));
+        return $this->getResults($params, $searchService);
     }
 
     /**
