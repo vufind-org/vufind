@@ -72,16 +72,16 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->method('translate')
             ->withConsecutive(
                 [$this->equalTo('000')],
-                [$this->equalTo('%raw% - %translated%')]
+                [$this->equalTo('dewey_format_str')]
             )->willReturnOnConsecutiveCalls(
                 'Computer science, information, general works',
-                '000 - Computer science, information, general works'
+                '%%raw%% - %%translated%%'
             );
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
         $options->setTranslatedFacets([
-            'dewey-raw:DDC23:%raw% - %translated%'
+            'dewey-raw:DDC23:dewey_format_str'
         ]);
         $params = $this->getParams($options);
         $params->addFacet('dewey-raw');
