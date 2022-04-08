@@ -368,12 +368,12 @@ class AbstractSearch extends AbstractBase
             $feed = $feedHelper($view->results);
             $writer = new \Laminas\Feed\Writer\Renderer\Feed\Rss($feed);
             $writer->render();
-            $xsl = 'todo';
-            $rssTitle = 'todo';
+            // TODO: search themes for file:
+            $xsl = $this->url()->fromRoute('home') . 'themes/root/assets/xsl/rss.xsl';
             $writer->getElement()->parentNode->insertBefore(
                 $writer->getDomDocument()->createProcessingInstruction(
                     'xml-stylesheet',
-                    'title="' . $rssTitle . '" type="text/xsl" href="' . $xsl . '"'
+                    'type="text/xsl" href="' . $xsl . '"'
                 ),
                 $writer->getElement()
             );
