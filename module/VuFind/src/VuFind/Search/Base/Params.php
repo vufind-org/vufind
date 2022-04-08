@@ -974,8 +974,6 @@ class Params
      * @param string $default Default field name (null for default behavior).
      *
      * @return string         Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
@@ -984,6 +982,10 @@ class Params
             && isset($this->facetAliases[$field])
         ) {
             $field = $this->facetAliases[$field];
+        }
+        $checkboxFacet = $this->checkboxFacets[$field]["$field:$value"] ?? null;
+        if (null !== $checkboxFacet) {
+            return $checkboxFacet['desc'];
         }
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
