@@ -53,7 +53,7 @@ trait ConfigPluginManagerTrait
      *
      * @return MockObject
      */
-    protected function getConfigPluginManager(array $configs): MockObject
+    protected function getMockConfigPluginManager(array $configs): MockObject
     {
         $manager = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()

@@ -121,7 +121,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFacetList(): void
     {
-        $config = $this->getConfigPluginManager(
+        $config = $this->getMockConfigPluginManager(
             [
                 'facets' => [
                     'SpecialFacets' => [
