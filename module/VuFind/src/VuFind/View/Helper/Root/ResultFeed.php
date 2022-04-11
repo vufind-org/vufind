@@ -114,6 +114,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         }
         $serverUrl = $this->getView()->plugin('serverurl');
         $baseUrl = $serverUrl($currentPath);
+        $lang = $this->getTranslatorLocale();
 
         // Create the parent feed
         $feed = new Feed();
@@ -126,10 +127,15 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             );
         }
         $feed->setLink(
-            $baseUrl . $results->getUrlQuery()->setViewParam(null)->getParams(false)
+            $baseUrl . $results->getUrlQuery()
+                ->setDefaultParameter('lng', $lang, true)
+                ->setViewParam(null)
+                ->getParams(false)
         );
         $feed->setFeedLink(
-            $baseUrl . $results->getUrlQuery()->getParams(false),
+            $baseUrl . $results->getUrlQuery()
+                ->setDefaultParameter('lng', $lang, true)
+                ->getParams(false),
             $results->getParams()->getView()
         );
         $feed->setDescription(
@@ -149,14 +155,19 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 
         // add atom links for easier paging
         $feed->addOpensearchLink(
-            $baseUrl . $results->getUrlQuery()->setPage(1)->getParams(false),
+            $baseUrl . $results->getUrlQuery()
+                ->setPage(1)
+                ->setDefaultParameter('lng', $lang, true)
+                ->getParams(false),
             'first',
             $params->getView()
         );
         if ($params->getPage() > 1) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage() - 1)->getParams(false),
+                    ->setPage($params->getPage() - 1)
+                    ->setDefaultParameter('lng', $lang, true)
+                    ->getParams(false),
                 'previous',
                 $params->getView()
             );
@@ -165,13 +176,18 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if ($params->getPage() < $lastPage) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage() + 1)->getParams(false),
+                    ->setPage($params->getPage() + 1)
+                    ->setDefaultParameter('lng', $lang, true)
+                    ->getParams(false),
                 'next',
                 $params->getView()
             );
         }
         $feed->addOpensearchLink(
-            $baseUrl . $results->getUrlQuery()->setPage($lastPage)->getParams(false),
+            $baseUrl . $results->getUrlQuery()
+                ->setPage($lastPage)
+                ->setDefaultParameter('lng', $lang, true)
+                ->getParams(false),
             'last',
             $params->getView()
         );
