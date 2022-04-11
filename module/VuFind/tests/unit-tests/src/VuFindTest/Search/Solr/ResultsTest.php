@@ -29,7 +29,6 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
 use VuFind\I18n\TranslatableString;
 use VuFind\Record\Loader;
@@ -53,6 +52,8 @@ use VuFindSearch\Service as SearchService;
  */
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test CursorMark functionality.
      *
@@ -120,24 +121,17 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFacetList(): void
     {
-        $config = $this->getMockBuilder(PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $config->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->returnValue(
-                    new Config(
-                        [
-                            'SpecialFacets' => [
-                                'hierarchical' => [
-                                    'building',
-                                ],
-                            ],
-                        ]
-                    )
-                )
-            );
+        $config = $this->getConfigPluginManager(
+            [
+                'facets' => [
+                    'SpecialFacets' => [
+                        'hierarchical' => [
+                            'building',
+                        ],
+                    ],
+                ],
+            ]
+        );
 
         $results = $this->getResultsFromResponse(
             [
@@ -166,12 +160,12 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $this->assertIsArray($facets);
         $this->assertEmpty($facets);
 
-        // Invalid facet:
+        // Facet not available in results:
         $facets = $results->getFacetList(['format' => 'Format']);
         $this->assertIsArray($facets);
         $this->assertEmpty($facets);
 
-        // Valid facet, no configuration:
+        // Facet available in results, no configuration:
         $facets = $results->getFacetList(['topic_facet' => 'Topic']);
         $this->assertEquals(
             [
@@ -226,7 +220,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $facets
         );
 
-        // Add a filter:
+        // Add an 'OR' filter:
         $results->getParams()->addFilter('~topic_facet:Research');
         $facets = $results->getFacetList();
         $this->assertEquals(
@@ -297,7 +291,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $facets
         );
 
-        // Make the building facet translated:
+        // Make the building facet translated and add an 'AND' filter:
+        $results->getParams()->addFilter('building:1/Main/Fiction/');
         $results->getOptions()->setTranslatedFacets(['building']);
         $facets = $results->getFacetList(['building' => 'Building']);
         $this->assertEquals(
@@ -317,7 +312,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'displayText' => 'Fiction',
                             'count' => 5,
                             'operator' => 'AND',
-                            'isApplied' => false,
+                            'isApplied' => true,
                         ],
                         [
                             'value' => '0/Sub/',
@@ -355,7 +350,10 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Results objects from a response array
+     * Get a Results objects from a response array.
+     *
+     * Note that this returns the response for a search request without validating
+     * the request.
      *
      * @param array  $response Solr response array
      * @param Params $params   Params
@@ -368,6 +366,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): Results {
         $collection = new RecordCollection($response);
         $searchService = $this->createMock(SearchService::class);
+        // No need to validate the parameters, just return the requested results:
         $searchService->expects($this->once())
             ->method('search')
             ->will($this->returnValue($collection));
