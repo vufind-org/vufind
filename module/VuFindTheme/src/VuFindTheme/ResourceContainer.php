@@ -200,9 +200,13 @@ class ResourceContainer
             );
         }
 
+        // If we are disabling the dependency, remove it now.
+        if ($jsEntry['disabled'] ?? false) {
+            return $this->removeEntry($jsEntry, $this->js);
+        }
+
         foreach ($this->js as $existingEntry) {
             if ($existingEntry['file'] == $jsEntry['file']) {
-
                 // If we have the same settings as before, just skip this entry.
                 if ($existingEntry == $jsEntry) {
                     return;
@@ -216,6 +220,24 @@ class ResourceContainer
         }
 
         $this->insertEntry($jsEntry, $this->js);
+    }
+
+    /**
+     * Helper function to remove an entry from an array based on filename.
+     *
+     * @param array $entry The entry to remove.
+     * @param array $array The array from which the entry shall be removed.
+     *
+     * @return void
+     */
+    protected function removeEntry($entry, &$array)
+    {
+        foreach (array_keys($array) as $i) {
+            if (($array[$i]['file'] ?? '') === ($entry['file'] ?? null)) {
+                unset($array[$i]);
+                return;
+            }
+        }
     }
 
     /**
