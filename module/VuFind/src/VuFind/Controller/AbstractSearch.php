@@ -28,9 +28,10 @@
 namespace VuFind\Controller;
 
 use Laminas\Session\SessionManager;
-use Laminas\Stdlib\Parameters;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
+use Laminas\Stdlib\ResponseInterface as Response;
+use Laminas\View\Model\ViewModel;
 
 /**
  * VuFind Search Controller
@@ -69,7 +70,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -81,7 +82,7 @@ class AbstractSearch extends AbstractBase
     /**
      * Handle an advanced search
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ViewModel
      */
     public function advancedAction()
     {
@@ -285,11 +286,49 @@ class AbstractSearch extends AbstractBase
     /**
      * Send search results to results view
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return Response|ViewModel
      */
     public function resultsAction()
     {
         return $this->getSearchResultsView();
+    }
+
+    /**
+     * Support method for getSearchResultsView() -- return the search results
+     * reformatted as an RSS feed.
+     *
+     * @param $view ViewModel View model
+     *
+     * @return Response
+     */
+    protected function getRssSearchResponse(ViewModel $view): Response
+    {
+        // Build the RSS feed:
+        $feedHelper = $this->getViewRenderer()->plugin('resultfeed');
+        $feed = $feedHelper($view->results);
+        $writer = new \Laminas\Feed\Writer\Renderer\Feed\Rss($feed);
+        $writer->render();
+
+        // Apply XSLT if we can find a relevant file:
+        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
+        $themeHits = $themeInfo->findInThemes('assets/xsl/rss.xsl');
+        if ($themeHits) {
+            $xsl = $this->url()->fromRoute('home') . 'themes/'
+                . $themeHits[0]['theme'] . '/' . $themeHits[0]['relativeFile'];
+            $writer->getElement()->parentNode->insertBefore(
+                $writer->getDomDocument()->createProcessingInstruction(
+                    'xml-stylesheet',
+                    'type="text/xsl" href="' . $xsl . '"'
+                ),
+                $writer->getElement()
+            );
+        }
+
+        // Format the response:
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
+        $response->setContent($writer->saveXml());
+        return $response;
     }
 
     /**
@@ -298,7 +337,7 @@ class AbstractSearch extends AbstractBase
      * @param callable $setupCallback Optional setup callback that overrides the
      * default one
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return Response|ViewModel
      */
     protected function getSearchResultsView($setupCallback = null)
     {
@@ -362,27 +401,7 @@ class AbstractSearch extends AbstractBase
 
         // Special case: If we're in RSS view, we need to render differently:
         if (isset($view->params) && $view->params->getView() == 'rss') {
-            $response = $this->getResponse();
-            $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
-            $feedHelper = $this->getViewRenderer()->plugin('resultfeed');
-            $feed = $feedHelper($view->results);
-            $writer = new \Laminas\Feed\Writer\Renderer\Feed\Rss($feed);
-            $writer->render();
-            $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
-            $themeHits = $themeInfo->findInThemes('assets/xsl/rss.xsl');
-            if (count($themeHits) > 0) {
-                $xsl = $this->url()->fromRoute('home') . 'themes/'
-                    . $themeHits[0]['theme'] . '/' . $themeHits[0]['relativeFile'];
-                $writer->getElement()->parentNode->insertBefore(
-                    $writer->getDomDocument()->createProcessingInstruction(
-                        'xml-stylesheet',
-                        'type="text/xsl" href="' . $xsl . '"'
-                    ),
-                    $writer->getElement()
-                );
-            }
-            $response->setContent($writer->saveXml());
-            return $response;
+            return $this->getRssSearchResponse($view);
         }
 
         // Search toolbar
@@ -400,7 +419,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param \VuFind\Search\Base\Results $results Search results object.
      *
-     * @return bool|\Laminas\View\Model\ViewModel
+     * @return bool|ViewModel
      */
     protected function processJumpTo($results)
     {
