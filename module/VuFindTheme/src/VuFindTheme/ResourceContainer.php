@@ -202,7 +202,8 @@ class ResourceContainer
 
         // If we are disabling the dependency, remove it now.
         if ($jsEntry['disabled'] ?? false) {
-            return $this->removeEntry($jsEntry, $this->js);
+            $this->removeEntry($jsEntry, $this->js);
+            return;
         }
 
         foreach ($this->js as $existingEntry) {
