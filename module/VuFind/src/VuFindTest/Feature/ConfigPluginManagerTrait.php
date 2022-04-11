@@ -30,6 +30,7 @@ namespace VuFindTest\Feature;
 
 use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
 use VuFind\Config\PluginManager;
 
 /**
@@ -47,27 +48,67 @@ trait ConfigPluginManagerTrait
      * Get a mock configuration plugin manager with the given configuration "files"
      * available.
      *
-     * @param array $configs An associative array of configurations where key is the
-     * file (e.g. 'config') and value an array of configuration sections and
-     * directives
+     * @param array            $configs   An associative array of configurations
+     * where key is the file (e.g. 'config') and value an array of configuration
+     * sections and directives
+     * @param array            $default   Default configuration to return when no
+     * entry is found in $configs
+     * @param ?InvocationOrder $getExpect The expected invocation order for the get()
+     * method (null for any)
+     * @param ?InvocationOrder $hasExpect The expected invocation order for the has()
+     * method (null for any)
      *
-     * @return MockObject
+     * @return MockObject&PluginManager
      */
-    protected function getMockConfigPluginManager(array $configs): MockObject
-    {
+    protected function getMockConfigPluginManager(
+        array $configs,
+        array $default = [],
+        InvocationOrder $getExpect = null,
+        InvocationOrder $hasExpect = null
+    ): PluginManager {
+        $manager = $this->getMockBuilder(PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $manager->expects($getExpect ?? $this->any())
+            ->method('get')
+            ->with($this->isType('string'))
+            ->will(
+                $this->returnCallback(
+                    function ($config) use ($configs, $default): Config {
+                        return new Config($configs[$config] ?? $default);
+                    }
+                )
+            );
+        $manager->expects($hasExpect ?? $this->any())
+            ->method('has')
+            ->with($this->isType('string'))
+            ->will(
+                $this->returnCallback(
+                    function ($config) use ($configs): bool {
+                        return isset($configs[$config]);
+                    }
+                )
+            );
+        return $manager;
+    }
+
+    /**
+     * Get a mock configuration plugin manager that will throw an exception.
+     *
+     * @param \Throwable $exception Exception to throw
+     *
+     * @return MockObject&PluginManager
+     */
+    protected function getMockFailingConfigPluginManager(
+        \Throwable $exception
+    ): PluginManager {
         $manager = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
             ->getMock();
         $manager->expects($this->any())
             ->method('get')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs): Config {
-                        return new Config($configs[$config] ?? []);
-                    }
-                )
-            );
+            ->will($this->throwException($exception));
         return $manager;
     }
 }

@@ -28,7 +28,6 @@
  */
 namespace VuFindTest\Service;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use League\CommonMark\MarkdownConverterInterface;
 use VuFind\Service\MarkdownFactory;
@@ -44,6 +43,8 @@ use VuFind\Service\MarkdownFactory;
  */
 class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test to ensure the markdown factory is using right config for markdown
      * service
@@ -213,13 +214,11 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMarkdownConverter(array $config): MarkdownConverterInterface
     {
-        $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);
-        $configManager = $container
-            ->createMock(\VuFind\Config\PluginManager::class, ['get']);
-        $configManager->expects($this->any())->method('get')
-            ->will($this->returnValue($config));
-        $container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $container->set(
+            \VuFind\Config\PluginManager::class,
+            $this->getMockConfigPluginManager(['markdown' => $config])
+        );
         $markdownFactory = new MarkdownFactory();
         $markdown = $markdownFactory(
             $container,

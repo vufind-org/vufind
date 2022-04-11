@@ -40,6 +40,7 @@ use VuFind\Recommend\CollectionSideFacets;
  */
 class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
@@ -60,17 +61,25 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
      * Get a fully configured module
      *
      * @param \VuFind\Config\PluginManager                $configLoader config loader
-     * @param \VuFind\Search\Solr\Results                 $results      results object
+     * @param \VuFind\Search\Solr\Results                 $results      results
+     * object
      * @param string                                      $settings     settings
-     * @param \Laminas\Stdlib\Parameters                     $request      request
-     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical facet helper (true to build default, null to omit)
+     * @param \Laminas\Stdlib\Parameters                  $request      request
+     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical
+     * facet helper (true to build default, null to omit)
      *
      * @return SideFacets
      */
-    protected function getSideFacets($configLoader = null, $results = null, $settings = '', $request = null, $facetHelper = true)
+    protected function getSideFacets(
+        $configLoader = null,
+        $results = null,
+        $settings = '',
+        $request = null,
+        $facetHelper = true
+    )
     {
         $sf = new CollectionSideFacets(
-            $configLoader ?? $this->getMockConfigLoader(),
+            $configLoader ?? $this->getMockConfigPluginManager([]),
             $facetHelper ? new \VuFind\Search\Solr\HierarchicalFacetHelper() : false
         );
         $sf->setConfig($settings);
@@ -80,23 +89,6 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         );
         $sf->process($results ?? $this->getSolrResults());
         return $sf;
-    }
-
-    /**
-     * Get a mock config loader.
-     *
-     * @param array  $config Configuration to return
-     * @param string $key    Key to store configuration under
-     *
-     * @return \VuFind\Config\PluginManager
-     */
-    protected function getMockConfigLoader($config = [], $key = 'facets')
-    {
-        $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $loader->expects($this->once())->method('get')->with($this->equalTo($key))
-            ->will($this->returnValue(new \Laminas\Config\Config($config)));
-        return $loader;
     }
 
     /**
