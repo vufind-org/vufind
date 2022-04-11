@@ -189,7 +189,7 @@ class Feed extends AbstractRenderer
                 $mime = 'application/' . strtolower($link['type']) . '+xml';
                 $elem->setAttribute('type', $mime);
             }
-            if ($link['title'] != null) {
+            if ($link['title'] ?? null) {
                 $elem->setAttribute('title', $link['title']);
             }
             $elem->setAttribute('href', $link['url']);
