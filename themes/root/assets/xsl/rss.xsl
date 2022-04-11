@@ -15,8 +15,8 @@
             <xsl:attribute name="href">
               <xsl:value-of select="@href" />
             </xsl:attribute>
-            <xsl:value-of select="@rel" />
-          </a>&#160;
+            <xsl:value-of select="@title" />
+          </a><br />
         </xsl:for-each>
         <xsl:for-each select="/rss/channel/item">
           <p>
