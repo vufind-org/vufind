@@ -27,24 +27,25 @@
   }
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
-<?php if ($results->getResultTotal() > 0): ?>
-  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h2>
-<?php endif; ?>
-<?php $checkboxFilters = $this->recommend->getCheckboxFacetSet(); ?>
-<?php $checkboxesShown = false; ?>
-<?php if (count($checkboxFilters) > 0):
+<?php
+  $checkboxFilters = $this->recommend->getCheckboxFacetSet();
+  $checkboxesShown = false;
+  if (count($checkboxFilters) > 0) {
     foreach ($checkboxFilters as $current) {
       if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
         $checkboxesShown = true;
         break;
       }
     }
-  ?>
-  <?php if ($checkboxesShown): ?>
-    <div class="checkboxFilter">
-      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
-    </div>
-  <?php endif; ?>
+  }
+?>
+<?php if ($results->getResultTotal() > 0 || $checkboxesShown): ?>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+<?php endif; ?>
+<?php if ($checkboxesShown): ?>
+  <div class="checkboxFilter">
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+  </div>
 <?php endif; ?>
 <?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
