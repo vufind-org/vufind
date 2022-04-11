@@ -441,7 +441,7 @@ class Backend extends AbstractBackend
      * Get next record from the given backend.
      *
      * Gets next records from the previously retrieved array of records or retrieves
-     * a new batch of records from.
+     * a new batch of records from the backend.
      *
      * @param array $backendDetails Details for the backend
      * @param array $backendRecords Record buffer
