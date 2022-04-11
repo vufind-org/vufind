@@ -27,10 +27,8 @@
  */
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\Config\Config;
 use VuFind\AjaxHandler\DoiLookup;
 use VuFind\AjaxHandler\DoiLookupFactory;
-use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\DoiLinker\DoiLinkerInterface;
 use VuFind\DoiLinker\PluginManager;
 
@@ -45,6 +43,8 @@ use VuFind\DoiLinker\PluginManager;
  */
 class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Set up configuration for a test.
      *
@@ -54,11 +54,10 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     protected function setupConfig($config)
     {
-        $config = new Config($config);
-        $cm = $this->container->createMock(ConfigManager::class, ['get']);
-        $cm->expects($this->once())->method('get')->with($this->equalTo('config'))
-            ->will($this->returnValue($config));
-        $this->container->set(ConfigManager::class, $cm);
+        $this->container->set(
+            \VuFind\Config\PluginManager::class,
+            $this->getMockConfigPluginManager(compact('config'))
+        );
     }
 
     /**

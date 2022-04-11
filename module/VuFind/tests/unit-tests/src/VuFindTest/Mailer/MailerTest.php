@@ -44,6 +44,8 @@ use VuFindTest\Container\MockContainer;
  */
 class MailerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test that the factory configures the object correctly.
      *
@@ -51,20 +53,17 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testFactoryConfiguration()
     {
-        $config = new \Laminas\Config\Config(
-            [
-                'Mail' => [
-                    'host' => 'vufindtest.localhost',
-                    'port' => 123,
-                    'connection_time_limit' => 600,
-                    'name' => 'foo',
-                    'username' => 'vufinduser',
-                    'password' => 'vufindpass',
-                ]
+        $config = [
+            'Mail' => [
+                'host' => 'vufindtest.localhost',
+                'port' => 123,
+                'connection_time_limit' => 600,
+                'name' => 'foo',
+                'username' => 'vufinduser',
+                'password' => 'vufindpass',
             ]
-        );
-        $cm = new MockContainer($this);
-        $cm->set('config', $config);
+        ];
+        $cm = $this->getMockConfigPluginManager(compact('config'));
         $sm = new MockContainer($this);
         $sm->set(\VuFind\Config\PluginManager::class, $cm);
         $factory = new MailerFactory();

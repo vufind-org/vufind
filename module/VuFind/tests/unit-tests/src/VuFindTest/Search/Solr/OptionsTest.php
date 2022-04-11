@@ -41,17 +41,7 @@ use VuFind\Search\Solr\Options;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Get mock configuration plugin manager
-     *
-     * @return PluginManager
-     */
-    protected function getMockConfigManager()
-    {
-        return $this->getMockBuilder(PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
 
     /**
      * Get Options object
@@ -63,7 +53,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getOptions($configManager = null)
     {
-        return new Options($configManager ?? $this->getMockConfigManager());
+        return new Options($configManager ?? $this->getMockConfigPluginManager([]));
     }
 
     /**

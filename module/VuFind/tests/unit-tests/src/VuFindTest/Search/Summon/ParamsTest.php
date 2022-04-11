@@ -43,6 +43,8 @@ use VuFind\Search\Summon\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test that checkbox filters are always visible (or not) as appropriate.
      *
@@ -50,22 +52,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckboxVisibility()
     {
-        $emptyConfig = new Config([]);
-        $facetConfig = new Config(
-            [
+        $config = [
+            'Summon' => [
                 'CheckboxFacets' => [
                     'IsScholarly:true' => 'scholarly_limit',
                     'holdingsOnly:false' => 'add_other_libraries',
                     'queryExpansion:true' => 'include_synonyms',
                 ],
             ]
-        );
-        $configManager = $this->createMock(PluginManager::class);
-        $callback = function ($config) use ($emptyConfig, $facetConfig) {
-            return $config === 'Summon' ? $facetConfig : $emptyConfig;
-        };
-        $configManager->expects($this->any())->method('get')
-            ->will($this->returnCallback($callback));
+        ];
+        $configManager = $this->getMockConfigPluginManager($config);
         $params = $this->getParams(null, $configManager);
         // We expect "normal" filters to NOT be always visible, and inverted
         // filters to be always visible.
