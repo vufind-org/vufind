@@ -29,6 +29,7 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Config\PluginManager;
 use VuFind\I18n\TranslatableString;
 use VuFind\Record\Loader;
@@ -67,6 +68,60 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test facet translation functionality.
+     *
+     * @return void
+     */
+    public function testFacetTranslations(): void
+    {
+        $mockTranslator = $this->createMock(TranslatorInterface::class);
+        $mockTranslator->expects($this->exactly(2))
+            ->method('translate')
+            ->withConsecutive(
+                [$this->equalTo('000')],
+                [$this->equalTo('dewey_format_str')]
+            )->willReturnOnConsecutiveCalls(
+                'Computer science, information, general works',
+                '%%raw%% - %%translated%%'
+            );
+        $mockConfig = $this->createMock(PluginManager::class);
+        $options = new Options($mockConfig);
+        $options->setTranslator($mockTranslator);
+        $options->setTranslatedFacets([
+            'dewey-raw:DDC23:dewey_format_str'
+        ]);
+        $params = $this->getParams($options);
+        $params->addFacet('dewey-raw');
+        $searchService = $this->getSearchServiceWithMockSearchMethod(
+            [
+                'response' => ['numFound' => 5],
+                'facet_counts' => [
+                    'facet_fields' => [
+                        'dewey-raw' => [
+                            ["000", 100]
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'spellcheck' => ['true'],
+                'hl' => ['false'],
+                'facet' => ['true'],
+                'facet.limit' => [30],
+                'facet.field' => ['dewey-raw'],
+                'facet.sort' => ['count'],
+                'facet.mincount' => [1],
+            ]
+        );
+        $results = $this->getResults($params, $searchService);
+        $list = $results->getFacetList();
+        $this->assertEquals(
+            $list['dewey-raw']['list'][0]['displayText'],
+            '000 - Computer science, information, general works'
+        );
+    }
+
+    /**
      * Test spelling processor support.
      *
      * @return void
@@ -92,7 +147,30 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResultTotal(): void
     {
-        $collection = new RecordCollection(['response' => ['numFound' => 5]]);
+        $searchService = $this->getSearchServiceWithMockSearchMethod(
+            ['response' => ['numFound' => 5]],
+            [
+                'spellcheck' => ['true'],
+                'hl' => ['false'],
+            ]
+        );
+        $results = $this->getResults(null, $searchService);
+        $this->assertEquals(5, $results->getResultTotal());
+    }
+
+    /**
+     * Get a mock search service that will return a RecordCollection.
+     *
+     * @param array $solrResponse   Decoded Solr response for search to return
+     * @parma array $expectedParams Expected ParamBag parameters
+     *
+     * @return SearchService
+     */
+    protected function getSearchServiceWithMockSearchMethod(
+        array $response,
+        array $expectedParams
+    ): SearchService {
+        $collection = new RecordCollection($response);
         $searchService = $this->createMock(SearchService::class);
         $searchService->expects($this->once())
             ->method('search')
@@ -101,17 +179,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo(new \VuFindSearch\Query\Query()),
                 $this->equalTo(0),
                 $this->equalTo(20),
-                $this->equalTo(
-                    new \VuFindSearch\ParamBag(
-                        [
-                            'spellcheck' => ['true'],
-                            'hl' => ['false'],
-                        ]
-                    )
-                )
+                $this->equalTo(new \VuFindSearch\ParamBag($expectedParams))
             )->will($this->returnValue($collection));
-        $results = $this->getResults(null, $searchService);
-        $this->assertEquals(5, $results->getResultTotal());
+        return $searchService;
     }
 
     /**

@@ -44,6 +44,8 @@ use VuFindTheme\ThemeInfo;
  */
 class ContentPagesTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Mock container
      *
@@ -109,10 +111,10 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         ?ThemeInfo $themeInfo = null
     ): ContentPages {
         // Set up configuration:
-        $configObj = new \Laminas\Config\Config($config);
-        $configManager = $this->container->get(\VuFind\Config\PluginManager::class);
-        $configManager->expects($this->once())->method('get')
-            ->with($this->equalTo('config'))->will($this->returnValue($configObj));
+        $this->container->set(
+            \VuFind\Config\PluginManager::class,
+            $this->getMockConfigPluginManager(compact('config'))
+        );
 
         // Set up other dependencies:
         $this->container->set('HttpRouter', $router ?? $this->getMockRouter());

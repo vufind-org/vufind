@@ -795,13 +795,16 @@ abstract class Results
             ];
             // Should we translate values for the current facet?
             $translateTextDomain = '';
+            $translateFormat = '';
             $translate = in_array($field, $translatedFacets);
             if ($translate) {
                 $translateTextDomain = $this->getOptions()
                     ->getTextDomainForTranslatedFacet($field);
+                $translateFormat = $this->getOptions()
+                    ->getFormatForTranslatedFacet($field);
             }
             $hierarchical = in_array($field, $hierarchicalFacets);
-            $facetOperator = $this->getParams()->getFacetOperator($field);
+            $operator = $this->getParams()->getFacetOperator($field);
             // Loop through values:
             foreach ($data as $value => $count) {
                 $displayText = $this->getParams()
@@ -816,18 +819,33 @@ abstract class Results
                     $displayText = $this->hierarchicalFacetHelper
                         ->formatDisplayText($displayText);
                 }
+                if ($translate) {
+                    $rawDisplayText = $displayText;
+                    $displayText = $this->translate(
+                        [$translateTextDomain, $displayText]
+                    );
+                    // Apply a format to the translation (if available):
+                    if ($translateFormat) {
+                        $displayText = $this->translate(
+                            $translateFormat,
+                            [
+                                '%%raw%%' => $rawDisplayText,
+                                '%%translated%%' => $displayText
+                            ]
+                        );
+                    }
+                }
+                $isApplied = $this->getParams()->hasFilter("$field:" . $value)
+                    || $this->getParams()->hasFilter("~$field:" . $value);
 
                 // Store the collected values:
-                $result[$field]['list'][] = [
-                    'value' => $value,
-                    'displayText' => $translate
-                        ? $this->translate([$translateTextDomain, $displayText])
-                        : $displayText,
-                    'count' => $count,
-                    'operator' => $facetOperator,
-                    'isApplied' => $this->getParams()->hasFilter("$field:" . $value)
-                        || $this->getParams()->hasFilter("~$field:" . $value),
-                ];
+                $result[$field]['list'][] = compact(
+                    'value',
+                    'displayText',
+                    'count',
+                    'operator',
+                    'isApplied'
+                );
             }
         }
         return $result;
