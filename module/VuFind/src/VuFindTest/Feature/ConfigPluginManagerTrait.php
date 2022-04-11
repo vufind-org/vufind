@@ -63,8 +63,7 @@ trait ConfigPluginManagerTrait
             ->with($this->isType('string'))
             ->will(
                 $this->returnCallback(
-                    function ($config) use ($configs): Config
-                    {
+                    function ($config) use ($configs): Config {
                         return new Config($configs[$config] ?? []);
                     }
                 )
