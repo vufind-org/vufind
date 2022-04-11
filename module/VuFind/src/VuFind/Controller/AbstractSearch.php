@@ -28,10 +28,10 @@
 namespace VuFind\Controller;
 
 use Laminas\Session\SessionManager;
-use VuFind\Search\RecommendListener;
-use VuFind\Solr\Utils as SolrUtils;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
+use VuFind\Search\RecommendListener;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * VuFind Search Controller
