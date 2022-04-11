@@ -32,6 +32,7 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
 use PHPUnit\Framework\TestCase;
+use VuFind\Log\Logger;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
@@ -468,8 +469,6 @@ class BackendTest extends TestCase
     ): void {
         $backend = $this->getBackend($config);
 
-        $this->assertNull($backend->getRecordCollectionFactory());
-
         $params = $this->getSearchParams($filters, $query);
         $result = $backend->search($query ?? new Query(), $start, $limit, $params);
         $this->assertEquals([], $result->getErrors());
@@ -561,6 +560,19 @@ class BackendTest extends TestCase
                 $this->assertEquals($expectedCounts, $facetCounts, $facet);
             }
         }
+    }
+
+    /**
+     * Test getRecordCollectionFactory.
+     *
+     * @return void
+     */
+    public function testGetRecordCollectionFactory()
+    {
+        $this->expectExceptionMessage(
+            'getRecordCollectionFactory not supported in Blender'
+        );
+        $this->getBackend()->getRecordCollectionFactory();
     }
 
     /**
@@ -726,9 +738,18 @@ class BackendTest extends TestCase
         $backend = $this->getBackend();
         $params = $this->getSearchParams(['blender_backend:Foo']);
 
-        $this->expectExceptionMessage(
-            'Invalid blender_backend filter: Backend Foo not enabled'
-        );
+        $logger = $this->getMockBuilder(Logger::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $logger->expects($this->once())
+            ->method('warn')
+            ->with(
+                'VuFindSearch\Backend\Blender\Backend:'
+                . ' Invalid blender_backend filter: Backend Foo not enabled',
+                []
+            )
+            ->will($this->returnValue(null));
+        $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }
 

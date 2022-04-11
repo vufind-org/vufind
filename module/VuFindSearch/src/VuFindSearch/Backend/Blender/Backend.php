@@ -32,6 +32,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Blender\Response\Json\RecordCollection;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -182,28 +183,11 @@ class Backend extends AbstractBackend
             }
         }
 
-        $failedBackends = [];
-        foreach ($exceptions as $backendId => $exception) {
-            // Throw exception right away if we didn't get any results or the query
-            // is invalid for a backend:
-            if (!$collections) {
-                // No results and an exception previously encountered, raise it now:
-                throw $exception;
-            }
-            // Log the errors and collect a list to display to the user:
-            $this->logError("Search in $backendId failed: " . (string)$exception);
-            $failedBackends[] = $this->config->Backends[$backendId];
-        }
-        if ($failedBackends) {
-            $mergedCollection->addError(
-                [
-                    'msg' => 'search_backend_partial_failure',
-                    'tokens' => [
-                        '%%sources%%' => implode(', ', $failedBackends)
-                    ]
-                ]
-            );
-        }
+        $this->processBackendFailures(
+            $mergedCollection,
+            $exceptions,
+            !empty($collections)
+        );
 
         $totalCount = 0;
         foreach ($collections as $collection) {
@@ -232,6 +216,46 @@ class Backend extends AbstractBackend
         $mergedCollection->slice($offset, $limit);
 
         return $mergedCollection;
+    }
+
+    /**
+     * Process any backend exceptions and throw an exception if all failed or add an
+     * error message if some of them failed.
+     *
+     * @param RecordCollection $mergedCollection Result collection
+     * @param array            $exceptions       Exceptions
+     * @param bool             $haveResults      Whether any results are available
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function processBackendFailures(
+        RecordCollection $mergedCollection,
+        array $exceptions,
+        bool $haveResults
+    ): void {
+        $failedBackends = [];
+        foreach ($exceptions as $backendId => $exception) {
+            // Throw exception right away if we didn't get any results or the query
+            // is invalid for a backend:
+            if (!$haveResults) {
+                // No results and an exception previously encountered, raise it now:
+                throw $exception;
+            }
+            // Log the errors and collect a list to display to the user:
+            $this->logError("Search in $backendId failed: " . (string)$exception);
+            $failedBackends[] = $this->config->Backends[$backendId];
+        }
+        if ($failedBackends) {
+            $mergedCollection->addError(
+                [
+                    'msg' => 'search_backend_partial_failure',
+                    'tokens' => [
+                        '%%sources%%' => implode(', ', $failedBackends)
+                    ]
+                ]
+            );
+        }
     }
 
     /**
@@ -358,7 +382,7 @@ class Backend extends AbstractBackend
      */
     public function getRecordCollectionFactory()
     {
-        return null;
+        throw new \Exception('getRecordCollectionFactory not supported in Blender');
     }
 
     /**
@@ -388,12 +412,13 @@ class Backend extends AbstractBackend
                 if (strncmp($current, 'blender_backend:', 16) === 0) {
                     $active = trim(substr($current, 16), '"');
                     if (!isset($activeBackends[$active])) {
-                        throw new \Exception(
+                        $this->logWarning(
                             "Invalid blender_backend filter: Backend $active not"
                             . ' enabled'
                         );
+                    } else {
+                        $filteredBackends[$active] = $activeBackends[$active];
                     }
-                    $filteredBackends[$active] = $activeBackends[$active];
                 }
             }
         }
@@ -413,7 +438,10 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Get a record from the given backend by offset
+     * Get next record from the given backend.
+     *
+     * Gets next records from the previously retrieved array of records or retrieves
+     * a new batch of records from.
      *
      * @param array $backendDetails Details for the backend
      * @param array $backendRecords Record buffer
