@@ -232,8 +232,12 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function addOpensearchLink($url, $role = null, $type = null, $title = null)
-    {
+    public function addOpensearchLink(
+        $url,
+        $role = null,
+        $type = null,
+        $title = null
+    ) {
         if (empty($url) || !is_string($url) || !Uri::factory($url)->isValid()) {
             throw new Exception\InvalidArgumentException(
                 'Invalid parameter: "url" must be '
