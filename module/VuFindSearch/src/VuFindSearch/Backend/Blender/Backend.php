@@ -483,7 +483,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Trigger pre-search events for both backends.
+     * Trigger pre-search events for all backends.
      *
      * @param EventInterface $event Event
      *
@@ -495,7 +495,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Trigger post-search events for both backends.
+     * Trigger post-search events for all backends.
      *
      * @param EventInterface $event Event
      *
@@ -507,7 +507,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Trigger pre-search events for both backends.
+     * Trigger pre-search events for all backends.
      *
      * @param EventInterface $event Event
      *
