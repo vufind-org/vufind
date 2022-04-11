@@ -33,7 +33,6 @@ namespace VuFindTest\Search\Base;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
-use VuFindTest\Feature\ReflectionTrait;
 
 /**
  * Base Search Object Parameters Test
@@ -48,19 +47,8 @@ use VuFindTest\Feature\ReflectionTrait;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use ReflectionTrait;
-
-    /**
-     * Get mock configuration plugin manager
-     *
-     * @return PluginManager
-     */
-    protected function getMockConfigManager(): PluginManager
-    {
-        return $this->getMockBuilder(PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Get mock Options object
@@ -74,7 +62,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockForAbstractClass(
             Options::class,
-            [$configManager ?? $this->getMockConfigManager()]
+            [$configManager ?? $this->getMockConfigPluginManager([])]
         );
     }
 
@@ -92,7 +80,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?Options $options = null,
         ?PluginManager $configManager = null
     ): Params {
-        $configManager = $configManager ?? $this->getMockConfigManager();
+        $configManager = $configManager ?? $this->getMockConfigPluginManager([]);
         return $this->getMockForAbstractClass(
             Params::class,
             [$options ?? $this->getMockOptions($configManager), $configManager]
