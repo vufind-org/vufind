@@ -76,8 +76,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         $settings = '',
         $request = null,
         $facetHelper = true
-    )
-    {
+    ) {
         $sf = new CollectionSideFacets(
             $configLoader ?? $this->getMockConfigPluginManager([]),
             $facetHelper ? new \VuFind\Search\Solr\HierarchicalFacetHelper() : false
