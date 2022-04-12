@@ -57,6 +57,8 @@ class AuthorController extends \VuFind\Controller\AuthorController {
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
+
+        // Remove the "page" parameter from the request array, to fix "sorting form"
         if(isset($request['page'])) {
             unset($request['page']);
         }
