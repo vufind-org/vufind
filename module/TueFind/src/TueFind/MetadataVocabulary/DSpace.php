@@ -52,7 +52,7 @@ class DSpace extends \VuFind\MetadataVocabulary\AbstractBase
 
         $issn = $driver->tryMethod('getCleanISSN');
         if ($issn != null) {
-            $dspaceData['/sections/traditionalpageone/dc.identifier'] = "issn;" . $controlNumber;
+            $dspaceData['/sections/traditionalpageone/dc.identifier'] = "issn;" . $driver->getUniqueID();
         }
 
         return $dspaceData;
