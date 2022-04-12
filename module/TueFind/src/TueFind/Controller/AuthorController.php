@@ -27,20 +27,8 @@ class AuthorController extends \VuFind\Controller\AuthorController {
         }
 
         if(empty($relatedAuthors) && !empty($page)) {
-
-            $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
-            $request = $this->getRequest()->getQuery()->toArray() + $this->getRequest()->getPost()->toArray();
-            if(isset($request['page'])) {
-                unset($request['page']);
-            }
-            $lastView = $this->getSearchMemory()->retrieveLastSetting($this->searchClassId, 'view');
-
-            $view->results = $runner->run(
-                $request, $this->searchClassId,
-                null ?: $this->getSearchSetupCallback(),
-                $lastView
-            );
-
+            $view = $this->getSearchResultsView();
+            $relatedAuthors = [];
             foreach($view->results->getResults() as $res) {
                 $updateData = $this->updateRelatedAuthor($res);
                 if($updateData['relatedAuthorID'] != $author_id) {
@@ -50,6 +38,87 @@ class AuthorController extends \VuFind\Controller\AuthorController {
         }
 
         $view->relatedAuthors = $relatedAuthors;
+        return $view;
+    }
+
+    protected function getSearchResultsView($setupCallback = null)
+    {
+        $view = $this->createViewModel();
+
+        // Handle saved search requests:
+        $savedId = $this->params()->fromQuery('saved', false);
+        if ($savedId !== false) {
+            return $this->redirectToSavedSearch($savedId);
+        }
+
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+
+        // Send both GET and POST variables to search class:
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
+        if(isset($request['page'])) {
+            unset($request['page']);
+        }
+
+        $lastView = $this->getSearchMemory()
+            ->retrieveLastSetting($this->searchClassId, 'view');
+        try {
+            $view->results = $results = $runner->run(
+                $request, $this->searchClassId,
+                $setupCallback ?: $this->getSearchSetupCallback(),
+                $lastView
+            );
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage($request, $e->getLegalPage());
+        }
+        $view->params = $results->getParams();
+
+        // If we received an EmptySet back, that indicates that the real search
+        // failed due to some kind of syntax error, and we should display a
+        // warning to the user; otherwise, we should proceed with normal post-search
+        // processing.
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            $view->parseError = true;
+        } else {
+            // If a "jumpto" parameter is set, deal with that now:
+            if ($jump = $this->processJumpTo($results)) {
+                return $jump;
+            }
+
+            // Remember the current URL as the last search.
+            $this->rememberSearch($results);
+
+            // Add to search history:
+            if ($this->saveToHistory) {
+                $this->saveSearchToHistory($results);
+            }
+
+            // Set up results scroller:
+            if ($this->resultScrollerActive()) {
+                $this->resultScroller()->init($results);
+            }
+
+            foreach ($results->getErrors() as $error) {
+                $this->flashMessenger()->addErrorMessage($error);
+            }
+        }
+
+        // Special case: If we're in RSS view, we need to render differently:
+        if (isset($view->params) && $view->params->getView() == 'rss') {
+            $response = $this->getResponse();
+            $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
+            $feed = $this->getViewRenderer()->plugin('resultfeed');
+            $response->setContent($feed($view->results)->export('rss'));
+            return $response;
+        }
+
+        // Search toolbar
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $view->showBulkOptions = isset($config->Site->showBulkOptions)
+          && $config->Site->showBulkOptions;
+
         return $view;
     }
 
