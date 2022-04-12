@@ -7,6 +7,7 @@ class AuthorController extends \VuFind\Controller\AuthorController {
     {
         $view = parent::searchAction();
         $author_id = $this->params()->fromQuery('author_id');
+        $page = $this->params()->fromQuery('page');
         if(empty($author_id) && !empty($this->params()->fromQuery('lookfor'))) {
             $lookforID = explode(' ', $this->params()->fromQuery('lookfor'));
             if(!empty($lookforID[0])) {
@@ -24,6 +25,30 @@ class AuthorController extends \VuFind\Controller\AuthorController {
                 $relatedAuthors[] = $updateData;
             }
         }
+
+        if(empty($relatedAuthors) && !empty($page)) {
+
+            $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+            $request = $this->getRequest()->getQuery()->toArray() + $this->getRequest()->getPost()->toArray();
+            if(isset($request['page'])) {
+                unset($request['page']);
+            }
+            $lastView = $this->getSearchMemory()->retrieveLastSetting($this->searchClassId, 'view');
+
+            $view->results = $runner->run(
+                $request, $this->searchClassId,
+                null ?: $this->getSearchSetupCallback(),
+                $lastView
+            );
+
+            foreach($view->results->getResults() as $res) {
+                $updateData = $this->updateRelatedAuthor($res);
+                if($updateData['relatedAuthorID'] != $author_id) {
+                    $relatedAuthors[] = $updateData;
+                }
+            }
+        }
+
         $view->relatedAuthors = $relatedAuthors;
         return $view;
     }
