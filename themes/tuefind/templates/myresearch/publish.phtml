@@ -32,7 +32,7 @@
   <!-- DC.creator -->
   <div class="form-group">
     <label>creator</label>
-    <select class="form-control" name="creator" required>
+    <select class="form-control" name="creator" disabled>
       <?php foreach ($this->userAuthorities as $userAuthority): ?>
         <option value="<?=$userAuthority['authority_GNDNumber'];?>" <?php echo $userAuthority['selected'] ? "selected" : "";?> ><?=$userAuthority['select_title'];?></option>
       <?php endforeach; ?>

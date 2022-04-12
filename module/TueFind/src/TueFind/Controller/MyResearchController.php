@@ -46,24 +46,18 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $this->forceLogin();
         }
 
-        // Get information from DSpace for each DB publication item
-        $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
-        $dspace->login();
-
         $config = $this->getConfig('tuefind');
         $dspaceServer = $config->Publication->dspace_url_base;
 
-        $authorityUsers = $this->getTable('user_authority')->getAll();
-
+        $authorityUsers = $this->getTable('user_authority')->getByUserId($user->id);
         $authorityUsersArray = [];
         foreach($authorityUsers as $authorityUser) {
             $authorityUserLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load($authorityUser->authority_id, 'SolrAuth');
-            $authorityUsersArray[] = array(
-                  'id'=>$authorityUser->authority_id,
-                  'email'=>$authorityUser->email,
-                  'access_state'=>$authorityUser->access_state,
-                  'title'=>$authorityUserLoader->getTitle()
-                );
+            $authorityUsersArray[] = [
+                'id'=>$authorityUser->authority_id,
+                'access_state'=>$authorityUser->access_state,
+                'title'=>$authorityUserLoader->getTitle()
+            ];
         }
         $publications = [];
         $dbPublications = $this->getTable('publication')->getByUserId($user->id);

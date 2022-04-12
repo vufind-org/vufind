@@ -7,12 +7,10 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2>Publications</h2>
+  <h2>Authorities</h2>
   <?php if (count($this->authorityRecords) == 0): ?>
     <p>You do not have access to any authority records yet. Please search for an authority record first and request access there.</p>
   <?php else: ?>
-    <p>If you like to publish something, please search for the matching record which is linked to your authority entry and use the "publish" button in the full view.</p>
-
     <table class="table">
       <tr>
         <th><?=$this->transEsc('Author')?></th>
@@ -25,14 +23,12 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
         </tr>
       <?php endforeach; ?>
     </table>
+    <p>If you like to publish something, please search for the matching record which is linked to your authority entry and use the "publish" button in the full view.</p>
 
-    <p>&nbsp;</p>
-    <hr />
-
+    <h2>Publications</h2>
     <?php if (count($this->publications) == 0): ?>
       <p>You did not upload any publications so far.</p>
     <?php else: ?>
-      <p>Details are queried live from our external publication repository:</p>
       <table class="table">
         <tr>
           <th>ID in external repository</th>
