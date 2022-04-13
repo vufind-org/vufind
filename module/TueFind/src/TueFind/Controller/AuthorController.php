@@ -5,7 +5,11 @@ class AuthorController extends \VuFind\Controller\AuthorController {
 
     public function searchAction()
     {
-        $view = parent::searchAction();
+
+        $this->searchClassId = 'SolrAuthorFacets';
+        $this->saveToHistory = false;
+        $this->rememberSearch = false;
+        $view = $this->getSearchResultsViewPageParam();
         $author_id = $this->params()->fromQuery('author_id');
         $page = $this->params()->fromQuery('page');
         if(empty($author_id) && !empty($this->params()->fromQuery('lookfor'))) {
@@ -26,8 +30,8 @@ class AuthorController extends \VuFind\Controller\AuthorController {
             }
         }
 
-        if(empty($relatedAuthors) && !empty($page)) {
-            $view = $this->getSearchResultsView();
+        if(empty($relatedAuthors)) {
+            $view = $this->getSearchResultsViewPageParam(false);
             $relatedAuthors = [];
             foreach($view->results->getResults() as $res) {
                 $updateData = $this->updateRelatedAuthor($res);
@@ -41,7 +45,7 @@ class AuthorController extends \VuFind\Controller\AuthorController {
         return $view;
     }
 
-    protected function getSearchResultsView($setupCallback = null)
+    protected function getSearchResultsViewPageParam($pageParam = true)
     {
         $view = $this->createViewModel();
 
@@ -59,7 +63,7 @@ class AuthorController extends \VuFind\Controller\AuthorController {
 
 
         // Remove the "page" parameter from the request array, to fix "sorting form"
-        if(isset($request['page'])) {
+        if($pageParam === false && isset($request['page'])) {
             unset($request['page']);
         }
 
@@ -68,7 +72,7 @@ class AuthorController extends \VuFind\Controller\AuthorController {
         try {
             $view->results = $results = $runner->run(
                 $request, $this->searchClassId,
-                $setupCallback ?: $this->getSearchSetupCallback(),
+                null ?: $this->getSearchSetupCallback(),
                 $lastView
             );
         } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
