@@ -3189,6 +3189,15 @@ public class TueFindBiblio extends TueFind {
         return ranges;
     }
 
+    public List<String> createNonUniqueSearchField(final Record record, final String tagList) {
+	List<String> results = new ArrayList<String>();
+	Set<String> fieldsByTagList = org.vufind.index.FieldSpecTools.getFieldsByTagList(record,tagList);
+	//clean, toLower, stripPunct, stripAccent, normalizeSortableString
+	for (String elem : fieldsByTagList) {
+		results.add(normalizeSortableString(org.solrmarc.tools.DataUtil.stripAccents(org.solrmarc.tools.DataUtil.stripAllPunct(elem.trim().toLowerCase()))));
+	}
+	return results;
+    }
 
     /*
      * Custom normalisation map function
