@@ -72,6 +72,8 @@ CREATE TABLE tuefind_user_authorities (
     user_id INT NOT NULL,
     authority_id VARCHAR(255) NOT NULL,
     access_state ENUM('requested', 'granted'),
+    requested_datetime TIMESTAMP DEFAULT NOW() NOT NULL,
+    granted_datetime TIMESTAMP DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY user_authority (authority_id),
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
