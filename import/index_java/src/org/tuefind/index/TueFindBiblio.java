@@ -2719,20 +2719,32 @@ public class TueFindBiblio extends TueFind {
 
     // Returns a canonized number for volume sorting
     public String getVolumeSort(final Record record) {
+        String volumeString = "";
         for (final VariableField variableField : record.getVariableFields("936")) {
+            if (!volumeString.isEmpty())
+                break;
             final DataField dataField = (DataField) variableField;
             final Subfield subfieldD = dataField.getSubfield('d');
-            if (subfieldD == null)
-                return "0";
-            final String volumeString = subfieldD.getData();
-            if (volumeString.matches("^\\d+$"))
-                return volumeString;
-            // Handle Some known special cases
-            if (volumeString.matches("[\\[]\\d+[\\]]"))
-                return volumeString.replaceAll("[\\[\\]]","");
-            if (volumeString.matches("\\d+/\\d+"))
-                return volumeString.split("/")[0];
+            if (subfieldD != null)
+                volumeString = subfieldD.getData();
         }
+        for (final VariableField variableField : record.getVariableFields("830")) {
+            if (!volumeString.isEmpty())
+                break;
+            final DataField dataField = (DataField) variableField;
+            final Subfield subfield9 = dataField.getSubfield('9');
+            if (subfield9 != null)
+                volumeString = subfield9.getData();
+        }
+
+        if (volumeString.matches("^\\d+$"))
+            return volumeString;
+        // Handle Some known special cases
+        if (volumeString.matches("[\\[]\\d+[\\]]"))
+            return volumeString.replaceAll("[\\[\\]]","");
+        if (volumeString.matches("\\d+/\\d+"))
+            return volumeString.split("/")[0];
+
         return "0";
     }
 

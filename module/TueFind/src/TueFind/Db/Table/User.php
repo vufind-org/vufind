@@ -18,7 +18,7 @@ class User extends \VuFind\Db\Table\User {
     public function getAdmins()
     {
         $select = $this->getSql()->select();
-        $select->where(['tuefind_is_admin' => true]);
+        $select->where('tuefind_rights IS NOT NULL');
         $select->order('username ASC');
         return $this->selectWith($select);
     }

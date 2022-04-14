@@ -15,7 +15,7 @@ class AdminFrontendController extends \VuFind\Controller\AbstractBase {
             throw new \Exception("You must be logged in first");
         }
 
-        if ($user->tuefind_is_admin != true)
+        if ($user->tuefind_rights == null)
             throw new \Exception("This user has no admin rights!");
     }
 

@@ -124,7 +124,7 @@
 
 <?php /* TueFind: Admin Menu */ ?>
 <?php $user = $this->auth()->isLoggedIn(); ?>
-<?php if ($user && $user->tuefind_is_admin): ?>
+<?php if ($user && $user->tuefind_rights != null): ?>
   <h3>Admin</h3>
   <div class="myresearch-menu">
     <a href="<?=$this->url('adminfrontend-showadmins') ?>"<?=$this->active == 'showadmins' ? ' class="active"' : ''?>>
