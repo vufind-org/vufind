@@ -90,4 +90,4 @@ ALTER TABLE user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE
 CREATE INDEX tuefind_rss_feed_send_emails_index ON user (tuefind_rss_feed_send_emails);
 ALTER TABLE user ADD tuefind_rss_feed_last_notification TIMESTAMP DEFAULT NOW();
 
-ALTER TABLE user ADD tuefind_is_admin BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE user ADD tuefind_rights SET('admin', 'user_authorities') DEFAULT NULL;
