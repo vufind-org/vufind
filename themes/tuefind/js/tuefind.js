@@ -477,6 +477,20 @@ var TueFind = {
 	  console.log('tf-loaded-custom');
 	}
       });
+    },
+
+    SwitchRSSFeedData: function(element) {
+        let actionType = 'add';
+        if(!element.is(':checked')) {
+            actionType = 'remove';
+        }
+        let rssID = element.data('id');
+        $.ajax({
+            type: "POST",
+            url: "/MyResearch/RssFeedSettings",
+            data: {action:actionType,id:rssID},
+            dataType: "json"
+        });
     }
 };
 
@@ -509,5 +523,9 @@ $(document).ready(function () {
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
     setInterval(TueFind.ShowMoreButtonFavoriteList, 1000);
+
+    $('.rssLabel').change(function(){
+        TueFind.SwitchRSSFeedData($(this));
+    })
 
 });

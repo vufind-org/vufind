@@ -16,19 +16,14 @@
       <tr>
         <td><a href="<?=$rssFeed['website_url']?>" target="_blank"><?=$rssFeed['feed_name']?></a></td>
         <td>
-          <form method="post">
-            <input type="hidden" name="id" value="<?=$rssFeed['id']?>">
-            <label class="switch" onclick="this.form.submit()">
-              <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
-                <input type="hidden" name="action" value="remove">
-                <input type="checkbox" checked>
-              <?php else: ?>
-                <input type="hidden" name="action" value="add">
-                <input type="checkbox">
-              <?php endif; ?>
-              <span class="slider round"></span>
-            </label>
-          </form>
+          <label class="switch">
+            <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
+              <input type="checkbox" checked class="rssLabel" data-id="<?=$rssFeed['id']?>">
+            <?php else: ?>
+              <input type="checkbox" class="rssLabel" data-id="<?=$rssFeed['id']?>">
+            <?php endif; ?>
+            <span class="slider round"></span>
+          </label>
         </td>
       </tr>
     <?php endforeach; ?>
