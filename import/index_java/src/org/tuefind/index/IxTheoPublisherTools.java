@@ -12,7 +12,6 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
 
     // Placeholder values inspired by https://www.loc.gov/marc/bibliographic/concise/bd264.html
     protected final static String placeholderForCopyright = "[copyright not identified]";
-    protected final static String placeholderForPublication = "[publication not identified]";
     protected final static String placeholderForPublisher = "[publisher not identified]";
 
     static {
@@ -133,7 +132,7 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
                 // In some cases make sure that we abort after only some part of the rewriting has taken place
                 if (replacementBlackList.contains(publisher))
                     break;
-                if (publisher.equals(placeholderForCopyright) || publisher.equals(placeholderForPublication) || publisher.equals(placeholderForPublisher))
+                if (publisher.equals(placeholderForCopyright) || publisher.equals(placeholderForPublisher))
                     break;
                 publisher = publisher.replaceAll(replacement.getKey(), replacement.getValue()).trim();
             }
@@ -163,6 +162,7 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
      * See also:
      * - VuFind\RecordDriver\DefaultRecord::getPublicationDetails()
      * - Issue #1339
+     * - Issue #1672
      *
      * @param record
      *
@@ -170,8 +170,7 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
      */
     public Set<String> getPublishers(final Record record) {
         Set<String> publishers = new LinkedHashSet<String>();
-        boolean publisherFound = false;
-        boolean publicationFound = false;
+        boolean raisePublisherNotIdentifiedFlag = false;
 
         // First check 773d especially for articles of journals:
         List<VariableField> list773 = record.getVariableFields("773");
@@ -189,25 +188,9 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
                         if (s773d.isEmpty() == false)
                         {
                             publishers.add(s773d);
-                            publicationFound = true;
                         }
                     }
                 }
-            }
-        }
-
-        // Second check old-style 260b name:
-        List<VariableField> list260 = record.getVariableFields("260");
-        for (VariableField vf : list260)
-        {
-            DataField df = (DataField) vf;
-            String currentString = "";
-            for (Subfield current : df.getSubfields('b')) {
-                currentString = currentString.trim().concat(" " + current.getData()).trim();
-            }
-
-            if (currentString.length() > 0) {
-                publishers.add(currentString);
             }
         }
 
@@ -231,12 +214,11 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
             {
                 case '1':
                     if (currentString.isEmpty()) {
-                        currentString = placeholderForPublication;
+                        raisePublisherNotIdentifiedFlag = true;
                     }
                     else {
-                        publicationFound = true;
+                        pubNames.add(currentString);
                     }
-                    pubNames.add(currentString);
                     break;
                 case '4':
                     if (currentString.isEmpty()) {
@@ -247,21 +229,13 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
             }
         }
 
-        // if publication was set in article field 773d but not in 264b, "not identified" flag not needed here
-        // for copyright flag no correction because we assume that 773d does not refer to copyright entry
-        if (publicationFound == true)
-        {
-            pubNames.remove(placeholderForPublication);
-        }
-        else { // assuming that a "full publication (found) does contain a publisher and thus does not need a "publisher not identified"
-            if (publishers.size() == 0) {
-                publishers.add(placeholderForPublisher);
-            }
+        if (pubNames.isEmpty() && raisePublisherNotIdentifiedFlag) {
+            pubNames.add(placeholderForPublisher);
         }
 
-        if (pubNames.size() > 0) {
+        if (!pubNames.isEmpty()) {
             publishers.addAll(pubNames);
-        } else if (copyNames.size() > 0) {
+        } else if (!copyNames.isEmpty()) {
             publishers.addAll(copyNames);
         }
 
