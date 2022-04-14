@@ -3189,14 +3189,29 @@ public class TueFindBiblio extends TueFind {
         return ranges;
     }
 
-    public List<String> createNonUniqueSearchField(final Record record, final String tagList) {
-	List<String> results = new ArrayList<String>();
-	Set<String> fieldsByTagList = org.vufind.index.FieldSpecTools.getFieldsByTagList(record,tagList);
-	//clean, toLower, stripPunct, stripAccent, normalizeSortableString
-	for (String elem : fieldsByTagList) {
-		results.add(normalizeSortableString(org.solrmarc.tools.DataUtil.stripAccents(org.solrmarc.tools.DataUtil.stripAllPunct(elem.trim().toLowerCase()))));
-	}
-	return results;
+    public List<String> createNonUniqueSearchField(final Record record, final String tagList, final String processingSteps) {
+        List<String> results = new ArrayList<String>();
+        Set<String> fieldsByTagList = org.vufind.index.FieldSpecTools.getFieldsByTagList(record,tagList);
+        //clean(trim), toLower, stripPunct, stripAccent, normalizeSortableString
+        String cmpProcessingSteps = processingSteps.toLowerCase();
+        boolean doTrim = cmpProcessingSteps.contains("trim");
+        boolean doToLower = cmpProcessingSteps.contains("tolower");
+        boolean doStripPunct = cmpProcessingSteps.contains("strippunct");
+        boolean doStripAccent = cmpProcessingSteps.contains("stripaccent");
+        boolean doNormalizeSortableString = cmpProcessingSteps.contains("normalizesortablestring");
+        for (String elem : fieldsByTagList) {
+            String modFieldValue = doTrim ? elem.trim() : elem;
+            if (doToLower)
+                modFieldValue = modFieldValue.toLowerCase();
+            if (doStripPunct)
+                modFieldValue = org.solrmarc.tools.DataUtil.stripAllPunct(modFieldValue);
+            if (doStripAccent)
+                modFieldValue = org.solrmarc.tools.DataUtil.stripAccents(modFieldValue);
+            if (doNormalizeSortableString)
+                modFieldValue = normalizeSortableString(modFieldValue);
+            results.add(modFieldValue);
+        }
+        return results;
     }
 
     /*
