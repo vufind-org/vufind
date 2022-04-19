@@ -115,8 +115,9 @@ class Folio extends \VuFind\ILS\Driver\Folio
 
             //TAMU Customization purchase, boundwith and zero item workarounds
             if (count($holdingItems) == 0 && $fallbackLocationId) {
-                $boundWithLocations = ['stk','blcc,stk','BookStacks',
-                                        'psel,stk','udoc','txdoc'];
+                $boundWithLocations
+                    = isset($this->config['TAMU']['bound_with_locations']) ?
+                    explode(":", $this->config['TAMU']['bound_with_locations']) : [];
                 $holdingLocationData = $this->getLocationData($fallbackLocationId);
 
                 $callNumberData = $this->chooseCallNumber(
