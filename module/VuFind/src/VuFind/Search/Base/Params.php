@@ -1064,23 +1064,24 @@ class Params
     }
 
     /**
-     * Check for delimited facets -- if $field is a delimited facet field,
-     * process $displayText accordingly. Return the appropriate display value.
+     * Get a display text for a facet field.
      *
-     * @param string $field       The facet
-     * @param string $displayText The facet value
+     * @param string $field Facet field
+     * @param string $value Facet value
      *
      * @return string
      */
-    public function checkForDelimitedFacetDisplayText($field, $displayText)
+    public function getFacetValueDisplayText(string $field, string $value): string
     {
+        // Check for delimited facets -- if $field is a delimited facet field,
+        // process $displayText accordingly:
         $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
         if (isset($delimitedFacetFields[$field])) {
-            $parts = explode($delimitedFacetFields[$field], $displayText);
-            $displayText = end($parts);
+            $parts = explode($delimitedFacetFields[$field], $value);
+            return end($parts);
         }
 
-        return $displayText;
+        return $value;
     }
 
     /**
@@ -1095,7 +1096,7 @@ class Params
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        $displayText = $this->checkForDelimitedFacetDisplayText($field, $value);
+        $displayText = $this->getFacetValueDisplayText($field, $value);
 
         if ($translate) {
             $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
