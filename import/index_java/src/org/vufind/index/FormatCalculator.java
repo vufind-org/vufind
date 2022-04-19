@@ -214,7 +214,7 @@ public class FormatCalculator
                 break;
             // Component parts
             case 'a':
-                return "BookComponentPart";
+                return (hasSerialHost(record)) ? "SerialComponentPart" : "BookComponentPart";
             case 'b':
                 return "SerialComponentPart";
             // Integrating resources (e.g. loose-leaf binders, databases)
@@ -369,8 +369,31 @@ public class FormatCalculator
      * @return boolean
      */
     protected boolean isThesis(Record record) {
-        // Is there a dissertation note? If so, it's a government document.
+        // Is there a dissertation note? If so, it's a thesis.
         return record.getVariableField("502") != null;
+    }
+
+    /**
+     * Determine whether a record has a host item that is a serial.
+     *
+     * @param Record record
+     * @return boolean
+     */
+    protected boolean hasSerialHost(Record record) {
+        // The 773 could possibly have more then one entry, although probably unlikely.
+        // If any contain a subfield 'g' return true to indicate the host is a serial
+        // see https://www.oclc.org/bibformats/en/specialcataloging.html#relatedpartsandpublications
+        List hostFields = record.getVariableFields("773");
+        Iterator hostFieldsIter = hostFields.iterator();
+        if (hostFields != null) {
+            while (hostFieldsIter.hasNext()) {
+                DataField hostField = (DataField) hostFieldsIter.next();
+                if (hostField.getSubfield('g') != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
