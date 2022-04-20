@@ -97,7 +97,10 @@ header .container.navbar { margin-bottom: 0; }
   .record-checkbox,
   .record-number { display: none; }
 
-  .title { font-weight: bold; }
+  .title {
+    display: inline-block;
+    font-weight: bold;
+  }
   .list-tab-content.record .img-col { display: none; }
   .list-tab-content.record .info-col { width: 100%; }
   .format {
@@ -186,6 +189,19 @@ header .container.navbar { margin-bottom: 0; }
   padding: 0;
   padding-bottom: .25rem;
 }
+
+.result-links a {
+  display: inline-flex;
+  text-decoration: none;
+}
+.result-link-icon {
+  flex: none;
+  line-height: inherit;
+}
+.result-link-label {
+  text-decoration: underline;
+}
+
 .result-links .alert { margin: 0; }
 .result-formats { margin-bottom: .5rem; }
 
@@ -282,7 +298,10 @@ body.rtl {
     flex: 0 0 30px;
     min-width: 0;
   }
-  .title { font-weight: bold; }
+  .title {
+    display: inline-block;
+    font-weight: bold;
+  }
   .label,
   .format {
     display: inline-block;
