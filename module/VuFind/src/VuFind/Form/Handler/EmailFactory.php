@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Factory for configurable forms.
+ * Class EmailFactory
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) Moravian Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -19,13 +21,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind
- * @package  Form
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @category Knihovny.cz
+ * @package  VuFind\Form\Handler
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://knihovny.cz Main Page
  */
-namespace VuFind\Form;
+namespace VuFind\Form\Handler;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
@@ -34,15 +36,15 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for configurable forms.
+ * Class EmailFactory
  *
  * @category VuFind
  * @package  Form
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://knihovny.cz Main Page
  */
-class FormFactory implements FactoryInterface
+class EmailFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -67,17 +69,10 @@ class FormFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->toArray();
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $viewHelperManager = $container->get('ViewHelperManager');
-        $handlerManager = $container->get(\VuFind\Form\Handler\PluginManager::class);
-
         return new $requestedName(
-            $yamlReader,
-            $viewHelperManager,
-            $handlerManager,
-            $config
+            $container->get('ViewRenderer'),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Mailer\Mailer::class)
         );
     }
 }

@@ -44,6 +44,13 @@
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field
+#   handler (array) Handlers to proccess form data - default is 'email', available options are: 'email', 'database'.
+#                   You can add your own handler by implementint \VuFind\Form\Handler\HadnlerInterface, and adding it
+#                   to module config under key 'vufind' -> 'plugin_manager' -> 'form_handler'
+#                   Example:
+#                     handler:
+#                       - email
+#                       - database
 #
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
@@ -146,6 +153,9 @@ forms:
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
+    handler:
+      - email
+      #- database
 
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback

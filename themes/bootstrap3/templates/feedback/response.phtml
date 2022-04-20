@@ -12,7 +12,9 @@
   <<?=$headTag?>><?=$this->escapeHtml($title)?></<?=$headTag?>>
 <?php endif; ?>
 <?=$this->flashmessages()?>
+<?php foreach ($this->successMessages as $successMessage): ?>
 <div role="status" class="alert alert-success">
-  <?=$this->translate($form->getSubmitResponse()) ?>
+  <?=$this->translate($successMessage) ?>
 </div>
+<?php endforeach; ?>
 <?php if (!$this->inLightbox): ?></div><?php endif; ?>

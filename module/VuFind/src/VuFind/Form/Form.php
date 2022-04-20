@@ -36,6 +36,7 @@ use Laminas\Validator\Identical;
 use Laminas\Validator\NotEmpty;
 use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
+use VuFind\Form\Handler\PluginManager as HandlerManager;
 
 /**
  * Configurable form.
@@ -112,10 +113,18 @@ class Form extends \Laminas\Form\Form implements
     protected $viewHelperManager;
 
     /**
+     * Handler plugin manager
+     *
+     * @var HandlerManager
+     */
+    protected $handlerManager;
+
+    /**
      * Constructor
      *
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
+     * @param HandlerManager      $handlerManager    Handler plugin manager
      * @param array               $config            VuFind main configuration
      * (optional)
      *
@@ -124,6 +133,7 @@ class Form extends \Laminas\Form\Form implements
     public function __construct(
         YamlReader $yamlReader,
         HelperPluginManager $viewHelperManager,
+        HandlerManager $handlerManager,
         array $config = null
     ) {
         parent::__construct();
@@ -132,6 +142,7 @@ class Form extends \Laminas\Form\Form implements
         $this->defaultFormConfig = $config['Feedback'] ?? null;
         $this->yamlReader = $yamlReader;
         $this->viewHelperManager = $viewHelperManager;
+        $this->handlerManager = $handlerManager;
     }
 
     /**
@@ -854,6 +865,7 @@ class Form extends \Laminas\Form\Form implements
             'submit',
             'title',
             'useCaptcha',
+            'handler',
         ];
     }
 
@@ -1088,5 +1100,23 @@ class Form extends \Laminas\Form\Form implements
     protected function getElementId(string $id): string
     {
         return 'form_' . $this->formConfig['id'] . '_' . $id;
+    }
+
+    /**
+     * Get form handlers
+     *
+     * @return array
+     */
+    public function getHandlers(): array
+    {
+        $handlerNames = (array)($this->formConfig['handler'] ?? []);
+        if (empty($handlerNames)) {
+            $handlerNames = ['email'];
+        }
+        $handlers = [];
+        foreach ($handlerNames as $handlerName) {
+            $handlers[] = $this->handlerManager->get($handlerName);
+        }
+        return $handlers;
     }
 }

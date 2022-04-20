@@ -13,9 +13,7 @@
  */
 namespace VuFind\Controller;
 
-use Laminas\Mail\Address;
 use Laminas\View\Model\ViewModel;
-use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
 
 /**
@@ -96,49 +94,31 @@ class FeedbackController extends AbstractBase
             return $view;
         }
 
-        $fields = $form->mapRequestParamsToFieldValues($this->params()->fromPost());
-        $emailMessage = $this->getViewRenderer()->partial(
-            'Email/form.phtml',
-            compact('fields')
-        );
-
-        [$senderName, $senderEmail] = $this->getSender($form);
-
-        $replyToName = $params->fromPost(
-            'name',
-            $user ? trim($user->firstname . ' ' . $user->lastname) : null
-        );
-        $replyToEmail = $params->fromPost(
-            'email',
-            $user ? $user->email : null
-        );
-
-        $recipients = $form->getRecipient($params->fromPost());
-
-        $emailSubject = $form->getEmailSubject($params->fromPost());
-
-        $sendSuccess = true;
-        foreach ($recipients as $recipient) {
-            [$success, $errorMsg] = $this->sendEmail(
-                $recipient['name'],
-                $recipient['email'],
-                $senderName,
-                $senderEmail,
-                $replyToName,
-                $replyToEmail,
-                $emailSubject,
-                $emailMessage
-            );
-
-            $sendSuccess = $sendSuccess && $success;
-            if (!$success) {
-                $this->flashMessenger()->addErrorMessage($errorMsg);
-            }
+        $handlers = $form->getHandlers();
+        $results = [];
+        $success = false;
+        foreach ($handlers as $handler) {
+            $result = $handler->handle($form, $params, $user ? $user : null);
+            $success = $success || ($result['success'] ?? false);
+            $results[] = $result;
         }
 
-        if ($sendSuccess) {
+        if ($success) {
             $view->setTemplate('feedback/response');
-            $view->emailMessage = $emailMessage;
+        }
+        $successMessages = [];
+        $errorMessages = [];
+        foreach ($results as $result) {
+            $successMessages[]
+                = $result['successMessage'] ?? $form->getSubmitResponse();
+            $errorMessages = array_merge(
+                $errorMessages,
+                $result['errorMessages']
+            );
+        }
+        $view->successMessages = array_unique($successMessages);
+        foreach ($errorMessages as $error) {
+            $this->flashMessenger()->addErrorMessage($error);
         }
 
         return $view;
@@ -163,64 +143,5 @@ class FeedbackController extends AbstractBase
             );
         }
         return $form;
-    }
-
-    /**
-     * Send form data as email.
-     *
-     * @param string $recipientName  Recipient name
-     * @param string $recipientEmail Recipient email
-     * @param string $senderName     Sender name
-     * @param string $senderEmail    Sender email
-     * @param string $replyToName    Reply-to name
-     * @param string $replyToEmail   Reply-to email
-     * @param string $emailSubject   Email subject
-     * @param string $emailMessage   Email message
-     *
-     * @return array with elements success:boolean, errorMessage:string (optional)
-     */
-    protected function sendEmail(
-        $recipientName,
-        $recipientEmail,
-        $senderName,
-        $senderEmail,
-        $replyToName,
-        $replyToEmail,
-        $emailSubject,
-        $emailMessage
-    ) {
-        try {
-            $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
-            $mailer->send(
-                new Address($recipientEmail, $recipientName),
-                new Address($senderEmail, $senderName),
-                $emailSubject,
-                $emailMessage,
-                null,
-                !empty($replyToEmail)
-                    ? new Address($replyToEmail, $replyToName) : null
-            );
-            return [true, null];
-        } catch (MailException $e) {
-            return [false, $e->getMessage()];
-        }
-    }
-
-    /**
-     * Return email sender from configuration.
-     *
-     * @param Form $form Form
-     *
-     * @return array with name, email
-     */
-    protected function getSender(Form $form)
-    {
-        $config = $this->getConfig()->Feedback;
-        $email = $form->getEmailFromAddress()
-            ?: $config->sender_email ?? 'noreply@vufind.org';
-        $name = $form->getEmailFromName()
-            ?: $config->sender_name ?? 'VuFind Feedback';
-
-        return [$name, $email];
     }
 }
