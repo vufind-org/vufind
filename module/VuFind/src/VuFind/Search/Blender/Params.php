@@ -524,8 +524,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function isBlenderFilter(string $filter): bool
     {
-        [$field] = $this->parseFilter($filter);
-        $field = ltrim($field, '-~');
+        [, $field] = $this->parseFilterAndPrefix($filter);
         return 'blender_backend' === $field;
     }
 
@@ -539,13 +538,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function translateFilter(string $filter, string $backendId): array
     {
-        [$field, $value] = $this->parseFilter($filter);
-        $prefix = '';
-        $firstChar = substr($field, 0, 1);
-        if (in_array($firstChar, ['~', '-'])) {
-            $prefix = $firstChar;
-            $field = substr($field, 1);
-        }
+        [$prefix, $field, $value] = $this->parseFilterAndPrefix($filter);
 
         $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
         if ($ignore = $fieldConfig['Mappings'][$backendId]['Ignore'] ?? '') {
@@ -574,37 +567,15 @@ class Params extends \VuFind\Search\Solr\Params
                 $resultValues[] = $k;
             }
         }
-        // Check also higher levels when converting hierarchical facets:
         if ($mappings['Hierarchical'] ?? false) {
-            $levelOffset = -1;
-            do {
-                $levelGood = false;
-                foreach ($mappings['Values'] ?? [] as $k => $v) {
-                    $parts = explode('/', $v);
-                    $partCount = count($parts);
-                    if ($parts[0] <= 0 || $partCount <= 2) {
-                        continue;
-                    }
-                    $level = $parts[0] + $levelOffset;
-                    if ($level < 0) {
-                        continue;
-                    }
-                    $levelGood = true;
-                    $levelValue = $level . '/'
-                        . implode(
-                            '/',
-                            array_slice($parts, 1, $level + 1)
-                        ) . '/';
-                    if ($value === $levelValue) {
-                        $resultValues[] = $k;
-                    }
-                }
-                --$levelOffset;
-            } while ($levelGood);
+            $resultValues = $this->addLowerLevelHierarchicalFilterValues(
+                $value,
+                $resultValues,
+                $mappings['Values'] ?? []
+            );
         }
 
-        // If the result is more than one value, make sure they're handled as OR
-        // or NOT:
+        // If the result is more than one value, convert an AND search to OR:
         if ('' === $prefix && count($resultValues) > 1) {
             $prefix = '~';
         }
@@ -615,6 +586,57 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         return $result;
+    }
+
+    /**
+     * Handle any lower level mappings when translating hierarchical facets.
+     *
+     * This ensures that selecting a facet value higher in a hierarchy than the
+     * mapped value still adds the correct filter.
+     * Example:
+     * - Backend's value 'journal' is mapped to hierarchical value
+     * '1/Journal/eJournal/'.
+     * - When user selects the top level facet '0/Journal/', it needs to be
+     * reflected as 'journal' in the backend.
+     *
+     * @param mixed $value        Filter value
+     * @param array $resultValues Current resulting filter values
+     * @param array $mappings     Value mappings
+     *
+     * @return array Updated filter values
+     */
+    protected function addLowerLevelHierarchicalFilterValues(
+        $value,
+        array $resultValues,
+        array $mappings
+    ): array {
+        $levelOffset = -1;
+        do {
+            $levelGood = false;
+            foreach ($mappings as $k => $v) {
+                $parts = explode('/', $v);
+                $partCount = count($parts);
+                if ($parts[0] <= 0 || $partCount <= 2) {
+                    continue;
+                }
+                $level = $parts[0] + $levelOffset;
+                if ($level < 0) {
+                    continue;
+                }
+                $levelGood = true;
+                $levelValue = $level . '/'
+                    . implode(
+                        '/',
+                        array_slice($parts, 1, $level + 1)
+                    ) . '/';
+                if ($value === $levelValue) {
+                    $resultValues[] = $k;
+                }
+            }
+            --$levelOffset;
+        } while ($levelGood);
+
+        return $resultValues;
     }
 
     /**
