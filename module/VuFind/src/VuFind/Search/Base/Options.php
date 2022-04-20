@@ -193,6 +193,20 @@ abstract class Options implements TranslatorAwareInterface
     protected $translatedFacetsFormats = [];
 
     /**
+     * Hierarchical facets
+     *
+     * @var array
+     */
+    protected $hierarchicalFacets = [];
+
+    /**
+     * Hierarchical facet separators
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSeparators = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -689,6 +703,26 @@ abstract class Options implements TranslatorAwareInterface
     public function getFormatForTranslatedFacet($field)
     {
         return $this->translatedFacetsFormats[$field] ?? null;
+    }
+
+    /**
+     * Get hierarchical facet fields.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacets()
+    {
+        return $this->hierarchicalFacets;
+    }
+
+    /**
+     * Get hierarchical facet separators.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSeparators()
+    {
+        return $this->hierarchicalFacetSeparators;
     }
 
     /**

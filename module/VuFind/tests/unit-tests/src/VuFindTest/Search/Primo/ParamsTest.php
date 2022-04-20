@@ -63,6 +63,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params->fixPrimoFacetValue('reference_entrys')
         );
         $this->assertEquals(
+            'Newsletter Articles',
+            $params->fixPrimoFacetValue('newsletterarticle')
+        );
+        $this->assertEquals(
+            'Archival Materials / Manuscripts',
+            $params->fixPrimoFacetValue('archival_material_manuscripts')
+        );
+        $this->assertEquals(
             '维普资讯 (Chongqing)',
             $params->fixPrimoFacetValue('维普资讯 (Chongqing)')
         );
