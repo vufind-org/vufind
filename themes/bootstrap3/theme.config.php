@@ -103,6 +103,7 @@ return [
              * for a strong inheritance safety net but this is not required.
              */
             // UI
+            'dropdown-caret' => 'FontAwesome:caret-down',
             'spinner' => 'FontAwesome:spinner:icon--spin',
         ],
     ],

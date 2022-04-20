@@ -2,20 +2,26 @@
   $wrapperTag = $this->wrapperTag ?? 'li';
   $wrapperClass = $this->wrapperClass ?? 'li';
 
-  $toggleTag = $this->toggleTag ?? 'a';
+  $toggleTag = $this->toggleTag ?? 'button';
   $toggleAttrs = $this->toggleAttrs ?? [];
+
+  $href = $this->href ?? $toggleTag == 'button' ? null : '#';
 ?>
 
 <<?=$wrapperTag ?> class="<?=$wrapperClass ?> dropdown">
-  <<?=$toggleTag ?> href="#" class="dropdown-toggle" data-toggle="dropdown">
-    <?=$this->transEsc($this->toggleLabel)?>
-    <b class="caret"></b>
+  <<?=$toggleTag ?>
+    class="dropdown-toggle"
+    data-toggle="dropdown"
+    <?php if ($href): ?>href="<?=$href ?>"<?php endif ?>
+  >
+    <?=$this->transEsc($this->toggleLabel) ?>
+    <?=$this->icon('dropdown-caret') ?>
   </<?=$toggleTag ?>>
 
   <ul class="dropdown-menu">
     <?php foreach ($this->menuItems as $current): ?>
-      <li<?php if ($current['selected']): ?> class="active"<?php endif ?>>
-        <a href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
+      <li class="dropdown__item <?php if ($current['selected']): ?> active<?php endif ?>">
+        <a class="dropdown__link" href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
           <?=$this->transEsc($current['label']) ?>
         </a>
       </li>
