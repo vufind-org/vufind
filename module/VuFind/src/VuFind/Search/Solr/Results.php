@@ -337,7 +337,7 @@ class Results extends \VuFind\Search\Base\Results
                 $currentSettings['value'] = $value;
 
                 $displayText = $this->getParams()
-                    ->getFacetValueDisplayText($field, $value);
+                    ->getFacetValueRawDisplayText($field, $value);
 
                 if ($hierarchical) {
                     if (!$this->hierarchicalFacetHelper) {

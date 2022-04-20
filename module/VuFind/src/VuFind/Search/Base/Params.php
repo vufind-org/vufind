@@ -1071,7 +1071,7 @@ class Params
      *
      * @return string
      */
-    public function getFacetValueDisplayText(string $field, string $value): string
+    public function getFacetValueRawDisplayText(string $field, string $value): string
     {
         // Check for delimited facets -- if $field is a delimited facet field,
         // process $displayText accordingly:
@@ -1096,7 +1096,7 @@ class Params
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        $displayText = $this->getFacetValueDisplayText($field, $value);
+        $displayText = $this->getFacetValueRawDisplayText($field, $value);
 
         if ($translate) {
             $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
