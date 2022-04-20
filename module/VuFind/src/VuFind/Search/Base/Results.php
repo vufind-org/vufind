@@ -30,7 +30,6 @@ namespace VuFind\Search\Base;
 use Laminas\Paginator\Paginator;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
-use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -169,7 +168,7 @@ abstract class Results
     /**
      * Hierarchical facet helper
      *
-     * @var HierarchicalFacetHelper
+     * @var HierarchicalFacetHelperInterface
      */
     protected $hierarchicalFacetHelper = null;
 
@@ -692,12 +691,13 @@ abstract class Results
     /**
      * Set hierarchical facet helper
      *
-     * @param HierarchicalFacetHelper $helper Hierarchical facet helper
+     * @param HierarchicalFacetHelperInterface $helper Hierarchical facet helper
      *
      * @return void
      */
-    public function setHierarchicalFacetHelper(HierarchicalFacetHelper $helper)
-    {
+    public function setHierarchicalFacetHelper(
+        HierarchicalFacetHelperInterface $helper
+    ) {
         $this->hierarchicalFacetHelper = $helper;
     }
 
