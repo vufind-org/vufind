@@ -41,6 +41,13 @@ namespace VuFind\Search\Blender;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
+     * Maximum number of results (400 by default)
+     *
+     * @var int
+     */
+    protected $resultLimit = 400;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
