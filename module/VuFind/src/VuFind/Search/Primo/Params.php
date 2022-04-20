@@ -60,6 +60,18 @@ class Params extends \VuFind\Search\Base\Params
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
+     * Mappings of specific Primo facet values (spelling errors and other special
+     * cases present at least in CDI)
+     *
+     * @var array
+     */
+    protected $facetValueMappings = [
+        'reference_entrys' => 'Reference Entries',
+        'newsletterarticle' => 'Newsletter Articles',
+        'archival_material_manuscripts' => 'Archival Materials / Manuscripts',
+    ];
+
+    /**
      * Create search backend parameters for advanced features.
      *
      * @return ParamBag
@@ -113,9 +125,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function fixPrimoFacetValue($str)
     {
-        // Special case: odd spelling error in Primo results:
-        if ($str == 'reference_entrys') {
-            return 'Reference Entries';
+        if ($replacement = $this->facetValueMappings[$str] ?? '') {
+            return $replacement;
         }
         return mb_convert_case(
             preg_replace('/_/u', ' ', $str),
