@@ -45,7 +45,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Search params for backends
      *
-     * @var \VuFind\Search\Base\Params
+     * @var \VuFind\Search\Base\Params[]
      */
     protected $searchParams;
 
