@@ -204,21 +204,21 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
-                    'League\CommonMark\Extension\Attributes\AttributesExtension',
-                    'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
-                    'League\CommonMark\Extension\Table\TableExtension',
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
+                    \League\CommonMark\Extension\Attributes\AttributesExtension::class,
+                    \League\CommonMark\Extension\ExternalLink\ExternalLinkExtension::class,
+                    \League\CommonMark\Extension\Table\TableExtension::class,
                 ],
             ],
             [ // Test default extension set
                 'config' => [],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
-                    'League\CommonMark\Extension\Autolink\AutolinkExtension',
-                    'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
-                    'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
-                    'League\CommonMark\Extension\Table\TableExtension',
-                    'League\CommonMark\Extension\TaskList\TaskListExtension',
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
+                    \League\CommonMark\Extension\Autolink\AutolinkExtension::class,
+                    \League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension::class,
+                    \League\CommonMark\Extension\Strikethrough\StrikethroughExtension::class,
+                    \League\CommonMark\Extension\Table\TableExtension::class,
+                    \League\CommonMark\Extension\TaskList\TaskListExtension::class,
                 ],
             ],
             [ // Test empty extensions set
@@ -228,7 +228,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
                 ],
             ],
             [ // Test custom extension
@@ -238,8 +238,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
-                    'VuFindTest\Markdown\ExampleExtension',
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
+                    \VuFindTest\Markdown\ExampleExtension::class,
                 ],
             ],
             [ // Test not valid extensions set
@@ -301,13 +301,13 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     protected function getMarkdownConverter(array $config): ConverterInterface
     {
         $disabledServices = [
-            'League\CommonMark\Extension\Autolink\AutolinkExtension',
-            'League\CommonMark\Extension\Attributes\AttributesExtension',
-            'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
-            'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
-            'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
-            'League\CommonMark\Extension\Table\TableExtension',
-            'League\CommonMark\Extension\TaskList\TaskListExtension',
+            \League\CommonMark\Extension\Autolink\AutolinkExtension::class,
+            \League\CommonMark\Extension\Attributes\AttributesExtension::class,
+            \League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension::class,
+            \League\CommonMark\Extension\ExternalLink\ExternalLinkExtension::class,
+            \League\CommonMark\Extension\Strikethrough\StrikethroughExtension::class,
+            \League\CommonMark\Extension\Table\TableExtension::class,
+            \League\CommonMark\Extension\TaskList\TaskListExtension::class,
         ];
         $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -315,7 +315,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             $container->disable($service);
         }
         $container->set(
-            'VuFindTest\Markdown\ExampleExtension',
+            \VuFindTest\Markdown\ExampleExtension::class,
             new \VuFindTest\Markdown\ExampleExtension()
         );
         $configManager = $container
