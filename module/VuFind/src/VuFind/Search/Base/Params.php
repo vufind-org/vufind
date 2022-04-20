@@ -892,6 +892,9 @@ class Params
             // If necessary, rebuild the array to remove gaps in the key sequence:
             if ($rebuildArray) {
                 $this->filterList[$field] = array_values($this->filterList[$field]);
+                if (!$this->filterList[$field]) {
+                    unset($this->filterList[$field]);
+                }
             }
         }
     }
