@@ -138,6 +138,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('~format:bar');
         $params->addFilter('~format:baz');
         $params->addFilter('building:main');
+        $params->addFilter('-building:sub');
         $this->assertTrue($params->hasFilter('~format:bar'));
         $this->assertTrue($params->hasFilter('~format:baz'));
         $this->assertTrue($params->hasFilter('building:main'));
@@ -163,6 +164,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'main',
                         'field' => 'building',
                         'operator' => 'AND',
+                    ],
+                    [
+                        'value' => 'sub',
+                        'displayText' => 'sub',
+                        'field' => 'building',
+                        'operator' => 'NOT',
                     ]
                 ]
             ],
@@ -170,7 +177,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
 
         // Remove format filters and verify:
-        $params->removeAllFilters('~format');
+        $params->removeAllFilters('format');
         $this->assertEquals(
             [
                 'building_label' => [
@@ -179,6 +186,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'main',
                         'field' => 'building',
                         'operator' => 'AND',
+                    ],
+                    [
+                        'value' => 'sub',
+                        'displayText' => 'sub',
+                        'field' => 'building',
+                        'operator' => 'NOT',
                     ]
                 ]
 
@@ -186,8 +199,39 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params->getFilterList()
         );
 
-        // Remove last filter and verify:
+        // Remove building:main filter and verify:
         $params->removeFilter('building:main');
+        $this->assertEquals(
+            [
+                'building_label' => [
+                    [
+                        'value' => 'sub',
+                        'displayText' => 'sub',
+                        'field' => 'building',
+                        'operator' => 'NOT',
+                    ]
+                ]
+
+            ],
+            $params->getFilterList()
+        );
+
+        // Remove the remaining building filter with removeAllFilters and verify:
+        $params->removeAllFilters('building');
+        $this->assertEquals([], $params->getFilterList());
+
+        // Test that removeAllFilters without parameters removes everything:
+        $params->addFilter('~format:bar');
+        $params->addFilter('format:baz');
+        $params->addFilter('-building:sub');
+        $this->assertTrue($params->hasFilter('~format:bar'));
+        $this->assertTrue($params->hasFilter('format:baz'));
+        $this->assertTrue($params->hasFilter('-building:sub'));
+
+        $params->removeAllFilters();
+        $this->assertFalse($params->hasFilter('~format:bar'));
+        $this->assertFalse($params->hasFilter('format:baz'));
+        $this->assertFalse($params->hasFilter('-building:main'));
         $this->assertEquals([], $params->getFilterList());
     }
 
