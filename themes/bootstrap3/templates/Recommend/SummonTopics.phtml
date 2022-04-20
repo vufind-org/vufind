@@ -5,7 +5,7 @@
     <p>
       <a href="<?=$this->url('summon-search')?>?lookfor=%22<?=urlencode($summonTopics['title'])?>%22"><?=$this->escapeHtml($summonTopics['title'])?></a><br />
       <?php if (isset($summonTopics['snippet'])): ?><?=$this->escapeHtml($summonTopics['snippet'])?><?php endif; ?>
-      <?php if (isset($summonTopics['sourceLink'])): ?><a href="<?=$this->escapeHtmlAttr($summonTopics['sourceLink'])?>"><?=$this->transEsc('more')?>...</a><?php endif; ?>
+      <?php if (isset($summonTopics['sourceLink'])): ?><a href="<?=$this->escapeHtmlAttr($summonTopics['sourceLink'])?>"><?=$this->transEsc('more_ellipsis')?></a><?php endif; ?>
     </p>
   <?php endif; ?>
   <?php if (isset($summonTopics['relatedTopics']) && !empty($summonTopics['relatedTopics'])): ?>
