@@ -13,8 +13,8 @@
 <?php endif; ?>
 <?=$this->flashmessages()?>
 <?php foreach ($this->successMessages as $successMessage): ?>
-<div role="status" class="alert alert-success">
-  <?=$this->translate($successMessage) ?>
-</div>
+  <div role="status" class="alert alert-success">
+    <?=$this->translate($successMessage) ?>
+  </div>
 <?php endforeach; ?>
 <?php if (!$this->inLightbox): ?></div><?php endif; ?>
