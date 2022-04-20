@@ -44,8 +44,8 @@
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field
-#   handler (array) Handlers to proccess form data - default is 'email', available options are: 'email', 'database'.
-#                   You can add your own handler by implementint \VuFind\Form\Handler\HadnlerInterface, and adding it
+#   handler (array) Handlers to process form data - default is 'email', available options are: 'email', 'database'.
+#                   You can add your own handler by implementint \VuFind\Form\Handler\HandlerInterface, and adding it
 #                   to module config under key 'vufind' -> 'plugin_manager' -> 'form_handler'
 #                   Example:
 #                     handler:
