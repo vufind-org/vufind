@@ -525,9 +525,7 @@ class Params extends \VuFind\Search\Solr\Params
     protected function isBlenderFilter(string $filter): bool
     {
         [$field] = $this->parseFilter($filter);
-        if (substr($field, 0, 1) === '~') {
-            $field = substr($field, 1);
-        }
+        $field = ltrim($field, '-~');
         return 'blender_backend' === $field;
     }
 

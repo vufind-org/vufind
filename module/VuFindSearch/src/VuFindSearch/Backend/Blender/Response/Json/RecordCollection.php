@@ -186,6 +186,27 @@ class RecordCollection
     }
 
     /**
+     * Get delimiter for the given facet field
+     *
+     * @param string $facet Facet field
+     *
+     * @return string
+     */
+    public function getFacetDelimiter(string $facet): string
+    {
+        foreach ($this->config->Advanced_Settings->delimited_facets ?? []
+            as $facet
+        ) {
+            $parts = explode('|', $facet);
+            if ('blender_backend' === $parts[0]) {
+                return $parts[1] ?? $this->config->Advanced_Settings->delimiter
+                    ?? '';
+            }
+        }
+        return '';
+    }
+
+    /**
      * Collect records from all backends to an associative array
      *
      * @param array $collections Array of record collections
@@ -393,10 +414,11 @@ class RecordCollection
      */
     protected function getBlenderFacetStats(array $collections): array
     {
+        $delimiter = $this->getFacetDelimiter('blender_backend');
         $result = [];
-        foreach (array_keys($this->config->Backends->toArray()) as $backendId) {
-            $result[$backendId]
-                = isset($collections[$backendId])
+        foreach ($this->config->Backends as $backendId => $name) {
+            $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;
+            $result[$key] = isset($collections[$backendId])
                 ? $collections[$backendId]->getTotal() : 0;
         }
         return $result;

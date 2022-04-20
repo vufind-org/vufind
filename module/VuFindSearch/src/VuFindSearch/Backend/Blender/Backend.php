@@ -150,7 +150,11 @@ class Backend extends AbstractBackend
         $mergedCollection = $this->createRecordCollection();
 
         $backendDetails = [];
-        foreach ($this->getActiveBackends($params) as $backendId => $backend) {
+        $activeBackends = $this->getActiveBackends(
+            $params,
+            $mergedCollection->getFacetDelimiter('blender_backend')
+        );
+        foreach ($activeBackends as $backendId => $backend) {
             $backendDetails[$backendId] = [
                 'backend' => $backend,
                 'query' => $params->get("query_$backendId")[0],
@@ -388,29 +392,34 @@ class Backend extends AbstractBackend
     /**
      * Get active backends for a search
      *
-     * @param ParamBag $params Search backend parameters
+     * @param ParamBag $params    Search backend parameters
+     * @param string   $delimiter Delimiter for the blender_backend facet
      *
      * @return array
      */
-    protected function getActiveBackends(ParamBag $params): array
+    protected function getActiveBackends(ParamBag $params, string $delimiter): array
     {
         $activeBackends = $this->backends;
 
         // Handle the blender_backend pseudo-filter
         $fq = $params->get('fq') ?? [];
         $filteredBackends = [];
+        // Handle AND and OR filters first:
         foreach ($fq as $filter) {
-            $advanced = preg_match(
+            $advancedOr = preg_match(
                 '/\{!tag=blender_backend_filter}blender_backend:\((.+)\)/',
                 $filter,
                 $matches
             );
-            if ($advanced) {
+            if ($advancedOr) {
                 $filter = explode(' OR ', $matches[1]);
             }
             foreach ((array)$filter as $current) {
                 if (strncmp($current, 'blender_backend:', 16) === 0) {
                     $active = trim(substr($current, 16), '"');
+                    if ($delimiter) {
+                        [$active] = explode($delimiter, $active, 2);
+                    }
                     if (!isset($activeBackends[$active])) {
                         $this->logWarning(
                             "Invalid blender_backend filter: Backend $active not"
@@ -425,9 +434,13 @@ class Backend extends AbstractBackend
         if ($filteredBackends) {
             $activeBackends = $filteredBackends;
         }
+        // Handle NOT filters last:
         foreach ($fq as $current) {
             if (strncmp($current, '-blender_backend:', 17) === 0) {
                 $disabled = trim(substr($current, 17), '"');
+                if ($delimiter) {
+                    [$disabled] = explode($delimiter, $disabled, 2);
+                }
                 if (isset($activeBackends[$disabled])) {
                     unset($activeBackends[$disabled]);
                 }
