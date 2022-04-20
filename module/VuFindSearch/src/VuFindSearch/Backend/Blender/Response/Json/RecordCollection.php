@@ -188,17 +188,17 @@ class RecordCollection
     /**
      * Get delimiter for the given facet field
      *
-     * @param string $facet Facet field
+     * @param string $field Facet field
      *
      * @return string
      */
-    public function getFacetDelimiter(string $facet): string
+    public function getFacetDelimiter(string $field): string
     {
         foreach ($this->config->Advanced_Settings->delimited_facets ?? []
-            as $facet
+            as $current
         ) {
-            $parts = explode('|', $facet);
-            if ('blender_backend' === $parts[0]) {
+            $parts = explode('|', $current);
+            if ($parts[0] === $field) {
                 return $parts[1] ?? $this->config->Advanced_Settings->delimiter
                     ?? '';
             }
