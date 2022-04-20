@@ -28,6 +28,7 @@
  */
 namespace VuFind\Search\Base;
 
+use VuFind\I18n\TranslatableString;
 use VuFind\Search\QueryAdapter;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -1087,12 +1088,13 @@ class Params
     /**
      * Translate a facet value.
      *
-     * @param string $field Field name
-     * @param string $text  Field value (processed by getFacetValueRawDisplayText)
+     * @param string                    $field Field name
+     * @param string|TranslatableString $text  Field value (processed by
+     * getFacetValueRawDisplayText)
      *
      * @return string
      */
-    public function translateFacetValue(string $field, string $text): string
+    public function translateFacetValue(string $field, $text): string
     {
         $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
         $translateFormat = $this->getOptions()->getFormatForTranslatedFacet($field);
