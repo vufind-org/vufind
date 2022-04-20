@@ -344,7 +344,7 @@ class Params extends \VuFind\Search\Solr\Params
         parent::removeAllFilters($field);
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
-            if ($translated = $this->translateFacet($field, $backendId)) {
+            if ($translated = $this->translateFacetName($field, $backendId)) {
                 $params->removeAllFilters($translated);
             }
         }
@@ -364,7 +364,7 @@ class Params extends \VuFind\Search\Solr\Params
         parent::addFacet($newField, $newAlias, $ored);
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
-            if ($translated = $this->translateFacet($newField, $backendId)) {
+            if ($translated = $this->translateFacetName($newField, $backendId)) {
                 $params->addFacet($translated, $newAlias, $ored);
             }
         }
@@ -502,23 +502,17 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a facet
+     * Translate a facet field name
      *
      * @param string $field     Facet field
      * @param string $backendId Backend ID
      *
      * @return string
      */
-    protected function translateFacet(string $field, string $backendId): string
+    protected function translateFacetName(string $field, string $backendId): string
     {
-        $prefix = '';
-        if (substr($field, 0, 1) === '~') {
-            $field = substr($field, 1);
-            $prefix = '~';
-        }
         $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
-        $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
-        return !empty($mappings['Field']) ? ($prefix . $mappings['Field']) : '';
+        return $fieldConfig['Mappings'][$backendId]['Field'] ?? '';
     }
 
     /**

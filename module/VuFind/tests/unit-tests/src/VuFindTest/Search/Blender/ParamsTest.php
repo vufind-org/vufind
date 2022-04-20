@@ -344,7 +344,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['LIMIT|FT:y'], $edsParams->get('filters'));
 
         // Remove format filters and verify:
-        $params->removeAllFilters('~format');
+        $params->removeFilter('~format:bar');
+        $params->removeFilter('~format:baz');
         $backendParams = $params->getBackendParameters();
         $this->assertEquals(['fulltext:"1"'], $backendParams->get('fq'));
 
@@ -358,16 +359,20 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'facetOp' => 'AND',
                     'values' => ['false']
                 ],
-                'formatPrimo' => [
-                    'facetOp' => 'AND',
-                    'values' => []
-                ]
             ],
-            $primoParams->get('filterList')
+            array_filter(
+                $primoParams->get('filterList'),
+                function ($f) {
+                    // Primo may return a field without values for a previously set
+                    // facet; ignore those:
+                    return !empty($f['values']);
+                }
+            )
         );
         $this->assertEquals(['LIMIT|FT:y'], $edsParams->get('filters'));
 
-        $params->removeAllFilters();
+        $params->removeAllFilters('building');
+        $params->removeFilter('fulltext:1');
         $backendParams = $params->getBackendParameters();
         $this->assertNull($backendParams->get('fq'));
 
@@ -380,9 +385,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'pcAvailability' => [
                     'facetOp' => 'AND',
                     'values' => ['true']
-                ]
+                ],
             ],
-            $primoParams->get('filterList')
+            array_filter(
+                $primoParams->get('filterList'),
+                function ($f) {
+                    // Primo may return a field without values for a previously set
+                    // facet; ignore those:
+                    return !empty($f['values']);
+                }
+            )
         );
         $this->assertNull($edsParams->get('filters'));
 
@@ -441,9 +453,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $primoParams->get('filterList')
         );
 
-        // Add a NOT filter that maps to two values:
+        // Add a NOT filter that maps to two values in Primo:
+        $params->removeAllFilters('format');
         $params->addFilter('-format:double');
-        $primoParams = $params->getBackendParameters()->get('params_Primo')[0];
+        $backendParams = $params->getBackendParameters();
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $this->assertEquals(['-formatSolr:"double"'], $solrParams->get('fq'));
+        $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertEquals(
             [
                 'formatPrimo' => [
@@ -459,6 +475,29 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ]
             ],
             $primoParams->get('filterList')
+        );
+
+        // Remove the NOT filter and check results:
+        $params->removeFilter('-format:double');
+        $backendParams = $params->getBackendParameters();
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $this->assertEquals(null, $solrParams->get('fq'));
+        $primoParams = $backendParams->get('params_Primo')[0];
+        $this->assertEquals(
+            [
+                'pcAvailability' => [
+                    'facetOp' => 'AND',
+                    'values' => ['true']
+                ]
+            ],
+            array_filter(
+                $primoParams->get('filterList'),
+                function ($f) {
+                    // Primo may return a field without values for a previously set
+                    // facet; ignore those:
+                    return !empty($f['values']);
+                }
+            )
         );
     }
 
