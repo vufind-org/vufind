@@ -1,4 +1,7 @@
-<?php $urls_and_material_types = $this->driver->getURLsAndMaterialTypes(); ?>
+<?php $urls_and_material_types = $this->driver->getURLsAndMaterialTypes();
+  if($this->showDspaceLink === true) {
+    $urls_and_material_types[$this->dspacelink] = $this->tuefind()->getTueFindType()." publication service";
+  }?>
 <?php if (!empty($urls_and_material_types)): ?>
   <?php $material_types = array_values($urls_and_material_types); ?>
   <?php $direct_fulltext_present = !empty(preg_grep('/Volltext.*/', $material_types))?>
