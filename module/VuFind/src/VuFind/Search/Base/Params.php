@@ -1085,6 +1085,29 @@ class Params
     }
 
     /**
+     * Translate a facet value.
+     *
+     * @param string $field Field name
+     * @param string $text  Field value (processed by getFacetValueRawDisplayText)
+     *
+     * @return string
+     */
+    public function translateFacetValue(string $field, string $text): string
+    {
+        $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+        $translateFormat = $this->getOptions()->getFormatForTranslatedFacet($field);
+        $translated = $this->translate([$domain, $text]);
+        return $translateFormat
+            ? $this->translate(
+                $translateFormat,
+                [
+                    '%%raw%%' => $text,
+                    '%%translated%%' => $translated
+                ]
+            ) : $translated;
+    }
+
+    /**
      * Format a single filter for use in getFilterList().
      *
      * @param string $field     Field name
@@ -1096,12 +1119,10 @@ class Params
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        $displayText = $this->getFacetValueRawDisplayText($field, $value);
-
-        if ($translate) {
-            $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
-            $displayText = $this->translate("$domain::$displayText");
-        }
+        $rawDisplayText = $this->getFacetValueRawDisplayText($field, $value);
+        $displayText = $translate
+            ? $this->translateFacetValue($field, $rawDisplayText)
+            : $rawDisplayText;
 
         return compact('value', 'displayText', 'field', 'operator');
     }
