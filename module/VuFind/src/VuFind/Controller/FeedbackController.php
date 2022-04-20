@@ -113,7 +113,7 @@ class FeedbackController extends AbstractBase
                 = $result['successMessage'] ?? $form->getSubmitResponse();
             $errorMessages = array_merge(
                 $errorMessages,
-                $result['errorMessages']
+                $result['errorMessages'] ?? []
             );
         }
         $view->successMessages = array_unique($successMessages);

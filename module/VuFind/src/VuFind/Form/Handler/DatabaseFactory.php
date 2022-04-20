@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Class EmailFactory
+ * Class DatabaseFactory
  *
  * PHP version 7
  *
@@ -36,7 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Class EmailFactory
+ * Class DatabaseFactory
  *
  * @category VuFind
  * @package  Form
@@ -44,7 +44,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EmailFactory implements FactoryInterface
+class DatabaseFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -69,10 +69,9 @@ class EmailFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
+        $dbTableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $container->get('ViewRenderer'),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Mailer\Mailer::class)
+            $dbTableManager->get(\VuFind\Db\Table\Feedback::class)
         );
     }
 }

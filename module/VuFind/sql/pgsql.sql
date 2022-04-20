@@ -363,3 +363,22 @@ ALTER TABLE user_resource
 ADD CONSTRAINT user_resource_ibfk_3 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
 ADD CONSTRAINT user_resource_ibfk_4 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE,
 ADD CONSTRAINT user_resource_ibfk_5 FOREIGN KEY (list_id) REFERENCES user_list (id) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feedback`
+--
+DROP TABLE IF EXISTS "feedback";
+
+CREATE TABLE feedback (
+id SERIAL,
+user_id int DEFAULT NULL,
+referrer text DEFAULT NULL,
+user_agent varchar(255) DEFAULT NULL,
+user_name varchar(255) DEFAULT NULL,
+user_email varchar(255) DEFAULT NULL,
+message text,
+PRIMARY KEY (id),
+CONSTRAINT feedback_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL
+);

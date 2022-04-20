@@ -27,8 +27,6 @@
  */
 namespace VuFind\Form\Handler;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Form handler plugin manager
  *
@@ -46,7 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        //'database' => Database::class,
+        'database' => Database::class,
         'email' => Email::class,
     ];
 
@@ -56,7 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        //Database::class => InvokableFactory::class,
+        Database::class => DatabaseFactory::class,
         Email::class => EmailFactory::class,
     ];
 
