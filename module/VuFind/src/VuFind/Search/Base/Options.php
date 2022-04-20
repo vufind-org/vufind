@@ -327,16 +327,6 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
-
-        if (isset($facetSettings->SpecialFacets->hierarchical)) {
-            $this->hierarchicalFacets
-                = $facetSettings->SpecialFacets->hierarchical->toArray();
-        }
-
-        if (isset($facetSettings->SpecialFacets->hierarchicalFacetSeparators)) {
-            $this->hierarchicalFacetSeparators = $facetSettings->SpecialFacets
-                ->hierarchicalFacetSeparators->toArray();
-        }
     }
 
     /**

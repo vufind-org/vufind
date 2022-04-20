@@ -172,6 +172,15 @@ class Options extends \VuFind\Search\Base\Options
             $this->specialAdvancedFacets
                 = $facetSettings->Advanced_Settings->special_facets;
         }
+        if (isset($facetSettings->SpecialFacets->hierarchical)) {
+            $this->hierarchicalFacets
+                = $facetSettings->SpecialFacets->hierarchical->toArray();
+        }
+
+        if (isset($facetSettings->SpecialFacets->hierarchicalFacetSeparators)) {
+            $this->hierarchicalFacetSeparators = $facetSettings->SpecialFacets
+                ->hierarchicalFacetSeparators->toArray();
+        }
 
         // Load Spelling preferences
         $config = $configLoader->get($this->mainIni);
