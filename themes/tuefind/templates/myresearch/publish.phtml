@@ -39,6 +39,15 @@
     </select>
   </div>
 
+  <div class="form-group">
+    <label>Language</label>
+    <select class="form-control" name="languege" <?php echo (count($this->recordLanguages) == 1) ? "disabled" : "";?> >
+      <?php foreach ($this->recordLanguages as $recordLanguege): ?>
+        <option value="<?=$recordLanguege;?>" ><?=$recordLanguege;?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+
   <!-- File -->
   <div class="form-group">
     <label>file</label>

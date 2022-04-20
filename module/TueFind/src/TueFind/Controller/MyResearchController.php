@@ -99,6 +99,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $uploadError = 1;
         } else {
             $existingRecord = $this->getRecordLoader()->load($existingRecordId);
+
             $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace')->getMappedData($existingRecord);
             $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
 
@@ -114,6 +115,16 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $uploadError = 1;
                 $showForm = false;
             } else if ($action == 'publish' && $uploadError == 0) {
+                $languageMap = [
+                    'English' => 'en',
+                    'German' => 'de',
+                ];
+                $metaDataLanguage = $dspaceMetadata['/sections/traditionalpageone/dc.language.iso'];
+                $userSelectedLanguage = $this->params()->fromPost('languege');
+
+                if($languageMap[$userSelectedLanguage] != $metaDataLanguage) {
+                    $dspaceMetadata['/sections/traditionalpageone/dc.language.iso'] = $languageMap[$userSelectedLanguage];
+                }
                 $uploadedFile = $this->params()->fromFiles('file');
 
                 $collectionName = $config->Publication->collection_name;
@@ -191,6 +202,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->uploadInfos = $uploadInfos;
         $view->termFile = $termFileData;
         $view->showForm = $showForm;
+        $view->recordLanguages = $existingRecord->getLanguages();
         return $view;
     }
 
