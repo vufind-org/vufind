@@ -13,7 +13,13 @@
           <?php if (isset($review['Rating'])): ?>
             <img src="<?=$this->imageLink($review['Rating'] . '.gif')?>" alt="<?=$review['Rating']?>/5 Stars"/>
           <?php endif; ?>
-          <strong><?=$review['Summary']?></strong> <?=isset($review['Date']) ? strftime('%B %e, %Y', strtotime($review['Date'])) : ''?>
+          <strong><?=$review['Summary']?></strong>
+          <?php
+            if (isset($review['Date'])) {
+              $formatter = new \IntlDateFormatter(null, \IntlDateFormatter::MEDIUM, \IntlDateFormatter::NONE);
+              echo $formatter->format(strtotime($review['Date']));
+            }
+          ?>
         </p>
       <?php endif; ?>
       <?php if (isset($review['Source'])): ?><strong><?=$this->transEsc('Review by')?> <?=$review['Source']?></strong><?php endif; ?>

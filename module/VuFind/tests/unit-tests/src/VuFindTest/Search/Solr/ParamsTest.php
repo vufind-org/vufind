@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
@@ -43,6 +42,8 @@ use VuFind\Search\Solr\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test that filters work as expected.
      *
@@ -117,9 +118,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckboxVisibility()
     {
-        $emptyConfig = new Config([]);
-        $facetConfig = new Config(
-            [
+        $config = [
+            'facets' => [
                 'CheckboxFacets' => [
                     'format:book' => 'Book filter',
                     'vufind:inverted' => 'Inverted filter',
@@ -130,13 +130,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ]
-        );
-        $configManager = $this->createMock(PluginManager::class);
-        $callback = function ($config) use ($emptyConfig, $facetConfig) {
-            return $config === 'facets' ? $facetConfig : $emptyConfig;
-        };
-        $configManager->expects($this->any())->method('get')
-            ->will($this->returnCallback($callback));
+        ];
+        $configManager = $this->getMockConfigPluginManager($config);
         $params = $this->getParams(null, $configManager);
         // We expect "normal" filters to NOT be always visible, and inverted
         // filters to be always visible.

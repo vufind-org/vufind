@@ -60,16 +60,24 @@ if (is_array($series)) {
     }
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
-if (!empty($author)) {
-    echo "author = {{$author}},\n";
+$mergeAuthors = function (array $a): string {
+    return implode(
+        ' and ',
+        array_map(
+            function ($s) {
+                return str_replace(' and ', ' {and} ', $s);
+            },
+            $a
+        )
+    );
+};
+
+if ($authors = $mergeAuthors($this->driver->tryMethod('getPrimaryAuthors', [], []))) {
+    echo "author = {{$authors}},\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo "editor = {{$current}},\n";
-    }
+if ($editors = $mergeAuthors($this->driver->tryMethod('getSecondaryAuthors', [], []))) {
+    echo "editor = {{$editors}},\n";
 }
 
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
