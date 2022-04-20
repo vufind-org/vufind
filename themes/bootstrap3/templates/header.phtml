@@ -51,14 +51,14 @@
             <?=$this->component('menu-button', [
               'toggleLabel' => 'Theme',
               'menuItems' => array_map(
-                function ($current) {
+                  function ($current) {
                   $item = $current;
                   $item['label'] = $current['desc'];
                   $item['url'] = $this->url()->addQueryParameters(['ui' => $current['name']]);
 
                   return $item;
                 },
-                $this->layout()->themeOptions
+                  $this->layout()->themeOptions
               )
             ]) ?>
           <?php endif; ?>
@@ -68,15 +68,15 @@
               'wrapperClass' => 'language',
               'toggleLabel' => 'Language',
               'menuItems' => array_map(
-                function ($langCode, $langName) {
+                  function ($langCode, $langName) {
                   return [
                     'label' => $this->displayLanguageOption($langName),
                     'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
                     'selected' => $this->layout()->userLang == $langCode,
                   ];
                 },
-                array_keys($this->layout()->allLangs),
-                array_values($this->layout()->allLangs),
+                  array_keys($this->layout()->allLangs),
+                  array_values($this->layout()->allLangs),
               ),
             ]) ?>
           <?php endif; ?>
