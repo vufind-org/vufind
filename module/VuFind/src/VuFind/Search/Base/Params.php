@@ -909,7 +909,6 @@ class Params
         if ($field == null) {
             $this->filterList = [];
         } else {
-            $field = ltrim($field, '-~');
             foreach (['', '-', '~'] as $prefix) {
                 if (isset($this->filterList[$prefix . $field])) {
                     unset($this->filterList[$prefix . $field]);
