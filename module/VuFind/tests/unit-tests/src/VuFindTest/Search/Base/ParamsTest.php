@@ -33,7 +33,6 @@ namespace VuFindTest\Search\Base;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
-use VuFindTest\Feature\ReflectionTrait;
 
 /**
  * Base Search Object Parameters Test
@@ -48,19 +47,8 @@ use VuFindTest\Feature\ReflectionTrait;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use ReflectionTrait;
-
-    /**
-     * Get mock configuration plugin manager
-     *
-     * @return PluginManager
-     */
-    protected function getMockConfigManager(): PluginManager
-    {
-        return $this->getMockBuilder(PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Get mock Options object
@@ -74,7 +62,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockForAbstractClass(
             Options::class,
-            [$configManager ?? $this->getMockConfigManager()]
+            [$configManager ?? $this->getMockConfigPluginManager([])]
         );
     }
 
@@ -92,7 +80,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?Options $options = null,
         ?PluginManager $configManager = null
     ): Params {
-        $configManager = $configManager ?? $this->getMockConfigManager();
+        $configManager = $configManager ?? $this->getMockConfigPluginManager([]);
         return $this->getMockForAbstractClass(
             Params::class,
             [$options ?? $this->getMockOptions($configManager), $configManager]
@@ -150,6 +138,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('~format:bar');
         $params->addFilter('~format:baz');
         $params->addFilter('building:main');
+        $params->addFilter('-building:sub');
         $this->assertTrue($params->hasFilter('~format:bar'));
         $this->assertTrue($params->hasFilter('~format:baz'));
         $this->assertTrue($params->hasFilter('building:main'));
@@ -175,6 +164,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'main',
                         'field' => 'building',
                         'operator' => 'AND',
+                    ],
+                    [
+                        'value' => 'sub',
+                        'displayText' => 'sub',
+                        'field' => 'building',
+                        'operator' => 'NOT',
                     ]
                 ]
             ],
@@ -182,7 +177,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
 
         // Remove format filters and verify:
-        $params->removeAllFilters('~format');
+        $params->removeAllFilters('format');
         $this->assertEquals(
             [
                 'building_label' => [
@@ -191,6 +186,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'main',
                         'field' => 'building',
                         'operator' => 'AND',
+                    ],
+                    [
+                        'value' => 'sub',
+                        'displayText' => 'sub',
+                        'field' => 'building',
+                        'operator' => 'NOT',
                     ]
                 ]
 
@@ -198,8 +199,39 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params->getFilterList()
         );
 
-        // Remove last filter and verify:
+        // Remove building:main filter and verify:
         $params->removeFilter('building:main');
+        $this->assertEquals(
+            [
+                'building_label' => [
+                    [
+                        'value' => 'sub',
+                        'displayText' => 'sub',
+                        'field' => 'building',
+                        'operator' => 'NOT',
+                    ]
+                ]
+
+            ],
+            $params->getFilterList()
+        );
+
+        // Remove the remaining building filter with removeAllFilters and verify:
+        $params->removeAllFilters('building');
+        $this->assertEquals([], $params->getFilterList());
+
+        // Test that removeAllFilters without parameters removes everything:
+        $params->addFilter('~format:bar');
+        $params->addFilter('format:baz');
+        $params->addFilter('-building:sub');
+        $this->assertTrue($params->hasFilter('~format:bar'));
+        $this->assertTrue($params->hasFilter('format:baz'));
+        $this->assertTrue($params->hasFilter('-building:sub'));
+
+        $params->removeAllFilters();
+        $this->assertFalse($params->hasFilter('~format:bar'));
+        $this->assertFalse($params->hasFilter('format:baz'));
+        $this->assertFalse($params->hasFilter('-building:main'));
         $this->assertEquals([], $params->getFilterList());
     }
 

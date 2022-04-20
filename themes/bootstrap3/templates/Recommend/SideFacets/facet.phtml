@@ -10,7 +10,7 @@
   <?=
     $this->context($this)->renderInContext(
         'Recommend/SideFacets/range-slider.phtml',
-        ['title' => $facet, 'facet' => $rangeFacets[$facet]]
+        ['title' => $facet, 'cluster' => $cluster, 'facet' => $rangeFacets[$facet]]
     );
   ?>
 <?php else: ?>
@@ -47,7 +47,9 @@
       $this->context($this)->renderInContext(
           'Recommend/SideFacets/cluster-list.phtml',
           [
-              'options' => $options, 'title' => $facet, 'cluster' => $cluster,
+              'options' => $options,
+              'title' => $facet,
+              'cluster' => $cluster,
               'allowExclude' => $this->recommend->excludeAllowed($facet),
               'facets_before_more' => $this->recommend->getShowMoreSetting($facet),
               'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($facet)

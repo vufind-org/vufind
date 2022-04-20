@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Search\EDS;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager;
 use VuFind\Search\EDS\Options;
 use VuFind\Search\EDS\Params;
