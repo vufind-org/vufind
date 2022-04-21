@@ -94,6 +94,6 @@
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-<?php if ($results->getResultTotal() > 0): ?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   </div>
 <?php endif; ?>
