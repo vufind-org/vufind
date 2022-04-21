@@ -165,7 +165,8 @@ class MarkdownFactory implements FactoryInterface
             'html_input' => $mainConfig['html_input'] ?? 'strip',
             'allow_unsafe_links'
                 => (bool)($mainConfig['allow_unsafe_links'] ?? false),
-            'max_nesting_level' => $mainConfig['max_nesting_level'] ?? \PHP_INT_MAX,
+            'max_nesting_level'
+                => (int)($mainConfig['max_nesting_level'] ?? \PHP_INT_MAX),
             'renderer' => [
                 'block_separator'
                     => $mainConfig['renderer']['block_separator'] ?? "\n",
@@ -279,6 +280,22 @@ class MarkdownFactory implements FactoryInterface
         if (isset($config['heading_permalink']['aria_hidden'])) {
             $config['heading_permalink']['aria_hidden']
                 = (bool)$config['heading_permalink']['aria_hidden'];
+        }
+        if (isset($config['table_of_contents']['min_heading_level'])) {
+            $config['table_of_contents']['min_heading_level']
+                = (int)$config['table_of_contents']['min_heading_level'];
+        }
+        if (isset($config['table_of_contents']['max_heading_level'])) {
+            $config['table_of_contents']['max_heading_level']
+                = (int)$config['table_of_contents']['max_heading_level'];
+        }
+        if (isset($config['heading_permalink']['min_heading_level'])) {
+            $config['heading_permalink']['min_heading_level']
+                = (int)$config['heading_permalink']['min_heading_level'];
+        }
+        if (isset($config['heading_permalink']['max_heading_level'])) {
+            $config['heading_permalink']['max_heading_level']
+                = (int)$config['heading_permalink']['max_heading_level'];
         }
         $tableWrapAttributes = [];
         if (isset($config['table']['wrap']['attributes'])) {
