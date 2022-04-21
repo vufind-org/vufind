@@ -29,20 +29,20 @@
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <?php
   $checkboxFilters = $this->recommend->getCheckboxFacetSet();
-  $checkboxesShown = false;
+  $hasVisibleCheckboxes = false;
   if (count($checkboxFilters) > 0) {
     foreach ($checkboxFilters as $current) {
       if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
-        $checkboxesShown = true;
+        $hasVisibleCheckboxes = true;
         break;
       }
     }
   }
 ?>
-<?php if ($results->getResultTotal() > 0 || $checkboxesShown): ?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
 <?php endif; ?>
-<?php if ($checkboxesShown): ?>
+<?php if ($hasVisibleCheckboxes): ?>
   <div class="checkboxFilter">
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
   </div>

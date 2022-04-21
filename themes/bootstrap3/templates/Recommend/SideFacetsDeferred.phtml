@@ -30,17 +30,17 @@
 ?>
 <?php
   $checkboxFilters = $this->recommend->getCheckboxFacetSet();
-  $checkboxesShown = false;
+  $hasVisibleCheckboxes = false;
   if (count($checkboxFilters) > 0) {
     foreach ($checkboxFilters as $current) {
       if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
-        $checkboxesShown = true;
+        $hasVisibleCheckboxes = true;
         break;
       }
     }
   }
 ?>
-<?php if ($results->getResultTotal() > 0 || $checkboxesShown): ?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
   <?php
     // We need to pass the current URL query to the Javascript; we use substr() to
@@ -57,7 +57,7 @@
   ?>
   <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex)?>" data-query="<?=$this->escapeHtmlAttr($urlQuery)?>" data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>" data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
 <?php endif; ?>
-<?php if ($checkboxesShown): ?>
+<?php if ($hasVisibleCheckboxes): ?>
   <div class="checkboxFilter">
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
   </div>
