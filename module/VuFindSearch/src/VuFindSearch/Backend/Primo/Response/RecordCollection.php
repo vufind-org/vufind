@@ -72,7 +72,10 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
-     * Return facet information.
+     * Return available facets.
+     *
+     * Returns an associative array with the field name as key. The value is an
+     * associative array of available facets for the field, indexed by facet value.
      *
      * @return array
      */
