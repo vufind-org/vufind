@@ -156,6 +156,9 @@ class EdsBackendFactory extends AbstractBackendFactory
             )
         );
         $connector->setLogger($this->logger);
+        if ($cache = $this->createConnectorCache($this->edsConfig)) {
+            $connector->setCache($cache);
+        }
         return $connector;
     }
 

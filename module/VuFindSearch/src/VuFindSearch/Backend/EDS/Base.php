@@ -176,7 +176,7 @@ abstract class Base
         $qs = ['profile' => $profile, 'guest' => $isGuest];
         $url = $this->edsApiHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
-        return $this->call($url, $headers, $qs);
+        return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
 
     /**
@@ -371,6 +371,7 @@ abstract class Base
      * @param string $method        The HTTP Method to use
      * @param string $message       Message to POST if $method is POST
      * @param string $messageFormat Format of request $messageBody and responses
+     * @param bool   $cacheable     Whether the request is cacheable
      *
      * @throws ApiException
      * @return object         EDS API response (or an Error object).
@@ -381,7 +382,8 @@ abstract class Base
         $params = [],
         $method = 'GET',
         $message = null,
-        $messageFormat = ""
+        $messageFormat = "",
+        $cacheable = true
     ) {
         // Build Query String Parameters
         $queryParameters = $this->createQSFromArray($params);
@@ -407,7 +409,8 @@ abstract class Base
             $queryString,
             $headers,
             $message,
-            $messageFormat
+            $messageFormat,
+            $cacheable
         );
         return $this->process($response);
     }
@@ -415,7 +418,7 @@ abstract class Base
     /**
      * Process EDSAPI response message
      *
-     * @param array $input The raw response from Summon
+     * @param string $input The raw response from Summon
      *
      * @throws ApiException
      * @return array       The processed response from EDS API
@@ -467,6 +470,7 @@ abstract class Base
      * @param array  $headers       HTTP headers to send
      * @param string $messageBody   Message body to for HTTP Request
      * @param string $messageFormat Format of request $messageBody and responses
+     * @param bool   $cacheable     Whether the request is cacheable
      *
      * @return string             HTTP response body
      */
@@ -476,6 +480,7 @@ abstract class Base
         $queryString,
         $headers,
         $messageBody,
-        $messageFormat
+        $messageFormat,
+        $cacheable = true
     );
 }

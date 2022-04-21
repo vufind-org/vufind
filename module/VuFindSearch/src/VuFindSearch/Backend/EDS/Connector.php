@@ -23,6 +23,7 @@
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -37,12 +38,15 @@ use Laminas\Log\LoggerAwareInterface;
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 class Connector extends Base implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * The HTTP Request object to execute EDS API transactions
@@ -80,6 +84,7 @@ class Connector extends Base implements LoggerAwareInterface
      * @param array  $headers       HTTP headers to send
      * @param string $messageBody   Message body to for HTTP Request
      * @param string $messageFormat Format of request $messageBody and respones
+     * @param bool   $cacheable     Whether the request is cacheable
      *
      * @throws ApiException
      * @return string               HTTP response body
@@ -90,7 +95,8 @@ class Connector extends Base implements LoggerAwareInterface
         $queryString,
         $headers,
         $messageBody = null,
-        $messageFormat = "application/json; charset=utf-8"
+        $messageFormat = "application/json; charset=utf-8",
+        $cacheable = true
     ) {
         $this->debugPrint("{$method}: {$baseUrl}?{$queryString}");
 
@@ -106,13 +112,27 @@ class Connector extends Base implements LoggerAwareInterface
         }
         $this->client->setUri($baseUrl);
         $this->client->setEncType($messageFormat);
-        $result = $this->client->send();
-        if (!$result->isSuccess()) {
-            $error = $result->getBody();
-            $decodedError = json_decode($error, true);
-            throw new ApiException($decodedError ? $decodedError : $error);
+
+        // Check cache:
+        $cacheKey = null;
+        if ($cacheable && $this->cache) {
+            $cacheKey = $this->getCacheKey($this->client);
+            if ($result = $this->getCachedData($cacheKey)) {
+                return $result;
+            }
         }
-        return $result->getBody();
+
+        // Send request:
+        $result = $this->client->send();
+        $resultBody = $result->getBody();
+        if (!$result->isSuccess()) {
+            $decodedError = json_decode($resultBody, true);
+            throw new ApiException($decodedError ? $decodedError : $resultBody);
+        }
+        if ($cacheKey) {
+            $this->putCachedData($cacheKey, $resultBody);
+        }
+        return $resultBody;
     }
 
     /**
