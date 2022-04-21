@@ -10,12 +10,12 @@ function waitForItemStatusesPromise(fn) {
     }
   }
 
-  VuFind.listen("item-status-done", function() {
+  VuFind.listen("item-status-done", function listenForItemStatusDone() {
     itemDone = true;
     checkBoth();
   });
 
-  VuFind.listen("save-status-done", function() {
+  VuFind.listen("save-status-done", function listenForSaveStatusDone() {
     saveDone = true;
     checkBoth();
   });
