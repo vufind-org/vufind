@@ -35,7 +35,6 @@ use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
-use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
@@ -65,6 +64,8 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
  */
 abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 {
+    use SharedListenersTrait;
+
     /**
      * Logger.
      *
@@ -551,32 +552,6 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         return empty($normal) && empty($inverted)
             ? null
             : new CustomFilterListener($backend, $normal, $inverted);
-    }
-
-    /**
-     * Get a hide facet value listener for the backend
-     *
-     * @param BackendInterface $backend Search backend
-     * @param Config           $facet   Configuration of facets
-     *
-     * @return mixed null|HideFacetValueListener
-     */
-    protected function getHideFacetValueListener(
-        BackendInterface $backend,
-        Config $facet
-    ) {
-        $hideFacetValue = isset($facet->HideFacetValue)
-            ? $facet->HideFacetValue->toArray() : [];
-        $showFacetValue = isset($facet->ShowFacetValue)
-            ? $facet->ShowFacetValue->toArray() : [];
-        if (empty($hideFacetValue) && empty($showFacetValue)) {
-            return null;
-        }
-        return new HideFacetValueListener(
-            $backend,
-            $hideFacetValue,
-            $showFacetValue
-        );
     }
 
     /**
