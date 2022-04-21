@@ -199,7 +199,8 @@ class EdsBackendFactory extends AbstractBackendFactory
         $events = $this->serviceLocator->get('SharedEventManager');
 
         // Attach hide facet value listener:
-        if ($hfvListener = $this->getHideFacetValueListener($backend, $this->edsConfig)) {
+        $hfvListener = $this->getHideFacetValueListener($backend, $this->edsConfig);
+        if ($hfvListener) {
             $hfvListener->attach($events);
         }
     }
