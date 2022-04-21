@@ -265,37 +265,30 @@ class MarkdownFactory implements FactoryInterface
      */
     protected function sanitizeConfig(array $config): array
     {
-        if (isset($config['external_link']['open_in_new_window'])) {
-            $config['external_link']['open_in_new_window']
-                = (bool)$config['external_link']['open_in_new_window'];
-        }
-        if (isset($config['footnote']['container_add_hr'])) {
-            $config['footnote']['container_add_hr']
-                = (bool)$config['footnote']['container_add_hr'];
+        $boolSettingKeys = [
+            ['external_link', 'open_in_new_window'],
+            ['footnote', 'container_add_hr'],
+            ['heading_permalink', 'aria_hidden'],
+        ];
+        foreach ($boolSettingKeys as $key) {
+            if (isset($config[$key[0]][$key[1]])) {
+                $config[$key[0]][$key[1]] = (bool)$config[$key[0]][$key[1]];
+            }
         }
         if (isset($config['table']['wrap']['enabled'])) {
             $config['table']['wrap']['enabled']
                 = (bool)$config['table']['wrap']['enabled'];
         }
-        if (isset($config['heading_permalink']['aria_hidden'])) {
-            $config['heading_permalink']['aria_hidden']
-                = (bool)$config['heading_permalink']['aria_hidden'];
-        }
-        if (isset($config['table_of_contents']['min_heading_level'])) {
-            $config['table_of_contents']['min_heading_level']
-                = (int)$config['table_of_contents']['min_heading_level'];
-        }
-        if (isset($config['table_of_contents']['max_heading_level'])) {
-            $config['table_of_contents']['max_heading_level']
-                = (int)$config['table_of_contents']['max_heading_level'];
-        }
-        if (isset($config['heading_permalink']['min_heading_level'])) {
-            $config['heading_permalink']['min_heading_level']
-                = (int)$config['heading_permalink']['min_heading_level'];
-        }
-        if (isset($config['heading_permalink']['max_heading_level'])) {
-            $config['heading_permalink']['max_heading_level']
-                = (int)$config['heading_permalink']['max_heading_level'];
+        $intSettingKeys = [
+            ['table_of_contents', 'min_heading_level'],
+            ['table_of_contents', 'max_heading_level'],
+            ['heading_permalink', 'min_heading_level'],
+            ['heading_permalink', 'max_heading_level'],
+        ];
+        foreach ($intSettingKeys as $key) {
+            if (isset($config[$key[0]][$key[1]])) {
+                $config[$key[0]][$key[1]] = (int)$config[$key[0]][$key[1]];
+            }
         }
         $tableWrapAttributes = [];
         if (isset($config['table']['wrap']['attributes'])) {
