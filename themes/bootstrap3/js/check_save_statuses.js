@@ -68,11 +68,13 @@ function runSaveAjaxForQueue() {
           }
         }
       }
-      saveStatusRunning = false;
     })
     .fail(function checkItemStatusFail(response, textStatus) {
       saveStatusFail(response, textStatus);
+    })
+    .then(function saveStatusDoneEmit() {
       saveStatusRunning = false;
+      VuFind.emit("save-status-done");
     });
 }
 function saveQueueAjax(obj, el) {
@@ -109,12 +111,25 @@ function checkSaveStatus(el) {
 
 var saveStatusObserver = null;
 function checkSaveStatuses(_container) {
+  // Stop looking for a scroll loader
+  if (saveStatusObserver) {
+    saveStatusObserver.disconnect();
+  }
+
   if (!userIsLoggedIn) {
+    VuFind.emit("save-status-done");
     return;
   }
+
   var container = _container || $('body');
 
   var ajaxItems = container.find('.result,.record');
+
+  if (ajaxItems.length === 0) {
+    VuFind.emit("save-status-done");
+    return;
+  }
+
   for (var i = 0; i < ajaxItems.length; i++) {
     var $id = $(ajaxItems[i]).find('.hiddenId');
     var $source = $(ajaxItems[i]).find('.hiddenSource');
@@ -124,11 +139,9 @@ function checkSaveStatuses(_container) {
         id: idval,
         source: $source.val()
       }, $(ajaxItems[i]));
+    } else {
+      VuFind.emit("save-status-done");
     }
-  }
-  // Stop looking for a scroll loader
-  if (saveStatusObserver) {
-    saveStatusObserver.disconnect();
   }
 }
 
@@ -138,7 +151,7 @@ function checkSaveStatusesCallback() {
 }
 
 $(document).ready(function checkSaveStatusFail() {
-  if (typeof Hunt === 'undefined') {
+  if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
     checkSaveStatuses();
   } else {
     saveStatusObserver = new Hunt(
