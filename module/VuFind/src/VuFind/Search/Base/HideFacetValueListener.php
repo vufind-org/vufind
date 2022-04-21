@@ -132,6 +132,9 @@ class HideFacetValueListener
     protected function processHideFacetValue($event)
     {
         $result = $event->getParam('command')->getResult();
+        if (!$result) {
+            return;
+        }
         $facets = $result->getFacets();
 
         foreach ($this->hideFacets as $facet => $values) {
