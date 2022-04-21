@@ -794,21 +794,13 @@ abstract class Results
                 'list' => []
             ];
             // Should we translate values for the current facet?
-            $translateTextDomain = '';
-            $translateFormat = '';
             $translate = in_array($field, $translatedFacets);
-            if ($translate) {
-                $translateTextDomain = $this->getOptions()
-                    ->getTextDomainForTranslatedFacet($field);
-                $translateFormat = $this->getOptions()
-                    ->getFormatForTranslatedFacet($field);
-            }
             $hierarchical = in_array($field, $hierarchicalFacets);
             $operator = $this->getParams()->getFacetOperator($field);
             // Loop through values:
             foreach ($data as $value => $count) {
                 $displayText = $this->getParams()
-                    ->getFacetValueDisplayText($field, $value);
+                    ->getFacetValueRawDisplayText($field, $value);
                 if ($hierarchical) {
                     if (!$this->hierarchicalFacetHelper) {
                         throw new \Exception(
@@ -819,22 +811,9 @@ abstract class Results
                     $displayText = $this->hierarchicalFacetHelper
                         ->formatDisplayText($displayText);
                 }
-                if ($translate) {
-                    $rawDisplayText = $displayText;
-                    $displayText = $this->translate(
-                        [$translateTextDomain, $displayText]
-                    );
-                    // Apply a format to the translation (if available):
-                    if ($translateFormat) {
-                        $displayText = $this->translate(
-                            $translateFormat,
-                            [
-                                '%%raw%%' => $rawDisplayText,
-                                '%%translated%%' => $displayText
-                            ]
-                        );
-                    }
-                }
+                $displayText = $translate
+                    ? $this->getParams()->translateFacetValue($field, $displayText)
+                    : $displayText;
                 $isApplied = $this->getParams()->hasFilter("$field:" . $value)
                     || $this->getParams()->hasFilter("~$field:" . $value);
 

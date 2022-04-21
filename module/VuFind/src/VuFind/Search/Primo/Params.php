@@ -103,10 +103,10 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-    public function getFacetValueDisplayText(string $field, string $value): string
+    public function getFacetValueRawDisplayText(string $field, string $value): string
     {
         return $this->fixPrimoFacetValue(
-            parent::getFacetValueDisplayText($field, $value)
+            parent::getFacetValueRawDisplayText($field, $value)
         );
     }
 
