@@ -1,0 +1,122 @@
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'none'; base-uri 'none'; connect-src 'self'; form-action 'self'; font-src 'self'; frame-ancestors 'none'; img-src 'self'; media-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self';
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+Last-Modified: Fri, 08 Apr 2022 10:21:31 GMT
+ETag: "MWMwMDAwMDAwMDAwMDAwMFNvbHI="
+Content-Type: application/json;charset=utf-8
+Vary: Accept-Encoding, User-Agent
+Content-Length: 3187
+
+{
+  "responseHeader":{
+    "status":0,
+    "QTime":1,
+    "params":{
+      "json.nl":"arrarr",
+      "facet.pivot":"callnumber-first,topic_facet",
+      "fl":"*",
+      "start":"0",
+      "sort":"title_sort asc",
+      "rows":"0",
+      "facet.limit":"5",
+      "q":"*:*",
+      "facet.mincount":"1",
+      "facet":"true",
+      "wt":"json",
+      "facet.sort":"count",
+      "debugQuery":"false"}},
+  "response":{"numFound":317,"start":0,"numFoundExact":true,"docs":[]
+  },
+  "facet_counts":{
+    "facet_queries":{},
+    "facet_fields":{},
+    "facet_ranges":{},
+    "facet_intervals":{},
+    "facet_heatmaps":{},
+    "facet_pivot":{
+      "callnumber-first,topic_facet":[{
+          "field":"callnumber-first",
+          "value":"A - General Works",
+          "count":40,
+          "pivot":[{
+              "field":"topic_facet",
+              "value":"Research",
+              "count":16},
+            {
+              "field":"topic_facet",
+              "value":"Psychotherapy",
+              "count":8},
+            {
+              "field":"topic_facet",
+              "value":"Cognitive therapy",
+              "count":4},
+            {
+              "field":"topic_facet",
+              "value":"Crime",
+              "count":4},
+            {
+              "field":"topic_facet",
+              "value":"Criminal justice, Administration of",
+              "count":4}]},
+        {
+          "field":"callnumber-first",
+          "value":"P - Language and Literature",
+          "count":7,
+          "pivot":[{
+              "field":"topic_facet",
+              "value":"Adult children of aging parents",
+              "count":7},
+            {
+              "field":"topic_facet",
+              "value":"Automobile drivers' tests",
+              "count":7},
+            {
+              "field":"topic_facet",
+              "value":"Fathers and daughters",
+              "count":7},
+            {
+              "field":"topic_facet",
+              "value":"Middle aged women",
+              "count":7},
+            {
+              "field":"topic_facet",
+              "value":"Older men",
+              "count":7}]},
+        {
+          "field":"callnumber-first",
+          "value":"D - World History",
+          "count":3,
+          "pivot":[{
+              "field":"topic_facet",
+              "value":"History",
+              "count":2}]},
+        {
+          "field":"callnumber-first",
+          "value":"B - Philosophy, Psychology, Religion",
+          "count":2},
+        {
+          "field":"callnumber-first",
+          "value":"H - Social Science",
+          "count":1,
+          "pivot":[{
+              "field":"topic_facet",
+              "value":"Bank employees",
+              "count":1},
+            {
+              "field":"topic_facet",
+              "value":"Bank management",
+              "count":1},
+            {
+              "field":"topic_facet",
+              "value":"Globalization",
+              "count":1},
+            {
+              "field":"topic_facet",
+              "value":"Industrial relations",
+              "count":1},
+            {
+              "field":"topic_facet",
+              "value":"Labor unions",
+              "count":1}]}]}}}

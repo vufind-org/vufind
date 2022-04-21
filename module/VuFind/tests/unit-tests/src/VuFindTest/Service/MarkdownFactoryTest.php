@@ -116,8 +116,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'use_asterisk' => false,
                 'use_underscore' => false,
                 'unordered_list_markers' => ['`', '~'],
-                'max_nesting_level' => 10,
-                'extensions' => 'Table,VuFindTest\Markdown\ExampleExtension',
+                'max_nesting_level' => '10',
+                'extensions' => 'Table,TableOfContents,HeadingPermalink,VuFindTest\Markdown\ExampleExtension',
                 'renderer' => [
                     'block_separator' => "\r\n",
                     'inner_separator' => "\r\n",
@@ -141,6 +141,14 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             'VuFindTest\Markdown\ExampleExtension' => [
                 'config_key' => 'example',
                 'example' => 'example',
+            ],
+            'TableOfContents' => [
+                'min_heading_level' => '2',
+                'max_heading_level' => '5',
+            ],
+            'HeadingPermalink' => [
+                'min_heading_level' => '3',
+                'max_heading_level' => '4',
             ],
         ];
         $customEnvironment2 = [
@@ -171,6 +179,26 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'block_separator' => "\r\n",
                 'inner_separator' => "\r\n",
                 'soft_break' => "\r\n",
+            ],
+            'table_of_contents' => [
+                'min_heading_level' => 2,
+                'max_heading_level' => 5,
+                'position' => 'top',
+                'style' => 'bullet',
+                'normalize' => 'relative',
+                'html_class' => 'table-of-contents',
+                'placeholder' => null,
+            ],
+            'heading_permalink' => [
+                'min_heading_level' => 3,
+                'max_heading_level' => 4,
+                'insert' => 'before',
+                'id_prefix' => 'content',
+                'fragment_prefix' => 'content',
+                'html_class' => 'heading-permalink',
+                'title' => 'Permalink',
+                'symbol' => '¶',
+                'aria_hidden' => true,
             ],
         ];
 
@@ -309,6 +337,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             \League\CommonMark\Extension\Strikethrough\StrikethroughExtension::class,
             \League\CommonMark\Extension\Table\TableExtension::class,
             \League\CommonMark\Extension\TaskList\TaskListExtension::class,
+            \League\CommonMark\Extension\TableOfContents\TableOfContentsExtension::class,
+            \League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension::class,
         ];
         $container = new \VuFindTest\Container\MockContainer($this);
         foreach ($disabledServices as $service) {
