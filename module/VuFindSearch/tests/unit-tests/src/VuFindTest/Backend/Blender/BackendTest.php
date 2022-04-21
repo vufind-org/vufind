@@ -76,6 +76,12 @@ class BackendTest extends TestCase
             ],
             'blockSize' => 7,
         ],
+        'Advanced_Settings' => [
+            'delimiter' => '::',
+            'delimited_facets' => [
+                'blender_backend',
+            ],
+        ],
     ];
 
     /**
@@ -495,8 +501,11 @@ class BackendTest extends TestCase
             $facets = $result->getFacets();
             $this->assertIsArray($facets);
             $backendFacet = $facets['blender_backend'];
-            $this->assertEquals($expectedSolr, $backendFacet['Solr']);
-            $this->assertEquals($expectedEDS, $backendFacet['EDS']);
+            $this->assertEquals($expectedSolr, $backendFacet['Solr::Local']);
+            $this->assertEquals(
+                $expectedEDS,
+                $backendFacet['EDS::Electronic Stuff']
+            );
 
             $expectedFacets = [
                 'building' => [
@@ -560,6 +569,31 @@ class BackendTest extends TestCase
                 $this->assertEquals($expectedCounts, $facetCounts, $facet);
             }
         }
+    }
+
+    /**
+     * Test non-delimited blender_backend facet field.
+     *
+     * @return void
+     */
+    public function testNonDelimitedBlenderBackendFacet(): void
+    {
+        $config = $this->config;
+        unset($config['Advanced_Settings']);
+        $backend = $this->getBackend($config);
+        $expectedSolr = 240;
+        $expectedEDS = 65924;
+
+        $params = $this->getSearchParams([]);
+        $result = $backend->search($query ?? new Query(), 0, 0, $params);
+        $this->assertEquals([], $result->getErrors());
+        $this->assertEquals($expectedSolr + $expectedEDS, $result->getTotal());
+
+        $facets = $result->getFacets();
+        $this->assertIsArray($facets);
+        $backendFacet = $facets['blender_backend'];
+        $this->assertEquals($expectedSolr, $backendFacet['Solr']);
+        $this->assertEquals($expectedEDS, $backendFacet['EDS']);
     }
 
     /**
