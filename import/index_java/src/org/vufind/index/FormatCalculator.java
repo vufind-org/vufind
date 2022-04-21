@@ -214,7 +214,7 @@ public class FormatCalculator
                 break;
             // Component parts
             case 'a':
-                return (hasSerialHost(record)) ? "SerialComponentPart" : "BookComponentPart";
+                return (hasSerialHost(record)) ? "Article" : "BookComponentPart";
             case 'b':
                 return "SerialComponentPart";
             // Integrating resources (e.g. loose-leaf binders, databases)
