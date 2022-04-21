@@ -360,14 +360,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => ['false']
                 ],
             ],
-            array_filter(
-                $primoParams->get('filterList'),
-                function ($f) {
-                    // Primo may return a field without values for a previously set
-                    // facet; ignore those:
-                    return !empty($f['values']);
-                }
-            )
+            $primoParams->get('filterList')
         );
         $this->assertEquals(['LIMIT|FT:y'], $edsParams->get('filters'));
 
@@ -387,14 +380,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => ['true']
                 ],
             ],
-            array_filter(
-                $primoParams->get('filterList'),
-                function ($f) {
-                    // Primo may return a field without values for a previously set
-                    // facet; ignore those:
-                    return !empty($f['values']);
-                }
-            )
+            $primoParams->get('filterList')
         );
         $this->assertNull($edsParams->get('filters'));
 
@@ -490,15 +476,30 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => ['true']
                 ]
             ],
-            array_filter(
-                $primoParams->get('filterList'),
-                function ($f) {
-                    // Primo may return a field without values for a previously set
-                    // facet; ignore those:
-                    return !empty($f['values']);
-                }
-            )
+            $primoParams->get('filterList')
         );
+
+        // Test removeAllFilters:
+        $params->addFilter('nonexistent:1');
+        $params->addFilter('format:double');
+        $params->removeAllFilters();
+        $backendParams = $params->getBackendParameters();
+        $this->assertNull($backendParams->get('fq'));
+
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $primoParams = $backendParams->get('params_Primo')[0];
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertNull($solrParams->get('fq'));
+        $this->assertEquals(
+            [
+                'pcAvailability' => [
+                    'facetOp' => 'AND',
+                    'values' => ['true']
+                ],
+            ],
+            $primoParams->get('filterList')
+        );
+        $this->assertNull($edsParams->get('filters'));
     }
 
     /**

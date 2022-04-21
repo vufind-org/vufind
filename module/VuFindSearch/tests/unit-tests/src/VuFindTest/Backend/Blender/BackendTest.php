@@ -492,9 +492,9 @@ class BackendTest extends TestCase
 
         // Check facet counts if we expect results:
         if ($expectedSolr + $expectedEDS > 0) {
-            $facets = $result->getFacets()->getFieldFacets();
-            $this->assertInstanceOf(\ArrayObject::class, $facets);
-            $backendFacet = $facets['blender_backend']->toArray();
+            $facets = $result->getFacets();
+            $this->assertIsArray($facets);
+            $backendFacet = $facets['blender_backend'];
             $this->assertEquals($expectedSolr, $backendFacet['Solr']);
             $this->assertEquals($expectedEDS, $backendFacet['EDS']);
 
@@ -545,8 +545,8 @@ class BackendTest extends TestCase
             }
 
             foreach ($expectedFacets as $facet => $expectedCountsForSources) {
-                $this->assertIsObject($facets[$facet]);
-                $facetCounts = $facets[$facet]->toArray();
+                $this->assertIsArray($facets[$facet]);
+                $facetCounts = $facets[$facet];
                 $expectedCounts = [];
                 foreach ($active as $source) {
                     foreach ($expectedCountsForSources[$source]
@@ -687,32 +687,7 @@ class BackendTest extends TestCase
         $params = $this->getSearchParams([]);
 
         $results = $backend->search(new Query(), 0, 20, $params);
-        $this->assertInstanceOf(
-            \VuFindSearch\Backend\Solr\Response\Json\Facets::class,
-            $results->getFacets()
-        );
-    }
-
-    /**
-     * Test search with an unsupported facet format
-     *
-     * @return void
-     */
-    public function testUnsupportedFacetFormat(): void
-    {
-        $backend = $this->getBackend(
-            null,
-            null,
-            [
-                'Solr' => $this->getSolrBackend(),
-                'EDS' => $this->getBackendForFacetsAndErrors(new \StdClass(), [])
-            ]
-        );
-
-        $params = $this->getSearchParams([]);
-
-        $this->expectExceptionMessageMatches('/^Unhandled facet format for Mock/');
-        $backend->search(new Query(), 0, 20, $params);
+        $this->assertIsArray($results->getFacets());
     }
 
     /**

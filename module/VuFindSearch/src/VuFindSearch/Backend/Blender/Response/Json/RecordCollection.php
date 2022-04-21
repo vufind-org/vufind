@@ -28,10 +28,6 @@
  */
 namespace VuFindSearch\Backend\Blender\Response\Json;
 
-use VuFindSearch\Backend\EDS\Response\RecordCollection as EDSRecordCollection;
-use VuFindSearch\Backend\Solr\Response\Json\Facets;
-use VuFindSearch\Response\RecordCollectionInterface;
-
 /**
  * JSON-based record collection for records from multiple sources.
  *
@@ -347,7 +343,7 @@ class RecordCollection
     {
         $result = [];
         foreach ($collections as $backendId => $collection) {
-            $facets = $this->convertFacets($collection);
+            $facets = $collection->getFacets();
             $facetType = $settings['Type'] ?? 'normal';
             $mappings = $settings['Mappings'][$backendId] ?? [];
             $backendFacetField = $mappings['Field'] ?? '';
@@ -422,41 +418,6 @@ class RecordCollection
                 ? $collections[$backendId]->getTotal() : 0;
         }
         return $result;
-    }
-
-    /**
-     * Convert facets into an associative array format for processing
-     *
-     * @param RecordCollectionInterface $collection Collection
-     *
-     * @return array
-     */
-    protected function convertFacets(RecordCollectionInterface $collection)
-    {
-        $facets = $collection->getFacets();
-        if ($facets instanceof Facets) {
-            return $facets->getFieldFacets();
-        }
-        if ($collection instanceof EDSRecordCollection) {
-            // Convert EDS facets:
-            $converted = [];
-            foreach ($facets as $field => $facetData) {
-                $valueCounts = [];
-                foreach ($facetData['counts'] as $count) {
-                    $valueCounts[$count['displayText']] = $count['count'];
-                }
-                $converted[$field] = $valueCounts;
-            }
-            return $converted;
-        }
-
-        if (!is_array($facets)) {
-            throw new \Exception(
-                'Unhandled facet format for ' . get_class($collection)
-            );
-        }
-
-        return $facets;
     }
 
     /**
