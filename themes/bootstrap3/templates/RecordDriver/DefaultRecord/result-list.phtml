@@ -73,7 +73,7 @@
             <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
           <?php endif; ?>
           <?php if (!empty($snippet['snippet'])): ?>
-            <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+            <?=$this->translate('highlight_snippet_html', ['%%snippet%%' => $this->highlight($snippet['snippet'])]) ?><br/>
           <?php endif; ?>
         <?php endif; ?>
       <?php endif; ?>
@@ -110,11 +110,11 @@
         <?php if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
           <span class="callnumber ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...<br/>
+            <?=$this->transEsc('loading_ellipsis')?><br/>
           </span>
           <strong><?=$this->transEsc('Located')?>:</strong>
           <span class="location ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...
+            <?=$this->transEsc('loading_ellipsis')?>
           </span>
           <div class="locationDetails"></div>
         <?php else: ?>
@@ -157,7 +157,7 @@
 
         <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
           <span class="status ajax-availability hidden">
-            <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+            <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
           </span>
         <?php endif; ?>
       </div>

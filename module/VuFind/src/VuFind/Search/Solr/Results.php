@@ -320,24 +320,15 @@ class Results extends \VuFind\Search\Base\Results
             // Build our array of values for this field
             $list[$field]['list']  = [];
             // Should we translate values for the current facet?
-            $translateTextDomain = '';
-            $translateFormat = '';
             $translate = in_array($field, $translatedFacets);
-            if ($translate) {
-                $translateTextDomain = $this->getOptions()
-                    ->getTextDomainForTranslatedFacet($field);
-                $translateFormat = $this->getOptions()
-                    ->getFormatForTranslatedFacet($field);
-            }
             $hierarchical = in_array($field, $hierarchicalFacets);
             // Loop through values:
             foreach ($data as $value => $count) {
                 // Initialize the array of data about the current facet:
-                $currentSettings = [];
-                $currentSettings['value'] = $value;
+                $currentSettings = compact('value', 'count');
 
                 $displayText = $this->getParams()
-                    ->checkForDelimitedFacetDisplayText($field, $value);
+                    ->getFacetValueRawDisplayText($field, $value);
 
                 if ($hierarchical) {
                     if (!$this->hierarchicalFacetHelper) {
@@ -350,24 +341,9 @@ class Results extends \VuFind\Search\Base\Results
                         ->formatDisplayText($displayText);
                 }
 
-                if ($translate) {
-                    $translated = $this->translate(
-                        [$translateTextDomain, $displayText]
-                    );
-                    // Apply a format to the translation (if available)
-                    if ($translateFormat) {
-                        $translated = $this->translate(
-                            $translateFormat,
-                            ['%%raw%%' => $displayText,
-                            '%%translated%%' => $translated]
-                        );
-                    }
-                    $currentSettings['displayText'] = $translated;
-                } else {
-                    $currentSettings['displayText'] = $displayText;
-                }
-
-                $currentSettings['count'] = $count;
+                $currentSettings['displayText'] = $translate
+                    ? $this->getParams()->translateFacetValue($field, $displayText)
+                    : $displayText;
                 $currentSettings['operator']
                     = $this->getParams()->getFacetOperator($field);
                 $currentSettings['isApplied']
