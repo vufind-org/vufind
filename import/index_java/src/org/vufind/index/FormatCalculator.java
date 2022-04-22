@@ -219,8 +219,21 @@ public class FormatCalculator
                 return "SerialComponentPart";
             // Integrating resources (e.g. loose-leaf binders, databases)
             case 'i':
-                return (formatCode == 'c')
-                    ? "OnlineIntegratingResource" : "PhysicalIntegratingResource";
+                if (formatCode == 'c') {
+                    // Look in 008 to determine type of electronic IntegratingResource
+                    if (marc008 != null) {
+                        switch (marc008.getData().toLowerCase().charAt(21)) {
+                            case 'h':
+                            case 'w':
+                                return "Website";
+                            default: break;
+                        }
+                    }
+                    // Default to "OnlineIntegratingResource" even if 008 is missing
+                    return "OnlineIntegratingResource";
+                } else {
+                    return "PhysicalIntegratingResource";
+                }
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
@@ -230,11 +243,12 @@ public class FormatCalculator
                             return "Newspaper";
                         case 'p':
                             return "Journal";
-                        default:
-                            if (!isConferenceProceeding(record)) {
-                                return "Serial";
-                            }
-                        }
+                        default: break;
+                    }
+                }
+                // Default to serial even if 008 is missing
+                if (!isConferenceProceeding(record)) {
+                    return "Serial";
                 }
                 break;
         }
