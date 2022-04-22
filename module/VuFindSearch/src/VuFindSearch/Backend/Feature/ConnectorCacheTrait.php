@@ -31,6 +31,7 @@
  */
 namespace VuFindSearch\Backend\Feature;
 
+use Laminas\Cache\Storage\Adapter\Memcached;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client as HttpClient;
 
@@ -109,20 +110,22 @@ trait ConnectorCacheTrait
         try {
             $this->cache->setItem($key, $response);
         } catch (\Laminas\Cache\Exception\RuntimeException $ex) {
-            // Try to determine if caching failed due to response size and log the
-            // case accordingly. Unfortunately Laminas Cache does not translate
-            // exceptions to any common error codes, so we must check codes and/or
-            // message for adapter-specific values.
-            // 'ITEM TOO BIG' is the message from the Memcached adapter
-            // and comes directly from libmemcached.
-            if ($ex->getMessage() === 'ITEM TOO BIG') {
-                $this->debug(
-                    'Cache setItem failed: ITEM TOO BIG; Response exceeds configured'
-                    . ' maximum cacheable size in memcached'
-                );
-            } else {
-                $this->logWarning('Cache setItem failed: ' . $ex->getMessage());
+            if ($this->cache->getCapabilities()->getAdapter() instanceof Memcached) {
+                // Try to determine if caching failed due to response size and log
+                // the case accordingly. Unfortunately Laminas Cache does not
+                // translate exceptions to any common error codes, so we must check
+                // the backend-specific code. Note that error code 37 is available as
+                // a constant in Memcached, but we're not using it here due to it
+                // being an optional extension.
+                if ($ex->getCode() === 37) {
+                    $this->debug(
+                        'Cache setItem failed: ' . $ex->getMessage() . '; Response'
+                        . ' exceeds configured maximum cacheable size in memcached'
+                    );
+                    return;
+                }
             }
+            $this->logWarning('Cache setItem failed: ' . $ex->getMessage());
         } catch (\Exception $ex) {
             $this->logWarning('Cache setItem failed: ' . $ex->getMessage());
         }
