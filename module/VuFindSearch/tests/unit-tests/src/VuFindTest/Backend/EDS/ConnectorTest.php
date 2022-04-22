@@ -48,6 +48,13 @@ class ConnectorTest extends TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Current response.
+     *
+     * @var string
+     */
+    protected $response;
+
+    /**
      * Test caching.
      *
      * @return void
