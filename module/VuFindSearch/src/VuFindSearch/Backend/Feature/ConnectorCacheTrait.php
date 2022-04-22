@@ -116,7 +116,10 @@ trait ConnectorCacheTrait
             // 'ITEM TOO BIG' is the message from the Memcached adapter
             // and comes directly from libmemcached.
             if ($ex->getMessage() === 'ITEM TOO BIG') {
-                $this->debug('Cache setItem failed: ' . $ex->getMessage());
+                $this->debug(
+                    'Cache setItem failed: ITEM TOO BIG; Response exceeds configured'
+                    . ' maximum cacheable size in memcached'
+                );
             } else {
                 $this->logWarning('Cache setItem failed: ' . $ex->getMessage());
             }
