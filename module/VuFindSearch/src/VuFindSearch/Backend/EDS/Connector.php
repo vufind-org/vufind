@@ -127,7 +127,7 @@ class Connector extends Base implements LoggerAwareInterface
         $resultBody = $result->getBody();
         if (!$result->isSuccess()) {
             $decodedError = json_decode($resultBody, true);
-            throw new ApiException($decodedError ? $decodedError : $resultBody);
+            throw new ApiException($decodedError ?: $resultBody);
         }
         if ($cacheKey) {
             $this->putCachedData($cacheKey, $resultBody);

@@ -159,7 +159,7 @@ abstract class Base
      * Creates a new session
      *
      * @param string $profile   Profile to use
-     * @param string $isGuest   Whether or not this sesssion will be a guest session
+     * @param string $isGuest   Whether or not this session will be a guest session
      * @param string $authToken Authentication token
      *
      * @return array
@@ -322,7 +322,7 @@ abstract class Base
             $authInfo['Options'] = $params;
         }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null, null, 'POST', $messageBody);
+        return $this->call($url, null, null, 'POST', $messageBody, '', false);
     }
 
     /**
