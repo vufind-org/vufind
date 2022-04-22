@@ -416,12 +416,12 @@ abstract class Base
     }
 
     /**
-     * Process EDSAPI response message
+     * Process EDS API response message
      *
-     * @param string $input The raw response from Summon
+     * @param string $input The raw response from EDS API
      *
      * @throws ApiException
-     * @return array       The processed response from EDS API
+     * @return array        The processed response from EDS API
      */
     protected function process($input)
     {
