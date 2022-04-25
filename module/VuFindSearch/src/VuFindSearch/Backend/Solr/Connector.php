@@ -30,7 +30,6 @@
  */
 namespace VuFindSearch\Backend\Solr;
 
-use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
@@ -57,6 +56,7 @@ use VuFindSearch\ParamBag;
 class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * Maximum length of a GET url.
@@ -96,13 +96,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @var string
      */
     protected $uniqueKey;
-
-    /**
-     * Request cache
-     *
-     * @var StorageInterface
-     */
-    protected $cache = null;
 
     /**
      * Constructor
@@ -254,18 +247,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return $this->trySolrUrls('POST', $urlSuffix, $callback);
     }
 
-    /**
-     * Set the cache storage
-     *
-     * @param StorageInterface $cache Cache
-     *
-     * @return void
-     */
-    public function setCache(StorageInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
     /// Internal API
 
     /**
@@ -397,46 +378,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // Always create the cache key from the first server, and only after any
             // callback has been called above.
             if ($cacheable && $this->cache && null === $cacheKey) {
-                $cacheKey = md5($this->client->getRequest()->toString());
-                try {
-                    if ($result = $this->cache->getItem($cacheKey)) {
-                        $this->debug('Returning cached results');
-                        return $result;
-                    }
-                } catch (\Exception $ex) {
-                    $this->logWarning('Cache getItem failed: ' . $ex->getMessage());
+                $cacheKey = $this->getCacheKey($this->client);
+                if ($result = $this->getCachedData($cacheKey)) {
+                    return $result;
                 }
             }
             try {
                 $result = $this->send($this->client);
-
                 if ($cacheKey) {
-                    try {
-                        $this->cache->setItem($cacheKey, $result);
-                    } catch (\Laminas\Cache\Exception\RuntimeException $ex) {
-                        // Try to determine if caching failed due to response size
-                        // and log the case accordingly.
-                        // Unfortunately Laminas Cache does not translate exceptions
-                        // to any common error codes, so we must check codes and/or
-                        // message for adapter-specific values.
-                        // 'ITEM TOO BIG' is the message from the Memcached adapter
-                        // and comes directly from libmemcached.
-                        if ($ex->getMessage() === 'ITEM TOO BIG') {
-                            $this->debug(
-                                'Cache setItem failed: ' . $ex->getMessage()
-                            );
-                        } else {
-                            $this->logWarning(
-                                'Cache setItem failed: ' . $ex->getMessage()
-                            );
-                        }
-                    } catch (\Exception $ex) {
-                        $this->logWarning(
-                            'Cache setItem failed: ' . $ex->getMessage()
-                        );
-                    }
+                    $this->putCachedData($cacheKey, $result);
                 }
-
                 return $result;
             } catch (\Exception $ex) {
                 if ($this->isRethrowableSolrException($ex)) {

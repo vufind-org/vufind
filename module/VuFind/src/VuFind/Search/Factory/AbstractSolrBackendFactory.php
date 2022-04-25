@@ -29,7 +29,6 @@
 namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
-
 use Laminas\Config\Config;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
@@ -407,24 +406,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $connector->setLogger($this->logger);
         }
 
-        if (!empty($searchConfig->SearchCache->adapter)) {
-            $cacheConfig = $searchConfig->SearchCache->toArray();
-            $options = $cacheConfig['options'] ?? [];
-            if (empty($options['namespace'])) {
-                $options['namespace'] = 'Index';
-            }
-            if (empty($options['ttl'])) {
-                $options['ttl'] = 300;
-            }
-            $settings = [
-                'adapter' => $cacheConfig['adapter'],
-                'options' => $options,
-            ];
-            $cache = $this->serviceLocator
-                ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
-                ->createFromArrayConfiguration($settings);
+        if ($cache = $this->createConnectorCache($searchConfig)) {
             $connector->setCache($cache);
         }
+
         return $connector;
     }
 
