@@ -4,7 +4,7 @@
  *
  * Prerequisites:
  *
- * - LoggerAwareInterface
+ * - LoggerAwareTrait
  *
  * PHP version 7
  *
