@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFindTest\Search\Solr;
+namespace VuFindTest\Search\Base;
 
 use Laminas\EventManager\Event;
-use VuFind\Search\Solr\HideFacetValueListener;
+use VuFind\Search\Base\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 

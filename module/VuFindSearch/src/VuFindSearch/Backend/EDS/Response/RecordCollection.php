@@ -49,6 +49,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $response;
 
     /**
+     * Facet fields.
+     *
+     * @var array
+     */
+    protected $facetFields = null;
+
+    /**
      * Constructor.
      *
      * @param array $response EdsApi response
@@ -91,16 +98,30 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        $result = [];
-        $facets = $this->response['SearchResult']['AvailableFacets'] ?? [];
-        foreach ($facets as $facet) {
-            $values = [];
-            foreach ($facet['AvailableFacetValues'] as $facetValue) {
-                $values[$facetValue['Value']] = $facetValue['Count'];
+        if ($this->facetFields === null) {
+            $this->facetFields = [];
+            $facets = $this->response['SearchResult']['AvailableFacets'] ?? [];
+            foreach ($facets as $facet) {
+                $values = [];
+                foreach ($facet['AvailableFacetValues'] as $facetValue) {
+                    $values[$facetValue['Value']] = $facetValue['Count'];
+                }
+                $this->facetFields[$facet['Id']] = $values;
             }
-            $result[$facet['Id']] = $values;
         }
-        return $result;
+        return $this->facetFields;
+    }
+
+    /**
+     * Set facets.
+     *
+     * @param array $facets Facet fields
+     *
+     * @return void
+     */
+    public function setFacets(array $facets): void
+    {
+        $this->facetFields = $facets;
     }
 
     /**

@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFind\Search\Solr;
+namespace VuFind\Search\Base;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
@@ -132,6 +132,9 @@ class HideFacetValueListener
     protected function processHideFacetValue($event)
     {
         $result = $event->getParam('command')->getResult();
+        if (!$result) {
+            return;
+        }
         $facets = $result->getFacets();
 
         foreach ($this->hideFacets as $facet => $values) {

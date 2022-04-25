@@ -85,6 +85,18 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
+     * Set facets.
+     *
+     * @param array $facets Facet fields
+     *
+     * @return void
+     */
+    public function setFacets(array $facets): void
+    {
+        $this->response['facets'] = $facets;
+    }
+
+    /**
      * Return offset in the total search result set.
      *
      * @return int
