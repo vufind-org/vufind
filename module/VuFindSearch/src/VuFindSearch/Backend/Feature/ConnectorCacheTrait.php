@@ -4,7 +4,7 @@
  *
  * Prerequisites:
  *
- * - LoggerAwareTrait
+ * - Logger as $this->logger
  *
  * PHP version 7
  *
@@ -34,6 +34,7 @@ namespace VuFindSearch\Backend\Feature;
 use Laminas\Cache\Storage\Adapter\Memcached;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client as HttpClient;
+use Laminas\Log\LoggerInterface;
 
 /**
  * Caching support trait for connectors.
@@ -88,11 +89,11 @@ trait ConnectorCacheTrait
     {
         try {
             if ($result = $this->cache->getItem($key)) {
-                $this->debug('Returning cached results');
+                $this->logCacheDebug('Returning cached results');
                 return $result;
             }
         } catch (\Exception $ex) {
-            $this->logWarning('Cache getItem failed: ' . $ex->getMessage());
+            $this->logCacheWarning('getItem failed: ' . $ex->getMessage());
         }
         return null;
     }
@@ -118,16 +119,48 @@ trait ConnectorCacheTrait
                 // a constant in Memcached, but we're not using it here due to it
                 // being an optional extension.
                 if ($ex->getCode() === 37) {
-                    $this->debug(
-                        'Cache setItem failed: ' . $ex->getMessage() . '; Response'
+                    $this->logCacheDebug(
+                        'setItem failed: ' . $ex->getMessage() . '; Response'
                         . ' exceeds configured maximum cacheable size in memcached'
                     );
                     return;
                 }
             }
-            $this->logWarning('Cache setItem failed: ' . $ex->getMessage());
+            $this->logCacheWarning('setItem failed: ' . $ex->getMessage());
         } catch (\Exception $ex) {
-            $this->logWarning('Cache setItem failed: ' . $ex->getMessage());
+            $this->logCacheWarning('setItem failed: ' . $ex->getMessage());
+        }
+    }
+
+    /**
+     * Log a warning message
+     *
+     * @param string $msg Message
+     *
+     * @return void
+     */
+    protected function logCacheWarning(string $msg): void
+    {
+        if (($this->logger ?? null) instanceof LoggerInterface) {
+            $this->logger->warn("Cache: $msg");
+        } else {
+            error_log("Warning: Cache: $msg");
+        }
+    }
+
+    /**
+     * Log a debug message
+     *
+     * @param string $msg Message
+     *
+     * @return void
+     */
+    protected function logCacheDebug(string $msg): void
+    {
+        if (($this->logger ?? null) instanceof LoggerInterface) {
+            $this->logger->debug("Cache: $msg");
+        } else {
+            error_log("Debug: Cache: $msg");
         }
     }
 }
