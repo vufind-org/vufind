@@ -165,13 +165,8 @@ class Backend extends AbstractBackend
             return $mergedCollection;
         }
 
-        $blendLimit = $this->blendLimit;
-        if ($limit === 0) {
-            $blendLimit = 0;
-        }
-        // If offset is less than the limit, fetch from backends up to the limit
-        // first:
-        $fetchLimit = $offset <= $this->blendLimit ? $blendLimit : 0;
+        $blendLimit = $limit === 0 ? 0 : $this->blendLimit;
+        // Fetch records from backends up to the number of initially boosted records:
         $collections = [];
         $exceptions = [];
         foreach ($backendDetails as $backendId => $details) {
@@ -179,7 +174,7 @@ class Backend extends AbstractBackend
                 $collections[$backendId] = $details['backend']->search(
                     $details['query'],
                     0,
-                    $fetchLimit,
+                    $blendLimit,
                     $details['params']
                 );
             } catch (\Exception $e) {
@@ -284,7 +279,7 @@ class Backend extends AbstractBackend
      * @param RecordCollectionInterface $mergedCollection Merged collection
      * @param array                     $collections      Source collections
      * @param array                     $backendDetails   Active backend details
-     * @param array                     $backendRecords   Backend record buffer
+     * @param array                     $backendRecords   Backend record buffers
      * @param int                       $limit            Record limit
      * @param int                       $blockSize        Block size
      *
@@ -392,13 +387,18 @@ class Backend extends AbstractBackend
     /**
      * Get active backends for a search
      *
-     * @param ParamBag $params    Search backend parameters
-     * @param string   $delimiter Delimiter for the blender_backend facet
+     * @param ?ParamBag $params    Search backend parameters
+     * @param string    $delimiter Delimiter for the blender_backend facet
      *
      * @return array
      */
-    protected function getActiveBackends(ParamBag $params, string $delimiter): array
+    protected function getActiveBackends(?ParamBag $params, string $delimiter): array
     {
+        if (null === $params) {
+            // Can't do anything without backend params..
+            return [];
+        }
+
         $activeBackends = $this->backends;
 
         // Handle the blender_backend pseudo-filter

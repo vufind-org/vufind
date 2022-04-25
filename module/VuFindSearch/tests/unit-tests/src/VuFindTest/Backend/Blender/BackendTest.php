@@ -572,6 +572,51 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Test limits used for search requests
+     *
+     * @return void
+     */
+    public function testSearchLimit(): void
+    {
+        $query = new Query();
+        $edsParams = new ParamBag();
+        $collection = new \VuFindSearch\Backend\EDS\Response\RecordCollection([]);
+
+        $eds = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $eds->expects($this->exactly(3))
+            ->method('search')
+            ->withConsecutive(
+                [$query, 0, 20, $edsParams],
+                [$query, 0, 20, $edsParams],
+                [$query, 0, 0, $edsParams],
+            )->will($this->returnValue($collection));
+
+        $backends = [
+            'EDS' => $eds
+        ];
+        $eventManager = new EventManager($this->sharedEventManager);
+        $backend = new Backend(
+            $backends,
+            new Config($this->config),
+            $this->mappings,
+            $eventManager
+        );
+        $backend->setIdentifier('Blender');
+
+        $params = new ParamBag(
+            [
+                'query_EDS' => [$query],
+                'params_EDS' => [$edsParams]
+            ]
+        );
+        $backend->search($query, 0, 20, $params);
+        $backend->search($query, 380, 20, $params);
+        $backend->search($query, 0, 0, $params);
+    }
+
+    /**
      * Test non-delimited blender_backend facet field.
      *
      * @return void
@@ -948,8 +993,6 @@ class BackendTest extends TestCase
      */
     protected function getBackendForFacetsAndErrors($facets, $errors)
     {
-        // Use Solr collection since it doesn't have class name based special
-        // processing:
         $collection = $this->getMockBuilder(SolrRecordCollection::class)
             ->disableOriginalConstructor()
             ->getMock();
