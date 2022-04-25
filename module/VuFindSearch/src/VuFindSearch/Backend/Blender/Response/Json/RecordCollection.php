@@ -213,6 +213,7 @@ class RecordCollection
     {
         $result = [];
         foreach ($collections as $backendId => $collection) {
+            $result[$backendId] = [];
             $records = $collection->getRecords();
             $label = $this->config->Backends[$backendId];
             foreach ($records as $record) {
