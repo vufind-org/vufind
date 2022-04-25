@@ -396,10 +396,6 @@ class Params extends \VuFind\Search\Solr\Params
                         $params->addCheckboxFacet($current, $desc, $dynamic);
                     }
                 }
-            } else {
-                // Add the filter to the list of unsupported filters:
-                $this->unsupportedFilters[$backendId][]
-                    = $this->parseFilter($filter);
             }
         }
     }

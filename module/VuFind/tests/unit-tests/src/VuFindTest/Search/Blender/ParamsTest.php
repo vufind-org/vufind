@@ -500,6 +500,18 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $primoParams->get('filterList')
         );
         $this->assertNull($edsParams->get('filters'));
+
+        // Check that simply adding a checkbox facet does not cause backends to be
+        // disabled:
+        $params = $this->getParams();
+        $params->addFilter('fulltext:1');
+        $backendParams = $params->getBackendParameters();
+        $this->assertEquals(
+            [
+                'fulltext:"1"',
+            ],
+            $backendParams->get('fq')
+        );
     }
 
     /**
