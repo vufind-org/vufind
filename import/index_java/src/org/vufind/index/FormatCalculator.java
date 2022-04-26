@@ -121,8 +121,10 @@ public class FormatCalculator
                 return "Braille";
             case 'g':
                 switch(formatCode2) {
-                    case 'c':
-                    case 'd':
+                    case 'c': // Filmstrip cartridge
+                    case 'd': // Filmslip
+                    case 'f': // Filmstrip, type unspecified
+                    case 'o': // Filmstrip roll
                         return "Filmstrip";
                     case 't':
                         return "Transparency";
@@ -138,18 +140,24 @@ public class FormatCalculator
                         return "Drawing";
                     case 'e':
                         return "Painting";
-                    case 'f':
+                    case 'f': // Photomechanical print
                         return "Print";
                     case 'g':
                         return "Photonegative";
                     case 'j':
                         return "Print";
+                    case 'k':
+                        return "Poster";
                     case 'l':
                         return "Drawing";
-                    case 'o':
-                        return "FlashCard";
                     case 'n':
                         return "Chart";
+                    case 'o':
+                        return "FlashCard";
+                    case 'p':
+                        return "Postcard";
+                    case 's': // Study print
+                        return "Print";
                 }
                 return "Photo";
             case 'm':
@@ -209,6 +217,18 @@ public class FormatCalculator
             // Monograph
             case 'm':
                 if (couldBeBook) {
+                    if (marc008 != null) {
+                        // Check 008/23 Form of item
+                        switch (marc008.getData().toLowerCase().charAt(23)) {
+                            case 'o': // Online
+                            case 'q': // Direct electronic
+                            case 's': // Electronic
+                                return "eBook";
+                            default:
+                                return "Book";
+                        }
+                    }
+                    // Fall-back on 007 if 008 is missing
                     return (formatCode == 'c') ? "eBook" : "Book";
                 }
                 break;
@@ -219,21 +239,27 @@ public class FormatCalculator
                 return "SerialComponentPart";
             // Integrating resources (e.g. loose-leaf binders, databases)
             case 'i':
-                if (formatCode == 'c') {
-                    // Look in 008 to determine type of electronic IntegratingResource
-                    if (marc008 != null) {
-                        switch (marc008.getData().toLowerCase().charAt(21)) {
-                            case 'h':
-                            case 'w':
-                                return "Website";
-                            default: break;
-                        }
+                // Look in 008 to determine type of electronic IntegratingResource
+                if (marc008 != null) {
+                    // Check 008/21 Type of continuing resource
+                    switch (marc008.getData().toLowerCase().charAt(21)) {
+                        case 'h': // Blog
+                        case 'w': // Updating Web site
+                            return "Website";
+                        default: break;
                     }
-                    // Default to "OnlineIntegratingResource" even if 008 is missing
-                    return "OnlineIntegratingResource";
-                } else {
-                    return "PhysicalIntegratingResource";
+                    // Check 008/22 Form of original item
+                    switch (marc008.getData().toLowerCase().charAt(22)) {
+                        case 'o': // Online
+                        case 'q': // Direct electronic
+                        case 's': // Electronic
+                            return "OnlineIntegratingResource";
+                        default:
+                            return "PhysicalIntegratingResource";
+                    }
                 }
+                // Fall-back on 007 if 008 is missing
+                return  (formatCode == 'c') ? "OnlineIntegratingResource" : "PhysicalIntegratingResource";
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
@@ -261,25 +287,61 @@ public class FormatCalculator
      *
      * @param Record record
      * @param char recordType
+     * @param ControlField marc008
      * @return String
      */
-    protected String getFormatFromRecordType(Record record, char recordType) {
+    protected String getFormatFromRecordType(Record record, char recordType, ControlField marc008) {
         switch (recordType) {
             case 'c':
             case 'd':
                 return "MusicalScore";
             case 'e':
             case 'f':
+                if (marc008 != null) {
+                    // Check 008/25 Type of cartographic material
+                    switch (marc008.getData().toLowerCase().charAt(25)) {
+                        case 'd':
+                            return "Globe";
+                        case 'e':
+                            return "Atlas";
+                        default: break;
+                    }
+                }
                 return "Map";
             case 'g':
-                // We're going to rely on the 007 instead for Projected Media
-                //return "Slide";
-                return "";
+                if (marc008 != null) {
+                    // Check 008/33 Type of visual material
+                    switch (marc008.getData().toLowerCase().charAt(33)) {
+                        case 'f':
+                            return "Filmstrip";
+                        case 't':
+                            return "Transparency";
+                        case 'm':
+                            return "MotionPicture";
+                        case 'v': // Videorecording
+                            return "Video";
+                        default: break;
+                    }
+                }
+                return "Slide";
             case 'i':
                 return "SoundRecording";
             case 'j':
                 return "MusicRecording";
             case 'k':
+                if (marc008 != null) {
+                    // Check 008/33 Type of visual material
+                    switch (marc008.getData().toLowerCase().charAt(33)) {
+                        case 'k': // Graphic
+                        case 'l': // Technical drawing
+                            return "Drawing";
+                        case 'n':
+                            return "Chart";
+                        case 'o':
+                            return "FlashCard";
+                        default: break;
+                    }
+                }
                 return "Photo";
             case 'o':
             case 'p':
@@ -470,7 +532,7 @@ public class FormatCalculator
         if (definitelyNotBookBasedOnRecordType(recordType, marc008)) {
             couldBeBook = false;
         }
-        String formatFromRecordType = getFormatFromRecordType(record, recordType);
+        String formatFromRecordType = getFormatFromRecordType(record, recordType, marc008);
         if (formatFromRecordType.length() > 0) {
             result.add(formatFromRecordType);
         }
