@@ -412,11 +412,17 @@ class RecordCollection
     protected function getBlenderFacetStats(array $collections): array
     {
         $delimiter = $this->getFacetDelimiter('blender_backend');
+        $orFacets = $this->config->Results_Settings->orFacets ?? '';
+        $orFacetList = array_map('trim', explode(',', $orFacets));
+        $isOrFacet = '*' === $orFacets || in_array('blender_backend', $orFacetList);
         $result = [];
         foreach ($this->config->Backends as $backendId => $name) {
             $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;
-            $result[$key] = isset($collections[$backendId])
-                ? $collections[$backendId]->getTotal() : 0;
+            if (isset($collections[$backendId])) {
+                $result[$key] = $collections[$backendId]->getTotal();
+            } elseif ($isOrFacet) {
+                $result[$key] = null;
+            }
         }
         return $result;
     }

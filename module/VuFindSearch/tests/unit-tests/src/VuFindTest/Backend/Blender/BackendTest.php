@@ -315,6 +315,9 @@ class BackendTest extends TestCase
         $adaptiveConfig['Blending']['adaptiveBlockSizes'] = [
             '5000-100000:5'
         ];
+        $adaptiveConfigWithOrFacet = $adaptiveConfig;
+        $adaptiveConfigWithOrFacet['Results_Settings']['orFacets']
+            = 'blender_backend';
 
         $expectedRecordsNoBoost = array_merge(
             array_slice($solrRecords, 0, 7),
@@ -394,13 +397,13 @@ class BackendTest extends TestCase
                 $adaptiveConfig,
                 ['blender_backend:Solr'],
                 240,
-                0
+                null
             ],
             [
                 0,
                 20,
                 array_slice($solrRecords, 0, 20),
-                $adaptiveConfig,
+                $adaptiveConfigWithOrFacet,
                 ['-blender_backend:EDS'],
                 240,
                 0
@@ -409,7 +412,7 @@ class BackendTest extends TestCase
                 0,
                 20,
                 array_slice($edsRecords, 0, 20),
-                $adaptiveConfig,
+                $adaptiveConfigWithOrFacet,
                 ['blender_backend:EDS'],
                 0,
                 65924
@@ -502,10 +505,14 @@ class BackendTest extends TestCase
             $this->assertIsArray($facets);
             $backendFacet = $facets['blender_backend'];
             $this->assertEquals($expectedSolr, $backendFacet['Solr::Local']);
-            $this->assertEquals(
-                $expectedEDS,
-                $backendFacet['EDS::Electronic Stuff']
-            );
+            if (null === $expectedEDS) {
+                $this->assertNotContains('EDS::Electronic Stuff', $backendFacet);
+            } else {
+                $this->assertEquals(
+                    $expectedEDS,
+                    $backendFacet['EDS::Electronic Stuff']
+                );
+            }
 
             $expectedFacets = [
                 'building' => [
