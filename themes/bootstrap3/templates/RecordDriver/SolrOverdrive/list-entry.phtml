@@ -169,6 +169,7 @@
           <br/>
 
           <?=$this->record($this->driver)->getFormatList() ?>
+          <?=$this->record($this->driver)->getLabelList() ?>
 
           <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
             <span class="status ajax-availability hidden"><?=$this->transEsc('loading_ellipsis')?></span>

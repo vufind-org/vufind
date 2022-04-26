@@ -206,6 +206,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Render a list of record labels.
+     *
+     * @return string
+     */
+    public function getLabelList()
+    {
+        return $this->renderTemplate('label-list.phtml');
+    }
+
+    /**
      * Render an entry in a favorite list.
      *
      * @param \VuFind\Db\Row\UserList $list Currently selected list (null for

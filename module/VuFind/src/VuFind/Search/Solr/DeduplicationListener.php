@@ -36,7 +36,6 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
 
@@ -327,6 +326,7 @@ class DeduplicationListener
             );
             $foundLocalRecord->setRawData($localRecordData);
             $foundLocalRecord->setHighlightDetails($record->getHighlightDetails());
+            $foundLocalRecord->setLabels($record->getLabels());
             $result->replace($record, $foundLocalRecord);
         }
     }
