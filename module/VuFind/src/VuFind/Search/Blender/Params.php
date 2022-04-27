@@ -86,7 +86,7 @@ class Params extends \VuFind\Search\Solr\Params
         HierarchicalFacetHelper $facetHelper,
         array $searchParams,
         \Laminas\Config\Config $blenderConfig,
-        $mappings
+        array $mappings
     ) {
         // Assign these first; they are needed during parent's construct:
         $this->searchParams = $searchParams;

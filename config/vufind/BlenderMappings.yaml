@@ -81,12 +81,12 @@ Facets:
             Reports: Report
             Electronic Resources: Electronic
             eBooks: eBook
-            Non-print Resources: Text
+            Non-Print Resources: Text
             Biographies: Biography
             Dissertations: Thesis
             Audio: Audio
             Music Scores: Music Score
-            Video: Video
+            Videos: Video
             Primary Source Documents: Primary Source Document
             Maps: Map
             Research Starters: Research Starter
@@ -146,12 +146,12 @@ Facets:
     #        Reports: "1/OtherText/ResearchReport/"
     #        Electronic Resources: "1/Other/Electronic/"
     #        eBooks: "1/Book/eBook/"
-    #        Non-print Resources: "1/OtherText/Text/"
+    #        Non-Print Resources: "1/OtherText/Text/"
     #        Biographies: "1/OtherText/Text/"
     #        Dissertations: "1/Thesis/Thesis/"
     #        Audio: "1/Sound/SoundRecording/"
     #        Music Scores: "1/MusicalScore/MusicalScore/"
-    #        Video: "1/Video/Video/"
+    #        Videos: "1/Video/Video/"
     #        Primary Source Documents: "1/OtherText/Text/"
     #        Maps: "1/Map/Map/"
     #        Research Starters: "1/OtherText/Text/"
