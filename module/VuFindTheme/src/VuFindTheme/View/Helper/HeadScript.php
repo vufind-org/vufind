@@ -110,13 +110,6 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
                 $url .= strstr($url, '?') ? '&_=' : '?_=';
                 $url .= filemtime($details['path']);
                 $item->attributes['src'] = $url;
-            } else {
-                // existing js files from vendor are loaded globally as value.
-                $item->source = $this->themeInfo
-                    ->findInPackage($item->attributes['src']);
-                if ($item->source) {
-                    unset($item->attributes['src']);
-                }
             }
         }
 

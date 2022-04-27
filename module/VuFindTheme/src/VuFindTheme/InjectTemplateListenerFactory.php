@@ -32,6 +32,7 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Helper\HeadLink;
 
 /**
  * Factory for InjectTemplateListener
@@ -109,6 +110,7 @@ class InjectTemplateListenerFactory implements FactoryInterface
     ): void {
         $templatePathStack = $config['view_manager']['template_path_stack'] ?? false;
         if ($templatePathStack) {
+            $headScript = $container->get('ViewHelperManager')->get('headScript');
             foreach ($templatePathStack as $templatePath) {
                 if (file_exists($mixin = $templatePath . '/../mixin.config.php')) {
                     $resourceContainer = $container
@@ -118,8 +120,8 @@ class InjectTemplateListenerFactory implements FactoryInterface
                         switch ($resourceType) {
                         case 'js':
                             foreach ($resourceFiles as $file) {
-                                $resourceContainer->addJs(
-                                    dirname($mixin) . "/$resourceType/$file"
+                                $headScript->appendScript(
+                                    file_get_contents(dirname($mixin) . "/$resourceType/$file")
                                 );
                             }
                         }
