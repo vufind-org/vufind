@@ -63,7 +63,7 @@ public class FormatCalculator
         switch (recordType) {
             case 'm':
                 // If this is a computer file containing numeric data, it is not a book:
-                if (getTypeOfComputerFile(marc008) == 'a') {
+                if (get008Value(marc008, 26) == 'a') {
                     return true;
                 }
                 break;
@@ -217,16 +217,13 @@ public class FormatCalculator
             // Monograph
             case 'm':
                 if (couldBeBook) {
-                    if (marc008 != null) {
-                        // Check 008/23 Form of item
-                        switch (marc008.getData().toLowerCase().charAt(23)) {
-                            case 'o': // Online
-                            case 'q': // Direct electronic
-                            case 's': // Electronic
-                                return "eBook";
-                            default:
-                                return "Book";
-                        }
+                    // Check 008/23 Form of item
+                    switch (get008Value(marc008, 23)) {
+                        case 'o': // Online
+                        case 'q': // Direct electronic
+                        case 's': // Electronic
+                            return "eBook";
+                        default: break;
                     }
                     // Fall-back on 007 if 008 is missing
                     return (formatCode == 'c') ? "eBook" : "Book";
@@ -240,37 +237,32 @@ public class FormatCalculator
             // Integrating resources (e.g. loose-leaf binders, databases)
             case 'i':
                 // Look in 008 to determine type of electronic IntegratingResource
-                if (marc008 != null) {
-                    // Check 008/21 Type of continuing resource
-                    switch (marc008.getData().toLowerCase().charAt(21)) {
-                        case 'h': // Blog
-                        case 'w': // Updating Web site
-                            return "Website";
-                        default: break;
-                    }
-                    // Check 008/22 Form of original item
-                    switch (marc008.getData().toLowerCase().charAt(22)) {
-                        case 'o': // Online
-                        case 'q': // Direct electronic
-                        case 's': // Electronic
-                            return "OnlineIntegratingResource";
-                        default:
-                            return "PhysicalIntegratingResource";
-                    }
+                // Check 008/21 Type of continuing resource
+                switch (get008Value(marc008, 21)) {
+                    case 'h': // Blog
+                    case 'w': // Updating Web site
+                        return "Website";
+                    default: break;
+                }
+                // Check 008/22 Form of original item
+                switch (get008Value(marc008, 22)) {
+                    case 'o': // Online
+                    case 'q': // Direct electronic
+                    case 's': // Electronic
+                        return "OnlineIntegratingResource";
+                    default: break;
                 }
                 // Fall-back on 007 if 008 is missing
                 return  (formatCode == 'c') ? "OnlineIntegratingResource" : "PhysicalIntegratingResource";
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
-                if (marc008 != null) {
-                    switch (marc008.getData().toLowerCase().charAt(21)) {
-                        case 'n':
-                            return "Newspaper";
-                        case 'p':
-                            return "Journal";
-                        default: break;
-                    }
+                switch (get008Value(marc008, 21)) {
+                    case 'n':
+                        return "Newspaper";
+                    case 'p':
+                        return "Journal";
+                    default: break;
                 }
                 // Default to serial even if 008 is missing
                 if (!isConferenceProceeding(record)) {
@@ -297,31 +289,27 @@ public class FormatCalculator
                 return "MusicalScore";
             case 'e':
             case 'f':
-                if (marc008 != null) {
-                    // Check 008/25 Type of cartographic material
-                    switch (marc008.getData().toLowerCase().charAt(25)) {
-                        case 'd':
-                            return "Globe";
-                        case 'e':
-                            return "Atlas";
-                        default: break;
-                    }
+                // Check 008/25 Type of cartographic material
+                switch (get008Value(marc008, 25)) {
+                    case 'd':
+                        return "Globe";
+                    case 'e':
+                        return "Atlas";
+                    default: break;
                 }
                 return "Map";
             case 'g':
-                if (marc008 != null) {
-                    // Check 008/33 Type of visual material
-                    switch (marc008.getData().toLowerCase().charAt(33)) {
-                        case 'f':
-                            return "Filmstrip";
-                        case 't':
-                            return "Transparency";
-                        case 'm':
-                            return "MotionPicture";
-                        case 'v': // Videorecording
-                            return "Video";
-                        default: break;
-                    }
+                // Check 008/33 Type of visual material
+                switch (get008Value(marc008, 33)) {
+                    case 'f':
+                        return "Filmstrip";
+                    case 't':
+                        return "Transparency";
+                    case 'm':
+                        return "MotionPicture";
+                    case 'v': // Videorecording
+                        return "Video";
+                    default: break;
                 }
                 return "Slide";
             case 'i':
@@ -329,18 +317,15 @@ public class FormatCalculator
             case 'j':
                 return "MusicRecording";
             case 'k':
-                if (marc008 != null) {
-                    // Check 008/33 Type of visual material
-                    switch (marc008.getData().toLowerCase().charAt(33)) {
-                        case 'k': // Graphic
-                        case 'l': // Technical drawing
-                            return "Drawing";
-                        case 'n':
-                            return "Chart";
-                        case 'o':
-                            return "FlashCard";
-                        default: break;
-                    }
+                // Check 008/33 Type of visual material
+                switch (get008Value(marc008, 33)) {
+                    case 'l': // Technical drawing
+                        return "Drawing";
+                    case 'n':
+                        return "Chart";
+                    case 'o':
+                        return "FlashCard";
+                    default: break;
                 }
                 return "Photo";
             case 'o':
@@ -358,17 +343,22 @@ public class FormatCalculator
     }
 
     /**
-     * Extract the computer file type from the 008 field
+     * Extract value at a specific position in 008 field
      *
      * @param ControlField marc008
+     * @param int position
      * @return char
      */
-    protected char getTypeOfComputerFile(ControlField marc008) {
-        // Check the 008 for the type of computer file:
+    protected char get008Value(ControlField marc008, int position) {
+        // Check the 008 at desired position:
         try {
-            return marc008.getData().toLowerCase().charAt(26);
+            return marc008.getData().toLowerCase().charAt(position);
         } catch (java.lang.StringIndexOutOfBoundsException e) {
             // ignore errors (leave the string blank if out of bounds)
+            return ' ';
+        } catch (java.lang.NullPointerException e) {
+            // some malformed 008s result in a NullPointerException
+            // ignore errors (leave the string blank)
             return ' ';
         }
     }
