@@ -55,7 +55,7 @@ public class FormatCalculator
      * Determine whether a record cannot be a book due to findings in leader
      * and fixed fields (008).
      *
-     * @param char formatCode
+     * @param char recordType
      * @param ControlField marc008
      * @return boolean
      */
@@ -207,12 +207,12 @@ public class FormatCalculator
      *
      * @param Record record
      * @param char bibLevel
-     * @param char formatCode
      * @param ControlField marc008
      * @param boolean couldBeBook
+     * @param List formatCodes007
      * @return String
      */
-    protected String getFormatFromBibLevel(Record record, char bibLevel, char formatCode, ControlField marc008, boolean couldBeBook) {
+    protected String getFormatFromBibLevel(Record record, char bibLevel, ControlField marc008, boolean couldBeBook, List formatCodes007) {
         switch (bibLevel) {
             // Monograph
             case 'm':
@@ -226,7 +226,9 @@ public class FormatCalculator
                         default: break;
                     }
                     // Fall-back on 007 if 008 is missing
-                    return (formatCode == 'c') ? "eBook" : "Book";
+                    // Note: relying on 007 here is not ideal as it is repeatable
+                    // and can also refer to accompanying material 
+                    return (formatCodes007.contains('c')) ? "eBook" : "Book";
                 }
                 break;
             // Component parts
@@ -253,7 +255,9 @@ public class FormatCalculator
                     default: break;
                 }
                 // Fall-back on 007 if 008 is missing
-                return  (formatCode == 'c') ? "OnlineIntegratingResource" : "PhysicalIntegratingResource";
+                // Note: relying on 007 here is not ideal as it is repeatable
+                // and can also refer to accompanying material 
+                return (formatCodes007.contains('c')) ?  "OnlineIntegratingResource" : "PhysicalIntegratingResource";
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
@@ -280,9 +284,10 @@ public class FormatCalculator
      * @param Record record
      * @param char recordType
      * @param ControlField marc008
+     * @param List formatCodes007
      * @return String
      */
-    protected String getFormatFromRecordType(Record record, char recordType, ControlField marc008) {
+    protected String getFormatFromRecordType(Record record, char recordType, ControlField marc008, List formatCodes007) {
         switch (recordType) {
             case 'c':
             case 'd':
@@ -311,7 +316,9 @@ public class FormatCalculator
                         return "Video";
                     default: break;
                 }
-                return "Slide";
+                // Insufficient info in LDR and 008 to distinguish still from moving images
+                // Leave it to corresponding 007 if it exists, else fall back to "ProjectMedium"  
+                return (formatCodes007.contains('g')) ? "" : "ProjectedMedium";
             case 'i':
                 return "SoundRecording";
             case 'j':
@@ -327,7 +334,9 @@ public class FormatCalculator
                         return "FlashCard";
                     default: break;
                 }
-                return "Photo";
+                // Insufficient info in LDR and 008 to distinguish image types
+                // Leave it to corresponding 007 if it exists, else fall back to "Image"  
+                return (formatCodes007.contains('k')) ? "" : "Image";
             case 'o':
             case 'p':
                 return "Kit";
@@ -494,6 +503,7 @@ public class FormatCalculator
 
         // check the 007 - this is a repeating field
         List fields = record.getVariableFields("007");
+        List formatCodes007;
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;
@@ -501,6 +511,7 @@ public class FormatCalculator
                 formatField = (ControlField) fieldsIter.next();
                 formatString = formatField.getData().toLowerCase();
                 formatCode = formatString.length() > 0 ? formatString.charAt(0) : ' ';
+                formatCodes007.add(formatCode);
                 if (definitelyNotBookBasedOn007(formatCode)) {
                     couldBeBook = false;
                 }
@@ -530,7 +541,7 @@ public class FormatCalculator
         // check the Leader at position 7
         char bibLevel = Character.toLowerCase(leader.charAt(7));
         String formatFromBibLevel = getFormatFromBibLevel(
-            record, bibLevel, formatCode, marc008, couldBeBook
+            record, bibLevel, marc008, couldBeBook, formatCodes007
         );
         if (formatFromBibLevel.length() > 0) {
             result.add(formatFromBibLevel);
