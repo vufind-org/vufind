@@ -533,7 +533,7 @@ public class FormatCalculator
         if (definitelyNotBookBasedOnRecordType(recordType, marc008)) {
             couldBeBook = false;
         }
-        String formatFromRecordType = getFormatFromRecordType(record, recordType, marc008);
+        String formatFromRecordType = getFormatFromRecordType(record, recordType, marc008, formatCodes007);
         if (formatFromRecordType.length() > 0) {
             result.add(formatFromRecordType);
         }
