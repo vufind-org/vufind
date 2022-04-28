@@ -317,7 +317,8 @@ public class FormatCalculator
                     default: break;
                 }
                 // Insufficient info in LDR and 008 to distinguish still from moving images
-                // Leave it to corresponding 007 if it exists, else fall back to "ProjectMedium"  
+                // If there is a 007 for "ProjectedMedium" it should have more info, so return nothing here;
+                // if there is no 007 for "ProjectedMedium", fall back to "ProjectedMedium"  
                 return (formatCodes007.contains('g')) ? "" : "ProjectedMedium";
             case 'i':
                 return "SoundRecording";
@@ -335,7 +336,8 @@ public class FormatCalculator
                     default: break;
                 }
                 // Insufficient info in LDR and 008 to distinguish image types
-                // Leave it to corresponding 007 if it exists, else fall back to "Image"  
+                // If there is a 007 for Nonprojected Graphic, it should have more info, so return nothing here;
+                // if there is no 007 for Nonprojected Graphic, fall back to "Image"   
                 return (formatCodes007.contains('k')) ? "" : "Image";
             case 'o':
             case 'p':
@@ -503,7 +505,7 @@ public class FormatCalculator
 
         // check the 007 - this is a repeating field
         List fields = record.getVariableFields("007");
-        List<String> formatCodes007 = new ArrayList<String>();
+        List<Character> formatCodes007 = new ArrayList<Character>();
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;
