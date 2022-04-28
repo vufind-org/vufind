@@ -503,7 +503,7 @@ public class FormatCalculator
 
         // check the 007 - this is a repeating field
         List fields = record.getVariableFields("007");
-        List formatCodes007;
+        List<char> formatCodes007 = new ArrayList<char>();
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;
