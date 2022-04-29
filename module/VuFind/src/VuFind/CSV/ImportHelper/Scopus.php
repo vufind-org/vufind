@@ -55,6 +55,7 @@ class Scopus
         // an abbreviation:
         return preg_match('/^(.\.[- ]*)+$/', $text);
     }
+
     /**
      * Given a string of multiple last name/initial pairs, split it into an array
      * of name strings.

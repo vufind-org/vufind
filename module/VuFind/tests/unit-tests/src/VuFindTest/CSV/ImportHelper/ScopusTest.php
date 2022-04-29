@@ -55,7 +55,8 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
                 "Rabgyal, J.",
                 "Katwal, T.B.",
                 "Delmond, A.R.",
-            ], Scopus::splitNames($input)
+            ],
+            Scopus::splitNames($input)
         );
     }
 
@@ -71,7 +72,8 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
             [
                 "Bellone, R.",
                 "Failloux, A.-B.",
-            ], Scopus::splitNames($input)
+            ],
+            Scopus::splitNames($input)
         );
     }
 
@@ -90,7 +92,8 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
                 "Zahid, H.",
                 "Numan, M.",
                 "da Silva Vaz, I.",
-            ], Scopus::splitNames($input)
+            ],
+            Scopus::splitNames($input)
         );
     }
 
@@ -105,7 +108,8 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 "Rai, P.",
-            ], Scopus::splitNames($input, 1)
+            ],
+            Scopus::splitNames($input, 1)
         );
     }
 }
