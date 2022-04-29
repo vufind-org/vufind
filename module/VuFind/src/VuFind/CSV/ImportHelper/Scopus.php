@@ -38,6 +38,13 @@ namespace VuFind\CSV\ImportHelper;
  */
 class Scopus
 {
+    /**
+     * Is the provided text the abbreviation part of a name string?
+     *
+     * @param string $text Text to check
+     *
+     * @return bool
+     */
     protected static function isNameAbbreviation(string $text): bool
     {
         // A single character is very likely an abbreviation:
