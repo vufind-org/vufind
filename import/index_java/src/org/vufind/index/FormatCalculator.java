@@ -320,7 +320,7 @@ public class FormatCalculator
                 // If there is a 007 for either "Projected Graphic", "Motion Picture", or "Videorecording" 
                 // that should contain more information, so return nothing here.
                 // If no such 007 exists, fall back to "ProjectedMedium"
-                if ((formatCodes007.contains('g') || (formatCodes007.contains('m') || (formatCodes007.contains('v')) {
+                if (formatCodes007.contains('g') || formatCodes007.contains('m') || formatCodes007.contains('v')) {
                     return ""; 
                 } else {
                     return "ProjectedMedium";
