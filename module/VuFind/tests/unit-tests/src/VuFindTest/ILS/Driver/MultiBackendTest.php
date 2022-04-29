@@ -29,6 +29,7 @@
  */
 namespace VuFindTest\ILS\Driver;
 
+use Laminas\Config\Exception\RuntimeException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
 
@@ -44,6 +45,7 @@ use VuFind\ILS\Driver\MultiBackend;
  */
 class MultiBackendTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -71,14 +73,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testMissingILSConfiguration()
     {
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
-            );
         $driver = new MultiBackend(
-            $mockPM,
+            $this->getMockFailingConfigPluginManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
@@ -97,15 +93,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithoutDriverConfigPath()
     {
-        $configData = ['config' => 'values'];
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->once())
-            ->method('get')
-            ->with('d1')
-            ->will(
-                $this->returnValue($config)
-            );
+        $mockPM = $this->getMockConfigPluginManager(
+            ['d1' => ['config' => 'values']],
+            [],
+            $this->once()
+        );
         $ils = $this->getMockILS('Voyager');
         $driver = new MultiBackend(
             $mockPM,
@@ -126,15 +118,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithDriverConfigPath()
     {
-        $configData = ['config' => 'values'];
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->once())
-            ->method('get')
-            ->with('configpath/d1')
-            ->will(
-                $this->returnValue($config)
-            );
+        $mockPM = $this->getMockConfigPluginManager(
+            ['configpath/d1' => ['config' => 'values']],
+            [],
+            $this->once()
+        );
         $ils = $this->getMockILS('Voyager');
         $driver = new MultiBackend(
             $mockPM,
@@ -175,14 +163,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $writer = new \Laminas\Log\Writer\Mock();
         $logger->addWriter($writer);
 
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
-            );
         $driver = new MultiBackend(
-            $mockPM,
+            $this->getMockFailingConfigPluginManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
@@ -296,15 +278,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $val = $this->callMethod($driver, 'getDriverConfig', ['good']);
         $this->assertEquals($configData, $val);
 
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
-            );
         $driver = new MultiBackend(
-            $mockPM,
+            $this->getMockFailingConfigPluginManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
@@ -2700,7 +2675,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($sm = null)
     {
         $driver = new MultiBackend(
-            $this->getPluginManager(),
+            $this->getMockConfigPluginManager([], ['config' => 'values']),
             $this->getMockILSAuthenticator(),
             $sm ?? $this->getMockSM()
         );
@@ -2802,22 +2777,6 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 );
         }
         return $mockAuth;
-    }
-
-    /**
-     * Method to get a fresh Plugin Manager.
-     *
-     * @return mixed A MultiBackend instance.
-     */
-    protected function getPluginManager()
-    {
-        $configData = ['config' => 'values'];
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will($this->returnValue($config));
-        return $mockPM;
     }
 
     /**

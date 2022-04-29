@@ -18,6 +18,6 @@
     </li>
     <?php endforeach; ?>
   </ul>
-  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('Find More')?>...</a></p>
+  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('find_more_ellipsis')?></a></p>
 </div>
 <?php endif ?>

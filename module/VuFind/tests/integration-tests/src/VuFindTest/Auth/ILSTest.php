@@ -44,6 +44,7 @@ use VuFind\Db\Table\User;
  */
 final class ILSTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
@@ -106,9 +107,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
-        $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockConfigReader->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Laminas\Config\Config([])));
+        $mockConfigReader = $this->getMockConfigPluginManager([]);
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
                 new \Laminas\Config\Config(['driver' => 'Sample']),
