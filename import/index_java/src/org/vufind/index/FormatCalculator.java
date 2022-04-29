@@ -317,9 +317,14 @@ public class FormatCalculator
                     default: break;
                 }
                 // Insufficient info in LDR and 008 to distinguish still from moving images
-                // If there is a 007 for "ProjectedMedium" it should have more info, so return nothing here;
-                // if there is no 007 for "ProjectedMedium", fall back to "ProjectedMedium"  
-                return (formatCodes007.contains('g')) ? "" : "ProjectedMedium";
+                // If there is a 007 for either "Projected Graphic", "Motion Picture", or "Videorecording" 
+                // that should contain more information, so return nothing here.
+                // If no such 007 exists, fall back to "ProjectedMedium"
+                if ((formatCodes007.contains('g') || (formatCodes007.contains('m') || (formatCodes007.contains('v')) {
+                    return ""; 
+                } else {
+                    return "ProjectedMedium";
+                } 
             case 'i':
                 return "SoundRecording";
             case 'j':
@@ -336,7 +341,7 @@ public class FormatCalculator
                     default: break;
                 }
                 // Insufficient info in LDR and 008 to distinguish image types
-                // If there is a 007 for Nonprojected Graphic, it should have more info, so return nothing here;
+                // If there is a 007 for Nonprojected Graphic, it should have more info, so return nothing here.
                 // if there is no 007 for Nonprojected Graphic, fall back to "Image"   
                 return (formatCodes007.contains('k')) ? "" : "Image";
             case 'o':
