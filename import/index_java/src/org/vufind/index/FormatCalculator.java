@@ -342,7 +342,7 @@ public class FormatCalculator
                 }
                 // Insufficient info in LDR and 008 to distinguish image types
                 // If there is a 007 for Nonprojected Graphic, it should have more info, so return nothing here.
-                // if there is no 007 for Nonprojected Graphic, fall back to "Image"   
+                // If there is no 007 for Nonprojected Graphic, fall back to "Image"   
                 return (formatCodes007.contains('k')) ? "" : "Image";
             case 'o':
             case 'p':
