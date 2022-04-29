@@ -11,7 +11,7 @@
   <div><?=$this->driver->getPubType()?></div>
 <?php else: ?>
   <div class="ajaxcover">
-    <div class="spinner"><?=$this->icon('spinner') ?> <?=$this->translate('Loading')?>...</div>
+    <div class="spinner"><?=$this->icon('spinner') ?> <?=$this->translate('loading_ellipsis')?></div>
     <div class="cover-container">
       <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-context="<?=$this->escapeHtmlAttr($this->context)?>" data-recordsource="<?=$this->escapeHtmlAttr($driver->getSourceIdentifier())?>" data-recordid="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" data-coversize="<?=$this->escapeHtmlAttr($size)?>" class="recordcover ajax" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
     </div>

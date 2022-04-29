@@ -4,8 +4,8 @@
   $results = $this->recommend->getResults();
   $truncateSettings = [
     'rows' => $topFacetSettings['rows'],
-    'more-label' => $this->transEsc('more') . ' ...',
-    'less-label' => $this->transEsc('less') . ' ...',
+    'more-label' => $this->transEsc('more_ellipsis'),
+    'less-label' => $this->transEsc('less_ellipsis'),
   ];
 ?>
 <?php if (isset($topFacetSet)): ?>

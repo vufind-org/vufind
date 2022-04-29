@@ -28,6 +28,7 @@
  */
 namespace VuFind\Search\Base;
 
+use VuFind\I18n\TranslatableString;
 use VuFind\Search\QueryAdapter;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -773,6 +774,25 @@ class Params
     }
 
     /**
+     * Parse apart any prefix, field and value from a URL filter string.
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return array         Array with elements 0 = prefix, 1 = field, 2 = value.
+     */
+    public function parseFilterAndPrefix($filter)
+    {
+        [$field, $value] = $this->parseFilter($filter);
+        $prefix = substr($field, 0, 1);
+        if (in_array($prefix, ['-', '~'])) {
+            $field = substr($field, 1);
+        } else {
+            $prefix = '';
+        }
+        return [$prefix, $field, $value];
+    }
+
+    /**
      * Given a facet field, return an array containing all aliases of that
      * field.
      *
@@ -892,6 +912,9 @@ class Params
             // If necessary, rebuild the array to remove gaps in the key sequence:
             if ($rebuildArray) {
                 $this->filterList[$field] = array_values($this->filterList[$field]);
+                if (!$this->filterList[$field]) {
+                    unset($this->filterList[$field]);
+                }
             }
         }
     }
@@ -908,8 +931,12 @@ class Params
     {
         if ($field == null) {
             $this->filterList = [];
-        } elseif (isset($this->filterList[$field])) {
-            unset($this->filterList[$field]);
+        } else {
+            foreach (['', '-', '~'] as $prefix) {
+                if (isset($this->filterList[$prefix . $field])) {
+                    unset($this->filterList[$prefix . $field]);
+                }
+            }
         }
     }
 
@@ -974,8 +1001,6 @@ class Params
      * @param string $default Default field name (null for default behavior).
      *
      * @return string         Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
@@ -984,6 +1009,10 @@ class Params
             && isset($this->facetAliases[$field])
         ) {
             $field = $this->facetAliases[$field];
+        }
+        $checkboxFacet = $this->checkboxFacets[$field]["$field:$value"] ?? null;
+        if (null !== $checkboxFacet) {
+            return $checkboxFacet['desc'];
         }
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
@@ -1062,23 +1091,48 @@ class Params
     }
 
     /**
-     * Check for delimited facets -- if $field is a delimited facet field,
-     * process $displayText accordingly. Return the appropriate display value.
+     * Get a display text for a facet field.
      *
-     * @param string $field       The facet
-     * @param string $displayText The facet value
+     * @param string $field Facet field
+     * @param string $value Facet value
      *
      * @return string
      */
-    public function checkForDelimitedFacetDisplayText($field, $displayText)
+    public function getFacetValueRawDisplayText(string $field, string $value): string
     {
+        // Check for delimited facets -- if $field is a delimited facet field,
+        // process $displayText accordingly:
         $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
         if (isset($delimitedFacetFields[$field])) {
-            $parts = explode($delimitedFacetFields[$field], $displayText);
-            $displayText = end($parts);
+            $parts = explode($delimitedFacetFields[$field], $value);
+            return end($parts);
         }
 
-        return $displayText;
+        return $value;
+    }
+
+    /**
+     * Translate a facet value.
+     *
+     * @param string                    $field Field name
+     * @param string|TranslatableString $text  Field value (processed by
+     * getFacetValueRawDisplayText)
+     *
+     * @return string
+     */
+    public function translateFacetValue(string $field, $text): string
+    {
+        $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+        $translateFormat = $this->getOptions()->getFormatForTranslatedFacet($field);
+        $translated = $this->translate([$domain, $text]);
+        return $translateFormat
+            ? $this->translate(
+                $translateFormat,
+                [
+                    '%%raw%%' => $text,
+                    '%%translated%%' => $translated
+                ]
+            ) : $translated;
     }
 
     /**
@@ -1093,12 +1147,10 @@ class Params
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        $displayText = $this->checkForDelimitedFacetDisplayText($field, $value);
-
-        if ($translate) {
-            $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
-            $displayText = $this->translate("$domain::$displayText");
-        }
+        $rawDisplayText = $this->getFacetValueRawDisplayText($field, $value);
+        $displayText = $translate
+            ? $this->translateFacetValue($field, $rawDisplayText)
+            : $rawDisplayText;
 
         return compact('value', 'displayText', 'field', 'operator');
     }

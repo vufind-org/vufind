@@ -29,15 +29,12 @@
 namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
-
 use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
-
 use VuFindSearch\Backend\Primo\QueryBuilder;
-
 use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 
 /**
@@ -51,6 +48,8 @@ use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
  */
 class PrimoBackendFactory extends AbstractBackendFactory
 {
+    use SharedListenersTrait;
+
     /**
      * Logger.
      *
@@ -103,7 +102,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
 
-        $this->createListeners();
+        $this->createListeners($backend);
 
         return $backend;
     }
@@ -129,13 +128,22 @@ class PrimoBackendFactory extends AbstractBackendFactory
     /**
      * Create listeners.
      *
+     * @param Backend $backend Backend
+     *
      * @return void
      */
-    protected function createListeners()
+    protected function createListeners(Backend $backend)
     {
         $events = $this->serviceLocator->get('SharedEventManager');
 
         $this->getInjectOnCampusListener()->attach($events);
+
+        // Attach hide facet value listener:
+        $hfvListener = $this
+            ->getHideFacetValueListener($backend, $this->primoConfig);
+        if ($hfvListener) {
+            $hfvListener->attach($events);
+        }
     }
 
     /**
@@ -163,6 +171,9 @@ class PrimoBackendFactory extends AbstractBackendFactory
             $this->createHttpClient($this->primoConfig->General->timeout ?? 30)
         );
         $connector->setLogger($this->logger);
+        if ($cache = $this->createConnectorCache($this->primoConfig)) {
+            $connector->setCache($cache);
+        }
         return $connector;
     }
 

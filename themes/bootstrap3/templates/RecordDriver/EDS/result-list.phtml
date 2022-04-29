@@ -70,6 +70,10 @@
             </span>
           <?php endforeach; ?>
         <?php endif; ?>
+        <?php if ($labels = trim($this->record($this->driver)->getLabelList())): ?>
+          <?=$customLinks ? '<br>' : '' ?>
+          <?=$labels?>
+        <?php endif; ?>
       </div>
 
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>

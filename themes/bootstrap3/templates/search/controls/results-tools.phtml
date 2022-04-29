@@ -13,7 +13,7 @@
     &mdash;
     <?php if ($this->results->isSavedSearch()): ?>
       <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>">
-        <?=$this->icon('ui-delete') ?>
+        <?=$this->icon('search-delete') ?>
         <?=$this->transEsc('save_search_remove')?>
       </a>
     <?php else: ?>

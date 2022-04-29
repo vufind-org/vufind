@@ -1265,11 +1265,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $dateTimeString = '';
         if ($time) {
-            $dateTimeString = strftime('%m/%d/%Y %H:%M', $time);
-            $dateTimeString = $this->dateConverter->convertToDisplayDate(
-                'm/d/Y H:i',
-                $dateTimeString
-            );
+            $dateTimeString = $this->dateConverter->convertToDisplayDate('U', $time);
         }
         return $dateTimeString;
     }

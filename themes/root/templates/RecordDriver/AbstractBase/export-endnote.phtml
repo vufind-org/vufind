@@ -10,16 +10,12 @@ if (is_array($formats) && !empty($formats)) {
     echo "%0 Book\n";
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
-if (!empty($author)) {
-    echo "%A $author\n";
+foreach ($this->driver->tryMethod('getPrimaryAuthors', [], []) as $current) {
+    echo "%A $current\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo "%E $current\n";
-    }
+foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
+    echo "%E $current\n";
 }
 
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
