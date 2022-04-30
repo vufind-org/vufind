@@ -225,10 +225,8 @@ public class FormatCalculator
                             return "eBook";
                         default: break;
                     }
-                    // Fall-back on 007 if 008 is missing
-                    // Note: relying on 007 here is not ideal as it is repeatable
-                    // and can also refer to accompanying material 
-                    return (formatCodes007.contains('c')) ? "eBook" : "Book";
+                    // If we made it here, it should be Book
+                    return "Book";
                 }
                 break;
             // Component parts
@@ -254,10 +252,7 @@ public class FormatCalculator
                         return "OnlineIntegratingResource";
                     default: break;
                 }
-                // Fall-back on 007 if 008 is missing
-                // Note: relying on 007 here is not ideal as it is repeatable
-                // and can also refer to accompanying material 
-                return (formatCodes007.contains('c')) ?  "OnlineIntegratingResource" : "PhysicalIntegratingResource";
+                return "PhysicalIntegratingResource";
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
@@ -313,6 +308,17 @@ public class FormatCalculator
                     case 'm':
                         return "MotionPicture";
                     case 'v': // Videorecording
+                        return "Video";
+                    default: break;
+                }
+                // Check 008/34 Technique
+                // If set, this is a video rather than a slide
+                switch (get008Value(marc008, 34)) {
+                    case 'a': // Animation
+                    case 'c': // Animation and live action
+                    case 'l': // Live action
+                    case 'u': // Unknown
+                    case 'z': // Other
                         return "Video";
                     default: break;
                 }
