@@ -67,7 +67,9 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         }
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
         $blenderConfig = $configLoader->get('Blender');
-        if (empty($blenderConfig->Backends)) {
+        $backendConfig = $blenderConfig->Backends
+            ? $blenderConfig->Backends->toArray() : [];
+        if (!$backendConfig) {
             throw new \Exception('No backends enabled in Blender.ini');
         }
 
@@ -76,7 +78,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
 
         $searchParams = [];
         $paramsManager = $container->get(\VuFind\Search\Params\PluginManager::class);
-        foreach (array_keys($blenderConfig->Backends->toArray()) as $backendId) {
+        foreach (array_keys($backendConfig) as $backendId) {
             $searchParams[] = $paramsManager->get($backendId);
         }
 
