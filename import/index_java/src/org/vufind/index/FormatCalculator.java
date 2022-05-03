@@ -61,9 +61,15 @@ public class FormatCalculator
      */
     protected boolean definitelyNotBookBasedOnRecordType(char recordType, ControlField marc008) {
         switch (recordType) {
+            // Computer file
             case 'm':
-                // If this is a computer file containing numeric data, it is not a book:
-                if (get008Value(marc008, 26) == 'a') {
+                // Check the type of computer file:
+                // If it is 'Document', 'Interactive multimedia', 'Combination',
+                // 'Unknown', 'Other', it could be a book; otherwise, it is not a book:
+                char fileType = get008Value(marc008, 26);
+                if (fileType == 'd' || fileType == 'i' || fileType == 'm' || fileType == 'u' || fileType == 'z') {
+                    return false;
+                } else {
                     return true;
                 }
                 break;
@@ -214,26 +220,16 @@ public class FormatCalculator
      */
     protected String getFormatFromBibLevel(Record record, char bibLevel, ControlField marc008, boolean couldBeBook, List formatCodes007) {
         switch (bibLevel) {
-            // Monograph
-            case 'm':
-                if (couldBeBook) {
-                    // Check 008/23 Form of item
-                    switch (get008Value(marc008, 23)) {
-                        case 'o': // Online
-                        case 'q': // Direct electronic
-                        case 's': // Electronic
-                            return "eBook";
-                        default: break;
-                    }
-                    // If we made it here, it should be Book
-                    return "Book";
-                }
-                break;
             // Component parts
             case 'a':
                 return (hasSerialHost(record)) ? "Article" : "BookComponentPart";
             case 'b':
                 return "SerialComponentPart";
+            // Collection and sub-unit will be mapped to 'Kit' below if no other
+            // format can be found. For now return an empty string here.
+            case 'c': // Collection
+            case 'd': // Sub-unit
+                return "";
             // Integrating resources (e.g. loose-leaf binders, databases)
             case 'i':
                 // Look in 008 to determine type of electronic IntegratingResource
@@ -253,6 +249,20 @@ public class FormatCalculator
                     default: break;
                 }
                 return "PhysicalIntegratingResource";
+            // Monograph
+            case 'm':
+                if (couldBeBook) {
+                    // Check 008/23 Form of item
+                    switch (get008Value(marc008, 23)) {
+                        case 'o': // Online
+                        case 'q': // Direct electronic
+                        case 's': // Electronic
+                            return "eBook";
+                        default: break;
+                    }
+                    // If we made it here, it should be Book
+                    return "Book";
+                }
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
@@ -284,6 +294,10 @@ public class FormatCalculator
      */
     protected String getFormatFromRecordType(Record record, char recordType, ControlField marc008, List formatCodes007) {
         switch (recordType) {
+            // Language material is mapped to 'Text' below if no other
+            // format can be found. For now return an empty string here.
+            case 'a':
+                return "";
             case 'c':
             case 'd':
                 return "MusicalScore";
@@ -350,6 +364,32 @@ public class FormatCalculator
                 // If there is a 007 for Nonprojected Graphic, it should have more info, so return nothing here.
                 // If there is no 007 for Nonprojected Graphic, fall back to "Image"
                 return (formatCodes007.contains('k')) ? "" : "Image";
+            // Computer file
+            case 'm':
+                // Check 008/26 Type of computer file
+                switch (get008Value(marc008, 26)) {
+                    case 'a': // Numeric data
+                        return "Dataset";
+                    case 'b': // Computer program
+                        return "Software";
+                    case 'c': // Representational
+                        return "Image";
+                    case 'd': // Document
+                        return "Software";
+                    case 'e': //Bibliographic data
+                        return "Dataset";
+                    case 'f': // Font
+                        return "Software";
+                    case 'g': // Game
+                        return "VideoGame";
+                    case 'h': // Sound
+                        return "SoundRecording";
+                    case 'i': // Interactive multimedia
+                        return "Software";
+                    default: break;
+                }
+                // Everything else (including "online system or service")
+                return "Software";
             case 'o':
             case 'p':
                 return "Kit";
@@ -562,9 +602,17 @@ public class FormatCalculator
 
         // Nothing worked -- time to set up a value of last resort!
         if (result.isEmpty()) {
-            // If the leader bit indicates a "Collection," treat it as a kit for now;
+            // If LDR/07 indicates a "Collection" or "Sub-Unit," treat it as a kit for now;
             // this is a rare case but helps cut down on the number of unknowns.
-            result.add(bibLevel == 'c' ? "Kit" : "Unknown");
+            if (bibLevel == 'c' || bibLevel == 'd') {
+                result.add("Kit");
+            } else if (recordType == 'a') {
+                // If LDR/06 indicates "Language material," map to "Text";
+                // this helps cut down on the number of unknowns.
+                result.add("Text");
+            } else {
+                result.add("Unknown");
+            }
         }
 
         return result;
