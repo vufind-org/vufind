@@ -229,6 +229,46 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Get rating information for this record.
+     *
+     * Returns an array with the following keys:
+     *
+     * rating - average rating (0-100)
+     * count  - count of ratings
+     *
+     * @param ?\VuFind\Db\Row\User $user User, or null for all users
+     *
+     * @return array
+     */
+    public function getRatingData(?\VuFind\Db\Row\User $user = null)
+    {
+        $table = $this->getDbTable('Ratings');
+        return $table->getForResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier(),
+            $user ? $user->id : null
+        );
+    }
+
+    /**
+     * Add or update user's rating for the record.
+     *
+     * @param \VuFind\Db\Row\User $user   The user posting the rating
+     * @param int                 $rating The user-provided rating
+     *
+     * @return void
+     */
+    public function addOrUpdateRating(\VuFind\Db\Row\User $user, int $rating): void
+    {
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
+        );
+        $resource->addOrUpdateRating($user, $rating);
+    }
+
+    /**
      * Get notes associated with this record in user lists.
      *
      * @param int $list_id ID of list to load tags from (null for all lists)

@@ -90,6 +90,16 @@ return [
                 // so it only loads conditionally when icons are used.
                 'src' => 'compiled.css',
             ],
+            'FontAwesomeClassOnly' => [
+                // Specifically Font Awesome 4.7
+                'template' => 'class',
+                'prefix' => 'fa fa-',
+                // Right now, FontAwesome is bundled into compiled.css; when we no
+                // longer globally rely on FA (by managing all icons through the
+                // helper), we should change this to 'vendor/font-awesome.min.css'
+                // so it only loads conditionally when icons are used.
+                'src' => 'compiled.css',
+            ],
             'Collapse' => [
                 'template' => 'collapse',
             ],
@@ -229,6 +239,8 @@ return [
             'profile-email' => 'FontAwesome:envelope',
             'profile-sms' => 'FontAwesome:phone',
             'qrcode' => 'FontAwesome:qrcode',
+            'rating-empty' => 'FontAwesomeClassOnly:star-o', // this must be class-based
+            'rating-filled' => 'FontAwesomeClassOnly:star',  // this must be class-based
             'search' => 'FontAwesome:search',
             'search-delete' => 'Alias:ui-delete',
             'search-rss' => 'FontAwesome:rss',

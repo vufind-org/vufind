@@ -1,0 +1,36 @@
+<?php
+  $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
+  $ratingData = $this->driver->getRatingData();
+  $avgRating = $ratingData['rating'] ? $ratingData['rating'] / 20 : 0;
+  $user = $this->auth()->isLoggedIn();
+  $translationParams = [
+    '%%rating%%' => $this->localizedNumber($ratingData['rating']),
+    '%%count%%' => $this->localizedNumber($ratingData['count'])
+  ];
+?>
+<div class="rating">
+  <div class="rating-average">
+    <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddRating'))?>" data-lightbox title="<?=$this->transEscAttr('rating_add_or_update')?>">
+      <?=$this->transEsc('rating_heading', $translationParams)?>:
+    </a>
+    <br>
+    <?php
+      $attributes = [
+        'id' => 'record_avg_rating',
+        'type' => 'hidden',
+        'class' => 'rating',
+        'value' => $avgRating,
+        'data-start' => '0',
+        'data-stop' => '5',
+        'data-readonly' => true,
+        'autocomplete' => 'off'
+      ];
+      $htmlAttrs = $this->htmlAttributes($attributes);
+    ?>
+    <input <?=$htmlAttrs?> data-filled="<?=$this->icon('rating-filled')?>" data-empty="<?=$this->icon('rating-empty')?>">
+    <br>
+    <span class="rating-summary">
+      <?=$this->transEsc('rating_summary', $translationParams)?>
+    </span>
+  </div>
+</div>

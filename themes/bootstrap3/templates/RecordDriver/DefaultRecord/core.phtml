@@ -1,4 +1,6 @@
-<?php $this->metadata()->generateMetatags($this->driver);?>
+<?php
+  $this->metadata()->generateMetatags($this->driver);
+?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");
@@ -19,6 +21,11 @@
         <span class="hidden-xs">
           <br/><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
+      <?php endif; ?>
+
+      <?php /* Display rating if enabled: */ ?>
+      <?php if ($this->record($this->driver)->isRatingEnabled()): ?>
+        <?=$this->record($driver)->renderTemplate('rating.phtml')?>
       <?php endif; ?>
 
       <?php // if you have a preview tab but want to move or remove the preview link
