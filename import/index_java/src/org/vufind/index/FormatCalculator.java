@@ -72,7 +72,6 @@ public class FormatCalculator
                 } else {
                     return true;
                 }
-                break;
             case 'e':   // Cartographic material
             case 'f':   // Manuscript cartographic material
             case 'g':   // Projected medium
