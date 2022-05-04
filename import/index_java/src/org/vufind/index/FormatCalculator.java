@@ -69,7 +69,7 @@ public class FormatCalculator
                 char fileType = get008Value(marc008, 26);
                 if (fileType == 'd' || fileType == 'i' || fileType == 'm' || fileType == 'u' || fileType == 'z') {
                     return false;
-                } 
+                }
                 return true;
             case 'e':   // Cartographic material
             case 'f':   // Manuscript cartographic material
@@ -210,13 +210,14 @@ public class FormatCalculator
      * blank string for ambiguous/irrelevant results.
      *
      * @param Record record
+     * @param char recordType
      * @param char bibLevel
      * @param ControlField marc008
      * @param boolean couldBeBook
      * @param List formatCodes007
      * @return String
      */
-    protected String getFormatFromBibLevel(Record record, char bibLevel, ControlField marc008, boolean couldBeBook, List formatCodes007) {
+    protected String getFormatFromBibLevel(Record record, char recordType, char bibLevel, ControlField marc008, boolean couldBeBook, List formatCodes007) {
         switch (bibLevel) {
             // Component parts
             case 'a':
@@ -232,44 +233,55 @@ public class FormatCalculator
             case 'i':
                 // Look in 008 to determine type of electronic IntegratingResource
                 // Check 008/21 Type of continuing resource
-                switch (get008Value(marc008, 21)) {
-                    case 'h': // Blog
-                    case 'w': // Updating Web site
-                        return "Website";
-                    default: break;
-                }
-                // Check 008/22 Form of original item
-                switch (get008Value(marc008, 22)) {
-                    case 'o': // Online
-                    case 'q': // Direct electronic
-                    case 's': // Electronic
-                        return "OnlineIntegratingResource";
-                    default: break;
+                // Make sure we have the applicable LDR/06: Language Material
+                if (recordType == 'a') {
+                    switch (get008Value(marc008, 21)) {
+                        case 'h': // Blog
+                        case 'w': // Updating Web site
+                            return "Website";
+                        default: break;
+                    }
+                    // Check 008/22 Form of original item
+                    switch (get008Value(marc008, 22)) {
+                        case 'o': // Online
+                        case 'q': // Direct electronic
+                        case 's': // Electronic
+                            return "OnlineIntegratingResource";
+                        default: break;
+                    }
                 }
                 return "PhysicalIntegratingResource";
             // Monograph
             case 'm':
                 if (couldBeBook) {
                     // Check 008/23 Form of item
-                    switch (get008Value(marc008, 23)) {
-                        case 'o': // Online
-                        case 'q': // Direct electronic
-                        case 's': // Electronic
-                            return "eBook";
-                        default: break;
+                    // Make sure we have the applicable LDR/06: Language Material; Manuscript Language Material;
+                    // or Computer File
+                    if (recordType == 'a' || recordType == 't' || recordType == 'm') {
+                        switch (get008Value(marc008, 23)) {
+                            case 'o': // Online
+                            case 'q': // Direct electronic
+                            case 's': // Electronic
+                                return "eBook";
+                            default: break;
+                        }
                     }
                     // If we made it here, it should be Book
                     return "Book";
                 }
+                break;
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
-                switch (get008Value(marc008, 21)) {
-                    case 'n':
-                        return "Newspaper";
-                    case 'p':
-                        return "Journal";
-                    default: break;
+                // Make sure we have the applicable LDR/06: Language Material
+                if (recordType == 'a') {
+                    switch (get008Value(marc008, 21)) {
+                        case 'n':
+                            return "Newspaper";
+                        case 'p':
+                            return "Journal";
+                        default: break;
+                    }
                 }
                 // Default to serial even if 008 is missing
                 if (!isConferenceProceeding(record)) {
@@ -340,7 +352,7 @@ public class FormatCalculator
                 // If no such 007 exists, fall back to "ProjectedMedium"
                 if (formatCodes007.contains('g') || formatCodes007.contains('m') || formatCodes007.contains('v')) {
                     return "";
-                } 
+                }
                 return "ProjectedMedium";
             case 'i':
                 return "SoundRecording";
@@ -363,6 +375,8 @@ public class FormatCalculator
                 return (formatCodes007.contains('k')) ? "" : "Image";
             // Computer file
             case 'm':
+                // All computer files return a format of Electronic in isElectronic()
+                // Only set more specific formats here
                 // Check 008/26 Type of computer file
                 switch (get008Value(marc008, 26)) {
                     case 'a': // Numeric data
@@ -372,7 +386,9 @@ public class FormatCalculator
                     case 'c': // Representational
                         return "Image";
                     case 'd': // Document
-                        return "ComputerDocument";
+                        // Document is too vague and often confusing when combined
+                        // with formats derived from elsewhere in the record
+                        break;
                     case 'e': //Bibliographic data
                         return "DataSet";
                     case 'f': // Font
@@ -385,8 +401,8 @@ public class FormatCalculator
                         return "Software";
                     default: break;
                 }
-                // Everything else (including "online system or service")
-                return "Software";
+                // If we got here, don't return anything
+                break;
             case 'o':
             case 'p':
                 return "Kit";
@@ -447,9 +463,10 @@ public class FormatCalculator
      * Determine whether a record is electronic in format.
      *
      * @param Record record
+     * @param char recordType 
      * @return boolean
      */
-    protected boolean isElectronic(Record record) {
+    protected boolean isElectronic(Record record, char recordType) {
         /* Example from Villanova of how to use holdings locations to detect online status;
          * You can override this method in a subclass if you wish to use this approach.
         List holdingsFields = record.getVariableFields("852");
@@ -471,6 +488,11 @@ public class FormatCalculator
                     return true;
                 }
             }
+        }
+        // Is this a computer file of some sort?
+        // If so it is electronic
+        if (recordType == 'm') {
+            return true;
         }
         return false;
     }
@@ -533,6 +555,8 @@ public class FormatCalculator
         ControlField marc008 = (ControlField) record.getVariableField("008");
         String formatString;
         char formatCode = ' ';
+        char recordType = Character.toLowerCase(leader.charAt(6));
+        char bibLevel = Character.toLowerCase(leader.charAt(7));
 
         // This record could be a book... until we prove otherwise!
         boolean couldBeBook = true;
@@ -544,7 +568,7 @@ public class FormatCalculator
         if (isThesis(record)) {
             result.add("Thesis");
         }
-        if (isElectronic(record)) {
+        if (isElectronic(record, recordType)) {
             result.add("Electronic");
         }
         if (isConferenceProceeding(record)) {
@@ -579,7 +603,6 @@ public class FormatCalculator
         }
 
         // check the Leader at position 6
-        char recordType = Character.toLowerCase(leader.charAt(6));
         if (definitelyNotBookBasedOnRecordType(recordType, marc008)) {
             couldBeBook = false;
         }
@@ -589,9 +612,8 @@ public class FormatCalculator
         }
 
         // check the Leader at position 7
-        char bibLevel = Character.toLowerCase(leader.charAt(7));
         String formatFromBibLevel = getFormatFromBibLevel(
-            record, bibLevel, marc008, couldBeBook, formatCodes007
+            record, recordType, bibLevel, marc008, couldBeBook, formatCodes007
         );
         if (formatFromBibLevel.length() > 0) {
             result.add(formatFromBibLevel);
