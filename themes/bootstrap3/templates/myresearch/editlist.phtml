@@ -1,6 +1,6 @@
 <?php
   // Set up page title:
-  $pageTitle = empty($this->list->id) ? 'Create a List' : "edit_list";
+  $pageTitle = $this->newList ? 'Create a List' : "edit_list";
   $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
