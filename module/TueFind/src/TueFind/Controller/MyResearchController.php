@@ -99,7 +99,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $uploadError = 1;
         } else {
             $existingRecord = $this->getRecordLoader()->load($existingRecordId);
-
             $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace')->getMappedData($existingRecord);
             $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
 
@@ -117,9 +116,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             } else if ($action == 'publish' && $uploadError == 0) {
 
                 $allLanguages = $config->Publication_Languages->toArray();
-
                 $recordLanguages = $existingRecord->getLanguages();
-
                 $dsApiLanguages = "";
                 foreach($recordLanguages as $rl) {
                     foreach($allLanguages as $alKay=>$alName) {
