@@ -94,8 +94,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $dublinCore = null;
         $existingRecordId = $this->params()->fromRoute('record_id', null);
 
-        $vuConfig = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)->get('config');
-
         if (empty($existingRecordId)) {
             $uploadInfos[] = ["Control Number empty!","text-danger"];
             $uploadError = 1;
@@ -118,7 +116,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $showForm = false;
             } else if ($action == 'publish' && $uploadError == 0) {
 
-                $allLanguages = $vuConfig->Languages->toArray();
+                $allLanguages = $config->Publication_Languages->toArray();
+
                 $recordLanguages = $existingRecord->getLanguages();
 
                 $dsApiLanguages = "";
