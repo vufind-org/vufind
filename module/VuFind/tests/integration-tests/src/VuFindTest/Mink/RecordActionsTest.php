@@ -37,7 +37,7 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
+ * @retry    0
  */
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -494,6 +494,109 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             'print=1',
             [$this, 'getCurrentQueryString']
         );
+    }
+
+    /**
+     * Test rating disabled.
+     *
+     * @return void
+     */
+    public function testRatingDisabled()
+    {
+        // Go to a record view
+        $page = $this->gotoRecord();
+        // Check that rating is not displayed:
+        $this->unFindCss($page, 'div.rating');
+    }
+
+    /**
+     * Test star ratings on records.
+     *
+     * @retryCallback removeUsername2
+     *
+     * @return void
+     */
+    public function testRating()
+    {
+        // Set up configs:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Social' => [
+                        'rating' => true
+                    ]
+                ]
+            ]
+        );
+        $this->removeUsername2();
+
+        $ratingLink = 'div.rating-average a';
+        $checked = 'div.rating-average input:checked';
+
+        // Go to a record view
+        $page = $this->gotoRecord();
+        // Click to add rating
+        $this->clickCss($page, $ratingLink);
+        // Lightbox login open?
+        $this->findCss($page, '.modal.in [name="username"]');
+        // Make account
+        $this->makeAccount($page, 'username2');
+        // Add rating exists?
+        $this->findCss($page, '.modal div.star-rating');
+        $this->closeLightbox($page);
+        $this->clickCss($page, '.logoutOptions a.logout');
+        // Login
+        $this->clickCss($page, $ratingLink);
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
+        // Add rating
+        $this->clickCss($page, '.modal div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $success = $this->findCss($page, '.alert-success');
+        $this->assertEquals('Rating Saved', $success->getText());
+        // Check result
+        $this->waitForPageLoad($page);
+        $inputs = $page->findAll('css', $checked);
+        $this->assertEquals(1, count($inputs));
+        $this->assertEquals('100', $inputs[0]->getValue());
+        // Update rating
+        $this->clickCss($page, $ratingLink);
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.modal div.star-rating label', null, 5);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $success = $this->findCss($page, '.alert-success');
+        $this->assertEquals('Rating Saved', $success->getText());
+        // Check result
+        $this->waitForPageLoad($page);
+        $inputs = $page->findAll('css', $checked);
+        $this->assertEquals(1, count($inputs));
+        $this->assertEquals('50', $inputs[0]->getValue());
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Login with second account
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCss($page, '.modal.in [name="username"]');
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Add rating
+        $this->clickCss($page, $ratingLink);
+        $this->clickCss($page, '.modal div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $success = $this->findCss($page, '.alert-success');
+        $this->assertEquals('Rating Saved', $success->getText());
+        // Check result
+        $this->waitForPageLoad($page);
+        $inputs = $page->findAll('css', $checked);
+        $this->assertEquals(1, count($inputs));
+        $this->assertEquals('70', $inputs[0]->getValue());
+
+        // Logout
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**
