@@ -37,7 +37,7 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    0
+ * @retry    4
  */
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
