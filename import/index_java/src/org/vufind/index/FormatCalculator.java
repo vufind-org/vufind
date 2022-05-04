@@ -69,9 +69,8 @@ public class FormatCalculator
                 char fileType = get008Value(marc008, 26);
                 if (fileType == 'd' || fileType == 'i' || fileType == 'm' || fileType == 'u' || fileType == 'z') {
                     return false;
-                } else {
-                    return true;
-                }
+                } 
+                return true;
             case 'e':   // Cartographic material
             case 'f':   // Manuscript cartographic material
             case 'g':   // Projected medium
@@ -341,9 +340,8 @@ public class FormatCalculator
                 // If no such 007 exists, fall back to "ProjectedMedium"
                 if (formatCodes007.contains('g') || formatCodes007.contains('m') || formatCodes007.contains('v')) {
                     return "";
-                } else {
-                    return "ProjectedMedium";
-                }
+                } 
+                return "ProjectedMedium";
             case 'i':
                 return "SoundRecording";
             case 'j':
@@ -368,15 +366,15 @@ public class FormatCalculator
                 // Check 008/26 Type of computer file
                 switch (get008Value(marc008, 26)) {
                     case 'a': // Numeric data
-                        return "Dataset";
+                        return "DataSet";
                     case 'b': // Computer program
                         return "Software";
                     case 'c': // Representational
                         return "Image";
                     case 'd': // Document
-                        return "Software";
+                        return "ComputerDocument";
                     case 'e': //Bibliographic data
-                        return "Dataset";
+                        return "DataSet";
                     case 'f': // Font
                         return "Software";
                     case 'g': // Game
