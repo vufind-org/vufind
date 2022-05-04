@@ -94,6 +94,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $dublinCore = null;
         $existingRecordId = $this->params()->fromRoute('record_id', null);
 
+        $vuConfig = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)->get('config');
+
         if (empty($existingRecordId)) {
             $uploadInfos[] = ["Control Number empty!","text-danger"];
             $uploadError = 1;
@@ -115,16 +117,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $uploadError = 1;
                 $showForm = false;
             } else if ($action == 'publish' && $uploadError == 0) {
-                $languageMap = [
-                    'English' => 'en',
-                    'German' => 'de',
-                ];
-                $metaDataLanguage = $dspaceMetadata['/sections/traditionalpageone/dc.language.iso'];
-                $userSelectedLanguage = $this->params()->fromPost('languege');
 
-                if($languageMap[$userSelectedLanguage] != $metaDataLanguage) {
-                    $dspaceMetadata['/sections/traditionalpageone/dc.language.iso'] = $languageMap[$userSelectedLanguage];
+                $allLanguages = $vuConfig->Languages->toArray();
+                $recordLanguages = $existingRecord->getLanguages();
+
+                $dsApiLanguages = "";
+                foreach($recordLanguages as $rl) {
+                    foreach($allLanguages as $alKay=>$alName) {
+                        if($rl == $alName) {
+                            $dsApiLanguages .= $alKay.",";
+                        }
+                    }
                 }
+
+                $dspaceMetadata['/sections/traditionalpageone/dc.language.iso'] = $dsApiLanguages;
                 $uploadedFile = $this->params()->fromFiles('file');
 
                 $collectionName = $config->Publication->collection_name;
