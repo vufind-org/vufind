@@ -93,7 +93,7 @@ class Ratings extends Gateway
                         [Expression::TYPE_IDENTIFIER]
                     ),
                     'rating' => new Expression(
-                        'AVG(?)',
+                        'FLOOR(AVG(?))',
                         ['rating'],
                         [Expression::TYPE_IDENTIFIER]
                     ),

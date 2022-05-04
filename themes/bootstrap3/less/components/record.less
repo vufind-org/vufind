@@ -177,3 +177,60 @@
     display: block;
   }
 }
+
+/* ------ Star Rating ------ */
+.star-rating {
+  /* Use display:inline-flex to prevent whitespace issues. Alternatively, you can put all the children of .rating-group on a single line. */
+  display: inline-flex;
+
+  /* Make hover effect work properly in IE, reset width */
+  .rating__icon {
+    pointer-events: none;
+    width: initial;
+  }
+
+  /* Hide radio inputs, but keep them accessible by keyboard */
+  .rating__input {
+    position: absolute !important;
+    left: -9999px !important;
+  }
+
+  /* Set icon padding and size */
+  .rating__label {
+    cursor: pointer;
+    /* If you change the left/right padding, update the margin-right property of .rating__label--half as well. */
+    padding: 0 0.1em;
+    font-size: 1rem;
+  }
+
+  /* Add padding and positioning to half star labels */
+  .rating__label--half {
+    padding-right: 0;
+    margin-right: -0.6em;
+    z-index: 2;
+  }
+
+  /* Set default star color */
+  .rating__icon--star {
+    color: @brand-warning;
+  }
+
+  /* If any input is checked, make its following siblings grey */
+  .rating__input:checked ~ .rating__label .rating__icon--star {
+    color: @gray-lighter;
+  }
+
+  /* Make all stars highlight on rating group hover */
+  &:not(.readonly)
+  {
+    &:hover .rating__label .rating__icon--star,
+    &:hover .rating__label--half .rating__icon--star {
+      color: @brand-warning;
+    }
+    /* Make hovered input's following siblings grey on hover */
+    .rating__input:hover ~ .rating__label .rating__icon--star,
+    .rating__input:hover ~ .rating__label--half .rating__icon--star {
+      color: @gray-lighter;
+    }
+  }
+}

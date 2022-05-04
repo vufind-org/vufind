@@ -239,8 +239,8 @@ return [
             'profile-email' => 'FontAwesome:envelope',
             'profile-sms' => 'FontAwesome:phone',
             'qrcode' => 'FontAwesome:qrcode',
-            'rating-empty' => 'FontAwesomeClassOnly:star-o', // this must be class-based
-            'rating-filled' => 'FontAwesomeClassOnly:star',  // this must be class-based
+            'rating-half' => 'FontAwesome:star-half',
+            'rating-full' => 'FontAwesome:star',
             'search' => 'FontAwesome:search',
             'search-delete' => 'Alias:ui-delete',
             'search-rss' => 'FontAwesome:rss',

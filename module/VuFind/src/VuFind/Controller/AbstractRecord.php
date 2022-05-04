@@ -288,9 +288,8 @@ class AbstractRecord extends AbstractBase
         }
 
         // Save rating, if any:
-        if ($rating = $this->params()->fromPost('rating')) {
-            $rating = intval($rating * 20);
-            $driver->addOrUpdateRating($user, $rating);
+        if (null !== ($rating = $this->params()->fromPost('rating'))) {
+            $driver->addOrUpdateRating($user, intval($rating));
             $this->flashMessenger()->addSuccessMessage('rating_add_success');
             if ($this->inLightbox()) {
                 return $this->getRefreshResponse();

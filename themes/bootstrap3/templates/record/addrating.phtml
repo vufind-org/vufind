@@ -6,9 +6,6 @@
     $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
       . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
       . '<li class="active">' . $this->transEsc('rating_add_or_update') . '</li>';
-
-    // Add script for rating:
-    $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
 ?>
 <h2><?=$this->transEsc('rating_add_or_update') ?></h2>
 <form method="post" name="rateRecord" class="form-add-rating">
@@ -17,24 +14,10 @@
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <div class="form-group">
     <label class="control-label" for="add_rating"><?=$this->transEsc('rating_prompt')?>:</label>
-    <?php
-      $attributes = [
-        'id' => 'add_rating',
-        'type' => 'hidden',
-        'name' => 'rating',
-        'class' => 'rating',
-        'value' => $this->currentRating['count'] ? $this->currentRating['rating'] / 20 : '',
-        'data-start' => '0',
-        'data-stop' => '5',
-        'data-fractions' => '2',
-      ];
-      $htmlAttrs = $this->htmlAttributes($attributes);
-    ?>
-    <input <?=$htmlAttrs?> data-filled="<?=$this->icon('rating-filled')?>" data-empty="<?=$this->icon('rating-empty')?>">
+    <?=$this->render('Helpers/star-rating.phtml', ['rating' => $this->currentRating['rating']]);?>
   </div>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>"/>
   </div>
 </form>
 <?php
-echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#add_rating').rating()", 'SET');
