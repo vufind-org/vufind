@@ -260,21 +260,17 @@ class WikidataProxyController extends AbstractProxyController
      *
      * (override parent function)
      */
-    protected function getUrlContents($url) {
+    protected function initializeClient()
+    {
+        parent::initializeClient();
+
         $config = $this->getConfig();
 
         $siteTitle = $config->Site->title;
         $siteUrl = $config->Site->url;
         $siteEmail = $config->Site->email;
 
-        $opts = [
-            "http" => [
-                "method" => "GET",
-                "header" => "User-Agent: " . $siteTitle . "/1.0 (" . $siteUrl . "; " . $siteEmail . ")\r\n"
-            ]
-        ];
-
-        $context = stream_context_create($opts);
-        return file_get_contents($url, false, $context);
+        $userAgent = $siteTitle . '/1.0 (' . $siteUrl . '; ' . $siteEmail . ')';
+        $this->client->setOptions(['User-Agent' => $userAgent]);
     }
 }
