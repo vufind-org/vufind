@@ -1,13 +1,49 @@
 <?php
 
 namespace TueFind\Controller;
+
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Cache\Storage\StorageInterface;
+
 /**
  * Abstract proxy controller with functions that allow using a cache
  * and sending additional HTTP headers when resolving URLs.
  */
 class AbstractProxyController extends \VuFind\Controller\AbstractBase
 {
-    const CACHE_DIR = 'shared';
+    /**
+     * Cache ID. This can be overridden by child classes if we want to use
+     * a separate cache.
+     */
+    const CACHE_ID = 'shared';
+
+    /**
+     * Cache to use for retrieved URLs.
+     * @var StorageInterface
+     */
+    protected $cache;
+
+    /**
+     * Overridden constructor which also initializes the cache.
+     *
+     * @param ServiceLocatorInterface $sm
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        parent::__construct($sm);
+        $this->initializeCache();
+    }
+
+    /**
+     * Initialize the Cache by using the Cache Manager.
+     */
+    protected function initializeCache()
+    {
+        $this->cacheManager = $this->serviceLocator->get(\TueFind\Cache\Manager::class);
+        $cacheDir = $this->cacheManager->getCacheDir() . static::CACHE_ID;
+        $this->cacheManager->addControllerCache(static::CACHE_ID, $cacheDir);
+        $this->cache = $this->cacheManager->getCache(static::CACHE_ID);
+    }
 
     /**
      * Resolve URL from cache if possible
@@ -17,44 +53,44 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
      */
     protected function getCachedUrlContents($url, $decodeJson=false)
     {
-        $cacheManager = $this->serviceLocator->get(\TueFind\Cache\Manager::class);
-        $cachingProxy = $this->serviceLocator->get(\TueFind\Cover\CachingProxy::class);
+        $cacheItemKey = md5($url);
 
-        $mdUrl = md5($url);
-
-        $dirPath = $cacheManager->getCacheDir() . static::CACHE_DIR . '/' . $mdUrl;
-
-        $cachedFile = $dirPath.'/'.$mdUrl;
-
-        if (is_file($cachedFile)) {
-            $contents = file_get_contents($cachedFile);
-            if ($decodeJson)
+        // Return item if exists in cache
+        if ($this->cache->hasItem($cacheItemKey)) {
+            $contents = $this->cache->getItem($cacheItemKey);
+            if ($decodeJson) {
                 $contents = json_decode($contents);
+            }
             return $contents;
         }
 
-        $cacheManager->addWikiCache(
-            $mdUrl,
-            $dirPath
-        );
-
-        $config = $this->getConfig();
-
-        $contents = $cachingProxy->resolveUrl($url,$config);
+        // Add new item to cache if not exists
+        $contents = $this->getUrlContents($url);
         if (!$contents) {
-            throw new \Exception('Could not resolve URL: ' + $url);
+            throw new \Exception('Could not resolve URL: ' . $url);
         }
         $contentsString = $contents;
         if ($decodeJson) {
             $contents = json_decode($contents);
             if (!$contents) {
-                throw new \Exception('Invalid JSON returned from URL: ' + $url);
+                throw new \Exception('Invalid JSON returned from URL: ' . $url);
             }
         }
 
-        $cachingProxy->setWikiCache($cachedFile, $contentsString);
-
+        $this->cache->addItem($cacheItemKey, $contentsString);
         return $contents;
+    }
 
+    /**
+     * This function is meant to be overridden in child classes,
+     * e.g. when special headers are needed (like for Wikidata).
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function getUrlContents($url)
+    {
+        return file_get_contents($url);
     }
 }
