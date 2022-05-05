@@ -14,7 +14,9 @@
     <?php endif; ?>
     <?php if ($this->accountCapabilities()->getScheduledSearchSetting() === 'enabled'): ?>
       &mdash;
-      <a href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('subscribe_search')?></a>
+      <a href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
+        <?=$this->transEsc($this->results->isSubscribedSearch() ? 'Manage Search Subscription' : 'subscribe_search')?>
+      </a>
     <?php endif; ?>
   <?php endif; ?>
 </div>

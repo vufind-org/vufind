@@ -103,6 +103,13 @@ abstract class Results
     protected $savedSearch = null;
 
     /**
+     * Is this a user-subscribed search?
+     *
+     * @var bool
+     */
+    protected $subscribedSearch = null;
+
+    /**
      * Query start time
      *
      * @var float
@@ -452,6 +459,25 @@ abstract class Results
     }
 
     /**
+     * Is the current search subscribed by a user?
+     *
+     * @return bool
+     */
+    public function isSubscribedSearch()
+    {
+        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
+        // is called...  blow up if somebody tries to get data that is not yet
+        // available.
+        if (null === $this->subscribedSearch) {
+            throw new \Exception(
+                'Cannot retrieve subscription status before '
+                . 'updateSaveStatus is called.'
+            );
+        }
+        return $this->subscribedSearch;
+    }
+
+    /**
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
@@ -463,6 +489,8 @@ abstract class Results
     {
         $this->searchId = $row->id;
         $this->savedSearch = ($row->saved == true);
+        $this->subscribedSearch = $this->savedSearch
+            && $row->notification_frequency > 0;
     }
 
     /**
