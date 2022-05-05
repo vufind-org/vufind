@@ -369,6 +369,28 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Get a search row, but throw an exception if it is not owned by the specified
+     * user or current active session.
+     *
+     * @param int $searchId ID of search row
+     * @param int $userId   ID of active user
+     *
+     * @throws ForbiddenException
+     * @return \VuFind\Db\Row\Search
+     */
+    protected function getSearchRowSecurely($searchId, $userId)
+    {
+        $searchTable = $this->getTable('Search');
+        $sessId = $this->serviceLocator
+            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $search = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        if (empty($search)) {
+            throw new ForbiddenException('Access denied.');
+        }
+        return $search;
+    }
+
+    /**
      * Support method for savesearchAction(): set the saved flag in a secure
      * fashion, throwing an exception if somebody attempts something invalid.
      *
@@ -381,13 +403,7 @@ class MyResearchController extends AbstractBase
      */
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
-        $searchTable = $this->getTable('Search');
-        $sessId = $this->serviceLocator
-            ->get(\Laminas\Session\SessionManager::class)->getId();
-        $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
-        if (empty($row)) {
-            throw new ForbiddenException('Access denied.');
-        }
+        $row = $this->getSearchRowSecurely($searchId, $userId);
         $row->saved = $saved ? 1 : 0;
         if (!$saved) {
             $row->notification_frequency = 0;
@@ -475,8 +491,10 @@ class MyResearchController extends AbstractBase
         if ($user == false) {
             return $this->forceLogin();
         }
+        // Get the row, and fail if the current user doesn't own it.
+        $search = $this->getSearchRowSecurely($searchId, $user->id);
         // Build the form.
-        return $this->createViewModel(compact('scheduleOptions', 'searchId'));
+        return $this->createViewModel(compact('scheduleOptions', 'search'));
     }
 
     /**

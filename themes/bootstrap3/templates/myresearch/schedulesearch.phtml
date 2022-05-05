@@ -20,10 +20,10 @@
         <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
           <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEscAttr("history_schedule")?>">
             <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
-              <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"><?=$this->transEsc($scheduleLabel)?></option>
+              <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($this->search->notification_frequency == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
             <?php endforeach; ?>
           </select>
-          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->searchId) ?>"/>
+          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->search->id) ?>"/>
         </form>
       </td>
     </tr>
