@@ -2,8 +2,10 @@
 
 namespace TueFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Http\Client;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+
 
 /**
  * Abstract proxy controller with functions that allow using a cache
@@ -24,6 +26,12 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
     protected $cache;
 
     /**
+     * HTTP client to use for downloads.
+     * @var Client
+     */
+    protected $client;
+
+    /**
      * Overridden constructor which also initializes the cache.
      *
      * @param ServiceLocatorInterface $sm
@@ -32,6 +40,7 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
     {
         parent::__construct($sm);
         $this->initializeCache();
+        $this->initializeClient();
     }
 
     /**
@@ -43,6 +52,14 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
         $cacheDir = $this->cacheManager->getCacheDir() . static::CACHE_ID;
         $this->cacheManager->addControllerCache(static::CACHE_ID, $cacheDir);
         $this->cache = $this->cacheManager->getCache(static::CACHE_ID);
+    }
+
+    /**
+     * Initialize the Client by using the HTTP Service.
+     */
+    protected function initializeClient()
+    {
+        $this->client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)->createClient();
     }
 
     /**
@@ -91,6 +108,7 @@ class AbstractProxyController extends \VuFind\Controller\AbstractBase
      */
     protected function getUrlContents($url)
     {
-        return file_get_contents($url);
+        $response = $this->client->setUri($url)->send();
+        return $response->getBody();
     }
 }
