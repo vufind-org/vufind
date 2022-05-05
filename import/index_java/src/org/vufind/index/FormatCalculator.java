@@ -467,7 +467,7 @@ public class FormatCalculator
      * Determine whether a record is electronic in format.
      *
      * @param Record record
-     * @param char recordType 
+     * @param char recordType
      * @return boolean
      */
     protected boolean isElectronic(Record record, char recordType) {
