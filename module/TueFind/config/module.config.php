@@ -223,7 +223,6 @@ $config = [
         'factories' => [
             'TueFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'TueFind\Cover\CachingProxy' => 'VuFind\Cover\CachingProxyFactory',
             'TueFind\Cache\Manager' => 'VuFind\Cache\ManagerFactory',
             'TueFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Config\AccountCapabilities' => 'TueFind\Config\AccountCapabilitiesFactory',
