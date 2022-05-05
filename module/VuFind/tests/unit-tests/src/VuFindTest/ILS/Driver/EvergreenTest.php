@@ -47,6 +47,6 @@ class EvergreenTest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function setUp(): void
     {
-        $this->driver = new Evergreen();
+        $this->driver = new Evergreen(new \VuFind\Date\Converter());
     }
 }

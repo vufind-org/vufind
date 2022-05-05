@@ -37,15 +37,17 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     }
     var description = document.createElement('span');
     description.className = 'facet-value';
-    description.innerHTML = facet.displayText;
+    description.appendChild(document.createTextNode(facet.displayText));
     item.appendChild(description);
     html.appendChild(item);
 
     if (!facet.isApplied && counts) {
-      var badge = document.createElement('span');
-      badge.className = 'badge';
-      badge.innerHTML = facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator);
-      html.appendChild(badge);
+      if (facet.count) {
+        var badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.appendChild(document.createTextNode(facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator)));
+        html.appendChild(badge);
+      }
       if (allowExclude) {
         var excludeUrl = currentPath + facet.exclude;
         var a = document.createElement('a');
@@ -208,7 +210,7 @@ VuFind.register('sideFacets', function SideFacets() {
               );
             }
           } else if (typeof facetData.html !== 'undefined') {
-            $facetContainer.html(facetData.html);
+            $facetContainer.html(VuFind.updateCspNonce(facetData.html));
             activateFacetBlocking($facetContainer);
           } else {
             var treeNode = $facetContainer.find('.jstree-facet');
@@ -297,11 +299,11 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       var sort = $(button).data('sort');
       var list = $('#facet-list-' + sort);
       if (list.find('.js-facet-item').length === 0) {
-        list.find('.js-facet-next-page').html(VuFind.translate('loading') + '...');
+        list.find('.js-facet-next-page').html(VuFind.translate('loading_ellipsis'));
         $.ajax(button.href + '&layout=lightbox')
           .done(function facetSortTitleDone(data) {
             list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').html(VuFind.translate('more') + ' ...');
+            list.find('.js-facet-next-page').html(VuFind.translate('more_ellipsis'));
           });
       }
       $('.full-facet-list').addClass('hidden');
@@ -324,7 +326,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         return false;
       }
       button.attr('disabled', 1);
-      button.html(VuFind.translate('loading') + '...');
+      button.html(VuFind.translate('loading_ellipsis'));
       $.ajax(this.href + '&layout=lightbox')
         .done(function facetLightboxMoreDone(data) {
           var htmlDiv = $('<div>' + data + '</div>');
@@ -333,7 +335,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
             button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
-            button.html(VuFind.translate('more') + ' ...');
+            button.html(VuFind.translate('more_ellipsis'));
             button.removeAttr('disabled');
           } else {
             button.remove();

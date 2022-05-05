@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020.
+ * Copyright (C) The National Library of Finland 2020-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -70,6 +70,7 @@ class Iso2709 implements SerializationInterface
         $fields = [];
         $dataStart = 0 + (int)substr($marc, 12, 5);
         $dirLen = $dataStart - self::LEADER_LEN - 1;
+        $invalid = false;
 
         $offset = 0;
         while ($offset < $dirLen) {
@@ -83,9 +84,7 @@ class Iso2709 implements SerializationInterface
             if (substr($tagData, -1, 1) == self::END_OF_FIELD) {
                 $tagData = substr($tagData, 0, -1);
             } else {
-                throw new \Exception(
-                    "Invalid MARC record (end of field not found): $marc"
-                );
+                $invalid = true;
             }
 
             if (ctype_digit($tag) && $tag < 10) {
@@ -113,7 +112,11 @@ class Iso2709 implements SerializationInterface
             $offset += 12;
         }
 
-        return [$leader, $fields];
+        return [
+            $leader,
+            $fields,
+            $invalid ? ['Invalid MARC record (end of field not found)'] : []
+        ];
     }
 
     /**

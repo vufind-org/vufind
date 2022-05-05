@@ -20,6 +20,7 @@
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
+  <property name="disable_csp" value="false" /> <!-- set value to "true" to disable Content Security Policy -->
   <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" /><!-- if you have issues with segfaults during code coverage generation, try adding -dzend.enable_gc=0 to this (but this fix was probably only needed in PHP 5) -->
   <property name="phpunit_extra_params" value="" />
   <property name="composer_version" value="2.1.6" />
@@ -29,11 +30,12 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="8.9.0" />
+  <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
+  <property name="solr_version" value="8.11.1" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="8.0.1" />
+  <property name="version" value="8.0.4" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -82,6 +84,28 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
+  </target>
+
+  <!-- Quality Assurance Tasks -->
+  <target name="qa-console" description="quality assurance tasks">
+    <!-- Call standard tasks -->
+    <phingcall target="qa-js-and-less"/>
+    <phingcall target="qa-php"/>
+  </target>
+
+  <!-- Quality Assurance Javascript Tasks -->
+  <target name="qa-js-and-less" description="quality assurance js and less tasks">
+    <phingcall target="eslint"/>
+    <phingcall target="jshint"/>
+    <phingcall target="checkLessToSass"/>
+  </target>
+
+  <!-- Quality Assurance PHP Tasks -->
+  <target name="qa-php" description="quality assurance php tasks">
+    <phingcall target="phpunitfast"/>
+    <phingcall target="phpcs-console"/>
+    <phingcall target="php-cs-fixer-dryrun"/>
+    <phingcall target="phpstan-console"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
@@ -301,6 +325,16 @@
         <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
       </then>
     </if>
+
+    <!-- fail if a local config.ini already exists -->
+    <property name="local_config_ini" value="${srcdir}/local/config/vufind/config.ini" />
+    <if>
+      <available file="${local_config_ini}" />
+      <then>
+        <fail>${local_config_ini} already exists</fail>
+      </then>
+    </if>
+
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
@@ -377,8 +411,22 @@
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
+    <if>
+      <not><istrue value="${disable_csp}" /></not>
+      <then>
+        <!-- Update contentsecuritypolicy.ini to enforce the CSP. -->
+        <copy file="${srcdir}/config/vufind/contentsecuritypolicy.ini" tofile="${srcdir}/local/config/vufind/contentsecuritypolicy.ini">
+          <filterchain>
+            <replaceregexp>
+              <regexp pattern="(enabled\[.+\]) = .*" replace="\1 = true" />
+            </replaceregexp>
+          </filterchain>
+        </copy>
+      </then>
+    </if>
+
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
@@ -429,6 +477,19 @@
   <!-- Uninstall and Deactivate VuFind -->
   <target name="shutdown" description="deactivate and uninstall demo">
 
+    <exec command="git status --porcelain --untracked-files=no" outputProperty="git_status" />
+    <if>
+      <not>
+        <equals arg1="${git_status}" arg2="" />
+      </not>
+      <then>
+        <fail>
+          Changed detected in tracked files:
+${git_status}
+        </fail>
+      </then>
+    </if>
+
     <!-- Remove Apache settings (if Apache was enabled) -->
     <if>
       <istrue value="${apachectl}" />
@@ -452,7 +513,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" passthru="true" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh stop" passthru="true" />
 
     <!-- run extra cleanup action, if any -->
     <if>

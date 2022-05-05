@@ -31,7 +31,7 @@ function getRecord(id) {
     dataType: 'html'
   })
     .done(function getRecordDone(response) {
-      $('#tree-preview').html(html_entity_decode(response));
+      $('#tree-preview').html(VuFind.updateCspNonce(html_entity_decode(response)));
       // Remove the old path highlighting
       $('#hierarchyTree a').removeClass("jstree-highlight");
       // Add Current path highlighting

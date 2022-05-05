@@ -29,7 +29,9 @@
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use PHPUnit\Framework\TestCase;
+use VuFindSearch\Backend\Solr\Response\Json\Facets;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
+use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
@@ -51,15 +53,9 @@ class RecordCollectionTest extends TestCase
     public function testDefaults()
     {
         $coll = new RecordCollection([]);
-        $this->assertEquals(
-            'VuFindSearch\Backend\Solr\Response\Json\Spellcheck',
-            get_class($coll->getSpellcheck())
-        );
+        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
         $this->assertEquals(0, $coll->getTotal());
-        $this->assertEquals(
-            'VuFindSearch\Backend\Solr\Response\Json\Facets',
-            get_class($coll->getFacets())
-        );
+        $this->assertTrue($coll->getFacets() instanceof Facets);
         $this->assertEquals([], $coll->getGroups());
         $this->assertEquals([], $coll->getHighlighting());
         $this->assertEquals(0, $coll->getOffset());
@@ -74,15 +70,9 @@ class RecordCollectionTest extends TestCase
     public function testDefaultsWithNullResponse()
     {
         $coll = new RecordCollection(['response' => null]);
-        $this->assertEquals(
-            'VuFindSearch\Backend\Solr\Response\Json\Spellcheck',
-            get_class($coll->getSpellcheck())
-        );
+        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
         $this->assertEquals(0, $coll->getTotal());
-        $this->assertEquals(
-            'VuFindSearch\Backend\Solr\Response\Json\Facets',
-            get_class($coll->getFacets())
-        );
+        $this->assertTrue($coll->getFacets() instanceof Facets);
         $this->assertEquals([], $coll->getGroups());
         $this->assertEquals([], $coll->getHighlighting());
         $this->assertEquals(0, $coll->getOffset());

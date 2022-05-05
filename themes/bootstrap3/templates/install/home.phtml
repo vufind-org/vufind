@@ -9,9 +9,11 @@
 <?=$this->flashmessages()?>
 <?php $errors = 0; foreach ($this->checks as $check): ?>
 <?php if (!$check['status']) $errors++; ?>
-  <div class="alert alert-<?=$check['status'] ? 'success':'danger'?>"><?=$this->escapeHtml($check['title'])?>... <?=$check['status'] ? $this->transEsc('test_ok') : $this->transEsc('test_fail') . ' <a class="btn btn-danger" href="' . $this->url('install-' . strtolower($check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></div>
+  <div class="alert alert-<?=$check['status'] ? 'success':'danger'?>"><?=$this->escapeHtml($check['title'])?><?=$this->transEsc('eol_ellipsis')?> <?=$check['status'] ? $this->transEsc('test_ok') : $this->transEsc('test_fail') . ' <a class="btn btn-danger" href="' . $this->url('install-' . strtolower($check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></div>
 <?php endforeach; ?>
 
 <?php if ($errors == 0): ?>
-  <p>No problems were found.  You may wish to <a href="<?=$this->url('install-done')?>">Disable Auto Configuration</a> at this time.</p>
+  <div class="alert alert-info">No problems were found.  You may wish to <a href="<?=$this->url('install-done')?>">Disable Auto Configuration</a> at this time.</div>
 <?php endif; ?>
+
+<div class="alert alert-info">Please consider <a href="https://vufind.org/advanced_demo/Feedback/Form/InstallationReport">reporting your new instance to the VuFind Community</a>. This will ensure that you are included on the <a href="https://vufind.org/wiki/community:installations">VuFind Installation List</a> and will help others find your site.</div>

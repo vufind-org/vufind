@@ -68,9 +68,6 @@
   $("#cart-confirm-empty").click(function($e) {
       submitFormWithButton(this, 'empty');
   });
-  $("#cart-refuse-empty").click(function($e) {
-      $('.fa.fa-spinner').remove();
-  });
 JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

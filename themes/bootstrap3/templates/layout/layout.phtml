@@ -1,13 +1,25 @@
-<?=$this->doctype('HTML5')?>
+<?=$this->doctype()?>
+
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
-    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
-    <?=$this->headTitle()?>
+
     <?php
+      // Format the page title using the translation system:
+      $siteConfig = $this->config()->get('config')->Site;
+      $fullTitle = $this->translate(
+          'title_wrapper',
+          [
+            '%%pageTitle%%' => $this->headTitle()->renderTitle(),
+            '%%siteTitle%%' => $siteConfig->title,
+            '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::'
+          ]
+      );
+      echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
+
       // Set up OpenSearch link:
       $this->headLink(
           [
@@ -71,11 +83,13 @@
       $root = rtrim($this->url('home'), '/');
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
+      $cspNonce = $this->cspNonce();
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 VuFind.addIcons({$icons});
+VuFind.setCspNonce('{$cspNonce}');
 JS;
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
@@ -120,13 +134,13 @@ JS;
     </div>
     <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal">
             <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
-          <div class="modal-body"><?=$this->icon('spinner') . $this->transEsc('Loading') ?>...</div>
+          <div class="modal-body"></div>
         </div>
       </div>
     </div>

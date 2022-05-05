@@ -239,6 +239,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
     ) {
         $response = [];
         $hierarchicalFacets = [];
+        $hierarchicalFacetSortOptions = [];
         $options = $results->getOptions();
         if (is_callable([$options, 'getHierarchicalFacets'])) {
             $hierarchicalFacets = $options->getHierarchicalFacets();

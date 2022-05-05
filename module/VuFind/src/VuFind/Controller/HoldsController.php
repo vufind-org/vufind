@@ -377,6 +377,10 @@ class HoldsController extends AbstractBase
         $dateValidationResults = [
             'errors' => []
         ];
+        $frozenThroughValidationResults = [
+            'frozenThroughTS' => null,
+            'errors' => [],
+        ];
         // The dates are not required unless one of them is set, so check that first:
         if (!empty($gatheredDetails['startDate'])
             || !empty($gatheredDetails['requiredBy'])

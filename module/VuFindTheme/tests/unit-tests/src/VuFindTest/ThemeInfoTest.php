@@ -27,6 +27,7 @@
  */
 namespace VuFindTest;
 
+use Laminas\Cache\Storage\StorageInterface;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -308,6 +309,64 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
             'fooMixinFactory',
             $mixinHelpers['factories']['foo']
         );
+    }
+
+    /**
+     * Test getMergedConfig() on string value in config
+     *
+     * @return void
+     */
+    public function testGetMergedConfigReturnString()
+    {
+        $ti = $this->getThemeInfo();
+        $doctype = $ti->getMergedConfig('doctype');
+        $this->assertEquals(['HTML5'], $doctype);
+    }
+
+    /**
+     * Test getMergedConfig() with no key (return all)
+     *
+     * @return void
+     */
+    public function testGetMergedConfigNoKey()
+    {
+        $ti = $this->getThemeInfo();
+        $config = $ti->getMergedConfig();
+        $this->assertEquals('HTML5', $config['doctype']);
+        $this->assertEqualsCanonicalizing(
+            ['doctype', 'extends', 'js', 'helpers'],
+            array_keys($config)
+        );
+    }
+
+    /**
+     * Test that caching works correctly.
+     *
+     * @return void
+     */
+    public function testCaching(): void
+    {
+        $key = '0_parent_doctype';
+        $expected = ['HTML5'];
+
+        // Create a mock cache that simulates normal cache functionality;
+        // the first call to getItem returns null, then it expects a call
+        // to setItem, and then the second call to getItem will return an
+        // expected value.
+        $cache = $this->getMockBuilder(StorageInterface::class)->getMock();
+        $cache->expects($this->exactly(2))->method('getItem')
+            ->with($this->equalTo($key))
+            ->willReturnOnConsecutiveCalls(null, $expected);
+        $cache->expects($this->once())->method('setItem')
+            ->with($this->equalTo($key), $this->equalTo($expected));
+
+        // Set cache
+        $ti = $this->getThemeInfo();
+        $ti->setCache($cache);
+
+        // Invoke the helper twice to meet the expectations of the cache mock:
+        $ti->getMergedConfig('doctype');
+        $ti->getMergedConfig('doctype');
     }
 
     /**

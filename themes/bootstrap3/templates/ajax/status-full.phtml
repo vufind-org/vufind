@@ -35,6 +35,6 @@
     </tr>
   <?php endforeach; ?>
 <?php if (count($this->statusItems) > 5): ?>
-  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']])?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more')?> ...</a></td></tr>
+  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']])?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more_ellipsis')?></a></td></tr>
 <?php endif; ?>
 </table>
