@@ -150,6 +150,17 @@ class AccountCapabilities
     }
 
     /**
+     * Get scheduled search setting ('enabled' or 'disabled').
+     *
+     * @return string
+     */
+    public function getScheduledSearchSetting()
+    {
+        return ($this->config->Account->schedule_searches ?? false)
+            ? 'enabled' : 'disabled';
+    }
+
+    /**
      * Get SMS setting ('enabled' or 'disabled').
      *
      * @return string

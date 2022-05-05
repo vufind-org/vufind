@@ -1,0 +1,41 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Manage Search Subscription'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . '<li class="active">' . $this->transEsc('Manage Search Subscription') . '</li>';
+?>
+
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <p><?=$this->transEsc('schedule_explanation')?></p>
+  <table>
+    <tr>
+      <th><?=$this->transEsc('history_schedule')?></th>
+      <td>
+        <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
+          <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEscAttr("history_schedule")?>">
+            <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
+              <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"><?=$this->transEsc($scheduleLabel)?></option>
+            <?php endforeach; ?>
+          </select>
+          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->searchId) ?>"/>
+        </form>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <?=
+    $this->context($this)->renderInContext(
+        "myresearch/menu.phtml",
+        // Only activate search history in account menu if user is logged in.
+        $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
+    );
+  ?>
+</div>

@@ -31,6 +31,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -443,6 +444,39 @@ class MyResearchController extends AbstractBase
         }
         $savedRow->setSchedule($schedule, $baseurl);
         return $this->redirect()->toRoute('search-history');
+    }
+
+    /**
+     * Handle search subscription request
+     *
+     * @return mixed
+     */
+    public function schedulesearchAction()
+    {
+        // Fail if saved searches or subscriptions are disabled.
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
+        if ($check->getSavedSearchSetting() === 'disabled') {
+            throw new ForbiddenException('Saved searches disabled.');
+        }
+        $scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
+        if (empty($scheduleOptions)) {
+            throw new ForbiddenException('Scheduled searches disabled.');
+        }
+        // Fail if search ID is missing.
+        $searchId = $this->params()->fromQuery('searchid', false);
+        if (!$searchId) {
+            throw new BadRequestException('searchid missing');
+        }
+        // Require login.
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+        // Build the form.
+        return $this->createViewModel(compact('scheduleOptions', 'searchId'));
     }
 
     /**
