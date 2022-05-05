@@ -74,6 +74,7 @@ public class FormatCalculator
             case 'e':   // Cartographic material
             case 'f':   // Manuscript cartographic material
             case 'g':   // Projected medium
+            case 'i':   // Nonmusical sound recording
             case 'j':   // Musical sound recording
             case 'k':   // 2-D nonprojectable graphic
             case 'r':   // 3-D artifact or naturally occurring object
