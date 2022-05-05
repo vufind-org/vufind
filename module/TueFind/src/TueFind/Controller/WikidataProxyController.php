@@ -2,6 +2,9 @@
 
 namespace TueFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use TueFind\Http\CachedDownloader;
+
 /**
  * Use Wikidata API to search for specific information (e.g. a picture)
  * - Example call: https://ptah.ub.uni-tuebingen.de/wikidataproxy/load?search=Martin%20Luther
@@ -14,6 +17,28 @@ class WikidataProxyController extends AbstractProxyController
 
     const API_URL = 'https://www.wikidata.org/w/api.php?format=json';
     const CACHE_ID = 'wikidata';
+
+    /**
+     * Wikidata URLs must be resolved with a special content, else you might get the following error:
+     * - HTTP/1.0 429 Too many requests. Please comply with the User-Agent policy: https://meta.wikimedia.org/wiki/User-Agent_policy
+     *
+     * Since this might be useful for other URLs as well, we generate the user agent for all proxy requests.
+     *
+     * (override parent function)
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        parent::__construct($sm);
+
+        $config = $this->getConfig();
+
+        $siteTitle = $config->Site->title;
+        $siteUrl = $config->Site->url;
+        $siteEmail = $config->Site->email;
+
+        $userAgent = $siteTitle . '/1.0 (' . $siteUrl . '; ' . $siteEmail . ')';
+        $this->cachedDownloader->setClientOptions(['User-Agent' => $userAgent]);
+    }
 
     public function loadAction()
     {
@@ -182,7 +207,7 @@ class WikidataProxyController extends AbstractProxyController
      */
     public function searchEntities($search, $language) {
         $url = self::API_URL . '&action=wbsearchentities&search=' . urlencode($search) . '&language=' . $language;
-        return $this->getCachedUrlContents($url, true);
+        return $this->cachedDownloader->download($url, CachedDownloader::RESULT_MODE_JSON);
     }
 
     /**
@@ -194,7 +219,7 @@ class WikidataProxyController extends AbstractProxyController
      */
     public function getEntities($ids) {
         $url = self::API_URL . '&action=wbgetentities&ids=' . urlencode(implode('|', $ids));
-        return $this->getCachedUrlContents($url, true);
+        return $this->cachedDownloader->download($url, CachedDownloader::RESULT_MODE_JSON);
     }
 
     /**
@@ -205,7 +230,7 @@ class WikidataProxyController extends AbstractProxyController
      */
     public function getImage($filename) {
         $metadata = $this->getImageMetadata($filename);
-        $metadata['image'] = $this->getCachedUrlContents($metadata['url']);
+        $metadata['image'] = $this->cachedDownloader->download($metadata['url']);
         return $metadata;
     }
 
@@ -217,7 +242,7 @@ class WikidataProxyController extends AbstractProxyController
      */
     public function getImageMetadata($filename) {
         $lookupUrl = self::API_URL . '&action=query&prop=imageinfo&iiprop=url|mime|extmetadata&titles=File:' . urlencode($filename);
-        $lookupResult = $this->getCachedUrlContents($lookupUrl, true);
+        $lookupResult = $this->cachedDownloader->download($lookupUrl, CachedDownloader::RESULT_MODE_JSON);
         $subindex = '-1';
 
         $imageInfo = $lookupResult->query->pages->$subindex->imageinfo[0] ?? null;
@@ -250,27 +275,5 @@ class WikidataProxyController extends AbstractProxyController
                 'license' => $license,
                 'licenseUrl' => $licenseUrl,
                 'artist' => $artist];
-    }
-
-    /**
-     * Wikidata URLs must be resolved with a special content, else you might get the following error:
-     * - HTTP/1.0 429 Too many requests. Please comply with the User-Agent policy: https://meta.wikimedia.org/wiki/User-Agent_policy
-     *
-     * Since this might be useful for other URLs as well, we generate the user agent for all proxy requests.
-     *
-     * (override parent function)
-     */
-    protected function initializeClient()
-    {
-        parent::initializeClient();
-
-        $config = $this->getConfig();
-
-        $siteTitle = $config->Site->title;
-        $siteUrl = $config->Site->url;
-        $siteEmail = $config->Site->email;
-
-        $userAgent = $siteTitle . '/1.0 (' . $siteUrl . '; ' . $siteEmail . ')';
-        $this->client->setOptions(['User-Agent' => $userAgent]);
     }
 }
