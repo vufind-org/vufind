@@ -114,6 +114,19 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $uploadError = 1;
                 $showForm = false;
             } else if ($action == 'publish' && $uploadError == 0) {
+
+                $allLanguages = $config->Publication_Languages->toArray();
+                $recordLanguages = $existingRecord->getLanguages();
+                $dsApiLanguages = "";
+                foreach($recordLanguages as $rl) {
+                    foreach($allLanguages as $alKay=>$alName) {
+                        if($rl == $alName) {
+                            $dsApiLanguages .= $alKay.",";
+                        }
+                    }
+                }
+
+                $dspaceMetadata['/sections/traditionalpageone/dc.language.iso'] = $dsApiLanguages;
                 $uploadedFile = $this->params()->fromFiles('file');
 
                 $collectionName = $config->Publication->collection_name;
@@ -191,6 +204,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->uploadInfos = $uploadInfos;
         $view->termFile = $termFileData;
         $view->showForm = $showForm;
+        $view->recordLanguages = $existingRecord->getLanguages();
         return $view;
     }
 
