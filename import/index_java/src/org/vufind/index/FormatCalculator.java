@@ -256,8 +256,7 @@ public class FormatCalculator
                 if (couldBeBook) {
                     // Check 008/23 Form of item
                     // Make sure we have the applicable LDR/06: Language Material; Manuscript Language Material;
-                    // or Computer File
-                    if (recordType == 'a' || recordType == 't' || recordType == 'm') {
+                    if (recordType == 'a' || recordType == 't') {
                         switch (get008Value(marc008, 23)) {
                             case 'o': // Online
                             case 'q': // Direct electronic
@@ -265,6 +264,11 @@ public class FormatCalculator
                                 return "eBook";
                             default: break;
                         }
+                    } else if (recordType == 'm') {
+                        // If we made it here and it is a Computer file, set to eBook
+                        // Note: specific types of Computer file, e.g. Video Game, have
+                        // already been excluded in definitelyNotBookBasedOnRecordType()
+                        return "eBook";
                     }
                     // If we made it here, it should be Book
                     return "Book";
