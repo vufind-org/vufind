@@ -119,7 +119,7 @@ public class FormatCalculator
                         // 856 field would be labeled as "Electronic"
                         return "";
                 }
-                return "Software";
+                return "ElectronicResource";
             case 'd':
                 return "Globe";
             case 'f':
@@ -397,13 +397,13 @@ public class FormatCalculator
                     case 'e': //Bibliographic data
                         return "DataSet";
                     case 'f': // Font
-                        return "Software";
+                        return "Font";
                     case 'g': // Game
                         return "VideoGame";
                     case 'h': // Sound
                         return "SoundRecording";
                     case 'i': // Interactive multimedia
-                        return "Software";
+                        return "InteractiveMultimedia";
                     default: break;
                 }
                 // If we got here, don't return anything
