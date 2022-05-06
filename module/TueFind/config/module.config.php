@@ -184,6 +184,9 @@ $config = [
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
+        'initializers' => [
+            'TueFind\ServiceManager\ServiceInitializer',
+        ],
         'aliases' => [
             'AdminFrontend' => 'TueFind\Controller\AdminFrontendController',
             'AJAX' => 'TueFind\Controller\AjaxController',

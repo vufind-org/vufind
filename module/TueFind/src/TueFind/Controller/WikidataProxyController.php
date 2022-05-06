@@ -16,7 +16,7 @@ class WikidataProxyController extends AbstractProxyController
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     const API_URL = 'https://www.wikidata.org/w/api.php?format=json';
-    const CACHE_ID = 'wikidata';
+    protected $downloaderCacheId = 'wikidata';
 
     /**
      * Wikidata URLs must be resolved with a special content, else you might get the following error:
@@ -37,7 +37,7 @@ class WikidataProxyController extends AbstractProxyController
         $siteEmail = $config->Site->email;
 
         $userAgent = $siteTitle . '/1.0 (' . $siteUrl . '; ' . $siteEmail . ')';
-        $this->cachedDownloader->setClientOptions(['User-Agent' => $userAgent]);
+        $this->downloaderClientOptions['User-Agent'] = $userAgent;
     }
 
     public function loadAction()
