@@ -4,7 +4,7 @@ namespace TueFind\Cache;
 
 class Manager extends \VuFind\Cache\Manager
 {
-    public function addWikiCache($name,$dirPath)
+    public function addControllerCache($name, $dirPath)
     {
         $this->createFileCache(
             $name,

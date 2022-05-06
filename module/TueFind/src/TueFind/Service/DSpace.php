@@ -186,14 +186,30 @@ class DSpace {
                     break;
             }
 
-            $requestData[] = [
-                'op' => 'add',
-                'path' => $metaKey,
-                'value' =>
-                    [
-                        $valuesArray
-                    ]
-            ];
+            if(isset($valuesArray['language'])) {
+                $dsValueArray = [];
+                $explodeLanguages = explode(",",$metaValue);
+                foreach($explodeLanguages as $exl) {
+                    if(!empty($exl)) {
+                        $dsValueArray[] = ['language' => $exl];
+                    }
+                }
+                $requestData[] = [
+                    'op' => 'add',
+                    'path' => $metaKey,
+                    'value' => $dsValueArray
+                ];
+            }else{
+                $requestData[] = [
+                    'op' => 'add',
+                    'path' => $metaKey,
+                    'value' =>
+                        [
+                            $valuesArray
+                        ]
+                ];
+            }
+
         }
 
         $requestDataJson = json_encode($requestData);

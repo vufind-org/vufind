@@ -72,6 +72,8 @@ CREATE TABLE tuefind_user_authorities (
     user_id INT NOT NULL,
     authority_id VARCHAR(255) NOT NULL,
     access_state ENUM('requested', 'granted'),
+    requested_datetime TIMESTAMP DEFAULT NOW() NOT NULL,
+    granted_datetime TIMESTAMP DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY user_authority (authority_id),
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
@@ -88,4 +90,4 @@ ALTER TABLE user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE
 CREATE INDEX tuefind_rss_feed_send_emails_index ON user (tuefind_rss_feed_send_emails);
 ALTER TABLE user ADD tuefind_rss_feed_last_notification TIMESTAMP DEFAULT NOW();
 
-ALTER TABLE user ADD tuefind_is_admin BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE user ADD tuefind_rights SET('admin', 'user_authorities') DEFAULT NULL;

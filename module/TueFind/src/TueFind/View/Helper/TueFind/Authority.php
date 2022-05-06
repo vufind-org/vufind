@@ -520,12 +520,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $topicsCloudFieldname = $this->getTopicsCloudFieldname($translatorLocale);
 
         $settings = [
-            'maxNumber' => 10,
-            'minNumber' => 2,
+            'maxNumber' => 12,
+            'minNumber' => 1,
             'firstTopicLength' => 10,
             'firstTopicWidth' => 10,
-            'maxTopicRows' => 20,
-            'minWeight' => 0,
+            'maxTopicRows' => 200,
+            'minWeight' => 1,
             'filter' => $topicsCloudFieldname,
             'paramBag' => [
                 'sort' => 'publishDate DESC',
@@ -588,19 +588,18 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                     }
                 }
                 $one = $topicsArray[$i];
-                if($firstWeight != $topicsArray[$i]['topicCount']) {
-                    $firstWeight = $topicsArray[$i]['topicCount'];
-                    if($topWeight != $settings['minWeight']) {
+                    if($topWeight > $settings['minNumber']) {
                         $topWeight--;
                     }else{
-                        $topWeight = $settings['minWeight'];
+                        if(count($topicsArray) < 30) {
+                            $topWeight = $settings['maxNumber']-1;
+                        }
                     }
-                }
                 $one['topicNumber'] = $topWeight;
                 $mainTopicsArray[] = $one;
             }
+            $mainTopicsArray[0]['topicNumber'] = $settings['maxNumber'];
         }
-
         return [$mainTopicsArray, $settings];
     }
 

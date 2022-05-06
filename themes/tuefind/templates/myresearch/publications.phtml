@@ -43,7 +43,7 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
             <td><a href="<?=$this->recordLink()->getUrl($publication['control_number'])?>"><?=$publication['title'];?></a></td>
             <td><a href="<?=$this->dspaceServer;?>/items/<?=$publication['external_document_guid']?>" target="_blank"><i class="fa fa-external-link"></i> Go to file</a></td>
             <td><?=date("d.m.Y H:i:s",strtotime($publication['publication_datetime']));?></td>
-            <td><?=date("d.m.Y",strtotime($publication['terms_date']));?></td>
+            <td><a href="/publication_terms/terms_<?=date("Ymd",strtotime($publication['terms_date']));?>.pdf" target="_blank"><?=date("d.m.Y",strtotime($publication['terms_date']));?></a></td>
           </tr>
         <?php endforeach; ?>
       </table>

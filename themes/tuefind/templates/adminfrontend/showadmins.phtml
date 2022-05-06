@@ -16,6 +16,7 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
       <th><?=$this->transEsc('First Name')?></th>
       <th><?=$this->transEsc('Last Name')?></th>
       <th><?=$this->transEsc('Email Address')?></th>
+      <th><?=$this->transEsc('Rights')?></th>
     </tr>
     <?php foreach ($this->admins as $user): ?>
       <tr>
@@ -23,6 +24,7 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
         <td><?=$user->firstname?></td>
         <td><?=$user->lastname?></td>
         <td><?=$user->email?></td>
+        <td><?=str_replace(',', '<br>', $user->tuefind_rights)?></td>
       </tr>
     <?php endforeach; ?>
   </table>

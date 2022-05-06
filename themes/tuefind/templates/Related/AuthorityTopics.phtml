@@ -8,14 +8,9 @@
     $responseTopicsData = $responseTopicsDataAndSettings[0];
     $responseTopicsSettings = $responseTopicsDataAndSettings[1];
 
-
     $jsData = '';
-    $itopic = 1;
     foreach($responseTopicsData as $topic) {
-      if($itopic <= $responseTopicsSettings['maxTopicRows']) {
         $jsData .= '{text: "'.$topic['topicTitle'].'", weight: '.$topic['topicNumber'].', html: {title: "'.$topic['topicTitle'].'", "class": "custom-class"}, link: {href: '. json_encode($topic['topicLink']).', target: "_blank"}},';
-      }
-      $itopic++;
     }
 
     $ascSortingTopicsData = $responseTopicsData;
@@ -24,7 +19,6 @@
         $toptitle[$key]  = $row['topicTitle'];
     }
     array_multisort($toptitle, SORT_ASC,SORT_LOCALE_STRING, $ascSortingTopicsData);
-
 
     $countSortingTopicsData = $responseTopicsData;
     array_multisort(array_column($countSortingTopicsData, 'topicCount'), SORT_DESC, $countSortingTopicsData);

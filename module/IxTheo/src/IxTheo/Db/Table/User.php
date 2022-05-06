@@ -19,7 +19,7 @@ class User extends \TueFind\Db\Table\User
     public function getAdmins()
     {
         $select = $this->getSql()->select();
-        $select->where(['user.tuefind_is_admin' => true, 'user.ixtheo_user_type' => \IxTheo\Utility::getUserTypeFromUsedEnvironment()]);
+        $select->where('user.tuefind_rights IS NOT NULL AND user.ixtheo_user_type = "' . \IxTheo\Utility::getUserTypeFromUsedEnvironment() . '"');
         $select->order('user.username ASC');
         return $this->selectWith($select);
     }
