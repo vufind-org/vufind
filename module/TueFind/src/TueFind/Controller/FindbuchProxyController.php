@@ -34,7 +34,7 @@ class FindbuchProxyController extends AbstractProxyController
                             'unibib_rub',
                             'wikidata'];
 
-    const CACHE_ID = 'findbuch';
+    protected $downloaderCacheId = 'findbuch';
 
     public function loadAction()
     {
