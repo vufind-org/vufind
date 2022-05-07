@@ -95,7 +95,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // theme:
         $expectedWarnings = [
             'The Statistics module has been removed from VuFind. '
-            . 'For usage tracking, please configure Google Analytics or Piwik.'
+            . 'For usage tracking, please configure Google Analytics or Matomo.'
         ];
         if ((float)$version < 1.3) {
             $expectedWarnings[] = "WARNING: This version of VuFind does not support "

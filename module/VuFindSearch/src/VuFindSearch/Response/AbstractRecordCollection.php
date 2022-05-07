@@ -101,6 +101,23 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Slice the record list.
+     *
+     * @param int $offset Offset
+     * @param int $limit  Limit
+     *
+     * @return void
+     */
+    public function slice(int $offset, int $limit): void
+    {
+        $this->records = array_slice(
+            $this->records,
+            $offset,
+            $limit
+        );
+    }
+
+    /**
      * Return first record in response.
      *
      * @return RecordInterface|null

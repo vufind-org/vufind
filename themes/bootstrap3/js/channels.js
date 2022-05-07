@@ -100,7 +100,7 @@ VuFind.register('channels', function Channels() {
       var record = $(event.delegateTarget);
       if (!record.data("popover-loaded")) {
         record.popover({
-          content: VuFind.translate('loading') + '...',
+          content: VuFind.translate('loading_ellipsis'),
           html: true,
           placement: 'bottom',
           trigger: 'focus',

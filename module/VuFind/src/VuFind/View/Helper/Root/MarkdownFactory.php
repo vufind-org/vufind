@@ -59,7 +59,7 @@ class MarkdownFactory implements FactoryInterface
         array $options = null
     ) {
         $markdownService = $container
-            ->get(\League\CommonMark\MarkdownConverterInterface::class);
+            ->get(\League\CommonMark\ConverterInterface::class);
         return new $requestedName($markdownService);
     }
 }

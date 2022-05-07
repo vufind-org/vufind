@@ -26,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFindTest\Search\Solr;
+namespace VuFindTest\Search\Base;
 
 use Laminas\EventManager\Event;
-use VuFind\Search\Solr\HideFacetValueListener;
+use VuFind\Search\Base\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Backend;
-use VuFindSearch\Backend\Solr\Response\Json\Facets;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 
 /**
@@ -65,22 +64,19 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a facet object for testing.
+     * Get a facet array for testing.
      *
-     * @return Facets
+     * @return array
      */
-    protected function getFacets(): Facets
+    protected function getFacets(): array
     {
-        $data = [
-            'facet_fields' => [
-                'format' => [
-                    ['Book', 124],
-                    ['Unknown', 16],
-                    ['Fake', 3],
-                ]
+        return [
+            'format' => [
+                'Book' => 124,
+                'Unknown' => 16,
+                'Fake' => 3,
             ]
         ];
-        return new Facets($data);
     }
 
     /**
@@ -90,10 +86,25 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResult(): RecordCollection
     {
+        $facets = $this->getFacets();
         $result = $this->getMockBuilder(RecordCollection::class)
             ->disableOriginalConstructor()->getMock();
         $result->expects($this->any())->method('getFacets')
-            ->will($this->returnValue($this->getFacets()));
+            ->will($this->returnCallback(
+                function () use (&$facets) {
+                    return $facets;
+                }
+            ));
+        $result->expects($this->any())->method('setFacets')
+            ->will($this->returnCallback(
+                function ($new) use (&$facets) {
+                    $facets = $new;
+                }
+            ));
+        $result->expects($this->any())->method('getQueryFacets')
+            ->will($this->returnValue([]));
+        $result->expects($this->any())->method('getPivotFacets')
+            ->will($this->returnValue([]));
         return $result;
     }
 
@@ -144,18 +155,19 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     {
         $listener = $this->getListener(['format' => ['Unknown']]);
         $result = $this->getMockResult();
-        $facets = $result->getFacets()->getFieldFacets();
+        $facets = $result->getFacets();
         $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
             ['Book' => 124, 'Unknown' => 16, 'Fake' => 3],
-            $facets['format']->toArray()
+            $facets['format']
         );
         $listener->onSearchPost($event);
+        $facets = $result->getFacets();
         $this->assertEquals(
             ['Book' => 124, 'Fake' => 3],
-            $facets['format']->toArray()
+            $facets['format']
         );
     }
 
@@ -166,20 +178,21 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testShowFacets(): void
     {
-        $listener = $this->getListener([], ['format' => ['Book']]);
+        $listener = $this->getListener([], ['format' => ['Book', 'Fake']]);
         $result = $this->getMockResult();
-        $facets = $result->getFacets()->getFieldFacets();
+        $facets = $result->getFacets();
         $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
             ['Book' => 124, 'Unknown' => 16, 'Fake' => 3],
-            $facets['format']->toArray()
+            $facets['format']
         );
         $listener->onSearchPost($event);
+        $facets = $result->getFacets();
         $this->assertEquals(
-            ['Book' => 124],
-            $facets['format']->toArray()
+            ['Book' => 124, 'Fake' => 3],
+            $facets['format']
         );
     }
 
@@ -197,18 +210,19 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
             ['format' => ['Book', 'Fake']]
         );
         $result = $this->getMockResult();
-        $facets = $result->getFacets()->getFieldFacets();
+        $facets = $result->getFacets();
         $command = $this->getMockSearchCommand(null, 'search', 'Solr', $result);
         $params = ['backend' => 'Solr', 'context' => 'search', 'command' => $command];
         $event = new Event(null, $result, $params);
         $this->assertEquals(
             ['Book' => 124, 'Unknown' => 16, 'Fake' => 3],
-            $facets['format']->toArray()
+            $facets['format']
         );
         $listener->onSearchPost($event);
+        $facets = $result->getFacets();
         $this->assertEquals(
             ['Book' => 124],
-            $facets['format']->toArray()
+            $facets['format']
         );
     }
 }

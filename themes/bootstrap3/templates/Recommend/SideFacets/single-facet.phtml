@@ -44,7 +44,7 @@
     </span>
   <?php endif; ?>
 
-  <?php if (!$this->facet['isApplied']): ?>
+  <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
     <span class="badge">
       <?=$this->localizedNumber($this->facet['count']) ?>
     </span>

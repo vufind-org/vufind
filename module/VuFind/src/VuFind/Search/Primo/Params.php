@@ -60,6 +60,18 @@ class Params extends \VuFind\Search\Base\Params
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
+     * Mappings of specific Primo facet values (spelling errors and other special
+     * cases present at least in CDI)
+     *
+     * @var array
+     */
+    protected $facetValueMappings = [
+        'reference_entrys' => 'Reference Entries',
+        'newsletterarticle' => 'Newsletter Articles',
+        'archival_material_manuscripts' => 'Archival Materials / Manuscripts',
+    ];
+
+    /**
      * Create search backend parameters for advanced features.
      *
      * @return ParamBag
@@ -84,24 +96,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Format a single filter for use in getFilterList().
+     * Get a display text for a facet field.
      *
-     * @param string $field     Field name
-     * @param string $value     Field value
-     * @param string $operator  Operator (AND/OR/NOT)
-     * @param bool   $translate Should we translate the label?
+     * @param string $field Facet field
+     * @param string $value Facet value
      *
-     * @return array
+     * @return string
      */
-    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    public function getFacetValueRawDisplayText(string $field, string $value): string
     {
-        $result
-            = parent::formatFilterListEntry($field, $value, $operator, $translate);
-        if (!$translate) {
-            $result['displayText']
-                = $this->fixPrimoFacetValue($result['displayText']);
-        }
-        return $result;
+        return $this->fixPrimoFacetValue(
+            parent::getFacetValueRawDisplayText($field, $value)
+        );
     }
 
     /**
@@ -113,9 +119,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function fixPrimoFacetValue($str)
     {
-        // Special case: odd spelling error in Primo results:
-        if ($str == 'reference_entrys') {
-            return 'Reference Entries';
+        if ($replacement = $this->facetValueMappings[$str] ?? '') {
+            return $replacement;
         }
         return mb_convert_case(
             preg_replace('/_/u', ' ', $str),

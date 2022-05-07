@@ -42,6 +42,8 @@ use VuFind\Controller\Plugin\ResultScroller;
  */
 class ResultScrollerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test next_prev_nav bug
      * Expect next_prev to behave like it's disabled if the last search didn't return any results
@@ -358,11 +360,9 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $firstLast = true,
         $sort = null
     ): \VuFindTest\Search\TestHarness\Results {
-        $pm = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->disableOriginalConstructor()->getMock();
-        $config = new \Laminas\Config\Config(
-            $firstLast ? $this->getFirstLastConfig() : []
+        $pm = $this->getMockConfigPluginManager(
+            ['config' => $firstLast ? $this->getFirstLastConfig() : []]
         );
-        $pm->expects($this->any())->method('get')->will($this->returnValue($config));
         $options = new \VuFindTest\Search\TestHarness\Options($pm);
         $params = new \VuFindTest\Search\TestHarness\Params($options, $pm);
         $params->setPage($page);

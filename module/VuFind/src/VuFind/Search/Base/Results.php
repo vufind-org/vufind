@@ -166,6 +166,13 @@ abstract class Results
     protected $urlQueryHelperFactory = null;
 
     /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelperInterface
+     */
+    protected $hierarchicalFacetHelper = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -682,6 +689,19 @@ abstract class Results
     }
 
     /**
+     * Set hierarchical facet helper
+     *
+     * @param HierarchicalFacetHelperInterface $helper Hierarchical facet helper
+     *
+     * @return void
+     */
+    public function setHierarchicalFacetHelper(
+        HierarchicalFacetHelperInterface $helper
+    ) {
+        $this->hierarchicalFacetHelper = $helper;
+    }
+
+    /**
      * Get complete facet counts for several index fields
      *
      * @param array  $facetfields  name of the Solr fields to return facets for
@@ -734,5 +754,79 @@ abstract class Results
             $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
+    }
+
+    /**
+     * A helper method that converts the list of facets for the last search from
+     * RecordCollection's facet list.
+     *
+     * @param array $facetList Facet list
+     * @param array $filter    Array of field => on-screen description listing
+     * all of the desired facet fields; set to null to get all configured values.
+     *
+     * @return array Facets data arrays
+     */
+    protected function buildFacetList(array $facetList, array $filter = null): array
+    {
+        // If there is no filter, we'll use all facets as the filter:
+        if (null === $filter) {
+            $filter = $this->getParams()->getFacetConfig();
+        }
+
+        // Start building the facet list:
+        $result = [];
+
+        // Loop through every field returned by the result set
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        $hierarchicalFacets
+            = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
+            ? $this->getOptions()->getHierarchicalFacets()
+            : [];
+        foreach (array_keys($filter) as $field) {
+            $data = $facetList[$field] ?? [];
+            // Skip empty arrays:
+            if (count($data) < 1) {
+                continue;
+            }
+            // Initialize the settings for the current field
+            $result[$field] = [
+                'label' => $filter[$field],
+                'list' => []
+            ];
+            // Should we translate values for the current facet?
+            $translate = in_array($field, $translatedFacets);
+            $hierarchical = in_array($field, $hierarchicalFacets);
+            $operator = $this->getParams()->getFacetOperator($field);
+            // Loop through values:
+            foreach ($data as $value => $count) {
+                $displayText = $this->getParams()
+                    ->getFacetValueRawDisplayText($field, $value);
+                if ($hierarchical) {
+                    if (!$this->hierarchicalFacetHelper) {
+                        throw new \Exception(
+                            get_class($this)
+                            . ': hierarchical facet helper unavailable'
+                        );
+                    }
+                    $displayText = $this->hierarchicalFacetHelper
+                        ->formatDisplayText($displayText);
+                }
+                $displayText = $translate
+                    ? $this->getParams()->translateFacetValue($field, $displayText)
+                    : $displayText;
+                $isApplied = $this->getParams()->hasFilter("$field:" . $value)
+                    || $this->getParams()->hasFilter("~$field:" . $value);
+
+                // Store the collected values:
+                $result[$field]['list'][] = compact(
+                    'value',
+                    'displayText',
+                    'count',
+                    'operator',
+                    'isApplied'
+                );
+            }
+        }
+        return $result;
     }
 }

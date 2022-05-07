@@ -179,6 +179,198 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Test facets.
+     *
+     * @return void
+     */
+    public function testFacets()
+    {
+        $resp = $this->loadResponse('facet');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $response = $back->search(new Query(), 0, 0);
+        $facets = $response->getFacets();
+        $this->assertIsArray($facets);
+        $this->assertEquals(
+            [
+                'topic_facet' => [
+                    'Research' => 16,
+                    'Psychotherapy' => 8,
+                    'Adult children of aging parents' => 7,
+                    'Automobile drivers\' tests' => 7,
+                    'Fathers and daughters' => 7,
+                ]
+            ],
+            $facets
+        );
+    }
+
+    /**
+     * Test pivot facets.
+     *
+     * @return void
+     */
+    public function testPivotFacets()
+    {
+        $resp = $this->loadResponse('pivot-facet');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $response = $back->search(new Query(), 0, 0);
+        $facets = $response->getPivotFacets();
+        $this->assertIsArray($facets);
+
+        $this->assertEquals(
+            [
+                'A - General Works' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'A - General Works',
+                    'count' => 40,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Research',
+                            'count' => 16,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Psychotherapy',
+                            'count' => 8,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Cognitive therapy',
+                            'count' => 4,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Crime',
+                            'count' => 4,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Criminal justice, Administration of',
+                            'count' => 4,
+                        ],
+                    ],
+                ],
+                'P - Language and Literature' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'P - Language and Literature',
+                    'count' => 7,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Adult children of aging parents',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Automobile drivers\' tests',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Fathers and daughters',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Middle aged women',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Older men',
+                            'count' => 7,
+                        ],
+                    ],
+                ],
+                'D - World History' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'D - World History',
+                    'count' => 3,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'History',
+                            'count' => 2,
+                        ],
+                    ],
+                ],
+                'B - Philosophy, Psychology, Religion' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'B - Philosophy, Psychology, Religion',
+                    'count' => 2,
+                ],
+                'H - Social Science' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'H - Social Science',
+                    'count' => 1,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Bank employees',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Bank management',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Globalization',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Industrial relations',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Labor unions',
+                            'count' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            $facets
+        );
+    }
+
+    /**
+     * Test query facets.
+     *
+     * @return void
+     */
+    public function testQueryFacets()
+    {
+        $resp = $this->loadResponse('query-facet');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $response = $back->search(new Query(), 0, 0);
+        $facets = $response->getQueryFacets();
+        $this->assertIsArray($facets);
+        $this->assertEquals(
+            [
+                'publishDate:[* TO 2000]' => 45,
+                'publishDate:[2001 TO 2010]' => 11,
+            ],
+            $facets
+        );
+    }
+
+    /**
      * Test terms component (using ParamBag as first param).
      *
      * @return void

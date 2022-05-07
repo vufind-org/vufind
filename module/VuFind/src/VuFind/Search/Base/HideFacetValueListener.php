@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFind\Search\Solr;
+namespace VuFind\Search\Base;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
@@ -51,14 +51,15 @@ class HideFacetValueListener
     protected $backend;
 
     /**
-     * List of facets to show. All other facets are hidden
+     * List of facet values to show, indexed by facet field. All other facets are
+     * hidden.
      *
      * @var array
      */
     protected $showFacets = [];
 
     /**
-     * List of facets to hide.
+     * List of facet values to hide, indexed by facet field.
      *
      * @var array
      */
@@ -131,20 +132,32 @@ class HideFacetValueListener
     protected function processHideFacetValue($event)
     {
         $result = $event->getParam('command')->getResult();
-        $facets = $result->getFacets()->getFieldFacets();
+        if (!$result) {
+            return;
+        }
+        $facets = $result->getFacets();
 
-        foreach ($this->hideFacets as $facet => $value) {
-            if (isset($facets[$facet])) {
-                $facets[$facet]->removeKeys((array)$value);
+        foreach ($this->hideFacets as $facet => $values) {
+            foreach ((array)$values as $value) {
+                if (isset($facets[$facet][$value])) {
+                    unset($facets[$facet][$value]);
+                }
             }
         }
-        foreach ($this->showFacets as $facet => $value) {
+        foreach ($this->showFacets as $facet => $values) {
             if (isset($facets[$facet])) {
-                $facetValues = $facets[$facet]->toArray();
-                $facetsToHide = array_diff(array_keys($facetValues), (array)$value);
-                $facets[$facet]->removeKeys($facetsToHide);
+                $valuesToHide = array_diff(
+                    array_keys($facets[$facet]),
+                    (array)$values
+                );
+                foreach ($valuesToHide as $valueToHide) {
+                    if (isset($facets[$facet][$valueToHide])) {
+                        unset($facets[$facet][$valueToHide]);
+                    }
+                }
             }
         }
-        return null;
+
+        $result->setFacets($facets);
     }
 }

@@ -25,6 +25,8 @@ return [
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - position: 'header' (default) or 'footer'
          * - conditional: e.g. 'lt IE 10'
+         * - disabled: if set to true in a child theme, the matching file will be
+         *   removed if it was included by a parent theme.
          *
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
@@ -194,10 +196,15 @@ return [
             'notification' => 'FontAwesome:bell',
             'options' => 'FontAwesome:gear',
             'overdrive' => 'FontAwesome:download',
+            'overdrive-cancel-hold' => 'FontAwesome:flag-o',
+            'overdrive-checkout' => 'FontAwesome:arrow-left',
+            'overdrive-checkout-rtl' => 'FontAwesome:arrow-right',
             'overdrive-download' => 'FontAwesome:download',
             'overdrive-help' => 'FontAwesome:question-circle',
+            'overdrive-place-hold' => 'FontAwesome:flag-o',
             'overdrive-return' => 'FontAwesome:arrow-right',
             'overdrive-return-rtl' => 'FontAwesome:arrow-left',
+            'overdrive-sign-in' => 'FontAwesome:sign-in',
             'overdrive-success' => 'FontAwesome:check',
             'overdrive-warning' => 'Alias:warning',
             'page-first' => 'FontAwesome:angle-double-left',

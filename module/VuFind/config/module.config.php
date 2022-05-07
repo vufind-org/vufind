@@ -338,7 +338,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'League\CommonMark\MarkdownConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
@@ -462,6 +462,7 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'League\CommonMark\MarkdownConverterInterface' => 'League\CommonMark\ConverterInterface',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
@@ -712,7 +713,7 @@ $staticRoutes = [
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
-    'Search/Advanced', 'Search/CollectionFacetList',
+    'Search/Advanced', 'Search/Blended', 'Search/CollectionFacetList',
     'Search/EditMemory', 'Search/Email',
     'Search/FacetList', 'Search/History', 'Search/Home', 'Search/NewItem',
     'Search/OpenSearch', 'Search/Reserves', 'Search/ReservesFacetList',

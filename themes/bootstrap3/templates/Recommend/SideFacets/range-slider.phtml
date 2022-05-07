@@ -4,28 +4,29 @@
     return preg_replace('/[^\d]*/', '', $val);
   };
   $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);
+  $safeBaseId = $this->escapeHtmlAttr($this->title);
 ?>
 <div class="facet">
-  <form class="facet-range-form" name="<?=$this->escapeHtmlAttr($this->title)?>Filter" id="<?=$this->escapeHtmlAttr($this->title)?>Filter">
+  <form class="facet-range-form" name="<?=$safeBaseId?>Filter" id="<?=$safeBaseId?>Filter">
     <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
     <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>"/>
     <div class="date-fields">
       <?php $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
       <div class="date-from">
-        <label for="<?=$this->escapeHtmlAttr($this->title)?>from">
+        <label id="<?=$safeBaseId?>from-label" for="<?=$safeBaseId?>from">
           <?=$this->transEsc('date_from')?>:
         </label>
-        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>from" id="<?=$this->escapeHtmlAttr($this->title)?>from" value="<?=$this->escapeHtmlAttr($cleanValues[0] ?? '')?>" <?=$extraInputAttribs?>/>
+        <input type="text" class="form-control" name="<?=$safeBaseId?>from" id="<?=$safeBaseId?>from" value="<?=$this->escapeHtmlAttr($cleanValues[0] ?? '')?>" <?=$extraInputAttribs?>/>
       </div>
       <div class="date-to">
-        <label for="<?=$this->escapeHtmlAttr($this->title)?>to">
+        <label id="<?=$safeBaseId?>to-label" for="<?=$safeBaseId?>to">
           <?=$this->transEsc('date_to')?>:
         </label>
-        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>to" id="<?=$this->escapeHtmlAttr($this->title)?>to" value="<?=$this->escapeHtmlAttr($cleanValues[1] ?? '')?>" <?=$extraInputAttribs?>/>
+        <input type="text" class="form-control" name="<?=$safeBaseId?>to" id="<?=$safeBaseId?>to" value="<?=$this->escapeHtmlAttr($cleanValues[1] ?? '')?>" <?=$extraInputAttribs?>/>
       </div>
     </div>
     <?php if ($this->facet['type'] == 'date'): ?>
-      <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($this->title)?><?=$this->escapeHtml($this->facet['type'])?>Slider"/></div>
+      <div class="slider-container"><input type="text" class="hidden" id="<?=$safeBaseId?><?=$this->escapeHtml($this->facet['type'])?>Slider" aria-label="<?=$this->transEsc('slider_label', ['%%title%%' => $this->translate($this->cluster['label'])])?>"/></div>
     <?php endif; ?>
     <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>"/>
   </form>
@@ -50,20 +51,23 @@
     $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
-    var v = {$this->escapeHtmlAttr($this->title)}dateSlider.getValue();
-    $('#{$this->escapeHtmlAttr($this->title)}from').val(v[0]);
-    $('#{$this->escapeHtmlAttr($this->title)}to').val(v[1]);
+    var v = {$safeBaseId}dateSlider.getValue();
+    $('#{$safeBaseId}from').val(v[0]);
+    $('#{$safeBaseId}to').val(v[1]);
   };
-  var {$this->escapeHtmlAttr($this->title)}dateSlider = $('#{$this->escapeHtmlAttr($this->title)}dateSlider')
+  var {$safeBaseId}dateSlider = $('#{$safeBaseId}dateSlider')
     .slider($sliderOptionsJson)
     .on('change', fillTexts)
     .data('slider');
+
+    $("#{$safeBaseId}Filter .slider-handle.min-slider-handle").attr("aria-labelledby", "{$safeBaseId}from-label");
+    $("#{$safeBaseId}Filter .slider-handle.max-slider-handle").attr("aria-labelledby", "{$safeBaseId}to-label");
 });
 
-$('#{$this->escapeHtmlAttr($this->title)}from, #{$this->escapeHtmlAttr($this->title)}to').change(function () {
-  var fromValue = Number($('#{$this->escapeHtmlAttr($this->title)}from').val());
-  var toValue = Number($('#{$this->escapeHtmlAttr($this->title)}to').val());
-  $('#{$this->escapeHtmlAttr($this->title)}dateSlider').slider(
+$('#{$safeBaseId}from, #{$safeBaseId}to').change(function () {
+  var fromValue = Number($('#{$safeBaseId}from').val());
+  var toValue = Number($('#{$safeBaseId}to').val());
+  $('#{$safeBaseId}dateSlider').slider(
     'setValue',
     [
       isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
