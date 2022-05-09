@@ -418,7 +418,10 @@ class Wikipedia implements TranslatorAwareInterface
         $imageName = null;
         $imageCaption = null;
         // Check if data exists or not
-        if (isset($rawBody['query']['pages']['-1'])) {
+        if (isset($rawBody['query'])
+            && isset($rawBody['query']['pages'])
+            && isset($rawBody['query']['pages']['-1'])
+        ) {
             return null;
         }
 

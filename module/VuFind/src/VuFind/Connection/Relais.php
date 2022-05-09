@@ -87,8 +87,8 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
     /**
      * Format the parameters needed to look up an OCLC number in the API.
      *
-     * @param string $oclc   OCLC number to look up
-     * @param string $patron Patron ID (null to use default from config)
+     * @param string      $oclc   OCLC number to look up
+     * @param string|null $patron Patron ID (null to use default from config)
      *
      * @return array
      */

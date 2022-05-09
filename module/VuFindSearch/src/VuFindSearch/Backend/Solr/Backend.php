@@ -445,7 +445,7 @@ class Backend extends AbstractBackend
             is_int($timeout ?? null) ? compact('timeout') : [],
             'write',
             $doc,
-            $handler ?? 'update',
+            $handler,
             $params
         );
 

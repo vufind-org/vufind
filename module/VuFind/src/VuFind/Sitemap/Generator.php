@@ -374,7 +374,7 @@ class Generator
                 }
             }
 
-            foreach ($sitemaps ?? [] as $sitemap) {
+            foreach ($sitemaps as $sitemap) {
                 $smf->addUrl($baseUrl . '/' . $sitemap);
             }
 

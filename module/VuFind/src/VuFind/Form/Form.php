@@ -400,10 +400,10 @@ class Form extends \Laminas\Form\Form implements
             $valueLabel = null;
 
             if (in_array($type, ['radio', 'select'])) {
+                $option = null;
                 if (isset($el['options'])) {
                     $option = $el['options'][$value] ?? null;
                 } elseif (isset($el['optionGroups'])) {
-                    $option = null;
                     foreach ($el['optionGroups'] as $group) {
                         if (isset($group['options'][$value])) {
                             $option = $group['options'][$value];
@@ -571,12 +571,12 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Merge local configuration into default configuration.
      *
-     * @param array $config      Default configuration
-     * @param array $localConfig Local configuration
+     * @param array  $config      Default configuration
+     * @param ?array $localConfig Local configuration
      *
      * @return array
      */
-    protected function mergeLocalConfig($config, $localConfig)
+    protected function mergeLocalConfig($config, $localConfig = null)
     {
         return $localConfig ?? $config;
     }

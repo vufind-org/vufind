@@ -566,7 +566,7 @@ class Folio extends AbstractAPI implements
                 $supStat = $supplement->statement ?? '';
                 $supNote = $supplement->note ?? '';
                 $statement = trim(sprintf($format, $supStat, $supNote));
-                return $statement ?? '';
+                return $statement;
             };
             $holdingNotes = array_filter(
                 array_map($notesFormatter, $holding->notes ?? [])

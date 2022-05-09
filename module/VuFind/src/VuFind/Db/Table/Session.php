@@ -137,9 +137,7 @@ class Session extends Gateway
     public function destroySession($sid)
     {
         $s = $this->getBySessionId($sid, false);
-        if (!empty($s)) {
-            $s->delete();
-        }
+        $s->delete();
     }
 
     /**

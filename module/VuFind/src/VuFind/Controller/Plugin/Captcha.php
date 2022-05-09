@@ -113,6 +113,7 @@ class Captcha extends AbstractPlugin
             return true;
         }
         $captchaPassed = false;
+
         foreach ($this->captchas as $captcha) {
             try {
                 $captchaPassed = $captcha->verify(
@@ -127,7 +128,7 @@ class Captcha extends AbstractPlugin
             }
         }
 
-        if (!$captchaPassed && $this->errorMode != 'none') {
+        if (isset($captcha) && !$captchaPassed && $this->errorMode != 'none') {
             $message = $captcha->getErrorMessage();
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()

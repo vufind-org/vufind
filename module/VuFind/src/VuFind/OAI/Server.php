@@ -1393,7 +1393,7 @@ class Server
         // Prefix?  Strip it off and return the stripped version if valid:
         $prefix = 'oai:' . $this->idNamespace . ':';
         $prefixLen = strlen($prefix);
-        if (!empty($prefix) && substr($id, 0, $prefixLen) == $prefix) {
+        if (substr($id, 0, $prefixLen) == $prefix) {
             return substr($id, $prefixLen);
         }
 

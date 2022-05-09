@@ -2812,7 +2812,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $location = $collection = null;
         $initialLevel = 0;
-        foreach ($locations ?? [] as $loc) {
+        foreach ($locations as $loc) {
             $this->registerNamespaceFor($loc);
             $name = $loc->xpath('ns1:LocationNameValue');
             $name = (string)($name[0] ?? '');

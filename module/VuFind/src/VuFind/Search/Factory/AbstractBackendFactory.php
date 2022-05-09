@@ -83,7 +83,6 @@ abstract class AbstractBackendFactory implements FactoryInterface
     ): \Laminas\Http\Client {
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $options = $options ?? [];
         if (null !== $timeout) {
             $options['timeout'] = $timeout;
         }
