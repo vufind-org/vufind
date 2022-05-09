@@ -12,6 +12,7 @@ class UserAuthority extends \VuFind\Db\Row\RowGateway
     public function updateAccessState($accessState)
     {
         $this->access_state = $accessState;
+        $this->granted_datetime = date('Y-m-d H:i:s');
         $this->save();
     }
 }
