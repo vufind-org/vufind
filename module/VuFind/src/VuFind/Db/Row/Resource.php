@@ -160,6 +160,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * @param int                 $rating Rating
      *
      * @throws LoginRequiredException
+     * @throws \Exception
      * @return int ID of newly-created rating
      */
     public function addOrUpdateRating(\VuFind\Db\Row\User $user, int $rating)
@@ -169,6 +170,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
                 "Can't add ratings without logging in."
             );
         }
+        if ($rating < 0 || $rating > 100) {
+            throw new \Exception('Rating value out of range');
+        }
+
 
         $ratings = $this->getDbTable('Ratings');
         $callback = function ($select) use ($user) {
