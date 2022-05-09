@@ -512,8 +512,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test star ratings on records.
      *
-     * @retryCallback removeUsername2
-     *
      * @return void
      */
     public function testRating()
