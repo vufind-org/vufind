@@ -43,9 +43,9 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class BrowseController extends AbstractBase implements
-    \VuFind\I18n\SorterAwareInterface
+    \VuFind\I18n\SorterInterface
 {
-    use \VuFind\I18n\SorterAwareTrait;
+    use \VuFind\I18n\SorterTrait;
 
     /**
      * VuFind configuration
@@ -84,6 +84,7 @@ class BrowseController extends AbstractBase implements
                 $this->disabledFacets[] = $key;
             }
         }
+        $this->setSorter($sm->get(\VuFind\I18n\Sorter::class));
         parent::__construct($sm);
     }
 

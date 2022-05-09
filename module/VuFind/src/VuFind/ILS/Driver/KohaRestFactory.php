@@ -71,10 +71,12 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
         };
         $currencyFormatter
             = $container->get(\VuFind\Service\CurrencyFormatter::class);
-        return parent::__invoke(
+        $driver = parent::__invoke(
             $container,
             $requestedName,
             [$sessionFactory, $currencyFormatter]
         );
+        $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $driver;
     }
 }

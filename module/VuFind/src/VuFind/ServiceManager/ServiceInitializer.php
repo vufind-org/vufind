@@ -95,9 +95,6 @@ class ServiceInitializer implements InitializerInterface
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
         }
-        if ($instance instanceof \VuFind\I18n\SorterAwareInterface) {
-            $instance->setSorter($sm->get(\VuFind\I18n\Sorter::class));
-        }
         // Only inject cache if configuration enabled (to save resources):
         if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface
             && $this->isCacheEnabled($sm)

@@ -38,9 +38,9 @@ namespace VuFind\View\Helper\Root;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
-class Sorter implements \VuFind\I18n\SorterAwareInterface
+class Sorter implements \VuFind\I18n\SorterInterface
 {
-    use \VuFind\I18n\SorterAwareTrait;
+    use \VuFind\I18n\SorterTrait;
 
     /**
      * Compare function

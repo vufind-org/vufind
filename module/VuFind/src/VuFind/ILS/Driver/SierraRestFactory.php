@@ -69,6 +69,8 @@ class SierraRestFactory extends DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container("SierraRest_$namespace", $manager);
         };
-        return parent::__invoke($container, $requestedName, [$sessionFactory]);
+        $driver = parent::__invoke($container, $requestedName, [$sessionFactory]);
+        $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $driver;
     }
 }

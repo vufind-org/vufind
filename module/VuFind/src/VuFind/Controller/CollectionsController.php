@@ -41,10 +41,10 @@ use VuFindSearch\Query\Query;
  * @link     https://vufind.org Main Site
  */
 class CollectionsController extends AbstractBase implements
-    \VuFind\I18n\SorterAwareInterface
+    \VuFind\I18n\SorterInterface
 {
     use Feature\AlphaBrowseTrait;
-    use \VuFind\I18n\SorterAwareTrait;
+    use \VuFind\I18n\SorterTrait;
 
     /**
      * VuFind configuration
@@ -62,6 +62,7 @@ class CollectionsController extends AbstractBase implements
     public function __construct(ServiceLocatorInterface $sm, Config $config)
     {
         $this->config = $config;
+        $this->setSorter($sm->get(\VuFind\I18n\Sorter::class));
         parent::__construct($sm);
     }
 

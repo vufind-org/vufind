@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Factory for Demo ILS driver.
+ * Class SorterFactory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Moravian Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +22,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  View_Helpers
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
@@ -33,15 +35,15 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
- * Factory for Demo ILS driver.
+ * Class SorterFactory
  *
  * @category VuFind
- * @package  ILS_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  View_Helpers
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DemoFactory extends DriverWithDateConverterFactory
+class SorterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -56,29 +58,16 @@ class DemoFactory extends DriverWithDateConverterFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $sessionFactory = function ($ns) use ($container) {
-            $manager = $container->get(\Laminas\Session\SessionManager::class);
-            return new \Laminas\Session\Container('DemoDriver' . $ns, $manager);
-        };
-        $driver = parent::__invoke(
-            $container,
-            $requestedName,
-            [
-                $container->get(\VuFindSearch\Service::class),
-                $sessionFactory,
-                $container->get('Request')
-            ]
-        );
-        $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
-        return $driver;
+        $helper = new $requestedName();
+        $helper->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $helper;
     }
 }

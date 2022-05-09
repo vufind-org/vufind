@@ -40,9 +40,9 @@ use Laminas\View\Helper\AbstractHelper;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class SortFacetList extends AbstractHelper implements
-    \VuFind\I18n\SorterAwareInterface
+    \VuFind\I18n\SorterInterface
 {
-    use \VuFind\I18n\SorterAwareTrait;
+    use \VuFind\I18n\SorterTrait;
 
     /**
      * Turns facet information into an alphabetical list.

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Trait SorterAwareTrait
+ * Interface SorterInterface
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ declare(strict_types=1);
 namespace VuFind\I18n;
 
 /**
- * Trait SorterAwareTrait
+ * Trait SorterInterface
  *
  * @category VuFind
  * @package  VuFind\Service
@@ -38,15 +38,8 @@ namespace VuFind\I18n;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
-trait SorterAwareTrait
+interface SorterInterface
 {
-    /**
-     * Sorter
-     *
-     * @var ?Sorter
-     */
-    protected $sorter = null;
-
     /**
      * Set the sorter
      *
@@ -54,18 +47,5 @@ trait SorterAwareTrait
      *
      * @return void
      */
-    public function setSorter(Sorter $sorter): void
-    {
-        $this->sorter = $sorter;
-    }
-
-    /**
-     * Get the sorter
-     *
-     * @return Sorter
-     */
-    public function getSorter(): Sorter
-    {
-        return $this->sorter ?? new Sorter();
-    }
+    public function setSorter(Sorter $sorter): void;
 }
