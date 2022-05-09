@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Class SorterTest
  *
- * PHP version 8
+ * PHP version 7
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -25,7 +25,7 @@ declare(strict_types=1);
  * @package  Tests
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTest\I18n;
 
@@ -36,7 +36,7 @@ namespace VuFindTest\I18n;
  * @package  Tests
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class SorterTest extends \PHPUnit\Framework\TestCase
 {

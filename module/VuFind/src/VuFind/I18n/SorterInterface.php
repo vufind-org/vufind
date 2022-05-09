@@ -25,7 +25,7 @@ declare(strict_types=1);
  * @package  VuFind\Service
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\I18n;
 
@@ -36,7 +36,7 @@ namespace VuFind\I18n;
  * @package  VuFind\Service
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 interface SorterInterface
 {
