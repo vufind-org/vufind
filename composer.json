@@ -100,7 +100,7 @@
         "opis/json-schema": "2.3.0",
         "phploc/phploc": "7.0.2",
         "phpmd/phpmd": "2.11.1",
-        "phpstan/phpstan": "1.2.0",
+        "phpstan/phpstan": "1.6.7",
         "phpunit/phpunit": "9.5.10",
         "sebastian/phpcpd": "6.0.3",
         "squizlabs/php_codesniffer": "3.6.2"
