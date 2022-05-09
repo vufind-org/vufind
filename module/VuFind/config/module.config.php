@@ -392,6 +392,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataFormatter\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Http\CachedDownloader' => 'VuFind\Http\CachedDownloaderFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
