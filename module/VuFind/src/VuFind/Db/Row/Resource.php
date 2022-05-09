@@ -174,7 +174,6 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             throw new \Exception('Rating value out of range');
         }
 
-
         $ratings = $this->getDbTable('Ratings');
         $callback = function ($select) use ($user) {
             $select->where->equalTo('ratings.resource_id', $this->id);
