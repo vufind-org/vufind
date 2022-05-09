@@ -105,7 +105,11 @@ class Ratings extends Gateway
             }
         };
 
-        return $this->select($callback)->current()->toArray();
+        $result = $this->select($callback)->current();
+        return [
+            'count' => $result->count,
+            'rating' => $result->rating ?? 0
+        ];
     }
 
     /**
