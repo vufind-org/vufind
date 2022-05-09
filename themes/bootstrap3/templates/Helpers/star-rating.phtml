@@ -1,9 +1,13 @@
 <?php
   $id = uniqid();
+  $labelAttrs = !empty($this->labelAttrs) ? (' ' . implode(' ', $this->labelAttrs)) : '';
+  $inputAttrs = !empty($this->inputAttrs) ? (' ' . implode(' ', $this->inputAttrs)) : '';
 ?>
 <div class="star-rating<?=$this->readonly ? ' readonly' : ''?>">
-  <label class="rating__label" for="rating_<?=$id?>_0" aria-label="<?=$this->transEsc('rating_0')?>">&nbsp;</label>
-  <input class="rating__input rating__input--none" name="rating" id="rating_<?=$id?>_0" value="0" type="radio" autocomplete="off" <?=0 === $rating ? 'checked' :''?>>
+  <label class="rating__label" for="rating_<?=$id?>_0" aria-label="<?=$this->transEsc('rating_0')?>"<?=$labelAttrs?>>
+    &nbsp;
+  </label>
+  <input class="rating__input rating__input--none" name="rating" id="rating_<?=$id?>_0" value="0" type="radio" autocomplete="off" <?=0 === $rating ? 'checked' :''?><?=$inputAttrs?>>
   <?php for ($level = 10; $level <= 100; $level += 10): ?>
     <?php
       $fieldId = "rating_{$id}_$level";
@@ -12,7 +16,9 @@
       $class = $level % 20 === 10 ? ' rating__label--half' : '';
       $icon = $this->icon($level % 20 === 10 ? 'rating-half' : 'rating-full', 'rating__icon rating__icon--star');
     ?>
-    <label class="rating__label<?=$class?>" for="<?=$fieldId?>" aria-label="<?=$this->transEsc("rating_$level")?>"><?=$icon?></label>
-    <input class="rating__input" name="rating" id="<?=$fieldId?>" value="<?=$level ?>" type="radio" autocomplete="off" <?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked' : ''?><?=$this->readonly ? ' disabled' : ''?>>
+    <label class="rating__label<?=$class?>" for="<?=$fieldId?>" aria-label="<?=$this->transEsc("rating_$level")?>"<?=$labelAttrs?>>
+      <?=$icon?>
+    </label>
+    <input class="rating__input" name="rating" id="<?=$fieldId?>" value="<?=$level ?>" type="radio" autocomplete="off" <?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked' : ''?><?=$this->readonly ? ' disabled' : ''?><?=$inputAttrs?>>
   <?php endfor; ?>
 </div>

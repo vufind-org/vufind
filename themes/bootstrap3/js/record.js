@@ -1,5 +1,5 @@
 /*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
-/*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback */
+/*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -357,4 +357,8 @@ function recordDocReady() {
 
   registerTabEvents();
   applyRecordTabHash(false);
+}
+
+function addRecordRating() {
+  document.querySelector('.rating-average a').click();
 }

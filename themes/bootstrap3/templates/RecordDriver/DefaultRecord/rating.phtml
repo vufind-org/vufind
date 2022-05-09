@@ -10,7 +10,7 @@
     <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddRating'))?>" data-lightbox title="<?=$this->transEscAttr('rating_add_or_update')?>">
       <?=$this->transEsc('rating_heading', $translationParams)?>:
     </a>
-    <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'rating' => $ratingData['rating']]);?>
+    <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'rating' => $ratingData['rating'], 'labelAttrs' => ['data-click-callback="addRecordRating"']]);?>
     <span class="rating-summary">
       <?=$this->transEsc('rating_summary', $translationParams)?>
     </span>
