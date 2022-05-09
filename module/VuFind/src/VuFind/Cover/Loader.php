@@ -315,7 +315,7 @@ class Loader extends \VuFind\ImageLoader
         $this->source = $settings['source'];
         $this->nbn = $settings['nbn'];
         $this->uuid = $settings['uuid'];
-        $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type']);
+        $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type'] ?? '');
         $this->size = $settings['size'];
     }
 
