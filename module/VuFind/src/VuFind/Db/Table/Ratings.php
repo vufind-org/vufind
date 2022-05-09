@@ -127,14 +127,9 @@ class Ratings extends Gateway
             return false;
         }
 
-        // Rating row must exist:
-        $matches = $this->select(['id' => $id]);
-        if (count($matches) == 0 || !($row = $matches->current())) {
-            return false;
-        }
-
-        // Row must be owned by user:
-        if ($row->user_id != $user->id) {
+        // Rating row must exist and be owned by the user:
+        $matches = $this->select(['id' => $id, 'user_id' => $user->id]);
+        if (!($row = $matches->current())) {
             return false;
         }
 
