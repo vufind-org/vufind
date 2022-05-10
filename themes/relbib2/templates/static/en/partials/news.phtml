@@ -6,7 +6,11 @@
             <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
         </p>
         <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
-            <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="btn btn-inverse btn-inverse-left" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+            <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
+                <a href="<?=$this->url('content-page', ['page' => 'subscribe_rssfeed'])?>" class="btn btn-inverse btn-inverse-left" role="button" data-lightbox><i class="fa fa-rss"></i> <?=$this->transEsc('Get Newsfeed')?></a>
+            <?php else: ?>
+                <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="btn btn-inverse btn-inverse-left" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+            <?php endif; ?>
             <a href="<?=$this->url('rssfeed-full')?>" class="btn btn-inverse" role="button">
                 Read more
             </a>
