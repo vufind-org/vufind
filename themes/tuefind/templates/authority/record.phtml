@@ -15,7 +15,9 @@
 ?>
 
 <?php /* User Authority Access */ ?>
-<?=$this->context($this)->renderInContext('Related/AuthorityAccess', ['driver' => $this->driver])?>
+<?php if ($this->user != false && $this->accountCapabilities()->getRequestAuthorityRightsSetting() === 'enabled') :?>
+   <?=$this->context($this)->renderInContext('Related/AuthorityAccess', ['driver' => $this->driver]); ?>
+<?php endif; ?>
 
 <?php /* Record details */ ?>
 <div vocab="http://schema.org/" typeof="<?=$schemaOrgType?>">

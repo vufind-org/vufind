@@ -1,14 +1,12 @@
-<?php if ($this->user != false && $this->accountCapabilities()->getRequestAuthorityRightsSetting() === 'enabled'): ?>
-  <div>
-    <?php if ($this->user_access['availability'] == 'free'): ?>
-      <a class="save-record toolbar-btn btn-type-save" rel="nofollow" href="<?=$this->url('authority-request-access', ['authority_id' => $this->driver->getUniqueId()])?>" data-lightbox="">Request access rights (This is me!)</a>
-    <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'requested'): ?>
-      You have requested permission on this authority record. Our team has been informed, please wait for the approval.
-    <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'granted'): ?>
-      This authority record is linked to your user account.
-      <?php if ($this->user != false && $this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
-        <br><a href="<?=$this->url('myresearch-publications')?>">Would you like to publish something?</a>
-      <?php endif; ?>
+<div>
+  <?php if ($this->user_access['availability'] == 'free'): ?>
+    <a class="save-record toolbar-btn btn-type-save" rel="nofollow" href="<?=$this->url('authority-request-access', ['authority_id' => $this->driver->getUniqueId()])?>" data-lightbox="">Request access rights (This is me!)</a>
+  <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'requested'): ?>
+    You have requested permission on this authority record. Our team has been informed, please wait for the approval.
+  <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'granted'): ?>
+    This authority record is linked to your user account.
+    <?php if ($this->user != false && $this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
+      <br><a href="<?=$this->url('myresearch-publications')?>">Would you like to publish something?</a>
     <?php endif; ?>
-  </div>
-<?php endif; ?>
+  <?php endif; ?>
+</div>
