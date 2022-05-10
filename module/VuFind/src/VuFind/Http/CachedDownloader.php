@@ -91,9 +91,8 @@ class CachedDownloader
      */
     public function setCacheId($cacheId)
     {
-        $cacheDir = $this->cacheManager->getCacheDir() . $cacheId;
-        $this->cacheManager->addControllerCache($cacheId, $cacheDir);
-        $this->cache = $this->cacheManager->getCache($cacheId);
+        $cacheName = $this->cacheManager->addDownloaderCache($cacheId);
+        $this->cache = $this->cacheManager->getCache($cacheName);
     }
 
     /**

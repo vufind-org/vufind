@@ -214,6 +214,23 @@ class Manager
     }
 
     /**
+     * Create a downloader-specific file cache.
+     *
+     * @param string $downloaderName Name of the downloader.
+     *
+     * @return string
+     */
+    public function addDownloaderCache($downloaderName)
+    {
+        $cacheName = 'downloader-' . $downloaderName;
+        $this->createFileCache(
+            $cacheName,
+            $this->getCacheDir()
+        );
+        return $cacheName;
+    }
+
+    /**
      * Create a new file cache for the given theme name if necessary. Return
      * the name of the cache.
      *
