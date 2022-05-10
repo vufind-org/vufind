@@ -1,0 +1,14 @@
+<h1><?=$this->transEsc('Get Newsfeed')?></h1>
+<p>You have multiple options to subscribe to the feed:</p>
+<ul>
+  <li>Either you can use a <b><a href="https://www.rss-readers.org/" target="_blank" data-lightbox-ignore>RSS-reader</a></b> to subscribe. Therefore you need an RSS-reader installed on your machine.</li>
+  <li>As an alternative, you can use your user account to create a personal feed.</li>
+  <ul>
+    <li>The personal feed can either be read via <b>RSS-reader</b>,</li>
+    <li>or you can use <b>email</b> to receive notifications about new articles.</li>
+  </ul>
+</ul>
+<p>
+  <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button" data-lightbox-ignore><i class="fa fa-rss"></i> Subscribe entire newsfeed with RSS-reader</a>
+  <a href="<?=$this->url('myresearch-rssfeedsettings')?>" class="read-more-trigger" role="button" data-lightbox-ignore><i class="fa fa-rss"></i> Configure personal newsfeed</a>
+</p>
