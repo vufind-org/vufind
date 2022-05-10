@@ -19,4 +19,7 @@ xmllint --xinclude --format $DIR/schema_${TUEFIND_FLAVOUR}_types.xml  > $DIR/sch
 
 xmllint --xinclude --format $DIR/schema_vufind.xml > $DIR/schema.xml
 
+# the following command is covered via the .gitignore file
+#git update-index --assume-unchanged $DIR/schema.xml
+
 exit 0
