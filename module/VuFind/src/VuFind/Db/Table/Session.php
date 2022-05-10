@@ -73,7 +73,7 @@ class Session extends Gateway
      * @param string $sid    Session ID to retrieve
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return \VuFind\Db\Row\Session
+     * @return ?\VuFind\Db\Row\Session
      */
     public function getBySessionId($sid, $create = true)
     {
@@ -137,7 +137,9 @@ class Session extends Gateway
     public function destroySession($sid)
     {
         $s = $this->getBySessionId($sid, false);
-        $s->delete();
+        if (!empty($s)) {
+            $s->delete();
+        }
     }
 
     /**
