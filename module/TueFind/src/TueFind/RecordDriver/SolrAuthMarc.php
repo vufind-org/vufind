@@ -134,10 +134,11 @@ class SolrAuthMarc extends SolrAuthDefault {
                              'url' => 'https://viaf.org/viaf/' . urlencode($viaf)];
         }
 
-        $wikidataId = $this->getWikidataId();
-        if ($wikidataId != null)
+        $wikidataIds = $this->getWikidataIds();
+        foreach ($wikidataIds as $wikidataId) {
             $references[] = ['title' => 'Wikidata',
                              'url' => 'https:////www.wikidata.org/wiki/' . urlencode($wikidataId)];
+        }
 
         $references = array_merge($references, $this->getExternalReferencesFiltered(/*blacklist=*/[], /*whitelist=*/['Wikipedia']));
         $references = array_merge($references, $this->getBeaconReferences(/* type flag, false => only non literary-remains */ false));
