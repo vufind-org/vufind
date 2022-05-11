@@ -16,11 +16,12 @@
       <input type="checkbox" <?=($this->user->tuefind_rss_feed_send_emails)?"checked":"";?>  class="rssLabel" name="action" value="<?=(!$this->user->tuefind_rss_feed_send_emails)?"unsubscribe_email":"subscribe_email";?>">
       <span class="slider round"></span>
     </label>
-    <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
-        <br><?=$this->transEsc('rss_email_min_timestamp')?> <?=$this->user->tuefind_rss_feed_last_notification?>.
-    <?php endif; ?>
-  </p>
 
+    <div class="rssEmailTimestampBlock <?=(!$this->user->tuefind_rss_feed_send_emails)?"tf-d-none":"";?>">
+      <br><?=$this->transEsc('rss_email_min_timestamp')?> <span><?=$this->user->tuefind_rss_feed_last_notification?></span>.
+    </div>
+
+  </p>
 
   <table class="search-history-table">
     <tr>
