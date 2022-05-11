@@ -484,6 +484,13 @@ var TueFind = {
         if(!element.is(':checked')) {
             actionType = 'remove';
         }
+        if(element.val() == 'unsubscribe_email'){
+            actionType = 'subscribe_email';
+            element.val('subscribe_email');
+        }else if(element.val() == 'subscribe_email'){
+            actionType = 'unsubscribe_email';
+            element.val('unsubscribe_email');
+        }
         let rssID = element.data('id');
         $.ajax({
             type: "POST",
