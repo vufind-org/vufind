@@ -3003,6 +3003,11 @@ public class TueFindBiblio extends TueFind {
         return extractFullTextFromJSON(getFullTextServerHits(record), "Summary");
     }
 
+    public String getFullTextElasticsearchReferences(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "List of References");
+    }
+
+
 
     public Set<String> getFullTextTypes(final Record record) throws Exception {
         return extractTextTypeFromJSON(getFullTextServerHits(record));

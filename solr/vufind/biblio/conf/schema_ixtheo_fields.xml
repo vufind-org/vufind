@@ -198,6 +198,18 @@
     <field name="fulltext_summary_synonyms_hans" type="fulltext_syn_hans" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_summary_synonyms_hant" type="fulltext_syn_hant" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_summary_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_fr" type="fulltext_syn_fr" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_it" type="fulltext_syn_it" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_es" type="fulltext_syn_es" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_pt" type="fulltext_syn_pt" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_ru" type="fulltext_syn_ru" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_el" type="fulltext_syn_el" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_hans" type="fulltext_syn_hans" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_hant" type="fulltext_syn_hant" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_references_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
+
 
 
 
@@ -317,4 +329,15 @@
     <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_hans"/>
     <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_hant"/>
     <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_all"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_de"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_en"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_fr"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_it"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_es"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_pt"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_ru"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_el"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_hans"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_hant"/>
+    <copyField source="fulltext_references" dest="fulltext_references_synonyms_all"/>
 </fields>
