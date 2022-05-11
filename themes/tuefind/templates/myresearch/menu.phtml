@@ -17,16 +17,16 @@
         <i class="fa fa-fw fa-bell"></i> <?=$this->transEsc('Subscriptions')?>
       </a>
     <?php endif; ?>
+    <?php /* TueFind: RSS subscription functionality */ ?>
+    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
+      <a href="<?=$this->url('myresearch-rssfeedsettings')?>"<?=$this->active == 'rssFeedSettings' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("My newsfeeds")?>
+      </a>
+    <?php endif; ?>
     <?php /* TueFind: PDA functionality */ ?>
     <?php if ($this->accountCapabilities()->getPdaSetting() === 'enabled'): ?>
       <a href="<?=$this->url('myresearch-pdasubscriptions')?>"<?=$this->active == 'pdasubscriptions' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('PDA')?>
-      </a>
-    <?php endif; ?>
-    <?php /* TueFind: RSS subscription functionality */ ?>
-    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
-      <a href="<?=$this->url('myresearch-rssfeedsettings')?>"<?=$this->active == 'rssFeedSettings' ? ' class="active"' : ''?>>
-        <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("RSS")?>
       </a>
     <?php endif; ?>
     <?php /* TueFind: Publication functionality */ ?>
