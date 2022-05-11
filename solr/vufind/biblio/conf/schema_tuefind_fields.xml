@@ -47,6 +47,8 @@
     <field name="fulltext_abstract_unstemmed" type="textProper" indexed="true" stored="false"/>
     <field name="fulltext_summary" type="text" indexed="true" stored="false"/>
     <field name="fulltext_summary_unstemmed" type="textProper" indexed="true" stored="false"/>
+    <field name="fulltext_references" type="text" indexed="true" stored="false"/>
+    <field name="fulltext_references_unstemmed" type="textProper" indexed="true" stored="false"/>
 
     <!-- COMMON copyFields -->
     <copyField source="id" dest="ids"/>
@@ -56,4 +58,5 @@
     <copyField source="fulltext_toc" dest="fulltext_toc_unstemmed"/>
     <copyField source="fulltext_abstract" dest="fulltext_abstract_unstemmed"/>
     <copyField source="fulltext_summary" dest="fulltext_summary_unstemmed"/>
+    <copyField source="fulltext_references" dest="fulltext_references_unstemmed"/>
 </fields>
