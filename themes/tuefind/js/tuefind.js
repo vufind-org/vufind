@@ -487,9 +487,11 @@ var TueFind = {
         if(element.val() == 'unsubscribe_email'){
             actionType = 'subscribe_email';
             element.val('subscribe_email');
+            $('.rssEmailTimestampBlock').removeClass('tf-d-none');
         }else if(element.val() == 'subscribe_email'){
             actionType = 'unsubscribe_email';
             element.val('unsubscribe_email');
+            $('.rssEmailTimestampBlock').addClass('tf-d-none');
         }
         let rssID = element.data('id');
         $.ajax({
