@@ -34,7 +34,7 @@ class FindbuchProxyController extends AbstractProxyController
                             'unibib_rub',
                             'wikidata'];
 
-    const CACHE_DIR = 'findbuch';
+    protected $downloaderCacheId = 'findbuch';
 
     public function loadAction()
     {
@@ -56,7 +56,7 @@ class FindbuchProxyController extends AbstractProxyController
             $apiUrlFull .= '-' . $exclusion . '/';
         $apiUrlFull .= self::API_URL_PARAMS . urlencode($gndNumber);
 
-        $response = $this->getCachedUrlContents($apiUrlFull);
+        $response = $this->cachedDownloader->download($apiUrlFull);
         return $response;
     }
 

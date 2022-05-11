@@ -184,6 +184,9 @@ $config = [
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
+        'initializers' => [
+            'TueFind\ServiceManager\ServiceInitializer',
+        ],
         'aliases' => [
             'AdminFrontend' => 'TueFind\Controller\AdminFrontendController',
             'AJAX' => 'TueFind\Controller\AjaxController',
@@ -223,7 +226,6 @@ $config = [
         'factories' => [
             'TueFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'TueFind\Cover\CachingProxy' => 'VuFind\Cover\CachingProxyFactory',
             'TueFind\Cache\Manager' => 'VuFind\Cache\ManagerFactory',
             'TueFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Config\AccountCapabilities' => 'TueFind\Config\AccountCapabilitiesFactory',
@@ -233,6 +235,7 @@ $config = [
             'TueFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
+            'TueFind\Http\CachedDownloader' => 'TueFind\Http\CachedDownloaderFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

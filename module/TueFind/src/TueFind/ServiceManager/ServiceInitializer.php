@@ -17,7 +17,10 @@ class ServiceInitializer extends \VuFind\ServiceManager\ServiceInitializer {
     {
         $instance = parent::__invoke($sm, $instance);
         if ($instance instanceof ConfigAwareInterface) {
-            $instance->setConfig($sm->get('VuFind\Config\PluginManager'));
+            $instance->setConfig($sm->get(\VuFind\Config\PluginManager::class));
+        }
+        if ($instance instanceof CachedDownloaderAwareInterface) {
+            $instance->setCachedDownloader($sm->get(\TueFind\Http\CachedDownloader::class));
         }
         return $instance;
     }

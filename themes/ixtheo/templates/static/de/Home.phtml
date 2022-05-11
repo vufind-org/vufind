@@ -24,15 +24,19 @@
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
             <div class="panel-body">
-              <p>
-                <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
-              </p>
-              <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
-                  <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
-                  <a href="<?=$this->url('rssfeed-full')?>" class="read-more-trigger" role="button">
-                      Weiterlesen
-                  </a>
-              <?php endif;?>
+                <p>
+                    <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
+                </p>
+                <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
+                    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
+                        <a href="<?=$this->url('content-page', ['page' => 'subscribe_rssfeed'])?>" class="read-more-trigger" role="button" data-lightbox><i class="fa fa-rss"></i> <?=$this->transEsc('Get Newsfeed')?></a>
+                    <?php else: ?>
+                        <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+                    <?php endif;?>
+                    <a href="<?=$this->url('rssfeed-full')?>" class="read-more-trigger" role="button">
+                        Weiterlesen
+                    </a>
+                <?php endif;?>
             </div>
         </div>
     </div>
@@ -142,22 +146,22 @@
             <div class="panel-body">
                 <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
                 <div class="read-more-wrap">
-                    <p>Der Fachinformationsdienst (FID) Theologie unterstützt und fördert Open-Access-Zeitschriften<br/>
-                        <a href="/OpenJournals" data-lightbox>Liste der IxTheo Open Journals</a>
-                    </p>
+                    <p>Der Fachinformationsdienst (FID) Theologie unterstützt und fördert Open-Access-Zeitschriften: <a href="/OpenJournals" data-lightbox>Liste der IxTheo Open Journals</a></p>
                     <div class="read-more-target">
-                        <p></p>
-                        <p>
-                            <ul>
-                                <li><a target="_blank" href="https://aabner.org">Advances in Ancient Biblical and Near Eastern Research [2021-]</a></li>
-                                <li><a target="_blank" href="https://jebs.eu">Journal of European Baptist Studies [2019-]</a></li>
-                                <li><a target="_blank" href="https://imdialog.akademie-rs.de">Im Dialog. Beiträge aus der Akademie der Diözese Rottenburg-Stuttgart [2019-]</a></li>
-                                <li><a target="_blank" href="https://jeac.de">Journal of Ethics in Antiquity and Christianity (JEAC) [2019-]</a></li>
-                                <li><a target="_blank" href="https://iapt-cs.org">International Academy of Practical Theology. Conference Series (IAPT.CS) [2019-]</a></li>
-                                <li><a target="_blank" href="https://vulgata-dialog.ch">Vulgata in Dialogue. A biblical online review [2017-]</a></li>
-                                <li><a target="_blank" href="http://www.ethik-und-gesellschaft.de">Ethik und Gesellschaft (EuG) [2007-]</a></li>
-                            </ul>
-                        </p>
+                        <p><b><?=$this->transEsc('IxTheo Open Journals')?></b></p>
+                        <ul>
+                            <li><a target="_blank" href="https://aabner.org">Advances in Ancient Biblical and Near Eastern Research [2021-]</a></li>
+                            <li><a target="_blank" href="https://jebs.eu">Journal of European Baptist Studies [2019-]</a></li>
+                            <li><a target="_blank" href="https://imdialog.akademie-rs.de">Im Dialog. Beiträge aus der Akademie der Diözese Rottenburg-Stuttgart [2019-]</a></li>
+                            <li><a target="_blank" href="https://jeac.de">Journal of Ethics in Antiquity and Christianity (JEAC) [2019-]</a></li>
+                            <li><a target="_blank" href="https://iapt-cs.org">International Academy of Practical Theology. Conference Series (IAPT.CS) [2019-]</a></li>
+                            <li><a target="_blank" href="https://vulgata-dialog.ch">Vulgata in Dialogue. A biblical online review [2017-]</a></li>
+                            <li><a target="_blank" href="http://www.ethik-und-gesellschaft.de">Ethik und Gesellschaft (EuG) [2007-]</a></li>
+                        </ul>
+                        <p><b><?=$this->transEsc('IxTheo Open Journals (with moving wall)')?></b></p>
+                        <ul>
+                            <li><a target="_blank" href="https://zfbeg.org/">Zeitschrift für christlich-jüdische Begegnung im Kontext [2017-]</a></li>
+                        </ul>
                         <p>
                             Wir bieten Herausgeber*innen mit der Plattform „IxTheo Open Journals“ die Möglichkeit ihre theologisch-wissenschaftlichen Zeitschriften oder Reihen dauerhaft Open Access zu hosten.<br/>
                             Neben der Gründung neuer OA-Zeitschriften begleiten wir auch die Transformation bisher gedruckter Zeitschriften zu Open Access. Wir stellen dafür das Publikationsmanagementsystem Open Journal Systems (OJS) zur Verfügung, mit dem die Verwaltung des gesamten redaktionellen Prozesses bis hin zur Publikation bewerkstelligt werden kann.
