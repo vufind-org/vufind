@@ -417,8 +417,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $available = (empty($curr_loc) || $curr_loc == $home_loc)
                     || $result['circulate flag'] == 'Y';
                 $callnumber = $result['call number'];
-                $location   = $library . ' - ' .
-                    ($available ? $curr_loc : $home_loc);
+                $location   = $library . ' - ' . ($available && !empty($curr_loc)
+                    ? $curr_loc : $home_loc);
 
                 $material = $this->translatePolicyID('ITYP', $result['item type']);
 
