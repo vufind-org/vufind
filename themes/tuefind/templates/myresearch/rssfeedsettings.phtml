@@ -18,7 +18,7 @@
     </label>
 
     <div class="rssEmailTimestampBlock <?=(!$this->user->tuefind_rss_feed_send_emails)?"tf-d-none":"";?>">
-      <br><?=$this->transEsc('rss_email_min_timestamp')?> <?=$this->user->tuefind_rss_feed_last_notification?>.
+      <br><?=$this->transEsc('rss_email_min_timestamp')?> <span><?=$this->user->tuefind_rss_feed_last_notification?></span>.
     </div>
 
   </p>

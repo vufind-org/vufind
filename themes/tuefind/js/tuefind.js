@@ -488,6 +488,11 @@ var TueFind = {
             actionType = 'subscribe_email';
             element.val('subscribe_email');
             $('.rssEmailTimestampBlock').removeClass('tf-d-none');
+            let today = new Date();
+            let curDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            let curTime = today.toLocaleTimeString();
+            let curTimestamp = curDate+" "+curTime;
+            $('.rssEmailTimestampBlock span').text(curTimestamp);
         }else if(element.val() == 'subscribe_email'){
             actionType = 'unsubscribe_email';
             element.val('unsubscribe_email');
