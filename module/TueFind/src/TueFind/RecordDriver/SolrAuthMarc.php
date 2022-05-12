@@ -113,13 +113,13 @@ class SolrAuthMarc extends SolrAuthDefault {
 
         $isnis = $this->getISNIs();
         foreach ($isnis as $isni) {
-            $references[] = ['title' => 'ISNI',
+            $references[] = ['title' => 'ISNI' .  ' (' . $isni . ')',
                              'url' => 'https://isni.org/isni/' . urlencode(str_replace(' ', '', $isni))];
         }
 
         $lccn = $this->getLCCN();
         if ($lccn != null)
-            $references[] = ['title' => 'LOC',
+            $references[] = ['title' => 'LOC' .  ' (' . $lccn . ')',
                              'url' => 'https://lccn.loc.gov/' . urlencode($lccn)];
 
         $orcids = $this->getORCIDs();
@@ -130,13 +130,13 @@ class SolrAuthMarc extends SolrAuthDefault {
 
         $viafs = $this->getVIAFs();
         foreach ($viafs as $viaf) {
-            $references[] = ['title' => 'VIAF',
+            $references[] = ['title' => 'VIAF' .  ' (' . $viaf . ')',
                              'url' => 'https://viaf.org/viaf/' . urlencode($viaf)];
         }
 
         $wikidataIds = $this->getWikidataIds();
         foreach ($wikidataIds as $wikidataId) {
-            $references[] = ['title' => 'Wikidata',
+            $references[] = ['title' => 'Wikidata' .  ' (' . $wikidataId . ')',
                              'url' => 'https:////www.wikidata.org/wiki/' . urlencode($wikidataId)];
         }
 
