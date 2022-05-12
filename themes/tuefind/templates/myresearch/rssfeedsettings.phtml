@@ -6,7 +6,26 @@
 ?>
 
 <div class="mainbody left">
-  <h2><?=$this->transEsc('RSS feeds')?></h2>
+  <h1><?=$this->transEsc('My newsfeeds')?></h1>
+
+  <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>"><?=$this->transEsc('Show personal RSS feed')?></a></p>
+  <table style="width: 100%">
+    <tr>
+      <td><?=$this->transEsc('rss_subscribe_email')?></td>
+      <td style="padding-right: 8px; padding-left: 8px;">
+        <label class="switch">
+          <input type="checkbox" <?=($this->user->tuefind_rss_feed_send_emails)?"checked":"";?>  class="rssLabel" name="action" value="<?=(!$this->user->tuefind_rss_feed_send_emails)?"unsubscribe_email":"subscribe_email";?>">
+          <span class="slider round"></span>
+        </label>
+      </td>
+    </tr>
+  </table>
+  <p>
+    <div class="rssEmailTimestampBlock <?=(!$this->user->tuefind_rss_feed_send_emails)?"tf-d-none":"";?>">
+      <?=$this->transEsc('rss_email_min_timestamp')?> <span><?=$this->user->tuefind_rss_feed_last_notification?></span>.
+    </div>
+  </p>
+
   <table class="search-history-table">
     <tr>
       <th><?=$this->transEsc('RSS feed')?></th>
@@ -28,29 +47,6 @@
       </tr>
     <?php endforeach; ?>
   </table>
-
-  <?php if (count($subscribedFeedIds) > 0): ?>
-    <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>"><?=$this->transEsc('Show personal RSS feed')?></a></p>
-    <p>
-      <form method="post">
-        <?=$this->transEsc('rss_subscribe_email')?>
-        <label class="switch" onclick="this.form.submit()">
-          <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
-            <input type="hidden" name="action" value="unsubscribe_email">
-            <input type="checkbox" checked>
-          <?php else: ?>
-            <input type="hidden" name="action" value="subscribe_email">
-            <input type="checkbox">
-          <?php endif; ?>
-          <span class="slider round"></span>
-        </label>
-
-        <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
-            <br><?=$this->transEsc('rss_email_min_timestamp')?> <?=$this->user->tuefind_rss_feed_last_notification?>.
-        <?php endif; ?>
-      </form>
-    </p>
-  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">

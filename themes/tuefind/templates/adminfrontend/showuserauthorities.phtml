@@ -19,6 +19,8 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
         <th><?=$this->transEsc('Email Address')?></th>
         <th><?=$this->transEsc('Author')?></th>
         <th><?=$this->transEsc('Status')?></th>
+        <th><?=$this->transEsc('Requested')?></th>
+        <th><?=$this->transEsc('Granted')?></th>
         <th><?=$this->transEsc('Actions')?></th>
       </tr>
       <?php foreach ($this->users as $user): ?>
@@ -28,7 +30,9 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
           <td><?=$user->lastname?></td>
           <td><?=$user->email?></td>
           <td><a href="/Authority/<?=urlencode($user->authority_id)?>"><?=$user->authority_id?></a></td>
-          <td><?=$user->access_state?></td>
+          <td><?=$this->transEsc(ucfirst($user->access_state))?></td>
+          <td><?=date("d.m.Y H:i:s",strtotime($user->requested_datetime));?></td>
+          <td><?=($user->granted_datetime)?date("d.m.Y H:i:s",strtotime($user->granted_datetime)):"";?></td>
           <td>
             <?php if ($user->access_state == 'requested'): ?>
               <a href="<?=$this->url('authority-process-request', ['user_id' => $user->user_id, 'authority_id' => $user->authority_id])?>" data-lightbox="">process request</a>

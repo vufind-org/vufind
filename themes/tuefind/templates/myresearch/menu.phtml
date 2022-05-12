@@ -11,22 +11,28 @@
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Favorites')?>
     </a>
+    <?php /* TueFind: Moved this section from bottom next to favorites section. */?>
+    <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
+    <a href="<?=$this->url('search-history')?>?require_login"<?=$this->active == 'history' ? ' class="active"' : ''?>>
+      <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>
+    </a>
+    <?php endif; ?>
     <?php /* TueFind: Subscription functionality */ ?>
     <?php if ($this->accountCapabilities()->getSubscriptionSetting() === 'enabled'): ?>
       <a href="<?=$this->url('myresearch-subscriptions')?>"<?=$this->active == 'subscriptions' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-bell"></i> <?=$this->transEsc('Subscriptions')?>
       </a>
     <?php endif; ?>
+    <?php /* TueFind: RSS subscription functionality */ ?>
+    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
+      <a href="<?=$this->url('myresearch-rssfeedsettings')?>"<?=$this->active == 'rssFeedSettings' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("My newsfeeds")?>
+      </a>
+    <?php endif; ?>
     <?php /* TueFind: PDA functionality */ ?>
     <?php if ($this->accountCapabilities()->getPdaSetting() === 'enabled'): ?>
       <a href="<?=$this->url('myresearch-pdasubscriptions')?>"<?=$this->active == 'pdasubscriptions' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('PDA')?>
-      </a>
-    <?php endif; ?>
-    <?php /* TueFind: RSS subscription functionality */ ?>
-    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
-      <a href="<?=$this->url('myresearch-rssfeedsettings')?>"<?=$this->active == 'rssFeedSettings' ? ' class="active"' : ''?>>
-        <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("RSS")?>
       </a>
     <?php endif; ?>
     <?php /* TueFind: Publication functionality */ ?>
@@ -86,11 +92,6 @@
   <?php if ($this->overdrive()->showMyContentLink()):?>
      <a href="<?=$this->url('overdrive-mycontent')?>"<?=$this->active == 'dgcontent' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-download" aria-hidden="true"></i> <?=$this->transEsc('Overdrive Content')?>
-    </a>
-  <?php endif; ?>
-  <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
-    <a href="<?=$this->url('search-history')?>?require_login"<?=$this->active == 'history' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>
     </a>
   <?php endif; ?>
   <?php if ($user): ?>
