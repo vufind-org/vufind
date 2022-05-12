@@ -108,7 +108,7 @@ class SolrAuthMarc extends SolrAuthDefault {
 
         $gndNumber = $this->getGNDNumber();
         if ($gndNumber != null)
-            $references[] = ['title' => 'GND',
+            $references[] = ['title' => 'GND' .  ' (' . $gndNumber . ')',
                              'url' => 'http://d-nb.info/gnd/' . urlencode($gndNumber)];
 
         $isnis = $this->getISNIs();
@@ -124,7 +124,7 @@ class SolrAuthMarc extends SolrAuthDefault {
 
         $orcids = $this->getORCIDs();
         foreach ($orcids as $orcid) {
-            $references[] = ['title' => 'ORCID',
+            $references[] = ['title' => 'ORCID' .  ' (' . $orcid . ')',
                              'url' => 'https://orcid.org/' . urlencode($orcid)];
         }
 
