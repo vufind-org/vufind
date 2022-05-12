@@ -301,7 +301,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     protected function setCommonSettings($searchSettings, $setting, $list, $target)
     {
-        if (isset($searchSettings->General->$setting)) {
+        if (!empty($searchSettings->General->$setting)) {
             $userValues = explode(',', $searchSettings->General->$setting);
 
             if (!empty($this->$list)) {

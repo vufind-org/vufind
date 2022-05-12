@@ -1083,7 +1083,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
      */
-    public function supportsMethod(string $method, array $params = [])
+    public function supportsMethod(string $method, array $params)
     {
         if ($method == 'getLoginDrivers' || $method == 'getDefaultLoginDriver') {
             return true;

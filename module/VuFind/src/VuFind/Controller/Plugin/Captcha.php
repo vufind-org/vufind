@@ -72,7 +72,7 @@ class Captcha extends AbstractPlugin
      *
      * @return void
      */
-    public function __construct($config, array $captchas=[])
+    public function __construct($config, array $captchas = [])
     {
         $this->captchas = $captchas;
         if (count($captchas) > 0 && isset($config->Captcha->forms)) {
@@ -128,7 +128,7 @@ class Captcha extends AbstractPlugin
             }
         }
 
-        if (isset($captcha) && !$captchaPassed && $this->errorMode != 'none') {
+        if (!$captchaPassed && $this->errorMode != 'none') {
             $message = $captcha->getErrorMessage();
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
