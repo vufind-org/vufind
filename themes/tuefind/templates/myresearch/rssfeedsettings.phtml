@@ -12,7 +12,7 @@
   <table style="width: 100%">
     <tr>
       <td><?=$this->transEsc('rss_subscribe_email')?></td>
-      <td style="padding-right: 8px; padding-left: 8px;">
+      <td class="tf-rss-feeds-switcher">
         <label class="switch">
           <input type="checkbox" <?=($this->user->tuefind_rss_feed_send_emails)?"checked":"";?>  class="rssLabel" name="action" value="<?=(!$this->user->tuefind_rss_feed_send_emails)?"unsubscribe_email":"subscribe_email";?>">
           <span class="slider round"></span>
@@ -34,7 +34,7 @@
     <?php foreach($rssFeeds as $rssFeed): ?>
       <tr>
         <td><a href="<?=$rssFeed['website_url']?>" target="_blank"><?=$rssFeed['feed_name']?></a></td>
-        <td>
+        <td class="tf-rss-feeds-switcher">
           <label class="switch">
             <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
               <input type="checkbox" checked class="rssLabel" data-id="<?=$rssFeed['id']?>">
