@@ -134,7 +134,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -1265,11 +1265,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $dateTimeString = '';
         if ($time) {
-            $dateTimeString = strftime('%m/%d/%Y %H:%M', $time);
-            $dateTimeString = $this->dateConverter->convertToDisplayDate(
-                'm/d/Y H:i',
-                $dateTimeString
-            );
+            $dateTimeString = $this->dateConverter->convertToDisplayDate('U', $time);
         }
         return $dateTimeString;
     }

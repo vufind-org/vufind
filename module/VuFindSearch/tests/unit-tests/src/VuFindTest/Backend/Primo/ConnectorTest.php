@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -42,12 +43,20 @@ use VuFindSearch\Backend\Primo\Connector;
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 class ConnectorTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+
+    /**
+     * Current response.
+     *
+     * @var string
+     */
+    protected $response;
 
     /**
      * Test default timeout value
@@ -139,7 +148,51 @@ class ConnectorTest extends TestCase
         $terms = [
             ['index' => 'Title', 'lookfor' => 'dummy query'],
         ];
-        $result = $conn->query('dummyinst', $terms, ['returnErr' => false]);
+        $conn->query('dummyinst', $terms, ['returnErr' => false]);
+    }
+
+    /**
+     * Test caching.
+     *
+     * @return void
+     */
+    public function testCaching()
+    {
+        $conn = $this->createConnector('record-http');
+
+        [, $expectedBody] = explode("\r\n\r\n", $this->response);
+        $noResults = <<<EOT
+<sear:SEGMENTS xmlns:sear="http://www.exlibrisgroup.com/xsd/jaguar/search">
+  <sear:JAGROOT>
+    <sear:RESULT>
+      <sear:DOCSET HIT_TIME="20" TOTALHITS="0" FIRSTHIT="1" LASTHIT="1" TOTAL_TIME="49">
+      </sear:DOCSET>
+    </sear:RESULT>
+  </sear:JAGROOT>
+</sear:SEGMENTS>
+EOT;
+        $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
+
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
+        $cache->expects($this->exactly(3))
+            ->method('getItem')
+            ->with($keyConstraint)
+            ->willReturnOnConsecutiveCalls(null, $expectedBody, $noResults);
+        $cache->expects($this->exactly(1))
+            ->method('setItem')
+            ->with($keyConstraint, $expectedBody)
+            ->will($this->returnValue(true));
+
+        $conn->setCache($cache);
+
+        $result = $conn->getRecord('id');
+        $this->assertEquals(1, $result['recordCount']);
+        $this->assertEquals('Abstract Test', $result['documents'][0]['title']);
+        $result = $conn->getRecord('id');
+        $this->assertEquals(1, $result['recordCount']);
+        $this->assertEquals('Abstract Test', $result['documents'][0]['title']);
+        $result = $conn->getRecord('id');
+        $this->assertEquals(0, $result['recordCount']);
     }
 
     /**
@@ -155,8 +208,9 @@ class ConnectorTest extends TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $response = $this->getFixture("primo/response/$fixture", 'VuFindSearch');
-            $adapter->setResponse($response);
+            $this->response
+                = $this->getFixture("primo/response/$fixture", 'VuFindSearch');
+            $adapter->setResponse($this->response);
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);

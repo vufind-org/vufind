@@ -30,6 +30,7 @@ namespace VuFind\Search\Solr;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Search\Base\HierarchicalFacetHelperInterface;
 use VuFind\Search\UrlQueryHelper;
 
 /**
@@ -41,7 +42,8 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HierarchicalFacetHelper implements TranslatorAwareInterface
+class HierarchicalFacetHelper implements HierarchicalFacetHelperInterface,
+    TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 

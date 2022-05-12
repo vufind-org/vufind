@@ -37,6 +37,19 @@ use VuFind\Crypt\HMAC;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property int     $user_id
+ * @property ?string $session_id
+ * @property ?int    $folder_id
+ * @property string  $created
+ * @property ?string $title
+ * @property int     $saved
+ * @property string  $search_object
+ * @property ?int    $checksum
+ * @property int     $notification_frequency
+ * @property string  $last_notification_sent
+ * @property string  $notification_base_url
  */
 class Search extends RowGateway
 {
