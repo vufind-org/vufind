@@ -1,26 +1,4 @@
 /**
- * Toolbar Button Icons
- */
-[class*="btn-type-"]::before {
-  display: inline-block;
-  margin-right: .25rem;
-  font-family: "FontAwesome";
-  color: inherit;
-}
-.btn-type-add::before { content: "\f055"; } // .fa-plus-circle
-.btn-type-cite::before { content: "\f069"; } // .fa-asterisk
-.btn-type-delete::before { content: "\f1f8"; } // .fa-trash
-.btn-type-email::before { content: "\f0e0"; } // .fa-envelope
-.btn-type-empty::before { content: "\f00d"; } // .fa-times
-.btn-type-export::before { content: "\f08e"; } // .fa-external-link
-.btn-type-minus::before { content: "\f056"; } // .fa-minus-circle
-.btn-type-phone::before { content: "\f10b"; } // .fa-mobile
-.btn-type-print::before { content: "\f02f"; } // .fa-print
-.btn-type-save::before { content: "\f005"; } // .fa-star
-.btn-type-permalink::before { content: "\f0c1"; } // .fa-link
-
-
-/**
  * Assign catalog formats to Font Awesome icons
  */
 .doi-icon {
@@ -64,7 +42,6 @@
 .fa-photo:before          {content: "\f03e";} // .fa-picture-o
 .fa-photonegative:before  {content: "\f03e";} // .fa-picture-o
 .fa-physicalobject:before {content: "\f187";} // .fa-archive
-.fa-print:before          {content: "\f03e";} // .fa-picture-o
 .fa-sensorimage:before    {content: "\f03e";} // .fa-picture-o
 .fa-serial:before         {content: "\f0f6";} // .fa-file-text-o
 .fa-slide:before          {content: "\f008";} // .fa-film
