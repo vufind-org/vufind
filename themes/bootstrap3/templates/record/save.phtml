@@ -4,11 +4,11 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Save') . '</li>';
 ?>
 <h2><?=$this->translate("add_to_favorites_html", ['%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb())]) ?></h2>
-<form class="form-record-save" method="post" action="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" name="saveRecord" data-lightbox-onclose="checkSaveStatusesCallback">
+<form class="form-record-save" method="post" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save')) ?>" name="saveRecord" data-lightbox-onclose="checkSaveStatusesCallback">
   <input type="hidden" name="submit" value="1" />
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
@@ -32,7 +32,9 @@
       <select class="form-control" id="save_list" name="list">
       <?php if ($this->nonContainingLists): ?>
         <?php foreach ($this->nonContainingLists as $list): ?>
-          <option value="<?=$list['id'] ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+          <option value="<?=$this->escapeHtmlAttr($list['id']) ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+            <?=$this->escapeHtml($list['title'])?><?php if ($list['public']):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
+          </option>
         <?php endforeach; ?>
       <?php else: ?>
         <option value=""><?=$this->transEsc('My Favorites') ?></option>

@@ -41,7 +41,7 @@ use VuFindConsole\Command\Harvest\MergeMarcCommand;
  */
 class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test that missing parameters yield an error message.

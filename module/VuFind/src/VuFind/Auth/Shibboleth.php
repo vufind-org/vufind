@@ -34,7 +34,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Vufind\Auth\Shibboleth\ConfigurationLoaderInterface;
+use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -56,7 +56,7 @@ class Shibboleth extends AbstractBase
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */
-    const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
+    public const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
 
     /**
      * This is array of attributes which $this->authenticate()
@@ -123,7 +123,8 @@ class Shibboleth extends AbstractBase
      * @param \Laminas\Http\PhpEnvironment\Request $request             Http
      * request object
      */
-    public function __construct(\Laminas\Session\ManagerInterface $sessionManager,
+    public function __construct(
+        \Laminas\Session\ManagerInterface $sessionManager,
         ConfigurationLoaderInterface $configurationLoader,
         \Laminas\Http\PhpEnvironment\Request $request
     ) {
@@ -234,7 +235,7 @@ class Shibboleth extends AbstractBase
                 } elseif ($attribute == 'cat_password') {
                     $catPassword = $value;
                 } else {
-                    $user->$attribute = ($value === null) ? '' : $value;
+                    $user->$attribute = $value ?? '';
                 }
             }
         }
@@ -332,6 +333,37 @@ class Shibboleth extends AbstractBase
     }
 
     /**
+     * Connect user authenticated by Shibboleth to library card.
+     *
+     * @param \Laminas\Http\PhpEnvironment\Request $request        Request object
+     * containing account credentials.
+     * @param \VuFind\Db\Row\User                  $connectingUser Connect newly
+     * created library card to this user.
+     *
+     * @return void
+     */
+    public function connectLibraryCard($request, $connectingUser)
+    {
+        $entityId = $this->getCurrentEntityId($request);
+        $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
+        $username = $this->getAttribute($request, $shib['cat_username']);
+        if (!$username) {
+            throw new \VuFind\Exception\LibraryCard('Missing username');
+        }
+        $prefix = $shib['prefix'] ?? '';
+        if (!empty($prefix)) {
+            $username = $shib['prefix'] . '.' . $username;
+        }
+        $password = $shib['cat_password'] ?? null;
+        $connectingUser->saveLibraryCard(
+            null,
+            $shib['prefix'],
+            $username,
+            $password
+        );
+    }
+
+    /**
      * Return configuration loader
      *
      * @return ConfigurationLoaderInterface configuration loader
@@ -344,7 +376,7 @@ class Shibboleth extends AbstractBase
     /**
      * Extract required user attributes from the configuration.
      *
-     * @param array $config shibboleth configuration
+     * @param array $config Shibboleth configuration
      *
      * @return array      Only username and attribute-related values
      * @throws AuthException

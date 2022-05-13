@@ -30,7 +30,6 @@ namespace VuFindTest\Search\Solr;
 
 use Laminas\Config\Config;
 use VuFind\Search\Solr\SpellingProcessor;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for spelling processor.
@@ -41,9 +40,11 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SpellingProcessorTest extends TestCase
+class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+    use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
      * Test defaults.
@@ -132,8 +133,7 @@ class SpellingProcessorTest extends TestCase
     {
         $spelling = $this->unserializeFixture('spell1');
         $query = $this->unserializeFixture('query1');
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
         $this->assertEquals(
@@ -180,7 +180,9 @@ class SpellingProcessorTest extends TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -194,8 +196,7 @@ class SpellingProcessorTest extends TestCase
     {
         $spelling = $this->unserializeFixture('spell6');
         $query = $this->unserializeFixture('query6');
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
         $this->assertEquals(
@@ -242,7 +243,9 @@ class SpellingProcessorTest extends TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery6Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery6Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -256,8 +259,7 @@ class SpellingProcessorTest extends TestCase
     {
         $spelling = $this->unserializeFixture('spell1');
         $query = $this->unserializeFixture('query1');
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $config = new Config(['expand' => false, 'phrase' => true]);
         $sp = new SpellingProcessor($config);
@@ -299,7 +301,9 @@ class SpellingProcessorTest extends TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -492,15 +496,16 @@ class SpellingProcessorTest extends TestCase
     {
         $spelling = $this->unserializeFixture('spell' . $testNum);
         $query = $this->unserializeFixture('query' . $testNum);
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $params = $this->getSolrParams();
         $this->setProperty($params, 'query', $query);
         $sp = new SpellingProcessor(new Config($config));
         $suggestions = $sp->getSuggestions($spelling, $query);
         $this->assertEquals(
             $expected,
             $sp->processSuggestions(
-                $suggestions, $spelling->getQuery(), $params
+                $suggestions,
+                $spelling->getQuery(),
+                $params
             )
         );
     }

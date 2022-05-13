@@ -6,9 +6,6 @@
   $hasSubLinks = $this->exclude && !$this->facet['isApplied'];
 
   $classList = ['facet', 'js-facet-item'];
-  if (!empty($this->moreClass)) {
-    $classList[] = $this->moreClass;
-  }
   if ($this->facet['isApplied']) {
     $classList[] = 'active';
   }
@@ -29,7 +26,7 @@
 
   if ($this->facet['operator'] == 'OR') {
     $displayText =
-      '<i class="fa ' . ($this->facet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o') . '" aria-hidden="true"></i> '
+      '<i class="fa ' . ($this->facet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o') . '" aria-hidden="true"></i>'
       . $displayText;
   }
 ?>

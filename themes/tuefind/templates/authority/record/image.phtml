@@ -1,10 +1,9 @@
 <?php
   // Image (partially rendered by JS)
   $imgUrl = $this->url('wikidataproxy-load');
-  $wikidataId = $this->driver->getWikidataId();
-  if ($wikidataId != null) {
-    $imgUrl .= '?id=' . $wikidataId;
-  } else {
+  $wikidataIds = $this->driver->getWikidataIds();
+
+  if (empty($wikidataIds)) {
     $imgUrl .= '?search[]=';
     $names = $this->driver->getNameAliases();
     $encodedNames = [];
@@ -13,12 +12,15 @@
     }
     $imgUrl .= implode('&search[]=', $encodedNames);
     $params = ['birthYear' => $this->driver->getBirthYear(),
-             'deathYear' => $this->driver->getDeathYear()];
+               'deathYear' => $this->driver->getDeathYear()];
     foreach ($params as $key => $value) {
       if ($value)
-        $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+	$imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+    }
+  } else {
+    // wikidata ids for single object always redirect to the master obj.: https://www.wikidata.org/wiki/Help:Redirects
+    $imgUrl .= '?id=' . $wikidataIds[0];
   }
-}
 ?>
 <!-- onload didn't work, so we use a separate script snippet -->
 <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>" align="center"></div>

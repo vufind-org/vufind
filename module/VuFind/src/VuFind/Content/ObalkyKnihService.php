@@ -41,7 +41,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
-    use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -57,6 +57,13 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      * @var string
      */
     protected $referrer;
+
+    /**
+     * Sigla - library identifier
+     *
+     * @var string
+     */
+    protected $sigla;
 
     /**
      * Constructor
@@ -75,6 +82,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $this->apiUrl = $config->base_url[0] . $config->books_endpoint;
         $this->cacheLifetime = 1800;
         $this->referrer = $config->referrer ?? null;
+        $this->sigla = $config->sigla ?? null;
     }
 
     /**
@@ -150,12 +158,13 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $oclc = $ids['oclc'] ?? null;
         $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
         $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
-        $nbn = $ids['nbn'] ?? null;
+        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid']);
         foreach (['isbn', 'oclc', 'ismn', 'nbn' ] as $identifier) {
             if (isset($$identifier)) {
                 $query[$identifier] = $$identifier;
             }
         }
+
         $url = $this->apiUrl . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
@@ -166,5 +175,21 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
             return null;
         }
         return $response->isSuccess() ? json_decode($response->getBody())[0] : null;
+    }
+
+    /**
+     * Create identifier of local record
+     *
+     * @param string $recordid Record identifier
+     *
+     * @return string|null
+     */
+    protected function createLocalIdentifier(string $recordid): ?string
+    {
+        if (strpos($recordid, '.') !== false) {
+            [, $recordid] = explode('.', $recordid, 2);
+        }
+        return empty($this->sigla) ? null :
+            $this->sigla . '-' . str_replace('-', '', $recordid);
     }
 }

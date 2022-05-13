@@ -31,7 +31,6 @@ namespace VuFindTest\Backend\Pazpar2;
 use InvalidArgumentException;
 use VuFindSearch\Backend\Pazpar2\Backend;
 use VuFindSearch\Query\Query;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Pazpar2 backend.
@@ -42,9 +41,10 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test that getConnector works.
@@ -77,12 +77,9 @@ class BackendTest extends TestCase
         $conn->expects($this->once())
             ->method('show')
             ->will($this->returnValue($this->loadResponse('pp2show')));
-        $conn->expects($this->at(0))
+        $conn->expects($this->exactly(2))
             ->method('stat')
-            ->will($this->returnValue(simplexml_load_string($this->getStatXml(0.5))));
-        $conn->expects($this->at(1))
-            ->method('stat')
-            ->will($this->returnValue(simplexml_load_string($this->getStatXml(1.0))));
+            ->willReturnOnConsecutiveCalls(simplexml_load_string($this->getStatXml(0.5)), simplexml_load_string($this->getStatXml(1.0)));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -150,7 +147,7 @@ class BackendTest extends TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\Pazpar2\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['fake', $client])
             ->getMock();
     }

@@ -53,15 +53,31 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     protected $universal;
 
     /**
+     * Options to pass to the ga() create command.
+     *
+     * @var string
+     */
+    protected $createOptions;
+
+    /**
      * Constructor
      *
-     * @param string|bool $key       API key (false if disabled)
-     * @param bool        $universal Are we using Universal Analytics?
+     * @param string|bool $key     API key (false if disabled)
+     * @param bool|array  $options Configuration options (supported options:
+     * 'universal' and 'create_options_js'). If a boolean is provided instead of
+     * an array, that value is used as the 'universal' setting and no other options
+     * are set (for backward compatibility).
      */
-    public function __construct($key, $universal = false)
+    public function __construct($key, $options = [])
     {
+        // The second constructor parameter used to be a boolean representing
+        // the "universal" setting, so convert to an array for back-compatibility:
+        if (!is_array($options)) {
+            $options = ['universal' => (bool)$options];
+        }
         $this->key = $key;
-        $this->universal = $universal;
+        $this->universal = $options['universal'] ?? false;
+        $this->createOptions = $options['create_options_js'] ?? "'auto'";
     }
 
     /**
@@ -83,7 +99,7 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
                 . 'm.parentNode.insertBefore(a,m)'
                 . "})(window,document,'script',"
                 . "'//www.google-analytics.com/analytics.js','ga');"
-                . "ga('create', '{$this->key}', 'auto');"
+                . "ga('create', '{$this->key}', {$this->createOptions});"
                 . "ga('send', 'pageview');";
         }
 

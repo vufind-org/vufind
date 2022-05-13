@@ -33,7 +33,9 @@
           $removeLink = isset($urlQuery)
             ? $urlQuery->removeFilter($filter['filter'])
             : $this->searchMemory()->getEditLink(
-              $this->searchClassId, 'removeFilter', $filter['filter']
+                $this->searchClassId,
+                'removeFilter',
+                $filter['filter']
             );
           $desc = $this->translate($filter['desc']);
           $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);

@@ -93,7 +93,10 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
         try {
             $this->generatorTools->setOutputInterface($output);
             $this->generatorTools->extendClass(
-                $this->container, $class, $target, $extendFactory
+                $this->container,
+                $class,
+                $target,
+                $extendFactory
             );
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());

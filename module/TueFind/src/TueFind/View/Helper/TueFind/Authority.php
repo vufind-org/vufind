@@ -300,7 +300,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getRelatedAuthors(AuthorityRecordDriver &$driver, $limit)
     {
-
         $params = new \VuFindSearch\ParamBag();
         $params->set('fl', 'id,author_and_id_facet');
         $params->set('sort', 'score desc,publishDateSort desc');
@@ -334,19 +333,22 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         // custom sort, since solr can only sort by count but not alphabetically,
         // since the value starts with an id instead of a name.
         $finalAuthorArray = [];
+        $fixedAuthorCount = 0;
         foreach($relatedAuthors as $oneRelatedAuthor=>$counts) {
             $explodeData = explode(':', $oneRelatedAuthor);
             $relatedAuthor['relatedAuthorTitle'] = '';
             $relatedAuthor['relatedAuthorID'] = '';
-            if(isset($explodeData[1])) {
+            if(isset($explodeData[1]) && $explodeData[1] != $driver->getUniqueID()) {
                 $relatedAuthor['relatedAuthorTitle'] = $explodeData[0];
                 $relatedAuthor['relatedAuthorID'] = $explodeData[1];
+                $fixedAuthorCount++;
             }
-            if($relatedAuthor['relatedAuthorID'] != $driver->getUniqueID() && count($finalAuthorArray) < $limit) {
+            if(count($finalAuthorArray) < $limit && !empty($relatedAuthor['relatedAuthorTitle'])) {
                 $finalAuthorArray[] = $relatedAuthor;
             }
         }
-        return array($finalAuthorArray,count($relatedAuthors));
+
+        return array($finalAuthorArray,$fixedAuthorCount);
     }
 
     /**
@@ -560,10 +562,16 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         arsort($countedTopics);
 
         $urlHelper = $this->viewHelperManager->get('url');
+        $tuefindHelper = $this->viewHelperManager->get('tuefind');
 
+        $searchType = 'AllFields';
         $lookfor = $this->getTitlesByQueryParams($driver);
 
-        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$settings['searchType'].'&filter[]='.$settings['filter'].':';
+        if ($tuefindHelper->getTueFindFlavour() == 'ixtheo') {
+            $settings['filter'] = 'key_word_chain_bag';
+        }
+
+        $topicLink = $urlHelper('search-results').'?lookfor='.$lookfor.'&type='.$searchType.'&filter[]='.$settings['filter'].':';
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {

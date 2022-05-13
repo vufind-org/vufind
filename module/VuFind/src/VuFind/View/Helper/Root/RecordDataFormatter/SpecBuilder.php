@@ -101,7 +101,7 @@ class SpecBuilder
     public function setMultiLine($key, $dataMethod, $callback, $options = [])
     {
         $options['multiFunction'] = $callback;
-        return $this->setLine($key, $dataMethod, 'Multi', $options);
+        $this->setLine($key, $dataMethod, 'Multi', $options);
     }
 
     /**
@@ -117,7 +117,7 @@ class SpecBuilder
     public function setTemplateLine($key, $dataMethod, $template, $options = [])
     {
         $options['template'] = $template;
-        return $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
+        $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
     }
 
     /**

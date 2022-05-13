@@ -122,7 +122,8 @@ class AlmaController extends AbstractBase
             } catch (\VuFind\Exception\Forbidden $ex) {
                 return $this->createJsonResponse(
                     'Access to Alma Webhook is forbidden. ' .
-                    'The message signature is not correct.', 403
+                    'The message signature is not correct.',
+                    403
                 );
             }
             $requestBodyJson = json_decode($request->getContent());
@@ -142,7 +143,8 @@ class AlmaController extends AbstractBase
                 return $this->createJsonResponse(
                     'Access to Alma Webhook \'' . $webhookAction . '\' forbidden. ' .
                     'Set permission \'' . $accessPermission .
-                    '\' in \'permissions.ini\'.', 403
+                    '\' in \'permissions.ini\'.',
+                    403
                 );
             }
 
@@ -163,7 +165,8 @@ class AlmaController extends AbstractBase
             } catch (\VuFind\Exception\Forbidden $ex) {
                 return $this->createJsonResponse(
                     'Access to Alma Webhook challenge forbidden. Set permission \'' .
-                    $accessPermission . '\' in \'permissions.ini\'.', 403
+                    $accessPermission . '\' in \'permissions.ini\'.',
+                    403
                 );
             }
             return $this->webhookChallenge();
@@ -251,7 +254,8 @@ class AlmaController extends AbstractBase
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully ' . strtolower($method) .
                         'd user with primary ID \'' . $primaryId .
-                        '\' | username \'' . $username . '\'.', 200
+                        '\' | username \'' . $username . '\'.',
+                        200
                     );
                 } catch (\Exception $ex) {
                     $jsonResponse = $this->createJsonResponse(
@@ -277,7 +281,8 @@ class AlmaController extends AbstractBase
                 if ($rowsAffected == 1) {
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully deleted use with primary ID \'' . $primaryId .
-                        '\' in VuFind.', 200
+                        '\' in VuFind.',
+                        200
                     );
                 } else {
                     $jsonResponse = $this->createJsonResponse(
@@ -285,13 +290,15 @@ class AlmaController extends AbstractBase
                         '\' in VuFind. It is expected that only 1 row of the ' .
                         'VuFind user table is affected by the deletion. But ' .
                         $rowsAffected . ' were affected. Please check the status ' .
-                        'of the user in the VuFind database.', 400
+                        'of the user in the VuFind database.',
+                        400
                     );
                 }
             } else {
                 $jsonResponse = $this->createJsonResponse(
                     'User with primary ID \'' . $primaryId . '\' was not found in ' .
-                    'VuFind database and therefore could not be deleted.', 404
+                    'VuFind database and therefore could not be deleted.',
+                    404
                 );
             }
         }
@@ -363,18 +370,20 @@ class AlmaController extends AbstractBase
 
                 // Custom template for emails (text-only)
                 $message = $renderer->render(
-                    'Email/new-user-welcome.phtml', [
-                    'library' => $config->Site->title,
-                    'firstname' => $user->firstname,
-                    'lastname' => $user->lastname,
-                    'username' => $user->username,
-                    'url' => $this->getServerUrl('myresearch-verify') . '?hash=' .
-                        $user->verify_hash . '&auth_method=' . $method
+                    'Email/new-user-welcome.phtml',
+                    [
+                        'library' => $config->Site->title,
+                        'firstname' => $user->firstname,
+                        'lastname' => $user->lastname,
+                        'username' => $user->username,
+                        'url' => $this->getServerUrl('myresearch-verify') . '?hash='
+                            . $user->verify_hash . '&auth_method=' . $method
                     ]
                 );
                 // Send the email
                 $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
-                    $user->email, $config->Site->email,
+                    $user->email,
+                    $config->Site->email,
                     $this->translate(
                         'new_user_welcome_subject',
                         ['%%library%%' => $config->Site->title]
@@ -423,7 +432,8 @@ class AlmaController extends AbstractBase
     protected function webhookNotImplemented($webhookType)
     {
         return $this->createJsonResponse(
-            $webhookType . ' Alma Webhook is not (yet) implemented in VuFind.', 400
+            $webhookType . ' Alma Webhook is not (yet) implemented in VuFind.',
+            400
         );
     }
 

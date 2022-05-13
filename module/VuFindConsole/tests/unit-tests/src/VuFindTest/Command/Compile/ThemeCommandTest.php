@@ -156,7 +156,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ThemeCompiler::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

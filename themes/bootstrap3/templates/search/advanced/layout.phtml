@@ -29,14 +29,14 @@
 
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
-    $this->advancedSearchJsOverride ?? 'advanced_search.js'
+      $this->advancedSearchJsOverride ?? 'advanced_search.js'
   );
   // Step 2: Build the page
   $this->headScript()->appendScript(
-    $this->partial(
-      $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
-      ['options' => $this->options, 'searchDetails' => $searchDetails]
-    )
+      $this->partial(
+          $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
+          ['options' => $this->options, 'searchDetails' => $searchDetails]
+      )
   );
 
   // Collect previous search queries
@@ -103,10 +103,10 @@
                     <div id="new_search_template">
                   <?php endif; ?>
                   <div id="search<?=$group . '_' . $search ?>" class="adv-search">
-                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?php if (isset($setQueries[$group][$search])): ?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?php endif; ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
+                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?php if (isset($setQueries[$group][$search])): ?> value="<?=$this->escapeHtmlAttr($setQueries[$group][$search]->getString())?>"<?php endif; ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
                     <select class="adv-term-type form-control" name="type<?=$group ?>[]" aria-label="<?=$this->transEscAttr("Search type")?>">
                       <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                        <option value="<?=$this->escapeHtml($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
+                        <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
                       <?php endforeach; ?>
                     </select>
                     <a href="#" class="adv-term-remove hidden">
@@ -140,16 +140,16 @@
         <?php endif; ?>
       </div>
       <div class="adv-submit">
-        <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
-        <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
+        <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">
+        <input class="btn btn-primary" type="submit" value="<?= $this->transEscAttr('Find')?>">
       </div>
       <?php if (isset($this->extraAdvancedControls)): ?>
         <div class="clearfix">
           <?=$this->extraAdvancedControls ?>
         </div>
         <div class="adv-submit">
-          <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
-          <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
+          <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">
+          <input class="btn btn-primary" type="submit" value="<?= $this->transEscAttr('Find')?>">
         </div>
       <?php endif; ?>
     </div>

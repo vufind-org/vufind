@@ -46,7 +46,7 @@ use VuFind\ILS\Driver\DAIA;
  */
 class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     protected $testResult = [
         0 =>

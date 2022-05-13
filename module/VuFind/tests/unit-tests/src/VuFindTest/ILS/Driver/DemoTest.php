@@ -38,7 +38,7 @@ use VuFind\ILS\Driver\Demo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DemoTest extends \VuFindTest\Unit\TestCase
+class DemoTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Driver object
@@ -57,7 +57,8 @@ class DemoTest extends \VuFindTest\Unit\TestCase
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         $this->driver = new Demo(
-            new \VuFind\Date\Converter(), $this->createMock(\VuFindSearch\Service::class),
+            new \VuFind\Date\Converter(),
+            $this->createMock(\VuFindSearch\Service::class),
             function () use ($session) {
                 return $session;
             }

@@ -21,122 +21,73 @@ class SolrMarc extends SolrDefault
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        // THIS PART OF THE CODE IS THE SAME AS VUFIND4
-        // This is all the collected data:
-        $retval = [];
+        // Get default headings from parent
+        $defaultHeadings = parent::getAllSubjectHeadings($extended);
 
-        // Try each MARC field one at a time:
-        foreach ($this->subjectFields as $field => $fieldType) {
-            // Do we have any results for the current field?  If not, try the next.
-            $results = $this->getMarcRecord()->getFields($field);
-            if (!$results) {
-                continue;
-            }
-
-            // If we got here, we found results -- let's loop through them.
-            foreach ($results as $result) {
-                // Start an array for holding the chunks of the current heading:
+        // Add custom headings
+        $customHeadings = [];
+        $fields = $this->getMarcReader()->getFields('689');
+        $current = [];
+        $currentID = 0;
+        foreach ($fields as $field) {
+            $id = $field['i1'];
+            if ($id != $currentID && !empty($current)) {
+                $customHeadings[] = $current;
                 $current = [];
-
-                // Get all the chunks and collect them together:
-                $subfields = $result->getSubfields();
-                if ($subfields) {
-                    foreach ($subfields as $subfield) {
-                        // Numeric subfields are for control purposes and should not
-                        // be displayed:
-                        if (!is_numeric($subfield->getCode())) {
-                            $current[] = $subfield->getData();
-                        }
-                    }
-                    // If we found at least one chunk, add a heading to our result:
-                    if (!empty($current)) {
-                        if ($extended) {
-                            $sourceIndicator = $result->getIndicator(2);
-                            $source = '';
-                            if (isset($this->subjectSources[$sourceIndicator])) {
-                                $source = $this->subjectSources[$sourceIndicator];
-                            } else {
-                                $source = $result->getSubfield('2');
-                                if ($source) {
-                                    $source = $source->getData();
-                                }
-                            }
-                            $retval[] = [
-                                'heading' => $current,
-                                'type' => $fieldType,
-                                'source' => $source ?: ''
-                            ];
-                        } else {
-                            $retval[] = $current;
-                        }
+            }
+            foreach ($field['subfields'] as $subfield) {
+                if (!is_numeric($subfield['code']) && strlen($subfield['data']) > 2) {
+                    if (!$extended) {
+                        $current[] = $subfield['data'];
+                    } else {
+                        $current[] = [
+                            'heading' => $subfield['data'],
+                            'type' => 'subject',
+                            'source' => '',
+                        ];
                     }
                 }
             }
+            $currentID = $id;
+        }
+        if (!empty($current)) {
+            $customHeadings[] = $current;
         }
 
-        // THIS IS WHERE THE KRIMDOK CODE STARTS => for 689 and LOK 689
-        $results = $this->getMarcRecord()->getFields('689');
-        if ($results) {
+        $fields = $this->getMarcReader()->getFields('LOK');
+        foreach ($fields as $field) {
             $current = [];
-            $currentID = 0;
-            foreach ($results as $result) {
-                $id = $result->getIndicator(1);
-                if ($id != $currentID && !empty($current)) {
-                    $retval[] = $current;
-                    $current = [];
-                }
-                $subfields = $result->getSubfields();
-                if ($subfields) {
-                    foreach ($subfields as $subfield) {
-                        if (!is_numeric($subfield->getCode()) && strlen($subfield->getData()) > 2) {
-                            if (!$extended) {
-                                $current[] = $subfield->getData();
-                            } else {
-                                $current[] = [
-                                    'heading' => $subfield->getData(),
-                                    'type' => 'subject',
-                                    'source' => '',
-                                ];
-                            }
+            $subfields = $field['subfields'];
+            $firstSubfieldData = $subfields[0]['data'] ?? null;
+            if ($firstSubfieldData === '689  ') {
+                foreach ($subfields as $subfield) {
+                    if ($subfield['code'] === 'a' && strlen($subfield['data']) > 1) {
+                        if (!$extended) {
+                            $current[] = $subfield['data'];
+                        } else {
+                            $current[] = [
+                                'heading' => $subfield['data'],
+                                'type' => 'subject',
+                                'source' => '',
+                            ];
                         }
                     }
                 }
-                $currentID = $id;
             }
             if (!empty($current)) {
-                $retval[] = $current;
-            }
-        }
-        $results = $this->getMarcRecord()->getFields('LOK');
-        if ($results) {
-            foreach ($results as $result) {
-                $current = [];
-                $subfields = $result->getSubfields();
-                if ($subfields && $subfields->bottom()->getData() === '689  ') {
-                    foreach ($subfields as $subfield) {
-                        if ($subfield->getCode() === 'a' && strlen($subfield->getData()) > 1) {
-                            if (!$extended) {
-                                $current[] = $subfield->getData();
-                            } else {
-                                $current[] = [
-                                    'heading' => $subfield->getData(),
-                                    'type' => 'subject',
-                                    'source' => '',
-                                ];
-                            }
-                        }
-                    }
-                }
-                if (!empty($current)) {
-                    $retval[] = $current;
-                }
+                $customHeadings[] = $current;
             }
         }
 
-        // RETURNING IS SAME AS VUFIND4
-        // Remove duplicates and then send back everything we collected:
-        return array_map(
-            'unserialize', array_unique(array_map('serialize', $retval))
-        );
+        // merge, unique, sort
+        $headings = array_merge($defaultHeadings, $customHeadings);
+        $headings = array_unique($headings, SORT_REGULAR);
+        uasort($headings, function($a, $b) {
+            $aSortKey = implode('#', $a);
+            $bSortKey = implode('#', $b);
+            return strnatcmp($aSortKey, $bSortKey);
+        });
+
+        return $headings;
     }
 }

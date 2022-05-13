@@ -42,6 +42,13 @@ namespace VuFind\Cookie;
 class CookieManager
 {
     /**
+     * Cookie array to work with
+     *
+     * @var array
+     */
+    protected $cookies;
+
+    /**
      * Cookie base path
      *
      * @var string
@@ -95,8 +102,14 @@ class CookieManager
      * @param bool   $httpOnly    Are cookies HTTP only? (default = true)
      * @param string $sameSite    Default SameSite attribute (defaut = 'Lax')
      */
-    public function __construct($cookies, $path = '/', $domain = null,
-        $secure = false, $sessionName = null, $httpOnly = true, $sameSite = 'Lax'
+    public function __construct(
+        $cookies,
+        $path = '/',
+        $domain = null,
+        $secure = false,
+        $sessionName = null,
+        $httpOnly = true,
+        $sameSite = 'Lax'
     ) {
         $this->cookies = $cookies;
         $this->path = $path;
@@ -192,18 +205,19 @@ class CookieManager
      *
      * @return bool
      */
-    public function proxySetCookie($key, $value, $expire, $path, $domain, $secure,
-        $httpOnly, $sameSite
+    public function proxySetCookie(
+        $key,
+        $value,
+        $expire,
+        $path,
+        $domain,
+        $secure,
+        $httpOnly,
+        $sameSite
     ) {
         // Special case: in CLI -- don't actually write headers!
         if ('cli' === PHP_SAPI) {
             return true;
-        }
-        if (PHP_VERSION_ID < 70300) {
-            return setcookie(
-                $key, $value, $expire, "$path; samesite=$sameSite", $domain, $secure,
-                $httpOnly
-            );
         }
         return setcookie(
             $key,
@@ -230,7 +244,11 @@ class CookieManager
      *
      * @return bool
      */
-    public function setGlobalCookie($key, $value, $expire, $httpOnly = null,
+    public function setGlobalCookie(
+        $key,
+        $value,
+        $expire,
+        $httpOnly = null,
         $sameSite = null
     ) {
         if (null === $httpOnly) {
@@ -242,8 +260,14 @@ class CookieManager
         // Simple case: flat value.
         if (!is_array($value)) {
             return $this->proxySetCookie(
-                $key, $value, $expire, $this->path, $this->domain, $this->secure,
-                $httpOnly, $sameSite
+                $key,
+                $value,
+                $expire,
+                $this->path,
+                $this->domain,
+                $this->secure,
+                $httpOnly,
+                $sameSite
             );
         }
 
@@ -251,8 +275,14 @@ class CookieManager
         $success = true;
         foreach ($value as $i => $curr) {
             $lastSuccess = $this->proxySetCookie(
-                $key . '[' . $i . ']', $curr, $expire,
-                $this->path, $this->domain, $this->secure, $httpOnly, $sameSite
+                $key . '[' . $i . ']',
+                $curr,
+                $expire,
+                $this->path,
+                $this->domain,
+                $this->secure,
+                $httpOnly,
+                $sameSite
             );
             if (!$lastSuccess) {
                 $success = false;
@@ -272,7 +302,11 @@ class CookieManager
      *
      * @return bool
      */
-    public function set($key, $value, $expire = 0, $httpOnly = null,
+    public function set(
+        $key,
+        $value,
+        $expire = 0,
+        $httpOnly = null,
         $sameSite = null
     ) {
         $success = $this

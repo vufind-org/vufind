@@ -91,14 +91,15 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $checkoutResults = $this->connector->getCheckouts(true);
             if (!$checkoutResults->status) {
                 $this->flashMessenger()->addMessage(
-                    $checkoutResults->code, 'error'
+                    $checkoutResults->code,
+                    'error'
                 );
                 $checkoutsUnavailable = true;
             } else {
                 foreach ($checkoutResults->data as $checkout) {
                     $mycheckout['checkout'] = $checkout;
                     $mycheckout['record']
-                        = $this->serviceLocator->get('VuFind\Record\Loader')
+                        = $this->serviceLocator->get(\VuFind\Record\Loader::class)
                         ->load(strtolower($checkout->reserveId));
                     $checkouts[] = $mycheckout;
                 }
@@ -109,7 +110,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             if (!$holdsResults->status) {
                 if ($checkoutResults->status) {
                     $this->flashMessenger()->addMessage(
-                        $holdsResults->code, 'error'
+                        $holdsResults->code,
+                        'error'
                     );
                 }
                 $holdsUnavailable = true;
@@ -117,7 +119,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 foreach ($holdsResults->data as $hold) {
                     $myhold['hold'] = $hold;
                     $myhold['record']
-                        = $this->serviceLocator->get('VuFind\Record\Loader')
+                        = $this->serviceLocator->get(\VuFind\Record\Loader::class)
                         ->load(strtolower($hold->reserveId));
                     $holds[] = $myhold;
                 }
@@ -128,8 +130,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $view = $this->createViewModel(
             compact(
-                'checkoutsUnavailable', 'holdsUnavailable',
-                'checkouts', 'holds'
+                'checkoutsUnavailable',
+                'holdsUnavailable',
+                'checkouts',
+                'holds'
             )
         );
 
@@ -147,7 +151,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $this->debug("ODC getStatus action");
         $ids = $this->params()->fromPost(
-            'id', $this->params()->fromQuery('id', [])
+            'id',
+            $this->params()->fromQuery('id', [])
         );
         $this->debug("ODRC availability for :" . print_r($ids, true));
         $result = $this->connector->getAvailabilityBulk($ids);
@@ -195,7 +200,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
         //load the Record Driver.  Should be a SolrOverdrive  driver.
-        $driver = $this->serviceLocator->get('VuFind\Record\Loader')->load(
+        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
 
@@ -278,7 +283,9 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $this->getServerUrl('overdrive-hold')
             );
             $result = $this->connector->getDownloadLink(
-                $od_id, $format, $this->getServerUrl('overdrive-hold')
+                $od_id,
+                $format,
+                $this->getServerUrl('overdrive-hold')
             );
             if ($result->status) {
                 //Redirect to resource
@@ -292,8 +299,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $view = $this->createViewModel(
             compact(
-                'od_id', 'rec_id', 'action',
-                'result', 'formats', 'cover', 'title', 'actionTitleCode',
+                'od_id',
+                'rec_id',
+                'action',
+                'result',
+                'formats',
+                'cover',
+                'title',
+                'actionTitleCode',
                 'listAuthors'
             )
         );

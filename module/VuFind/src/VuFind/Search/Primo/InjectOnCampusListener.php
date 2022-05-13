@@ -31,6 +31,7 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFindSearch\Service;
 
 /**
  * OnCampus listener.
@@ -94,7 +95,11 @@ class InjectOnCampusListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
     }
 
     /**
@@ -120,7 +125,7 @@ class InjectOnCampusListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $params = $event->getParam('params');
+        $params = $event->getParam('command')->getSearchParameters();
         $params->set('onCampus', $this->getOnCampus());
 
         return $event;

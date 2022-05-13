@@ -42,7 +42,7 @@ use VuFindSearch\Backend\EIT\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test query parsing.
@@ -61,7 +61,7 @@ class QueryBuilderTest extends TestCase
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
-            list($input, $output) = $test;
+            [$input, $output] = $test;
             $q = unserialize(
                 $this->getFixture("eit/query/$input", 'VuFindSearch')
             );

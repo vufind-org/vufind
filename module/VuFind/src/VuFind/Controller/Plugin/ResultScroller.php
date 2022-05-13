@@ -70,7 +70,9 @@ class ResultScroller extends AbstractPlugin
      * @param ResultsManager   $rm      Results manager
      * @param bool             $enabled Is the scroller enabled?
      */
-    public function __construct(SessionContainer $session, ResultsManager $rm,
+    public function __construct(
+        SessionContainer $session,
+        ResultsManager $rm,
         $enabled = true
     ) {
         $this->enabled = $enabled;
@@ -156,7 +158,8 @@ class ResultScroller extends AbstractPlugin
         // fetch the previous page
         if ($this->data->page > 1 && $this->data->prevIds == null) {
             $this->data->prevIds = $this->fetchPage(
-                $lastSearch, $this->data->page - 1
+                $lastSearch,
+                $this->data->page - 1
             );
         }
 
@@ -196,7 +199,8 @@ class ResultScroller extends AbstractPlugin
             && $this->data->nextIds == null
         ) {
             $this->data->nextIds = $this->fetchPage(
-                $lastSearch, $this->data->page + 1
+                $lastSearch,
+                $this->data->page + 1
             );
         }
 

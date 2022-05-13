@@ -59,6 +59,7 @@ class MaintenanceController extends AbstractAdmin
      */
     public function clearcacheAction()
     {
+        $cache = null;
         $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         foreach ($this->params()->fromQuery('cache', []) as $cache) {
             $cacheManager->getCache($cache)->flush();
@@ -121,20 +122,21 @@ class MaintenanceController extends AbstractAdmin
         if ($daysOld < $minAge) {
             $this->flashMessenger()->addMessage(
                 str_replace(
-                    '%%age%%', $minAge,
+                    '%%age%%',
+                    $minAge,
                     'Expiration age must be at least %%age%% days.'
-                ), 'error'
+                ),
+                'error'
             );
         } else {
             $search = $this->getTable($table);
-            if (!method_exists($search, 'getExpiredQuery')) {
-                throw new \Exception($table . ' does not support getExpiredQuery()');
+            if (!method_exists($search, 'deleteExpired')) {
+                throw new \Exception($table . ' does not support deleteExpired()');
             }
-            $query = $search->getExpiredQuery($daysOld);
-            if (($count = count($search->select($query))) == 0) {
+            $count = $search->deleteExpired($daysOld);
+            if ($count == 0) {
                 $msg = $failString;
             } else {
-                $search->delete($query);
                 $msg = str_replace('%%count%%', $count, $successString);
             }
             $this->flashMessenger()->addMessage($msg, 'success');

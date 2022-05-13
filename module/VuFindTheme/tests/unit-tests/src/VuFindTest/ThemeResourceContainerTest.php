@@ -38,7 +38,7 @@ use VuFindTheme\ResourceContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeResourceContainerTest extends Unit\TestCase
+class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test CSS add/remove.
@@ -80,10 +80,80 @@ class ThemeResourceContainerTest extends Unit\TestCase
     public function testJs()
     {
         $container = new ResourceContainer();
-        $container->addJs(['a', 'b', 'c']);
-        $container->addJs('c');
-        $container->addJs('d');
-        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getJs()));
+        $container->addJs('a');
+        $container->addJs(['file' => 'p2', 'priority' => 220]);
+        $container->addJs(['b', 'c']);
+        $container->addJs(['file' => 'd', 'position' => 'header']);
+        $container->addJs(['file' => 'df', 'position' => 'footer']);
+        $container->addJs('http://foo/bar:lt IE 7');
+        $container->addJs(['file' => 'd1', 'load_after' => 'd']);
+        $container->addJs(['file' => 'p1', 'priority' => 110]);
+        $container->addJs(['file' => 'd2', 'load_after' => 'd1']);
+        $container->addJs([]);
+
+        $expectedResult = [
+            ['file' => 'p1', 'priority' => 110, 'position' => 'header'],
+            ['file' => 'p2', 'priority' => 220, 'position' => 'header'],
+            ['file' => 'a', 'position' => 'header'],
+            ['file' => 'b', 'position' => 'header'],
+            ['file' => 'c', 'position' => 'header'],
+            ['file' => 'd', 'position' => 'header'],
+            ['file' => 'd1', 'load_after' => 'd', 'position' => 'header'],
+            ['file' => 'd2', 'load_after' => 'd1', 'position' => 'header'],
+            ['file' => 'df', 'position' => 'footer'],
+            [
+                'file' => 'http://foo/bar',
+                'position' => 'header',
+                'attributes' => ['conditional' => 'lt IE 7']
+            ],
+        ];
+        $this->assertEquals($expectedResult, $container->getJs());
+
+        $expectedHeaderResult = [
+            ['file' => 'p1', 'priority' => 110, 'position' => 'header'],
+            ['file' => 'p2', 'priority' => 220, 'position' => 'header'],
+            ['file' => 'a', 'position' => 'header'],
+            ['file' => 'b', 'position' => 'header'],
+            ['file' => 'c', 'position' => 'header'],
+            ['file' => 'd', 'position' => 'header'],
+            ['file' => 'd1', 'load_after' => 'd', 'position' => 'header'],
+            ['file' => 'd2', 'load_after' => 'd1', 'position' => 'header'],
+            [
+                'file' => 'http://foo/bar',
+                'position' => 'header',
+                'attributes' => ['conditional' => 'lt IE 7']
+            ],
+        ];
+        $this->assertEquals(
+            $expectedHeaderResult,
+            array_values($container->getJs('header'))
+        );
+
+        $expectedFooterResult = [
+            ['file' => 'df', 'position' => 'footer'],
+        ];
+        $this->assertEquals(
+            $expectedFooterResult,
+            array_values($container->getJs('footer'))
+        );
+    }
+
+    /**
+     * Test Exception for priority + load_after in same js entry.
+     *
+     * @return void
+     */
+    public function testJsException()
+    {
+        $jsEntry = ['file' => 'test', 'priority' => 100, 'load_after' => 'a'];
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            'Using "priority" as well as "load_after" in the same entry '
+                . 'is not supported: "' . $jsEntry['file'] . '"'
+        );
+
+        $container = new ResourceContainer();
+        $container->addJs($jsEntry);
     }
 
     /**
@@ -120,5 +190,25 @@ class ThemeResourceContainerTest extends Unit\TestCase
         $container = new ResourceContainer();
         $container->setGenerator('fake');
         $this->assertEquals('fake', $container->getGenerator());
+    }
+
+    /**
+     * Test configuration parsing.
+     *
+     * @return void
+     */
+    public function testConfigParsing()
+    {
+        $container = new ResourceContainer();
+        $tests = [
+            'foo:bar:baz' => ['foo', 'bar', 'baz'],
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+        ];
+        foreach ($tests as $test => $expected) {
+            $this->assertEquals(
+                $expected,
+                $container->parseSetting($test)
+            );
+        }
     }
 }

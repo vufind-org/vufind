@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -45,9 +45,9 @@ use VuFindHttp\HttpServiceAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
-    const HOLDINGS_LINE_NUMBER = 40;
+    public const HOLDINGS_LINE_NUMBER = 40;
 
-    use CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
@@ -71,7 +71,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     /**
      * Factory function for constructing the SessionContainer.
      *
-     * @var Callable
+     * @var callable
      */
     protected $sessionFactory;
 
@@ -186,7 +186,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * @param callable               $sessionFactory Factory function returning
      * SessionContainer object
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
         $sessionFactory
     ) {
         $this->dateConverter = $dateConverter;
@@ -253,7 +254,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         if (!empty($this->config['ItemStatusMappings'])) {
             $this->itemStatusMappings = array_merge(
-                $this->itemStatusMappings, $this->config['ItemStatusMappings']
+                $this->itemStatusMappings,
+                $this->config['ItemStatusMappings']
             );
         }
 
@@ -407,50 +409,36 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function patronLogin($username, $password)
     {
-        // We could get the access token and use the token info API, but since we
-        // already know the barcode, we can avoid one API call and get the patron
-        // information right away (makeRequest renews the access token as necessary
-        // which verifies the PIN code).
-
-        $result = $this->makeRequest(
-            [$this->apiBase, 'info', 'token'],
-            [],
-            'GET',
-            ['cat_username' => $username, 'cat_password' => $password]
-        );
-        if (null === $result) {
-            return null;
+        // If we are using a patron-specific access grant, we can bypass
+        // authentication as the credentials are verified when the access token is
+        // requested.
+        if ($this->isPatronSpecificAccess()) {
+            $patron = $this->getPatronInformationFromAuthToken($username, $password);
+            if (!$patron) {
+                return null;
+            }
+        } else {
+            $patron = $this->authenticatePatron($username, $password);
+            if (!$patron) {
+                return null;
+            }
         }
-        if (empty($result['patronId'])) {
-            throw new ILSException('No patronId in token response');
-        }
-        $patronId = $result['patronId'];
 
-        $result = $this->makeRequest(
-            [$this->apiBase, 'patrons', $patronId],
-            ['fields' => 'names,emails'],
-            'GET',
-            ['cat_username' => $username, 'cat_password' => $password]
-        );
-
-        if (null === $result || !empty($result['code'])) {
-            return null;
-        }
         $firstname = '';
         $lastname = '';
-        if (!empty($result['names'])) {
-            $name = $result['names'][0];
+        if (!empty($patron['names'])) {
+            $name = $patron['names'][0];
             $parts = explode(', ', $name, 2);
             $lastname = $parts[0];
             $firstname = $parts[1] ?? '';
         }
         return [
-            'id' => $result['id'],
+            'id' => $patron['id'],
             'firstname' => $firstname,
             'lastname' => $lastname,
             'cat_username' => $username,
             'cat_password' => $password,
-            'email' => !empty($result['emails']) ? $result['emails'][0] : '',
+            'email' => !empty($patron['emails']) ? $patron['emails'][0] : '',
             'major' => null,
             'college' => null
         ];
@@ -528,7 +516,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
         $expirationDate = !empty($result['expirationDate'])
                 ? $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $result['expirationDate']
+                    'Y-m-d',
+                    $result['expirationDate']
                 ) : '';
         return [
             'firstname' => $firstname,
@@ -578,6 +567,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'records' => []
             ];
         }
+
+        $items = $this->getItemsWithBibsForTransactions($result['entries'], $patron);
         $transactions = [];
         foreach ($result['entries'] as $entry) {
             $transaction = [
@@ -586,33 +577,25 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'item_id' => $this->extractId($entry['item']),
                 'barcode' => $entry['barcode'],
                 'duedate' => $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $entry['dueDate']
+                    'Y-m-d',
+                    $entry['dueDate']
                 ),
                 'renew' => $entry['numberOfRenewals'],
                 'renewable' => true // assumption, who knows?
             ];
             if (!empty($entry['recallDate'])) {
                 $date = $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $entry['recallDate']
+                    'Y-m-d',
+                    $entry['recallDate']
                 );
                 $transaction['message']
                     = $this->translate('item_recalled', ['%%date%%' => $date]);
             }
-            // Fetch item information
-            $item = $this->makeRequest(
-                [$this->apiBase, 'items', $transaction['item_id']],
-                ['fields' => 'bibIds,varFields'],
-                'GET',
-                $patron
-            );
-            $transaction['volume'] = $this->extractVolume($item);
-            if (!empty($item['bibIds'])) {
-                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
-
-                // Fetch bib information
-                $bib = $this->getBibRecord(
-                    $transaction['id'], 'title,publishYear', $patron
-                );
+            $item = $items[$transaction['item_id']] ?? null;
+            $transaction['volume'] = $item ? $this->extractVolume($item) : '';
+            if (!empty($item['bib'])) {
+                $bib = $item['bib'];
+                $transaction['id'] = $this->formatBibId($bib['id']);
                 if (!empty($bib['title'])) {
                     $transaction['title'] = $bib['title'];
                 }
@@ -658,7 +641,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $finalResult = ['details' => []];
 
         foreach ($renewDetails['details'] as $details) {
-            list($checkoutId, $itemId) = explode('|', $details);
+            [$checkoutId, $itemId] = explode('|', $details);
             $result = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'],
                 [],
@@ -676,7 +659,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ];
             } else {
                 $newDate = $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $result['dueDate']
+                    'Y-m-d',
+                    $result['dueDate']
                 );
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
@@ -727,30 +711,24 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     : 'ils_connection_failed'
             ];
         }
+
+        $items = $this->getItemsWithBibsForTransactions($result['entries'], $patron);
         $transactions = [];
         foreach ($result['entries'] as $entry) {
             $transaction = [
                 'id' => '',
                 'item_id' => $this->extractId($entry['item']),
                 'checkoutDate' => $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $entry['outDate']
+                    'Y-m-d',
+                    $entry['outDate']
                 )
             ];
-            // Fetch item information
-            $item = $this->makeRequest(
-                [$this->apiBase, 'items', $transaction['item_id']],
-                ['fields' => 'bibIds,varFields'],
-                'GET',
-                $patron
-            );
-            $transaction['volume'] = $this->extractVolume($item);
-            if (!empty($item['bibIds'])) {
-                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
+            $item = $items[$transaction['item_id']] ?? null;
+            $transaction['volume'] = $item ? $this->extractVolume($item) : '';
+            if (!empty($item['bib'])) {
+                $bib = $item['bib'];
+                $transaction['id'] = $this->formatBibId($bib['id']);
 
-                // Fetch bib information
-                $bib = $this->getBibRecord(
-                    $transaction['id'], 'title,publishYear', $patron
-                );
                 if (!empty($bib['title'])) {
                     $transaction['title'] = $bib['title'];
                 }
@@ -838,52 +816,43 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             }
             $lastPickup = !empty($entry['pickupByDate'])
                 ? $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $entry['pickupByDate']
+                    'Y-m-d',
+                    $entry['pickupByDate']
                 ) : '';
+            $inTransit = $entry['status']['code'] === 't';
+            $requestId = $this->extractId($entry['id']);
+            $updateDetails = ($available || $inTransit) ? '' : $requestId;
             $holds[] = [
                 'id' => $this->formatBibId($bibId),
-                'requestId' => $this->extractId($entry['id']),
+                'reqnum' => $requestId,
                 'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
                 // note that $entry['pickupLocation']['name'] may contain misleading
                 // text, so we instead use the code here:
                 'location' => $entry['pickupLocation']['code'],
                 'create' => $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $entry['placed']
+                    'Y-m-d',
+                    $entry['placed']
                 ),
                 'last_pickup_date' => $lastPickup,
                 'position' => $position,
                 'available' => $available,
-                'in_transit' => $entry['status']['code'] == 't',
+                'in_transit' => $inTransit,
                 'volume' => $volume,
                 'publication_year' => $publicationYear,
                 'title' => $title,
-                'frozen' => !empty($entry['frozen'])
+                'frozen' => !empty($entry['frozen']),
+                'cancel_details' => $updateDetails,
+                'updateDetails' => $updateDetails,
             ];
         }
         return $holds;
     }
 
     /**
-     * Get Cancel Hold Details
-     *
-     * Get required data for canceling a hold. This value is used by relayed to the
-     * cancelHolds function when the user attempts to cancel a hold.
-     *
-     * @param array $holdDetails An array of hold data
-     *
-     * @return string Data for use in a form field
-     */
-    public function getCancelHoldDetails($holdDetails)
-    {
-        return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['requestId'];
-    }
-
-    /**
      * Cancel Holds
      *
-     * Attempts to Cancel a hold. The data in $cancelDetails['details'] is determined
-     * by getCancelHoldDetails().
+     * Attempts to Cancel a hold. The data in $cancelDetails['details'] is taken from
+     * holds' cancel_details field.
      *
      * @param array $cancelDetails An array of item and patron data
      *
@@ -899,7 +868,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         foreach ($details as $holdId) {
             $result = $this->makeRequest(
-                ['v5', 'patrons', 'holds', $holdId], '', 'DELETE', $patron
+                ['v5', 'patrons', 'holds', $holdId],
+                '',
+                'DELETE',
+                $patron
             );
 
             if (!empty($result['code'])) {
@@ -925,6 +897,56 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $holdsDetails The details identifying the holds
+     * @param array $fields       An associative array of fields to be updated
+     * @param array $patron       Patron array
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(
+        array $holdsDetails,
+        array $fields,
+        array $patron
+    ): array {
+        $results = [];
+        foreach ($holdsDetails as $requestId) {
+            $updateFields = [];
+            if (isset($fields['frozen'])) {
+                $updateFields['freeze'] = $fields['frozen'];
+            }
+            if (isset($fields['pickUpLocation'])) {
+                $updateFields['pickupLocation'] = $fields['pickUpLocation'];
+            }
+
+            $result = $this->makeRequest(
+                [$this->apiBase, 'patrons', 'holds', $requestId],
+                json_encode($updateFields),
+                'PUT',
+                $patron
+            );
+
+            if (!empty($result['code'])) {
+                $results[$requestId] = [
+                    'success' => false,
+                    'status' => $this->formatErrorMessage(
+                        $result['description'] ?? $result['name']
+                    )
+                ];
+            } else {
+                $results[$requestId] = [
+                    'success' => true
+                ];
+            }
+        }
+
+        return $results;
+    }
+
+    /**
      * Get Pick Up Locations
      *
      * This is responsible for gettting a list of valid library locations for
@@ -933,10 +955,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
@@ -1073,7 +1097,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // Convert last interest date from Display Format to Sierra's required format
         try {
             $lastInterestDate = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
+                'Y-m-d',
+                $holdDetails['requiredBy']
             );
         } catch (DateException $e) {
             // Hold Date is invalid
@@ -1086,7 +1111,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         try {
             $checkTime = $this->dateConverter->convertFromDisplayDate(
-                'U', $holdDetails['requiredBy']
+                'U',
+                $holdDetails['requiredBy']
             );
             if (!is_numeric($checkTime)) {
                 throw new DateException('Result should be numeric');
@@ -1201,7 +1227,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'fine' => $description,
                 'balance' => $balance * 100,
                 'createdate' => $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d', $entry['assessedDate']
+                    'Y-m-d',
+                    $entry['assessedDate']
                 ),
                 'checkout' => '',
                 'id' => $this->formatBibId($bibId),
@@ -1230,7 +1257,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // Force new login
         $this->sessionCache->accessTokenPatron = '';
         $patron = $this->patronLogin(
-            $details['patron']['cat_username'], $details['oldPassword']
+            $details['patron']['cat_username'],
+            $details['oldPassword']
         );
         if (null === $patron) {
             return [
@@ -1359,21 +1387,28 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      *
      * Makes a request to the Sierra REST API
      *
-     * @param array  $hierarchy Array of values to embed in the URL path of
-     * the request
-     * @param array  $params    A keyed array of query data
-     * @param string $method    The http request method to use (Default is GET)
-     * @param array  $patron    Patron information, if available
+     * @param array  $hierarchy    Array of values to embed in the URL path of the
+     * request
+     * @param array  $params       A keyed array of query data
+     * @param string $method       The http request method to use (Default is GET)
+     * @param array  $patron       Patron information, if available
+     * @param bool   $returnStatus Whether to return HTTP status code and response
+     * as a keyed array instead of just the response
      *
      * @throws ILSException
-     * @return mixed JSON response decoded to an associative array or null on
-     * authentication error
+     * @return mixed JSON response decoded to an associative array, an array of HTTP
+     * status code and JSON response when $returnStatus is true or null on
+     * authentication error when using patron-specific access
      */
-    protected function makeRequest($hierarchy, $params = false, $method = 'GET',
-        $patron = false
+    protected function makeRequest(
+        $hierarchy,
+        $params = false,
+        $method = 'GET',
+        $patron = false,
+        $returnStatus = false
     ) {
         // Clear current access token if it's not specific to the given patron
-        if ($patron
+        if ($patron && $this->isPatronSpecificAccess()
             && $this->sessionCache->accessTokenPatron != $patron['cat_username']
         ) {
             $this->sessionCache->accessToken = null;
@@ -1411,7 +1446,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // Set authorization header
         $headers = $client->getRequest()->getHeaders();
         $headers->addHeaderLine(
-            'Authorization', "Bearer {$this->sessionCache->accessToken}"
+            'Authorization',
+            "Bearer {$this->sessionCache->accessToken}"
         );
         if (is_string($params)) {
             $headers->addHeaderLine('Content-Type', 'application/json');
@@ -1444,7 +1480,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 return null;
             }
             $client->getRequest()->getHeaders()->addHeaderLine(
-                'Authorization', "Bearer {$this->sessionCache->accessToken}"
+                'Authorization',
+                "Bearer {$this->sessionCache->accessToken}"
             );
             $response = $client->send();
         }
@@ -1472,7 +1509,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             throw new ILSException('Problem with Sierra REST API.');
         }
 
-        return $decodedResult;
+        return $returnStatus
+            ? [
+                'statusCode' => $response->getStatusCode(),
+                'response' => $decodedResult
+            ] : $decodedResult;
     }
 
     /**
@@ -1487,7 +1528,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function renewAccessToken($patron = false)
     {
         $patronCode = false;
-        if ($patron && !empty($this->config['Catalog']['redirect_uri'])) {
+        if ($patron && $this->isPatronSpecificAccess()) {
             if (!($patronCode = $this->getPatronAuthorizationCode($patron))) {
                 return false;
             }
@@ -1692,7 +1733,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Set Accept header
         $client->getRequest()->getHeaders()->addHeaderLine(
-            'Accept', 'application/json'
+            'Accept',
+            'application/json'
         );
 
         return $client;
@@ -1809,7 +1851,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
             foreach ($result['entries'] as $item) {
                 $location = $this->translateLocation($item['location']);
-                list($status, $duedate, $notes) = $this->getItemStatus($item);
+                [$status, $duedate, $notes] = $this->getItemStatus($item);
                 $available = $status == $this->mapStatusCode('-');
                 // OPAC message
                 if (isset($item['fixedFields']['108'])) {
@@ -1988,7 +2030,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $line = [];
                     foreach ($subfields as $subfield) {
                         if ($subfieldCodes
-                            && false === strpos($subfieldCodes, $subfield['tag'])
+                            && false === strpos(
+                                $subfieldCodes,
+                                (string)$subfield['tag']
+                            )
                         ) {
                             continue;
                         }
@@ -2155,7 +2200,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $today = $this->dateConverter->convertToDisplayDate('U', time());
             if (isset($item['fixedFields']['68'])) {
                 $checkedIn = $this->dateConverter->convertToDisplayDate(
-                    \DateTime::ISO8601, $item['fixedFields']['68']['value']
+                    \DateTime::ISO8601,
+                    $item['fixedFields']['68']['value']
                 );
                 if ($checkedIn == $today) {
                     $notes[] = $this->translate('Returned today');
@@ -2175,7 +2221,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function isHoldable($item)
     {
         if (!empty($this->validHoldStatuses)) {
-            list($status) = $this->getItemStatus($item);
+            [$status] = $this->getItemStatus($item);
             if (!in_array($status, $this->validHoldStatuses)) {
                 return false;
             }
@@ -2317,7 +2363,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             '/\{u([0-9a-fA-F]{4})\}/',
             function ($matches) {
                 return mb_convert_encoding(
-                    pack('H*', $matches[1]), 'UTF-8', 'UCS-2BE'
+                    pack('H*', $matches[1]),
+                    'UTF-8',
+                    'UCS-2BE'
                 );
             },
             $msg
@@ -2384,5 +2432,274 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $checksum = $sum % 11;
         $finalChecksum = $checksum === 10 ? 'x' : $checksum;
         return '.b' . $id . $finalChecksum;
+    }
+
+    /**
+     * Check if we re using a patron-specific access token
+     *
+     * @return bool
+     */
+    protected function isPatronSpecificAccess()
+    {
+        return !empty($this->config['Catalog']['redirect_uri']);
+    }
+
+    /**
+     * Get patron information via authentication token when using patron-specific
+     * access
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return array
+     */
+    protected function getPatronInformationFromAuthToken(
+        string $username,
+        string $password
+    ): array {
+        $credentials = [
+            'cat_username' => $username,
+            'cat_password' => $password
+        ];
+        $result = $this->makeRequest(
+            [$this->apiBase, 'info', 'token'],
+            [],
+            'GET',
+            $credentials
+        );
+        if (null === $result) {
+            return [];
+        }
+        if (empty($result['patronId'])) {
+            throw new ILSException('No patronId in token response');
+        }
+
+        $result = $this->makeRequest(
+            [$this->apiBase, 'patrons', $result['patronId']],
+            ['fields' => 'names,emails'],
+            'GET',
+            $credentials
+        );
+        if (null === $result || !empty($result['code'])) {
+            return [];
+        }
+        return $result;
+    }
+
+    /**
+     * Authenticate a patron
+     *
+     * Returns patron information on success and null on failure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     *
+     * @return array|null
+     */
+    protected function authenticatePatron(
+        string $username,
+        ?string $password
+    ): ?array {
+        $authMethod = $this->config['Authentication']['method'] ?? 'native';
+        $validationField = $this->config['Authentication']['patron_validation_field']
+            ?? null;
+        // patrons/auth endpoint is only supported on API version >= 6, without
+        // custom validation configured:
+        if ($this->apiVersion >= 6 && null !== $password
+            && empty($validationField)
+        ) {
+            return $this->authenticatePatronV6($username, $password, $authMethod);
+        }
+
+        if ('native' !== $authMethod) {
+            $this->logError(
+                'Sierra REST API level set too low for authentication method'
+                . " '$authMethod'. Only 'native' is supported."
+            );
+            throw new ILSException('API level set too low');
+        }
+
+        // Depending on validation settings, use either normal PIN-based auth,
+        // or bypass PIN check and validate a different field.
+        return empty($validationField)
+            ? $this->authenticatePatronV5($username, $password)
+            : $this->validatePatron(
+                $this->authenticatePatronV5($username, null),
+                $validationField,
+                $password
+            );
+    }
+
+    /**
+     * Perform extra validation of retrieved user, if configured to do so. Returns
+     * patron data if value, null otherwise.
+     *
+     * @param ?array  $patron          Output of authenticatePatronV5()
+     * @param string  $validationField Field to use for validation
+     * @param ?string $password        Value to use in validation
+     *
+     * @return ?array
+     * @throws \Exception
+     */
+    protected function validatePatron(
+        ?array $patron,
+        string $validationField,
+        ?string $password
+    ): ?array {
+        // If the validation field is a valid, supported value, perform validation:
+        if (in_array($validationField, ['email', 'name'])) {
+            return in_array($password, $patron[$validationField . 's'] ?? [])
+                ? $patron : null;
+        }
+        // Throw an exception if we got an unexpected configuration:
+        throw new \Exception(
+            "Unexpected patron_validation_field: $validationField"
+        );
+    }
+
+    /**
+     * Authenticate a patron using the API version 5 endpoints
+     *
+     * Returns patron information on success and null on failure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     *
+     * @return array|null
+     */
+    protected function authenticatePatronV5(
+        string $username,
+        ?string $password
+    ): ?array {
+        // Validate a password unless it's null:
+        if (null !== $password) {
+            $request = [
+                'barcode' => $username,
+                'pin' => $password,
+                'caseSensitivity' => false
+            ];
+            try {
+                $result = $this->makeRequest(
+                    ['v5', 'patrons', 'validate'],
+                    json_encode($request),
+                    'POST',
+                    false,
+                    true
+                );
+            } catch (ILSException $e) {
+                return null;
+            }
+            if (!$result || $result['statusCode'] != 204) {
+                return null;
+            }
+        }
+
+        $varField = $this->config['Authentication']['patron_lookup_field'] ?? 'b';
+        $result = $this->makeRequest(
+            [$this->apiBase, 'patrons', 'find'],
+            [
+                'varFieldTag' => $varField,
+                'varFieldContent' => $username,
+                'fields' => 'names,emails'
+            ]
+        );
+        if (!$result || !empty($result['code'])) {
+            return null;
+        }
+        return $result;
+    }
+
+    /**
+     * Authenticate a patron using the API version 6 patrons/auth endpoint
+     *
+     * Returns patron information on success and null on failure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     * @param string $method   Authentication method
+     *
+     * @return array|null
+     */
+    protected function authenticatePatronV6(
+        string $username,
+        string $password,
+        string $method
+    ): ?array {
+        $request = [
+            'authMethod' => $method,
+            'patronId' => $username,
+            'patronSecret' => $password,
+        ];
+        $result = $this->makeRequest(
+            ['v6', 'patrons', 'auth'],
+            json_encode($request),
+            'POST'
+        );
+        if (!$result || !empty($result['code'])) {
+            return null;
+        }
+        $result = $this->makeRequest(
+            [$this->apiBase, 'patrons', $result],
+            ['fields' => 'names,emails']
+        );
+        if (!$result || !empty($result['code'])) {
+            return null;
+        }
+        return $result;
+    }
+
+    /**
+     * Get items and their bibs for an array of transactions
+     *
+     * @param array $transactions Transaction list
+     * @param array $patron       The patron array from patronLogin
+     *
+     * @return array
+     */
+    protected function getItemsWithBibsForTransactions(
+        array $transactions,
+        array $patron
+    ): array {
+        if (!$transactions) {
+            return [];
+        }
+        // Fetch items
+        $itemIds = [];
+        foreach ($transactions as $transaction) {
+            $itemIds[] = $this->extractId($transaction['item']);
+        }
+        $itemsResult = $this->makeRequest(
+            [$this->apiBase, 'items'],
+            [
+                'id' => implode(',', $itemIds),
+                'fields' => 'bibIds,varFields'
+            ],
+            'GET',
+            $patron
+        );
+        $items = [];
+        $bibIdsToItems = [];
+        foreach ($itemsResult['entries'] as $item) {
+            $items[(string)$item['id']] = $item;
+            if (!empty($item['bibIds'][0])) {
+                $bibIdsToItems[(string)$item['bibIds'][0]] = (string)$item['id'];
+            }
+        }
+        // Fetch bibs for the items
+        $bibsResult = $this->makeRequest(
+            [$this->apiBase, 'bibs'],
+            [
+                'id' => implode(',', array_keys($bibIdsToItems)),
+                'fields' => 'title,publishYear'
+            ],
+            'GET',
+            $patron
+        );
+        foreach ($bibsResult['entries'] as $bib) {
+            // Add bib data to the items
+            $items[$bibIdsToItems[(string)$bib['id']]]['bib'] = $bib;
+        }
+
+        return $items;
     }
 }

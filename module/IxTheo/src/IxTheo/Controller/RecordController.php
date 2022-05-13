@@ -49,10 +49,10 @@ class RecordController extends \TueFind\Controller\RecordController
         $recordId = $driver->getUniqueId();
         $userId = $user->id;
 
-        $infoText = $this->forward()->dispatch('StaticPage', array(
-            'action' => 'staticPage',
+        $infoText = $this->forward()->dispatch('Content', [
+            'action' => 'content',
             'page' => 'SubscriptionInfoText'
-        ));
+        ]);
 
         $subscribed = boolval($table->findExisting($userId, $recordId));
         $bundles = [];
@@ -119,10 +119,10 @@ class RecordController extends \TueFind\Controller\RecordController
         $recordId = $driver->getUniqueId();
         $userId = $user->id;
 
-        $infoText = $this->forward()->dispatch('StaticPage', array(
-            'action' => 'staticPage',
+        $infoText = $this->forward()->dispatch('Content', [
+            'action' => 'content',
             'page' => 'PDASubscriptionInfoText'
-        ));
+        ]);
         $bookDescription = $driver->getAuthorsAsString() . ": " .
                            $driver->getTitle() .  ($driver->getYear() != "" ? "(" . $driver->getYear() . ")" : "") .
                            ", ISBN: " . $driver->getISBNs()[0];

@@ -18,8 +18,10 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory {
     protected function createBackend(Connector $connector)
     {
         $backend = parent::createBackend($connector);
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
-        $factory = new RecordCollectionFactory([$manager, 'getSolrRecord']);
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $factory
+            = new RecordCollectionFactory([$manager, $this->createRecordMethod]);
         $backend->setRecordCollectionFactory($factory);
         return $backend;
     }

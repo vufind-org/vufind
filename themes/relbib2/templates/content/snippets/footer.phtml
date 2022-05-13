@@ -1,0 +1,18 @@
+<div class="container">
+    <?=$this->content()->renderTranslated('snippets/supporters'); ?>
+</div>
+<div class="container" id="footer-bottom">
+    <div class="row">
+        <div class="col-xs-12 col-md-6 col-lg-8 copyright">
+            <?=$this->content()->renderTranslated('snippets/copyright'); ?>
+        </div>
+        <div class="col-xs-12 col-md-6 col-lg-4 footer-menu">
+            <ul class="footer-menu">
+                <!--<li><a target="blank" href="//twitter.com/ix_theo"><img src="<?=$this->imageLink('twitter.png')?>" height="30"></a></li>-->
+                <li><a href="<?=$this->url('content-page', ['page' => 'Impressum'])?>"><?=$this->translate('Imprint');?></a></li>
+                <li><a target="_blank" href="<?=$this->url('content-page', ['page' => 'privacy'])?>"><?=$this->translate('Privacy Protection');?></a></li>
+                <li><a target="_blank" href="https://twitter.com/rel_bib"><img src="<?=$this->imageLink('twitter.svg')?>" width="25" height="25" alt="Twitter"></a></li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -73,8 +73,10 @@ class Ezb extends AbstractBase
      * @param \Laminas\Http\Client $httpClient   HTTP client
      * @param UserIpReader         $userIpReader User IP address reader
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient,
-        UserIpReader $userIpReader = null
+    public function __construct(
+        $baseUrl,
+        \Laminas\Http\Client $httpClient,
+        UserIpReader $userIpReader
     ) {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
@@ -167,9 +169,7 @@ class Ezb extends AbstractBase
 
         // make the request IP-based to allow automatic
         // indication on institution level
-        $ipAddr = $this->userIpReader !== null
-            ? $this->userIpReader->getUserIp()
-            : $_SERVER['REMOTE_ADDR'];
+        $ipAddr = $this->userIpReader->getUserIp();
         $openURL .= '&pid=client_ip%3D' . urlencode($ipAddr);
 
         // Make the call to the EZB and load results

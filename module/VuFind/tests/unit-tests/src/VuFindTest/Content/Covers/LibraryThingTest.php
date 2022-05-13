@@ -53,7 +53,9 @@ class LibraryThingTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'http://covers.librarything.com/devkey/mykey/small/isbn/9780739313121',
             $loader->getUrl(
-                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
+                'mykey',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }

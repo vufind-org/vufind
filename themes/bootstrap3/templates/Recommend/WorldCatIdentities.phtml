@@ -1,36 +1,38 @@
 <?php
-  $this->headScript()->appendFile('facets.js');
+  $labels = [
+    'more-label' => $this->transEsc('more') . ' ...',
+    'less-label' => $this->transEsc('less') . ' ...',
+  ];
+  $authorTruncateSettings = $labels + [
+    'rows' => 3,
+  ];
+  $subjectTruncateSettings = $labels + [
+    'rows' => 4,
+  ];
 ?>
 <?php $worldCatIdentities = $this->recommend->getIdentities(); if (!empty($worldCatIdentities)): ?>
   <div>
     <h3><?=$this->transEsc('Authors Related to Your Search')?></h3>
-    <dl>
+    <dl class="truncate-identities-authors" data-truncate="<?=$this->escapeHtmlAttr(json_encode($authorTruncateSettings))?>">
       <?php $i = 0; foreach ($worldCatIdentities as $author => $subjects): ?>
-        <?php $moreClass = 'narrowGroupHidden-authors hidden'; ?>
-        <?php if (++$i == 4): ?>
-          <dd id="more-narrowGroupHidden-authors"><a href="#" class="more-facets" data-title="authors"><?=$this->transEsc('more')?> ...</a></dd>
-          <span class="<?=$moreClass?>">
-        <?php endif; ?>
-        <dd>
-        <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escapeHtml($author)?></a>
-        <?php if (count($subjects) > 0): ?>
-          <dl>
-          <dd><?=$this->transEsc('Related Subjects')?>:</dd>
-          <?php $j = 0; foreach ($subjects as $subj): ?>
-            <?php $moreClassInner = 'narrowGroupHidden-subjects' . $this->escapeHtmlAttr($i) . ' hidden'; ?>
-            <?php if (++$j == 3): ?>
-              <dd id="more-narrowGroupHidden-subjects<?=$this->escapeHtmlAttr($i)?>"><a href="#" class="more-facets" data-title="subjects<?=$this->escapeHtmlAttr($i)?>"><?=$this->transEsc('more')?> ...</a></dd>
-              <span class="<?=$moreClassInner?>">
-            <?php endif; ?>
-            <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escapeHtml($subj)?></a></dd>
-          <?php endforeach; ?>
-          <?php if ($j > 2): ?><dd id="less-WCIdents"><a href="#" class="less-facets narrowGroupHidden-subjects<?=$this->escapeHtmlAttr($i)?>" data-title="subjects<?=$this->escapeHtmlAttr($i)?>"><?=$this->transEsc('less')?> ...</a></dd></span><?php endif; ?>
-          </dl>
-        <?php endif; ?>
+        <dd class="author">
+          <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escapeHtml($author)?></a>
+          <?php if (count($subjects) > 0): ?>
+            <dl class="truncate-identities-subjects" data-truncate="<?=$this->escapeHtmlAttr(json_encode($subjectTruncateSettings))?>">
+            <dd><?=$this->transEsc('Related Subjects')?>:</dd>
+            <?php $j = 0; foreach ($subjects as $subj): ?>
+              <?php $moreClassInner = 'narrowGroupHidden-subjects' . $this->escapeHtmlAttr($i) . ' hidden'; ?>
+              <dd class=".truncate-identities-subject">&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escapeHtml($subj)?></a></dd>
+            <?php endforeach; ?>
+            </dl>
+          <?php endif; ?>
         </dd>
       <?php endforeach; ?>
-      <?php if ($i > 3): ?><dd id="less-WCIdents"><a href="#" class="less-facets narrowGroupHidden-authors" data-title="authors"><?=$this->transEsc('less')?> ...</a></dd></span><?php endif; ?>
     </dl>
   </div>
 <?php endif; ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerMoreLessFacetsEventHandlers();", 'SET');?>
+<?php
+  $script = "VuFind.truncate.initTruncate('.truncate-identities-authors', 'dd.author');"
+    . "VuFind.truncate.initTruncate('.truncate-identities-subjects', 'dd');"
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>

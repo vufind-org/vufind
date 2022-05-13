@@ -23,12 +23,13 @@ class AbstractSolrBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacke
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $this->config = $this->serviceLocator->get('VuFind\Config\PluginManager');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        $this->config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
+        $backend->setIdentifier($name);
         $this->createListeners($backend);
         return $backend;
     }

@@ -47,7 +47,7 @@ use VuFindSearch\Backend\Primo\Connector;
  */
 class ConnectorTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test default timeout value

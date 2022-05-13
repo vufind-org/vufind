@@ -4,12 +4,12 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li>')
-        . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>'
+        . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>'
         . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
-<?php if ($this->helpText): ?>
-<p class="helptext"><?=$this->helpText?></p>
+<?php if ($this->helpTextHtml): ?>
+<p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
 
 <form name="placeStorageRetrievalRequest" class="form-storage-retrieval-request" method="post" data-clear-account-cache="storageRetrievalRequests">

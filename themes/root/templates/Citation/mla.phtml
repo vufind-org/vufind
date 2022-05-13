@@ -1,5 +1,6 @@
 <?php if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?>. <?php endif; ?>
-<span style="font-style:italic;"><?=$this->escapeHtml($this->title)?></span><?php if ($this->periodAfterTitle): ?>.<?php endif ?> 
-<?php if (!empty($this->edition)): ?><?=$this->escapeHtml($this->edition)?> <?php endif; ?>
-<?php if (!empty($this->publisher)): ?><?=$this->escapeHtml($this->publisher)?><?php endif; ?>
-<?php if (!empty($this->year)): ?><?php if (!empty($this->publisher)): ?>, <?php endif; ?><?=$this->escapeHtml($this->year)?><?php endif; ?><?php if (!empty($this->year) || !empty($this->publisher)): ?>.<?php endif; ?>
+<i><?=$this->escapeHtml($this->title)?></i><?php if ($this->periodAfterTitle): ?>.<?php endif ?>
+<?php if (!empty($this->edition)): ?> <?=$this->escapeHtml($this->edition)?> <?php endif; ?>
+<?php $publisherAndYear = array_filter([$this->publisher ?? null, $this->year ?? null]); ?>
+<?php if (!empty($publisherAndYear)): ?> <?=$this->escapeHtml(implode(', ', $publisherAndYear))?>.<?php endif; ?>
+<?php if (isset($this->doiPrefix) && !empty($this->doi)): ?> <?=$this->escapeHtml($this->doiPrefix . $this->doi)?>.<?php endif; ?>

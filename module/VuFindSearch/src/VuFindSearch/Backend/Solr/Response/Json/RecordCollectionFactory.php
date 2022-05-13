@@ -45,7 +45,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Factory to turn data into a record object.
      *
-     * @var Callable
+     * @var callable
      */
     protected $recordFactory;
 
@@ -64,7 +64,8 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return void
      */
-    public function __construct($recordFactory = null,
+    public function __construct(
+        $recordFactory = null,
         $collectionClass = 'VuFindSearch\Backend\Solr\Response\Json\RecordCollection'
     ) {
         if (null === $recordFactory) {

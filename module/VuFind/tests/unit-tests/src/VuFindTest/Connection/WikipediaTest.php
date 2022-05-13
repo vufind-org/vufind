@@ -44,7 +44,7 @@ use VuFind\Connection\Wikipedia;
  */
 class WikipediaTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test processing of English-language Jane Austen entry.

@@ -27,8 +27,7 @@
  */
 namespace VuFindTest\Container;
 
-use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\TestCase;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Container that produces mock objects.
@@ -39,123 +38,20 @@ use PHPUnit\Framework\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class MockContainer implements ContainerInterface
+class MockContainer implements ServiceLocatorInterface
 {
-    /**
-     * Disabled services.
-     *
-     * @var string[]
-     */
-    protected $disabled = [];
+    use MockContainerTrait;
 
     /**
-     * Services
+     * Alias for createMock(), needed to conform to ServiceLocatorInterface.
      *
-     * @var array
-     */
-    protected $services = [];
-
-    /**
-     * Common service aliases.
-     *
-     * @var array
-     */
-    protected $aliases = [
-        'ViewHelperManager' => \Laminas\View\HelperPluginManager::class,
-    ];
-
-    /**
-     * Test case (for building mock objects)
-     *
-     * @var TestCase
-     */
-    protected $test;
-
-    /**
-     * Constructor
-     *
-     * @param TestCase $test Test using the container
-     */
-    public function __construct(TestCase $test)
-    {
-        $this->test = $test;
-    }
-
-    /**
-     * Create a mock object.
-     *
-     * @param string $id      Identifier of the service to mock out.
-     * @param array  $methods Methods to mock.
+     * @param string $name    Name of service to build
+     * @param array  $options Options
      *
      * @return mixed
      */
-    public function createMock($id, $methods = [])
+    public function build($name, array $options = null)
     {
-        return $this->test->getMockBuilder($id)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
-    }
-
-    /**
-     * Disable a service
-     *
-     * @param string $id Identifier of the entry to disable.
-     *
-     * @return MockContainer
-     */
-    public function disable($id)
-    {
-        // Don't double-disable a service:
-        if ($this->has($id)) {
-            $this->disabled[] = $id;
-        }
-        // Fluent interface:
-        return $this;
-    }
-
-    /**
-     * Finds an entry of the container by its identifier and returns it.
-     *
-     * @param string $rawId Identifier of the entry to look for.
-     *
-     * @return mixed
-     */
-    public function get($rawId)
-    {
-        $id = $this->aliases[$rawId] ?? $rawId;
-        if (!isset($this->services[$id])) {
-            $this->services[$id] = $this->createMock($id);
-        }
-        return $this->services[$id];
-    }
-
-    /**
-     * Returns true if the container can return an entry for the given identifier.
-     * Returns false otherwise.
-     *
-     * @param string $rawId Identifier of the entry to look for.
-     *
-     * @return bool
-     */
-    public function has($rawId)
-    {
-        $id = $this->aliases[$rawId] ?? $rawId;
-        // Assume every service exists unless explicitly disabled
-        return !in_array($id, $this->disabled);
-    }
-
-    /**
-     * Explicitly set an entry in the container.
-     *
-     * @param string $id  Identifier of the entry to set.
-     * @param mixed  $obj The service to set.
-     *
-     * @return MockContainer
-     */
-    public function set($id, $obj)
-    {
-        $this->services[$id] = $obj;
-        return $this;
+        return $this->createMock($name, $options ?? []);
     }
 }

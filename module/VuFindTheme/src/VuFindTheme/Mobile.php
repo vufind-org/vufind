@@ -67,7 +67,7 @@ class Mobile
      */
     public function __construct(uagent_info $detector = null)
     {
-        $this->detector = (null === $detector) ? new uagent_info() : $detector;
+        $this->detector = $detector ?? new uagent_info();
     }
 
     /**
@@ -88,7 +88,7 @@ class Mobile
      *
      * @param bool $enabled Are mobile themes enabled?
      *
-     * @return bool
+     * @return void
      */
     public function enable($enabled = true)
     {

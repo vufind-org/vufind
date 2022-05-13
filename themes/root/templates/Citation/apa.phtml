@@ -1,5 +1,6 @@
 <?php if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?> <?php endif; ?>
 <?php if (!empty($this->year)): ?>(<?=$this->escapeHtml($this->year)?>). <?php endif; ?>
-<span style="font-style:italic;"><?=$this->escapeHtml($this->title)?></span><?php if ($this->periodAfterTitle): ?>.<?php endif ?> 
-<?php if (!empty($this->edition)): ?>(<?=$this->escapeHtml($this->edition)?>). <?php endif; ?>
-<?php if (!empty($this->publisher)): ?><?=$this->escapeHtml($this->publisher)?>.<?php endif; ?>
+<i><?=$this->escapeHtml($this->title)?></i><?php if ($this->periodAfterTitle): ?>.<?php endif ?>
+<?php if (!empty($this->edition)): ?> (<?=$this->escapeHtml($this->edition)?>).<?php endif; ?>
+<?php if (!empty($this->publisher)): ?> <?=$this->escapeHtml($this->publisher)?>.<?php endif; ?>
+<?php if (isset($this->doi)): ?> https://doi.org/<?=$this->escapeHtml($this->doi)?><?php endif; ?>

@@ -37,10 +37,8 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class RecordVersionsTest extends \VuFindTest\Unit\MinkTestCase
+class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Standard setup method.
      *
@@ -125,8 +123,12 @@ class RecordVersionsTest extends \VuFindTest\Unit\MinkTestCase
     public function testDisabledVersionsTab()
     {
         // Disable versions tab:
-        $extraConfigs['RecordTabs']['VuFind\RecordDriver\SolrMarc'] = [
-            'tabs[Versions]' => false
+        $extraConfigs = [
+            'RecordTabs' => [
+                'VuFind\RecordDriver\SolrMarc' => [
+                    'tabs[Versions]' => false
+                ]
+            ]
         ];
         $this->changeConfigs($extraConfigs);
         // Search for an item known to have other versions in test data:
@@ -161,7 +163,13 @@ class RecordVersionsTest extends \VuFindTest\Unit\MinkTestCase
     public function testDisabledVersions()
     {
         // Disable versions:
-        $extraConfigs['searches']['General'] = ['display_versions' => false];
+        $extraConfigs = [
+            'searches' => [
+                'General' => [
+                    'display_versions' => false
+                ]
+            ]
+        ];
         $this->changeConfigs($extraConfigs);
 
         // Search for an item known to have other versions in test data:
@@ -169,7 +177,8 @@ class RecordVersionsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Click on the "other versions" link:
         $this->assertEquals(
-            0, count($page->findAll('css', 'div.record-versions a'))
+            0,
+            count($page->findAll('css', 'div.record-versions a'))
         );
     }
 }

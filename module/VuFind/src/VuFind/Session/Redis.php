@@ -20,14 +20,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
 
@@ -41,7 +41,7 @@ use Laminas\Config\Config;
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class Redis extends AbstractBase
 {
@@ -98,7 +98,9 @@ class Redis extends AbstractBase
     protected function saveSession($sessId, $data)
     {
         return $this->connection->setex(
-            "vufind_sessions/{$sessId}", $this->lifetime, $data
+            "vufind_sessions/{$sessId}",
+            $this->lifetime,
+            $data
         );
     }
 

@@ -42,7 +42,7 @@ use VuFindSearch\Backend\EDS\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Given a response, decode the JSON query objects for easier reading.
@@ -113,11 +113,12 @@ class QueryBuilderTest extends TestCase
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
-            list($input, $output) = $test;
+            [$input, $output] = $test;
             $q = unserialize($this->getFixture("eds/query/$input", 'VuFindSearch'));
             $response = $qb->build($q);
             $this->assertEquals(
-                $output, $this->decodeResponse($response->get('query'))
+                $output,
+                $this->decodeResponse($response->get('query'))
             );
         }
     }

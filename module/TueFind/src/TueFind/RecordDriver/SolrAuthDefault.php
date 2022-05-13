@@ -58,8 +58,11 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $viafs;
     }
 
-    public function getWikidataId() {
-        return $this->fields['wikidata'] ?? null;
+    public function getWikidataIds(): array {
+        $wikidata = $this->fields['wikidata'] ?? [];
+        if (!is_array($wikidata))
+            $wikidata = [$wikidata];
+        return $wikidata;
     }
 
     public function getType() {

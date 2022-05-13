@@ -39,10 +39,8 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class FeedbackTest extends \VuFindTest\Unit\MinkTestCase
+class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Standard setup method.
      *

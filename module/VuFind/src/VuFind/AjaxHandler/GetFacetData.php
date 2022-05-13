@@ -74,7 +74,9 @@ class GetFacetData extends AbstractBase
      * @param HierarchicalFacetHelper $fh Facet helper
      * @param ResultsManager          $rm Search results manager
      */
-    public function __construct(SessionSettings $ss, HierarchicalFacetHelper $fh,
+    public function __construct(
+        SessionSettings $ss,
+        HierarchicalFacetHelper $fh,
         ResultsManager $rm
     ) {
         $this->sessionSettings = $ss;

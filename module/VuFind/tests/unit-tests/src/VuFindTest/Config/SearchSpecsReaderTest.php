@@ -40,9 +40,10 @@ use VuFind\Config\SearchSpecsReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
+class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Flag -- did writing config files fail?
@@ -96,12 +97,9 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     {
         // The searchspecs.yaml file should define author dismax fields (among many
         // other things).
-        $reader = $this->getServiceManager()->get(\VuFind\Config\SearchSpecsReader::class);
+        $reader = new SearchSpecsReader();
         $specs = $reader->get('searchspecs.yaml');
-        $this->assertTrue(
-            isset($specs['Author']['DismaxFields'])
-            && !empty($specs['Author']['DismaxFields'])
-        );
+        $this->assertTrue(!empty($specs['Author']['DismaxFields']));
     }
 
     /**
@@ -111,7 +109,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingFileRead()
     {
-        $reader = $this->getServiceManager()->get(\VuFind\Config\SearchSpecsReader::class);
+        $reader = new SearchSpecsReader();
         $specs = $reader->get('notreallyasearchspecs.yaml');
         $this->assertEquals([], $specs);
     }

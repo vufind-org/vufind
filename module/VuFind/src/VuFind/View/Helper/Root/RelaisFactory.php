@@ -56,9 +56,11 @@ class RelaisFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -67,7 +69,7 @@ class RelaisFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $urlHelper = $container->get('ViewHelperManager')->get('url');
-        $loginUrl = $urlHelper->__invoke('relais-login');
+        $loginUrl = $urlHelper('relais-login');
         return new $requestedName($config->Relais ?? null, $loginUrl);
     }
 }

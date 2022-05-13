@@ -86,7 +86,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         $template = $input->getArgument('template');
 
         // Make sure a valid target has been specified:
-        list($targetDomain, $targetKey) = $this->extractTextDomain($target);
+        [$targetDomain, $targetKey] = $this->extractTextDomain($target);
         if (!($targetDir = $this->getLangDir($output, $targetDomain, true))) {
             return 1;
         }
@@ -96,7 +96,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         $lookups = [];
         foreach ($matches[0] as $current) {
             $key = trim($current, '|');
-            list($sourceDomain, $sourceKey) = $this->extractTextDomain($key);
+            [$sourceDomain, $sourceKey] = $this->extractTextDomain($key);
             $lookups[$sourceDomain][$current] = [
                 'key' => $sourceKey,
                 'translations' => []
@@ -124,7 +124,10 @@ class AddUsingTemplateCommand extends AbstractCommand
 
         // Fill in template, write results:
         $targetCallback = function ($full) use (
-            $output, $template, $targetKey, $lookups
+            $output,
+            $template,
+            $targetKey,
+            $lookups
         ) {
             $lang = basename($full);
             $in = $out = [];
@@ -139,7 +142,9 @@ class AddUsingTemplateCommand extends AbstractCommand
                 }
             }
             $this->addLineToFile(
-                $full, $targetKey, str_replace($in, $out, $template)
+                $full,
+                $targetKey,
+                str_replace($in, $out, $template)
             );
             $this->normalizer->normalizeFile($full);
         };

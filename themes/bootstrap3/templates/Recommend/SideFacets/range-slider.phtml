@@ -1,3 +1,10 @@
+<?php
+  // Sanitize inputs:
+  $sanitize = function ($val) {
+    return preg_replace('/[^\d]*/', '', $val);
+  };
+  $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);
+?>
 <div class="facet">
   <form class="facet-range-form" name="<?=$this->escapeHtmlAttr($this->title)?>Filter" id="<?=$this->escapeHtmlAttr($this->title)?>Filter">
     <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
@@ -8,13 +15,13 @@
         <label for="<?=$this->escapeHtmlAttr($this->title)?>from">
           <?=$this->transEsc('date_from')?>:
         </label>
-        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>from" id="<?=$this->escapeHtmlAttr($this->title)?>from" value="<?=isset($this->facet['values'][0])?$this->escapeHtmlAttr($this->facet['values'][0]):''?>" <?=$extraInputAttribs?>/>
+        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>from" id="<?=$this->escapeHtmlAttr($this->title)?>from" value="<?=$this->escapeHtmlAttr($cleanValues[0] ?? '')?>" <?=$extraInputAttribs?>/>
       </div>
       <div class="date-to">
         <label for="<?=$this->escapeHtmlAttr($this->title)?>to">
           <?=$this->transEsc('date_to')?>:
         </label>
-        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>to" id="<?=$this->escapeHtmlAttr($this->title)?>to" value="<?=isset($this->facet['values'][1])?$this->escapeHtmlAttr($this->facet['values'][1]):''?>" <?=$extraInputAttribs?>/>
+        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>to" id="<?=$this->escapeHtmlAttr($this->title)?>to" value="<?=$this->escapeHtmlAttr($cleanValues[1] ?? '')?>" <?=$extraInputAttribs?>/>
       </div>
     </div>
     <?php if ($this->facet['type'] == 'date'): ?>
@@ -27,11 +34,19 @@
   <?php $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
   <?php $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
   <?php
-    $min = !empty($this->facet['values'][0]) ? min($this->facet['values'][0], 1400) : 1400;
+    $min = !empty($cleanValues[0]) ? min($cleanValues[0], 1400) : 1400;
     $future = date('Y', time() + 31536000); // next year
-    $max = !empty($this->facet['values'][1]) ? max($future, $this->facet['values'][1]) : $future;
-    $low = !empty($this->facet['values'][0]) ? $this->facet['values'][0] : $min;
-    $high = !empty($this->facet['values'][1]) ? $this->facet['values'][1] : $max;
+    $max = !empty($cleanValues[1]) ? max($future, $cleanValues[1]) : $future;
+    $low = !empty($cleanValues[0]) ? $cleanValues[0] : $min;
+    $high = !empty($cleanValues[1]) ? $cleanValues[1] : $max;
+    $sliderOptions = [
+      'min' => (int)$min,
+      'max' => (int)$max,
+      'handle' => 'square',
+      'tooltip' => 'hide',
+      'value' => [(int)$low, (int)$high],
+    ];
+    $sliderOptionsJson = json_encode($sliderOptions);
     $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -40,13 +55,7 @@ $(document).ready(function() {
     $('#{$this->escapeHtmlAttr($this->title)}to').val(v[1]);
   };
   var {$this->escapeHtmlAttr($this->title)}dateSlider = $('#{$this->escapeHtmlAttr($this->title)}dateSlider')
-    .slider({
-      'min':{$min},
-      'max':{$max},
-      'handle':"square",
-      'tooltip':"hide",
-      'value':[{$low},{$high}]
-    })
+    .slider($sliderOptionsJson)
     .on('change', fillTexts)
     .data('slider');
 });

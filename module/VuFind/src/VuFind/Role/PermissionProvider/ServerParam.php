@@ -150,7 +150,9 @@ class ServerParam implements PermissionProviderInterface,
             return false;
         }
         $serverParams = $this->splitString(
-            $serverParamString, $this->serverParamDelimiter, $this->serverParamEscape
+            $serverParamString,
+            $this->serverParamDelimiter,
+            $this->serverParamEscape
         );
 
         $result = false;
@@ -198,7 +200,8 @@ class ServerParam implements PermissionProviderInterface,
         }
 
         return str_replace(
-            $escape . $delimiter, $delimiter,
+            $escape . $delimiter,
+            $delimiter,
             preg_split('/' . $pattern . '/', $string)
         );
     }

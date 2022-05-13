@@ -73,7 +73,9 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
      *
      * @return string
      */
-    protected static function displayAdvanced(AbstractQuery $query, $translate,
+    protected static function displayAdvanced(
+        AbstractQuery $query,
+        $translate,
         $showName
     ) {
         $output = '';

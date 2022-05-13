@@ -36,7 +36,8 @@ namespace VuFind\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordMissing extends \Exception implements HttpStatusInterface
+class RecordMissing extends \Exception implements HttpStatusInterface,
+    SeverityLevelInterface
 {
     /**
      * Get HTTP status associated with this exception.
@@ -46,5 +47,15 @@ class RecordMissing extends \Exception implements HttpStatusInterface
     public function getHttpStatus()
     {
         return 404;
+    }
+
+    /**
+     * Get the logging severity level for this exception.
+     *
+     * @return int
+     */
+    public function getSeverityLevel()
+    {
+        return \Laminas\Log\Logger::DEBUG;
     }
 }

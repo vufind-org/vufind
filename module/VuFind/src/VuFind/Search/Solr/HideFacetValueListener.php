@@ -30,6 +30,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
 
 /**
  * Hide single facet values from displaying.
@@ -50,6 +51,13 @@ class HideFacetValueListener
     protected $backend;
 
     /**
+     * List of facets to show. All other facets are hidden
+     *
+     * @var array
+     */
+    protected $showFacets = [];
+
+    /**
      * List of facets to hide.
      *
      * @var array
@@ -60,15 +68,19 @@ class HideFacetValueListener
      * Constructor.
      *
      * @param BackendInterface $backend         Search backend
-     * @param array            $hideFacetValues Associative array of field name
-     * to array of facet values to hide.
+     * @param array            $hideFacetValues Assoc. array of field
+     * name => values to exclude from display.
+     * @param array            $showFacetValues Assoc. array of field
+     * name => values to exclusively show in display.
      */
     public function __construct(
         BackendInterface $backend,
-        array $hideFacetValues
+        array $hideFacetValues,
+        array $showFacetValues = []
     ) {
         $this->backend = $backend;
         $this->hideFacets = $hideFacetValues;
+        $this->showFacets = $showFacetValues;
     }
 
     /**
@@ -81,7 +93,11 @@ class HideFacetValueListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
+        );
     }
 
     /**
@@ -93,12 +109,12 @@ class HideFacetValueListener
      */
     public function onSearchPost(EventInterface $event)
     {
-        $backend = $event->getParam('backend');
+        $command = $event->getParam('command');
 
-        if ($backend != $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
-        $context = $event->getParam('context');
+        $context = $command->getContext();
         if ($context == 'search' || $context == 'retrieve') {
             $this->processHideFacetValue($event);
         }
@@ -114,12 +130,19 @@ class HideFacetValueListener
      */
     protected function processHideFacetValue($event)
     {
-        $result = $event->getTarget();
+        $result = $event->getParam('command')->getResult();
         $facets = $result->getFacets()->getFieldFacets();
 
         foreach ($this->hideFacets as $facet => $value) {
             if (isset($facets[$facet])) {
                 $facets[$facet]->removeKeys((array)$value);
+            }
+        }
+        foreach ($this->showFacets as $facet => $value) {
+            if (isset($facets[$facet])) {
+                $facetValues = $facets[$facet]->toArray();
+                $facetsToHide = array_diff(array_keys($facetValues), (array)$value);
+                $facets[$facet]->removeKeys($facetsToHide);
             }
         }
         return null;

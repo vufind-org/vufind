@@ -17,8 +17,8 @@
 -->
 
 <config>
-  <!-- Set this to 'false' if you want solr to continue working after it has 
-       encountered an severe configuration error.  In a production environment, 
+  <!-- Set this to 'false' if you want solr to continue working after it has
+       encountered an severe configuration error.  In a production environment,
        you may want solr to keep working even if one handler is mis-configured.
 
        You may also set this to false using by setting the system property:
@@ -32,7 +32,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>7.7.3</luceneMatchVersion>
+  <luceneMatchVersion>8.11.1</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -44,12 +44,13 @@
   <lib dir="../../vendor/contrib/analysis-extras/lib" regex=".*\.jar" />
   <lib dir="../../vendor/contrib/analysis-extras/lucene-libs" regex=".*\.jar" />
   <lib dir="../jars" regex=".*\.jar" />
-  
+
+
   <indexConfig>
-  
+
     <useCompoundFile>false</useCompoundFile>
 
-	
+
 	<!-- ramBufferSizeMB sets the amount of RAM that may be used by Lucene
       indexing for buffering added documents and deletions before they are
       flushed to the Directory.
@@ -59,8 +60,8 @@
       Lucene will flush based on whichever limit is hit first.  -->
     <ramBufferSizeMB>100</ramBufferSizeMB>
     <!-- <maxBufferedDocs>1000</maxBufferedDocs> -->
-	
-	
+
+
 	   <!-- Commit Deletion Policy
 
          Custom deletion policies can be specified here. The class must
@@ -71,7 +72,7 @@
          The default Solr IndexDeletionPolicy implementation supports
          deleting index commit points on number of commits, age of
          commit point and optimized status.
-         
+
          The latest commit point should always be preserved regardless
          of the criteria.
     -->
@@ -88,19 +89,19 @@
           <str name="maxCommitAge">1DAY</str>
       -->
     </deletionPolicy>
-	
+
   </indexConfig>
 
-  <!--	Enables JMX if and only if an existing MBeanServer is found, use 
+  <!--	Enables JMX if and only if an existing MBeanServer is found, use
   		this if you want to configure JMX through JVM parameters. Remove
   		this to disable exposing Solr configuration and statistics to JMX.
-  		
+
 		If you want to connect to a particular server, specify the agentId
 		e.g. <jmx agentId="myAgent" />
-		
+
 		If you want to start a new MBeanServer, specify the serviceUrl
 		e.g <jmx serviceurl="service:jmx:rmi:///jndi/rmi://localhost:9999/solr" />
-		
+
 		For more details see http://wiki.apache.org/solr/SolrJmx
   -->
   <jmx />
@@ -108,17 +109,17 @@
   <!-- the default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
 
-  
+
       <!-- Enables a transaction log, used for real-time get, durability, and
          and solr cloud replica recovery.  The log can grow as big as
          uncommitted changes to the index, so use of a hard autoCommit
          is recommended (see below).
          "dir" - the target directory for transaction logs, defaults to the
-                solr data directory.  --> 
+                solr data directory.  -->
     <updateLog>
       <str name="dir">${solr.ulog.dir:}</str>
     </updateLog>
-	
+
     <!-- A prefix of "solr." for class names is an alias that
          causes solr to search appropriate packages, including
          org.apache.solr.(search|update|request|core|analysis)
@@ -128,9 +129,9 @@
          maxDocs - number of updates since last commit is greater than this
          maxTime - oldest uncommited update (in ms) is this long ago
     -->
-     <autoCommit> 
-       <maxTime>15000</maxTime> 
-       <openSearcher>false</openSearcher> 
+     <autoCommit>
+       <maxTime>15000</maxTime>
+       <openSearcher>false</openSearcher>
      </autoCommit>
 
     <!-- The RunExecutableListener executes an external command.
@@ -167,7 +168,7 @@
         queries.  An exception is thrown if exceeded.  -->
     <maxBooleanClauses>1024</maxBooleanClauses>
 
-    
+
     <!-- Cache used by SolrIndexSearcher for filters (DocSets),
          unordered sets of *all* documents that match a query.
          When a new searcher is opened, its caches may be prepopulated
@@ -184,7 +185,7 @@
          -->
 
     <!-- VuFind uses the default Solr settings for filterCache, which should produce a high
-         hit rate. You can carefully adjust the filterCache and check the hit ratio in 
+         hit rate. You can carefully adjust the filterCache and check the hit ratio in
          admin>plugins>stats -->
     <filterCache
       class="solr.FastLRUCache"
@@ -246,7 +247,7 @@
          then documents 0 through 49 will be collected and cached.  Any further
          requests in that range can be satisfied via the cache.  -->
     <queryResultWindowSize>50</queryResultWindowSize>
-    
+
     <!-- Maximum number of documents to cache for any entry in the
          queryResultCache. -->
     <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
@@ -280,7 +281,7 @@
       </arr>
     </listener>
     -->
-    
+
     <!-- If a search request comes in and there is no current registered searcher,
          then immediately register the still warming searcher and use it.  If
          "false" then all requests will block until the first searcher is done
@@ -294,20 +295,20 @@
 
   </query>
 
-  <!-- 
+  <!--
     Let the dispatch filter handler /select?qt=XXX
     handleSelect=true will use consistent error handling for /select and /update
     handleSelect=false will use solr1.1 style error formatting
     -->
   <requestDispatcher handleSelect="true" >
     <!--Make sure your system has some authentication before enabling remote streaming!  -->
-    <requestParsers enableRemoteStreaming="false" 
+    <requestParsers enableRemoteStreaming="false"
                     enableStreamBody="true"
                     multipartUploadLimitInKB="2048"
                     formdataUploadLimitInKB="2048"/>
-        
+
     <!-- Set HTTP caching related parameters (for proxy caches and clients).
-          
+
          To get the behaviour of Solr 1.2 (ie: no caching related headers)
          use the never304="true" option and do not specify a value for
          <cacheControl>
@@ -321,7 +322,7 @@
             You can change it to lastModFrom="dirLastMod" if you want the
             value to exactly correspond to when the physical index was last
             modified.
-               
+
             etagSeed="..." is an option you can change to force the ETag
             header (and validation against If-None-Match requests) to be
             different even if the index has not changed (ie: when making
@@ -333,7 +334,7 @@
        <!-- If you include a <cacheControl> directive, it will be used to
             generate a Cache-Control header, as well as an Expires header
             if the value contains "max-age="
-               
+
             By default, no Cache-Control header is generated.
 
             You can use the <cacheControl> option even if you have set
@@ -342,11 +343,11 @@
        <!-- <cacheControl>max-age=30, public</cacheControl> -->
     </httpCaching>
   </requestDispatcher>
-  
-      
+
+
   <!-- requestHandler plugins... incoming queries will be dispatched to the
      correct handler based on the path or the qt (query type) param.
-     Names starting with a '/' are accessed with the a path equal to the 
+     Names starting with a '/' are accessed with the a path equal to the
      registered name.  Names without a leading '/' are accessed with:
       http://host/app/select?qt=name
      If no qt is defined, the requestHandler that declares default="true"
@@ -366,7 +367,7 @@
       <str name="df">allfields</str>
     </lst>
   </requestHandler>
-  
+
   <!-- the following two handlers will be used for eligible dismax searches defined
      in searchspecs.yaml. The edismax handler will be used most of the time, unless
      a specific configuration tells VuFind to use traditional dismax instead. You
@@ -383,7 +384,7 @@
       <str name="df">allfields</str>
     </lst>
   </requestHandler>
-  
+
   <requestHandler name="edismax" class="solr.SearchHandler">
     <lst name="defaults">
       <str name="defType">edismax</str>
@@ -393,28 +394,28 @@
       <str name="df">allfields</str>
     </lst>
   </requestHandler>
-  
+
   <!-- Search component for extracting terms (useful for sitemap generation) -->
   <searchComponent name="terms" class="solr.TermsComponent">
   </searchComponent>
 
   <!--
-   
+
    Search components are registered to SolrCore and used by Search Handlers
-   
+
    By default, the following components are available:
-    
+
    <searchComponent name="query"     class="org.apache.solr.handler.component.QueryComponent" />
    <searchComponent name="facet"     class="org.apache.solr.handler.component.FacetComponent" />
    <searchComponent name="mlt"       class="org.apache.solr.handler.component.MoreLikeThisComponent" />
    <searchComponent name="highlight" class="org.apache.solr.handler.component.HighlightComponent" />
    <searchComponent name="stats"     class="org.apache.solr.handler.component.StatsComponent" />
    <searchComponent name="debug"     class="org.apache.solr.handler.component.DebugComponent" />
-  
+
    If you register a searchComponent to one of the standard names, that will be used instead.
-  
+
    -->
-  
+
   <!-- Request handler to extract terms (useful for sitemap generation) -->
   <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
     <arr name="components">
@@ -440,7 +441,7 @@
            field value analysis will be marked as "matched" for every
            token that is produces by the query analysis
    -->
-  <requestHandler name="/analysis/field" 
+  <requestHandler name="/analysis/field"
                   startup="lazy"
                   class="solr.FieldAnalysisRequestHandler" />
 
@@ -473,10 +474,10 @@
     request parameter that holds the query text to be analyzed. It
     also supports the "analysis.showmatch" parameter which when set to
     true, all field tokens that match the query tokens will be marked
-    as a "match". 
+    as a "match".
   -->
-  <requestHandler name="/analysis/document" 
-                  class="solr.DocumentAnalysisRequestHandler" 
+  <requestHandler name="/analysis/document"
+                  class="solr.DocumentAnalysisRequestHandler"
                   startup="lazy" />
 
 
@@ -488,7 +489,7 @@
       <str name="echoParams">all</str>
     </lst>
   </requestHandler>
-    
+
   <!-- Echo the request contents back to the client -->
   <requestHandler name="/debug/dump" class="solr.DumpRequestHandler" >
     <lst name="defaults">
@@ -496,7 +497,7 @@
      <str name="echoHandler">true</str>
     </lst>
   </requestHandler>
-  
+
   <searchComponent class="solr.HighlightComponent" name="highlight">
     <highlighting>
       <!-- Configure the standard fragmenter -->
@@ -532,7 +533,7 @@
   <!-- queryResponseWriter plugins... query responses will be written using the
     writer specified by the 'wt' request parameter matching the name of a registered
     writer.
-    The "default" writer is the default and will be used if 'wt' is not specified 
+    The "default" writer is the default and will be used if 'wt' is not specified
     in the request. XMLResponseWriter will be used if nothing is specified here.
     The json, python, and ruby writers are also available by default.
 
@@ -548,11 +549,11 @@
 
   <!-- XSLT response writer transforms the XML output by any xslt file found
        in Solr's conf/xslt directory.  Changes to xslt files are checked for
-       every xsltCacheLifetimeSeconds.  
+       every xsltCacheLifetimeSeconds.
    -->
   <queryResponseWriter name="xslt" class="org.apache.solr.response.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
-  </queryResponseWriter> 
+  </queryResponseWriter>
 
   <!-- Mitigate CVE-2017-12629 -->
   <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin"/>
@@ -564,10 +565,10 @@
   </transformer>
 
 
-  <!-- config for the admin interface --> 
+  <!-- config for the admin interface -->
   <admin>
     <defaultQuery>shakespeare</defaultQuery>
-    
+
     <!-- configure a healthcheck file for servers behind a loadbalancer
     <healthcheck type="file">server-enabled</healthcheck>
     -->

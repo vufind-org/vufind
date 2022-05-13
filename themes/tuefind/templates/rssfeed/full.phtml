@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-9">
-        <?=$this->HelpText()->render('rss_top', null, 'static'); ?>
+        <?=$this->content()->renderTranslated('snippets/rss_top'); ?>
         <?=$this->context($this)->renderInContext('rssfeed/full-items', ['rssItems' => $rssItems])?>
     </div>
     <div class="col-md-3">

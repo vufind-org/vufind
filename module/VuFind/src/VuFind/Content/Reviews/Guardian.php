@@ -82,7 +82,8 @@ class Guardian extends \VuFind\Content\AbstractBase
                     $result[$i]['Date'] = $review['webPublicationDate'];
                     $result[$i]['Summary'] = $review['fields']['headline'] . ". " .
                         preg_replace(
-                            '/<p>|<p [^>]*>|<\/p>/', '',
+                            '/<p>|<p [^>]*>|<\/p>/',
+                            '',
                             html_entity_decode($review['fields']['trailText'])
                         );
                     $result[$i]['ReviewURL'] = $review['fields']['shortUrl'];

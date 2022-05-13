@@ -505,4 +505,19 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         $publicationTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('publication');
         return $publicationTable->getByControlNumber($controlNumber);
     }
+
+    /**
+     * Render an old-style static template from templates/static/<language>/template.phtml
+     *
+     * This is just a workaround as a preparation to be able to work with vufind 8.0.
+     * Our own deprecated HelpText view helper has been removed due to changes in 8.0.
+     *
+     * In the long term, the old static templates should be moved to the new
+     * templates/content/snippet/<template>_<language>.phtml schema.
+     */
+    public function renderStaticTemplate($template, $context=[])
+    {
+        $contentHelper = $this->container->get('ViewHelperManager')->get('content');
+        return $contentHelper->renderTranslated($template, 'static', $context, $output, '%pathPrefix%/%language%/%pageName%');
+    }
 }

@@ -85,7 +85,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     new Config($config),
                     $table ?? $this->getMockTable(),
                 ]
-            )->setMethods(['getConfigWriter'])
+            )->onlyMethods(['getConfigWriter'])
             ->getMock();
     }
 
@@ -190,23 +190,11 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     public function testSuccessNoUsers()
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->at(0))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('encrypt_ils_password'),
-                $this->equalTo(true)
-            );
-        $writer->expects($this->at(1))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_algo'),
-                $this->equalTo('blowfish')
-            );
-        $writer->expects($this->at(2))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_key'),
-                $this->equalTo('foo')
+        $writer->expects($this->exactly(3))->method('set')
+            ->withConsecutive(
+                ['Authentication', 'encrypt_ils_password', true],
+                ['Authentication', 'ils_encryption_algo', 'blowfish'],
+                ['Authentication', 'ils_encryption_key', 'foo']
             );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));
@@ -245,7 +233,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->setConstructorArgs([$adapter])
-            ->setMethods(['save'])
+            ->onlyMethods(['save'])
             ->getMock();
         $user->populate($data, true);
         return $user;
@@ -269,23 +257,11 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     public function testSuccessWithUser()
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->at(0))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('encrypt_ils_password'),
-                $this->equalTo(true)
-            );
-        $writer->expects($this->at(1))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_algo'),
-                $this->equalTo('blowfish')
-            );
-        $writer->expects($this->at(2))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_key'),
-                $this->equalTo('foo')
+        $writer->expects($this->exactly(3))->method('set')
+            ->withConsecutive(
+                ['Authentication', 'encrypt_ils_password', true],
+                ['Authentication', 'ils_encryption_algo', 'blowfish'],
+                ['Authentication', 'ils_encryption_key', 'foo']
             );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));

@@ -14,7 +14,7 @@
     <field name="subsystem" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="type" type="string" indexed="true" stored="true"/>
     <field name="viaf" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="wikidata" type="string" indexed="true" stored="true"/>
+    <field name="wikidata" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="year" type="date_range" indexed="true" stored="true" multiValued="true"/>
     <field name="year_range_bbox" type="year_range_bbox" indexed="true" stored="true" multiValued="true"/>
     <field name="occupation_de" type="string" indexed="true" stored="true" multiValued="true"/>

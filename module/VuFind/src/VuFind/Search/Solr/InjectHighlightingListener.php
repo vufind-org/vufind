@@ -32,6 +32,7 @@ use Laminas\EventManager\EventInterface;
 
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
 
 /**
  * Solr highlighting listener.
@@ -88,8 +89,16 @@ class InjectHighlightingListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
-        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
+        );
     }
 
     /**
@@ -101,13 +110,12 @@ class InjectHighlightingListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        if ($event->getParam('context') != 'search') {
+        $command = $event->getParam('command');
+        if ($command->getContext() != 'search') {
             return $event;
         }
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $params = $event->getParam('params');
-            if ($params) {
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            if ($params = $command->getSearchParameters()) {
                 // Set highlighting parameters unless explicitly disabled:
                 $hl = $params->get('hl');
                 if (!isset($hl[0]) || $hl[0] != 'false') {
@@ -135,14 +143,14 @@ class InjectHighlightingListener
     public function onSearchPost(EventInterface $event)
     {
         // Do nothing if highlighting is disabled or context is wrong
-        if (!$this->active || $event->getParam('context') != 'search') {
+        $command = $event->getParam('command');
+        if (!$this->active || $command->getContext() != 'search') {
             return $event;
         }
 
         // Inject highlighting details into record objects:
-        $backend = $event->getParam('backend');
-        if ($backend == $this->backend->getIdentifier()) {
-            $result = $event->getTarget();
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            $result = $command->getResult();
             $hlDetails = $result->getHighlighting();
             foreach ($result->getRecords() as $record) {
                 $id = $record->getUniqueId();
@@ -151,5 +159,6 @@ class InjectHighlightingListener
                 }
             }
         }
+        return $event;
     }
 }

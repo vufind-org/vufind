@@ -7,15 +7,15 @@
 <nav class="record-nav">
   <ul class="action-toolbar" aria-label="<?=$this->transEscAttr('ajaxview_label_tools'); ?>">
     <?php if (count($this->driver->getCitationFormats()) > 0): ?>
-      <li role="none"><a class="cite-record toolbar-btn btn-type-cite" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" rel="nofollow"><?=$this->transEsc('Cite this')?></a></li>
+      <li role="none"><a class="cite-record toolbar-btn btn-type-cite" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Cite')?>" rel="nofollow"><?=$this->transEsc('Cite this')?></a></li>
     <?php endif; ?>
 
     <?php if ($this->accountCapabilities()->getSmsSetting() !== 'disabled'): ?>
-      <li role="none"><a class="sms-record toolbar-btn btn-type-phone" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" rel="nofollow"><?=$this->transEsc('Text this')?></a></li>
+      <li role="none"><a class="sms-record toolbar-btn btn-type-phone" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'SMS')?>" rel="nofollow"><?=$this->transEsc('Text this')?></a></li>
     <?php endif; ?>
 
     <!-- KrimDok: Disabled on purpose
-    <li><a class="mail-record toolbar-btn btn-type-email" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" rel="nofollow"><?=$this->transEsc('Email this')?></a></li>
+    <li><a class="mail-record toolbar-btn btn-type-email" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Email')?>" rel="nofollow"><?=$this->transEsc('Email this')?></a></li>
     -->
 
     <li><a class="print-record toolbar-btn btn-type-print" href="<?=$this->url()->addQueryParameters(['print' => true])?>" rel="nofollow"><?=$this->transEsc('Print')?></a></li>
@@ -23,10 +23,10 @@
     <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
     <?php if(count($exportFormats) > 0): ?>
       <li role="none" class="dropdown">
-        <a class="export-toggle toolbar-btn btn-type-export dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" rel="nofollow" aria-expanded="false" aria-controls="export-options"><?=$this->transEsc('Export Record') ?></a>
+        <a class="export-toggle toolbar-btn btn-type-export dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Export')?>" rel="nofollow" aria-expanded="false" aria-controls="export-options"><?=$this->transEsc('Export Record') ?></a>
         <ul class="dropdown-menu" id="export-options" role="menu">
           <?php foreach ($exportFormats as $exportFormat): ?>
-            <li role="none"><a <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem"><?=$this->transEsc('Export to')?> <?=$this->transEsc($this->export()->getLabelForFormat($exportFormat))?></a></li>
+            <li role="none"><a <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem"><?=$this->transEsc('Export to')?> <?=$this->transEsc($this->export()->getLabelForFormat($exportFormat))?></a></li>
           <?php endforeach; ?>
         </ul>
       </li>
@@ -35,7 +35,7 @@
     <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
       <li role="none">
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
-          <a class="save-record toolbar-btn btn-type-save" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" rel="nofollow"><?=$this->transEsc('Add to favorites')?></a>
+          <a class="save-record toolbar-btn btn-type-save" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Save')?>" rel="nofollow"><?=$this->transEsc('Add to favorites')?></a>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block?>
         <?php endif; ?>

@@ -23,7 +23,7 @@ class Params extends \VuFind\Search\SolrAuthorFacets\Params
     {
         $query = parent::getQuery();
         if ($this->authorId != null)
-            $query->setString("author_id:".$this->authorId." OR author2_id:".$this->authorId." OR author_corporate_id:".$this->authorId."");
+            $query->setString('author_id:"' . $this->authorId . '" OR author2_id:"' . $this->authorId . '" OR author_corporate_id:"' . $this->authorId.'"');
         return $query;
     }
 

@@ -151,7 +151,8 @@ class CreateHierarchyTreesCommand extends Command
                     if (!$skipJson) {
                         $output->writeln("\t\tJSON cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getJSON(
-                            $recordid, ['refresh' => true]
+                            $recordid,
+                            ['refresh' => true]
                         );
                     } else {
                         $output->writeln("\t\tJSON skipped.");
@@ -160,7 +161,8 @@ class CreateHierarchyTreesCommand extends Command
                     if (!$skipXml) {
                         $output->writeln("\t\tXML cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getXML(
-                            $recordid, ['refresh' => true]
+                            $recordid,
+                            ['refresh' => true]
                         );
                     } else {
                         $output->writeln("\t\tXML skipped.");

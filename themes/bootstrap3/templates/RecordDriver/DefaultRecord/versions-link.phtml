@@ -4,17 +4,17 @@
     return;
   }
   if (isset($this->tabs['Versions'])) {
-    $url = !empty($this->full) ? $this->escapeHtmlAttr($this->recordLink()->getTabUrl($this->driver, 'Versions')) . '#tabnav' : '#versions';
+    $url = !empty($this->full) ? $this->recordLinker()->getTabUrl($this->driver, 'Versions') . '#tabnav' : '#versions';
     $translationKey = 'other_versions_link';
   } else {
-    $url = $this->recordLink()->getVersionsSearchUrl($this->driver);
+    $url = $this->recordLinker()->getVersionsSearchUrl($this->driver);
     $translationKey = 'other_versions_search_link';
     // Search results include this record, so increase the count
     $versions++;
   }
 ?>
 <div class="record-versions">
-  <a href="<?=$url?>">
+  <a href="<?=$this->escapeHtmlAttr($url)?>">
     <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc($translationKey, ['%%count%%' => $versions])?>
   </a>
 </div>

@@ -70,7 +70,9 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
      * @param CachingProxy    $proxy  Proxy loader
      * @param SessionSettings $ss     Session settings
      */
-    public function __construct(Loader $loader, CachingProxy $proxy,
+    public function __construct(
+        Loader $loader,
+        CachingProxy $proxy,
         SessionSettings $ss
     ) {
         $this->loader = $loader;
@@ -159,7 +161,8 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine(
-            'Content-type', $type ?: $this->loader->getContentType()
+            'Content-type',
+            $type ?: $this->loader->getContentType()
         );
 
         // Send proper caching headers so that the user's browser
@@ -168,13 +171,16 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
 
         $coverImageTtl = (60 * 60 * 24 * 14); // 14 days
         $headers->addHeaderLine(
-            'Cache-Control', "maxage=" . $coverImageTtl
+            'Cache-Control',
+            "maxage=" . $coverImageTtl
         );
         $headers->addHeaderLine(
-            'Pragma', 'public'
+            'Pragma',
+            'public'
         );
         $headers->addHeaderLine(
-            'Expires', gmdate('D, d M Y H:i:s', time() + $coverImageTtl) . ' GMT'
+            'Expires',
+            gmdate('D, d M Y H:i:s', time() + $coverImageTtl) . ' GMT'
         );
 
         $response->setContent($image ?: $this->loader->getImage());

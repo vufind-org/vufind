@@ -108,6 +108,6 @@ class MultiILS extends ILS
                 'MultiILS authentication requires MultiBackend ILS driver.'
             );
         }
-        return parent::setCatalog($connection);
+        parent::setCatalog($connection);
     }
 }

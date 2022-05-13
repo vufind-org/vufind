@@ -142,7 +142,7 @@ function handleAjaxTabLinks(_context) {
       $a.unbind('click').click(function linkClick() {
         var tabid = $('.record-tabs .nav-tabs li.active').data('tab');
         var $tab = $('.' + tabid + '-tab');
-        $tab.html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+        $tab.html('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
         ajaxLoadTab($tab, '', false, href);
         return false;
       });
@@ -265,7 +265,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 }
 
 function getNewRecordTab(tabid) {
-  return $('<div class="tab-pane ' + tabid + '-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+  return $('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
 }
 
 function backgroundLoadTab(tabid) {

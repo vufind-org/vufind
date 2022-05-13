@@ -359,6 +359,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
+        $baseUrl = null;
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;
         } elseif ($method == 'POST') {
@@ -415,7 +416,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         // Register the 'sear' namespace at the top level to avoid problems:
         $sxe->registerXPathNamespace(
-            'sear', 'http://www.exlibrisgroup.com/xsd/jaguar/search'
+            'sear',
+            'http://www.exlibrisgroup.com/xsd/jaguar/search'
         );
 
         // Get the available namespaces. The Primo API uses multiple namespaces.
@@ -455,7 +457,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // format
             $item['format'] = ucwords(
                 str_replace(
-                    '_', ' ', (string)$prefix->PrimoNMBib->record->display->type
+                    '_',
+                    ' ',
+                    (string)$prefix->PrimoNMBib->record->display->type
                 )
             );
             // creators
@@ -608,7 +612,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
@@ -654,7 +657,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
             return addcslashes($id, '":()');

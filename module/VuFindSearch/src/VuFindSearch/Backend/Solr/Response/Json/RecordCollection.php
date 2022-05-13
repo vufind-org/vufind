@@ -104,7 +104,8 @@ class RecordCollection extends AbstractRecordCollection
     {
         if (!$this->spellcheck) {
             $this->spellcheck = new Spellcheck(
-                $this->getRawSpellcheckSuggestions(), $this->getSpellcheckQuery()
+                $this->getRawSpellcheckSuggestions(),
+                $this->getSpellcheckQuery()
             );
         }
         return $this->spellcheck;

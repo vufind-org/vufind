@@ -78,35 +78,47 @@ class TemplateBased implements ContentBlockInterface
     /**
      * Return context variables used for rendering the block's template.
      *
+     * @param string $pathPrefix Subdirectory where the template should be located
+     * @param string $page       Template name (defaults to config value if unset)
+     * @param string $pattern    Filesystem pattern (see PageLocator)
+     *
      * @return array
      */
-    public function getContext()
-    {
-        $page = $this->templateName;
-        $pathPrefix = "templates/ContentBlock/TemplateBased/";
-        $data = $this->pageLocator
-            ->determineTemplateAndRenderer($pathPrefix, $page);
+    public function getContext(
+        $pathPrefix = 'templates/ContentBlock/TemplateBased/',
+        $page = null,
+        $pattern = null
+    ) {
+        $data = $this->pageLocator->determineTemplateAndRenderer(
+            $pathPrefix,
+            $page ?? $this->templateName,
+            $pattern
+        );
 
         $method = isset($data) ? 'getContextFor' . ucwords($data['renderer'])
             : false;
 
-        return $method && is_callable([$this, $method])
-            ? $this->$method($data['page'], $data['path'])
+        $context = $method && is_callable([$this, $method])
+            ? $this->$method($data['relativePath'], $data['path'])
             : [];
+        $context['pageLocatorDetails'] = $data;
+        return $context;
     }
 
     /**
      * Return context array for markdown
      *
-     * @param string $page Page name
-     * @param string $path Full path of file
+     * @param string $relativePath Relative path to template
+     * @param string $path         Full path of template file
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getContextForMd(string $page, string $path): array
+    protected function getContextForMd(string $relativePath, string $path): array
     {
         return [
-            'templateName' => 'markdown',
+            'template' => 'ContentBlock/TemplateBased/markdown',
             'data' => file_get_contents($path),
         ];
     }
@@ -114,15 +126,15 @@ class TemplateBased implements ContentBlockInterface
     /**
      * Return context array of phtml
      *
-     * @param string $page Page name
-     * @param string $path Full path of fie
+     * @param string $relativePath Relative path to template
+     * @param string $path         Full path of template file
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getContextForPhtml(string $page, string $path): array
+    protected function getContextForPhtml(string $relativePath, string $path): array
     {
-        return [
-            'templateName' => $page,
-        ];
+        return ['template' => $relativePath];
     }
 }

@@ -113,7 +113,9 @@ class VuFindSitemap extends VuFind
 
         // Extract the keywords from the XML:
         preg_match_all(
-            '/<meta name="keywords" content="([^"]*)"/ms', $xml, $matches
+            '/<meta name="keywords" content="([^"]*)"/ms',
+            $xml,
+            $matches
         );
         $keywords = [];
         if (isset($matches[1])) {
@@ -150,7 +152,9 @@ class VuFindSitemap extends VuFind
     {
         // Extract the subjects from the HTML:
         preg_match_all(
-            '/<meta name="subject" content="([^"]*)"/ms', $html, $matches
+            '/<meta name="subject" content="([^"]*)"/ms',
+            $html,
+            $matches
         );
         $subjects = [];
         if (isset($matches[1])) {
@@ -161,7 +165,9 @@ class VuFindSitemap extends VuFind
 
         // Extract the link types from the HTML:
         preg_match_all(
-            '/<meta name="category" content="([^"]*)"/ms', $html, $matches
+            '/<meta name="category" content="([^"]*)"/ms',
+            $html,
+            $matches
         );
         $categories = [];
         if (isset($matches[1])) {
@@ -172,7 +178,9 @@ class VuFindSitemap extends VuFind
 
         // Extract the use count from the HTML:
         preg_match_all(
-            '/<meta name="useCount" content="([^"]*)"/ms', $html, $matches
+            '/<meta name="useCount" content="([^"]*)"/ms',
+            $html,
+            $matches
         );
         $useCount = $matches[1][0] ?? 1;
 
@@ -261,7 +269,9 @@ class VuFindSitemap extends VuFind
         // Clean up/normalize full text:
         $fields['fulltext'] = trim(
             preg_replace(
-                '/\s+/', ' ', static::stripBadChars($fields['fulltext'])
+                '/\s+/',
+                ' ',
+                static::stripBadChars($fields['fulltext'])
             )
         );
 

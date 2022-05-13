@@ -59,7 +59,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'koha' => Koha::class,
         'kohailsdi' => KohaILSDI::class,
         'koharest' => KohaRest::class,
-        'lbs4' => LBS4::class,
         'multibackend' => MultiBackend::class,
         'newgenlib' => NewGenLib::class,
         'noils' => NoILS::class,
@@ -95,7 +94,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Koha::class => DriverWithDateConverterFactory::class,
         KohaILSDI::class => DriverWithDateConverterFactory::class,
         KohaRest::class => KohaRestFactory::class,
-        LBS4::class => DriverWithDateConverterFactory::class,
         MultiBackend::class => MultiBackendFactory::class,
         NewGenLib::class => InvokableFactory::class,
         NoILS::class => NoILSFactory::class,
@@ -121,7 +119,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

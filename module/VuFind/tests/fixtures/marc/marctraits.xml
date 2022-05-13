@@ -58,6 +58,7 @@
         <datafield tag="100" ind1="1" ind2=" ">
             <subfield code="a">Author, Test</subfield>
             <subfield code="d">(1800-)</subfield>
+            <subfield code="0">(TEST)789</subfield>
         </datafield>
         <datafield tag="110" ind1="2" ind2=" ">
             <subfield code="a">Testcorp</subfield>
@@ -107,7 +108,7 @@
             <subfield code="a">2020-</subfield>
         </datafield>
         <datafield tag="440" ind1=" " ind2="0">
-            <subfield code="a">Development Series</subfield>    
+            <subfield code="a">Development Series &amp;&apos;&gt;&lt;&quot;</subfield>    
             <subfield code="x">1111-2222</subfield>
         </datafield>
         <datafield tag="490" ind1="0" ind2=" ">

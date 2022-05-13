@@ -4,4 +4,4 @@
 ?>
 <pre><?=$laminasCaptcha->getFiglet()->render($laminasCaptcha->getWord())?></pre>
 <p><label for="<?=$this->captcha->getHtmlInputId()?>"><?=$this->transEsc('captcha_label_input')?></label> <input name="<?=$this->captcha->getHtmlInputId()?>" id="<?=$this->captcha->getHtmlInputId()?>"></p>
-<input type="hidden" name="<?=$this->captcha->getHtmlInternalId()?>" value="<?=$id?>">
+<input type="hidden" name="<?=$this->captcha->getHtmlInternalId()?>" value="<?=$this->escapeHtmlAttr($id)?>">

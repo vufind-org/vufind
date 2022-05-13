@@ -58,7 +58,8 @@ class RelaisOrder extends AbstractRelaisAction
         $authorizationId = $this->relais->authenticatePatron($lin);
         if ($authorizationId === null) {
             return $this->formatResponse(
-                $this->translate('Failed'), self::STATUS_HTTP_FORBIDDEN
+                $this->translate('Failed'),
+                self::STATUS_HTTP_FORBIDDEN
             );
         }
 

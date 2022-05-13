@@ -145,7 +145,7 @@ class CAS extends AbstractBase
                 if ($attribute == 'email') {
                     $user->updateEmail($value);
                 } elseif ($attribute != 'cat_password') {
-                    $user->$attribute = ($value === null) ? '' : $value;
+                    $user->$attribute = $value ?? '';
                 } else {
                     $catPassword = $value;
                 }
@@ -287,7 +287,11 @@ class CAS extends AbstractBase
             }
             $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
             $casauth->client(
-                $protocol, $cas->server, (int)$cas->port, $cas->context, false
+                $protocol,
+                $cas->server,
+                (int)$cas->port,
+                $cas->context,
+                false
             );
             if (isset($cas->CACert) && !empty($cas->CACert)) {
                 $casauth->setCasServerCACert($cas->CACert);

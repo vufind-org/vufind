@@ -7,7 +7,9 @@ class SolrMarc extends SolrDefault
     const ISIL_PREFIX_GND = '(DE-588)';
     const ISIL_PREFIX_K10PLUS = '(DE-627)';
 
-    use MarcAdvancedTrait;
+    use Feature\MarcAdvancedTrait;
+
+    protected $marcReaderClass = \TueFind\Marc\MarcReader::class;
 
     /**
      * Search for author and return its id (e.g. GND number or PPN)
@@ -18,19 +20,20 @@ class SolrMarc extends SolrDefault
      */
     protected function getAuthorIdByHeading($author_heading, $scheme_prefix)
     {
-        $authors = $this->getMarcRecord()->getFields('^100|700$', true);
-        foreach ($authors as $author) {
-            $subfield_a = $author->getSubfield('a');
-            $subfield_d = $author->getSubfield('d');
-            $current_author_heading = $subfield_a->getData();
-            if ($subfield_d != false)
-                $current_author_heading .= ' ' . $subfield_d->getData();
+        $authors = $this->getMarcReader()->getFieldsDelimiter('100|700');
 
-            if ($author_heading == $subfield_a->getData() || $author_heading == $current_author_heading) {
-                $subfields_0 = $author->getSubfields('0');
+        foreach ($authors as $author) {
+            $subfield_a = $this->getSubfieldArray($author, ['a']);
+            $subfield_d = $this->getSubfieldArray($author, ['d']);
+            $current_author_heading = $subfield_a[0];
+            if (isset($subfield_d[0])) {
+                $current_author_heading .= ' ' . $subfield_d[0];
+            }
+            if ($author_heading == $subfield_a[0] || $author_heading == $current_author_heading) {
+                $subfields_0 = $this->getSubfieldArray($author, ['0']);
                 foreach ($subfields_0 as $subfield_0) {
-                    if (preg_match('"^' . preg_quote($scheme_prefix) . '"', $subfield_0->getData()))
-                        return substr($subfield_0->getData(), strlen($scheme_prefix));
+                    if (preg_match('"^' . preg_quote($scheme_prefix) . '"', $subfield_0[0]))
+                        return substr($subfield_0[0], strlen($scheme_prefix));
                 }
                 break;
             }
@@ -58,10 +61,14 @@ class SolrMarc extends SolrDefault
     public function getAuthorNames(): array
     {
         $authorNames = [];
-        $authors = $this->getMarcRecord()->getFields('^100|700$', true);
+        $authors = $this->getMarcReader()->getFieldsDelimiter('100|700');
+
         foreach ($authors as $author) {
-            $authorName = $author->getSubfield('a')->getData();
-            $authorNames[] = $authorName;
+            $authorName = $this->getSubfieldArray($author, ['a']);
+            if(!empty($authorName) && isset($authorName[0])) {
+              $authorNames[] = $authorName[0];
+            }
+
         }
         return array_unique($authorNames);
     }
@@ -80,13 +87,13 @@ class SolrMarc extends SolrDefault
     public function getAuthorRoles($author_heading)
     {
         $roles = [];
-        $authors = $this->getMarcRecord()->getFields('^100|700$', true);
+        $authors = $this->getMarcReader()->getFieldsDelimiter('100|700');
         foreach ($authors as $author) {
-            $subfield_a = $author->getSubfield('a');
-            if ($subfield_a != false && $subfield_a->getData() == $author_heading) {
-                $subfields_4 = $author->getSubfields('4');
+            $subfield_a = $this->getSubfieldArray($author, ['a']);
+            if (!empty($authorName) && isset($authorName[0]) && $authorName[0]  == $author_heading) {
+                $subfields_4 = $this->getSubfieldArray($author, ['4']);
                 foreach ($subfields_4 as $subfield_4) {
-                    $roles[] = $subfield_4->getData();
+                    $roles[] = $subfield_4[0];
                 }
                 break;
             }
@@ -102,7 +109,7 @@ class SolrMarc extends SolrDefault
     public function getCleanDOIs()
     {
         $clean_dois = [];
-        $_024_fields = $this->getMarcRecord()->getFields('024');
+        $_024_fields = $this->getMarcReader()->getFields('024');
         if (!$_024_fields)
             return;
         foreach ($_024_fields as $_024_field) {
@@ -141,17 +148,17 @@ class SolrMarc extends SolrDefault
 
     public function getLicense(): ?array
     {
-        $licenseFields = $this->getMarcRecord()->getFields('540');
+        $licenseFields = $this->getMarcReader()->getFields('540');
         foreach ($licenseFields as $licenseField) {
             $id = null;
-            $idSubfield = $licenseField->getSubfield('f');
+            $idSubfield = $this->getMarcReader()->getSubfield($licenseField,'f');
             if ($idSubfield != false)
-                $id = $idSubfield->getData();
+                $id = $idSubfield;
 
             $url = null;
-            $urlSubfield = $licenseField->getSubfield('u');
+            $urlSubfield = $this->getMarcReader()->getSubfield($licenseField,'u');
             if ($urlSubfield != false)
-                $url = $urlSubfield->getData();
+                $url = $urlSubfield;
 
             if ($id == null && preg_match('"^http(s)?:' . preg_quote('//rightsstatements.org/vocab/InC/1.0/', '"') . '$"', $url)) {
                 // force correct ID + english URL
@@ -169,7 +176,7 @@ class SolrMarc extends SolrDefault
 
     public function isTADTagged()
     {
-        $ita_fields = $this->getMarcRecord()->getFields('ITA');
+        $ita_fields = $this->getMarcReader()->getFields('ITA');
         foreach ($ita_fields as $ita_field) {
             $t_subfields = $this->getSubfieldArray($ita_field, ['t']);
             if (count($t_subfields) > 0)
@@ -181,11 +188,11 @@ class SolrMarc extends SolrDefault
 
     public function isArticle()
     {
-        $leader = $this->getMarcRecord()->getLeader();
+        $leader = $this->getMarcReader()->getLeader();
 
         if ($leader[7] == 'a' || $leader[7] == 'b')
             return true;
-        $_935_fields = $this->getMarcRecord()->getFields('935');
+        $_935_fields = $this->getMarcReader()->getFields('935');
         foreach ($_935_fields as $_935_field) {
             $c_subfields = $this->getSubfieldArray($_935_field, ['c']);
             foreach ($c_subfields as $c_subfield) {
@@ -199,14 +206,14 @@ class SolrMarc extends SolrDefault
 
     public function isArticleCollection()
     {
-        $aco_fields = $this->getMarcRecord()->getFields('ACO');
+        $aco_fields = $this->getMarcReader()->getFields('ACO');
         return (count($aco_fields) > 0);
     }
 
     public function isPrintedWork() {
-        $fields = $this->getMarcRecord()->getFields('007');
+        $fields = $this->getMarcReader()->getFields('007');
         foreach ($fields as $field) {
-            if ($field->getData()[0] == 't')
+            if ($field == 't')
                 return true;
         }
         return false;
@@ -265,14 +272,14 @@ class SolrMarc extends SolrDefault
     {
         $parallel_ppns_and_type = [];
         foreach (['775', '776'] as $tag) {
-            $fields = $this->getMarcRecord()->getFields($tag);
+            $fields = $this->getMarcReader()->getFields($tag);
             foreach ($fields as $field) {
                 $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
                 foreach ($subfields_w as $subfield_w) {
                     if (preg_match('/^' . preg_quote(self::ISIL_PREFIX_K10PLUS, '/') . '(.*)/', $subfield_w, $ppn)) {
-                        $subfield_k = $field->getSubfield('k');
-                        if ($subfield_k !== false && $subfield_k->getData() !== 'dangling')
-                            array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_k->getData() ]);
+                        $subfield_k = $this->getMarcReader()->getSubfields($field,'k');
+                        if ($subfield_k !== false && $subfield_k !== 'dangling')
+                            array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_k ]);
                     }
                 }
             }
@@ -285,24 +292,24 @@ class SolrMarc extends SolrDefault
     {
         $parallel_editions = [];
         foreach (['775', '776'] as $tag) {
-            $fields = $this->getMarcRecord()->getFields($tag);
+            $fields = $this->getMarcReader()->getFields($tag);
             foreach ($fields as $field) {
                 # If $w exists this is handled by getParallelEditionPPNs
-                $subfield_w = $field->getSubfield('w');
+                $subfield_w = $this->getMarcReader()->getSubfield($field,'w');
                 if (!empty($subfield_w))
                     continue;
 
                 $parallel_edition = '';
-                $subfield_i = $field->getSubfield('i');
+                $subfield_i = $this->getMarcReader()->getSubfield($field,'i');
                 # If $i is not given we will not have a proper key for processing
                 if (empty($subfield_i))
                     continue;
-                $subfield_a = $field->getSubfield('a');
+                $subfield_a = $this->getMarcReader()->getSubfield($field,'a');
                 if (!empty($subfield_a))
-                    $parallel_edition .= $subfield_a->getData() . ': ';
+                    $parallel_edition .= $subfield_a . ': ';
                 $further_subfields = $this->getSubfieldArray($field, ['t','d','h','g','o','u','z'], false);
                 $parallel_edition .= implode('. - ', $further_subfields);
-                $description = \TueFind\Utility::normalizeGermanParallelDescriptions($subfield_i->getData());
+                $description = \TueFind\Utility::normalizeGermanParallelDescriptions($subfield_i);
                 array_push($parallel_editions, [ $description => $parallel_edition ]);
             }
         }
@@ -324,20 +331,22 @@ class SolrMarc extends SolrDefault
     public function getReferenceInformation(): array
     {
         $references = [];
-        $fields = $this->getMarcRecord()->getFields('770|772', true);
+        $fields = $this->getMarcReader()->getFieldsDelimiter('770|772');
+
         foreach ($fields as $field) {
-            $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() . ':' : '';
-            $timeRange = $field->getSubfield('n') ? $field->getSubfield('n')->getData() : '';
+
+            $opening = $this->getMarcReader()->getSubfield($field,'i') ? $this->getMarcReader()->getSubfield($field,'i') . ':' : '';
+            $timeRange = $this->getMarcReader()->getSubfield($field,'n') ? $this->getMarcReader()->getSubfield($field,'n') : '';
             if ($timeRange != '') {
                 if ($opening != '')
                     $opening .= ' ';
                 $opening .= '(' . $timeRange . '):';
             }
             $titles = [];
-            $field->getSubfield('a') ? $titles[] = $field->getSubfield('a')->getData() : '';
-            $field->getSubfield('d') ? $titles[] = $field->getSubfield('d')->getData() : '';
-            $field->getSubfield('h') ? $titles[] = $field->getSubfield('h')->getData() : '';
-            $field->getSubfield('t') ? $titles[] = $field->getSubfield('t')->getData() : '';
+            $this->getMarcReader()->getSubfield($field,'a') ? $titles[] = $this->getMarcReader()->getSubfield($field,'a') : '';
+            $this->getMarcReader()->getSubfield($field,'d') ? $titles[] = $this->getMarcReader()->getSubfield($field,'d') : '';
+            $this->getMarcReader()->getSubfield($field,'h') ? $titles[] = $this->getMarcReader()->getSubfield($field,'h') : '';
+            $this->getMarcReader()->getSubfield($field,'t') ? $titles[] = $this->getMarcReader()->getSubfield($field,'t') : '';
             $description = $opening . ' ' .  implode(', ' , array_filter($titles) /*skip empty elements */);
             $link_ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
             $references[] = ['id' => $link_ppn, 'description' => $description];
@@ -349,17 +358,18 @@ class SolrMarc extends SolrDefault
     public function getContainsInformation(): array
     {
         $contains = [];
-        $fields = $this->getMarcRecord()->getFields('773');
+        $fields = $this->getMarcReader()->getFields('773');
         foreach ($fields as $field) {
-            if ($field->getIndicator(1) != 0)
-                continue;
-            $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
+            $opening = $this->getMarcReader()->getSubfield($field,'i') ? $this->getMarcReader()->getSubfield($field,'i') : '';
             $titles = [];
-            $field->getSubfield('a') ? $titles[] = $field->getSubfield('a')->getData() : '';
-            $field->getSubfield('t') ? $titles[] = $field->getSubfield('t')->getData() : '';
+            $this->getMarcReader()->getSubfield($field,'a') ? $titles[] = $this->getMarcReader()->getSubfield($field,'a') : '';
+            $this->getMarcReader()->getSubfield($field,'t') ? $titles[] = $this->getMarcReader()->getSubfield($field,'t') : '';
             $description = $opening . ': ' .  implode(', ', array_filter($titles) /*skip empty elements */);
             $link_ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
-            $contains[] = ['id' => $link_ppn, 'description' => $description];
+            if(!empty($link_ppn)) {
+                $contains[] = ['id' => $link_ppn, 'description' => $description];
+            }
+
         }
         return $contains;
     }
@@ -369,35 +379,35 @@ class SolrMarc extends SolrDefault
     {
         $references = [];
 
-        $fields = $this->getMarcRecord()->getFields('787');
+        $fields = $this->getMarcReader()->getFields('787');
         foreach ($fields as $field) {
-            $iSubfield = $field->getSubfield('i');
+            $iSubfield = $this->getMarcReader()->getSubfield($field,'i');
             if ($iSubfield == false)
                 continue;
 
-            $aSubfield = $field->getSubfield('a');
-            $dSubfield = $field->getSubfield('d');
-            $tSubfield = $field->getSubfield('t');
-            $gSubfield = $field->getSubfield('g');
+            $aSubfield = $this->getMarcReader()->getSubfield($field,'a');
+            $dSubfield = $this->getMarcReader()->getSubfield($field,'d');
+            $tSubfield = $this->getMarcReader()->getSubfield($field,'t');
+            $gSubfield = $this->getMarcReader()->getSubfield($field,'g');
 
             $title = '';
             if ($tSubfield != false )
-                $title = $tSubfield->getData();
+                $title = $tSubfield;
             elseif ($aSubfield != false)
-                $title = $aSubfield->getData();
+                $title = $aSubfield;
 
             if ($gSubfield != false) // Year and Page information
-	        $title .= ' ' . $gSubfield->getData();
+	        $title .= ' ' . $gSubfield;
 
             if ($dSubfield != false)
-                $title .= ' (' . $dSubfield->getData() . ')';
+                $title .= ' (' . $dSubfield . ')';
 
             $referencedId = null;
             $ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
             if (!empty($ppn))
                 $referencedId = $ppn;
 
-            $type = $iSubfield->getData();
+            $type = $iSubfield;
             if (preg_match('"^(Rezension|Rezensiert in)(:)?$"i', $type)) {
                 $resultType = 'review';
                 if (!isset($references[$resultType]))
@@ -405,7 +415,7 @@ class SolrMarc extends SolrDefault
 
                 $author = '';
                 if ($aSubfield != false)
-                    $author = $aSubfield->getData();
+                    $author = $aSubfield;
 
                 $references[$resultType][] = ['id' => $referencedId,
                                               'title' => $title,
@@ -415,11 +425,11 @@ class SolrMarc extends SolrDefault
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
                 $author = '';
-                $authorFields = $this->getMarcRecord()->getFields('100');
+                $authorFields = $this->getMarcReader()->getFields($field,'100');
                 foreach ($authorFields as $authorField) {
-                    $a100Subfields = $authorField->getSubfields('a');
+                    $a100Subfields = $this->getMarcReader()->getSubfields($authorField,'a');
                     foreach ($a100Subfields as $a100Subfield) {
-                        $a100 = $a100Subfield->getData();
+                        $a100 = $a100Subfield;
                         if ($a100 != '') {
                             $author = $a100;
                             break 2;
@@ -468,14 +478,16 @@ class SolrMarc extends SolrDefault
 
     public function getJOPISSNsAndAdditionalInformation()
     {
-        $issns_and_additional_information = [];
-        $_022fields = $this->getMarcRecord()->getFields('022');
+
+      $issns_and_additional_information = [];
+        $_022fields = $this->getMarcReader()->getFields('022');
         foreach ($_022fields as $_022field) {
-            $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
+            $subfield_a = $this->getMarcReader()->getSubfield($_022field,'a') ? $this->getMarcReader()->getSubfield($_022field,'a') : ''; //$a is non-repeatable in 022
             if (!empty($subfield_a)) {
-                $subfield_2 = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
+                $subfield_2 = $this->getMarcReader()->getSubfield($_022field,'2') ? $this->getMarcReader()->getSubfield($_022field,'2') : '';
                 $additional_information = empty($subfield_2) ? '' : $this->translate($subfield_2);
-                $subfield_3 = $_022field->getSubfield('3') ? $_022field->getSubfield('3')->getData() : '';
+                $subfield_3 = $this->getMarcReader()->getSubfield($_022field,'3') ? $this->getMarcReader()->getSubfield($_022field,'3') : '';
+
                 if (!empty($subfield_3)) {
                     if (!empty($additional_information))
                         $additional_information .= ' ';
@@ -484,28 +496,27 @@ class SolrMarc extends SolrDefault
                 $issns_and_additional_information[$this->cleanISSN($subfield_a)] = $additional_information;
             }
         }
-        $_029fields = $this->getMarcRecord()->getFields('029');
+
+        $_029fields = $this->getMarcReader()->getFields('029');
+
         foreach ($_029fields as $_029field) {
-            if ($_029field->getIndicator('1') == 'x') {
-                switch ($_029field->getIndicator('2')) {
-                    case 'c':
-                        $subfield_a = $_029field->getSubfield('a') ? $_029field->getSubfield('a')->getData() : '';
-                        $issn = $this->cleanISSN($subfield_a);
-                        if (!array_key_exists($issn, $issns_and_additional_information))
-                            $issns_and_additional_information[$issn] = '';
-                        break;
-                    default:
-                        break;
-                }
+            $x = $this->getMarcReader()->getSubfield($_029field,'x');
+            if (!empty($x)) {
+              $subfield_a = $this->getMarcReader()->getSubfield($_029field,'a') ? $this->getMarcReader()->getSubfield($_029field,'a') : '';
+              $issn = $this->cleanISSN($subfield_a);
+              if (!array_key_exists($issn, $issns_and_additional_information)) {
+                $issns_and_additional_information[$issn] = '';
+              }
             }
         }
+
         if (!empty($issns_and_additional_information))
             return $issns_and_additional_information;
 
         // Fall back to the ISSN of the parallel (print) edition
-        $_776fields = $this->getMarcRecord()->getFields('776');
+        $_776fields = $this->getMarcReader()->getFields('776');
         foreach ($_776fields as $_776field) {
-            $subfield_x = $_776field->getSubfield('x') ? $_776field->getSubfield('x')->getData() : '';
+            $subfield_x = $this->getMarcReader()->getSubfields($_776field,'x') ? $this->getMarcReader()->getSubfields($_776field,'x') : '';
             $issn = $this->cleanISSN($subfield_x);
             if (!empty($issn)) {
                 $issns_and_additional_information[$issn] = '';
@@ -518,9 +529,9 @@ class SolrMarc extends SolrDefault
 
     public function getSuperiorFrom773a()
     {
-        $_773_fields = $this->getMarcRecord()->getFields('773');
+        $_773_fields = $this->getMarcReader()->getFields('773');
         foreach ($_773_fields as $_773_field) {
-            $subfield_a = $_773_field->getSubfield('a') ? $_773_field->getSubfield('a')->getData() : '';
+            $subfield_a = $this->getMarcReader()->getSubfields($_773_field,'a') ? $this->getMarcReader()->getSubfields($_773_field,'a') : '';
             if (!empty($subfield_a))
                 return $subfield_a;
         }

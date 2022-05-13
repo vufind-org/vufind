@@ -107,7 +107,10 @@ abstract class AbstractHandlerMap
      *
      * @return void
      */
-    protected function apply(ParamBag $params, array $defaults, array $appends,
+    protected function apply(
+        ParamBag $params,
+        array $defaults,
+        array $appends,
         array $invariants
     ) {
         $final = $params->getArrayCopy();
