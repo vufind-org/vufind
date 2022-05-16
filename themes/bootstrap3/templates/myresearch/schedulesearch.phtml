@@ -5,6 +5,8 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li class="active">' . $this->transEsc('Manage Scheduled Alerts') . '</li>';
+
+  $user = $this->auth()->isLoggedIn();
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
@@ -12,6 +14,18 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
+  <?php if (!empty($user->email)): ?>
+    <div class="alert alert-info alert-email-notification">
+      <?=$this->transEsc("alert_email_address") . ': ' . $this->escapeHtml($user->email) ?>
+      <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
+        (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
+      <?php endif; ?>
+    </div>
+  <?php else: ?>
+    <div class="alert alert-danger alert-email-notification">
+      <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
+    </div>
+  <?php endif; ?>
   <p><?=$this->transEsc('schedule_explanation')?></p>
   <table>
     <tr>
