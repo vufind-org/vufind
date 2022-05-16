@@ -876,8 +876,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if (empty($result['data'])) {
                     return [];
                 }
-                $notes = $result['data']['availability']['notes'];
-                $included = $notes['Item::PickupLocations']['to_libraries'];
+                $notes = $result['data']['availability']['notes'] ?? [];
+                $included = $notes['Item::PickupLocations']['to_libraries'] ?? [];
             } else {
                 $result = $this->makeRequest(
                     [
@@ -895,8 +895,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if (empty($result['data'])) {
                     return [];
                 }
-                $notes = $result['data']['availability']['notes'];
-                $included = $notes['Biblio::PickupLocations']['to_libraries'];
+                $notes = $result['data']['availability']['notes'] ?? [];
+                $included = $notes['Biblio::PickupLocations']['to_libraries'] ?? [];
             }
         }
 
@@ -1146,15 +1146,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (isset($fields['frozen'])) {
                 if ($fields['frozen']) {
                     if (isset($fields['frozenThrough'])) {
+                        // Convert the date to end of day in RFC3339 format. Note
+                        // that as of May 2022 Koha only uses the date part and
+                        // ignores time, but requires a valid RFC3339 date+time.
+                        $date = $this->dateConverter->convert(
+                            'U',
+                            '',
+                            $fields['frozenThroughTS'],
+                            true
+                        );
+                        $date->setTime(23, 59, 59, 999);
                         $updateFields['suspended_until']
-                            = date('Y-m-d', $fields['frozenThroughTS'])
-                                . ' 23:59:59';
+                            = $date->format($date::RFC3339);
                         $result = false;
                     } else {
                         $result = $this->makeRequest(
                             [
                                 'path' => ['v1', 'holds', $requestId, 'suspension'],
                                 'method' => 'POST',
+                                'json' => new \stdClass(), // For empty JSON object
                                 'errors' => true
                             ]
                         );
@@ -1164,6 +1174,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         [
                             'path' => ['v1', 'holds', $requestId, 'suspension'],
                             'method' => 'DELETE',
+                            'json' => new \stdClass(), // For empty JSON object
                             'errors' => true
                         ]
                     );
