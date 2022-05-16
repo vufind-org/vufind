@@ -12,10 +12,12 @@
     <?php else: ?>
       <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc('save_search')?></a>
     <?php endif; ?>
-    <?php if ($this->accountCapabilities()->getScheduledSearchSetting() === 'enabled'): ?>
+    <?php if ($this->accountCapabilities()->getScheduledSearchSetting() === 'enabled' && !empty($this->scheduleOptions)): ?>
       &mdash;
       <a href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
-        <?=$this->transEsc($this->results->getNotificationFrequency() > 0 ? 'Manage Scheduled Alerts' : 'subscribe_search')?>
+        <?=$this->transEsc('Notifications')?>:
+        <?php $freq = $this->results->getNotificationFrequency(); ?>
+        <?=$this->transEsc($this->scheduleOptions[$freq] ?? $freq)?>
       </a>
     <?php endif; ?>
   <?php endif; ?>
