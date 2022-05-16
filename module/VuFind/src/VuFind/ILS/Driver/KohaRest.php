@@ -1146,9 +1146,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (isset($fields['frozen'])) {
                 if ($fields['frozen']) {
                     if (isset($fields['frozenThrough'])) {
+                        // Convert the date to end of day in RFC3339 format. Note
+                        // that as of May 2022 Koha only uses the date part and
+                        // ignores time, but requires a valid RFC3339 date+time.
+                        $date = $this->dateConverter->convertToDateTime(
+                            'U',
+                            $fields['frozenThroughTS']
+                        );
+                        $date->setTime(23, 59, 59, 999);
                         $updateFields['suspended_until']
-                            = date('Y-m-d', $fields['frozenThroughTS'])
-                                . ' 23:59:59';
+                            = $date->format($date::RFC3339);
                         $result = false;
                     } else {
                         $result = $this->makeRequest(

@@ -84,7 +84,7 @@
         "swagger-api/swagger-ui": "4.5.2",
         "vstelmakh/url-highlight": "3.0.0",
         "vufind-org/vufindcode": "1.2",
-        "vufind-org/vufinddate": "1.0.0",
+        "vufind-org/vufinddate": "1.1.0",
         "vufind-org/vufindharvest": "4.1.0",
         "vufind-org/vufindhttp": "3.1.0",
         "webfontkit/open-sans": "^1.0",
