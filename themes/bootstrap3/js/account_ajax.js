@@ -66,7 +66,7 @@ VuFind.register('account', function Account() {
         } else {
           $element.removeClass('hidden');
           if (status === LOADING) {
-            $element.html('<i class="fa fa-spin fa-spinner"></i>');
+            $element.html(VuFind.spinner());
           } else {
             var moduleStatus = _submodules[sub].render($element, _statuses[sub], ICON_LEVELS);
             if (moduleStatus > accountStatus) {

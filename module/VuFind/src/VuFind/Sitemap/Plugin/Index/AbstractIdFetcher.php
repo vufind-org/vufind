@@ -48,7 +48,7 @@ abstract class AbstractIdFetcher
     protected $searchService;
 
     /**
-     * CallMethodCommand constructor.
+     * Constructor.
      *
      * @param Service $searchService Search service
      */

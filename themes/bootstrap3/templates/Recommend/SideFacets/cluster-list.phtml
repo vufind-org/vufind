@@ -10,8 +10,8 @@
   $truncateSettings = $alwaysUseLightbox ? false : [
     'rows' => $this->facets_before_more,
     'btn-class' => 'facet',
-    'more-label' => $this->transEsc('more') . ' ...',
-    'less-label' => $this->transEsc('less') . ' ...',
+    'more-label' => $this->transEsc('more_ellipsis'),
+    'less-label' => $this->transEsc('less_ellipsis'),
     'wrapper-class' => false,
     'wrapper-tagname' => 'div',
   ];
@@ -26,7 +26,7 @@
       ?>
       <?php if ($alwaysUseLightbox): ?>
         <a class="facet narrow-toggle more-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-          <span class="text"><?=$this->transEsc('more')?> ...</span>
+          <span class="text"><?=$this->transEsc('more_ellipsis')?></span>
         </a>
         <?php break; ?>
       <?php endif; ?>
@@ -50,7 +50,7 @@
         }
       ?>
       <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-        <span class="text"><?=$this->transEsc('see all')?> ...</span>
+        <span class="text"><?=$this->transEsc('see_all_ellipsis')?></span>
       </a>
     <?php endif; ?>
   <?php endif; ?>

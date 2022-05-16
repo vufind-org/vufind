@@ -30,6 +30,7 @@ namespace VuFindTest\Backend;
 
 use PHPUnit\Framework\TestCase;
 
+use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 
 /**
@@ -50,7 +51,7 @@ class AbstractHandlerMapTest extends TestCase
      */
     public function testPrepareDefaults()
     {
-        $map = $this->getMockForAbstractClass('VuFindSearch\Backend\AbstractHandlerMap');
+        $map = $this->getMockForAbstractClass(AbstractHandlerMap::class);
         $map->expects($this->once())
             ->method('getDefaults')
             ->will(
@@ -81,7 +82,7 @@ class AbstractHandlerMapTest extends TestCase
      */
     public function testPrepareAppends()
     {
-        $map = $this->getMockForAbstractClass('VuFindSearch\Backend\AbstractHandlerMap');
+        $map = $this->getMockForAbstractClass(AbstractHandlerMap::class);
         $map->expects($this->once())
             ->method('getDefaults')
             ->will($this->returnValue(new ParamBag()));
@@ -105,7 +106,7 @@ class AbstractHandlerMapTest extends TestCase
      */
     public function testPrepareInvariants()
     {
-        $map = $this->getMockForAbstractClass('VuFindSearch\Backend\AbstractHandlerMap');
+        $map = $this->getMockForAbstractClass(AbstractHandlerMap::class);
         $map->expects($this->once())
             ->method('getDefaults')
             ->will($this->returnValue(new ParamBag()));

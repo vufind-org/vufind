@@ -105,10 +105,10 @@
 </div>
 <?php /* End Main Listing */ ?>
 
-<?php /* Narrow Search Options */ ?>
+<?php /* Refine Search Options */ ?>
 <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
   <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
     <?=$this->recommend($current, 'side', $index)?>
   <?php endforeach; ?>
 </div>
-<?php /* End Narrow Search Options */ ?>
+<?php /* End Refine Search Options */ ?>

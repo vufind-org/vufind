@@ -195,6 +195,32 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test unsuccessful ILS loading (missing data elements).
+     *
+     * @return void
+     */
+    public function testMissingData()
+    {
+        $ils = $this->getMockIlsConnection();
+        $ils->expects($this->exactly(4))->method('__call')
+            ->withConsecutive(
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves']
+            )->willReturn([]);
+        $command = $this->getCommand($this->getMockSolrWriter(), $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertEquals(
+            "Unable to load data. No data found for: "
+            . "instructors, courses, departments, reserves\n",
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
      * Test successful ILS loading.
      *
      * @return void

@@ -135,7 +135,9 @@
                 foreach ($item['extras'][$extraName] as $j => $e):
                   $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
                 endforeach;
-                echo empty($extraDisplayArray) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
+                echo empty($extraDisplayArray)
+                  ? '&nbsp;'
+                  : implode('<br />', array_map([$this, 'escapeHtml'], $extraDisplayArray));
               ?>
             </td>
           <?php endforeach; ?>

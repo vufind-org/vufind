@@ -144,8 +144,10 @@ class Folio extends AbstractAPI implements
      */
     protected function debugRequest($method, $path, $params, $req_headers)
     {
-        // Only log non-GET requests
-        if ($method == 'GET') {
+        // Only log non-GET requests, unless configured otherwise
+        if ($method == 'GET'
+            && !($this->config['API']['debug_get_requests'] ?? false)
+        ) {
             return;
         }
         // remove passwords
@@ -561,8 +563,8 @@ class Folio extends AbstractAPI implements
             };
             $textFormatter = function ($supplement) {
                 $format = '%s %s';
-                $supStat = $supplement->statement;
-                $supNote = $supplement->note;
+                $supStat = $supplement->statement ?? '';
+                $supNote = $supplement->note ?? '';
                 $statement = trim(sprintf($format, $supStat, $supNote));
                 return $statement ?? '';
             };
@@ -1215,18 +1217,21 @@ class Folio extends AbstractAPI implements
     /**
      * Obtain a list of course resources, creating an id => value associative array.
      *
-     * @param string $type        Type of resource to retrieve from the API.
-     * @param string $responseKey Key containing useful values in response (defaults
-     * to $type if unspecified)
-     * @param string $valueKey    Key containing value to extract from response
-     * (defaults to 'name')
+     * @param string       $type        Type of resource to retrieve from the API.
+     * @param string       $responseKey Key containing useful values in response
+     * (defaults to $type if unspecified)
+     * @param string|array $valueKey    Key containing value(s) to extract from
+     * response (defaults to 'name')
+     * @param string       $formatStr   A sprintf format string for assembling the
+     * parameters retrieved using $valueKey
      *
      * @return array
      */
     protected function getCourseResourceList(
         $type,
         $responseKey = null,
-        $valueKey = 'name'
+        $valueKey = 'name',
+        $formatStr = '%s'
     ) {
         $retVal = [];
 
@@ -1235,9 +1240,12 @@ class Folio extends AbstractAPI implements
             $responseKey ?? $type,
             '/coursereserves/' . $type
         ) as $item) {
-            $retVal[$item->id] = $item->$valueKey ?? '';
+            $callback = function ($key) use ($item) {
+                return $item->$key ?? '';
+            };
+            $retVal[$item->id]
+                = sprintf($formatStr, ...array_map($callback, (array)$valueKey));
         }
-
         return $retVal;
     }
 
@@ -1284,7 +1292,17 @@ class Folio extends AbstractAPI implements
      */
     public function getCourses()
     {
-        return $this->getCourseResourceList('courses');
+        $showCodes = $this->config['CourseReserves']['displayCourseCodes'] ?? false;
+        $courses = $this->getCourseResourceList(
+            'courses',
+            null,
+            $showCodes ? ['courseNumber', 'name'] : ['name'],
+            $showCodes ? '%s: %s' : '%s'
+        );
+        $callback = function ($course) {
+            return trim(ltrim($course, ':'));
+        };
+        return array_map($callback, $courses);
     }
 
     /**
@@ -1453,8 +1471,11 @@ class Folio extends AbstractAPI implements
         ) as $fine) {
             $date = date_create($fine->metadata->createdDate);
             $title = $fine->title ?? null;
+            $bibId = isset($fine->instanceId)
+                ? $this->getBibId($fine->instanceId)
+                : null;
             $fines[] = [
-                'id' => $fine->id,
+                'id' => $bibId,
                 'amount' => $fine->amount * 100,
                 'balance' => $fine->remaining * 100,
                 'status' => $fine->paymentStatus->name,

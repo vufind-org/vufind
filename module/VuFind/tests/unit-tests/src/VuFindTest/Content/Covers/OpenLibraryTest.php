@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -35,7 +35,7 @@ use VuFindCode\ISBN;
  * Unit tests for OpenLibrary cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -47,7 +47,7 @@ class OpenLibraryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidCoverLoading()
+    public function testValidCoverLoading(): void
     {
         $ol = new OpenLibrary();
         $this->assertEquals(
@@ -65,9 +65,9 @@ class OpenLibraryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingIsbn()
+    public function testMissingIsbn(): void
     {
         $ol = new OpenLibrary();
-        $this->assertEquals(false, $ol->getUrl('mykey', 'small', []));
+        $this->assertFalse($ol->getUrl('mykey', 'small', []));
     }
 }

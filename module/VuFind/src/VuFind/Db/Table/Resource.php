@@ -249,14 +249,14 @@ class Resource extends Gateway
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
         if ($oldId !== $newId
-            && $resource = $this->findResource($oldId, $source)
+            && $resource = $this->findResource($oldId, $source, false)
         ) {
             $tableObjects = [];
             // Do this as a transaction to prevent odd behavior:
             $connection = $this->getAdapter()->getDriver()->getConnection();
             $connection->beginTransaction();
             // Does the new ID already exist?
-            if ($newResource = $this->findResource($newId, $source)) {
+            if ($newResource = $this->findResource($newId, $source, false)) {
                 // Special case: merge new ID and old ID:
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
                     $tableObjects[$table] = $this->getDbTable($table);
@@ -268,7 +268,7 @@ class Resource extends Gateway
                 $resource->delete();
             } else {
                 // Default case: just update the record ID:
-                $resource->record_id = $newId();
+                $resource->record_id = $newId;
                 $resource->save();
             }
             // Done -- commit the transaction:

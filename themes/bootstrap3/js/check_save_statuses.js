@@ -86,7 +86,7 @@ function saveQueueAjax(obj, el) {
   el.addClass('js-save-pending');
   el.find('.savedLists')
     .removeClass('loaded hidden')
-    .append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
+    .append('<span class="js-load">' + VuFind.translate('loading_ellipsis') + '</span>');
   el.find('.savedLists ul').remove();
 }
 

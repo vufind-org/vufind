@@ -255,6 +255,40 @@ class LanguageHelper
     }
 
     /**
+     * Create summary data for use in the tabular display.
+     *
+     * @param array $details Full details from getAllLanguageDetails()
+     *
+     * @return array
+     */
+    protected function summarizeData($details)
+    {
+        $data = [];
+        foreach ($details as $langCode => $diffs) {
+            if ($diffs['l2Percent'] > 90) {
+                $progressLevel = 'info';
+            } elseif ($diffs['l2Percent'] > 70) {
+                $progressLevel = 'warning';
+            } else {
+                $progressLevel = 'danger';
+            }
+            $data[] = [
+                "lang" => $langCode,
+                "name"=> $diffs['name'],
+                "langtitle" => $langCode . (($langCode != $diffs['name'])
+                    ? " (" . $diffs['name'] . ")" : ''),
+                "missing" => count($diffs['notInL2']),
+                "extra" => count($diffs['notInL1']),
+                "percent" => $diffs['l2Percent'],
+                "countfiles" => count($diffs['helpFiles']),
+                "files" => $diffs['helpFiles'],
+                "progresslevel" => $progressLevel,
+            ];
+        }
+        return $data;
+    }
+
+    /**
      * Return language comparison information, using $mainLanguage as the
      * baseline.
      *
@@ -265,11 +299,21 @@ class LanguageHelper
     public function getAllDetails($mainLanguage)
     {
         $main = $this->loadLanguage($mainLanguage);
+        $details = $this->getAllLanguageDetails($main);
+        $dirHelpParts = [
+            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations'
+        ];
+        $dirLangParts = [APPLICATION_PATH, 'languages'];
         return [
-            'details' => $this->getAllLanguageDetails($main),
+            'details' => $details,
+            'dirHelp' => implode(DIRECTORY_SEPARATOR, $dirHelpParts)
+                . DIRECTORY_SEPARATOR,
+            'dirLang' => implode(DIRECTORY_SEPARATOR, $dirLangParts)
+                . DIRECTORY_SEPARATOR,
             'mainCode' => $mainLanguage,
             'mainName' => $this->getLangName($mainLanguage),
             'main' => $main,
+            'summaryData' => $this->summarizeData($details),
         ];
     }
 }

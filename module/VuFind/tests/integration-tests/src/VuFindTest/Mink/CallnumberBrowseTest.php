@@ -112,7 +112,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                 'Catalog' => ['driver' => 'Demo']
             ],
             'Demo' => [
-                'Holdings' => [
+                'StaticHoldings' => [
                     $this->id => json_encode(
                         [
                         ['callnumber' => 'CallNumberOne', 'location' => 'Villanova'],
@@ -147,20 +147,23 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                 ]
             ]
         );
-        $this->getMinkSession()->reload();
-        $this->snooze();
-        $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
+        $callnumberSelector = '.callnumber a,.groupCallnumber a,.fullCallnumber a';
+        $session = $this->getMinkSession();
+        $session->reload();
+        $this->waitForPageLoad($page);
+        $link = $this->findCss($page, $callnumberSelector);
         $this->checkLink($link, $type);
 
         // Multiple callnumbers
         $this->setupMultipleCallnumbers();
-        $this->getMinkSession()->reload();
-        $this->snooze();
-        $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
+        $session->reload();
+        $this->waitForPageLoad($page);
         if ($expectLinks) {
+            $link = $this->findCss($page, $callnumberSelector);
             $this->checkLink($link, $type);
         } else {
-            $this->assertTrue(null === $link);
+            $link = $page->find('css', $callnumberSelector);
+            $this->assertNull($link);
         }
     }
 

@@ -26,6 +26,8 @@ return [
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - position: 'header' (default) or 'footer'
          * - conditional: e.g. 'lt IE 10'
+         * - disabled: if set to true in a child theme, the matching file will be
+         *   removed if it was included by a parent theme.
          *
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
@@ -44,6 +46,7 @@ return [
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'truncate.js', 'priority' => 330],
+        ['file' => 'trigger_print.js', 'priority' => 340],
     ],
     'less' => [
         'active' => false,
@@ -103,4 +106,5 @@ return [
             'spinner' => 'FontAwesome:spinner:icon--spin',
         ],
     ],
+    'doctype' => 'HTML5'
 ];

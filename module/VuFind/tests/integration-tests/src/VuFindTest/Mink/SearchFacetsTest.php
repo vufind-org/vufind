@@ -92,9 +92,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
         $this->assertEquals('Fiction 7', $facetList->getText());
         $facetList->click();
-        $this->snooze();
 
         // Check that when the page reloads, we have fewer results and a filter:
+        $this->waitForPageLoad($page);
         $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals("Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
@@ -113,7 +113,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function facetListProcedure($page, $limit, $exclusionActive = false)
     {
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit, count($items));
         $excludes = $page
@@ -121,7 +121,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items));
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
@@ -134,7 +134,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study of %\'s? 1 ' . $excludeControl
             . 'The Study of +\'s? 1 ' . $excludeControl
             . 'The Study of @Twitter #test 1 ' . $excludeControl
-            . 'more ...',
+            . 'more…',
             $this->findCss($page, '#modal #facet-list-count')->getText()
         );
         $excludes = $page
@@ -143,7 +143,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
         $this->assertEquals($limit, count($items)); // reset number of items
         $this->assertEquals(
@@ -151,7 +151,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study Of P|pes 1 ' . $excludeControl
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 ' . $excludeControl
             . 'The Study of "Important" Things 1 ' . $excludeControl
-            . 'more ...',
+            . 'more…',
             $this->findCss($page, '#modal #facet-list-index')->getText()
         );
         $excludes = $page
@@ -159,7 +159,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // sort by index again
         $this->clickCss($page, '[data-sort="count"]');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items)); // maintain number of items
         // When exclusion is active, the result count is outside of the link tag:
@@ -171,7 +171,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($expectedLinkText, $weirdIDs->getText());
         // apply US facet
         $weirdIDs->click();
-        $this->snooze();
+        $this->waitForPageLoad($page);
     }
 
     /**
@@ -242,9 +242,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->facetListProcedure($page, $limit);
         $genreMore->click();
         $this->clickCss($page, '#modal .js-facet-item.active');
-        // remove facet
-        $this->snooze();
-        $this->assertNull($page->find('css', $this->activeFilterSelector));
+        // facet removed
+        $this->unFindCss($page, $this->activeFilterSelector);
     }
 
     /**
@@ -267,16 +266,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-btn');
-        $genreMore->click();
+        $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
         $this->facetListProcedure($page, $limit);
-        $genreMore->click();
+        $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
         $this->clickCss($page, '#modal .js-facet-item.active');
-        // remove facet
-        $this->snooze();
-        $this->assertNull($page->find('css', $this->activeFilterSelector));
+        // facet removed
+        $this->unFindCss($page, $this->activeFilterSelector);
     }
 
     /**
@@ -300,8 +297,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-facets');
-        $genreMore->click();
+        $this->clickCss($page, '#side-collapse-genre_facet .more-facets');
         $this->facetListProcedure($page, $limit, true);
         $this->assertEquals(1, count($page->findAll('css', $this->activeFilterSelector)));
     }
@@ -316,10 +312,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function clickHierarchyFacet($page)
     {
         $this->clickCss($page, '#j1_1.jstree-closed .jstree-icon');
-        $this->snooze();
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
         $this->clickCss($page, '#j1_2 a');
-        $this->snooze();
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
@@ -383,10 +377,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $extractCount($stats->getText())
         );
         $this->clickCss($page, '#j1_1.jstree-closed .jstree-icon');
-        $this->snooze();
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
         $this->clickCss($page, '#j1_2 a.exclude');
-        $this->snooze();
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
@@ -431,7 +423,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // that it was opened, and let's also toggle building on to confirm that
         // it was not alread opened.
         $this->clickCss($page, '#side-panel-format .title'); // off
-        $this->snooze(); // wait for animation
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '#side-panel-format .collapsed'); // on
         $this->clickCss($page, '#side-panel-building .collapsed'); // on
     }
@@ -486,12 +478,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFilterIsStillThere($page);
         // Re-click the search button and confirm that filters are still there
         $this->clickCss($page, '#searchForm .btn.btn-primary');
-        $this->snooze();
         $this->assertFilterIsStillThere($page);
         // Click the "reset filters" button and confirm that filters are gone and
         // that the button disappears when no longer needed.
         $this->clickCss($page, '.reset-filters-btn');
-        $this->snooze();
         $this->assertNoFilters($page);
         $this->assertNoResetFiltersButton($page);
     }
@@ -508,12 +498,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFilterIsStillThere($page);
         // Now click the first result:
         $this->clickCss($page, '.result-body a.title');
-        $this->snooze();
         // Confirm that filters are still visible:
         $this->assertFilterIsStillThere($page);
         // Re-click the search button...
         $this->clickCss($page, '#searchForm .btn.btn-primary');
-        $this->snooze();
         // Confirm that filter is STILL applied
         $this->assertFilterIsStillThere($page);
     }
@@ -538,7 +526,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNoResetFiltersButton($page);
         // Re-click the search button and confirm that filters go away
         $this->clickCss($page, '#searchForm .btn.btn-primary');
-        $this->snooze();
         $this->assertNoFilters($page);
     }
 
@@ -564,7 +551,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $page = $session->getPage();
-        $this->snooze();
         $this->assertFilterIsStillThere($page);
 
         // Confirm that the reset button is NOT present:
@@ -572,14 +558,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now manually clear the filter:
         $this->clickCss($page, '.search-filter-remove');
-        $this->snooze();
 
         // Confirm that no filters are displayed:
         $this->assertNoFilters($page);
 
         // Now click the reset button to bring back the default:
         $this->clickCss($page, '.reset-filters-btn');
-        $this->snooze();
         $this->assertFilterIsStillThere($page);
         $this->assertNoResetFiltersButton($page);
     }

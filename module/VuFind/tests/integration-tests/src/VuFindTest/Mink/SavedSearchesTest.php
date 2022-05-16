@@ -51,7 +51,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -79,12 +79,10 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->performSearch('test');
         $this->clickCss($page, '.fa.fa-save');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
         $this->assertEquals(
             'Search saved successfully.',
             $this->findCss($page, '.alert.alert-success')->getText()
@@ -106,7 +104,6 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // different problems in a single test.
         $page = $this->performSearch('foo \ bar');
         $this->findAndAssertLink($page, 'Search History')->click();
-        $this->snooze();
         // We should see our "foo \ bar" search in the history, but no saved
         // searches because we are logged out:
         $this->assertEquals(
@@ -116,14 +113,15 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFalse(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
+        $this->waitForPageLoad($page);
         $this->assertNull($page->findLink('test'));
 
         // Now log in and see if our saved search shows up (without making the
         // unsaved search go away):
         $this->clickCss($page, '#loginOptions a');
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'foo \ bar',
             $this->findAndAssertLink($page, 'foo \ bar')->getText()
@@ -139,7 +137,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // Now purge unsaved searches, confirm that unsaved search is gone
         // but saved search is still present:
         $this->findAndAssertLink($page, 'Purge unsaved searches')->click();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertNull($page->findLink('foo \ bar'));
         $this->assertEquals(
             'test',
@@ -162,35 +160,31 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/History');
         $page = $session->getPage();
         $this->clickCss($page, '#loginOptions a');
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
+        $this->waitForPageLoad($page);
         $delete = $this->findAndAssertLink($page, 'Delete')->getAttribute('href');
         $this->findAndAssertLink($page, 'Log Out')->click();
-        $this->snooze();
 
         // Use user A's delete link, but try to execute it as user B:
         [$base, $params] = explode('?', $delete);
         $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
         $page = $session->getPage();
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm(
             $page,
             ['username' => 'username2', 'email' => 'username2@example.com']
         );
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->findAndAssertLink($page, 'Log Out')->click();
-        $this->snooze();
 
         // Go back in as user A -- see if the saved search still exists.
         $this->findAndAssertLink($page, 'Search History')->click();
-        $this->snooze();
         $this->clickCss($page, '#loginOptions a');
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
+        $this->waitForPageLoad($page);
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
@@ -214,11 +208,10 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now log in and go to search history...
         $this->clickCss($page, '#loginOptions a');
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
+        $this->waitForPageLoad($page);
         $this->findAndAssertLink($page, 'Search History')->click();
-        $this->snooze();
 
         // By default, there should be no alert option at all:
         $scheduleSelector = 'select[name="schedule"]';
@@ -232,8 +225,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         );
         $session = $this->getMinkSession();
         $session->reload();
-        $this->snooze();
         $page = $session->getPage();
+        $this->waitForPageLoad($page);
 
         // Now there should be two alert options visible (one in saved, one in
         // unsaved):
@@ -251,7 +244,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // set it up for alerts and confirm that this auto-saves it.
         $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
         $select->selectOption(7);
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             2,
             count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
@@ -260,7 +253,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // Now let's delete the saved search and confirm that this clears the
         // alert subscription.
         $this->findAndAssertLink($page, 'Delete')->click();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
         $this->assertEquals(0, $select->getValue());
     }
