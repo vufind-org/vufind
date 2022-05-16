@@ -38,6 +38,14 @@ class User extends \TueFind\Db\Table\User
         return $row;
     }
 
+    public function getByRight($right)
+    {
+        $select = $this->getSql()->select();
+        $select->where('FIND_IN_SET("' . $right . '", tuefind_rights) > 0 AND ixtheo_user_type="' . \IxTheo\Utility::getUserTypeFromUsedEnvironment() . '"');
+        $select->order('username ASC');
+        return $this->selectWith($select);
+    }
+
     public function getByUsername($username, $create = true)
     {
         $row = $this->select(['username' => $username, 'ixtheo_user_type' => \IxTheo\Utility::getUserTypeFromUsedEnvironment()])->current();
