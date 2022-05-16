@@ -87,9 +87,10 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
         }
 
         if ($this->params()->fromPost('request') == 'yes') {
-            $table = $this->getTable('user_authority');
-            $table->addRequest($user->id, $authorityId);
+            $userAuthorityTable = $this->getTable('user_authority');
+            $userAuthorityTable->addRequest($user->id, $authorityId);
 
+            // body
             $renderer = $this->getViewRenderer();
             $message = $renderer->render(
                 'Email/authority-request-access.phtml',
@@ -100,9 +101,23 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
                     'processRequestUrl' => $this->getServerUrl('adminfrontend-showuserauthorities'),
                 ]
             );
+
+            // receivers
+            $userTable = $this->getTable('user');
+            $receivingUsers = $userTable->getByRight('user_authorities');
+            $receivers = new \Laminas\Mail\AddressList();
+            foreach ($receivingUsers as $receivingUser) {
+                $receivers->add($receivingUser->email);
+            }
+
             $config = $this->getConfig();
+            if (count($receivers) == 0) {
+                $receivers = $config->Site->email;
+            }
+
+            // send mail
             $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
-            $mailer->send($config->Site->email, $config->Site->email_from, 'A user has requested access to an authority dataset', $message);
+            $mailer->send($receivers, $config->Site->email_from, 'A user has requested access to an authority dataset', $message);
         }
 
         return $this->createViewModel(['user_access' => $this->getUserAccessState($authorityId, $user->id)]);
