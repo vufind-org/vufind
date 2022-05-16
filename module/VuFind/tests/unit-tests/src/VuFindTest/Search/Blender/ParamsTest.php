@@ -965,8 +965,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'Base' => $baseParams,
             ],
-            new Config($config ?? $this->config),
-            $mappings ?? $this->mappings
+            new Config($this->config),
+            $this->mappings
         );
 
         $this->expectExceptionMessage(

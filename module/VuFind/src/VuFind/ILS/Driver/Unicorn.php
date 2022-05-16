@@ -320,17 +320,16 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $items[] = $item;
         }
 
-        if (!empty($items)) {
-            // sort the items by shelving key in descending order, then ascending by
-            // copy number
-            $cmp = function ($a, $b) {
-                if ($a['shelving_key'] == $b['shelving_key']) {
-                    return $a['number'] - $b['number'];
-                }
-                return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by shelving key in descending order, then ascending by
+        // copy number
+        $cmp = function ($a, $b) {
+            if ($a['shelving_key'] == $b['shelving_key']) {
+                return $a['number'] - $b['number'];
+            }
+            return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
+        };
+        usort($items, $cmp);
+
         return $items;
     }
 
@@ -824,16 +823,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             ];
         }
 
-        if (!empty($items)) {
-            // sort the items by due date
-            $cmp = function ($a, $b) {
-                if ($a['duedate_raw'] == $b['duedate_raw']) {
-                    return $a['id'] < $b['id'] ? -1 : 1;
-                }
-                return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by due date
+        $cmp = function ($a, $b) {
+            if ($a['duedate_raw'] == $b['duedate_raw']) {
+                return $a['id'] < $b['id'] ? -1 : 1;
+            }
+            return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
+        };
+        usort($items, $cmp);
 
         return $items;
     }

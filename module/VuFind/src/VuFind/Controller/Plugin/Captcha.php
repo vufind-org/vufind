@@ -72,7 +72,7 @@ class Captcha extends AbstractPlugin
      *
      * @return void
      */
-    public function __construct($config, array $captchas=[])
+    public function __construct($config, array $captchas = [])
     {
         $this->captchas = $captchas;
         if (count($captchas) > 0 && isset($config->Captcha->forms)) {
@@ -113,6 +113,7 @@ class Captcha extends AbstractPlugin
             return true;
         }
         $captchaPassed = false;
+
         foreach ($this->captchas as $captcha) {
             try {
                 $captchaPassed = $captcha->verify(
