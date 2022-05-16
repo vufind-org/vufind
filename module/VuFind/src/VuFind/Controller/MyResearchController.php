@@ -493,8 +493,13 @@ class MyResearchController extends AbstractBase
         }
         // Get the row, and fail if the current user doesn't own it.
         $search = $this->getSearchRowSecurely($searchId, $user->id);
+        $resultsManager = $this->serviceLocator
+            ->get(\VuFind\Search\Results\PluginManager::class);
+        $results = $search->getSearchObject()->deminify($resultsManager);
         // Build the form.
-        return $this->createViewModel(compact('scheduleOptions', 'search'));
+        return $this->createViewModel(
+            compact('scheduleOptions', 'search', 'results')
+        );
     }
 
     /**

@@ -29,6 +29,13 @@
   <p><?=$this->transEsc('schedule_explanation')?></p>
   <table>
     <tr>
+      <th><?=$this->transEsc("history_search")?>: </th>
+      <td>
+        <?php $desc = $this->results->getParams()->getDisplayQuery(); ?>
+        <?=empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc)?>
+      </td>
+    </tr>
+    <tr>
       <th><?=$this->transEsc('history_schedule')?>: </th>
       <td>
         <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
