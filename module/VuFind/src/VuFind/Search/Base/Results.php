@@ -103,11 +103,11 @@ abstract class Results
     protected $savedSearch = null;
 
     /**
-     * Is this a user-subscribed search?
+     * How frequently will a user be notified about this search (0 = never)?
      *
-     * @var bool
+     * @var int
      */
-    protected $subscribedSearch = null;
+    protected $notificationFrequency = null;
 
     /**
      * Query start time
@@ -459,22 +459,24 @@ abstract class Results
     }
 
     /**
-     * Is the current search subscribed by a user?
+     * How frequently (in days) will the current user be notified about updates to
+     * these search results (0 = never)?
      *
-     * @return bool
+     * @return int
+     * @throws \Exception
      */
-    public function isSubscribedSearch()
+    public function getNotificationFrequency(): int
     {
         // This data is not available until \VuFind\Db\Table\Search::saveSearch()
         // is called...  blow up if somebody tries to get data that is not yet
         // available.
-        if (null === $this->subscribedSearch) {
+        if (null === $this->notificationFrequency) {
             throw new \Exception(
-                'Cannot retrieve subscription status before '
+                'Cannot retrieve notification frequency before '
                 . 'updateSaveStatus is called.'
             );
         }
-        return $this->subscribedSearch;
+        return $this->notificationFrequency;
     }
 
     /**
@@ -489,8 +491,8 @@ abstract class Results
     {
         $this->searchId = $row->id;
         $this->savedSearch = ($row->saved == true);
-        $this->subscribedSearch = $this->savedSearch
-            && $row->notification_frequency > 0;
+        $this->notificationFrequency = $this->savedSearch
+            ? $row->notification_frequency : 0;
     }
 
     /**

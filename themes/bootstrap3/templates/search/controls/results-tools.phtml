@@ -15,7 +15,7 @@
     <?php if ($this->accountCapabilities()->getScheduledSearchSetting() === 'enabled'): ?>
       &mdash;
       <a href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
-        <?=$this->transEsc($this->results->isSubscribedSearch() ? 'Manage Scheduled Alerts' : 'subscribe_search')?>
+        <?=$this->transEsc($this->results->getNotificationFrequency() > 0 ? 'Manage Scheduled Alerts' : 'subscribe_search')?>
       </a>
     <?php endif; ?>
   <?php endif; ?>
