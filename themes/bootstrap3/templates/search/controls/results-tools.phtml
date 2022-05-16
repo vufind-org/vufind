@@ -15,7 +15,7 @@
     <?php if ($this->accountCapabilities()->getScheduledSearchSetting() === 'enabled' && !empty($this->scheduleOptions)): ?>
       &mdash;
       <a href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
-        <?=$this->transEsc('Notifications')?>:
+        <?=$this->transEsc('history_schedule')?>:
         <?php $freq = $this->results->getNotificationFrequency(); ?>
         <?=$this->transEsc($this->scheduleOptions[$freq] ?? $freq)?>
       </a>
