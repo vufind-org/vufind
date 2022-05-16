@@ -876,8 +876,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if (empty($result['data'])) {
                     return [];
                 }
-                $notes = $result['data']['availability']['notes'];
-                $included = $notes['Item::PickupLocations']['to_libraries'];
+                $notes = $result['data']['availability']['notes'] ?? [];
+                $included = $notes['Item::PickupLocations']['to_libraries'] ?? [];
             } else {
                 $result = $this->makeRequest(
                     [
@@ -895,8 +895,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if (empty($result['data'])) {
                     return [];
                 }
-                $notes = $result['data']['availability']['notes'];
-                $included = $notes['Biblio::PickupLocations']['to_libraries'];
+                $notes = $result['data']['availability']['notes'] ?? [];
+                $included = $notes['Biblio::PickupLocations']['to_libraries'] ?? [];
             }
         }
 
@@ -1155,6 +1155,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                             [
                                 'path' => ['v1', 'holds', $requestId, 'suspension'],
                                 'method' => 'POST',
+                                'json' => new \stdClass(), // For empty JSON object
                                 'errors' => true
                             ]
                         );
@@ -1164,6 +1165,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         [
                             'path' => ['v1', 'holds', $requestId, 'suspension'],
                             'method' => 'DELETE',
+                            'json' => new \stdClass(), // For empty JSON object
                             'errors' => true
                         ]
                     );
