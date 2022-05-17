@@ -1900,7 +1900,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:CancelRequestItemResponse/' .
                 'ns1:UserId/ns1:UserIdentifierValue'
             );
-            $itemId = empty($itemId) ? $requestId : $itemId;
+            $itemId = $itemId ?: $requestId;
             try {
                 $this->checkResponseForError($cancelRequestResponse);
             } catch (ILSException $exception) {

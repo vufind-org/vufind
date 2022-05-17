@@ -55,7 +55,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     /**
      * String array of forms where Captcha is active
      *
-     * @var array
+     * @var bool|string[]
      */
     protected $domains = [];
 
@@ -122,7 +122,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
             return true;
         }
         $captchaPassed = false;
-        $message = '';
+        $errorMessage = '';
 
         foreach ($this->captchas as $captcha) {
             try {
@@ -130,11 +130,11 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
                     $this->getController()->params()
                 );
                 if (!$captchaPassed) {
-                    $message = $captcha->getErrorMessage();
+                    $errorMessage = $captcha->getErrorMessage();
                 }
             } catch (\Exception $e) {
                 $captchaPassed = false;
-                $message = $this->translate('captcha_technical_difficulties');
+                $errorMessage = $this->translate('captcha_technical_difficulties');
             }
 
             if ($captchaPassed) {
@@ -142,13 +142,13 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
             }
         }
 
-        if (!empty($message)) {
+        if (!empty($errorMessage)) {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
-                    ->addErrorMessage($message);
+                    ->addErrorMessage($errorMessage);
             }
             if ($this->errorMode == 'throw') {
-                throw new \Exception($message);
+                throw new \Exception($errorMessage);
             }
         }
         return $captchaPassed;
@@ -157,7 +157,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     /**
      * Return whether a specific form is set for Captcha in the config
      *
-     * @param string $domain The specific config term are we checking; ie. "sms"
+     * @param bool|string $domain The specific config term are we checking; ie. "sms"
      *
      * @return bool
      */
