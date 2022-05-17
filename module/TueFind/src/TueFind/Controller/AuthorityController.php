@@ -111,12 +111,15 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
             }
 
             $config = $this->getConfig();
-            if (count($receivers) == 0) {
+            $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
+            $receiverCount = count($receivers);
+            if ($receiverCount == 0) {
                 $receivers = $config->Site->email;
+            } else {
+                $mailer->setMaxRecipients(count($receiverCount));
             }
 
             // send mail
-            $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
             $mailer->send($receivers, $config->Site->email_from, 'A user has requested access to an authority dataset', $message);
         }
 
