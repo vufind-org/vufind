@@ -44,7 +44,7 @@
  */
 
 /* Rotate 360 degrees */
-.icon--spin   {
+.icon--spin {
     animation: spin 1s linear infinite;
 }
 @keyframes spin {
@@ -57,7 +57,7 @@
 }
 
 /* Fade opacity in and out */
-.icon--pulse  {
+.icon--pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 @keyframes pulse {

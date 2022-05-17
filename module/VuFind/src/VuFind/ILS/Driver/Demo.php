@@ -2479,7 +2479,7 @@ class Demo extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {

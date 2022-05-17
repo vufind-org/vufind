@@ -263,13 +263,13 @@ class DeduplicationListener
                         $localPriority = ++$undefPriority;
                     }
                 }
-                if (isset($localPriority) && $localPriority < $priority) {
+                if ($localPriority < $priority) {
                     $dedupId = $localId;
                     $priority = $localPriority;
                 }
                 $dedupData[$source] = [
                     'id' => $localId,
-                    'priority' => $localPriority ?? 99999
+                    'priority' => $localPriority,
                 ];
             }
             $fields['dedup_id'] = $dedupId;

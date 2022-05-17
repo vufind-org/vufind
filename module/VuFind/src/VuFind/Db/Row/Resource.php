@@ -38,6 +38,14 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property string  $record_id
+ * @property string  $title
+ * @property ?string $author
+ * @property ?int    $year
+ * @property string  $source
+ * @property ?string $extra_metadata
  */
 class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {

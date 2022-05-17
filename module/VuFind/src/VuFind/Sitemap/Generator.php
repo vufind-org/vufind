@@ -346,7 +346,7 @@ class Generator
      *
      * @return void
      */
-    protected function buildIndex($sitemaps)
+    protected function buildIndex(array $sitemaps)
     {
         // Only build index file if requested:
         if ($this->indexFile !== false) {
@@ -374,7 +374,7 @@ class Generator
                 }
             }
 
-            foreach ($sitemaps ?? [] as $sitemap) {
+            foreach ($sitemaps as $sitemap) {
                 $smf->addUrl($baseUrl . '/' . $sitemap);
             }
 

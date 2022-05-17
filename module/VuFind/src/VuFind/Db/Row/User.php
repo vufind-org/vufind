@@ -40,6 +40,29 @@ use Laminas\Db\Sql\Select;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property ?string $username
+ * @property string  $password
+ * @property ?string $pass_hash
+ * @property string  $firstname
+ * @property string  $lastname
+ * @property string  $email
+ * @property ?string $email_verified
+ * @property string  $pending_email
+ * @property int     $user_provided_email
+ * @property ?string $cat_id
+ * @property ?string $cat_username
+ * @property ?string $cat_password
+ * @property ?string $cat_pass_enc
+ * @property string  $college
+ * @property string  $major
+ * @property string  $home_library
+ * @property string  $created
+ * @property string  $verify_hash
+ * @property string  $last_login
+ * @property ?string $auth_method
+ * @property string  $last_language
  */
 class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
