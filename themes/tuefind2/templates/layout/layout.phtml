@@ -99,18 +99,24 @@ JS;
     <header class="hidden-print">
       <div class="container-fluid px-0">
         <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-        <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
-      <?php endif; ?>
-      <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+          <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+        <?php endif; ?>
+        <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
         <?=$this->render('header.phtml')?>
       </div>
-
-        <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
-          && !empty($this->layout()->breadcrumbs)
-          && $this->layout()->breadcrumbs !== false
-        ): ?>
-          <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
-        <?php endif; ?>
+      <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+        && !empty($this->layout()->breadcrumbs)
+        && $this->layout()->breadcrumbs !== false
+      ): ?>
+      <div class="container breadcrumb-wrapper hidden-print">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><i class="fa fa-home" aria-hidden="true"></i> <a href="/">Home</a></li>
+            <?=$this->layout()->breadcrumbs ?>
+          </ol>
+        </nav>
+      </div>
+      <?php endif; ?>
     </header>
     <div class="container-fluid">
         <div class="row">
