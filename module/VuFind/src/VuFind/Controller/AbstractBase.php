@@ -30,6 +30,7 @@ namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
@@ -45,6 +46,22 @@ use VuFind\Http\PhpEnvironment\Request as HttpRequest;
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
+ *
+ * @method Plugin\Captcha captcha() Captcha plugin
+ * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
+ * @method Plugin\Favorites favorites() Favorites plugin
+ * @method FlashMessenger flashMessenger() FlashMessenger plugin
+ * @method Plugin\Followup followup() Followup plugin
+ * @method Plugin\Holds holds() Holds plugin
+ * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
+ * @method Plugin\IlsRecords ilsRecords() IlsRecords plugin
+ * @method Plugin\NewItems newItems() NewItems plugin
+ * @method Plugin\Permission permission() Permission plugin
+ * @method Plugin\Renewals renewals() Renewals plugin
+ * @method Plugin\Reserves reserves() Reserves plugin
+ * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
+ * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
+ * StorageRetrievalRequests plugin
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
