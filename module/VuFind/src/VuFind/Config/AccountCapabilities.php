@@ -150,14 +150,13 @@ class AccountCapabilities
     }
 
     /**
-     * Get scheduled search setting ('enabled' or 'disabled').
+     * Is scheduled search enabled?
      *
-     * @return string
+     * @return bool
      */
-    public function getScheduledSearchSetting()
+    public function isScheduledSearchEnabled(): bool
     {
-        return ($this->config->Account->schedule_searches ?? false)
-            ? 'enabled' : 'disabled';
+        return ($this->config->Account->schedule_searches ?? false);
     }
 
     /**

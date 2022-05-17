@@ -12,7 +12,7 @@
     <?php else: ?>
       <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc('save_search')?></a>
     <?php endif; ?>
-    <?php if ($this->accountCapabilities()->getScheduledSearchSetting() === 'enabled' && !empty($this->scheduleOptions)): ?>
+    <?php if ($this->accountCapabilities()->isScheduledSearchEnabled() && !empty($this->scheduleOptions)): ?>
       &ndash;
       <a href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
         <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
