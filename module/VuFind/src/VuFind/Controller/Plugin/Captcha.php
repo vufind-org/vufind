@@ -29,6 +29,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Action helper to manage Captcha fields
@@ -40,8 +41,10 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Captcha extends AbstractPlugin
+class Captcha extends AbstractPlugin implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Captcha services
      *
@@ -51,24 +54,30 @@ class Captcha extends AbstractPlugin
 
     /**
      * String array of forms where Captcha is active
+     *
+     * @var array
      */
     protected $domains = [];
 
     /**
      * Captcha activated in config
+     *
+     * @var bool
      */
     protected $active = false;
 
     /**
      * Flash message or throw Exception
+     *
+     * @var string
      */
     protected $errorMode = 'flash';
 
     /**
      * Constructor
      *
-     * @param \VuFind\Config $config   Config file
-     * @param array          $captchas CAPTCHA objects
+     * @param \Laminas\Config\Config $config   Config file
+     * @param array                  $captchas CAPTCHA objects
      *
      * @return void
      */
@@ -113,14 +122,19 @@ class Captcha extends AbstractPlugin
             return true;
         }
         $captchaPassed = false;
+        $message = '';
 
         foreach ($this->captchas as $captcha) {
             try {
                 $captchaPassed = $captcha->verify(
                     $this->getController()->params()
                 );
+                if (!$captchaPassed) {
+                    $message = $captcha->getErrorMessage();
+                }
             } catch (\Exception $e) {
                 $captchaPassed = false;
+                $message = $this->translate('captcha_technical_difficulties');
             }
 
             if ($captchaPassed) {
@@ -128,12 +142,12 @@ class Captcha extends AbstractPlugin
             }
         }
 
-        if (!$captchaPassed && $this->errorMode != 'none') {
-            $message = $captcha->getErrorMessage();
+        if (!empty($message)) {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
                     ->addErrorMessage($message);
-            } else {
+            }
+            if ($this->errorMode == 'throw') {
                 throw new \Exception($message);
             }
         }
