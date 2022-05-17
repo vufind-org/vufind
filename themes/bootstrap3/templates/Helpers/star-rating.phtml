@@ -2,6 +2,7 @@
   $id = uniqid();
   $labelAttrs = !empty($this->labelAttrs) ? (' ' . implode(' ', $this->labelAttrs)) : '';
   $inputAttrs = !empty($this->inputAttrs) ? (' ' . implode(' ', $this->inputAttrs)) : '';
+  $rating = $ratingData['rating'] ?? 0;
 ?>
 <div class="star-rating<?=$this->readonly ? ' readonly' : ''?>">
   <label class="rating__label" for="rating_<?=$id?>_0" aria-label="<?=$this->transEsc('rating_0')?>"<?=$labelAttrs?>>

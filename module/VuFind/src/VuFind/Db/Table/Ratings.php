@@ -76,12 +76,16 @@ class Ratings extends Gateway
         $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource($id, $source, false);
         if (empty($resource)) {
-            return [];
+            return [
+                'count' => 0,
+                'rating' => 0
+            ];
         }
 
         $callback = function ($select) use ($resource, $userId) {
             $select->columns(
                 [
+                    // RowGateway requires an id field:
                     'id' => new Expression(
                         '1',
                         [],
