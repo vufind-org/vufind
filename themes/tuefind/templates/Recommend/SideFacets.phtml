@@ -76,7 +76,8 @@
         <?=$this->transEsc($cluster['label'])?>
       </button>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if (!in_array($title, $collapsedFacets)): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
-        <?=$this->context($this)->renderInContext(
+        <?=
+          $this->context($this)->renderInContext(
           'Recommend/SideFacets/facet.phtml',
           [
             'facet' => $title,
@@ -84,9 +85,10 @@
             'collapsedFacets' => $collapsedFacets,
             'suppressCountFacets' => $suppressCountFacets
           ]
-        ); ?>
+        );
+      ?>
       </div>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerMoreLessFacetsEventHandlers();", 'SET');?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerSideFacetTruncation();", 'SET');?>
