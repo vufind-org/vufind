@@ -156,7 +156,7 @@ class AccountCapabilities
      */
     public function isScheduledSearchEnabled(): bool
     {
-        return ($this->config->Account->schedule_searches ?? false);
+        return $this->config->Account->schedule_searches ?? false;
     }
 
     /**
