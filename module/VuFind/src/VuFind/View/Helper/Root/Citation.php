@@ -171,7 +171,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $this->details = [
             'authors' => $authors,
             'corporateAuthors' => $corporateAuthors,
-            'title' => trim($title), 'subtitle' => trim($subtitle),
+            'title' => trim($title ?? ''),
+            'subtitle' => trim($subtitle ?? ''),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
