@@ -116,7 +116,7 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
             if ($receiverCount == 0) {
                 $receivers = $config->Site->email;
             } else {
-                $mailer->setMaxRecipients(count($receiverCount));
+                $mailer->setMaxRecipients($receiverCount);
             }
 
             // send mail
