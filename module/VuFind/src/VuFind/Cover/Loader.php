@@ -301,8 +301,8 @@ class Loader extends \VuFind\ImageLoader
     protected function storeSanitizedSettings($settings)
     {
         $settings = array_merge($this->getDefaultSettings(), $settings);
-        $this->isbn = new ISBN($settings['isbn']);
-        $this->ismn = new ISMN($settings['ismn']);
+        $this->isbn = new ISBN($settings['isbn'] ?? '');
+        $this->ismn = new ISMN($settings['ismn'] ?? '');
         if (!empty($settings['issn'])) {
             $rawissn = preg_replace('/[^0-9X]/', '', strtoupper($settings['issn']));
             $this->issn = substr($rawissn, 0, 8);
@@ -315,7 +315,7 @@ class Loader extends \VuFind\ImageLoader
         $this->source = $settings['source'];
         $this->nbn = $settings['nbn'];
         $this->uuid = $settings['uuid'];
-        $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type']);
+        $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type'] ?? '');
         $this->size = $settings['size'];
     }
 

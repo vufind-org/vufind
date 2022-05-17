@@ -12,8 +12,8 @@ jobs:
     strategy:
       matrix:
         php-version: ['7.4', '8.0', '8.1']
-        # We run most tests on all platforms, but we only run Javascript-related tests in 8.1,
-        # since the results should be the same on all platforms, so we don't need to repeat them.
+        # We run most tests on all platforms, but we only run Javascript-related tests in 8.1.
+        # Since the results should be the same on all platforms, we don't need to repeat them.
         include:
           - php-version: 7.4
             phing_tasks: "qa-php"
@@ -31,6 +31,7 @@ jobs:
           tools: composer:2.1.6
 
       - name: Setup node
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
         uses: actions/setup-node@v2
         with:
           node-version: '14'
@@ -42,6 +43,7 @@ jobs:
         run: touch solr/.disableAutomaticInstall
 
       - name: Install node dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
         run: |
           npm install -g eslint@"<5.0.0"
           npm install -g jshint@"2.9.6"
