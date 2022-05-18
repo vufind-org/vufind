@@ -368,7 +368,13 @@ trait ConcatTrait
         $output = [];
         foreach ($this->groups as $group) {
             if (isset($group['other'])) {
-                /* @phpstan-ignore-next-line */
+                /**
+                 * PHPStan doesn't like this because of incompatible itemToString
+                 * signatures in HeadLink/HeadScript, but it is safe to use because
+                 * the extra parameters will be ignored appropriately.
+                 *
+                 * @phpstan-ignore-next-line
+                 */
                 $output[] = $this->itemToString(
                     $group['item'],
                     $indent,
@@ -383,7 +389,13 @@ trait ConcatTrait
                 $path = $this->getConcatenatedFilePath($group);
                 $item = $this->setResourceFilePath($group['items'][0], $path);
                 $this->addNonce($item);
-                /* @phpstan-ignore-next-line */
+                /**
+                 * PHPStan doesn't like this because of incompatible itemToString
+                 * signatures in HeadLink/HeadScript, but it is safe to use because
+                 * the extra parameters will be ignored appropriately.
+                 *
+                 * @phpstan-ignore-next-line
+                 */
                 $output[] = parent::itemToString(
                     $item,
                     $indent,
