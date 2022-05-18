@@ -1900,7 +1900,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:CancelRequestItemResponse/' .
                 'ns1:UserId/ns1:UserIdentifierValue'
             );
-            $itemId = $itemId ?? $requestId;
+            $itemId = $itemId ?: $requestId;
             try {
                 $this->checkResponseForError($cancelRequestResponse);
             } catch (ILSException $exception) {
@@ -2880,11 +2880,24 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $response->xpath('ns1:LookupItemSetResponse/ns1:BibInformation')
             );
             $nextItemToken = $response->xpath('//ns1:NextItemToken');
-            $request = !empty($nextItemToken) && (string)$nextItemToken[0] !== '';
+            $request = $this->isNextItemTokenEmpty($nextItemToken);
             if ($page == $this->maxNumberOfPages) {
                 break;
             }
         }
         return $bibs;
+    }
+
+    /**
+     * Check NextItemToken for emptiness
+     *
+     * @param \SimpleXMLElement[] $nextItemToken Next item token elements from NCIP
+     * Response
+     *
+     * @return bool
+     */
+    protected function isNextItemTokenEmpty(array $nextItemToken): bool
+    {
+        return !empty($nextItemToken) && (string)$nextItemToken[0] !== '';
     }
 }
