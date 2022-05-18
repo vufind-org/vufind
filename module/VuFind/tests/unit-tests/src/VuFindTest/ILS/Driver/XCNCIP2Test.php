@@ -1485,9 +1485,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->mockResponse(['lookupItemSetNextItemTokenEmpty.xml','lookupItemSet.xml']);
         $bibs = $method->invokeArgs($this->driver, [['id1'], ['agency1']]);
         $this->assertEquals(4, count($bibs));
-        $this->mockResponse(['lookupItemSetNextItemTokenZero.xml','lookupItemSet.xml']);
-        $bibs = $method->invokeArgs($this->driver, [['id1'], ['agency1']]);
-        $this->assertEquals(4, count($bibs));
     }
 
     /**
