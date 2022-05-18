@@ -159,8 +159,6 @@ trait ConnectorCacheTrait
     {
         if (($this->logger ?? null) instanceof LoggerInterface) {
             $this->logger->debug("Cache: $msg");
-        } else {
-            error_log("Debug: Cache: $msg");
         }
     }
 }
