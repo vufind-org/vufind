@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Class Sorter
+ * Interface SortingInterface
  *
  * PHP version 7
  *
@@ -22,60 +22,37 @@ declare(strict_types=1);
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\View\Helper\Root
+ * @package  I18n
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\I18n;
 
 /**
- * Class Sorter
+ * Interface SortingInterface
  *
  * @category VuFind
- * @package  VuFind\View\Helper\Root
+ * @package  I18n
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Sorter implements \VuFind\I18n\SortingInterface
+interface SortingInterface
 {
-    use \VuFind\I18n\SortingTrait;
+    /**
+     * Set the sorter
+     *
+     * @param SorterInterface $sorter Sorter service
+     *
+     * @return void
+     */
+    public function setSorter(SorterInterface $sorter): void;
 
     /**
-     * Compare function
+     * Get the sorter
      *
-     * @param string $string1 First string to compare
-     * @param string $string2 Second string to compare
-     *
-     * @return int
+     * @return SorterInterface
      */
-    public function compare(string $string1, string $string2): int
-    {
-        return $this->getSorter()->compare($string1, $string2);
-    }
-
-    /**
-     * Sort array by values
-     *
-     * @param array $array Array to sort
-     *
-     * @return bool
-     */
-    public function sort(array &$array): bool
-    {
-        return $this->getSorter()->sort($array);
-    }
-
-    /**
-     * Sort array by values and maintain index association
-     *
-     * @param array $array Array to sort
-     *
-     * @return bool
-     */
-    public function asort(array &$array): bool
-    {
-        return $this->getSorter()->asort($array);
-    }
+    public function getSorter(): SorterInterface;
 }

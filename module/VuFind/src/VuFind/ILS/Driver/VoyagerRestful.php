@@ -50,13 +50,13 @@ use VuFind\Exception\ILS as ILSException;
  */
 class VoyagerRestful extends Voyager implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \VuFind\I18n\SorterInterface
+    \VuFind\I18n\SortingInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
-    use \VuFind\I18n\SorterTrait;
+    use \VuFind\I18n\SortingTrait;
 
     /**
      * Web services host

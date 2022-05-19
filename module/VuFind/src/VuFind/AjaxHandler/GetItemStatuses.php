@@ -53,10 +53,10 @@ use VuFind\Session\Settings as SessionSettings;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
-    \VuFind\I18n\SorterInterface
+    \VuFind\I18n\SortingInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\I18n\SorterTrait;
+    use \VuFind\I18n\SortingTrait;
 
     /**
      * Top-level configuration

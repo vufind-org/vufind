@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Trait SorterTrait
+ * Trait SortingTrait
  *
  * PHP version 7
  *
@@ -22,7 +22,7 @@ declare(strict_types=1);
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\Service
+ * @package  I18n
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -30,31 +30,31 @@ declare(strict_types=1);
 namespace VuFind\I18n;
 
 /**
- * Trait SorterTrait
+ * Trait SortingTrait
  *
  * @category VuFind
- * @package  VuFind\Service
+ * @package  I18n
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-trait SorterTrait
+trait SortingTrait
 {
     /**
      * Sorter
      *
-     * @var ?Sorter
+     * @var ?SorterInterface
      */
     protected $sorter = null;
 
     /**
      * Set the sorter
      *
-     * @param Sorter $sorter Sorter service
+     * @param SorterInterface $sorter Sorter service
      *
      * @return void
      */
-    public function setSorter(Sorter $sorter): void
+    public function setSorter(SorterInterface $sorter): void
     {
         $this->sorter = $sorter;
     }
@@ -62,9 +62,9 @@ trait SorterTrait
     /**
      * Get the sorter
      *
-     * @return Sorter
+     * @return SorterInterface
      */
-    public function getSorter(): Sorter
+    public function getSorter(): SorterInterface
     {
         return $this->sorter ?? new Sorter();
     }

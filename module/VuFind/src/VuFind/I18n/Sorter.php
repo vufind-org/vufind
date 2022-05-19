@@ -22,7 +22,7 @@ declare(strict_types=1);
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\Service
+ * @package  I18n
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -33,12 +33,12 @@ namespace VuFind\I18n;
  * Class Sorter
  *
  * @category VuFind
- * @package  VuFind\Service
+ * @package  I18n
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Sorter
+class Sorter implements SorterInterface
 {
     /**
      * Intl Collator

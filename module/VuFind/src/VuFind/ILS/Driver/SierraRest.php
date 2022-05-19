@@ -44,7 +44,7 @@ use VuFindHttp\HttpServiceAwareInterface;
  */
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface,
-    \VuFind\I18n\SorterInterface
+    \VuFind\I18n\SortingInterface
 {
     public const HOLDINGS_LINE_NUMBER = 40;
 
@@ -54,7 +54,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\I18n\SorterTrait;
+    use \VuFind\I18n\SortingTrait;
 
     /**
      * Driver configuration
