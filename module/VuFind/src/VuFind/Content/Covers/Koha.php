@@ -37,10 +37,7 @@ namespace VuFind\Content\Covers;
  * @link     https://vufind.org/wiki/development:plugins:content_provider_components
  */
 class Koha extends \VuFind\Content\AbstractCover
-    implements \VuFindHttp\HttpServiceAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
-
     /**
      * Base URL for Koha covers
      *
