@@ -63,7 +63,6 @@
         "laminas/laminas-serializer": "2.12.0",
         "laminas/laminas-servicemanager": "3.7.0",
         "laminas/laminas-session": "2.12.0",
-        "laminas/laminas-soap": "2.9.0",
         "laminas/laminas-stdlib": "3.7.1",
         "laminas/laminas-text": "2.9.0",
         "laminas/laminas-validator": "2.16.0",
