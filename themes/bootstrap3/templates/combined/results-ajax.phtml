@@ -11,7 +11,7 @@
     $searchClassIdEncoded = urlencode($searchClassId);
     $targetIdHtmlEscaped = $this->escapeHtml('#' . $currentSearch['domId']);
     $lookforEncoded = urlencode($lookfor);
-    $typeEncoded = urlencode($params->getSearchHandler());
+    $typeEncoded = urlencode($params->getSearchHandler() ?? '');
     $loadJs = <<<JS
 $(document).ready(function(){
     var url = VuFind.path
