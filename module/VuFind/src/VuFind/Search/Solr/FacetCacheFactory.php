@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Solr;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Solr FacetCache Factory.
