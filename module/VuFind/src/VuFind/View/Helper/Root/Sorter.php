@@ -43,39 +43,12 @@ class Sorter implements \VuFind\I18n\SortingInterface
     use \VuFind\I18n\SortingTrait;
 
     /**
-     * Compare function
+     * Get sorter
      *
-     * @param string $string1 First string to compare
-     * @param string $string2 Second string to compare
-     *
-     * @return int
+     * @return \VuFind\I18n\SorterInterface
      */
-    public function compare(string $string1, string $string2): int
+    public function __invoke(): \VuFind\I18n\SorterInterface
     {
-        return $this->getSorter()->compare($string1, $string2);
-    }
-
-    /**
-     * Sort array by values
-     *
-     * @param array $array Array to sort
-     *
-     * @return bool
-     */
-    public function sort(array &$array): bool
-    {
-        return $this->getSorter()->sort($array);
-    }
-
-    /**
-     * Sort array by values and maintain index association
-     *
-     * @param array $array Array to sort
-     *
-     * @return bool
-     */
-    public function asort(array &$array): bool
-    {
-        return $this->getSorter()->asort($array);
+        return $this->getSorter();
     }
 }
