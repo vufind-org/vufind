@@ -204,7 +204,7 @@ class Shibboleth extends AbstractBase
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes($shib) as $key => $value) {
-            if (!preg_match("/$value/", $this->getAttribute($request, $key))) {
+            if (!preg_match("/$value/", $this->getAttribute($request, $key) ?? '')) {
                 $details = ($this->useHeaders) ? $request->getHeaders()->toArray()
                     : $request->getServer()->toArray();
                 $this->debug(
@@ -439,7 +439,7 @@ class Shibboleth extends AbstractBase
      */
     protected function getCurrentEntityId($request)
     {
-        return $this->getAttribute($request, $this->shibIdentityProvider);
+        return $this->getAttribute($request, $this->shibIdentityProvider) ?? '';
     }
 
     /**
