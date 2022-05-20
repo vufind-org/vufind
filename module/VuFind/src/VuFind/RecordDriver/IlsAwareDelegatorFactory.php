@@ -27,8 +27,8 @@
  */
 namespace VuFind\RecordDriver;
 
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * ILS aware delegator factory

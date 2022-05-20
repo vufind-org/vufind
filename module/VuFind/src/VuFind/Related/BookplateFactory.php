@@ -27,8 +27,8 @@
  */
 namespace VuFind\Related;
 
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Related record plugin factory

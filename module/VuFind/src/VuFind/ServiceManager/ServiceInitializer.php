@@ -27,8 +27,8 @@
  */
 namespace VuFind\ServiceManager;
 
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Initializer\InitializerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Service Initializer

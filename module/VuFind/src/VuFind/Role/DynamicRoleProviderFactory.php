@@ -27,9 +27,9 @@
  */
 namespace VuFind\Role;
 
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind dynamic role provider factory.

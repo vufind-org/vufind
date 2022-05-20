@@ -29,9 +29,9 @@
  */
 namespace VuFind\Session;
 
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use Psr\Container\ContainerInterface;
 
 /**
  * Secure session delegator factory

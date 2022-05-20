@@ -27,11 +27,11 @@
  */
 namespace VuFindConsole\Generator;
 
-use Psr\Container\ContainerInterface;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
+use Psr\Container\ContainerInterface;
 
 /**
  * Generator tools.

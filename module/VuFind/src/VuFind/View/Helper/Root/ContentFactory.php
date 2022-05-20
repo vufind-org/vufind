@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Content helper factory.

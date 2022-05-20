@@ -27,10 +27,10 @@
  */
 namespace VuFind\Recommend;
 
-use Psr\Container\ContainerInterface;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * CollectionSideFacets recommendation module factory.

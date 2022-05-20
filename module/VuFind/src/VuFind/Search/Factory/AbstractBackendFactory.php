@@ -27,10 +27,10 @@
  */
 namespace VuFind\Search\Factory;
 
-use Psr\Container\ContainerInterface;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Abstract factory for backends.

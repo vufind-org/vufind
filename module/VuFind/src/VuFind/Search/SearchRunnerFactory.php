@@ -27,12 +27,12 @@
  */
 namespace VuFind\Search;
 
-use Psr\Container\ContainerInterface;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Search runner factory.

@@ -27,9 +27,9 @@
  */
 namespace VuFind\Search\Factory;
 
-use Psr\Container\ContainerInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\Blender\Backend;
 
 /**

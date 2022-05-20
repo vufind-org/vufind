@@ -27,8 +27,8 @@
  */
 namespace VuFind\Favorites;
 
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Favorites service
