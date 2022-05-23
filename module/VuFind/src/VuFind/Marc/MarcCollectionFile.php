@@ -138,6 +138,7 @@ class MarcCollectionFile implements \Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (null === $this->record) {
@@ -151,6 +152,7 @@ class MarcCollectionFile implements \Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;

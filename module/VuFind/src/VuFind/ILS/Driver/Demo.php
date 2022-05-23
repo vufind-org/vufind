@@ -2484,7 +2484,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\SortingInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {

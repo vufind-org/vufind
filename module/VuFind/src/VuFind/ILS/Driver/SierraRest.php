@@ -1380,7 +1380,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if ('getMyTransactions' === $function) {
             return [

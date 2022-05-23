@@ -40,6 +40,13 @@ use VuFind\Tags;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int    $id
+ * @property int    $user_id
+ * @property string $title
+ * @property string $description
+ * @property string $created
+ * @property bool   $public
  */
 class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {

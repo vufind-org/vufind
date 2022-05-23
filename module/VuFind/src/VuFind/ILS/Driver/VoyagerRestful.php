@@ -309,7 +309,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -350,15 +350,13 @@ class VoyagerRestful extends Voyager implements
         // User defined hold behaviour
         $is_holdable = true;
 
-        if (isset($this->config['Holds']['valid_hold_statuses'])) {
+        if (!empty($this->config['Holds']['valid_hold_statuses'])) {
             $valid_hold_statuses_array
                 = explode(':', $this->config['Holds']['valid_hold_statuses']);
 
-            if (!empty($valid_hold_statuses_array)) {
-                foreach ($statusArray as $status) {
-                    if (!in_array($status, $valid_hold_statuses_array)) {
-                        $is_holdable = false;
-                    }
+            foreach ($statusArray as $status) {
+                if (!in_array($status, $valid_hold_statuses_array)) {
+                    $is_holdable = false;
                 }
             }
         }

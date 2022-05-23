@@ -48,12 +48,9 @@ abstract class AbstractBase implements SMSInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array                  $options Additional options
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @param \Laminas\Config\Config $config SMS configuration
      */
-    public function __construct(\Laminas\Config\Config $config, $options = [])
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->smsConfig = $config;
     }

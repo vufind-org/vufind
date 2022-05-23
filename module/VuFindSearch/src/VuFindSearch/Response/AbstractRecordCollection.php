@@ -236,7 +236,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->records[$this->pointer]);
     }
@@ -246,6 +246,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->records[$this->pointer];
@@ -256,7 +257,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->pointer = 0;
     }
@@ -266,7 +267,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         $this->pointer++;
     }
@@ -276,6 +277,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->pointer + $this->getOffset();
@@ -288,7 +290,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
-    public function count()
+    public function count(): int
     {
         return count($this->records);
     }
