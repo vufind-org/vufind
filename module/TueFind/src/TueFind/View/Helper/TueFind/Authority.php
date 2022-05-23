@@ -575,8 +575,14 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $topicsArray = [];
         foreach($countedTopics as $topic => $topicCount) {
-            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicLink'=>$topicLink.$topic];
+            $originalTopicName = $topic;
+            $pos = strripos($topic, '"');
+            if ($pos !== false) {
+                $topic = preg_replace( '/"([^"]*)"/', "«$1»", $topic);
+            }
+            $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicLink'=>$topicLink.$originalTopicName];
         }
+
         $mainTopicsArray = [];
         if(!empty($topicsArray)){
             $topWeight = $settings['maxNumber'];
