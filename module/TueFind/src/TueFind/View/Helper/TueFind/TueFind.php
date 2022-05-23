@@ -534,4 +534,42 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         $contentHelper = $this->container->get('ViewHelperManager')->get('content');
         return $contentHelper->renderTranslated($template, 'static', $context, $output, '%pathPrefix%/%language%/%pageName%');
     }
+
+    public function getUserAccessState($authorityId, $userId = null): array
+    {
+        $table = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('user_authority');
+        $row = $table->getByAuthorityId($authorityId);
+
+        $result = ['availability' => '', 'access_state' => ''];
+        if ($row == null) {
+            // Nobody got permission yet, feel free to take it
+            $result['availability'] = 'free';
+        } else {
+            $result['access_state'] = $row->access_state;
+            if (isset($userId) && ($userId == $row->user_id)) {
+                $result['availability'] = 'mine';
+            } else {
+                $result['availability'] = 'other';
+            }
+        }
+
+        return $result;
+    }
+
+    public function getUserAccessPublishRecord($userId, $recordAuthors): bool
+    {
+        $authorsIds = [];
+        foreach($recordAuthors as $authorArray) {
+            if(!empty($authorArray) && is_array($authorArray)) {
+                foreach($authorArray as $authors) {
+                    if(isset($authors['id'])) {
+                        $authorsIds[] = $authors['id'][0];
+                    }
+                }
+            }
+        }
+
+        $table = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('user_authority');
+        return $table->hasGrantedAuthorityRight($userId, $authorsIds);
+    }
 }

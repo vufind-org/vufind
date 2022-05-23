@@ -6,27 +6,6 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
 
     use TabsTrait;
 
-    protected function getUserAccessState($authorityId, $userId = null): array
-    {
-        $table = $this->getTable('user_authority');
-        $row = $table->getByAuthorityId($authorityId);
-
-        $result = ['availability' => null, 'access_state' => null];
-        if ($row == null) {
-            // Nobody got permission yet, feel free to take it
-            $result['availability'] = 'free';
-        } else {
-            $result['access_state'] = $row->access_state;
-            if (isset($userId) && ($userId == $row->user_id)) {
-                $result['availability'] = 'mine';
-            } else {
-                $result['availability'] = 'other';
-            }
-        }
-
-        return $result;
-    }
-
     /**
      * This action needs to be overwritten because it is meant to be a redirect
      * to the recordAction under certain circumstances (especially tabs).
@@ -68,13 +47,11 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
     public function recordAction()
     {
         $driver = $this->loadRecord();
-
         $user = $this->getUser();
         $request = $this->getRequest();
         $view = $this->showTab($this->params()->fromQuery('tab', $this->getDefaultTab()));
         $view->driver = $driver;
         $view->user = $user;
-        $view->user_access = $this->getUserAccessState($driver->getUniqueId(), $user->id ?? null);
         return $view;
     }
 
@@ -123,6 +100,6 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
             $mailer->send($receivers, $config->Site->email_from, 'A user has requested access to an authority dataset', $message);
         }
 
-        return $this->createViewModel(['user_access' => $this->getUserAccessState($authorityId, $user->id)]);
+        return $this->createViewModel(['userId' => $user->id]);
     }
 }
