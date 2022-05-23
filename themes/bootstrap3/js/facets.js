@@ -22,7 +22,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     if (facet.operator === 'OR') {
       var icon = document.createElement('span');
       icon.className = "hierarchy-facet-icon";
-      icon.innerHTML = VuFind.icon(facet.isApplied ? "facet-checked" : "facet-unchecked");
+      icon.innerHTML = facet.isApplied ? VuFind.icon("facet-checked", { title: selected }) : VuFind.icon("facet-unchecked");
       item.appendChild(icon);
     }
     var description = document.createElement('span');
