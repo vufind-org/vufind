@@ -76,10 +76,9 @@ class Sorter implements SorterInterface
      */
     public function compare(string $string1, string $string2): int
     {
-        if ($this->respectLocale) {
-            return $this->collator->compare($string1, $string2);
-        }
-        return strcasecmp($string1, $string2);
+        return $this->respectLocale
+            ? $this->collator->compare($string1, $string2)
+            : strcasecmp($string1, $string2);
     }
 
     /**
@@ -91,10 +90,9 @@ class Sorter implements SorterInterface
      */
     public function sort(array &$array): bool
     {
-        if ($this->respectLocale) {
-            return $this->collator->sort($array);
-        }
-        return sort($array);
+        return $this->respectLocale
+            ? $this->collator->sort($array)
+            : sort($array);
     }
 
     /**
@@ -106,9 +104,8 @@ class Sorter implements SorterInterface
      */
     public function asort(array &$array): bool
     {
-        if ($this->respectLocale) {
-            return $this->collator->asort($array);
-        }
-        return asort($array);
+        return $this->respectLocale
+            ? $this->collator->asort($array)
+            : asort($array);
     }
 }
