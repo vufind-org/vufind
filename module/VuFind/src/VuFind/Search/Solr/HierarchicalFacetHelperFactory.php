@@ -25,7 +25,7 @@ declare(strict_types=1);
  * @package  Search
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Search\Solr;
 
@@ -41,10 +41,10 @@ use Psr\Container\ContainerInterface;
  * @package  Search
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class HierarchicalFacetHelperFactory implements
-    Laminas\ServiceManager\Factory\FactoryInterface
+    \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
