@@ -94,6 +94,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getBiographicalReferences(AuthorityRecordDriver &$driver): string
     {
+        $tuefindHelper = $this->viewHelperManager->get('tuefind');
+
         $references = $driver->getBiographicalReferences();
         if (count($references) == 0)
             return '';
@@ -101,8 +103,15 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         usort($references, function($a, $b) { return strcmp($a['title'], $b['title']); });
 
         $display = '';
-        foreach ($references as $reference)
-            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"><i class="fa fa-external-link"></i> ' . htmlspecialchars($reference['title']) . '</a><br>';
+        foreach ($references as $reference) {
+            $image = $tuefindHelper->getDetailsIcon($reference['title']);
+            if ($image == null) {
+                $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"><i class="fa fa-external-link"></i> ' . htmlspecialchars($reference['title']) . '</a><br>';
+            }
+            else {
+                $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"> <img class="detailsIcon" src="'.$image.'"/>' . htmlspecialchars($reference['title']) . '</a><br>';
+            }
+        }
 
         return $display;
     }
