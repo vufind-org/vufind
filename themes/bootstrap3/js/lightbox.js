@@ -256,7 +256,7 @@ VuFind.register('lightbox', function Lightbox() {
       || typeof $link.attr("href") === "undefined"
       || $link.attr("href").charAt(0) === "#"
       || $link.attr("href").match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
-      || ($link.attr("href").slice(0, 4) == "http" // external links
+      || ($link.attr("href").slice(0, 4) === "http" // external links
         && $link.attr("href").indexof(urlRoot) === -1)
       || (typeof $link.attr("target") !== "undefined"
         && (
