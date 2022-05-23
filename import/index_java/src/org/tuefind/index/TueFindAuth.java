@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -336,8 +337,8 @@ public class TueFindAuth extends TueFind {
     }
 
     public Set<String> getOccupations(final Record record, String langAbbrev) {
-        Set<String> occupations = new TreeSet<>();
-        Set<String> retOccupations = new TreeSet<>();
+        Set<String> occupations = new LinkedHashSet<>();
+        Set<String> retOccupations = new LinkedHashSet<>();
 
         for (final VariableField variableField : record.getVariableFields("374")) {
             final DataField field = (DataField) variableField;

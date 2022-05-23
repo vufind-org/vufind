@@ -208,6 +208,20 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         return $imgSrc;
     }
 
+     /**
+     * Search for specific icon in details table, return generic icon if not found
+     *
+     * @param string $detailsId
+     *
+     * @return string
+     */
+    public function getDetailsIcon($detailsId='details') {
+        if (str_contains($detailsId, "(")) {
+            $detailsId = trim(explode("(", $detailsId)[0]);
+        }
+        return $this->getView()->imageLink('details/' . $detailsId . '.png');
+    }
+
     /**
      * Filter unwanted stuff from RSS item description (especially images)
      *
