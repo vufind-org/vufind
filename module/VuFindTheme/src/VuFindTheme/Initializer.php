@@ -341,6 +341,17 @@ class Initializer
             }
         }
 
+        // Determine doctype and apply it:
+        $doctype = 'HTML5';
+        foreach ($themes as $key => $currentThemeInfo) {
+            if (isset($currentThemeInfo['doctype'])) {
+                $doctype = $currentThemeInfo['doctype'];
+                break;
+            }
+        }
+        $loader = $this->serviceManager->get('ViewHelperManager');
+        ($loader->get('doctype'))($doctype);
+
         // Apply the loaded theme settings in reverse for proper inheritance:
         foreach ($themes as $key => $currentThemeInfo) {
             if (isset($currentThemeInfo['helpers'])) {

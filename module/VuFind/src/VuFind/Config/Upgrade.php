@@ -27,6 +27,7 @@
  */
 namespace VuFind\Config;
 
+use Composer\Semver\Comparator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
 
@@ -168,8 +169,9 @@ class Upgrade
         $this->saveModifiedConfig('permissions.ini');
 
         // The following routines load special configurations that were not
-        // explicitly loaded by loadConfigs:
-        if ($this->from < 2) {  // some pieces only apply to 1.x upgrade!
+        // explicitly loaded by loadConfigs... note that some pieces only apply to
+        // the 1.x upgrade!
+        if (Comparator::lessThan($this->from, '2.0')) {
             $this->upgradeSolrMarc();
             $this->upgradeSearchSpecs();
         }
@@ -477,16 +479,15 @@ class Upgrade
      */
     protected function isDefaultBulkExportOptions($eo)
     {
-        $from = (float)$this->from;
-        if ($from >= 2.4) {
+        if (Comparator::greaterThanOrEqualTo($this->from, '2.4')) {
             $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
-        } elseif ($from >= 2.0) {
+        } elseif (Comparator::greaterThanOrEqualTo($this->from, '2.0')) {
             $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
-        } elseif ($from >= 1.4) {
+        } elseif (Comparator::greaterThanOrEqualTo($this->from, '1.4')) {
             $default = 'MARC:MARCXML:EndNote:RefWorks:BibTeX';
-        } elseif ($from >= 1.3) {
+        } elseif (Comparator::greaterThanOrEqualTo($this->from, '1.3')) {
             $default = 'MARC:EndNote:RefWorks:BibTeX';
-        } elseif ($from >= 1.2) {
+        } elseif (Comparator::greaterThanOrEqualTo($this->from, '1.2')) {
             $default = 'MARC:EndNote:BibTeX';
         } else {
             $default = 'MARC:EndNote';
@@ -544,11 +545,11 @@ class Upgrade
             unset($newConfig['BulkExport']['options']);
         }
 
-        // If [Statistics] is present, warn the user about its deprecation.
+        // If [Statistics] is present, warn the user about its removal.
         if (isset($newConfig['Statistics'])) {
             $this->addWarning(
                 'The Statistics module has been removed from VuFind. ' .
-                'For usage tracking, please configure Google Analytics or Piwik.'
+                'For usage tracking, please configure Google Analytics or Matomo.'
             );
             unset($newConfig['Statistics']);
         }
@@ -679,9 +680,9 @@ class Upgrade
         // Eliminate obsolete config override settings:
         unset($newConfig['Extra_Config']);
 
-        // Update generator if it is default value:
+        // Update generator if it contains a version number:
         if (isset($newConfig['Site']['generator'])
-            && $newConfig['Site']['generator'] == 'VuFind ' . $this->from
+            && preg_match('/^VuFind (\d+\.?)+$/', $newConfig['Site']['generator'])
         ) {
             $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
         }
@@ -900,7 +901,7 @@ class Upgrade
     {
         // Turn on the spelling recommendations if we're upgrading from a version
         // prior to 2.4.
-        if ((float)$this->from < 2.4) {
+        if (Comparator::lessThan($this->from, '2.4')) {
             // Fix defaults in general section:
             $cfg = & $this->newConfigs[$ini]['General'];
             $keys = ['default_top_recommend', 'default_noresults_recommend'];
@@ -1038,7 +1039,7 @@ class Upgrade
 
         // Turn on advanced checkbox facets if we're upgrading from a version
         // prior to 2.3.
-        if ((float)$this->from < 2.3) {
+        if (Comparator::lessThan($this->from, '2.3')) {
             $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
             $specialFacets = $cfg['special_facets'] ?? null;
             if (empty($specialFacets)) {

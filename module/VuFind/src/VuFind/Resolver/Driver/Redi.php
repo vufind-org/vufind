@@ -142,7 +142,9 @@ class Redi extends AbstractBase
                     'title' => $doiTerm->item($i)->textContent
                         . $doiDefinition->item($i)->textContent,
                     'href' => $href,
-                    'service_type' => 'getFullTxt',
+                    'access' => 'unknown',
+                    'coverage' => null,
+                    'service_type' => 'getDOI',
                 ];
             }
         }

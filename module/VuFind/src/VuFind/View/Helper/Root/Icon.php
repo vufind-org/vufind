@@ -136,11 +136,12 @@ class Icon extends AbstractHelper
      * Map icon to set. Add prefix, return with set and template.
      * Broken out for easier customization.
      *
-     * @param string $name Icon name or key from theme.config.php
+     * @param string $name       Icon name or key from theme.config.php
+     * @param array  $aliasTrail Safety mechanism to prevent circular aliases
      *
      * @return array
      */
-    protected function mapIcon(string $name): array
+    protected function mapIcon(string $name, $aliasTrail = []): array
     {
         $rtl = $this->rtl ? '-rtl' : '';
         $icon = $this->iconMap[$name . $rtl] ?? $this->iconMap[$name] ?? $name;
@@ -153,6 +154,15 @@ class Icon extends AbstractHelper
             $set = $parts[0];
             $icon = $parts[1];
             $class = $parts[2] ?? null;
+        }
+
+        // Special case: aliases:
+        if ($set === 'Alias') {
+            $aliasTrail[] = $name;
+            if (in_array($icon, $aliasTrail)) {
+                throw new \Exception("Circular icon alias detected: $icon!");
+            }
+            return $this->mapIcon($icon, $aliasTrail);
         }
 
         // Find set in theme.config.php

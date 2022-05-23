@@ -202,7 +202,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getView()
     {
-        $viewArr = explode('|', $this->view);
+        $viewArr = explode('|', $this->view ?? '');
         return $viewArr[0];
     }
 
@@ -213,7 +213,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getEdsView()
     {
-        $viewArr = explode('|', $this->view);
+        $viewArr = explode('|', $this->view ?? '');
         return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
     }
 
@@ -301,7 +301,8 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($ssLimiters as $ssLimiter) {
                 $this->addCheckboxFacet(
                     $ssLimiter['selectedvalue'],
-                    $ssLimiter['description']
+                    $ssLimiter['description'],
+                    true
                 );
             }
         }
@@ -321,7 +322,8 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($availableExpanders as $expander) {
                 $this->addCheckboxFacet(
                     $expander['selectedvalue'],
-                    $expander['description']
+                    $expander['description'],
+                    true
                 );
             }
         }

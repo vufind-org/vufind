@@ -8,4 +8,5 @@ return [
             'bar' => 'barFactory',
         ]
     ],
+    'doctype' => 'HTML5',
 ];

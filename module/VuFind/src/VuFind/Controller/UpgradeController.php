@@ -30,6 +30,7 @@
 namespace VuFind\Controller;
 
 use ArrayObject;
+use Composer\Semver\Comparator;
 use Exception;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
@@ -795,15 +796,15 @@ class UpgradeController extends AbstractBase
     public function getsourceversionAction()
     {
         // Process form submission:
-        $version = floatval($this->params()->fromPost('sourceversion'));
+        $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
-            $this->cookie->newVersion = Version::getBuildVersion();
-            if (floor($version) < 2) {
+            $this->cookie->newVersion = $newVersion = Version::getBuildVersion();
+            if (Comparator::lessThan($version, '2.0')) {
                 $this->flashMessenger()
                     ->addMessage('Illegal version number.', 'error');
-            } elseif ($version >= $this->cookie->newVersion) {
+            } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
                 $this->flashMessenger()->addMessage(
-                    "Source version must be less than {$this->cookie->newVersion}.",
+                    "Source version must be less than {$newVersion}.",
                     'error'
                 );
             } else {

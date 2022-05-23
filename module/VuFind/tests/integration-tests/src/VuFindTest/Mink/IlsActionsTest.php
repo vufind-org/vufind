@@ -54,7 +54,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -98,7 +98,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
-        return $session->getPage();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
     }
 
     /**
@@ -118,7 +120,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#profile_cat_username')->setValue($username);
         $this->findCss($page, '#profile_cat_password')->setValue($password);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
     }
 
     /**
@@ -131,25 +132,24 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function placeIllRequestAndGoToIllScreen(Element $page): void
     {
         // Open the "place ILL request" dialog
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placeILLRequest');
-        $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickupLibrary')->setValue('2');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->findCss($page, '#pickupLibraryLocation')->setValue('3');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
         // If successful, we should now have a link to review the request:
+        $this->waitForPageLoad($page);
         $link = $this->findCss($page, '.modal-body a');
         $this->assertEquals('Interlibrary Loan Requests', $link->getText());
         $link->click();
-        $this->snooze();
 
         // Make sure we arrived where we expected to:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Interlibrary Loan Requests',
             $this->findCss($page, 'h2')->getText()
@@ -168,23 +168,21 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         Element $page
     ): void {
         // Open the "place storage request" dialog
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placeStorageRetrievalRequest');
-        $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '.modal-body select')->setValue('C');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
         // If successful, we should now have a link to review the request:
         $link = $this->findCss($page, '.modal-body a');
         $this->assertEquals('Storage Retrieval Requests', $link->getText());
         $link->click();
-        $this->snooze();
 
         // Make sure we arrived where we expected to:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Storage Retrieval Requests',
             $this->findCss($page, 'h2')->getText()
@@ -207,21 +205,58 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling a request.
+     * Test canceling a request with the "cancel selected" button.
      *
      * @param Element $page Page element.
      * @param string  $type Request type being tested.
      *
      * @return void
      */
-    protected function cancelProcedure(Element $page, string $type): void
+    protected function cancelSelectedProcedure(Element $page, string $type): void
     {
+        // First make sure item is there before cancel is pushed:
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+
         // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
         $this->assertNull($page->find('css', '.btn-group.open'));
 
-        // Test "cancel all" button -- first make sure item is there before
-        // cancel is pushed:
+        // Test that control becomes active if we click a checkbox (but don't
+        // actually cancel anything yet).
+        $this->clickCss($page, "#checkbox_testsample1");
+        $this->clickCss($page, '#cancelSelected');
+        $this->clickButtonGroupLink($page, 'No');
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+
+        // Now cancel for real:
+        $this->clickCss($page, '#cancelSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            '1 request(s) were successfully canceled',
+            $this->findCss($page, '.alert.alert-success')->getText()
+        );
+        $this->assertNull($page->find('css', 'a.title'));
+    }
+
+    /**
+     * Test canceling a request with the "cancel all" button.
+     *
+     * @param Element $page Page element.
+     * @param string  $type Request type being tested.
+     *
+     * @return void
+     */
+    protected function cancelAllProcedure(Element $page, string $type): void
+    {
+        // First make sure item is there before cancel is pushed:
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -231,7 +266,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click cancel but bail out with no... item should still be there.
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'No');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -241,7 +276,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Now cancel for real:
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
         $this->assertEquals(
             '1 request(s) were successfully canceled',
             $this->findCss($page, '.alert.alert-success')->getText()
@@ -261,7 +295,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
@@ -269,6 +302,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeIllRequestAndGoToIllScreen($page);
 
         // Verify the request is correct:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -289,7 +323,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
@@ -297,6 +330,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeStorageRetrievalRequestAndGoToSRRScreen($page);
 
         // Verify the request is correct:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -326,16 +360,14 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Set up user account:
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
 
         // Link ILS profile:
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
-        $this->snooze();
 
         // Confirm that demo driver expected values are present:
+        $this->waitForPageLoad($page);
         $texts = [
             'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
         ];
@@ -362,22 +394,19 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
-        $this->snooze();
         $this->illRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
     }
 
     /**
-     * Test canceling an ILL request.
+     * Set up a cancel ILL request test.
      *
-     * @depends testProfile
-     *
-     * @return void
+     * @return Element
      */
-    public function testCancelIllRequest(): void
+    protected function setUpCancelIllTest(): Element
     {
         // Turn on "cancel ILL requests" in addition to normal defaults:
         $config = $this->getConfigIniOverrides();
@@ -391,11 +420,34 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
-        $this->snooze();
         $this->illRequestProcedure($page);
+        return $page;
+    }
 
-        // Test canceling the request:
-        $this->cancelProcedure($page, 'interlibrary loan requests');
+    /**
+     * Test canceling an ILL request with "cancel all."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelAllIllRequest(): void
+    {
+        $page = $this->setUpCancelIllTest();
+        $this->cancelAllProcedure($page, 'interlibrary loan requests');
+    }
+
+    /**
+     * Test canceling an ILL request with "cancel selected."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelSelectedIllRequest(): void
+    {
+        $page = $this->setUpCancelIllTest();
+        $this->cancelSelectedProcedure($page, 'interlibrary loan requests');
     }
 
     /**
@@ -416,22 +468,19 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
-        $this->snooze();
         $this->storageRetrievalRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
     }
 
     /**
-     * Test canceling storage retrieval requests.
+     * Set up a cancel storage retrieval request test.
      *
-     * @depends testProfile
-     *
-     * @return void
+     * @return Element
      */
-    public function testCancelStorageRetrievalRequest(): void
+    protected function setUpCancelStorageRetrievalTest(): Element
     {
         // Turn on "cancel storage requests" in addition to normal defaults:
         $config = $this->getConfigIniOverrides();
@@ -445,11 +494,34 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
-        $this->snooze();
         $this->storageRetrievalRequestProcedure($page);
+        return $page;
+    }
 
-        // Test canceling the request:
-        $this->cancelProcedure($page, 'storage retrieval requests');
+    /**
+     * Test canceling storage retrieval requests with "cancel all."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelAllStorageRetrievalRequest(): void
+    {
+        $page = $this->setUpCancelStorageRetrievalTest();
+        $this->cancelAllProcedure($page, 'storage retrieval requests');
+    }
+
+    /**
+     * Test canceling storage retrieval requests with "cancel selected."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelSelectedStorageRetrievalRequest(): void
+    {
+        $page = $this->setUpCancelStorageRetrievalTest();
+        $this->cancelSelectedProcedure($page, 'storage retrieval requests');
     }
 
     /**
@@ -479,7 +551,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test submitting with no selected checkboxes:
         $this->clickCss($page, '#renewSelected');
-        $this->snooze();
         $this->assertEquals(
             'No items were selected',
             $this->findCss($page, '.alert.alert-danger')->getText()
@@ -487,7 +558,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test "renew all":
         $this->clickCss($page, '#renewAll');
-        $this->snooze();
         $this->assertEquals(
             'Renewal Successful',
             $this->findCss($page, '.alert.alert-success')->getText()

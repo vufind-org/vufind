@@ -33,6 +33,6 @@ JS;
   <?php return; // if permission is denied, don't render the rest of the template! ?>
 <?php endif; ?>
 
-<p><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> <?=$this->transEsc("Loading")?>...</p>
+<p><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></p>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>

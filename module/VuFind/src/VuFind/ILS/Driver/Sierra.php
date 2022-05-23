@@ -325,6 +325,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
     {
         $reserves = [];
         try {
+            $coursenum = '';
             if ($course != null) {
                 $coursenum = $course;
             } elseif ($instructor != null) {

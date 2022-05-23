@@ -153,6 +153,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $disableRenewals = false;
 
     /**
+     * Which subelements of Problem element show to user when placing hold fails.
+     * Possible values are: 'ProblemType', 'ProblemDetail', 'ProblemElement',
+     * 'ProblemValue'
+     *
+     * @var string[]
+     */
+    protected $holdProblemsDisplay = ['ProblemType'];
+
+    /**
      * Schemes preset for certain elements. See implementation profile:
      * http://www.ncip.info/uploads/7/1/4/6/7146749/z39-83-2-2012_ncip.pdf
      *
@@ -209,6 +218,27 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $tokenBasicAuth = false;
 
     /**
+     * If the NCIP need an authorization using HTTP Basic
+     *
+     * @var bool
+     */
+    protected $useHttpBasic = false;
+
+    /**
+     * HTTP Basic username
+     *
+     * @var string
+     */
+    protected $username;
+
+    /**
+     * HTTP Basic password
+     *
+     * @var string
+     */
+    protected $password;
+
+    /**
      * Mapping block messages from NCIP API to VuFind internal values
      *
      * @var array
@@ -231,6 +261,24 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var string
      */
     protected $translationDomain = 'ILSMessages';
+
+    /**
+     * Other than 2xx HTTP status codes, which could be accepted as correct response.
+     * Some NCIP servers could return some 4xx codes similar to REST API (like 404
+     * Not found) altogether with correct XML in response body.
+     *
+     * @var array
+     */
+    protected $otherAcceptedHttpStatusCodes = [];
+
+    /**
+     * Max number of pages taken from API at once. Sometimes NCIP responders could
+     * paginate even if we want all data at one time. We then ask for all pages, but
+     * it could possibly lead to long response times.
+     *
+     * @var int
+     */
+    protected $maxNumberOfPages;
 
     /**
      * Constructor
@@ -280,9 +328,37 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             && ($this->config['Catalog']['clientSecret'] ?? false);
         $this->tokenBasicAuth = $this->config['Catalog']['tokenBasicAuth'] ?? false;
 
+        $this->useHttpBasic = ($this->config['Catalog']['httpBasicAuth'] ?? false)
+            && ($this->config['Catalog']['username'] ?? false)
+            && ($this->config['Catalog']['password'] ?? false);
+
+        $this->username = $this->config['Catalog']['username'] ?? '';
+        $this->password = $this->config['Catalog']['password'] ?? '';
+
         if (isset($this->config['Catalog']['translationDomain'])) {
             $this->translationDomain
                 = $this->config['Catalog']['translationDomain'];
+        }
+
+        if (isset($this->config['Catalog']['otherAcceptedHttpStatusCodes'])) {
+            $otherAcceptedHttpStatusCodes
+                = explode(
+                    ',',
+                    $this->config['Catalog']['otherAcceptedHttpStatusCodes']
+                );
+            $this->otherAcceptedHttpStatusCodes = array_map(
+                'trim',
+                $otherAcceptedHttpStatusCodes
+            );
+        }
+        $this->maxNumberOfPages = $this->config['Catalog']['maxNumberOfPages'] ?? 0;
+        if (isset($this->config['Catalog']['holdProblemsDisplay'])) {
+            $holdProblemsDisplay
+                = explode(
+                    ',',
+                    $this->config['Catalog']['holdProblemsDisplay']
+                );
+            $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
     }
 
@@ -379,11 +455,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function sendRequest($xml)
     {
-        $this->debug('Sendig NCIP request: ' . $xml);
+        $this->debug('Sending NCIP request: ' . $xml);
         $client = $this->httpService->createClient($this->url);
         if ($this->useOAuth2) {
             $client->getRequest()->getHeaders()
                 ->addHeaderLine('Authorization', $this->getOAuth2Token());
+        } elseif ($this->useHttpBasic) {
+            $client->setAuth($this->username, $this->password);
         }
         // Set timeout value
         $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
@@ -411,7 +489,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         }
 
-        if (!$result->isSuccess()) {
+        if (!$result->isSuccess()
+            && !in_array(
+                $result->getStatusCode(),
+                $this->otherAcceptedHttpStatusCodes
+            )
+        ) {
             throw new ILSException(
                 'HTTP error: ' . $this->parseProblem($result->getBody())
             );
@@ -551,7 +634,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemType = (string)($itemType[0] ?? '');
 
         $itemAgencyId = $current->xpath('ns1:ItemId/ns1:AgencyId');
-        $itemAgencyId = (string)($itemAgencyId[0] ?? '');
+        $itemAgencyId = !empty($itemAgencyId) ? ((string)$itemAgencyId[0]) : null;
+        $itemAgencyId = $this->determineToAgencyId($itemAgencyId);
 
         // Pick out the permanent location (TODO: better smarts for dealing with
         // temporary locations and multi-level location names):
@@ -831,12 +915,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         $holdings = [];
-        $request = $this->getStatusRequest($idList, null, $agencyList);
-        $response = $this->sendRequest($request);
-
-        $bibs = $response->xpath(
-            'ns1:LookupItemSetResponse/ns1:BibInformation'
-        );
+        $bibs = $this->getBibs($idList, $agencyList);
 
         foreach ($bibs as $bib) {
             $this->registerNamespaceFor($bib);
@@ -1058,7 +1137,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemRequest = $this->getLookupItemRequest($itemId, $itemType);
                 $itemResponse = $this->sendRequest($itemRequest);
             }
-            if ($bibId === null) {
+            if ($bibId === null && isset($itemResponse)) {
                 $bibId = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
@@ -1072,7 +1151,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 // temporarily until consortial functionality is enabled.
                 $bibId = !empty($bibId) ? (string)$bibId[0] : "1";
             }
-            if ($itemAgencyId === null) {
+            if ($itemAgencyId === null && isset($itemResponse)) {
                 $itemAgencyId = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
@@ -1083,7 +1162,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemAgencyId = !empty($itemAgencyId)
                     ? (string)$itemAgencyId[0] : null;
             }
-            if (empty($due)) {
+            if (empty($due) && isset($itemResponse)) {
                 $rawDueDate = $itemResponse->xpath(
                     'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
                     'ns1:DateDue'
@@ -1712,11 +1791,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function placeRequest($details, $type = 'Hold')
     {
-        $msgPrefix = ($type == 'Stack Retrieval') ? 'Storage Retrieval ' : '';
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
         $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
+        $requestType = $details['holdtype'] ?? $type;
         $pickUpLocation = null;
         if (isset($details['pickUpLocation'])) {
             [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
@@ -1729,15 +1808,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lastInterestDate = \DateTime::createFromFormat('U', $convertedDate);
         $lastInterestDate->setTime(23, 59, 59);
         $lastInterestDateStr = $lastInterestDate->format('c');
-        $successReturn = [
-            'success' => true,
-            'sysMessage' => $msgPrefix . 'Request Successful.'
-        ];
-        $failureReturn = [
-            'success' => false,
-            'sysMessage' => $msgPrefix . 'Request Not Successful.'
-        ];
-
         $request = $this->getRequest(
             $username,
             $password,
@@ -1745,7 +1815,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $itemId,
             $details['patron']['patronAgencyId'],
             $details['item_agency_id'],
-            $type,
+            $requestType,
             "Item",
             $lastInterestDateStr,
             $pickUpLocation,
@@ -1762,17 +1832,28 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         try {
             $this->checkResponseForError($response);
         } catch (ILSException $exception) {
+            $failureReturn = ['success' => false];
+            $problemDescription = $this->getProblemDescription(
+                $response,
+                $this->holdProblemsDisplay,
+                false
+            );
+            if (!empty($problemDescription)) {
+                $failureReturn['sysMessage']
+                    = $this->translateMessage($problemDescription);
+            }
             return $failureReturn;
         }
 
-        return !empty($success) ? $successReturn : $failureReturn;
+        $this->invalidateResponseCache('LookupUser', $username);
+        return !empty($success) ? ['success' => true] : ['success' => false];
     }
 
     /**
      * General cancel request method
      *
      * Attempts to Cancel a request on a particular item. The data in
-     * $cancelDetails['details'] is determined by getCancel*Details().
+     * $cancelDetails['details'] is determined by getCancelRequestDetails().
      *
      * @param array  $cancelDetails An array of item and patron data
      * @param string $type          Type of request, could be: 'Hold',
@@ -1791,6 +1872,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $password = $cancelDetails['patron']['cat_password'];
         $patronAgency = $cancelDetails['patron']['patronAgencyId'];
         $details = $cancelDetails['details'];
+        $patronId = $cancelDetails['patron']['id'] ?? null;
         $response = [];
         $failureReturn = [
             'success' => false,
@@ -1810,7 +1892,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $itemAgencyId,
                 $requestId,
                 $type,
-                $itemId
+                $itemId,
+                $patronId
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
@@ -1831,6 +1914,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $response[$itemId] = $failureReturn;
             }
         }
+        $this->invalidateResponseCache('LookupUser', $username);
         $result = ['count' => $count, 'items' => $response];
         return $result;
     }
@@ -1862,6 +1946,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelRequestDetails($details)
     {
+        if ($details['available']) {
+            return '';
+        }
         return $details['item_agency_id'] .
             "|" . $details['requestId'] .
             "|" . $details['item_id'];
@@ -1938,6 +2025,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function renewMyItems($renewDetails)
     {
         $details = [];
+        $username = $renewDetails['patron']['cat_username'];
         foreach ($renewDetails['details'] as $detail) {
             [$agencyId, $itemId] = explode("|", $detail);
             $failureReturn = [
@@ -1949,11 +2037,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 continue;
             }
             $request = $this->getRenewRequest(
-                $renewDetails['patron']['cat_username'],
+                $username,
                 $renewDetails['patron']['cat_password'],
                 $itemId,
                 $agencyId,
-                $renewDetails['patron']['patronAgencyId']
+                $renewDetails['patron']['patronAgencyId'],
+                $username
             );
             $response = $this->sendRequest($request);
             $dueDateXml = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
@@ -1976,7 +2065,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $details[$itemId] = $failureReturn;
             }
         }
-
+        $this->invalidateResponseCache('LookupUser', $username);
         return [ 'blocks' => false, 'details' => $details];
     }
 
@@ -2025,9 +2114,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemId,
         $patronId = null
     ) {
-        if ($requestId === null && $itemId === null) {
+        if (empty($requestId) && empty($itemId)) {
             throw new ILSException('No identifiers for CancelRequest');
         }
+        $itemAgencyId = $this->determineToAgencyId($itemAgencyId);
         $ret = $this->getNCIPMessageStart() .
             '<ns1:CancelRequestItem>' .
             $this->getInitiationHeaderXml($patronAgency) .
@@ -2035,14 +2125,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $ret .= $this->getUserIdXml($patronAgency, $patronId);
 
-        if ($requestId !== null) {
+        if (!empty($requestId)) {
             $ret .=
                 '<ns1:RequestId>' .
                     $this->element('AgencyId', $itemAgencyId) .
                     $this->element('RequestIdentifierValue', $requestId) .
                 '</ns1:RequestId>';
         }
-        if ($itemId !== null) {
+        if (!empty($itemId)) {
             $ret .= $this->getItemIdXml($itemAgencyId, $itemId);
         }
         $ret .= $this->getRequestTypeXml($type) .
@@ -2120,6 +2210,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $patronAgencyId,
         $patronId = null
     ) {
+        $itemAgencyId = $this->determineToAgencyId($itemAgencyId);
         return $this->getNCIPMessageStart() .
             '<ns1:RenewItem>' .
             $this->getInitiationHeaderXml($patronAgencyId) .
@@ -2285,6 +2376,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getItemIdXml($agency, $itemId, $idType = null)
     {
+        $agency = $this->determineToAgencyId($agency);
         $ret = '<ns1:ItemId>' . $this->element('AgencyId', $agency);
         if ($idType !== null) {
             $ret .= $this->element('ItemIdentifierType', $idType);
@@ -2361,7 +2453,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function checkResponseForError($response)
     {
         $error = $response->xpath(
-            '//ns1:Problem/ns1:ProblemDetail'
+            '//ns1:Problem'
         );
         if (!empty($error)) {
             throw new ILSException($error[0]);
@@ -2532,7 +2624,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // FIXME: We are using the first defined agency, it will probably not work in
         // consortium scenario
-        if (null === $agency) {
+        if (empty($agency)) {
             $keys = array_keys($this->agency);
             $agency = $keys[0];
         }
@@ -2625,21 +2717,46 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function parseProblem(string $xmlString): string
     {
         $xml = $this->parseXml($xmlString);
-        $problems = $xml->xpath('ns1:Problem');
+        $problems = $xml->xpath('//ns1:Problem');
         if (empty($problems)) {
             return 'Cannot identify problem in response: ' . $xmlString;
         }
-        $detailElements = [
+        return $this->getProblemDescription($xml);
+    }
+
+    /**
+     * Get problem description as one string
+     *
+     * @param \SimpleXMLElement $xml              XML response
+     * @param array|string[]    $elements         Which of Problem subelements
+     * return in desription - defaulting to full list: ProblemType, ProblemDetail,
+     * ProblemElement and ProblemValue
+     * @param bool              $withElementNames Whether to add element names as
+     * value labels (for example for debug purposes)
+     *
+     * @return string
+     */
+    protected function getProblemDescription(
+        \SimpleXMLElement $xml,
+        array $elements = [
             'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue'
-        ];
+        ],
+        bool $withElementNames = true
+    ): string {
+        $problems = $xml->xpath('//ns1:Problem');
+        if (empty($problems)) {
+            return '';
+        }
         $allProblems = [];
         foreach ($problems as $problem) {
             $this->registerNamespaceFor($problem);
             $oneProblem = [];
-            foreach ($detailElements as $detailElement) {
-                $detail = $problem->xpath('ns1:' . $detailElement);
+            foreach ($elements as $element) {
+                $detail = $problem->xpath('ns1:' . $element);
                 if (!empty($detail)) {
-                    $oneProblem[] = $detailElement . ': ' . (string)$detail[0];
+                    $oneProblem[] = $withElementNames
+                        ? $element . ': ' . (string)$detail[0]
+                        : (string)$detail[0];
                 }
             }
             $allProblems[] = implode(', ', $oneProblem);
@@ -2723,5 +2840,64 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function translateMessage(string $message): string
     {
         return $this->translate($this->translationDomain . '::' . $message);
+    }
+
+    /**
+     * Invalidate L1 cache for responses
+     *
+     * @param string $message NCIP message type - curently only 'LookupUser'
+     * @param string $key     Cache key (For LookupUser its cat_username)
+     *
+     * @return void
+     */
+    protected function invalidateResponseCache(string $message, string $key): void
+    {
+        unset($this->responses['LookupUser'][$key]);
+    }
+
+    /**
+     * Get all bibliographic records
+     *
+     * @param array $idList     List of bibliographic IDs.
+     * @param array $agencyList List of possible toAgency values
+     *
+     * @return array|false|\SimpleXMLElement[]
+     * @throws ILSException
+     */
+    protected function getBibs(array $idList, array $agencyList): array
+    {
+        $bibs = [];
+        $nextItemToken = [];
+        $request = true;
+        $page = 0;
+        while ($request) {
+            $page++;
+            $resumption = !empty($nextItemToken) ? (string)$nextItemToken[0] : null;
+            $request = $this->getStatusRequest($idList, $resumption, $agencyList);
+            $response = $this->sendRequest($request);
+            $bibs = array_merge(
+                $bibs,
+                $response->xpath('ns1:LookupItemSetResponse/ns1:BibInformation')
+            );
+            $nextItemToken = $response->xpath('//ns1:NextItemToken');
+            $request = $this->isNextItemTokenEmpty($nextItemToken);
+            if ($page == $this->maxNumberOfPages) {
+                break;
+            }
+        }
+        return $bibs;
+    }
+
+    /**
+     * Check NextItemToken for emptiness
+     *
+     * @param \SimpleXMLElement[] $nextItemToken Next item token elements from NCIP
+     * Response
+     *
+     * @return bool
+     */
+    protected function isNextItemTokenEmpty(array $nextItemToken): bool
+    {
+        return !empty($nextItemToken) && (string)$nextItemToken[0] !== '';
     }
 }

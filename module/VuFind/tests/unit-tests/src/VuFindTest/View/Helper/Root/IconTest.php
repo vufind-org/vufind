@@ -75,6 +75,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'bar-rtl' => 'Fugue:zab.png',
                 'ltronly' => 'Fugue:ltronly.png',
                 'xyzzy' => 'FakeSprite:sprite',
+                'same' => 'Alias:foo',
+                'illegal' => 'Alias:criminal',
+                'criminal' => 'Alias:illegal',
+                'foolish' => 'Alias:foolish',
                 'classy' => 'FontAwesome:spinner:extraClass',
                 'extraClassy' => 'Fugue:zzz.png:weird:class foo'
             ],
@@ -276,6 +280,42 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper(null, null, null, $plugins, true);
         $expected = '<img class="icon--img" src="ltronly.png" aria-hidden="true"/>';
         $this->assertEquals($expected, trim($helper('ltronly')));
+    }
+
+    /**
+     * Test that we can use an alias
+     *
+     * @return void
+     */
+    public function testAlias(): void
+    {
+        $helper = $this->getIconHelper();
+        $expected = '<span class="icon--font fa&#x20;fa-foo" '
+            . 'role="img" aria-hidden="true"></span>';
+        // same is an alias for foo!
+        $this->assertEquals($expected, trim($helper('same')));
+    }
+
+    /**
+     * Test that we can detect a direct circular alias
+     *
+     * @return void
+     */
+    public function testDirectCircularAlias(): void
+    {
+        $this->expectExceptionMessage('Circular icon alias detected: foolish!');
+        ($this->getIconHelper())('foolish');
+    }
+
+    /**
+     * Test that we can detect an indirect circular alias
+     *
+     * @return void
+     */
+    public function testIndirectCircularAlias(): void
+    {
+        $this->expectExceptionMessage('Circular icon alias detected: illegal!');
+        ($this->getIconHelper())('illegal');
     }
 
     /**

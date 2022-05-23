@@ -463,7 +463,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return $cachedBlocks;
         }
 
-        $xml = $this->makeRequest('/users/' . $patronId);
+        $xml = $this->makeRequest('/users/' . rawurlencode($patronId));
         if ($xml == null || empty($xml)) {
             return false;
         }
@@ -737,12 +737,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         ];
 
         // Check for patron in Alma
-        $response = $this->makeRequest(
+        [$response, $status] = $this->makeRequest(
             '/users/' . rawurlencode($patronId),
-            $getParams
+            $getParams,
+            [],
+            'GET',
+            null,
+            null,
+            [400],
+            true
         );
 
-        if ($response !== null) {
+        if ($status != 400 && $response !== null) {
             // We may already have some information, so just fill the gaps
             $patron['id'] = (string)$response->primary_id;
             $patron['cat_username'] = trim($username);
@@ -836,7 +842,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyFines($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['id'] . '/fees'
+            '/users/' . rawurlencode($patron['id']) . '/fees'
         );
         $fineList = [];
         foreach ($xml as $fee) {
@@ -874,7 +880,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             = $this->config['Holds']['allowCancelingAvailableRequests'] ?? true;
         while ($offset < $totalCount) {
             $xml = $this->makeRequest(
-                '/users/' . $patron['id'] . '/requests',
+                '/users/' . rawurlencode($patron['id']) . '/requests',
                 ['request_type' => 'HOLD', 'offset' => $offset, 'limit' => 100]
             );
             $offset += 100;
@@ -1057,7 +1063,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyStorageRetrievalRequests($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['id'] . '/requests',
+            '/users/' . rawurlencode($patron['id']) . '/requests',
             ['request_type' => 'MOVE']
         );
         $holdList = [];
@@ -1097,7 +1103,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyILLRequests($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['id'] . '/requests',
+            '/users/' . rawurlencode($patron['id']) . '/requests',
             ['request_type' => 'MOVE']
         );
         $holdList = [];
@@ -1170,7 +1176,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Get user loans from Alma API
         $apiResult = $this->makeRequest(
-            '/users/' . $patronId . '/loans',
+            '/users/' . rawurlencode($patronId) . '/loans',
             $params
         );
 
@@ -1269,7 +1275,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             try {
                 // POST the renewals to Alma
                 $apiResult = $this->makeRequest(
-                    '/users/' . $patronId . '/loans/' . $loanId . '/?op=renew',
+                    '/users/' . rawurlencode($patronId) . '/loans/'
+                    . rawurlencode($loanId) . '/?op=renew',
                     [],
                     [],
                     'POST'
@@ -1575,12 +1582,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /almaws/v1/courses/{course_id}/reading-lists
-        $xml = $this->makeRequest('/courses/' . $courseID . '/reading-lists');
+        $listsBase = '/courses/' . rawurlencode($courseID) . '/reading-lists';
+        $xml = $this->makeRequest($listsBase);
         $reserves = [];
         foreach ($xml as $list) {
             $listId = $list->id;
             $listXML = $this->makeRequest(
-                "/courses/${$courseID}/reading-lists/${$listId}/citations"
+                $listsBase . '/' . rawurlencode($listId) . '/citations'
             );
             foreach ($listXML as $citation) {
                 $reserves[$citation->id] = $citation->metadata;

@@ -2,22 +2,22 @@
   <?php $params = $this->searchParams($this->searchClassId); ?>
   <?php foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
     <?php $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
-    <fieldset class="range">
+    <fieldset class="range" id="<?=$escField?>-range-container">
       <legend><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
       <input type="hidden" name="<?=$this->escapeHtmlAttr($current['type'])?>range[]" value="<?=$escField?>"/>
       <div class="date-fields">
         <div class="date-from">
-          <label for="<?=$escField?>from"><?=$this->transEsc('date_from')?>:</label>
+          <label for="<?=$escField?>from" id="<?=$escField?>from-label"><?=$this->transEsc('date_from')?>:</label>
           <input type="text" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" class="form-control" <?=$extraInputAttribs?>/>
         </div>
         <div class="date-to">
-          <label for="<?=$escField?>to"><?=$this->transEsc('date_to')?>:</label>
+          <label for="<?=$escField?>to" id="<?=$escField?>to-label"><?=$this->transEsc('date_to')?>:</label>
           <input type="text" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" class="form-control" <?=$extraInputAttribs?>/>
         </div>
       </div>
       <?php if ($current['type'] == 'date'): ?>
         <div class="slider-container">
-          <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
+          <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider"  aria-label="<?=$this->transEsc('slider_label', ['%%title%%' => $this->translate($params->getFacetLabel($current['field']))])?>">
         </div>
         <?php
           $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
@@ -49,6 +49,9 @@ $(document).ready(function() {
     })
     .on('change', fillTexts)
     .data('slider');
+
+  $("#{$escField}-range-container .slider-handle.min-slider-handle").attr("aria-labelledby", "{$escField}from-label");
+  $("#{$escField}-range-container .slider-handle.max-slider-handle").attr("aria-labelledby", "{$escField}to-label");
   {$init}
 });
 

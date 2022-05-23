@@ -103,7 +103,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Database connection
      *
-     * @var string
+     * @var PDO
      */
     protected $db;
 
@@ -304,6 +304,19 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get the database connection (and make sure it is initialized).
+     *
+     * @return PDO
+     */
+    protected function getDb()
+    {
+        if (!$this->db) {
+            $this->initDb();
+        }
+        return $this->db;
+    }
+
+    /**
      * Check if a table exists in the current database.
      *
      * @param string $table Table to search for.
@@ -318,16 +331,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             return $cachedValue;
         }
 
-        if (!$this->db) {
-            $this->initDb();
-        }
-
         $returnValue = false;
 
         // Try a select statement against the table
         // Run it in try/catch in case PDO is in ERRMODE_EXCEPTION.
         try {
-            $result = $this->db->query("SELECT 1 FROM $table LIMIT 1");
+            $result = $this->getDb()->query("SELECT 1 FROM $table LIMIT 1");
             // Result is FALSE (no table found) or PDOStatement Object (table found)
             $returnValue = $result !== false;
         } catch (PDOException $e) {
@@ -569,9 +578,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         if (!$this->locations) {
-            if (!$this->db) {
-                $this->initDb();
-            }
             if (!$this->pickupEnableBranchcodes) {
                 // No defaultPickupLocation is defined in config
                 // AND no pickupLocations are defined either
@@ -584,7 +590,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                             FROM items
                             WHERE itemnumber=($item_id)";
                     try {
-                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt = $this->getDb()->prepare($sql);
                         $sqlSt->execute();
                         $this->pickupEnableBranchcodes = $sqlSt->fetch();
                     } catch (PDOException $e) {
@@ -600,7 +606,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                             FROM items
                             WHERE biblionumber=($id)";
                     try {
-                        $sqlSt = $this->db->prepare($sql);
+                        $sqlSt = $this->getDb()->prepare($sql);
                         $sqlSt->execute();
                         foreach ($sqlSt->fetchAll() as $row) {
                             $this->pickupEnableBranchcodes[] = $row['holdingbranch'];
@@ -620,7 +626,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     FROM branches
                     WHERE branchcode IN ($branchcodes)";
             try {
-                $sqlSt = $this->db->prepare($sql);
+                $sqlSt = $this->getDb()->prepare($sql);
                 $sqlSt->execute();
                 $this->locations = $sqlSt->fetchAll();
             } catch (PDOException $e) {
@@ -713,7 +719,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         // that allowed multiple holds from the same user to the same item
         $sql = "select count(*) as RCOUNT from reserves where borrowernumber = :rid "
             . "and itemnumber = :iid";
-        $reservesSqlStmt = $this->db->prepare($sql);
+        $reservesSqlStmt = $this->getDb()->prepare($sql);
         $reservesSqlStmt->execute([':rid' => $patron_id, ':iid' => $item_id]);
         $reservesCount = $reservesSqlStmt->fetch()["RCOUNT"];
 
@@ -855,21 +861,18 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 . "WHERE biblionumber = :id), "
                . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
         }
-        if (!$this->db) {
-            $this->initDb();
-        }
         try {
-            $itemSqlStmt = $this->db->prepare($sql);
+            $itemSqlStmt = $this->getDb()->prepare($sql);
             $itemSqlStmt->execute(
                 [
                     ':id' => $id,
                     ':av_category' => $this->locationAuthorisedValuesCategory,
                 ]
             );
-            $sqlStmtReserves = $this->db->prepare($sqlReserves);
-            $sqlStmtWaitingReserve = $this->db->prepare($sqlWaitingReserve);
+            $sqlStmtReserves = $this->getDb()->prepare($sqlReserves);
+            $sqlStmtWaitingReserve = $this->getDb()->prepare($sqlWaitingReserve);
             $sqlStmtReserves->execute([':id' => $id]);
-            $sqlStmtHoldings = $this->db->prepare($sqlHoldings);
+            $sqlStmtHoldings = $this->getDb()->prepare($sqlHoldings);
             $sqlStmtHoldings->execute([':id' => $id]);
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
@@ -898,7 +901,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 case 0:
                     // If the item is available for loan, then check its current
                     // status
-                    $issueSqlStmt = $this->db->prepare($sql);
+                    $issueSqlStmt = $this->getDb()->prepare($sql);
                     $issueSqlStmt->execute([':inum' => $inum]);
                     $rowIssue = $issueSqlStmt->fetch();
                     if ($rowIssue) {
@@ -953,12 +956,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $branch = $rowItem['HLDBRNCH'] ?? $rowItem['HOMEBRANCH'] ?? '';
             }
 
-            //Retrieving the full branch name
-            if ($loc != "Unknown") {
-                $sqlBranch = "select branchname as BNAME
+            $sqlBranch = "select branchname as BNAME
                               from branches
                               where branchcode = :branch";
-                $branchSqlStmt = $this->db->prepare($sqlBranch);
+            $branchSqlStmt = $this->getDb()->prepare($sqlBranch);
+            //Retrieving the full branch name
+            if ($loc != "Unknown") {
                 $branchSqlStmt->execute([':branch' => $branch]);
                 $row = $branchSqlStmt->fetch();
                 if ($row) {
@@ -1058,13 +1061,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                       INTERVAL -$daysOld day)
                 ORDER BY dateaccessioned DESC";
 
-        if (!$this->db) {
-            $this->initDb();
-        }
-
         $this->debug($sql);
 
-        $itemSqlStmt = $this->db->prepare($sql);
+        $itemSqlStmt = $this->getDb()->prepare($sql);
         $itemSqlStmt->execute();
 
         $rescount = 0;
@@ -1119,78 +1118,85 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $row = $sql = $sqlStmt = '';
         try {
             $id = $patron['id'];
-            $sql = "SELECT al.amount*100 as amount, " .
-                   "al.amountoutstanding*100 as balance, al.accounttype as fine, " .
-                   "al.date as createdat, items.biblionumber as id, " .
-                   "al.description as title, issues.date_due as duedate, " .
-                   "issues.issuedate as issuedate " .
-                   "FROM `accountlines` al " .
-                   "LEFT JOIN items USING (itemnumber) " .
-                   "LEFT JOIN issues USING (issue_id) " .
-                   "WHERE al.borrowernumber = :id ";
-            if (!$this->db) {
-                $this->initDB();
-            }
-            $sqlStmt = $this->db->prepare($sql);
+            $sql = "SELECT al.amount*100 as amount, "
+                . "al.amountoutstanding*100 as balance, "
+                . "COALESCE(al.credit_type_code, al.debit_type_code) as fine, "
+                . "al.date as createdat, items.biblionumber as id, "
+                . "al.description as title, issues.date_due as duedate, "
+                . "issues.issuedate as issuedate "
+                . "FROM `accountlines` al "
+                . "LEFT JOIN items USING (itemnumber) "
+                . "LEFT JOIN issues USING (issue_id) "
+                . "WHERE al.borrowernumber = :id ";
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 switch ($row['fine']) {
-                case 'A':
-                    $fineValue = "Account Management Fee";
+                case 'ACCOUNT':
+                    $fineValue = 'Account creation fee';
                     break;
-                case 'C':
-                    $fineValue = "Credit";
+                case 'ACCOUNT_RENEW':
+                    $fineValue = 'Account renewal fee';
                     break;
-                case "CR":
-                    $fineValue = "Credit for Returning Lost Book";
+                case 'LOST':
+                    $fineValue = 'Lost item';
                     break;
-                case "Copie":
-                    $fineValue = "Copier Fee";
+                case 'MANUAL':
+                    $fineValue = 'Manual fee';
                     break;
-                case 'F':
-                    $fineValue = "Overdue Fine";
+                case 'NEW_CARD':
+                    $fineValue = 'New card';
                     break;
-                case "FFOR":
-                    $fineValue = "Forgiven Overdue Fine";
+                case 'OVERDUE':
+                    $fineValue = 'Fine';
                     break;
-                case "FOR":
-                    $fineValue = "Forgiven";
+                case 'PROCESSING':
+                    $fineValue = 'Lost item processing fee';
                     break;
-                case "FU":
-                    $fineValue = "Overdue Fine";
+                case 'RENT':
+                    $fineValue = 'Rental fee';
                     break;
-                case 'L':
-                    $fineValue = "Lost Item";
+                case 'RENT_DAILY':
+                    $fineValue = 'Daily rental fee';
                     break;
-                case "LR":
-                    $fineValue = "Lost and Returned";
+                case 'RENT_RENEW':
+                    $fineValue = 'Renewal of rental item';
                     break;
-                case 'M':
-                    $fineValue = "Sundry";
+                case 'RENT_DAILY_RENEW':
+                    $fineValue = 'Renewal of daily rental item';
                     break;
-                case 'N':
-                    $fineValue = "New Card";
+                case 'RESERVE':
+                    $fineValue = 'Hold fee';
                     break;
-                case 'O':
-                    $fineValue = "Overdue Fine";
+                case 'RESERVE_EXPIRED':
+                    $fineValue = 'Hold waiting too long';
                     break;
-                case "Pay":
-                    $fineValue = "Payment";
+                case 'Payout':
+                    $fineValue = 'Payout';
                     break;
-                case "REF":
-                    $fineValue = "Refund";
+                case 'PAYMENT':
+                    $fineValue = 'Payment';
                     break;
-                case "Rent":
-                    $fineValue = "Rental Fee";
+                case 'WRITEOFF':
+                    $fineValue = 'Writeoff';
                     break;
-                case "Rep":
-                    $fineValue = "Replacement";
+                case 'FORGIVEN':
+                    $fineValue = 'Forgiven';
                     break;
-                case "Res":
-                    $fineValue = "Reserve Charge";
+                case 'CREDIT':
+                    $fineValue = 'Credit';
                     break;
-                case 'W':
-                    $fineValue = "Charge Written Off";
+                case 'LOST_FOUND':
+                    $fineValue = 'Lost item fee refund';
+                    break;
+                case 'OVERPAYMENT':
+                    $fineValue = 'Overpayment refund';
+                    break;
+                case 'REFUND':
+                    $fineValue = 'Refund';
+                    break;
+                case 'CANCELLATION':
+                    $fineValue = 'Cancelled charge';
                     break;
                 default:
                     $fineValue = "Unknown Charge";
@@ -1407,15 +1413,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $blocks = [];
 
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
             $id = $patron['id'];
             $sql = "select type as TYPE, comment as COMMENT " .
                 "from borrower_debarments " .
                 "where (expiration is null or expiration >= NOW()) " .
                 "and borrowernumber = :id";
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
 
             foreach ($sqlStmt->fetchAll() as $row) {
@@ -1457,15 +1460,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $historicLoans = [];
         $row = $sql = $sqlStmt = '';
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
             $id = $patron['id'];
 
             // Get total count first
             $sql = "select count(*) as cnt from old_issues " .
                 "where old_issues.borrowernumber = :id";
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             $totalCount = $sqlStmt->fetch()['cnt'];
 
@@ -1499,7 +1499,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 "join biblio on items.biblionumber = biblio.biblionumber " .
                 "where old_issues.borrowernumber = :id " .
                 "order by $sort limit $start,$limit";
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
 
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
@@ -1656,10 +1656,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     public function getPurchaseHistory($id)
     {
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
-
             $sql = "SELECT b.title, b.biblionumber,
                        CONCAT(s.publisheddate, ' / ',s.serialseq)
                          AS 'date and enumeration'
@@ -1668,7 +1664,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     WHERE s.STATUS=2 and b.biblionumber = :id
                     ORDER BY s.publisheddate DESC";
 
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute(['id' => $id]);
 
             $result = [];
@@ -1729,10 +1725,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     public function getSuppressedRecords()
     {
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
-
             if ($this->tableExists("biblio_metadata")) {
                 $sql = "SELECT biblio.biblionumber AS biblionumber
                       FROM biblio
@@ -1749,7 +1741,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         marcxml, '//datafield[@tag=\"942\"]/subfield[@code=\"n\"]' )
                         IN ('Y', '1')";
             }
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute();
             $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
@@ -1776,10 +1768,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                  INNER JOIN `authorised_values`
                     ON courses.department = `authorised_values`.`authorised_value`";
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute();
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $deptList[$rowItem["abv"]] = $rowItem["DEPARTMENT"];
@@ -1806,10 +1795,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                  LEFT JOIN borrowers USING(borrowernumber)";
 
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute();
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $instList[$rowItem["borrowernumber"]] = $rowItem["name"];
@@ -1835,10 +1821,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                  FROM courses
                  WHERE enabled = 1";
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute();
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $courseList[$rowItem["course_id"]] = $rowItem["course"];
@@ -1899,10 +1882,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 WHERE courses.enabled = 'yes' " . $reserveWhere;
 
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
-            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt = $this->getDb()->prepare($sql);
             $sqlStmt->execute($bindParams);
             $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
@@ -1979,9 +1959,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function changePassword($detail)
     {
-        if (!$this->db) {
-            $this->initDb();
-        }
         $sql = "UPDATE borrowers SET password = ? WHERE borrowernumber = ?";
         $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $max = mb_strlen($keyspace, '8bit') - 1;
@@ -1992,7 +1969,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $salt = base64_encode($salt);
         $newPassword_hashed = crypt($detail['newPassword'], '$2a$08$' . $salt);
         try {
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->getDb()->prepare($sql);
             $result = $stmt->execute(
                 [ $newPassword_hashed, $detail['patron']['id'] ]
             );

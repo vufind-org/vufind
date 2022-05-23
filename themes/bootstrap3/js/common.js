@@ -9,6 +9,9 @@ var VuFind = (function VuFind() {
   var path = null;
   var _initialized = false;
   var _submodules = [];
+  var _cspNonce = '';
+
+  var _icons = {};
   var _translations = {};
 
   // Emit a custom event
@@ -72,7 +75,7 @@ var VuFind = (function VuFind() {
     }
   };
   var translate = function translate(op, _replacements) {
-    var replacements = _replacements || [];
+    var replacements = _replacements || {};
     var translation = _translations[op] || op;
     if (replacements) {
       for (var key in replacements) {
@@ -82,6 +85,34 @@ var VuFind = (function VuFind() {
       }
     }
     return translation;
+  };
+
+  var addIcons = function addIcons(s) {
+    for (var i in s) {
+      if (Object.prototype.hasOwnProperty.call(s, i)) {
+        _icons[i] = s[i];
+      }
+    }
+  };
+  var icon = function icon(name) {
+    if (typeof _icons[name] == "undefined") {
+      console.error("JS icon missing: " + name);
+      return name;
+    }
+
+    var html = _icons[name];
+
+    return html;
+  };
+  // Icon shortcut methods
+  var spinner = function spinner(extraClass = "") {
+    let className = ("loading-spinner " + extraClass).trim();
+    return '<span class="' + className + '">' + icon('spinner') + '</span>';
+  };
+  var loading = function loading(text = null, extraClass = "") {
+    let className = ("loading-spinner " + extraClass).trim();
+    let string = translate(text === null ? 'loading_ellipsis' : text);
+    return '<span class="' + className + '">' + icon('spinner') + string + '</span>';
   };
 
   /**
@@ -100,18 +131,54 @@ var VuFind = (function VuFind() {
     }
   };
 
+  var getCspNonce = function getCspNonce() {
+    return _cspNonce;
+  };
+
+  var setCspNonce = function setCspNonce(nonce) {
+    _cspNonce = nonce;
+  };
+
+  var updateCspNonce = function updateCspNonce(html) {
+    // Fix any inline script nonces
+    return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
+  };
+
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var $elem = $(_element);
+    if ($elem.length === 0) {
+      return;
+    }
+    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
+      if ('success' === textStatus || 'notmodified' === textStatus) {
+        $elem.html(updateCspNonce(responseText));
+      }
+      if (typeof success !== 'undefined') {
+        success(responseText, textStatus, jqXhr);
+      }
+    });
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
     path: path,
 
+    addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    getCspNonce: getCspNonce,
+    icon: icon,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
-    translate: translate
+    setCspNonce: setCspNonce,
+    spinner: spinner,
+    loadHtml: loadHtml,
+    loading: loading,
+    translate: translate,
+    updateCspNonce: updateCspNonce
   };
 })();
 
@@ -267,7 +334,7 @@ function setupAutocomplete() {
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
-    loadingString: VuFind.translate('loading') + '...',
+    loadingString: VuFind.translate('loading_ellipsis'),
     // Auto-submit selected item
     callback: acCallback,
     // AJAX call for autocomplete results
@@ -455,19 +522,6 @@ $(document).ready(function commonDocReady() {
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
-    $(document).ajaxStop(function triggerPrint() {
-      // Print dialogs cause problems during testing, so disable them
-      // when the "test mode" cookie is set. This should never happen
-      // under normal usage outside of the Phing startup process.
-      if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
-        window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
-        window.print();
-      } else {
-        console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
-      }
-    });
-    // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   setupIeSupport();

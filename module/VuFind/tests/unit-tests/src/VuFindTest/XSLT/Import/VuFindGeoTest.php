@@ -139,12 +139,11 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
         ];
         $logger = $this->getLogger();
         foreach ($badInputs as $input) {
-            extract($input);
             // When one or more coordinates are missing, we expect a null return:
-            $this->assertNull(VuFindGeo::getDisplayCoordinatesFromCoverage($data));
-            $this->assertEquals($error, $logger->popMessage());
-            $this->assertNull(VuFindGeo::getAllCoordinatesFromCoverage($data));
-            $this->assertEquals($error, $logger->popMessage());
+            $this->assertNull(VuFindGeo::getDisplayCoordinatesFromCoverage($input['data']));
+            $this->assertEquals($input['error'], $logger->popMessage());
+            $this->assertNull(VuFindGeo::getAllCoordinatesFromCoverage($input['data']));
+            $this->assertEquals($input['error'], $logger->popMessage());
         }
     }
 }

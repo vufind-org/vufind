@@ -1,19 +1,22 @@
 /* global VuFind */
 
 VuFind.register('truncate', function Truncate() {
-  const defaultSettings = {
-    'btn-class': '',
-    'in-place-toggle': false,
-    'label': null,
-    'less-label': VuFind.translate('show_less'),
-    'more-label': VuFind.translate('show_more'),
-    'rows': 3,
-    'top-toggle': Infinity,
-    'wrapper-class': '', // '' will glean from element, false or null will exclude a class
-    'wrapper-tagname': null, // falsey values will glean from element
-  };
-
   function initTruncate(_container, _element, _fill) {
+    const defaultSettings = {
+      'btn-class': '',
+      'in-place-toggle': false,
+      'label': null,
+      'less-icon': '<i class="fa fa-arrow-up" aria-hidden="true"></i>',
+      'less-label': VuFind.translate('less_ellipsis'),
+      'more-icon': '<i class="fa fa-arrow-down" aria-hidden="true"></i>',
+      'more-label': VuFind.translate('more_ellipsis'),
+      'rows': 3,
+      'top-toggle': Infinity,
+      'wrapper-class': '', // '' will glean from element, false or null will exclude a class
+      'wrapper-tagname': null, // falsey values will glean from element
+      'label-icons': 'before' // 'after' = icon after label, 'before' = icon before label, false = no icons
+    };
+
     var zeroHeightContainers = [];
 
     $(_container).not('.truncate-done').each(function truncate() {
@@ -26,7 +29,7 @@ VuFind.register('truncate', function Truncate() {
           ? container.find(settings.element)
           : false;
       var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
-      var rowCount = settings.rows;
+      var maxRows = parseFloat(settings.rows);
       var moreLabel, lessLabel;
       moreLabel = lessLabel = settings.label;
       if (moreLabel === null) {
@@ -48,7 +51,7 @@ VuFind.register('truncate', function Truncate() {
         // Element-based truncation
         parent = element.parent();
         numRows = container.find(element).length || 0;
-        shouldTruncate = rowCount < numRows;
+        shouldTruncate = numRows > maxRows;
 
         if (wrapperClass === '') {
           wrapperClass = element.length ? element.prop('class') : '';
@@ -59,10 +62,10 @@ VuFind.register('truncate', function Truncate() {
 
         if (shouldTruncate) {
           element.each(function hideRows(i) {
-            if (i === rowCount) {
+            if (i === maxRows) {
               $(this).addClass('truncate-start');
             }
-            if (i >= rowCount) {
+            if (i >= maxRows) {
               $(this).hide();
               toggleElements.push(this);
             }
@@ -86,18 +89,28 @@ VuFind.register('truncate', function Truncate() {
         } else {
           rowHeight = parseFloat(container.css('line-height').replace('px', ''));
         }
-        numRows = Math.ceil(container.height() / rowHeight);
-        shouldTruncate = rowCount < numRows;
+        numRows = container.height() / rowHeight;
+        // Truncate only if it saves at least 1.5 rows. This accounts for the room
+        // the more button takes as well as any fractional imprecision.
+        shouldTruncate = maxRows === 0 || maxRows !== 0 && numRows > maxRows + 1.5;
 
         if (shouldTruncate) {
-          truncatedHeight = rowCount * rowHeight;
+          truncatedHeight = maxRows * rowHeight;
           container.css('height', truncatedHeight + 'px');
         }
       }
 
       if (shouldTruncate) {
-        var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button>';
-        var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+        var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">'
+          + (settings['label-icons'] === 'before' ? settings['more-icon'] + ' ' : '')
+          + '<span>' + moreLabel + '</span>'
+          + (settings['label-icons'] === 'after' ? ' ' + settings['more-icon'] : '')
+          + '</button>';
+        var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">'
+          + (settings['label-icons'] === 'before' ? settings['less-icon'] + ' ' : '')
+          + '<span>' + lessLabel + '</span>'
+          + (settings['label-icons'] === 'after' ? ' ' + settings['less-icon'] : '')
+          + '</button>';
 
         wrapperClass = wrapperClass ? ' ' + wrapperClass : '';
         wrapperTagName = wrapperTagName || 'div';
