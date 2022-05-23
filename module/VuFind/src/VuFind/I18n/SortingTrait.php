@@ -29,6 +29,8 @@ declare(strict_types=1);
  */
 namespace VuFind\I18n;
 
+use VuFind\Exception\BadConfig as BadConfigException;
+
 /**
  * Trait SortingTrait
  *
@@ -66,6 +68,9 @@ trait SortingTrait
      */
     public function getSorter(): SorterInterface
     {
-        return $this->sorter ?? new Sorter();
+        if (null === $this->sorter) {
+            throw new BadConfigException('Sorter class is not set.');
+        }
+        return $this->sorter;
     }
 }
