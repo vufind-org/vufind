@@ -19,21 +19,15 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     }
     item.setAttribute('title', facet.displayText);
     item.setAttribute('role', 'menuitem');
-    var icon = document.createElement('span');
-    icon.className = "hierarchy-facet-icon";
     if (facet.operator === 'OR') {
-      if (facet.isApplied) {
-        icon.innerHTML = VuFind.icon("facet-checked");
-      } else {
-        icon.innerHTML = VuFind.icon("facet-unchecked");
-      }
-    } else if (facet.isApplied) {
-      icon.innerHTML = VuFind.icon("facet-checked", { class: "pull-right", title: selected });
+      var icon = document.createElement('span');
+      icon.className = "hierarchy-facet-icon";
+      icon.innerHTML = VuFind.icon(facet.isApplied ? "facet-checked" : "facet-unchecked");
+      item.appendChild(icon);
     }
     var description = document.createElement('span');
     description.className = 'facet-value';
     description.appendChild(document.createTextNode(facet.displayText));
-    item.appendChild(icon);
     item.appendChild(description);
     html.appendChild(item);
 
@@ -139,6 +133,10 @@ VuFind.register('sideFacets', function SideFacets() {
       + VuFind.loading()
       + "</span></div>";
     $(this).closest(".collapse").append(overlay);
+    if (typeof data !== "undefined") {
+      // Remove jstree-clicked class from JSTree links to avoid the color change:
+      data.instance.get_node(data.node, true).children().removeClass('jstree-clicked');
+    }
     // This callback operates both as a click handler and a JSTree callback;
     // if the data element is undefined, we assume we are handling a click.
     var href = typeof data === "undefined" || typeof data.node.data.url === "undefined"
