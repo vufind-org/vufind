@@ -105,13 +105,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $display = '';
         foreach ($references as $reference) {
             $image = $tuefindHelper->getDetailsIcon($reference['title']);
-            print_r($image);
             if ($image == null) {
-	        $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"><i class="fa fa-external-link"></i> ' . htmlspecialchars($reference['title']) . '</a><br>';
-	    }
-	    else {
-	        $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"> <img class="detailsIcon" src="'.$image.'"/>' . htmlspecialchars($reference['title']) . '</a><br>';
-	    }
+                $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"><i class="fa fa-external-link"></i> ' . htmlspecialchars($reference['title']) . '</a><br>';
+            }
+            else {
+                $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs"> <img class="detailsIcon" src="'.$image.'"/>' . htmlspecialchars($reference['title']) . '</a><br>';
+            }
         }
 
         return $display;
