@@ -186,6 +186,13 @@ trait ConcatTrait
                 $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+
+            if (null === $details) {
+                // Check for files in vendor
+                $details = $this->themeInfo
+                    ->findInPackage($item->attributes['src']);
+            }
+
             // Deal with special case: $path was not found in any theme.
             if (null === $details) {
                 $errorMsg = "Could not find file '$path' in theme files";
@@ -306,6 +313,9 @@ trait ConcatTrait
                 . $this->getResourceFilePath($item),
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+            if (null === $details) {
+                $details = $this->themeInfo->findInPackage($item->attributes['src']);
+            }
             $details['path'] = realpath($details['path']);
             $data[] = $this->getMinifiedData($details, $concatPath);
         }
@@ -416,7 +426,7 @@ trait ConcatTrait
      *
      * @return bool
      */
-    protected function isPipelineActive()
+    public function isPipelineActive()
     {
         if ($this->usePipeline) {
             try {

@@ -378,4 +378,27 @@ class ThemeInfo
         }
         return array_values($results);
     }
+
+    /**
+     * Search vendor directory for a file.
+     *
+     * @param string $filePath Relative path to file
+     * @param string $fileType Specified file extension
+     *
+     * @return array|null
+     */
+    public function findInPackage($filePath, $fileType = 'js')
+    {
+        if (strpos($filePath, 'vendor') !== false
+            && file_exists($filePath) && is_file($filePath)
+            && pathinfo($filePath, PATHINFO_EXTENSION) === $fileType
+        ) {
+            return [
+                'path' => $filePath,
+                'type' => $fileType
+            ];
+        }
+
+        return null;
+    }
 }

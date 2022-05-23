@@ -32,7 +32,7 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\View\Helper\HeadLink;
+use VuFindTheme\View\Helper\HeadScript;
 
 /**
  * Factory for InjectTemplateListener
@@ -40,6 +40,7 @@ use Laminas\View\Helper\HeadLink;
  * @category VuFind
  * @package  Theme
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @author   Robert Lange <lange@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org Main Site
  */
@@ -110,19 +111,29 @@ class InjectTemplateListenerFactory implements FactoryInterface
     ): void {
         $templatePathStack = $config['view_manager']['template_path_stack'] ?? false;
         if ($templatePathStack) {
+            /* @var HeadScript $headScript */
             $headScript = $container->get('ViewHelperManager')->get('headScript');
             foreach ($templatePathStack as $templatePath) {
                 if (file_exists($mixin = $templatePath . '/../mixin.config.php')) {
                     $resourceContainer = $container
                         ->get(\VuFindTheme\ResourceContainer::class);
                     $resources = include $mixin;
-                    foreach ($resources as $resourceType => $resourceFiles) {
-                        switch ($resourceType) {
+                    foreach ($resources as $type => $files) {
+                        switch ($type) {
                         case 'js':
-                            foreach ($resourceFiles as $file) {
-                                $headScript->appendScript(
-                                    file_get_contents(dirname($mixin) . "/$resourceType/$file")
-                                );
+                            foreach ($files as $file) {
+                                $path = realpath(dirname($mixin) . "/$type/$file");
+                                if (file_exists($path)) {
+                                    if ($headScript->isPipelineActive()) {
+                                        $headScript->appendFile(
+                                            $path
+                                        );
+                                    } else {
+                                        $headScript->appendScript(
+                                            file_get_contents($path)
+                                        );
+                                    }
+                                }
                             }
                         }
                     }
