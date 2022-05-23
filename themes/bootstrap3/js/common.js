@@ -463,9 +463,11 @@ function setupQRCodeLinks(_container) {
 
   container.find('a.qrcodeLink').click(function qrcodeToggle() {
     if ($(this).hasClass("active")) {
-      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
+      $(".result-link-label", this).html(VuFind.translate('qrcode_show'));
+      $(this).removeClass("active");
     } else {
-      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
+      $(".result-link-label", this).html(VuFind.translate('qrcode_hide'));
+      $(this).addClass("active");
     }
 
     var holder = $(this).next('.qrcode');

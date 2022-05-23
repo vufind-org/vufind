@@ -190,15 +190,18 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: .25rem;
 }
 
+.btn-bookbag-toggle,
 .result-links a {
   display: inline-flex;
   text-decoration: none;
 }
-.result-link-icon {
+.result-link-icon,
+.cart-link-icon {
   flex: none;
   line-height: inherit;
 }
-.result-link-label {
+.result-link-label,
+.cart-link-label {
   text-decoration: underline;
 }
 
@@ -206,13 +209,7 @@ header .container.navbar { margin-bottom: 0; }
 .result-formats { margin-bottom: .5rem; }
 
 .btn-bookbag-toggle form { display: inline; }
-.cart-link-icon.fa { margin-right: .3rem; }
-.result .cart-link-icon {
-  color: @text-color;
-  /* .fa-fw */
-  width: 1.28571429em;
-  text-align: center;
-}
+
 .savedLists {
   &:extend(.alert);
   &:extend(.alert-info);
