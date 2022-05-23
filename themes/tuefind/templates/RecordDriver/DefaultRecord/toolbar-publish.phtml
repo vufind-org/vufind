@@ -3,7 +3,8 @@
   $recordId = $routeParams['id'];
   $config = $this->tuefind()->getConfig('tuefind');
   $publication = $this->tuefind()->getPublicationByControlNumber($recordId);
-  $userAccess = $this->tuefind()->getUserAccessState($this->driver->getUniqueId(), $this->user->id ?? null);
+  $authors = $this->driver->getDeduplicatedAuthors();
+  $accessPublishRecord = $this->tuefind()->getUserAccessPublishRecord($user->id, $authors);
   $showDspaceLink = false;
   if (isset($publication)) {
       $showDspaceLink = true;
@@ -15,7 +16,7 @@
     <?php if($showDspaceLink) {?>
       <a class="toolbar-btn btn-type-publish" href="<?=$dspaceLink;?>">go to file</a>
     <?php }else{
-      if($userAccess) { ?>
+      if($accessPublishRecord) { ?>
         <a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Publish')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a>
     <?php } } ?>
   </li>

@@ -10,7 +10,10 @@ class RecordController extends \VuFind\Controller\RecordController {
      */
     public function homeAction()
     {
+
+        $user = $this->getUser();
         $this->loadRecord();
+
         if (isset($this->driver->isFallback) && $this->driver->isFallback) {
             $params = [ 'driver' => $this->driver,
                         'originalId' => $this->params()->fromRoute('id', $this->params()->fromQuery('id'))];
@@ -21,11 +24,12 @@ class RecordController extends \VuFind\Controller\RecordController {
                 $view = $this->createViewModel($params);
                 $view->setTemplate($template[1]);
                 $this->getResponse()->setStatusCode(301);
+                $view->user = $user;
                 return $view;
             }
         } else {
             $view = parent::homeAction();
-            $view->user = $this->getUser();
+            $view->user = $user;
             return $view;
         }
 
