@@ -73,7 +73,7 @@ class Terms implements IteratorAggregate
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->terms->getIterator();
     }

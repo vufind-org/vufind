@@ -16,7 +16,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?php if (!empty($this->alertemail)): ?>
     <div class="alert alert-info alert-email-notification">
-      <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail ?>
+      <?=$this->transEsc("alert_email_address") . ': ' . $this->escapeHtml($this->alertemail) ?>
       <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
         (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
       <?php endif; ?>
