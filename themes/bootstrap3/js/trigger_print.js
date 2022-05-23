@@ -1,6 +1,6 @@
 /* global VuFind */
 
-function waitForItemStatusesPromise(fn) {
+function waitForItemStatuses(fn) {
   var itemDone = false;
   var saveDone = false;
 
@@ -30,7 +30,7 @@ $(document).ready(function triggerPrint() {
     setTimeout(fn, 10);
   }
 
-  waitForItemStatusesPromise(function waitForAjax() {
+  waitForItemStatuses(function waitForAjax() {
     $(document).one('ajaxStop', function doTriggerPrint() {
       // Print dialogs cause problems during testing, so disable them
       // when the "test mode" cookie is set. This should never happen

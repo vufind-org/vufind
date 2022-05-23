@@ -139,10 +139,10 @@ function checkSaveStatuses(_container) {
         id: idval,
         source: $source.val()
       }, $(ajaxItems[i]));
-    } else {
-      VuFind.emit("save-status-done");
     }
   }
+
+  VuFind.emit("save-status-done");
 }
 
 function checkSaveStatusesCallback() {
