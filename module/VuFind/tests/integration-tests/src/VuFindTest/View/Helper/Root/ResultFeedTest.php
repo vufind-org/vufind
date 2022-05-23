@@ -135,6 +135,9 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         // Make sure custom Dublin Core elements are present:
         $this->assertTrue(strstr($rss, 'dc:format') !== false);
 
+        // Make sure custom Atom link elements are present:
+        $this->assertTrue(strstr($rss, 'atom:link') !== false);
+
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(

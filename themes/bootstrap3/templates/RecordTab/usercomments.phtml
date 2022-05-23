@@ -17,7 +17,7 @@
       <?php if ($this->tab->isCaptchaActive()): ?>
         <?=$this->captcha()->html(true, false) ?>
       <?php endif; ?>
-      <input class="btn btn-primary" data-loading-text="<?=$this->transEscAttr('Submitting') ?>..." type="submit" value="<?=$this->transEscAttr("Add your comment")?>"/>
+      <input class="btn btn-primary" data-loading-text="<?=$this->transEscAttr('Submitting') ?>" type="submit" value="<?=$this->transEscAttr("Add your comment")?>"/>
     </div>
   <?php else: ?>
     <?php $singleSignOn = $this->auth()->getManager()->getSessionInitiator($this->serverUrl(true)); ?>

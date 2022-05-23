@@ -7,9 +7,9 @@ VuFind.register('truncate', function Truncate() {
       'in-place-toggle': false,
       'label': null,
       'less-icon': '<i class="fa fa-arrow-up" aria-hidden="true"></i>',
-      'less-label': VuFind.translate('less'),
+      'less-label': VuFind.translate('less_ellipsis'),
       'more-icon': '<i class="fa fa-arrow-down" aria-hidden="true"></i>',
-      'more-label': VuFind.translate('more'),
+      'more-label': VuFind.translate('more_ellipsis'),
       'rows': 3,
       'top-toggle': Infinity,
       'wrapper-class': '', // '' will glean from element, false or null will exclude a class

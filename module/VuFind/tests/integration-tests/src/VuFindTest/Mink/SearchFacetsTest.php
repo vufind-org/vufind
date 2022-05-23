@@ -134,7 +134,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study of %\'s? 1 ' . $excludeControl
             . 'The Study of +\'s? 1 ' . $excludeControl
             . 'The Study of @Twitter #test 1 ' . $excludeControl
-            . 'more ...',
+            . 'more…',
             $this->findCss($page, '#modal #facet-list-count')->getText()
         );
         $excludes = $page
@@ -151,7 +151,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study Of P|pes 1 ' . $excludeControl
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 ' . $excludeControl
             . 'The Study of "Important" Things 1 ' . $excludeControl
-            . 'more ...',
+            . 'more…',
             $this->findCss($page, '#modal #facet-list-index')->getText()
         );
         $excludes = $page
@@ -318,7 +318,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
         $this->assertEquals('level1a/level2a', $filter->getText());
-        $this->findCss($page, '#j1_2 .fa-check');
+        $this->findCss($page, '#j1_2 .applied');
     }
 
     /**

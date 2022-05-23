@@ -67,7 +67,7 @@ class Query extends AbstractQuery
      * @param string $handler  Name of search handler
      * @param string $operator Operator to apply to query string (null if n/a)
      */
-    public function __construct($string = null, $handler = null, $operator = null)
+    public function __construct($string = '', $handler = null, $operator = null)
     {
         $this->queryHandler = $handler ? $handler : null;
         $this->queryString  = $string;
