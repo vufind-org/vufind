@@ -37,7 +37,7 @@
   <?php endif ?>
 
   <?php $currentGroup = null; ?>
-  <?php foreach($form->getElements() as $el): ?>
+  <?php foreach($form->getFormElementConfig() as $el): ?>
     <?php
     $formElement = $form->get($el['name']);
 
@@ -76,7 +76,7 @@
       <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
         <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($el['name']) . '"' : ''?>>
       <?php else: ?>
-        <div class="field-set">
+        <div class="field-set"<?= !empty($elementHelpPre) ? ' role="contentinfo" aria-label="' . $this->escapeHtmlAttr($elementHelpPre) . '"' : ''?>>
       <?php endif ?>
     <?php endif ?>
 

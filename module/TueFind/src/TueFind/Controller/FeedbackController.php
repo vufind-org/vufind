@@ -11,9 +11,9 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
 
     /**
      * Handles rendering and submit of dynamic forms.
-     * Form configurations are specified in FeedbackForms.json
+     * Form configurations are specified in FeedbackForms.yaml.
      *
-     * @return void
+     * @return mixed
      */
     public function formAction()
     {
@@ -24,11 +24,13 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
+        $form = $this->serviceLocator->get($this->formClass);
         $params = [];
-        if ($refererHeader = $this->getRequest()->getHeader('Referer')
-        ) {
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
             $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        if ($userAgentHeader = $this->getRequest()->getHeader('User-Agent')) {
+            $params['userAgent'] = $userAgentHeader->getFieldValue();
         }
         $form->setFormId($formId, $params);
 
@@ -57,10 +59,11 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             return $view;
         }
 
-        list($messageParams, $template)
+        [$messageParams, $template]
             = $form->formatEmailMessage($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
-            $template, ['fields' => $messageParams]
+            $template,
+            ['fields' => $messageParams]
         );
         $emailMessage .= "----------------------------------------------------------------------------------------------\n";
         $emailMessage .= "Aktuelle Seite: " . $this->getRequest()->getHeaders("Referer")->getUri() . "\n";
@@ -68,7 +71,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $emailMessage .= "Cookies:        " . htmlentities($this->getRequest()->getCookie()->getFieldValue()) . "\n";
         $emailMessage .= "----------------------------------------------------------------------------------------------\n\n";
 
-        list($senderName, $senderEmail) = $this->getSender();
+        [$senderName, $senderEmail] = $this->getSender($form);
 
         $replyToName = $params->fromPost(
             'name',
@@ -91,16 +94,25 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
 
         $sendSuccess = true;
         foreach ($recipients as $recipient) {
-            list($success, $errorMsg) = $this->sendEmail(
-                $recipient['name'], $recipient['email'], $senderName, $senderEmail,
-                $replyToName, $replyToEmail, $emailSubject, $emailMessage,
+            [$success, $errorMsg] = $this->sendEmail(
+                $recipient['name'],
+                $recipient['email'],
+                $senderName,
+                $senderEmail,
+                $replyToName,
+                $replyToEmail,
+                $emailSubject,
+                $emailMessage,
                 /*$enableSpamfilter=*/true
             );
 
             $sendSuccess = $sendSuccess && $success;
             if (!$success) {
                 $this->showResponse(
-                    $view, $form, false, $errorMsg
+                    $view,
+                    $form,
+                    false,
+                    $errorMsg
                 );
             }
         }
@@ -128,8 +140,14 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
      * @return array with elements success:boolean, errorMessage:string (optional)
      */
     protected function sendEmail(
-        $recipientName, $recipientEmail, $senderName, $senderEmail,
-        $replyToName, $replyToEmail, $emailSubject, $emailMessage,
+        $recipientName,
+        $recipientEmail,
+        $senderName,
+        $senderEmail,
+        $replyToName,
+        $replyToEmail,
+        $emailSubject,
+        $emailMessage,
         $enableSpamfilter = false
     ) {
         try {
