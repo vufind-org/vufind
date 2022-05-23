@@ -463,24 +463,24 @@ class SolrAuthMarc extends SolrAuthDefault {
         $fields = $this->getMarcReader()->getFields('510');
         if (is_array($fields)) {
             foreach ($fields as $field) {
-                $nameSubfield = $this->getMarcReader()->getSubfield($field,'a');
+                $nameSubfield = $this->getMarcReader()->getSubfield($field, 'a');
                 if ($nameSubfield !== false) {
                     $relation = ['name' => $nameSubfield];
 
-                    $addSubfield = $this->getMarcReader()->getSubfield($field,'b');
+                    $addSubfield = $this->getMarcReader()->getSubfield($field, 'b');
                     if ($addSubfield !== false)
                         $relation['institution'] = $addSubfield;
 
-                    $locationSubfield = $this->getMarcReader()->getSubfield($field,'g');
+                    $locationSubfield = $this->getMarcReader()->getSubfield($field, 'g');
                     if ($locationSubfield !== false)
                         $relation['location'] = $locationSubfield;
 
                     $idPrefixPattern = '/^\(DE-627\)/';
-                    $idSubfield = $this->getMarcReader()->getSubfield($field,'0', $idPrefixPattern);
+                    $idSubfield = $this->getMarcReader()->getSubfield($field, '0', $idPrefixPattern);
                     if ($idSubfield !== false)
                         $relation['id'] = preg_replace($idPrefixPattern, '', $idSubfield);
 
-                    $localSubfields = $this->getMarcReader()->getSubfields($field,'9');
+                    $localSubfields = $this->getMarcReader()->getSubfields($field, '9');
                     foreach ($localSubfields as $localSubfield) {
                         if (preg_match('"^(.):(.+)"', $localSubfield, $matches)) {
                             if ($matches[1] == 'Z')

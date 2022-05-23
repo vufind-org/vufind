@@ -201,17 +201,17 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             }
 
             $relationsDisplay .= '<span property="name">' . htmlspecialchars($relation['name']) . '</span>';
-            if (isset($relation['location'])) {
+            if (!empty($relation['location'])) {
                 $relationsDisplay .= ' (<span property="location">' . htmlspecialchars($relation['location']) . '</span>)';
-            } else if (isset($relation['institution'])) {
+            } else if (!empty($relation['institution'])) {
                 $relationsDisplay .= '. <span property="department">' . htmlspecialchars($relation['institution']) . '</span>';
             }
 
-            if (isset($relation['type']) || isset($relation['timespan'])) {
+            if (!empty($relation['type']) || !empty($relation['timespan'])) {
                 $relationsDisplay .= ':';
-                if (isset($relation['type']))
+                if (!empty($relation['type']))
                     $relationsDisplay .= ' ' . $relation['type'];
-                if (isset($relation['timespan']))
+                if (!empty($relation['timespan']))
                     $relationsDisplay .= ' ' . $relation['timespan'];
             }
 
