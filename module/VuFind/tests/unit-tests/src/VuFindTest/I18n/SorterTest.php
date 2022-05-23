@@ -41,170 +41,240 @@ namespace VuFindTest\I18n;
 class SorterTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Data Provider for compare tests
+     *
+     * @return array
+     */
+    public static function compareProvider(): array
+    {
+        return [
+            [
+                [
+                    'strings' => ['a', 'b'],
+                    'locale' => 'en',
+                    'respectLocale' => false,
+                ],
+                -1
+            ],
+            [
+                [
+                    'strings' => ['a', 'a'],
+                    'locale' => 'en',
+                    'respectLocale' => false,
+                ],
+                0
+            ],
+            [
+                [
+                    'strings' => ['b', 'a'],
+                    'locale' => 'en',
+                    'respectLocale' => false,
+                ],
+                1
+            ],
+            [
+                [
+                    'strings' => ['a', 'A'],
+                    'locale' => 'en',
+                    'respectLocale' => false,
+                ],
+                0
+            ],
+            [
+                [
+                    'strings' => ['a', 'b'],
+                    'locale' => 'en',
+                    'respectLocale' => true,
+                ],
+                -1
+            ],
+            [
+                [
+                    'strings' => ['a', 'a'],
+                    'locale' => 'en',
+                    'respectLocale' => true,
+                ],
+                0
+            ],
+            [
+                [
+                    'strings' => ['b', 'a'],
+                    'locale' => 'en',
+                    'respectLocale' => true,
+                ],
+                1
+            ],
+            [
+                [
+                    'strings' => ['a', 'A'],
+                    'locale' => 'en',
+                    'respectLocale' => true,
+                ],
+                -1
+            ],
+            [
+                [
+                    'strings' => ['č', 'd'],
+                    'locale' => 'cs',
+                    'respectLocale' => false,
+                ],
+                1
+            ],
+            [
+                [
+                    'strings' => ['č', 'd'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                -1
+            ],
+        ];
+    }
+
+    /**
      * Test compare function
+     *
+     * @dataProvider compareProvider
      *
      * @return void
      */
-    public function testCompare()
+    public function testCompare($test, $expected)
     {
-        $testCases = [
-            [
-                'strings' => ['a', 'b'],
-                'locale' => 'en',
-                'respectLocale' => false,
-                'result' => -1
-            ],
-            [
-                'strings' => ['a', 'a'],
-                'locale' => 'en',
-                'respectLocale' => false,
-                'result' => 0
-            ],
-            [
-                'strings' => ['b', 'a'],
-                'locale' => 'en',
-                'respectLocale' => false,
-                'result' => 1
-            ],
-            [
-                'strings' => ['a', 'A'],
-                'locale' => 'en',
-                'respectLocale' => false,
-                'result' => 0
-            ],
-            [
-                'strings' => ['a', 'b'],
-                'locale' => 'en',
-                'respectLocale' => true,
-                'result' => -1
-            ],
-            [
-                'strings' => ['a', 'a'],
-                'locale' => 'en',
-                'respectLocale' => true,
-                'result' => 0
-            ],
-            [
-                'strings' => ['b', 'a'],
-                'locale' => 'en',
-                'respectLocale' => true,
-                'result' => 1
-            ],
-            [
-                'strings' => ['a', 'A'],
-                'locale' => 'en',
-                'respectLocale' => true,
-                'result' => -1
-            ],
-            [
-                'strings' => ['č', 'd'],
-                'locale' => 'cs',
-                'respectLocale' => false,
-                'result' => 1
-            ],
-            [
-                'strings' => ['č', 'd'],
-                'locale' => 'cs',
-                'respectLocale' => true,
-                'result' => -1
-            ],
-
-        ];
-        foreach ($testCases as $key => $test) {
-            $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
-            $result =  $sorter->compare($test['strings'][0], $test['strings'][1]);
-            if ($test['result'] === 1) {
-                $this->assertGreaterThanOrEqual($test['result'], $result, 'Failed test with key ' . $key);
-            } elseif ($test['result'] === -1) {
-                $this->assertLessThanOrEqual($test['result'], $result, 'Failed test with key ' . $key);
-            } else {
-                $this->assertEquals($test['result'], $result, 'Failed test with key ' . $key);
-            }
+        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $result =  $sorter->compare($test['strings'][0], $test['strings'][1]);
+        if ($expected === 1) {
+            $this->assertGreaterThanOrEqual($expected, $result);
+        } elseif ($expected === -1) {
+            $this->assertLessThanOrEqual($expected, $result);
+        } else {
+            $this->assertEquals($expected, $result);
         }
+    }
+
+    /**
+     * Data Provider for sort tests
+     *
+     * @return array
+     */
+    public static function sortProvider(): array
+    {
+        return [
+            [
+                [
+                    'input' => ['a', 'c', 'b'],
+                    'locale' => 'en',
+                    'respectLocale' => false,
+                ],
+                ['a', 'b', 'c'],
+            ],
+            [
+                [
+                    'input' => ['a', 'c', 'b'],
+                    'locale' => 'en',
+                    'respectLocale' => true,
+                ],
+                ['a', 'b', 'c'],
+            ],
+            [
+                [
+                    'input' => ['a', 'č', 'd', 'c'],
+                    'locale' => 'cs',
+                    'respectLocale' => false,
+                ],
+                ['a', 'c', 'd', 'č'],
+            ],
+            [
+                [
+                    'input' => ['a', 'č', 'd', 'c'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                ['a', 'c', 'č', 'd'],
+            ]
+        ];
     }
 
     /**
      * Test sort function
      *
+     * @dataProvider sortProvider
+     *
      * @return void
      */
-    public function testSort()
+    public function testSort($test, $expected)
     {
-        $testCases = [
+        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $result = $sorter->sort($test['input']);
+        $this->assertEquals($expected, $test['input']);
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Data Provider for asort tests
+     *
+     * @return array
+     */
+    public static function asortProvider(): array
+    {
+        return [
             [
-                'input' => ['a', 'c', 'b'],
-                'output' => ['a', 'b', 'c'],
-                'locale' => 'en',
-                'respectLocale' => false,
+                [
+                    'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
+                    'locale' => 'en',
+                    'respectLocale' => false,
+                ],
+                ['a' => 'a', 'b' => 'b', 'c' => 'c'],
             ],
             [
-                'input' => ['a', 'c', 'b'],
-                'output' => ['a', 'b', 'c'],
-                'locale' => 'en',
-                'respectLocale' => true,
+                [
+                    'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
+                    'locale' => 'en',
+                    'respectLocale' => true,
+                ],
+                ['a' => 'a', 'b' => 'b', 'c' => 'c'],
             ],
             [
-                'input' => ['a', 'č', 'd', 'c'],
-                'output' => ['a', 'c', 'd', 'č'],
-                'locale' => 'cs',
-                'respectLocale' => false,
+                [
+                    'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
+                    'locale' => 'cs',
+                    'respectLocale' => false,
+                ],
+                ['a' => 'a', 'c' => 'c', 'd' => 'd', 'č' => 'č'],
             ],
             [
-                'input' => ['a', 'č', 'd', 'c'],
-                'output' => ['a', 'c', 'č', 'd'],
-                'locale' => 'cs',
-                'respectLocale' => true,
+                [
+                    'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                ['a' => 'a', 'c' => 'c', 'č' => 'č', 'd' => 'd'],
             ]
         ];
-        foreach ($testCases as $key => $test) {
-            $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
-            $result = $sorter->sort($test['input']);
-            $this->assertEquals($test['output'], $test['input'], 'Failed test with key ' . $key);
-            $this->assertTrue($result);
-        }
     }
 
     /**
      * Test asort function
      *
+     * @dataProvider asortProvider
+     *
      * @return void
      */
-    public function testAsort()
+    public function testAsort($test, $expected)
     {
-        $testCases = [
-            [
-                'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
-                'output' => ['a' => 'a', 'b' => 'b', 'c' => 'c'],
-                'locale' => 'en',
-                'respectLocale' => false,
-            ],
-            [
-                'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
-                'output' => ['a' => 'a', 'b' => 'b', 'c' => 'c'],
-                'locale' => 'en',
-                'respectLocale' => true,
-            ],
-            [
-                'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
-                'output' => ['a' => 'a', 'c' => 'c', 'd' => 'd', 'č' => 'č'],
-                'locale' => 'cs',
-                'respectLocale' => false,
-            ],
-            [
-                'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
-                'output' => ['a' => 'a', 'c' => 'c', 'č' => 'č', 'd' => 'd'],
-                'locale' => 'cs',
-                'respectLocale' => true,
-            ]
-        ];
-        foreach ($testCases as $key => $test) {
-            $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
-            $result = $sorter->asort($test['input']);
-            $this->assertEquals($test['output'], $test['input'], 'Failed test with key ' . $key);
-            $this->assertTrue($result);
-        }
+        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $result = $sorter->asort($test['input']);
+        $this->assertEquals($expected, $test['input']);
+        $this->assertTrue($result);
     }
 
+    /**
+     * Create sorter
+     *
+     * @param string $locale
+     * @param bool   $respectLocale
+     *
+     * @return \VuFind\I18n\Sorter
+     */
     protected function createSorter(string $locale, bool $respectLocale = false)
     {
         return new \VuFind\I18n\Sorter($locale, $respectLocale);
