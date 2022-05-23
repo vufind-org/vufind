@@ -544,8 +544,6 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
 
     public function getUserAccessPublishRecord($userId, $recordAuthors): bool
     {
-        $access = false;
-
         $authorsIds = [];
         foreach($recordAuthors as $authorArray) {
             if(!empty($authorArray) && is_array($authorArray)) {
@@ -558,12 +556,6 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         }
 
         $table = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('user_authority');
-        $hasPermission = $table->hasGrantedAuthorityRight($userId, $authorsIds);
-
-        if($hasPermission === true) {
-            $access = true;
-        }
-
-        return $access;
+        return $table->hasGrantedAuthorityRight($userId, $authorsIds);
     }
 }

@@ -46,14 +46,12 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
 
     public function recordAction()
     {
-        $tuefind = $this->serviceLocator->get('ViewHelperManager')->get('tuefind');
         $driver = $this->loadRecord();
         $user = $this->getUser();
         $request = $this->getRequest();
         $view = $this->showTab($this->params()->fromQuery('tab', $this->getDefaultTab()));
         $view->driver = $driver;
         $view->user = $user;
-        $view->user_access = $tuefind->getUserAccessState($driver->getUniqueId(), $user->id ?? null);
         return $view;
     }
 

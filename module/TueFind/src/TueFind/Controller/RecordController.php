@@ -10,21 +10,7 @@ class RecordController extends \VuFind\Controller\RecordController {
      */
     public function homeAction()
     {
-        $tuefind = $this->serviceLocator->get('ViewHelperManager')->get('tuefind');
-        $showDspaceLink = false;
-        $dspacelink = "";
-
-        $routeParams = $tuefind->getRouteParams();
-        $recordId = $routeParams['id'];
-
-        $user = $this->getUser();
-
         $this->loadRecord();
-
-        $authors = $this->driver->getDeduplicatedAuthors();
-
-        $accessPublishRecord = $tuefind->getUserAccessPublishRecord($user->id, $authors);
-
         if (isset($this->driver->isFallback) && $this->driver->isFallback) {
             $params = [ 'driver' => $this->driver,
                         'originalId' => $this->params()->fromRoute('id', $this->params()->fromQuery('id'))];
@@ -35,24 +21,11 @@ class RecordController extends \VuFind\Controller\RecordController {
                 $view = $this->createViewModel($params);
                 $view->setTemplate($template[1]);
                 $this->getResponse()->setStatusCode(301);
-                $view->showDspaceLink = $showDspaceLink;
-                $view->dspacelink = $dspacelink;
-                $view->user_access = $accessPublishRecord;
                 return $view;
             }
         } else {
             $view = parent::homeAction();
-
-            $config = $tuefind->getConfig('tuefind');
-            $publication = $tuefind->getPublicationByControlNumber($recordId);
-            if (isset($publication)) {
-                $showDspaceLink = true;
-                $dspaceServer = $config->Publication->dspace_url_base;
-                $dspacelink = $dspaceServer."/items/".$publication->external_document_guid;
-            }
-            $view->showDspaceLink = $showDspaceLink;
-            $view->dspacelink = $dspacelink;
-            $view->user_access = $accessPublishRecord;
+            $view->user = $this->getUser();
             return $view;
         }
 
