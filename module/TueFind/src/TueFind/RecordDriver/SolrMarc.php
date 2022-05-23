@@ -425,9 +425,9 @@ class SolrMarc extends SolrDefault
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
                 $author = '';
-                $authorFields = $this->getMarcReader()->getFields($field,'100');
+                $authorFields = $this->getMarcReader()->getFields('100');
                 foreach ($authorFields as $authorField) {
-                    $a100Subfields = $this->getMarcReader()->getSubfields($authorField,'a');
+                    $a100Subfields = $this->getMarcReader()->getSubfields($authorField, 'a');
                     foreach ($a100Subfields as $a100Subfield) {
                         $a100 = $a100Subfield;
                         if ($a100 != '') {
