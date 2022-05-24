@@ -190,7 +190,23 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'respectLocale' => true,
                 ],
                 ['a', 'c', 'č', 'd'],
-            ]
+            ],
+            [
+                [
+                    'input' => ['100', '3', '10', '2', '1'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                ['1', '2', '3', '10', '100'],
+            ],
+            [
+                [
+                    'input' => ['100', '3', '10', '2', '1'],
+                    'locale' => 'cs',
+                    'respectLocale' => false,
+                ],
+                ['1', '2', '3', '10', '100'],
+            ],
         ];
     }
 
@@ -248,7 +264,23 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'respectLocale' => true,
                 ],
                 ['a' => 'a', 'c' => 'c', 'č' => 'č', 'd' => 'd'],
-            ]
+            ],
+            [
+                [
+                    'input' => ['a' => '100', 'b' => '3', 'c' => '10', 'd' => '2', 'e' => '1'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                ['e' => '1', 'd' => '2', 'b' => '3', 'c' => '10', 'a' => '100'],
+            ],
+            [
+                [
+                    'input' => ['a' => '100', 'b' => '3', 'c' => '10', 'd' => '2', 'e' => '1'],
+                    'locale' => 'cs',
+                    'respectLocale' => false,
+                ],
+                ['e' => '1', 'd' => '2', 'b' => '3', 'c' => '10', 'a' => '100'],
+            ],
         ];
     }
 
@@ -264,6 +296,45 @@ class SorterTest extends \PHPUnit\Framework\TestCase
         $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
         $result = $sorter->asort($test['input']);
         $this->assertEquals($expected, $test['input']);
+        $this->assertEquals(array_values($expected), array_values($test['input']));
+        $this->assertTrue($result);
+    }
+
+    public static function natsortProvider(): array
+    {
+        return [
+            [
+                [
+                    'input' => ['a' => 'img100', 'b' => 'img3', 'c' => 'img10', 'd' => 'img2', 'e' => 'img1'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                ['e' => 'img1', 'd' => 'img2', 'b' => 'img3', 'c' => 'img10', 'a' => 'img100'],
+            ],
+            [
+                [
+                    'input' => ['a' => 'img100', 'b' => 'img3', 'c' => 'img10', 'd' => 'img2', 'e' => 'img1'],
+                    'locale' => 'cs',
+                    'respectLocale' => false,
+                ],
+                ['e' => 'img1', 'd' => 'img2', 'b' => 'img3', 'c' => 'img10', 'a' => 'img100'],
+            ],
+        ];
+    }
+
+    /**
+     * Test natsort function
+     *
+     * @dataProvider natsortProvider
+     *
+     * @return void
+     */
+    public function testNatsort($test, $expected)
+    {
+        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $result = $sorter->natsort($test['input']);
+        $this->assertEquals($expected, $test['input']);
+        $this->assertEquals(array_values($expected), array_values($test['input']));
         $this->assertTrue($result);
     }
 

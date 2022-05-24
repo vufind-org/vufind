@@ -67,7 +67,7 @@ class SortFacetList extends AbstractHelper implements
                 ->addFacet($field, $value['value'])->getParams();
             $facets[$url] = $value['displayText'];
         }
-        $this->getSorter()->asort($facets);
+        $this->getSorter()->natsort($facets);
         return $facets;
     }
 }

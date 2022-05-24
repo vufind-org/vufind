@@ -108,4 +108,43 @@ class Sorter implements SorterInterface
             ? $this->collator->asort($array)
             : asort($array);
     }
+
+    /**
+     * Natural sort by values and maintain index association
+     *
+     * @param array $array Array to sort
+     *
+     * @return bool
+     */
+    public function natsort(array &$array): bool
+    {
+        return $this->respectLocale
+            ? $this->collatorNatsort($array)
+            : natcasesort($array);
+    }
+
+    /**
+     * Function to actually do natural sorting
+     *
+     * @param array $array Array to sort
+     *
+     * @return bool
+     */
+    protected function collatorNatsort(array &$array): bool
+    {
+        $data = $array;
+        $data = preg_replace_callback(
+            '~([0-9]+)~',
+            function ($matches) {
+                return sprintf('%032d', $matches[0]);
+            },
+            $data
+        );
+        $success = $this->collator->asort($data);
+        foreach ($data as $key => $item) {
+            $data[$key] = $array[$key];
+        }
+        $array = $data;
+        return $success;
+    }
 }

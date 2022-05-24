@@ -35,7 +35,7 @@
                   }
                 }
               }
-              $this->sorter()->sort($sorted);
+              $this->sorter()->natsort($sorted);
 
               // Order filtered items according to how they appear in the config.
               uasort($filtered, function ($a, $b) use ($filterKeys) {
