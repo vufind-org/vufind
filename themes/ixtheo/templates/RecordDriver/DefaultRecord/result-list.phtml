@@ -68,7 +68,7 @@
             <?php endif; ?>
           <?php else: ?>
             <?php // Handle corporation information... ?>
-            <?php $corporation = !is_null($this->driver->tryMethod('getCorporation')) ? implode($this->driver->tryMethod('getCorporation'), " ") : ""?>
+            <?php $corporation = !is_null($this->driver->tryMethod('getCorporation')) ? implode(" ", $this->driver->tryMethod('getCorporation')) : ""?>
             <?php if (!empty($corporation)): ?>
                <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?php
                 $summCorporation = "";
@@ -89,7 +89,7 @@
             <div>
               <?php if(!empty($superior_ppn)): ?>
                 <?=$this->transEsc('in')?>:
-                <?php $journal_issue_display = preg_replace('/(\d+)(\()/','$1 $2', implode($journal_issue,  ", ")) ?>
+                <?php $journal_issue_display = preg_replace('/(\d+)(\()/','$1 $2', implode(", ", $journal_issue)) ?>
                 <a href="<?=$this->url('record', ['id' => $superior_ppn]) ?>"><?=$journal_issue_display ?></a>
               <?php else: ?>
                 <?php implode($journal_issue, " ") ?>
@@ -98,7 +98,7 @@
           <?php else: ?>
               <div>
               <?php // Fill with non article handling code ?>
-              <?=!is_null($this->driver->tryMethod('getPublicationDetailsNoPlaces')) ? implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ")  : "" ?>
+              <?=!is_null($this->driver->tryMethod('getPublicationDetailsNoPlaces')) ? implode(" ", $this->driver->tryMethod('getPublicationDetailsNoPlaces'))  : "" ?>
               </div>
           <?php endif; ?>
         <?php endif; ?>
