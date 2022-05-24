@@ -49,7 +49,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Host

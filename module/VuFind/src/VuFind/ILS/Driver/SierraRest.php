@@ -54,7 +54,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Driver configuration

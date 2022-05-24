@@ -53,7 +53,7 @@ use VuFindSearch\Service as SearchService;
  */
 class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Catalog ID used to distinquish between multiple Demo driver instances with the

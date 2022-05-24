@@ -56,7 +56,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Top-level configuration

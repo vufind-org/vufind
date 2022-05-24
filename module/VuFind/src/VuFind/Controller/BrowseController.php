@@ -45,7 +45,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 class BrowseController extends AbstractBase implements
     \VuFind\I18n\HasSorterInterface
 {
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * VuFind configuration

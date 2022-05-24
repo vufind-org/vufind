@@ -42,7 +42,7 @@ use Laminas\View\Helper\AbstractHelper;
 class SortFacetList extends AbstractHelper implements
     \VuFind\I18n\HasSorterInterface
 {
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Turns facet information into an alphabetical list.

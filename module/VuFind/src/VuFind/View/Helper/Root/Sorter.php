@@ -40,7 +40,7 @@ namespace VuFind\View\Helper\Root;
  */
 class Sorter implements \VuFind\I18n\HasSorterInterface
 {
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Get sorter

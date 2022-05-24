@@ -44,7 +44,7 @@ class CollectionsController extends AbstractBase implements
     \VuFind\I18n\HasSorterInterface
 {
     use Feature\AlphaBrowseTrait;
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * VuFind configuration

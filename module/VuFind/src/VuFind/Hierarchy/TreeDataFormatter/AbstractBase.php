@@ -38,7 +38,7 @@ namespace VuFind\Hierarchy\TreeDataFormatter;
  */
 abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
-    use \VuFind\I18n\SortingTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Top-level record from index
