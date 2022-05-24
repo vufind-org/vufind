@@ -122,10 +122,19 @@ JS;
         <div class="row">
             <div class="col-12 px-0 pt-5 pb-5 justify-content-center">
                 <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
-                  <?php $content_wrap = ($this->tuefind()->getControllerName() != 'index'); ?>
-                  <?= $content_wrap ? '<div id="content" class="container">' : ''?>
+                  <?php $showContainerBlock = true; $routeParams = $this->tuefind()->getRouteParams();
+                  if($routeParams['controller'] == 'index' ||
+                    ($routeParams['controller'] == "Search" && $routeParams['action'] == "Home") ||
+                    ($routeParams['controller'] == "Content" && $routeParams['action'] == "Content") ) {
+                      $showContainerBlock = false;
+                  }?>
+                  <?php  if($showContainerBlock === true) { ?>
+                    <div id="content" class="container">
+                      <?=$this->layout()->content ?>
+                    </div>
+                  <?php } else { ?>
                     <?=$this->layout()->content ?>
-                  <?= $content_wrap ? '</div>' : ''?>
+                  <?php } ?>
                 </div>
             </div>
         </div>
