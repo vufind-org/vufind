@@ -4,6 +4,23 @@ namespace TueFind\Module\Config;
 $config = [
     'router' => [
         'routes' => [
+            'content-page' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Content/:page[/:container]',
+                    'constraints' => [
+                        'page'      => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        // Override: Add information about whether we want to
+                        // include the html template in a container
+                        // (default true)
+                        'container' => '(true|false)',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Content',
+                        'action'     => 'Content',
+                    ]
+                ],
+            ],
             'proxy-load' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
