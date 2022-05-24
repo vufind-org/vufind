@@ -469,6 +469,9 @@ class SolrMarc extends SolrDefault
 
     public function cleanISSN($issn)
     {
+        if(is_array($issn) && isset($issn[0])){
+            $issn = $issn[0];
+        }
         if ($pos = strpos($issn, ' ')) {
             $issn = substr($issn, 0, $pos);
         }
