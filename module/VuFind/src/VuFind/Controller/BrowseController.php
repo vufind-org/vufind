@@ -43,7 +43,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class BrowseController extends AbstractBase implements
-    \VuFind\I18n\SortingInterface
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\SortingTrait;
 

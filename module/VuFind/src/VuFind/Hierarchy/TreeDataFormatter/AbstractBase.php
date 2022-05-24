@@ -36,7 +36,7 @@ namespace VuFind\Hierarchy\TreeDataFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractBase implements \VuFind\I18n\SortingInterface
+abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\SortingTrait;
 

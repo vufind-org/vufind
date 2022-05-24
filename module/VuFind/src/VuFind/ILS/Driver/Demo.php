@@ -51,7 +51,7 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Demo extends AbstractBase implements \VuFind\I18n\SortingInterface
+class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\SortingTrait;
 

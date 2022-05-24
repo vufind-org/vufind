@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFind\I18n\SortingInterface;
+use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\SortingTrait;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -45,7 +45,7 @@ use VuFind\Search\UrlQueryHelper;
  * @link     https://vufind.org Main Site
  */
 class HierarchicalFacetHelper implements HierarchicalFacetHelperInterface,
-    TranslatorAwareInterface, SortingInterface
+    TranslatorAwareInterface, HasSorterInterface
 {
     use TranslatorAwareTrait;
     use SortingTrait;

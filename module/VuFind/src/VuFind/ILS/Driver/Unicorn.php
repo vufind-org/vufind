@@ -46,7 +46,7 @@ use VuFind\Marc\MarcReader;
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
 class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \VuFind\I18n\SortingInterface
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\SortingTrait;

@@ -38,7 +38,7 @@ namespace VuFind\View\Helper\Root;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Sorter implements \VuFind\I18n\SortingInterface
+class Sorter implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\SortingTrait;
 

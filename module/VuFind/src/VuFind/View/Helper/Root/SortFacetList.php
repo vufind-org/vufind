@@ -40,7 +40,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class SortFacetList extends AbstractHelper implements
-    \VuFind\I18n\SortingInterface
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\SortingTrait;
 
