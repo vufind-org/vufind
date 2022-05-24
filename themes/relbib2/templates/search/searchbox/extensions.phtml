@@ -1,6 +1,6 @@
 <br/>
 <?php
     if ($this->tuefind()->getControllerName() == 'index') {
-        echo $this->context($this)->renderInContext('content/snippets/searchbox_news', ['driver' => $this->driver]);
+        echo $this->content()->renderTranslated('snippets/searchbox_news');
     }
 ?>
