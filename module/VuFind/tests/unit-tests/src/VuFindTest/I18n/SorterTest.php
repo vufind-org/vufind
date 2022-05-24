@@ -207,6 +207,22 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                 ],
                 ['1', '2', '3', '10', '100'],
             ],
+            [
+                [
+                    'input' => ['a100', 'a3', 'a10', 'a2', 'a1'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                ['a1', 'a10', 'a100', 'a2', 'a3'],
+            ],
+            [
+                [
+                    'input' => ['a100', 'a3', 'a10', 'a2', 'a1'],
+                    'locale' => 'cs',
+                    'respectLocale' => false,
+                ],
+                ['a1', 'a10', 'a100', 'a2', 'a3'],
+            ],
         ];
     }
 
