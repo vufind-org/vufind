@@ -67,4 +67,13 @@ interface SorterInterface
      * @return bool
      */
     public function asort(array &$array): bool;
+
+    /**
+     * Natural sort by values and maintain index association
+     *
+     * @param array $array Array to sort
+     *
+     * @return bool
+     */
+    public function natsort(array &$array): bool;
 }
