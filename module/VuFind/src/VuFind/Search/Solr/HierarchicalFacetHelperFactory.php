@@ -65,6 +65,9 @@ class HierarchicalFacetHelperFactory implements
         $requestedName,
         array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
         $helper = new $requestedName();
         $helper->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $helper;
