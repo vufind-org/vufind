@@ -29,6 +29,8 @@ declare(strict_types=1);
  */
 namespace VuFindTest\I18n;
 
+use VuFind\I18n\Sorter;
+
 /**
  * Class SorterTest
  *
@@ -110,7 +112,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                -1
+                0
             ],
             [
                 [
@@ -128,6 +130,14 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                 ],
                 -1
             ],
+            [
+                [
+                    'strings' => ['č', 'Č'],
+                    'locale' => 'cs',
+                    'respectLocale' => true,
+                ],
+                0
+            ],
         ];
     }
 
@@ -140,7 +150,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      */
     public function testCompare($test, $expected)
     {
-        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $sorter = $this->getSorterForTest($test);
         $result =  $sorter->compare($test['strings'][0], $test['strings'][1]);
         if ($expected === 1) {
             $this->assertGreaterThanOrEqual($expected, $result);
@@ -185,11 +195,11 @@ class SorterTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 [
-                    'input' => ['a', 'č', 'd', 'c'],
+                    'input' => ['a', 'č', 'd', 'c', 'C'],
                     'locale' => 'cs',
                     'respectLocale' => true,
                 ],
-                ['a', 'c', 'č', 'd'],
+                ['a', 'c', 'C', 'č', 'd'],
             ],
             [
                 [
@@ -235,7 +245,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      */
     public function testSort($test, $expected)
     {
-        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $sorter = $this->getSorterForTest($test);
         $result = $sorter->sort($test['input']);
         $this->assertEquals($expected, $test['input']);
         $this->assertTrue($result);
@@ -309,7 +319,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      */
     public function testAsort($test, $expected)
     {
-        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $sorter = $this->getSorterForTest($test);
         $result = $sorter->asort($test['input']);
         $this->assertEquals($expected, $test['input']);
         $this->assertEquals(array_values($expected), array_values($test['input']));
@@ -347,7 +357,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      */
     public function testNatsort($test, $expected)
     {
-        $sorter = $this->createSorter($test['locale'], $test['respectLocale']);
+        $sorter = $this->getSorterForTest($test);
         $result = $sorter->natsort($test['input']);
         $this->assertEquals($expected, $test['input']);
         $this->assertEquals(array_values($expected), array_values($test['input']));
@@ -357,13 +367,32 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Create sorter
      *
-     * @param string $locale
-     * @param bool   $respectLocale
+     * @param string $locale        Locale
+     * @param bool   $respectLocale Does respect locale
      *
-     * @return \VuFind\I18n\Sorter
+     * @return Sorter
      */
-    protected function createSorter(string $locale, bool $respectLocale = false)
+    protected function createSorter(
+        string $locale,
+        bool $respectLocale = false
+    ): Sorter {
+        $collator = new \Collator($locale);
+        $collator->setStrength(\Collator::SECONDARY);
+        return new Sorter($collator, $respectLocale);
+    }
+
+    /**
+     * Get sorter for current test
+     *
+     * @param array $testCase Test definition
+     *
+     * @return Sorter
+     */
+    protected function getSorterForTest(array $testCase): Sorter
     {
-        return new \VuFind\I18n\Sorter(new \Collator($locale), $respectLocale);
+        return $this->createSorter(
+            $testCase['locale'],
+            $testCase['respectLocale'],
+        );
     }
 }
