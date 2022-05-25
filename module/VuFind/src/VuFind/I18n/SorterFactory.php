@@ -70,11 +70,12 @@ class SorterFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $localeSettings = $container->get(LocaleSettings::class);
+        $collator = new \Collator($localeSettings->getUserLocale());
         $config = $container
             ->get(\VuFind\Config\PluginManager::class)
             ->get('config')->Sorting;
         return new $requestedName(
-            $localeSettings->getUserLocale(),
+            $collator,
             (bool)($config->use_locale_sorting ?? false)
         );
     }

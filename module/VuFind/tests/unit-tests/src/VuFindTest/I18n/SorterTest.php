@@ -364,6 +364,6 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      */
     protected function createSorter(string $locale, bool $respectLocale = false)
     {
-        return new \VuFind\I18n\Sorter($locale, $respectLocale);
+        return new \VuFind\I18n\Sorter(new \Collator($locale), $respectLocale);
     }
 }

@@ -57,12 +57,12 @@ class Sorter implements SorterInterface
     /**
      * Constructor
      *
-     * @param string $locale        Current user locale
-     * @param bool   $respectLocale Do respect current locale?
+     * @param \Collator $collator      Current user locale
+     * @param bool      $respectLocale Do respect current locale?
      */
-    public function __construct(string $locale = 'en', bool $respectLocale = false)
+    public function __construct(\Collator $collator, bool $respectLocale = false)
     {
-        $this->collator = new \Collator($locale);
+        $this->collator = $collator;
         $this->respectLocale = $respectLocale;
     }
 

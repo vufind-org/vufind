@@ -144,7 +144,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->helper = new HierarchicalFacetHelper();
-        $this->helper->setSorter(new Sorter('en'));
+        $this->helper->setSorter(new Sorter(new \Collator('en')));
     }
 
     /**
