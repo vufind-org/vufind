@@ -161,7 +161,7 @@ var VuFind = (function VuFind() {
 
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
-  }
+  };
 
   //Reveal
   return {
