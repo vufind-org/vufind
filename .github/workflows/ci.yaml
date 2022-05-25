@@ -32,24 +32,29 @@ jobs:
           extensions: intl, xsl
           tools: composer:2.1.6
 
-      - name: Setup node
-        if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall
 
+      - name: Setup node
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Cache NPM dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
       - name: Install node dependencies
         if: ${{ matrix.phing_tasks == 'qa-console' }}
-        run: |
-          npm install -g eslint@"<5.0.0"
-          npm install -g jshint@"2.9.6"
-          npm install
+        run: npm install --ignore-scripts
 
       - name: Get composer cache directory
         id: composer-cache
