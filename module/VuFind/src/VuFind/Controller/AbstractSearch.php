@@ -409,6 +409,10 @@ class AbstractSearch extends AbstractBase
             ->get('config');
         $view->showBulkOptions = $config->Site->showBulkOptions ?? false;
 
+        // Schedule options for footer tools
+        $view->scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
         return $view;
     }
 
