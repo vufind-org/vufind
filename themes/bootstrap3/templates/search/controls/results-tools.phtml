@@ -14,7 +14,7 @@
     <?php endif; ?>
     <?php if ($this->accountCapabilities()->isScheduledSearchEnabled() && !empty($this->scheduleOptions)): ?>
       &ndash;
-      <a href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
+      <a class="manageSchedule" href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
         <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
         <?=$this->transEsc('history_schedule')?>:
         <?php $freq = $this->results->getNotificationFrequency(); ?>
