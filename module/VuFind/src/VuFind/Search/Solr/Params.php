@@ -549,7 +549,7 @@ class Params extends \VuFind\Search\Base\Params
             // If we have an empty search with relevance sort as the primary sort
             // field, see if there is an override configured:
             $sortFields = explode(',', $sort);
-            $allTerms = trim($this->getQuery()->getAllTerms());
+            $allTerms = trim($this->getQuery()->getAllTerms() ?? '');
             if ('relevance' === $sortFields[0]
                 && ('' === $allTerms || '*:*' === $allTerms || $this->searchingById)
                 && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
