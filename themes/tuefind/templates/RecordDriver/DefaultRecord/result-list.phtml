@@ -159,7 +159,7 @@
         <?php if (!is_array($urls)) $urls = [];
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
           <?php endforeach; ?>
         <?php endif; ?>
       <?php endif; ?>
@@ -173,7 +173,7 @@
             <?php if ($direct_fulltext_present && $material_type == 'Presumably Free Access'): ?>
             <?php     continue; ?>
             <?php else: ?>
-                      <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=$this->transEsc($material_type)?></a>
+                      <a href="<?=$url?>" class="fulltext" target="_blank"><i class="fa fa-external-link"></i> <?=$this->transEsc($material_type)?></a>
                       <br/>
             <?php endif; ?>
         <?php endforeach; ?>

@@ -166,7 +166,7 @@
       <?php $urls_and_material_types = $this->driver->getURLsAndMaterialTypes(); ?>
       <?php if (!empty($urls_and_material_types)): ?>
         <?php foreach ($urls_and_material_types as $url => $material_type): ?>
-	   <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=$this->transEsc($material_type)?></a>
+	   <a href="<?=$url?>" class="fulltext" target="_blank"><i class="fa fa-external-link"></i> <?=$this->transEsc($material_type)?></a>
            <br/>
         <?php endforeach; ?>
       <?php endif; ?>

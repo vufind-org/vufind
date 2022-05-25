@@ -1,7 +1,7 @@
 <?php $parallel_ppns_and_type = $this->driver->tryMethod('getParallelEditionPPNs'); ?>
 <?php if (!empty($parallel_ppns_and_type)): ?>
   <?php foreach ($parallel_ppns_and_type as $parallel_ppn_and_type): ?>
-    <a href="<?=$this->recordLinker()->getUrl($parallel_ppn_and_type[0])?>" class="fulltext" target="new"><?=$this->transEsc($parallel_ppn_and_type[1])?></a>
+    <a href="<?=$this->recordLinker()->getUrl($parallel_ppn_and_type[0])?>" class="fulltext" target="_blank"><?=$this->transEsc($parallel_ppn_and_type[1])?></a>
     <br/>
   <?php endforeach; ?>
 <?php endif; ?>
