@@ -516,7 +516,7 @@ class SolrMarc extends SolrDefault
         // Fall back to the ISSN of the parallel (print) edition
         $_776fields = $this->getMarcReader()->getFields('776');
         foreach ($_776fields as $_776field) {
-            $subfield_x = $this->getMarcReader()->getSubfields($_776field,'x') ? $this->getMarcReader()->getSubfields($_776field,'x') : '';
+            $subfield_x = $this->getMarcReader()->getSubfield($_776field,'x') ? $this->getMarcReader()->getSubfield($_776field,'x') : '';
             $issn = $this->cleanISSN($subfield_x);
             if (!empty($issn)) {
                 $issns_and_additional_information[$issn] = '';
