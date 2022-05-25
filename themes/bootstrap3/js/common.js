@@ -159,6 +159,10 @@ var VuFind = (function VuFind() {
     });
   };
 
+  var isPrinting = function() {
+    return Boolean(window.location.search.match(/[?&]print=/));
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -170,6 +174,7 @@ var VuFind = (function VuFind() {
     emit: emit,
     getCspNonce: getCspNonce,
     icon: icon,
+    isPrinting: isPrinting,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
