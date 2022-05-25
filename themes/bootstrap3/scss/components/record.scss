@@ -17,6 +17,14 @@
   font-size: 14px;
 }
 
+.record__biblio-value a,
+.related__title {
+  display: inline-block;
+}
+.related__icon {
+  float: left;
+}
+
 .media-body h1 { margin-top: 0; }
 @media (max-width: 767px) {
   .record .media-left,
