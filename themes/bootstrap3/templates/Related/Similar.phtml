@@ -5,8 +5,8 @@
     <?php foreach ($similarRecords as $data): ?>
       <li class="list-group-item">
         <?php $formats = $data->getFormats(); ?>
-        <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>" class="related__title">
+          <i class="related__icon fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
           <?=$this->escapeHtml($data->getTitle())?>
         </a>
         <?php $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
