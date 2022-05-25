@@ -72,7 +72,7 @@ function runSaveAjaxForQueue() {
     .fail(function checkItemStatusFail(response, textStatus) {
       saveStatusFail(response, textStatus);
     })
-    .then(function saveStatusDoneEmit() {
+    .always(function saveStatusDoneEmit() {
       saveStatusRunning = false;
       VuFind.emit("save-status-done");
     });
@@ -141,8 +141,6 @@ function checkSaveStatuses(_container) {
       }, $(ajaxItems[i]));
     }
   }
-
-  VuFind.emit("save-status-done");
 }
 
 function checkSaveStatusesCallback() {

@@ -204,8 +204,6 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     for (var i = 0; i < ajaxItems.length; i++) {
       checkItemStatus($(ajaxItems[i]));
     }
-
-    VuFind.emit("item-status-done");
   }
   function init(_container) {
     if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
