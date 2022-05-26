@@ -123,13 +123,13 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
             return $this->formatResponse($this->getVersionsForRecord($id, $source));
         }
 
-        $htmlByIdSource = [];
+        $htmlByRecord = [];
         for ($i=0; $i < count($id); $i++) {
             $key = $source[$i] . '|' . $id[$i];
 
-            $htmlById[$key] = $this->getVersionsForRecord($id[$i], $source[$i]);
+            $htmlByRecord[$key] = $this->getVersionsForRecord($id[$i], $source[$i]);
         }
 
-        return $this->formatResponse($htmlById);
+        return $this->formatResponse($htmlByRecord);
     }
 }
