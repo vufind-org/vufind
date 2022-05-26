@@ -1,10 +1,7 @@
 <?php
   $truncateSettings = [
-    'rows' => $this->config()->subjectLimit(),
-    'more-label' => $this->transEsc('show_more_subjects'),
-    'less-label' => $this->transEsc('show_less_subjects'),
-    'btn-size' => 'btn-xs',
-    'top-toggle' => '30',
+    'rows' => $this->config()->getRecordSubjectLimit(),
+    'top-toggle' => 30,
   ];
 ?>
 <div class="truncate-subjects" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">

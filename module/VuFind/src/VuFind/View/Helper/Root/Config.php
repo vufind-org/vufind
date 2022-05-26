@@ -94,9 +94,9 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      *
      * @return int
      */
-    public function itemLimit()
+    public function getHoldingsItemLimit()
     {
-        $limit = $this->get('config')->Site->itemLimit;
+        $limit = $this->get('config')->Record->holdingsItemLimit;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
@@ -105,9 +105,9 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      *
      * @return int
      */
-    public function subjectLimit()
+    public function getRecordSubjectLimit()
     {
-        $limit = $this->get('config')->Site->subjectLimit;
+        $limit = $this->get('config')->Record->subjectLimit;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 }

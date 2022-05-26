@@ -82,10 +82,7 @@
 </h3>
 <?php
   $truncateSettings = [
-    'rows' => $this->config()->itemLimit(),
-    'more-label' => $this->transEsc('show_more_items'),
-    'less-label' => $this->transEsc('show_less_items'),
-    'in-place-toggle' => 'true',
+    'rows' => $this->config()->getHoldingsItemLimit(),
   ];
 ?>
 <table class="table table-striped truncate-field" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
