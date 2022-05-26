@@ -1,57 +1,81 @@
-/*global Hunt, VuFind */
+/*global Hunt, StatusAjaxQueue, VuFind */
 
-VuFind.register('recordVersions', function recordVersions() {
-  function checkRecordVersions(_container) {
-    var container = typeof _container === 'undefined' ? $(document) : $(_container);
+VuFind.register("recordVersions", function recordVersions() {
+  function checkVersionStatusSuccess(items, response) {
+    items.forEach((item) => {
+      const key = item.source + "|" + item.id;
 
-    var elements = container.hasClass('record-versions') && container.hasClass('ajax')
-      ? container : container.find('.record-versions.ajax');
-    elements.each(function checkVersions() {
-      var $elem = $(this);
-      if ($elem.hasClass('loaded')) {
-        return;
+      if (typeof response.data[key] !== "undefined") {
+        $(item.el).html(VuFind.updateCspNonce(response.data[key]));
       }
-      $elem.addClass('loaded');
-      $elem.removeClass('hidden');
-      $elem.append('<span class="js-load">' + VuFind.translate('loading_ellipsis') + '</span>');
-      var $item = $(this).parents('.result');
-      var id = $item.find('.hiddenId')[0].value;
-      var source = $item.find('.hiddenSource')[0].value;
-      $.getJSON(
-        VuFind.path + '/AJAX/JSON',
-        {
-          method: 'getRecordVersions',
-          id: id,
-          source: source
-        }
-      )
-        .done(function onGetVersionsDone(response) {
-          if (response.data.length > 0) {
-            $elem.html(VuFind.updateCspNonce(response.data));
-          } else {
-            $elem.text('');
-          }
-        })
-        .fail(function onGetVersionsFail() {
-          $elem.text(VuFind.translate('error_occurred'));
-        });
     });
   }
 
-  function init(_container) {
-    if (typeof Hunt === 'undefined') {
-      checkRecordVersions(_container);
-    } else {
-      var container = typeof _container === 'undefined'
-        ? document.body
-        : _container;
-      new Hunt(
-        $(container).find('.record-versions.ajax').toArray(),
-        { enter: checkRecordVersions }
+  function checkVersionStatusFailure(items, response, textStatus) {
+    items.forEach((item) => {
+      item.el.innerHTML = VuFind.translate("error_occurred");
+    });
+  }
+
+  function runVersionAjaxQueue(items) {
+    return new Promise((done, error) => {
+      $.getJSON(VuFind.path + "/AJAX/JSON", {
+        method: "getRecordVersions",
+        id: items.map((item) => item.id),
+        source: items.map((item) => item.source),
+      })
+        .done(done)
+        .fail(error);
+    });
+  }
+
+  const versionQueue = new StatusAjaxQueue({
+    run: runVersionAjaxQueue,
+    success: checkVersionStatusSuccess,
+    failure: checkVersionStatusFailure,
+  });
+
+  function checkRecordVersions(_container = null) {
+    const container = $(_container ?? document);
+
+    const elements =
+      container.hasClass("record-versions") && container.hasClass("ajax")
+        ? container
+        : container.find(".record-versions.ajax");
+
+    elements.each(function checkVersions() {
+      var $elem = $(this);
+
+      if ($elem.hasClass("loaded")) {
+        return;
+      }
+
+      $elem.addClass("loaded");
+      $elem.removeClass("hidden");
+      $elem.append(
+        '<span class="js-load">' +
+          VuFind.translate("loading_ellipsis") +
+          "</span>"
       );
+      var $item = $(this).parents(".result");
+      var id = $item.find(".hiddenId")[0].value;
+      var source = $item.find(".hiddenSource")[0].value;
+
+      versionQueue.add({ id, source, el: this });
+    });
+  }
+
+  function init(_container = null) {
+    const container = _container ?? document;
+
+    if (typeof Hunt === "undefined") {
+      checkRecordVersions(container);
+    } else {
+      new Hunt(container.querySelectorAll(".record-versions.ajax"), {
+        enter: checkRecordVersions,
+      });
     }
   }
 
-  return { init: init, check: checkRecordVersions };
+  return { init };
 });
-

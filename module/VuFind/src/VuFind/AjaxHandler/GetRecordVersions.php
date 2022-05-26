@@ -86,6 +86,26 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
     }
 
     /**
+     * Load a single record and render the link template
+     *
+     * @param string $id     Record id
+     * @param string $source Record source
+     *
+     * @return array [response data, HTTP status code]
+     */
+    protected function getVersionsForRecord($id, $source)
+    {
+        $driver = $this->recordLoader->load($id, $source);
+        $tabs = $this->tabManager->getTabsForRecord($driver);
+        $full = true;
+
+        return ($this->recordPlugin)($driver)->renderTemplate(
+            'versions-link.phtml',
+            compact('driver', 'tabs', 'full')
+        );
+    }
+
+    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller
@@ -98,15 +118,18 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
 
         $id = $params->fromPost('id') ?: $params->fromQuery('id');
         $source = $params->fromPost('source') ?: $params->fromQuery('source');
-        $driver = $this->recordLoader->load($id, $source);
-        $tabs = $this->tabManager->getTabsForRecord($driver);
-        $full = true;
 
-        $html = ($this->recordPlugin)($driver)->renderTemplate(
-            'versions-link.phtml',
-            compact('driver', 'tabs', 'full')
-        );
+        if (gettype($id) != 'array') {
+            return $this->formatResponse($this->getVersionsForRecord($id, $source));
+        }
 
-        return $this->formatResponse($html);
+        $htmlByIdSource = [];
+        for ($i=0; $i < count($id); $i++) {
+            $key = $source[$i] . '|' . $id[$i];
+
+            $htmlById[$key] = $this->getVersionsForRecord($id[$i], $source[$i]);
+        }
+
+        return $this->formatResponse($htmlById);
     }
 }
