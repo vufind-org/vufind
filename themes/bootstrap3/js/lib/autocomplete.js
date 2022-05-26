@@ -269,26 +269,26 @@
             return;
           }
           switch (event.which) {
-            case 9: // tab
-            case 13: // enter
-            case 16: // shift
-            case 20: // caps lock
-            case 27: // esc
-            case 33: // page up
-            case 34: // page down
-            case 35: // end
-            case 36: // home
-            case 37: // arrows
-            case 38:
-            case 39:
-            case 40:
-            case 45: // insert
-            case 144: // num lock
-            case 145: // scroll lock
-            case 19: // pause/break
-              return;
-            default:
-              search();
+          case 9: // tab
+          case 13: // enter
+          case 16: // shift
+          case 20: // caps lock
+          case 27: // esc
+          case 33: // page up
+          case 34: // page down
+          case 35: // end
+          case 36: // home
+          case 37: // arrows
+          case 38:
+          case 39:
+          case 40:
+          case 45: // insert
+          case 144: // num lock
+          case 145: // scroll lock
+          case 19: // pause/break
+            return;
+          default:
+            search();
           }
         });
         input.keydown(function acinputKeydown(event) {
@@ -298,46 +298,46 @@
           }
           var position = $(this).data('ac-selected');
           switch (event.which) {
-            // arrow keys through items
-            case 38: // up key
-              event.preventDefault();
-              element.find('.ac-item.selected').removeClass('selected');
-              if (position > -1) {
-                if (position-- > 0) {
-                  element.find('.ac-item:eq(' + position + ')').addClass('selected');
-                }
-                $(this).data('ac-selected', position);
-              }
-              break;
-            case 40: // down key
-              event.preventDefault();
-              if (element.hasClass(options.hidingClass)) {
-                search();
-              } else if (position < input.data('ac-length') - 1) {
-                position++;
-                element.find('.ac-item.selected').removeClass('selected');
+          // arrow keys through items
+          case 38: // up key
+            event.preventDefault();
+            element.find('.ac-item.selected').removeClass('selected');
+            if (position > -1) {
+              if (position-- > 0) {
                 element.find('.ac-item:eq(' + position + ')').addClass('selected');
-                $(this).data('ac-selected', position);
               }
-              break;
+              $(this).data('ac-selected', position);
+            }
+            break;
+          case 40: // down key
+            event.preventDefault();
+            if (element.hasClass(options.hidingClass)) {
+              search();
+            } else if (position < input.data('ac-length') - 1) {
+              position++;
+              element.find('.ac-item.selected').removeClass('selected');
+              element.find('.ac-item:eq(' + position + ')').addClass('selected');
+              $(this).data('ac-selected', position);
+            }
+            break;
             // enter to nav or populate
-            case 9:
-            case 13:
-              var selected = element.find('.ac-item.selected');
-              if (selected.length > 0) {
-                event.preventDefault();
-                if (event.which === 13 && selected.attr('href') && options.callback === 'undefined') {
-                  return window.location.assign(selected.attr('href'));
-                } else {
-                  _populate(selected.data(), { key: true });
-                }
+          case 9:
+          case 13:
+            var selected = element.find('.ac-item.selected');
+            if (selected.length > 0) {
+              event.preventDefault();
+              if (event.which === 13 && selected.attr('href') && options.callback === 'undefined') {
+                return window.location.assign(selected.attr('href'));
+              } else {
+                _populate(selected.data(), { key: true });
               }
-              break;
+            }
+            break;
             // hide on escape
-            case 27:
-              hide();
-              $(this).data('ac-selected', -1);
-              break;
+          case 27:
+            hide();
+            $(this).data('ac-selected', -1);
+            break;
           }
         });
 

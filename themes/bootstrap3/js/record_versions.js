@@ -11,14 +11,14 @@ VuFind.register("recordVersions", function recordVersions() {
     });
   }
 
-  function checkVersionStatusFailure(items, response, textStatus) {
+  function checkVersionStatusFailure(items) {
     items.forEach(function displayVersionFailure(item) {
       item.el.innerHTML = VuFind.translate("error_occurred");
     });
   }
 
   function runVersionAjaxQueue(items) {
-    return new Promise(function runVersionAjaxQueue(done, error) {
+    return new Promise(function runVersionAjaxPromise(done, error) {
       $.getJSON(VuFind.path + "/AJAX/JSON", {
         method: "getRecordVersions",
         id: items.map((item) => item.id),

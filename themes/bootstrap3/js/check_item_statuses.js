@@ -97,9 +97,9 @@ VuFind.register("itemStatuses", function ItemStatuses() {
         locationListHTML += '<div class="groupCallnumber">';
         locationListHTML += result.locationList[x].callnumbers
           ? formatCallnumbers(
-              result.locationList[x].callnumbers,
-              result.locationList[x].callnumber_handler
-            )
+            result.locationList[x].callnumbers,
+            result.locationList[x].callnumber_handler
+          )
           : "";
         locationListHTML += "</div>";
       }
@@ -127,7 +127,7 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     let idMap = {};
 
     // make map if ids to element arrays
-    items.forEach(function mapItemId(item, i) {
+    items.forEach(function mapItemId(item) {
       if (typeof idMap[item.id] == "undefined") {
         idMap[item.id] = [];
       }
@@ -182,7 +182,7 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     delay = 200,
   } = {}) {
     return new StatusAjaxQueue({
-      run: function runItemAjaxPromise(items) {
+      run: function runItemAjaxQueue(items) {
         return new Promise(function runItemAjaxPromise(done, error) {
           $.ajax({
             // todo: replace with fetch
