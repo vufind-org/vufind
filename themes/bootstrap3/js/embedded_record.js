@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
+/*global registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPERATOR = ':::';
@@ -165,8 +165,8 @@ VuFind.register('embedded', function embedded() {
             });
             // Add events to record toolbar
             VuFind.lightbox.bind(longNode);
-            if (typeof checkSaveStatuses == 'function') {
-              checkSaveStatuses(longNode);
+            if (typeof VuFind.saveStatuses.init == 'function') {
+              VuFind.saveStatuses.init(longNode);
             }
           }
         });

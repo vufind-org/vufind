@@ -209,6 +209,11 @@ header .container.navbar { margin-bottom: 0; }
   display: none;
 }
 
+.savedLists__ul {
+  list-style: disc;
+  padding-left: 1rem;
+}
+
 @media (min-width: 768px) {
   .result-body {
     float: left;
