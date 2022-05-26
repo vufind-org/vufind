@@ -242,15 +242,11 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     checkItemHandlers[handlerName].add({ el, id: hiddenIdEl.value });
   }
 
-  function checkAllItemStatuses(container = null) {
-    (container ?? document)
-      .querySelectorAll(".ajaxItem")
-      .forEach(checkItemStatus);
+  function checkAllItemStatuses(container = document) {
+    container.querySelectorAll(".ajaxItem").forEach(checkItemStatus);
   }
 
-  function init(_container = null) {
-    const container = _container ?? document;
-
+  function init(container = document) {
     if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkAllItemStatuses(container);
     } else {

@@ -131,14 +131,12 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     });
   }
 
-  function checkAllSaveStatuses(container = null) {
+  function checkAllSaveStatuses(container = document) {
     if (!userIsLoggedIn) {
       return;
     }
 
-    (container ?? document)
-      .querySelectorAll(".result,.record")
-      .forEach(checkSaveStatus);
+    container.querySelectorAll(".result,.record").forEach(checkSaveStatus);
   }
 
   function refresh() {
@@ -146,9 +144,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     checkAllSaveStatuses();
   }
 
-  function init(_container = null) {
-    const container = _container ?? document;
-
+  function init(container = document) {
     if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkAllSaveStatuses(container);
     } else {
