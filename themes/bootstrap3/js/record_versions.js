@@ -2,7 +2,7 @@
 
 VuFind.register("recordVersions", function recordVersions() {
   function checkVersionStatusSuccess(items, response) {
-    items.forEach((item) => {
+    items.forEach(function displayVersionStatus(item) {
       const key = item.source + "|" + item.id;
 
       if (typeof response.data[key] !== "undefined") {
@@ -12,13 +12,13 @@ VuFind.register("recordVersions", function recordVersions() {
   }
 
   function checkVersionStatusFailure(items, response, textStatus) {
-    items.forEach((item) => {
+    items.forEach(function displayVersionFailure(item) {
       item.el.innerHTML = VuFind.translate("error_occurred");
     });
   }
 
   function runVersionAjaxQueue(items) {
-    return new Promise((done, error) => {
+    return new Promise(function runVersionAjaxQueue(done, error) {
       $.getJSON(VuFind.path + "/AJAX/JSON", {
         method: "getRecordVersions",
         id: items.map((item) => item.id),
@@ -44,7 +44,7 @@ VuFind.register("recordVersions", function recordVersions() {
         : container.find(".record-versions.ajax");
 
     elements.each(function checkVersions() {
-      var $elem = $(this);
+      const $elem = $(this);
 
       if ($elem.hasClass("loaded")) {
         return;
@@ -57,9 +57,10 @@ VuFind.register("recordVersions", function recordVersions() {
           VuFind.translate("loading_ellipsis") +
           "</span>"
       );
-      var $item = $(this).parents(".result");
-      var id = $item.find(".hiddenId")[0].value;
-      var source = $item.find(".hiddenSource")[0].value;
+
+      const $item = $(this).parents(".result");
+      const id = $item.find(".hiddenId")[0].value;
+      const source = $item.find(".hiddenSource")[0].value;
 
       versionQueue.add({ id, source, el: this });
     });

@@ -34,7 +34,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   }
 
   function checkSaveStatusSuccess(items, response) {
-    items.forEach((item) => {
+    items.forEach(function displaySaveStatus(item) {
       const key = item.source + "|" + item.id;
 
       if (typeof response.data.statuses[key] !== "undefined") {
@@ -48,7 +48,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
       textStatus === "abort" ||
       typeof response.responseJSON === "undefined"
     ) {
-      items.forEach((item) => {
+      items.forEach(function hideSaveStatus(item) {
         $(item.el).find(".savedLists").addClass("hidden");
       });
 
@@ -56,7 +56,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     }
 
     // display the error message on each of the ajax status place holder
-    items.forEach((item) => {
+    items.forEach(function displaySaveFailure(item) {
       $(item.el)
         .find(".savedLists")
         .addClass("alert-danger")
@@ -65,7 +65,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   }
 
   function runSaveAjaxQueue(items) {
-    return new Promise((done, error) => {
+    return new Promise(function runSaveAjaxPromise(done, error) {
       $.ajax({
         url: VuFind.path + "/AJAX/JSON?method=getSaveStatuses",
         data: {
@@ -77,7 +77,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
       })
         .done(done)
         .catch(error);
-    })
+    });
   }
 
   const saveStatusQueue = new StatusAjaxQueue({

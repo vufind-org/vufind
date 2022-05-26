@@ -127,7 +127,7 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     let idMap = {};
 
     // make map if ids to element arrays
-    items.forEach((item, i) => {
+    items.forEach(function mapItemId(item, i) {
       if (typeof idMap[item.id] == "undefined") {
         idMap[item.id] = [];
       }
@@ -136,7 +136,7 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     });
 
     // display data
-    response.data.statuses.forEach((status) => {
+    response.data.statuses.forEach(function displayItemStatusResponse(status) {
       if (typeof idMap[status.id] == "undefined") {
         return;
       }
@@ -155,7 +155,7 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     }
 
     // display the error message on each of the ajax status place holder
-    items.forEach((item) => {
+    items.forEach(function displayItemStatusFailure(item) {
       $(item.el)
         .find(".callnumAndLocation")
         .addClass("text-danger")
@@ -176,8 +176,8 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     delay = 200,
   } = {}) {
     return new StatusAjaxQueue({
-      run: (items) =>
-        new Promise((done, error) => {
+      run: function runItemAjaxPromise(items) {
+        return new Promise(function runItemAjaxPromise(done, error) {
           $.ajax({
             // todo: replace with fetch
             url: VuFind.path + url,
@@ -187,7 +187,8 @@ VuFind.register("itemStatuses", function ItemStatuses() {
           })
             .done(done)
             .catch(error);
-        }),
+        });
+      },
       success: itemStatusAjaxSuccess,
       failure: itemStatusAjaxFailure,
       delay,
@@ -236,7 +237,9 @@ VuFind.register("itemStatuses", function ItemStatuses() {
   }
 
   function checkAllItemStatuses(container = null) {
-    (container ?? document).querySelectorAll(".ajaxItem").forEach(checkItemStatus);
+    (container ?? document)
+      .querySelectorAll(".ajaxItem")
+      .forEach(checkItemStatus);
   }
 
   function init(_container = null) {
@@ -245,7 +248,9 @@ VuFind.register("itemStatuses", function ItemStatuses() {
     if (typeof Hunt === "undefined") {
       checkAllItemStatuses(container);
     } else {
-      new Hunt(container.querySelectorAll(".ajaxItem"), { enter: checkItemStatus });
+      new Hunt(container.querySelectorAll(".ajaxItem"), {
+        enter: checkItemStatus,
+      });
     }
   }
 
