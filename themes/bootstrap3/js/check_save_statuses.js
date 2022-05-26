@@ -34,7 +34,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   }
 
   function checkSaveStatusSuccess(items, response) {
-    items.forEach(function displaySaveStatus(item) {
+    items.forEach(function displayEachSaveStatus(item) {
       const key = item.source + "|" + item.id;
 
       if (typeof response.data.statuses[key] !== "undefined") {
