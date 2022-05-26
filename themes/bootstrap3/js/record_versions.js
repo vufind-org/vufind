@@ -69,7 +69,7 @@ VuFind.register("recordVersions", function recordVersions() {
   function init(_container = null) {
     const container = _container ?? document;
 
-    if (typeof Hunt === "undefined") {
+    if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkRecordVersions(container);
     } else {
       new Hunt(container.querySelectorAll(".record-versions.ajax"), {

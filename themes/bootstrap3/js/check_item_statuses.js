@@ -143,6 +143,8 @@ VuFind.register("itemStatuses", function ItemStatuses() {
 
       idMap[status.id].forEach((el) => displayItemStatus(status, el));
     });
+
+    VuFind.emit("item-status-done");
   }
 
   function itemStatusAjaxFailure(items, response, textStatus) {
@@ -151,6 +153,8 @@ VuFind.register("itemStatuses", function ItemStatuses() {
       textStatus === "abort" ||
       typeof response.responseJSON === "undefined"
     ) {
+      VuFind.emit("item-status-done");
+
       return;
     }
 
@@ -167,6 +171,8 @@ VuFind.register("itemStatuses", function ItemStatuses() {
             : VuFind.translate("error_occurred")
         );
     });
+
+    VuFind.emit("item-status-done");
   }
 
   function makeItemStatusQueue({
@@ -245,7 +251,7 @@ VuFind.register("itemStatuses", function ItemStatuses() {
   function init(_container = null) {
     const container = _container ?? document;
 
-    if (typeof Hunt === "undefined") {
+    if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkAllItemStatuses(container);
     } else {
       new Hunt(container.querySelectorAll(".ajaxItem"), {

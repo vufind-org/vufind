@@ -144,7 +144,7 @@ class BlockLoader
             foreach ($config->$section->$setting as $current) {
                 $parts = explode(':', $current, 2);
                 $block = $this->blockManager->get($parts[0]);
-                $block->setConfig($parts[1] ?? null);
+                $block->setConfig($parts[1] ?? '');
                 $blocks[] = $block;
             }
         }

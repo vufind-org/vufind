@@ -41,6 +41,8 @@ VuFind.register("saveStatuses", function ItemStatuses() {
         displaySaveStatus(response.data.statuses[key], item.el);
       }
     });
+
+    VuFind.emit("save-status-done");
   }
 
   function checkSaveStatusFailure(items, response, textStatus) {
@@ -52,6 +54,8 @@ VuFind.register("saveStatuses", function ItemStatuses() {
         $(item.el).find(".savedLists").addClass("hidden");
       });
 
+      VuFind.emit("save-status-done");
+
       return;
     }
 
@@ -62,6 +66,8 @@ VuFind.register("saveStatuses", function ItemStatuses() {
         .addClass("alert-danger")
         .append(response.responseJSON.data);
     });
+
+    VuFind.emit("save-status-done");
   }
 
   function runSaveAjaxQueue(items) {
@@ -88,6 +94,8 @@ VuFind.register("saveStatuses", function ItemStatuses() {
 
   function checkSaveStatus(el) {
     if (!userIsLoggedIn) {
+      VuFind.emit("save-status-done");
+
       return;
     }
 
@@ -141,7 +149,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   function init(_container = null) {
     const container = _container ?? document;
 
-    if (typeof Hunt === "undefined") {
+    if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkAllSaveStatuses(container);
     } else {
       new Hunt(container.querySelectorAll(".result,.record"), {

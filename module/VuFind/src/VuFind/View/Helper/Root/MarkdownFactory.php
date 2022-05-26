@@ -28,8 +28,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Markdown helper factory

@@ -27,10 +27,10 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Abstract factory for backends.
@@ -83,7 +83,6 @@ abstract class AbstractBackendFactory implements FactoryInterface
     ): \Laminas\Http\Client {
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $options = $options ?? [];
         if (null !== $timeout) {
             $options['timeout'] = $timeout;
         }
