@@ -413,22 +413,44 @@ class SolrAuthMarc extends SolrAuthDefault {
         $relations = [];
 
         $fields = $this->getMarcReader()->getFields('500');
+
         if (is_array($fields)) {
             foreach ($fields as $field) {
-                $nameSubfield = $this->getMarcReader()->getSubfield($field,'a');
 
-                if ($nameSubfield !== false) {
-                    $relation = ['name' => $nameSubfield];
+                $aSubfield = $this->getMarcReader()->getSubfield($field,'a');
+                if ($aSubfield !== false) {
+
+                    $relationName = $aSubfield;
+
+                    $bSubfield = $this->getMarcReader()->getSubfield($field,'b');
+                    if ($bSubfield !== false) {
+                        $relationName .= " " . $bSubfield;
+                    }
+
+                    $cSubfield = $this->getMarcReader()->getSubfield($field,'c');
+                    if ($cSubfield !== false) {
+                        $relationName .= ", " . $cSubfield;
+                    }
+
+                    $relation = ['name' => $relationName];
 
                     $idPrefixPattern = '/^\(DE-627\)/';
                     $idSubfield = $this->getMarcReader()->getSubfield($field, '0', $idPrefixPattern);
-                    if ($idSubfield !== false)
+                    if ($idSubfield !== false) {
                         $relation['id'] = preg_replace($idPrefixPattern, '', $idSubfield);
-
+                    }
                     $typeSubfield = $this->getMarcReader()->getSubfield($field,'9');
-                    if ($typeSubfield !== false)
-                        $relation['type'] = $this->translateLabel(preg_replace('/^v:/', '', $typeSubfield));
 
+                    if ($typeSubfield !== false) {
+                        $relationType =  $this->translateLabel(preg_replace('/^v:/', '', $typeSubfield));
+                        if(empty($relationType)) {
+                            $dSubfield = $this->getMarcReader()->getSubfield($field,'d');
+                            if ($dSubfield !== false) {
+                                $relationType .= $dSubfield;
+                            }
+                        }
+                        $relation['type'] = $relationType;
+                    }
                     $relations[] = $relation;
                 }
             }
@@ -465,11 +487,16 @@ class SolrAuthMarc extends SolrAuthDefault {
             foreach ($fields as $field) {
                 $nameSubfield = $this->getMarcReader()->getSubfield($field, 'a');
                 if ($nameSubfield !== false) {
-                    $relation = ['name' => $nameSubfield];
 
-                    $addSubfield = $this->getMarcReader()->getSubfield($field, 'b');
-                    if ($addSubfield !== false)
-                        $relation['institution'] = $addSubfield;
+                    $relationName = $nameSubfield;
+                    $addSubfields = $this->getMarcReader()->getSubfields($field, 'b');
+
+                    foreach ($addSubfields as $addSubfield) {
+                        $relationName .= ". " . $addSubfield;
+                        if (!isset($relation['institution']))
+                            $relation['institution'] = $addSubfield;
+                    }
+                    $relation = ['name' => $relationName];
 
                     $locationSubfield = $this->getMarcReader()->getSubfield($field, 'g');
                     if ($locationSubfield !== false)
