@@ -489,13 +489,13 @@ class SolrAuthMarc extends SolrAuthDefault {
                 if ($nameSubfield !== false) {
 
                     $relationName = $nameSubfield;
-                    $addSubfield = $this->getMarcReader()->getSubfield($field, 'b');
-                    
-                    if ($addSubfield !== false) {
-                        $relationName .= " ".$addSubfield;
-                        $relation['institution'] = $addSubfield;
-                    }
+                    $addSubfields = $this->getMarcReader()->getSubfields($field, 'b');
 
+                    foreach ($addSubfields as $addSubfield) {
+                        $relationName .= ". " . $addSubfield;
+                        if (!isset($relation['institution']))
+                            $relation['institution'] = $addSubfield;
+                    }
                     $relation = ['name' => $relationName];
 
                     $locationSubfield = $this->getMarcReader()->getSubfield($field, 'g');
