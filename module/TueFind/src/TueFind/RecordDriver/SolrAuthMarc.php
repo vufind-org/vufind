@@ -424,12 +424,12 @@ class SolrAuthMarc extends SolrAuthDefault {
 
                     $bSubfield = $this->getMarcReader()->getSubfield($field,'b');
                     if ($bSubfield !== false) {
-                        $relationName .= " ".$bSubfield;
+                        $relationName .= " " . $bSubfield;
                     }
 
                     $cSubfield = $this->getMarcReader()->getSubfield($field,'c');
                     if ($cSubfield !== false) {
-                        $relationName .= " ".$cSubfield;
+                        $relationName .= ", " . $cSubfield;
                     }
 
                     $relation = ['name' => $relationName];
