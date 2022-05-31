@@ -61,7 +61,7 @@ class Solr extends \VuFind\Autocomplete\Solr
             $query .= "*";
             // Make sure we avoid empty results after a suggestion
             $escape = ['/'];
-            $query = preg_replace('#(' . implode($escape, '|') . ')#', '\\\\' . '\\1', $query);
+            $query = preg_replace('#(' . implode('|', $escape) . ')#', '\\\\' . '\\1', $query);
         }
         return $query;
     }
