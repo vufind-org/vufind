@@ -1793,27 +1793,28 @@ class PAIA extends DAIA
 
         // prepare post data depending on configured grant type
         switch ($this->grantType) {
-            case 'password' :
+        case 'password' :
+            $post_data = [
+                "username"   => $username,
+                "password"   => $password
+            ];
+            break;
+        case 'client_credentials':
+            // client_credentials only works if we have client_credentials
+            // username and password
+            if (isset($this->config['PAIA']['client_username'])
+                && isset($this->config['PAIA']['client_password']))
+            {
+                $header_data["Authorization"] = 'Basic ' .
+                    base64_encode(
+                        $this->config['PAIA']['client_username'] . ':' .
+                        $this->config['PAIA']['client_password']
+                    );
                 $post_data = [
-                    "username"   => $username,
-                    "password"   => $password
+                    "patron" => $username // actual patron identifier
                 ];
-                break;
-            case 'client_credentials':
-                // client_credentials only works if we have client_credentials
-                // username and password
-                if (isset($this->config['PAIA']['client_username']) &&
-                    isset($this->config['PAIA']['client_password'])) {
-                    $header_data["Authorization"] = 'Basic ' .
-                        base64_encode(
-                            $this->config['PAIA']['client_username'] . ':' .
-                            $this->config['PAIA']['client_password']
-                        );
-                    $post_data = [
-                        "patron" => $username // actual patron identifier
-                    ];
-                }
-                break;
+            }
+            break;
         }
 
         // perform full PAIA auth and get patron info
