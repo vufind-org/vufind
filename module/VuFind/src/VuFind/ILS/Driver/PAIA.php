@@ -1793,7 +1793,7 @@ class PAIA extends DAIA
 
         // prepare post data depending on configured grant type
         switch ($this->grantType) {
-        case 'password' :
+        case 'password':
             $post_data = [
                 "username"   => $username,
                 "password"   => $password
