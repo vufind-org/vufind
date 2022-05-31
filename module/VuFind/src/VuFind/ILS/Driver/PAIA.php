@@ -198,7 +198,12 @@ class PAIA extends DAIA
             throw new ILSException('PAIA/baseUrl configuration needs to be set.');
         }
         $this->paiaURL = $this->config['PAIA']['baseUrl'];
-        
+
+        // read configured grantType
+        if (isset($this->config['PAIA']['grantType'])) {
+            $this->grantType = $this->config['PAIA']['grantType'];
+        }
+
         // use PAIA specific timeout setting for http requests if configured
         if ((isset($this->config['PAIA']['timeout']))) {
             $this->paiaTimeout = $this->config['PAIA']['timeout'];
@@ -1775,6 +1780,42 @@ class PAIA extends DAIA
      */
     protected function paiaLogin($username, $password)
     {
+        // as PAIA supports two authentication methods (defined as grant_type:
+        // password or client_credentials), check which one is configured
+        if (!in_array($this->grantType, ['password', 'client_credentials'])) {
+            throw new ILSException(
+                'Unsupported PAIA grantType configured.'
+            );
+        }
+
+        // prepare http header
+        $header_data = [];
+
+        // prepare post data depending on configured grant type
+        switch ($this->grantType) {
+            case 'password' :
+                $post_data = [
+                    "username"   => $username,
+                    "password"   => $password
+                ];
+                break;
+            case 'client_credentials':
+                // client_credentials only works if we have client_credentials
+                // username and password
+                if (isset($this->config['PAIA']['client_username']) &&
+                    isset($this->config['PAIA']['client_password'])) {
+                    $header_data["Authorization"] = 'Basic ' .
+                        base64_encode(
+                            $this->config['PAIA']['client_username'] . ':' .
+                            $this->config['PAIA']['client_password']
+                        );
+                    $post_data = [
+                        "patron" => $username // actual patron identifier
+                    ];
+                }
+                break;
+        }
+
         // perform full PAIA auth and get patron info
         $post_data = [
             "username"   => $username,
@@ -1786,9 +1827,39 @@ class PAIA extends DAIA
                 self::SCOPE_WRITE_ITEMS . " " .
                 self::SCOPE_CHANGE_PASSWORD
         ];
-        $responseJson = $this->paiaPostRequest('auth/login', $post_data);
 
-        $responseArray = $this->paiaParseJsonAsArray($responseJson);
+        // perform full PAIA auth and get patron info
+        try {
+            $result = $this->httpService->post(
+                $this->paiaURL . 'auth/login',
+                json_encode($post_data),
+                'application/json; charset=UTF-8',
+                $this->paiaTimeout,
+                $header_data
+            );
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        if (!$result->isSuccess()) {
+            // log error for debugging
+            $this->debug(
+                'HTTP status ' . $result->getStatusCode() .
+                ' received'
+            );
+        }
+
+        // continue with result data
+        $responseJson = $result->getBody();
+
+        try {
+            $responseArray = $this->paiaParseJsonAsArray($responseJson);
+        } catch (\Exception $e) {
+            // all error handling is done in paiaHandleErrors so pass on the
+            // excpetion
+            throw $e;
+        }
+
         if (!isset($responseArray['access_token'])) {
             throw new ILSException(
                 'Unknown error! Access denied.'
