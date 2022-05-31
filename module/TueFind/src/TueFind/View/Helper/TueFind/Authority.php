@@ -533,13 +533,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             'minNumber' => 1,
             'firstTopicLength' => 10,
             'firstTopicWidth' => 10,
-            'maxTopicRows' => 200,
+            'maxTopicRows' => 1000,
             'minWeight' => 1,
             'filter' => $topicsCloudFieldname,
             'paramBag' => [
                 'sort' => 'publishDate DESC',
                 'fl' => 'id,'.$topicsCloudFieldname,
-             ],
+            ],
             'searchType' => 'AllFields'
         ];
 
@@ -550,7 +550,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         //       Example: Martin Luther, 133813363
         $titleRecords = $this->searchService->search($identifier,
                                                  new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), $settings['searchType']),
-                                                 0, 9999, new \VuFindSearch\ParamBag($settings['paramBag']));
+                                                 0, $settings['maxTopicRows'], new \VuFindSearch\ParamBag($settings['paramBag']));
 
         $countedTopics = [];
         foreach ($titleRecords as $titleRecord) {
@@ -589,6 +589,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if ($pos !== false) {
                 $topic = preg_replace( '/"([^"]*)"/', "«$1»", $topic);
             }
+
+            $topic = htmlspecialchars($topic, ENT_COMPAT,'UTF-8', true);
+
             $topicsArray[] = ['topicTitle'=>$topic, 'topicCount'=>$topicCount, 'topicLink'=>$topicLink.$originalTopicName];
         }
 
