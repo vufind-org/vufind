@@ -54,7 +54,6 @@ function addSearch(group, _fieldValues, isUser) {
   }
   groupLength[group]++;
 
-  // #17985 finc barf
   if (isUser) {
     $newSearch.find('input.form-control').focus();
   } else {
@@ -132,7 +131,6 @@ function addGroup(_firstTerm, _firstField, _join) {
     $('.adv-group-close').removeClass('hidden');
   }
 
-  // #17985 finc barf
   $newGroup.children('input.form-control').first().focus();
 
   return nextGroup++;
