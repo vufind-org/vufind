@@ -111,8 +111,8 @@ var VuFind = (function VuFind() {
   };
   var loading = function loading(text = null, extraClass = "") {
     let className = ("loading-spinner " + extraClass).trim();
-    let string = translate(text === null ? "loading" : text);
-    return '<span class="' + className + '">' + icon('spinner') + string + '...</span>';
+    let string = translate(text === null ? 'loading_ellipsis' : text);
+    return '<span class="' + className + '">' + icon('spinner') + string + '</span>';
   };
 
   /**
@@ -159,6 +159,10 @@ var VuFind = (function VuFind() {
     });
   };
 
+  var isPrinting = function() {
+    return Boolean(window.location.search.match(/[?&]print=/));
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -170,6 +174,7 @@ var VuFind = (function VuFind() {
     emit: emit,
     getCspNonce: getCspNonce,
     icon: icon,
+    isPrinting: isPrinting,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
@@ -334,7 +339,7 @@ function setupAutocomplete() {
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
-    loadingString: VuFind.translate('loading') + '...',
+    loadingString: VuFind.translate('loading_ellipsis'),
     // Auto-submit selected item
     callback: acCallback,
     // AJAX call for autocomplete results
