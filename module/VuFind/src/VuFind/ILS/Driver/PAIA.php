@@ -1803,8 +1803,8 @@ class PAIA extends DAIA
             // client_credentials only works if we have client_credentials
             // username and password
             if (isset($this->config['PAIA']['client_username'])
-                && isset($this->config['PAIA']['client_password']))
-            {
+                && isset($this->config['PAIA']['client_password'])
+            ) {
                 $header_data["Authorization"] = 'Basic ' .
                     base64_encode(
                         $this->config['PAIA']['client_username'] . ':' .
