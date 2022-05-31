@@ -21,10 +21,12 @@
 .related__title {
   display: inline-block;
 }
-.related__icon {
+.related__title .related__icon {
   float: left;
-  width: 1.2em;
+  width: 1.375em;
+  text-align: left;
   line-height: 1.4;
+  background-position-x: left;
 }
 
 .media-body h1 { margin-top: 0; }
