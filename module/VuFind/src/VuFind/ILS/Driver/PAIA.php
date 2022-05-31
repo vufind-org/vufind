@@ -60,6 +60,13 @@ class PAIA extends DAIA
     protected $paiaURL;
 
     /**
+     * Accepted grant_type for authorization
+     *
+     * @var string
+     */
+    protected $grantType;
+
+    /**
      * Timeout in seconds to be used for PAIA http requests
      *
      * @var int
