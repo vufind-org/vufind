@@ -198,7 +198,7 @@ class PAIA extends DAIA
             throw new ILSException('PAIA/baseUrl configuration needs to be set.');
         }
         $this->paiaURL = $this->config['PAIA']['baseUrl'];
-
+        
         // use PAIA specific timeout setting for http requests if configured
         if ((isset($this->config['PAIA']['timeout']))) {
             $this->paiaTimeout = $this->config['PAIA']['timeout'];
@@ -1027,7 +1027,8 @@ class PAIA extends DAIA
 
             default:
                 throw new ILSException(
-                    $array['error_description'] ?? $array['error'],
+                    $array['error_description'] ?? $array['error']
+                    . ' : ' .
                     (int)($array['code'] ?? 0)
                 );
             }
