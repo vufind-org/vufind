@@ -172,9 +172,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         }
     }
 
-    public function getNormdataTranslation($normdataString): string
+    public function translateNormdata($normdataString): string
     {
         $language = $this->getTranslatorLocale();
+
+        if ($language == 'de')
+            return $normdataString;
 
         $dir = '/usr/local/ub_tools/bsz_daten/';
         $path = $dir . 'normdata_translations_' . $language . '.txt';
@@ -203,7 +206,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if ($occupationsDisplay != '')
                 $occupationsDisplay .= ' / ';
 
-            $value = $this->getNormdataTranslation($occupation['name']);
+            $value = $this->translateNormdata($occupation['name']);
             if (!empty($occupation['timespan']))
                 $value .= ' (' . $occupation['timespan'] . ')';
             $occupationsDisplay .= '<span property="hasOccupation">' . htmlspecialchars($value) . '</span>';
@@ -229,7 +232,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
 
-            $relationsDisplay .= '<span property="name">' . htmlspecialchars($relation['name']) . '</span>';
+            $name = $this->translateNormdata($relation['name']);
+            foreach ($relation['adds'] as $add) {
+                $name .= '. ' . $this->translateNormdata($add);
+            }
+
+            $relationsDisplay .= '<span property="name">' . htmlspecialchars($name) . '</span>';
             if (!empty($relation['location'])) {
                 $relationsDisplay .= ' (<span property="location">' . htmlspecialchars($relation['location']) . '</span>)';
             } else if (!empty($relation['institution'])) {
@@ -273,7 +281,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
 
             if (isset($relation['type']))
-                $relationsDisplay .= ' (' . htmlspecialchars($this->translate($relation['type'])) . ')';
+                $relationsDisplay .= ' (' . htmlspecialchars($this->translateNormdata($relation['type'])) . ')';
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
@@ -294,7 +302,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $place['name'] = \Locale::getDisplayRegion($place['name'], $this->getTranslatorLocale()) . ' (' . $place['name'] . ')';
             }
 
-            $placesString .= htmlentities($this->translate($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
+            $placesString .= htmlentities($this->translateNormdata($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
         }
 
         return $placesString;
