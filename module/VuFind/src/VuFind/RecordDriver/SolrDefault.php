@@ -51,7 +51,6 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
     use Feature\HierarchyAwareTrait;
     use Feature\PreviousUniqueIdTrait;
     use Feature\VersionAwareTrait;
-    use \VuFindResultsGrouping\RecordDriver\SubrecordTrait;
 
     /**
      * These Solr fields should be used for snippets if available (listed in order

@@ -214,10 +214,8 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
-      <?=$this->render('RecordDriver/DefaultRecord/result-list-grouping-button')?>
+      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
     </div>
-    <?=$this->render('RecordDriver/DefaultRecord/result-list-grouped-subrecords')?>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>

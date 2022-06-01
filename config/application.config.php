@@ -4,7 +4,7 @@
 $modules = [
     'Laminas\Cache', 'Laminas\Form', 'Laminas\Router', 'LmcRbacMvc', 'Laminas\I18n',
     'Laminas\Mvc\I18n', 'SlmLocale', 'VuFindTheme', 'VuFindSearch', 'VuFind',
-    'VuFindAdmin', 'VuFindApi', 'finc\VuFindHttpPsrCompat', 'finc\WorldCat', 'VuFindResultsGrouping'
+    'VuFindAdmin', 'VuFindApi'
 ];
 if (!extension_loaded('intl')) {
     // Disable SlmLocale module if intl extension is missing:

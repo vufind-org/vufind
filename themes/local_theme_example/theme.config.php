@@ -13,8 +13,4 @@ return [
         ],
     ],
     'header-nav' => parse_ini_file('header-nav.ini', true),
-    'extends' => 'bootstrap3',
-    'mixins' => [
-        'local_mixin_example'
-    ],
 ];
