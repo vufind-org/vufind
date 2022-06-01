@@ -80,7 +80,12 @@
     <?=$locationTextEsc?>
   <?php endif; ?>
 </h3>
-<table class="table table-striped">
+<?php
+  $truncateSettings = [
+    'rows' => $this->config()->getHoldingsItemLimit(),
+  ];
+?>
+<table class="table table-striped truncate-field" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
   <tr>
