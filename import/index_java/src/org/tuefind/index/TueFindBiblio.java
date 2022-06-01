@@ -415,6 +415,16 @@ public class TueFindBiblio extends TueFind {
         final Set<String> nonUnknownMaterialTypeURLs = new HashSet<String>();
         final Map<String, Set<String>> materialTypeToURLsMap = new TreeMap<String, Set<String>>();
         final Set<String> urls_and_material_types = new LinkedHashSet<>();
+        boolean is_fid = false;
+
+        for (final VariableField variableField : record.getVariableFields("084")) {
+            final DataField field = (DataField) variableField;
+            final Subfield subfield_2 = getFirstNonEmptySubfield(field, '2');
+            if (subfield_2 != null && subfield_2.getData().equals("fid")) {
+                is_fid = true;
+                break;
+            }
+        }
 
         for (final VariableField variableField : record.getVariableFields("856")) {
             final DataField field = (DataField) variableField;
@@ -459,6 +469,9 @@ public class TueFindBiblio extends TueFind {
 
             if (!materialLicence.isEmpty())
                 materialType = materialType + " (" + materialLicence + ")";
+
+            if (is_fid && (materialType.equals("Volltext (Deutschlandweit zugänglich)")))
+                materialType = "Volltext (FID Nationallizenz)";
 
             for (final Subfield subfield_u : field.getSubfields('u')) {
                 Set<String> URLs = materialTypeToURLsMap.get(materialType);
