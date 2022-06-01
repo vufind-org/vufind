@@ -1,15 +1,15 @@
 class StatusAjaxQueue {
-  isRunning = false;
-  queue = [];
-  payload = [];
-
   constructor({ run, success, failure, delay }) {
+    this.isRunning = false;
+    this.queue = [];
+    this.payload = [];
+
     this.runFn = run;
     this.successFn = success;
     this.failureFn = failure;
 
     // move once Javascript is modularized
-    function debounce(func, delay) {
+    function debounce(func, delay = 300) {
       let timeout;
 
       return function () {
@@ -24,7 +24,7 @@ class StatusAjaxQueue {
       };
     }
 
-    this.runPayload = debounce(async function runPayloadCore() {
+    this.runPayload = debounce(function runPayloadCore() {
       this.isRunning = true;
 
       this.runFn(this.payload)
@@ -45,7 +45,7 @@ class StatusAjaxQueue {
             this.runPayload();
           }
         });
-    }, delay ?? 300);
+    }, delay);
   }
 
   add(obj) {
