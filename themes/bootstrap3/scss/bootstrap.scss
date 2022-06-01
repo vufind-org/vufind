@@ -102,6 +102,14 @@ h3 { font-size: 16px; }
   #modal .form-control { max-width: none; }
 }
 
+button.dropdown-toggle {
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+  appearance: none;
+  padding: 15px;
+  border: 0;
+  color: $brand-primary;
+}
+
 /* ------ Layout ------ */
 footer {
   @extend .container;
