@@ -3,7 +3,7 @@ var nextGroup = 0;
 var groupLength = [];
 var deleteGroup, deleteSearch;
 
-function addSearch(group, _fieldValues, isUser) {
+function addSearch(group, _fieldValues, isUser = false) {
   var fieldValues = _fieldValues || {};
   // Build the new search
   var inputID = group + '_' + groupLength[group];
