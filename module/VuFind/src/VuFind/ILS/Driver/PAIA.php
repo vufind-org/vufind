@@ -1039,8 +1039,7 @@ class PAIA extends DAIA
 
             default:
                 throw new ILSException(
-                    $array['error_description'] ?? $array['error']
-                    . ' : ' .
+                    $array['error_description'] ?? $array['error'],
                     (int)($array['code'] ?? 0)
                 );
             }
