@@ -35,7 +35,7 @@
       var data = $('[form=' + this.id + ']').serializeArray();
       // append data to form
       var $form = resetFormAttr(this);
-      for (var i = 0; i < data.length; i++) {
+      for (var i=0; i<data.length; i++) {
         $form.append(makeFieldElement(data[i]));
       }
       return true;
