@@ -180,6 +180,10 @@ foreach ($this->record($this->driver)->getUrlList() as $url) {
     echo 'UR  - ' . "$url\r\n";
 }
 
+$identifiers = $this->driver->tryMethod('getTypesAndPersistentIdentifiers');
+if (isset($identifiers['DOI'][0]))
+    echo 'DO  - ' . $identifiers['DOI'][0] . "\r\n";
+
 // End of Record:
 echo "ER  -\r\n\r\n";
 ?>
