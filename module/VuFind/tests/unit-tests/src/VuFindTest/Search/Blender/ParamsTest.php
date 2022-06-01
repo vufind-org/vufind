@@ -899,7 +899,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'lookfor' => 'foo',
             'type'  => 'Title',
             'sort' => 'year',
-            'page' => '2'
+            'page' => '2',
+            'hiddenFilter' => ['foo:"bar"'],
+            'hiddenFilters' => ['foo:"baz"'],
         ];
         $params = $this->getParams();
         $params->initFromRequest(new Parameters($query));
@@ -911,6 +913,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ParamBag::class, $solrParams);
         $this->assertInstanceOf(ParamBag::class, $primoParams);
         $this->assertInstanceOf(ParamBag::class, $edsParams);
+        $this->assertNull($solrParams->get('fq'));
 
         $solrQuery = $backendParams->get('query_Solr')[0];
         $primoQuery = $backendParams->get('query_Primo')[0];
