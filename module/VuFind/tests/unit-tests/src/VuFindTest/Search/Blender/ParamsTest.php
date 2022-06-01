@@ -900,7 +900,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'type'  => 'Title',
             'sort' => 'year',
             'page' => '2',
-            'hiddenFilter' => ['foo:"bar"'],
             'hiddenFilters' => ['foo:"baz"'],
         ];
         $params = $this->getParams();
