@@ -34,7 +34,7 @@ trait MarcAdvancedTrait
     }
 
     public function getSeries() {
-       return $this->getVuFindSeries();
+        return $this->getVuFindSeries();
     }
 
     public function getSeriesFromMARC($fieldInfo) {
@@ -71,8 +71,8 @@ trait MarcAdvancedTrait
                         // with 440, 490, 800 or 830 -- hence the hard-coded array
                         // rather than another parameter in $fieldInfo).
                         $number = $this->getMarcReader()->getSubfield($currentField, 'v');
-                        if (isset($number[0])) {
-                            $currentArray['number'] = $number[0];
+                        if (!empty($number)) {
+                            $currentArray['number'] = $number;
                         }
                         // Save the current match:
                         $matches[] = $currentArray;
