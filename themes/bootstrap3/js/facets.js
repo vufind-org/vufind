@@ -30,10 +30,6 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         icon.setAttribute('aria-hidden', 'true');
       }
       item.appendChild(icon);
-    } else if (facet.isApplied) {
-      icon.className += ' fa-check pull-right';
-      icon.setAttribute('title', selected);
-      item.appendChild(icon);
     }
     var description = document.createElement('span');
     description.className = 'facet-value';
@@ -160,6 +156,10 @@ VuFind.register('sideFacets', function SideFacets() {
       + VuFind.loading()
       + "</span></div>";
     $(this).closest(".collapse").append(overlay);
+    if (typeof data !== "undefined") {
+      // Remove jstree-clicked class from JSTree links to avoid the color change:
+      data.instance.get_node(data.node, true).children().removeClass('jstree-clicked');
+    }
     // This callback operates both as a click handler and a JSTree callback;
     // if the data element is undefined, we assume we are handling a click.
     var href = typeof data === "undefined" || typeof data.node.data.url === "undefined"

@@ -250,10 +250,14 @@ VuFind.register('lightbox', function Lightbox() {
    */
   _constrainLink = function constrainLink(event) {
     var $link = $(this);
+    var urlRoot = location.origin + VuFind.path;
+
     if (typeof $link.data("lightboxIgnore") != "undefined"
       || typeof $link.attr("href") === "undefined"
       || $link.attr("href").charAt(0) === "#"
       || $link.attr("href").match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
+      || ($link.attr("href").slice(0, 4) === "http" // external links
+        && $link.attr("href").indexOf(urlRoot) === -1)
       || (typeof $link.attr("target") !== "undefined"
         && (
           $link.attr("target").toLowerCase() === "_new"
