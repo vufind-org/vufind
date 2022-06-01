@@ -21,6 +21,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     protected $viewHelperManager;
 
+    protected $normdataTranslationCache = [];
+
     public function __construct(\VuFindSearch\Service $searchService,
                                 \Laminas\View\HelperPluginManager $viewHelperManager,
                                 \VuFind\Record\Loader $recordLoader,
@@ -170,14 +172,44 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         }
     }
 
+    public function translateNormdata($normdataString): string
+    {
+        $language = $this->getTranslatorLocale();
+
+        if ($language == 'de')
+            return $normdataString;
+
+        $dir = '/usr/local/ub_tools/bsz_daten/';
+        $path = $dir . 'normdata_translations_' . $language . '.txt';
+        $fallbackPath = $dir . 'normdata_translations_en.txt';
+        if (!is_file($path) && is_file($fallbackPath))
+            $path = $fallbackPath;
+
+        if (!isset($this->normdataTranslationCache[$language]) && is_file($path)) {
+            $languageCache = [];
+            $rawTranslations = file($path);
+            foreach ($rawTranslations as $rawTranslation) {
+                $parts = explode('|', $rawTranslation);
+                $languageCache[$parts[0]] = trim($parts[1]);
+            }
+            $this->normdataTranslationCache[$language] = $languageCache;
+        }
+
+        return $this->normdataTranslationCache[$language][$normdataString] ?? $normdataString;
+    }
+
     public function getOccupations(AuthorityRecordDriver &$driver): string
     {
-        $occupations = $driver->getOccupations($this->getTranslatorLocale());
+        $occupations = $driver->getOccupationsAndTimespans();
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
                 $occupationsDisplay .= ' / ';
-            $occupationsDisplay .= '<span property="hasOccupation">' . htmlspecialchars($occupation) . '</span>';
+
+            $value = $this->translateNormdata($occupation['name']);
+            if (!empty($occupation['timespan']))
+                $value .= ' (' . $occupation['timespan'] . ')';
+            $occupationsDisplay .= '<span property="hasOccupation">' . htmlspecialchars($value) . '</span>';
         }
         return $occupationsDisplay;
     }
@@ -200,7 +232,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
 
-            $relationsDisplay .= '<span property="name">' . htmlspecialchars($relation['name']) . '</span>';
+            $name = $this->translateNormdata($relation['name']);
+            foreach ($relation['adds'] as $add) {
+                $name .= '. ' . $this->translateNormdata($add);
+            }
+
+            $relationsDisplay .= '<span property="name">' . htmlspecialchars($name) . '</span>';
             if (!empty($relation['location'])) {
                 $relationsDisplay .= ' (<span property="location">' . htmlspecialchars($relation['location']) . '</span>)';
             } else if (!empty($relation['institution'])) {
@@ -244,7 +281,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
 
             if (isset($relation['type']))
-                $relationsDisplay .= ' (' . htmlspecialchars($this->translate($relation['type'])) . ')';
+                $relationsDisplay .= ' (' . htmlspecialchars($this->translateNormdata($relation['type'])) . ')';
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
@@ -265,7 +302,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                 $place['name'] = \Locale::getDisplayRegion($place['name'], $this->getTranslatorLocale()) . ' (' . $place['name'] . ')';
             }
 
-            $placesString .= htmlentities($this->translate($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
+            $placesString .= htmlentities($this->translateNormdata($place['type'])) . ': ' . htmlentities($place['name']) . '<br>';
         }
 
         return $placesString;
