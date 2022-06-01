@@ -64,7 +64,7 @@ class PAIA extends DAIA
      *
      * @var string
      */
-    protected $grantType;
+    protected $grantType = 'password';
 
     /**
      * Timeout in seconds to be used for PAIA http requests
@@ -1790,7 +1790,7 @@ class PAIA extends DAIA
         // password or client_credentials), check which one is configured
         if (!in_array($this->grantType, ['password', 'client_credentials'])) {
             throw new ILSException(
-                'Unsupported PAIA grantType configured.'
+                'Unsupported PAIA grant_type configured: ' . $this->grantType
             );
         }
 
@@ -1819,6 +1819,11 @@ class PAIA extends DAIA
                 $post_data = [
                     "patron" => $username // actual patron identifier
                 ];
+            } else {
+                throw new ILSException(
+                    'Missing username and/or password for PAIA grant_type' .
+                    ' client_credentials in PAIA configuration.'
+                );
             }
             break;
         }
@@ -1836,17 +1841,13 @@ class PAIA extends DAIA
         ];
 
         // perform full PAIA auth and get patron info
-        try {
-            $result = $this->httpService->post(
-                $this->paiaURL . 'auth/login',
-                json_encode($post_data),
-                'application/json; charset=UTF-8',
-                $this->paiaTimeout,
-                $header_data
-            );
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
+        $result = $this->httpService->post(
+            $this->paiaURL . 'auth/login',
+            json_encode($post_data),
+            'application/json; charset=UTF-8',
+            $this->paiaTimeout,
+            $header_data
+        );
 
         if (!$result->isSuccess()) {
             // log error for debugging
@@ -1859,14 +1860,7 @@ class PAIA extends DAIA
         // continue with result data
         $responseJson = $result->getBody();
 
-        try {
-            $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (\Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the
-            // excpetion
-            throw $e;
-        }
-
+        $responseArray = $this->paiaParseJsonAsArray($responseJson);
         if (!isset($responseArray['access_token'])) {
             throw new ILSException(
                 'Unknown error! Access denied.'
