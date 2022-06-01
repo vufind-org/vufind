@@ -4,7 +4,10 @@
   $config = $this->tuefind()->getConfig('tuefind');
   $publication = $this->tuefind()->getPublicationByControlNumber($recordId);
   $authors = $this->driver->getDeduplicatedAuthors();
-  $accessPublishRecord = $this->tuefind()->getUserAccessPublishRecord($user->id, $authors);
+  $accessPublishRecord = false;
+  if(isset($user->id)) {
+    $accessPublishRecord = $this->tuefind()->getUserAccessPublishRecord($user->id, $authors);
+  }
   $showDspaceLink = false;
   if (isset($publication)) {
       $showDspaceLink = true;
