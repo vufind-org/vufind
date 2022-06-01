@@ -6,7 +6,7 @@
   $authors = $this->driver->getDeduplicatedAuthors();
   $accessPublishRecord = false;
   if(isset($user->id)) {
-    $accessPublishRecord = $this->tuefind()->getUserAccessPublishRecord($user->id, $authors);
+      $accessPublishRecord = $this->tuefind()->getUserAccessPublishRecord($user->id, $authors);
   }
   $showDspaceLink = false;
   if (isset($publication)) {
