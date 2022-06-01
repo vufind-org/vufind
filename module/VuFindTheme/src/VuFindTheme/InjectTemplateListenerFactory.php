@@ -105,14 +105,15 @@ class InjectTemplateListenerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function loadConfiguredJavascriptFilesFromMixin(
+    public function loadConfiguredJavascriptFilesFromMixin(
         array $config,
         ContainerInterface $container
     ): void {
         $templatePathStack = $config['view_manager']['template_path_stack'] ?? false;
         if ($templatePathStack) {
             /* @var HeadScript $headScript */
-            $headScript = $container->get('ViewHelperManager')->get('headScript');
+            $headScript = $container->get('ViewHelperManager')->get('headScript') ??
+                $container->get('headScript');
             foreach ($templatePathStack as $templatePath) {
                 if (file_exists($mixin = $templatePath . '/../mixin.config.php')) {
                     $resourceContainer = $container
@@ -122,7 +123,7 @@ class InjectTemplateListenerFactory implements FactoryInterface
                         switch ($type) {
                         case 'js':
                             foreach ($files as $file) {
-                                $path = realpath(dirname($mixin) . "/$type/$file");
+                                $path = dirname($mixin) . "/$type/$file";
                                 if (file_exists($path)) {
                                     if ($headScript->isPipelineActive()) {
                                         $headScript->appendFile(
