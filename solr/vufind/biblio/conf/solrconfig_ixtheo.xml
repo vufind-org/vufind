@@ -396,7 +396,8 @@
            https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
            https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
       -->
-      <str name="sow">true</str>
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <lst name="appends">
       <str name="fl">[multiLanguageDocTransformer]</str>
@@ -432,7 +433,8 @@
            https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
            https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
       -->
-      <str name="sow">true</str>
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <lst name="appends">
       <str name="fl">[multiLanguageDocTransformer]</str>
@@ -461,7 +463,8 @@
            https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
            https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
       -->
-      <str name="sow">true</str>
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <lst name="appends">
       <str name="fl">[multiLanguageDocTransformer]</str>

@@ -185,6 +185,7 @@ $config = [
             'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'TueFind\Controller\RedirectController' => 'TueFind\Controller\RedirectControllerFactory',
             'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\Search2recordController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'initializers' => [
@@ -216,6 +217,8 @@ $config = [
             'redirect' => 'TueFind\Controller\RedirectController',
             'RssFeed' => 'TueFind\Controller\RssFeedController',
             'rssfeed' => 'TueFind\Controller\RssFeedController',
+            'search2record' => 'TueFind\Controller\Search2recordController',
+            'Search2Record' => 'TueFind\Controller\Search2recordController',
             'WikidataProxy' => 'TueFind\Controller\WikidataProxyController',
             'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],

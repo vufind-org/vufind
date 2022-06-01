@@ -212,11 +212,7 @@ class SolrMarc extends SolrDefault
 
     public function isPrintedWork() {
         $fields = $this->getMarcReader()->getFields('007');
-        foreach ($fields as $field) {
-            if ($field == 't')
-                return true;
-        }
-        return false;
+        return isset($fields[0]) && (strpos($fields[0], 't') !== false);
     }
 
     public function isSubscriptionBundle(): bool
