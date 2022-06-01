@@ -21,6 +21,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     protected $viewHelperManager;
 
+    protected $normdataTranslationCache = [];
+
     public function __construct(\VuFindSearch\Service $searchService,
                                 \Laminas\View\HelperPluginManager $viewHelperManager,
                                 \VuFind\Record\Loader $recordLoader,
@@ -170,14 +172,41 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         }
     }
 
+    public function getNormdataTranslation($normdataString): string
+    {
+        $language = $this->getTranslatorLocale();
+
+        $dir = '/usr/local/ub_tools/bsz_daten/';
+        $path = $dir . 'normdata_translations_' . $language . '.txt';
+        $fallbackPath = $dir . 'normdata_translations_en.txt';
+        if (!is_file($path) && is_file($fallbackPath))
+            $path = $fallbackPath;
+
+        if (!isset($this->normdataTranslationCache[$language]) && is_file($path)) {
+            $languageCache = [];
+            $rawTranslations = file($path);
+            foreach ($rawTranslations as $rawTranslation) {
+                $parts = explode('|', $rawTranslation);
+                $languageCache[$parts[0]] = trim($parts[1]);
+            }
+            $this->normdataTranslationCache[$language] = $languageCache;
+        }
+
+        return $this->normdataTranslationCache[$language][$normdataString] ?? $normdataString;
+    }
+
     public function getOccupations(AuthorityRecordDriver &$driver): string
     {
-        $occupations = $driver->getOccupations($this->getTranslatorLocale());
+        $occupations = $driver->getOccupationsAndTimespans();
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
                 $occupationsDisplay .= ' / ';
-            $occupationsDisplay .= '<span property="hasOccupation">' . htmlspecialchars($occupation) . '</span>';
+
+            $value = $this->getNormdataTranslation($occupation['name']);
+            if (!empty($occupation['timespan']))
+                $value .= ' (' . $occupation['timespan'] . ')';
+            $occupationsDisplay .= '<span property="hasOccupation">' . htmlspecialchars($value) . '</span>';
         }
         return $occupationsDisplay;
     }
