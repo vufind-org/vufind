@@ -116,6 +116,6 @@ class AuthHash extends Gateway
      */
     protected function expirationCallback($select, $dateLimit)
     {
-        $select->where->lessThan('created', strtotime($dateLimit));
+        $select->where->lessThan('created', $dateLimit);
     }
 }
