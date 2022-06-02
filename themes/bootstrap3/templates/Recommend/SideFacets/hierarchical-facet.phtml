@@ -39,14 +39,12 @@ JS;
   $truncateSettings = $alwaysUseLightbox ? false : [
     'rows' => $this->facets_before_more,
     'btn-class' => 'facet',
-    'more-label' => $this->transEsc('more') . ' ...',
-    'less-label' => $this->transEsc('less') . ' ...',
     'wrapper-class' => false,
     'wrapper-tagname' => 'div',
   ];
 ?>
-<div<?php if ($truncateSettings): ?> class ="truncate-hierarchy" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
-<li id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
+<div<?php if ($truncateSettings): ?> class="truncate-hierarchy" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
+  <li id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
     data-source="<?=$this->escapeHtml($this->searchClassId)?>"
     data-facet="<?=$this->escapeHtmlAttr($this->title)?>"
     data-path="<?=$this->currentPath()?>"
@@ -57,18 +55,5 @@ JS;
     data-query="<?=$this->escapeHtmlAttr($urlQuery)?>"
     data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>"
     data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
-</li>
-<?php /* LESS and SEE MORE links */ ?>
-<?php if (isset($i) && $i >= 5): ?>
-  <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
-    <?php
-      $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
-      if (!empty($this->baseUriExtra)) {
-        $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
-      }
-    ?>
-    <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-      <span class="text"><?=$this->transEsc('see all')?> ...</span>
-    </a>
-  <?php endif; ?>
-<?php endif; ?>
+  </li>
+</div>
