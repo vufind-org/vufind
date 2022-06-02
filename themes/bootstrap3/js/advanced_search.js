@@ -56,8 +56,6 @@ function addSearch(group, _fieldValues, isUser = false) {
 
   if (isUser) {
     $newSearch.find('input.form-control').focus();
-  } else if (group === 0 || fieldValues.term === '') {
-    $('#group' + group).find('input.form-control').first().focus();
   }
 
   return false;
@@ -87,7 +85,7 @@ deleteSearch = function _deleteSearch(group, sindex) {
   return false;
 };
 
-function addGroup(_firstTerm, _firstField, _join) {
+function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   var firstTerm = _firstTerm || '';
   var firstField = _firstField || '';
   var join = _join || '';
@@ -123,7 +121,7 @@ function addGroup(_firstTerm, _firstField, _join) {
   $('#groupPlaceHolder').before($newGroup);
   // Populate
   groupLength[nextGroup] = 0;
-  addSearch(nextGroup, {term: firstTerm, field: firstField}, false);
+  addSearch(nextGroup, {term: firstTerm, field: firstField}, isUser);
   // Show join menu
   if (nextGroup > 0) {
     $('#groupJoin').removeClass('hidden');
