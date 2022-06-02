@@ -93,7 +93,7 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
     treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
       treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
       treeNode.find('a.exclude').click(VuFind.sideFacets.showLoadingOverlay);
-      VuFind.emit('VuFind.sidefactes.treenodeloaded');
+      VuFind.emit('VuFind.sidefacets.treenodeloaded');
     });
   }
   treeNode.jstree({
@@ -365,4 +365,4 @@ function registerHierarchicalFacetTruncation() {
 }
 
 VuFind.listen('VuFind.sidefacets.loaded', registerSideFacetTruncation);
-VuFind.listen('VuFind.sidefactes.treenodeloaded', registerHierarchicalFacetTruncation);
+VuFind.listen('VuFind.sidefacets.treenodeloaded', registerHierarchicalFacetTruncation);
