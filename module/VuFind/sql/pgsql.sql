@@ -88,7 +88,7 @@ CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
 CREATE INDEX notification_frequency_idx ON search (notification_frequency);
 CREATE INDEX notification_base_url_idx ON search (notification_base_url);
-CREATE INDEX created_saved_idx ON search (created, saved);
+CREATE INDEX search_created_saved_idx ON search (created, saved);
 
 -- --------------------------------------------------------
 
