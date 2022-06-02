@@ -56,7 +56,7 @@ function addSearch(group, _fieldValues, isUser = false) {
 
   if (isUser) {
     $newSearch.find('input.form-control').focus();
-  } else {
+  } else if (group === 0 || fieldValues.term === '') {
     $('#group' + group).find('input.form-control').first().focus();
   }
 
