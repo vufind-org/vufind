@@ -136,8 +136,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $collectionID = $collection->id;
                 }
 
-                if ($uploadedFile['type'] != "application/pdf") {
-                    $uploadInfos[] = ["Invalid file type!: " . $uploadedFile['type'],"text-danger"];
+                $PDFMediaTypesArray = array('application/pdf', 'application/x-pdf', 'application/x-bzpdf', 'application-gzpdf');
+
+                if (!in_array($uploadedFile['type'], $PDFMediaTypesArray)) {
+                    $uploadInfos[] = ["You can upload only PDF file!","text-danger"];
                     $uploadError = 1;
                 }
 
