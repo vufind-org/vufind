@@ -19,9 +19,6 @@
   </div>
 <?php endif;?>
 
-
-
-
 <h3><?=$this->transEsc('Upload new publication');?></h3>
 
 <h4><?=$this->transEsc('Publication title');?>: <?=$this->dublinCore['DC.title'][0]?> </h4>
@@ -39,10 +36,9 @@
     </select>
   </div>
 
-  <p class="text-center tf-m-0"><i><?=$this->transEsc('You can upload only PDF file');?></i></p>
   <!-- File -->
   <div class="form-group">
-    <label><?=$this->transEsc('file');?></label>
+    <label><?=$this->transEsc('file');?> (<i><?=$this->transEsc('You can upload only PDF file');?></i>)</label>
     <input class="form-control" type="file" name="file" required>
   </div>
   <div>
