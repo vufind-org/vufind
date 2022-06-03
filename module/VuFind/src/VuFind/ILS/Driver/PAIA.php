@@ -1807,14 +1807,14 @@ class PAIA extends DAIA
             break;
         case 'client_credentials':
             // client_credentials only works if we have client_credentials
-            // username and password
-            if (isset($this->config['PAIA']['client_username'])
-                && isset($this->config['PAIA']['client_password'])
+            // username and password (see PAIA.ini for further explanation)
+            if (isset($this->config['PAIA']['clientUsername'])
+                && isset($this->config['PAIA']['clientPassword'])
             ) {
                 $header_data["Authorization"] = 'Basic ' .
                     base64_encode(
-                        $this->config['PAIA']['client_username'] . ':' .
-                        $this->config['PAIA']['client_password']
+                        $this->config['PAIA']['clientUsername'] . ':' .
+                        $this->config['PAIA']['clientPassword']
                     );
                 $post_data = [
                     "patron" => $username // actual patron identifier
