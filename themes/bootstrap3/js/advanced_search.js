@@ -3,7 +3,7 @@ var nextGroup = 0;
 var groupLength = [];
 var deleteGroup, deleteSearch;
 
-function addSearch(group, _fieldValues) {
+function addSearch(group, _fieldValues, isUser = false) {
   var fieldValues = _fieldValues || {};
   // Build the new search
   var inputID = group + '_' + groupLength[group];
@@ -53,6 +53,11 @@ function addSearch(group, _fieldValues) {
     $('#group' + group + ' .adv-term-remove').removeClass('hidden');
   }
   groupLength[group]++;
+
+  if (isUser) {
+    $newSearch.find('input.form-control').focus();
+  }
+
   return false;
 }
 
@@ -67,7 +72,12 @@ deleteSearch = function _deleteSearch(group, sindex) {
   }
   if (groupLength[group] > 1) {
     groupLength[group]--;
-    $('#search' + group + '_' + groupLength[group]).remove();
+    var toRemove = $('#search' + group + '_' + groupLength[group]);
+    var parent = toRemove.parent();
+    toRemove.remove();
+    if (parent.length) {
+      parent.find('.adv-search input.form-control').focus();
+    }
     if (groupLength[group] === 1) {
       $('#group' + group + ' .adv-term-remove').addClass('hidden'); // Hide x
     }
@@ -75,7 +85,7 @@ deleteSearch = function _deleteSearch(group, sindex) {
   return false;
 };
 
-function addGroup(_firstTerm, _firstField, _join) {
+function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   var firstTerm = _firstTerm || '';
   var firstField = _firstField || '';
   var join = _join || '';
@@ -91,7 +101,7 @@ function addGroup(_firstTerm, _firstField, _join) {
     .attr('id', 'add_search_link_' + nextGroup)
     .data('nextGroup', nextGroup)
     .click(function addSearchHandler() {
-      return addSearch($(this).data('nextGroup'));
+      return addSearch($(this).data('nextGroup'), {}, true);
     })
     .removeClass('hidden');
   $newGroup.find('.adv-group-close')
@@ -111,13 +121,16 @@ function addGroup(_firstTerm, _firstField, _join) {
   $('#groupPlaceHolder').before($newGroup);
   // Populate
   groupLength[nextGroup] = 0;
-  addSearch(nextGroup, {term: firstTerm, field: firstField});
+  addSearch(nextGroup, {term: firstTerm, field: firstField}, isUser);
   // Show join menu
   if (nextGroup > 0) {
     $('#groupJoin').removeClass('hidden');
     // Show x
     $('.adv-group-close').removeClass('hidden');
   }
+
+  $newGroup.children('input.form-control').first().focus();
+
   return nextGroup++;
 }
 
