@@ -27,6 +27,7 @@
  */
 namespace VuFind\Search;
 
+use minSO;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
@@ -68,5 +69,17 @@ class SearchNormalizer
     public function normalizeSearch(Results $results): NormalizedSearch
     {
         return new NormalizedSearch($this->resultsManager, $results);
+    }
+
+    /**
+     * Normalize a minified search
+     *
+     * @param minSO $minified Minified search results object
+     *
+     * @return NormalizedSearch
+     */
+    public function normalizeMinifiedSearch(minSO $minified): NormalizedSearch
+    {
+        return $this->normalizeSearch($minified->deminify($this->resultsManager));
     }
 }

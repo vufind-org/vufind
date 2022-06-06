@@ -34,6 +34,7 @@ use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
 use minSO;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Search\NormalizedSearch;
 use VuFind\Search\SearchNormalizer;
 
 /**
@@ -215,6 +216,49 @@ class Search extends Gateway
     }
 
     /**
+     * Return existing search table rows matching the provided search results.
+     *
+     * @param \VuFind\Search\Results\PluginManager $manager   Search manager
+     * @param \VuFind\Search\Base\Results          $newSearch Search to save
+     * @param string                               $sessionId Current session ID
+     * @param int|null                             $userId    Current user ID
+     * @param int                                  $limit     Max rows to retrieve
+     * (default = no limit)
+     *
+     * @return \VuFind\Db\Row\Search[]
+     */
+    public function getSearchRowsMatchingNormalizedSearch(
+        NormalizedSearch $normalized,
+        string $sessionId,
+        ?int $userId,
+        int $limit = PHP_INT_MAX
+    ) {
+        // Fetch all rows with the same CRC32 and try to match with the URL
+        $checksum = $normalized->getChecksum();
+        $callback = function ($select) use ($checksum, $sessionId, $userId) {
+            $nest = $select->where
+                ->equalTo('checksum', $checksum)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        $results = [];
+        foreach ($this->select($callback) as $match) {
+            $minified = $match->getSearchObject();
+            if ($normalized->isEquivalentToMinifiedSearch($minified)) {
+                $results[] = $match;
+                if (count($results) >= $limit) {
+                    break;
+                }
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Add a search into the search table (history)
      *
      * @param SearchNormalizer            $manager   Search manager
@@ -231,40 +275,35 @@ class Search extends Gateway
         $userId
     ) {
         $normalized = $normalizer->normalizeSearch($newSearch);
-        $checksum = $normalized->getChecksum();
-
-        // Fetch all rows with the same CRC32 and try to match with the URL
-        $callback = function ($select) use ($checksum, $sessionId, $userId) {
-            $nest = $select->where
-                ->equalTo('checksum', $checksum)
-                ->and
-                ->nest
-                ->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
-            if (!empty($userId)) {
-                $nest->or->equalTo('user_id', $userId);
+        $duplicates = $this->getSearchRowsMatchingNormalizedSearch(
+            $normalized,
+            $sessionId,
+            $userId,
+            1 // we only need to identify at most one duplicate match
+        );
+        if ($oldSearch = array_shift($duplicates)) {
+            // Update the old search only if it wasn't saved:
+            if (!$oldSearch->saved) {
+                $oldSearch->created = date('Y-m-d H:i:s');
+                // Keep the ID of the old search:
+                $newSearchMinified = $normalized->getMinified();
+                $newSearchMinified->id = $oldSearch->getSearchObject()->id;
+                $oldSearch->search_object = serialize($newSearchMinified);
+                $oldSearch->save();
             }
-        };
-        foreach ($this->select($callback) as $oldSearch) {
-            $oldSearchMinified = $oldSearch->getSearchObject();
-            if ($normalized->isEquivalentToMinifiedSearch($oldSearchMinified)) {
-                // Update the old search only if it wasn't saved:
-                if (!$oldSearch->saved) {
-                    $oldSearch->created = date('Y-m-d H:i:s');
-                    // Keep the ID of the old search:
-                    $newSearchMinified = $normalized->getMinified();
-                    $newSearchMinified->id = $oldSearchMinified->id;
-                    $oldSearch->search_object = serialize($newSearchMinified);
-                    $oldSearch->save();
-                }
-                // Update the new search from the existing one
-                $newSearch->updateSaveStatus($oldSearch);
-                return $oldSearch;
-            }
+            // Update the new search from the existing one
+            $newSearch->updateSaveStatus($oldSearch);
+            return $oldSearch;
         }
 
         // If we got this far, we didn't find a saved duplicate, so we should
         // save the new search:
-        $this->insert(['created' => date('Y-m-d H:i:s'), 'checksum' => $checksum]);
+        $this->insert(
+            [
+                'created' => date('Y-m-d H:i:s'),
+                'checksum' => $normalized->getChecksum()
+            ]
+        );
         $row = $this->getRowById($this->getLastInsertValue());
 
         // Chicken and egg... We didn't know the id before insert

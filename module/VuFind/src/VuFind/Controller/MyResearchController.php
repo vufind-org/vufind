@@ -503,6 +503,39 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Is the provided search row a duplicate of a search that is already saved?
+     *
+     * @param \VuFind\Db\Table\Search $searchTable Search table
+     * @param \VuFind\Db\Row\Search   $rowToCheck  Search row to check
+     * @param string                  $sessId      Current session ID
+     * @param int                     $userId      Current user ID
+     *
+     * @return ?int
+     */
+    protected function isDuplicateOfSavedSearch(
+        \VuFind\Db\Table\Search $searchTable,
+        \VuFind\Db\Row\Search   $rowToCheck,
+        string                  $sessId,
+        int                     $userId
+    ): ?int {
+        $normalizer = $this->serviceLocator
+            ->get(\VuFind\Search\SearchNormalizer::class);
+        $normalized = $normalizer
+            ->normalizeMinifiedSearch($rowToCheck->getSearchObject());
+        $matches = $searchTable->getSearchRowsMatchingNormalizedSearch(
+            $normalized,
+            $sessId,
+            $userId
+        );
+        foreach ($matches as $current) {
+            if ($current->saved === 1 && $current->id !== $rowToCheck->id) {
+                return $current->id;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Handle 'save/unsave search' request
      *
      * @return mixed
@@ -530,7 +563,26 @@ class MyResearchController extends AbstractBase
 
         // Check for the save / delete parameters and process them appropriately:
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
-            $this->setSavedFlagSecurely($id, true, $user->id);
+            // If the row the user is trying to save is a duplicate of an already-
+            // saved row, we should just delete the duplicate. (This can happen if
+            // the user clicks "save" before logging in, then logs in during the
+            // save process, but has the same search already saved in their account).
+            $searchTable = $this->getTable('search');
+            $sessId = $this->serviceLocator
+                ->get(\Laminas\Session\SessionManager::class)->getId();
+            $rowToCheck = $searchTable->getOwnedRowById($id, $sessId, $user->id);
+            $duplicateId = $this->isDuplicateOfSavedSearch(
+                $searchTable,
+                $rowToCheck,
+                $sessId,
+                $user->id
+            );
+            if ($duplicateId) {
+                $rowToCheck->delete();
+                $id = $duplicateId;
+            } else {
+                $this->setSavedFlagSecurely($id, true, $user->id);
+            }
             $this->flashMessenger()->addMessage('search_save_success', 'success');
         } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
             $this->setSavedFlagSecurely($id, false, $user->id);
