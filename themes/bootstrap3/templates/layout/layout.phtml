@@ -10,6 +10,8 @@
     <?php
       // Format the page title using the translation system:
       $siteConfig = $this->config()->get('config')->Site;
+      // Disabled escaping of title temporarily so that we get it unescaped first:
+      $this->headTitle()->setAutoEscape(false);
       $fullTitle = $this->translate(
           'title_wrapper',
           [
@@ -18,6 +20,8 @@
             '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::'
           ]
       );
+      // Enable escaping again for proper output:
+      $this->headTitle()->setAutoEscape(true);
       echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
 
       // Set up OpenSearch link:
