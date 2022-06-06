@@ -149,7 +149,8 @@ CREATE TABLE `search` (
   KEY `folder_id` (`folder_id`),
   KEY `session_id` (`session_id`),
   KEY `notification_frequency` (`notification_frequency`),
-  KEY `notification_base_url` (`notification_base_url`(190))
+  KEY `notification_base_url` (`notification_base_url`(190)),
+  KEY `created_saved` (`created`, `saved`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

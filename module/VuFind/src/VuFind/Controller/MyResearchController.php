@@ -31,6 +31,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -369,6 +370,28 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Get a search row, but throw an exception if it is not owned by the specified
+     * user or current active session.
+     *
+     * @param int $searchId ID of search row
+     * @param int $userId   ID of active user
+     *
+     * @throws ForbiddenException
+     * @return \VuFind\Db\Row\Search
+     */
+    protected function getSearchRowSecurely($searchId, $userId)
+    {
+        $searchTable = $this->getTable('Search');
+        $sessId = $this->serviceLocator
+            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $search = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        if (empty($search)) {
+            throw new ForbiddenException('Access denied.');
+        }
+        return $search;
+    }
+
+    /**
      * Support method for savesearchAction(): set the saved flag in a secure
      * fashion, throwing an exception if somebody attempts something invalid.
      *
@@ -381,13 +404,7 @@ class MyResearchController extends AbstractBase
      */
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
-        $searchTable = $this->getTable('Search');
-        $sessId = $this->serviceLocator
-            ->get(\Laminas\Session\SessionManager::class)->getId();
-        $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
-        if (empty($row)) {
-            throw new ForbiddenException('Access denied.');
-        }
+        $row = $this->getSearchRowSecurely($searchId, $userId);
         $row->saved = $saved ? 1 : 0;
         if (!$saved) {
             $row->notification_frequency = 0;
@@ -444,6 +461,46 @@ class MyResearchController extends AbstractBase
         }
         $savedRow->setSchedule($schedule, $baseurl);
         return $this->redirect()->toRoute('search-history');
+    }
+
+    /**
+     * Handle search subscription request
+     *
+     * @return mixed
+     */
+    public function schedulesearchAction()
+    {
+        // Fail if saved searches or subscriptions are disabled.
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
+        if ($check->getSavedSearchSetting() === 'disabled') {
+            throw new ForbiddenException('Saved searches disabled.');
+        }
+        $scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
+        if (empty($scheduleOptions)) {
+            throw new ForbiddenException('Scheduled searches disabled.');
+        }
+        // Fail if search ID is missing.
+        $searchId = $this->params()->fromQuery('searchid', false);
+        if (!$searchId) {
+            throw new BadRequestException('searchid missing');
+        }
+        // Require login.
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+        // Get the row, and fail if the current user doesn't own it.
+        $search = $this->getSearchRowSecurely($searchId, $user->id);
+        $resultsManager = $this->serviceLocator
+            ->get(\VuFind\Search\Results\PluginManager::class);
+        $results = $search->getSearchObject()->deminify($resultsManager);
+        // Build the form.
+        return $this->createViewModel(
+            compact('scheduleOptions', 'search', 'results')
+        );
     }
 
     /**

@@ -355,7 +355,7 @@ abstract class Base
                             = $finalParameterName . '=' . urlencode($subValue);
                     }
                 } else {
-                    $queryParameters[] = $key . '=' . urlencode($value);
+                    $queryParameters[] = $key . '=' . urlencode($value ?? '');
                 }
             }
         }

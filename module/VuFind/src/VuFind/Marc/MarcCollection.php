@@ -116,6 +116,7 @@ class MarcCollection implements \Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return new MarcReader($this->records[$this->position]);
@@ -126,6 +127,7 @@ class MarcCollection implements \Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;

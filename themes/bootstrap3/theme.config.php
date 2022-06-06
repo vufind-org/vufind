@@ -235,6 +235,7 @@ return [
             'search-delete' => 'Alias:ui-delete',
             'search-rss' => 'FontAwesome:rss',
             'search-save' => 'Alias:ui-save',
+            'search-schedule-alert' => 'FontAwesome:exclamation-circle',
             'send-email' => 'FontAwesome:envelope',
             'send-sms' => 'FontAwesome:phone',
             'sign-in' => 'FontAwesome:sign-in',

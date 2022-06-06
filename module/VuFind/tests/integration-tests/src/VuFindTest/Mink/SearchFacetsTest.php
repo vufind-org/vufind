@@ -318,7 +318,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
         $this->assertEquals('level1a/level2a', $filter->getText());
-        $this->findCss($page, '#j1_2 .icon--font,#j1_2 .icon--img');
+        $this->findCss($page, '#j1_2 .applied');
     }
 
     /**
