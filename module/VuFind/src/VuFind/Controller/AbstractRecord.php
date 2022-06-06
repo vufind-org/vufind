@@ -298,9 +298,11 @@ class AbstractRecord extends AbstractBase
         }
 
         // Display the "add rating" form:
-        $view = $this->createViewModel();
-        $view->setTemplate('record/addrating');
-        $view->currentRating = $driver->getRatingData($user);
+        $view = $this->createViewModel(
+            [
+                'currentRating' => $driver->getRatingData($user)
+            ]
+        );
         return $view;
     }
 
