@@ -14,7 +14,7 @@
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <div class="form-group">
     <label class="control-label" for="add_rating"><?=$this->transEsc('rating_prompt')?>:</label>
-    <?=$this->render('Helpers/star-rating.phtml', ['rating' => $this->currentRating['rating'], 'inputAttrs' => ['data-submit-on-change']]);?>
+    <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->currentRating, 'inputAttrs' => ['data-submit-on-change']]);?>
   </div>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>"/>
