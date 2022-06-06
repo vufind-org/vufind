@@ -216,13 +216,12 @@ class Search extends Gateway
     }
 
     /**
-     * Return existing search table rows matching the provided search results.
+     * Return existing search table rows matching the provided normalized search.
      *
-     * @param \VuFind\Search\Results\PluginManager $manager   Search manager
-     * @param \VuFind\Search\Base\Results          $newSearch Search to save
-     * @param string                               $sessionId Current session ID
-     * @param int|null                             $userId    Current user ID
-     * @param int                                  $limit     Max rows to retrieve
+     * @param NormalizedSearch $normalized Normalized search to match against
+     * @param string           $sessionId  Current session ID
+     * @param int|null         $userId     Current user ID
+     * @param int              $limit      Max rows to retrieve
      * (default = no limit)
      *
      * @return \VuFind\Db\Row\Search[]
@@ -261,10 +260,10 @@ class Search extends Gateway
     /**
      * Add a search into the search table (history)
      *
-     * @param SearchNormalizer            $manager   Search manager
-     * @param \VuFind\Search\Base\Results $newSearch Search to save
-     * @param string                      $sessionId Current session ID
-     * @param int|null                    $userId    Current user ID
+     * @param SearchNormalizer            $normalizer Search manager
+     * @param \VuFind\Search\Base\Results $newSearch  Search to save
+     * @param string                      $sessionId  Current session ID
+     * @param int|null                    $userId     Current user ID
      *
      * @return \VuFind\Db\Row\Search
      */

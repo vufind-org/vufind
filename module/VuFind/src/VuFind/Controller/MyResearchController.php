@@ -514,9 +514,9 @@ class MyResearchController extends AbstractBase
      */
     protected function isDuplicateOfSavedSearch(
         \VuFind\Db\Table\Search $searchTable,
-        \VuFind\Db\Row\Search   $rowToCheck,
-        string                  $sessId,
-        int                     $userId
+        \VuFind\Db\Row\Search $rowToCheck,
+        string $sessId,
+        int $userId
     ): ?int {
         $normalizer = $this->serviceLocator
             ->get(\VuFind\Search\SearchNormalizer::class);
