@@ -34,6 +34,7 @@ use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
 use minSO;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Search\SearchNormalizer;
 
 /**
  * Table Definition for search
@@ -216,28 +217,21 @@ class Search extends Gateway
     /**
      * Add a search into the search table (history)
      *
-     * @param \VuFind\Search\Results\PluginManager $manager   Search manager
-     * @param \VuFind\Search\Base\Results          $newSearch Search to save
-     * @param string                               $sessionId Current session ID
-     * @param int|null                             $userId    Current user ID
+     * @param SearchNormalizer            $manager   Search manager
+     * @param \VuFind\Search\Base\Results $newSearch Search to save
+     * @param string                      $sessionId Current session ID
+     * @param int|null                    $userId    Current user ID
      *
      * @return \VuFind\Db\Row\Search
      */
     public function saveSearch(
-        \VuFind\Search\Results\PluginManager $manager,
+        SearchNormalizer $normalizer,
         $newSearch,
         $sessionId,
         $userId
     ) {
-        // Duplicate elimination
-        // Normalize the URL params by minifying and deminifying the search object
-        $newSearchMinified = new minSO($newSearch);
-        $newSearchCopy = $newSearchMinified->deminify($manager);
-        $newUrl = $newSearchCopy->getUrlQuery()->getParams();
-        // Use crc32 as the checksum but get rid of highest bit so that we don't
-        // need to care about signed/unsigned issues
-        // (note: the checksum doesn't need to be unique)
-        $checksum = crc32($newUrl) & 0xFFFFFFF;
+        $normalized = $normalizer->normalizeSearch($newSearch);
+        $checksum = $normalized->getChecksum();
 
         // Fetch all rows with the same CRC32 and try to match with the URL
         $callback = function ($select) use ($checksum, $sessionId, $userId) {
@@ -251,20 +245,13 @@ class Search extends Gateway
             }
         };
         foreach ($this->select($callback) as $oldSearch) {
-            // Deminify the old search:
             $oldSearchMinified = $oldSearch->getSearchObject();
-            $dupSearch = $oldSearchMinified->deminify($manager);
-            // Check first if classes match:
-            if (get_class($dupSearch) != get_class($newSearch)) {
-                continue;
-            }
-            // Check if URLs match:
-            $oldUrl = $dupSearch->getUrlQuery()->getParams();
-            if ($oldUrl == $newUrl) {
+            if ($normalized->isEquivalentToMinifiedSearch($oldSearchMinified)) {
                 // Update the old search only if it wasn't saved:
                 if (!$oldSearch->saved) {
                     $oldSearch->created = date('Y-m-d H:i:s');
                     // Keep the ID of the old search:
+                    $newSearchMinified = $normalized->getMinified();
                     $newSearchMinified->id = $oldSearchMinified->id;
                     $oldSearch->search_object = serialize($newSearchMinified);
                     $oldSearch->save();

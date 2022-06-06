@@ -484,7 +484,7 @@ class AbstractSearch extends AbstractBase
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
-            $this->getResultsManager(),
+            $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
             $results,
             $sessId,
             $user->id ?? null
