@@ -29,6 +29,8 @@ namespace VuFind\Http;
 
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client;
+use Laminas\Stdlib\ArrayUtils;
+use Traversable;
 use VuFind\Cache\Manager as CacheManager;
 
 /**
@@ -55,6 +57,13 @@ class CachingDownloader
      * @var CacheManager
      */
     protected $cacheManager;
+
+    /**
+     * Stored client options for cache key generation.
+     *
+     * @var array
+     */
+    protected $cacheOptions = [];
 
     /**
      * Cache to use for downloads
@@ -98,13 +107,19 @@ class CachingDownloader
     /**
      * Set client options (HTTP headers and so on).
      *
-     * @param array $options Client options (e.g. HTTP headers)
+     * @param array|Traversable $options Client options (e.g. HTTP headers)
      *
      * @return void
      */
     public function setClientOptions($options)
     {
         $this->client->setOptions($options);
+
+        if ($options instanceof Traversable) {
+            $options = ArrayUtils::iteratorToArray($options);
+        }
+        $this->cacheOptions = array_merge($this->cacheOptions, $options);
+        ksort($this->cacheOptions);
     }
 
     /**
@@ -118,6 +133,9 @@ class CachingDownloader
     public function download($url, $resultMode = self::RESULT_MODE_RAW)
     {
         $cacheItemKey = md5($url);
+        foreach ($this->cacheOptions as $optionKey => $optionValue) {
+            $cacheItemKey .= '#' . $optionKey . '§' . $optionValue;
+        }
 
         // Return item if exists in cache
         if ($this->cache->hasItem($cacheItemKey)) {
