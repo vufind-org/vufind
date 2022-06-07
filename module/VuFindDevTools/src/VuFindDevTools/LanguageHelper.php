@@ -179,7 +179,7 @@ class LanguageHelper
     protected function getTextDomains($includeOptional)
     {
         static $domains = false;
-        $filter = $includeOptional ? [] : ['CreatorRoles', 'DDC23'];
+        $filter = $includeOptional ? [] : ['CallNumberFirst', 'CreatorRoles', 'DDC23'];
         if (!$domains) {
             $base = APPLICATION_PATH . '/languages';
             $dir = opendir($base);
