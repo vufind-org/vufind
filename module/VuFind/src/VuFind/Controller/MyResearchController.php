@@ -506,7 +506,7 @@ class MyResearchController extends AbstractBase
      * Is the provided search row a duplicate of a search that is already saved?
      *
      * @param \VuFind\Db\Table\Search $searchTable Search table
-     * @param \VuFind\Db\Row\Search   $rowToCheck  Search row to check
+     * @param ?\VuFind\Db\Row\Search  $rowToCheck  Search row to check (if any)
      * @param string                  $sessId      Current session ID
      * @param int                     $userId      Current user ID
      *
@@ -514,10 +514,13 @@ class MyResearchController extends AbstractBase
      */
     protected function isDuplicateOfSavedSearch(
         \VuFind\Db\Table\Search $searchTable,
-        \VuFind\Db\Row\Search $rowToCheck,
+        ?\VuFind\Db\Row\Search $rowToCheck,
         string $sessId,
         int $userId
     ): ?int {
+        if (!$rowToCheck) {
+            return null;
+        }
         $normalizer = $this->serviceLocator
             ->get(\VuFind\Search\SearchNormalizer::class);
         $normalized = $normalizer
