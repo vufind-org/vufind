@@ -94,6 +94,10 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
         $doiPrefix = false,
         $labelPageRange = true
     ) {
+        // IxTheo: Always show DOI
+        if ($doiPrefix == false)
+            $doiPrefix = 'doi: ';
+
         $mla = [
             'title' => $this->getMLATitle(),
             'authors' => $this->getMLAAuthors($etAlThreshold),
