@@ -103,7 +103,7 @@
             <?php endif; ?>
             <div id="group<?=$group ?>" class="adv-group">
               <div class="adv-group-terms">
-                <label class="adv-group-label" for="search_lookfor<?=$group ?>_0"><?=$this->transEsc("adv_search_label")?>:</label>
+                <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
                 <?php for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
                   <?php if($group == 0 && $search == 0): ?>
                     <div id="new_search_template">
@@ -203,7 +203,7 @@
 <?php
 $script = <<<JS
 $('#groupPlaceHolder a').click(function(e) {
-  addGroup();
+  addGroup(null, null, null, true);
   return false;
 })
 JS;

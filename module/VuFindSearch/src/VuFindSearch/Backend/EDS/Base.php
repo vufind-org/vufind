@@ -269,11 +269,19 @@ abstract class Base
      */
     public function autocomplete($query, $type, $data, $raw = false)
     {
-        // build request
-        $url = $data['url'] . '?idx=' . urlencode($type) .
-            '&token=' . urlencode($data['token']) .
-            '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
-            urlencode($data['custid']) . '"]}]&term=' . urlencode($query);
+        // $filters is an array of filter objects
+        // filter objects consist of name and an array of values (customer ids)
+        $filters = [['name' => 'custid', 'values' => [$data['custid']]]];
+
+        $params = [
+            'idx' => $type,
+            'token' => $data['token'],
+            'filters' => json_encode($filters),
+            'term' => $query,
+        ];
+
+        $url = $data['url'] . '?' . http_build_query($params);
+
         $this->debugPrint("Autocomplete URL: " . $url);
         $response = $this->call($url, null, null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
@@ -347,7 +355,7 @@ abstract class Base
                             = $finalParameterName . '=' . urlencode($subValue);
                     }
                 } else {
-                    $queryParameters[] = $key . '=' . urlencode($value);
+                    $queryParameters[] = $key . '=' . urlencode($value ?? '');
                 }
             }
         }

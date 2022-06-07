@@ -186,6 +186,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $translatedFacetsTextDomains = [];
 
     /**
+     * Formats for translated facets
+     *
+     * @var array
+     */
+    protected $translatedFacetsFormats = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -642,7 +649,8 @@ abstract class Options implements TranslatorAwareInterface
     public function setTranslatedFacets($facets)
     {
         // Reset properties:
-        $this->translatedFacets = $this->translatedFacetsTextDomains = [];
+        $this->translatedFacets = $this->translatedFacetsTextDomains
+            = $this->translatedFacetsFormats = [];
 
         // Fill in new data:
         foreach ($facets as $current) {
@@ -650,6 +658,9 @@ abstract class Options implements TranslatorAwareInterface
             $this->translatedFacets[] = $parts[0];
             if (isset($parts[1])) {
                 $this->translatedFacetsTextDomains[$parts[0]] = $parts[1];
+            }
+            if (isset($parts[2])) {
+                $this->translatedFacetsFormats[$parts[0]] = $parts[2];
             }
         }
     }
@@ -665,6 +676,19 @@ abstract class Options implements TranslatorAwareInterface
     public function getTextDomainForTranslatedFacet($field)
     {
         return $this->translatedFacetsTextDomains[$field] ?? 'default';
+    }
+
+    /**
+     * Look up the format for use when translating a particular facet
+     * field.
+     *
+     * @param string $field Field name being translated
+     *
+     * @return string
+     */
+    public function getFormatForTranslatedFacet($field)
+    {
+        return $this->translatedFacetsFormats[$field] ?? null;
     }
 
     /**
@@ -969,7 +993,18 @@ abstract class Options implements TranslatorAwareInterface
     public function getSearchClassId()
     {
         // Parse identifier out of class name of format VuFind\Search\[id]\Options:
-        $class = explode('\\', get_class($this));
+        $className = get_class($this);
+        $class = explode('\\', $className);
+
+        // Special case: if there's an unexpected number of parts, we may be testing
+        // with a mock object; if so, that's okay, but anything else is unexpected.
+        if (count($class) !== 4) {
+            if ('Mock_' === substr($className, 0, 5)) {
+                return 'Mock';
+            }
+            throw new \Exception("Unexpected class name: {$className}");
+        }
+
         return $class[2];
     }
 

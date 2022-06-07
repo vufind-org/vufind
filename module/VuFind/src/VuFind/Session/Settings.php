@@ -72,6 +72,13 @@ class Settings
 
         // If the session manager is already instantiated, close it!
         if (null !== $this->manager) {
+            // Try to disable writes so that writeClose() below doesn't actually
+            // write anything:
+            $saveHandler = $this->manager->getSaveHandler();
+            if (is_callable([$saveHandler, 'disableWrites'])) {
+                $saveHandler->disableWrites();
+            }
+            // Close the session:
             $this->manager->writeClose();
         }
     }

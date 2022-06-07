@@ -563,8 +563,8 @@ class Folio extends AbstractAPI implements
             };
             $textFormatter = function ($supplement) {
                 $format = '%s %s';
-                $supStat = $supplement->statement;
-                $supNote = $supplement->note;
+                $supStat = $supplement->statement ?? '';
+                $supNote = $supplement->note ?? '';
                 $statement = trim(sprintf($format, $supStat, $supNote));
                 return $statement ?? '';
             };
@@ -943,36 +943,42 @@ class Folio extends AbstractAPI implements
                 'itemId' => $loanId,
                 'userId' => $renewDetails['patron']['id']
             ];
-            $response = $this->makeRequest(
-                'POST',
-                '/circulation/renew-by-id',
-                json_encode($requestbody)
-            );
-            if ($response->isSuccess()) {
-                $json = json_decode($response->getBody());
-                $renewal = [
-                    'success' => true,
-                    'new_date' => $this->dateConverter->convertToDisplayDate(
-                        "Y-m-d H:i",
-                        $json->dueDate
-                    ),
-                    'new_time' => $this->dateConverter->convertToDisplayTime(
-                        "Y-m-d H:i",
-                        $json->dueDate
-                    ),
-                    'item_id' => $json->itemId,
-                    'sysMessage' => $json->action
-                ];
-            } else {
-                try {
+            try {
+                $response = $this->makeRequest(
+                    'POST',
+                    '/circulation/renew-by-id',
+                    json_encode($requestbody)
+                );
+                if ($response->isSuccess()) {
+                    $json = json_decode($response->getBody());
+                    $renewal = [
+                        'success' => true,
+                        'new_date' => $this->dateConverter->convertToDisplayDate(
+                            "Y-m-d H:i",
+                            $json->dueDate
+                        ),
+                        'new_time' => $this->dateConverter->convertToDisplayTime(
+                            "Y-m-d H:i",
+                            $json->dueDate
+                        ),
+                        'item_id' => $json->itemId,
+                        'sysMessage' => $json->action
+                    ];
+                } else {
                     $json = json_decode($response->getBody());
                     $sysMessage = $json->errors[0]->message;
-                } catch (Exception $e) {
-                    $sysMessage = "Renewal Failed";
+                    $renewal = [
+                        'success' => false,
+                        'sysMessage' => $sysMessage
+                    ];
                 }
+            } catch (Exception $e) {
+                $this->debug(
+                    "Unexpected exception renewing $loanId: " . $e->getMessage()
+                );
                 $renewal = [
                     'success' => false,
-                    'sysMessage' => $sysMessage
+                    'sysMessage' => "Renewal Failed",
                 ];
             }
             $renewalResults['details'][$loanId] = $renewal;
@@ -1471,8 +1477,11 @@ class Folio extends AbstractAPI implements
         ) as $fine) {
             $date = date_create($fine->metadata->createdDate);
             $title = $fine->title ?? null;
+            $bibId = isset($fine->instanceId)
+                ? $this->getBibId($fine->instanceId)
+                : null;
             $fines[] = [
-                'id' => $fine->id,
+                'id' => $bibId,
                 'amount' => $fine->amount * 100,
                 'balance' => $fine->remaining * 100,
                 'status' => $fine->paymentStatus->name,

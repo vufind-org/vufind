@@ -83,7 +83,9 @@ class RediTest extends \PHPUnit\Framework\TestCase
             0 => [
                 'title' => "DOI:10.1007/s11606-014-2915-9",
                 'href' => "http://www-fr.redi-bw.de/links/?rl_site=ubl&rl_action=link&rl_link_target=citation&rl_link_name=doi&rl_citation=9443914d0e261c0c1f6a3fd8151213c1d4cec05f5d3053097da6fa5597bbb9d7",
-                'service_type' => "getFullTxt",
+                'access' => 'unknown',
+                'coverage' => null,
+                'service_type' => "getDOI",
              ],
             1 => [
                 'title' => "Zum Volltext (via SpringerLink)",

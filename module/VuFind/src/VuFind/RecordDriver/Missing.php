@@ -103,4 +103,14 @@ class Missing extends DefaultRecord
         $title = parent::getShortTitle();
         return empty($title) ? $this->determineMissingTitle() : $title;
     }
+
+    /**
+     * Get an array of all the formats associated with the record.
+     *
+     * @return array
+     */
+    public function getFormats()
+    {
+        return ['Unknown'];
+    }
 }

@@ -1,10 +1,10 @@
 <?php
 /**
- * Summon record fallback loader factory
+ * Theme Config helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +20,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Record
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Record\FallbackLoader;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
@@ -34,15 +35,16 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Summon record fallback loader factory
+ * Icon helper factory.
  *
  * @category VuFind
- * @package  Record
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class SummonFactory implements FactoryInterface
+class ThemeConfigFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -64,11 +66,11 @@ class SummonFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
-            $container->get(\VuFindSearch\Service::class)
-        );
+
+        $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
+
+        return new $requestedName($themeInfo);
     }
 }
