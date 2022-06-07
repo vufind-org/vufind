@@ -1,6 +1,6 @@
 <?php
 /**
- * Lightweight cached downloader aware marker interface.
+ * Lightweight caching downloader aware marker interface.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Http;
 
 /**
- * Lightweight cached downloader aware marker interface.
+ * Lightweight caching downloader aware marker interface.
  *
  * @category VuFind
  * @package  Http
@@ -36,14 +36,14 @@ namespace VuFind\Http;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface CachedDownloaderAwareInterface
+interface CachingDownloaderAwareInterface
 {
     /**
-     * Set a cached downloader.
+     * Set a caching downloader.
      *
-     * @param CachedDownloader $cachedDownloader Cached downloader
+     * @param CachingDownloader $cachingDownloader Caching downloader
      *
      * @return void
      */
-    public function setCachedDownloader(CachedDownloader $cachedDownloader);
+    public function setCachingDownloader(CachingDownloader $cachingDownloader);
 }

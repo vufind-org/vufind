@@ -1,6 +1,6 @@
 <?php
 /**
- * Cached downloader factory.
+ * Caching downloader factory.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cached downloader factory.
+ * Caching downloader factory.
  *
  * @category VuFind
  * @package  Http
@@ -39,7 +39,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CachedDownloaderFactory implements FactoryInterface
+class CachingDownloaderFactory implements FactoryInterface
 {
     /**
      * Create an object

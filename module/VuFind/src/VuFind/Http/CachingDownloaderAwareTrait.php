@@ -1,6 +1,6 @@
 <?php
 /**
- * Lightweight cached downloader aware marker trait.
+ * Lightweight caching downloader aware marker trait.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Http;
 
 /**
- * Lightweight cached downloader aware marker trait.
+ * Lightweight caching downloader aware marker trait.
  *
  * @category VuFind
  * @package  Http
@@ -36,7 +36,7 @@ namespace VuFind\Http;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-trait CachedDownloaderAwareTrait
+trait CachingDownloaderAwareTrait
 {
     /**
      * Cache ID. This can be overridden by child classes if we want to use
@@ -55,23 +55,23 @@ trait CachedDownloaderAwareTrait
     protected $downloaderClientOptions = [];
 
     /**
-     * Cached downloader
+     * Caching downloader
      *
-     * @var CachedDownloader
+     * @var CachingDownloader
      */
-    protected $cachedDownloader = null;
+    protected $cachingDownloader = null;
 
     /**
-     * Set cached downloader
+     * Set caching downloader
      *
-     * @param $cachedDownloader CachedDownloader
+     * @param $cachingDownloader CachingDownloader
      *
      * @return void
      */
-    public function setCachedDownloader(CachedDownloader $cachedDownloader)
+    public function setCachingDownloader(CachingDownloader $cachingDownloader)
     {
-        $this->cachedDownloader = $cachedDownloader;
-        $this->cachedDownloader->setCacheId($this->downloaderCacheId);
-        $this->cachedDownloader->setClientOptions($this->downloaderClientOptions);
+        $this->cachingDownloader = $cachingDownloader;
+        $this->cachingDownloader->setCacheId($this->downloaderCacheId);
+        $this->cachingDownloader->setClientOptions($this->downloaderClientOptions);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Cached downloader.
+ * Caching downloader.
  *
  * PHP version 7
  *
@@ -32,7 +32,7 @@ use Laminas\Http\Client;
 use VuFind\Cache\Manager as CacheManager;
 
 /**
- * Cached downloader.
+ * Caching downloader.
  *
  * @category VuFind
  * @package  Http
@@ -40,7 +40,7 @@ use VuFind\Cache\Manager as CacheManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CachedDownloader
+class CachingDownloader
 {
     /**
      * HTTP client
