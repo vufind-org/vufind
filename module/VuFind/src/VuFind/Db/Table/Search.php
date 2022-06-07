@@ -261,7 +261,7 @@ class Search extends Gateway
      * Add a search into the search table (history)
      *
      * @param SearchNormalizer            $normalizer Search manager
-     * @param \VuFind\Search\Base\Results $newSearch  Search to save
+     * @param \VuFind\Search\Base\Results $results    Search to save
      * @param string                      $sessionId  Current session ID
      * @param int|null                    $userId     Current user ID
      *
@@ -269,30 +269,33 @@ class Search extends Gateway
      */
     public function saveSearch(
         SearchNormalizer $normalizer,
-        $newSearch,
+        $results,
         $sessionId,
         $userId
     ) {
-        $normalized = $normalizer->normalizeSearch($newSearch);
+        $normalized = $normalizer->normalizeSearch($results);
         $duplicates = $this->getSearchRowsMatchingNormalizedSearch(
             $normalized,
             $sessionId,
             $userId,
             1 // we only need to identify at most one duplicate match
         );
-        if ($oldSearch = array_shift($duplicates)) {
-            // Update the old search only if it wasn't saved:
-            if (!$oldSearch->saved) {
-                $oldSearch->created = date('Y-m-d H:i:s');
+        if ($existingRow = array_shift($duplicates)) {
+            // Update the existing search only if it wasn't already saved
+            // (to make it the most recent history entry and make sure it's
+            // using the most up-to-date serialization):
+            if (!$existingRow->saved) {
+                $existingRow->created = date('Y-m-d H:i:s');
                 // Keep the ID of the old search:
-                $newSearchMinified = $normalized->getMinified();
-                $newSearchMinified->id = $oldSearch->getSearchObject()->id;
-                $oldSearch->search_object = serialize($newSearchMinified);
-                $oldSearch->save();
+                $minified = $normalized->getMinified();
+                $minified->id = $existingRow->getSearchObject()->id;
+                $existingRow->search_object = serialize($minified);
+                $existingRow->save();
             }
-            // Update the new search from the existing one
-            $newSearch->updateSaveStatus($oldSearch);
-            return $oldSearch;
+            // Register the appropriate search history database row with the current
+            // search results object.
+            $results->updateSaveStatus($existingRow);
+            return $existingRow;
         }
 
         // If we got this far, we didn't find a saved duplicate, so we should
@@ -306,13 +309,13 @@ class Search extends Gateway
         $row = $this->getRowById($this->getLastInsertValue());
 
         // Chicken and egg... We didn't know the id before insert
-        $newSearch->updateSaveStatus($row);
+        $results->updateSaveStatus($row);
 
         // Don't set session ID until this stage, because we don't want to risk
         // ever having a row that's associated with a session but which has no
         // search object data attached to it; this could cause problems!
         $row->session_id = $sessionId;
-        $row->search_object = serialize(new minSO($newSearch));
+        $row->search_object = serialize(new minSO($results));
         $row->save();
         return $row;
     }
