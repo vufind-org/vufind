@@ -10,6 +10,8 @@
     <?php
       // Format the page title using the translation system:
       $siteConfig = $this->config()->get('config')->Site;
+      // Disabled escaping of title temporarily so that we get it unescaped first:
+      $this->headTitle()->setAutoEscape(false);
       $fullTitle = $this->translate(
           'title_wrapper',
           [
@@ -18,6 +20,8 @@
             '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::'
           ]
       );
+      // Enable escaping again for proper output:
+      $this->headTitle()->setAutoEscape(true);
       echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
 
       // Set up OpenSearch link:
@@ -34,8 +38,8 @@
       // may not load correctly. Thus, we render early, but use this later.
       $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
     ?>
-    <!-- RTL styling -->
     <?php if ($this->layout()->rtl) {
+      // RTL styling
       $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
     } ?>
     <?=$this->headLink()?>
