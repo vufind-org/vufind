@@ -116,7 +116,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'use_asterisk' => false,
                 'use_underscore' => false,
                 'unordered_list_markers' => ['`', '~'],
-                'max_nesting_level' => 10,
+                'max_nesting_level' => '10',
+                'extensions' => 'Table,TableOfContents,HeadingPermalink,VuFindTest\Markdown\ExampleExtension',
                 'renderer' => [
                     'block_separator' => "\r\n",
                     'inner_separator' => "\r\n",
@@ -136,6 +137,18 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     'tag' => 'div',
                     'attributes' => 'class:table-responsive,title:table',
                 ],
+            ],
+            'VuFindTest\Markdown\ExampleExtension' => [
+                'config_key' => 'example',
+                'example' => 'example',
+            ],
+            'TableOfContents' => [
+                'min_heading_level' => '2',
+                'max_heading_level' => '5',
+            ],
+            'HeadingPermalink' => [
+                'min_heading_level' => '3',
+                'max_heading_level' => '4',
             ],
         ];
         $customEnvironment2 = [
@@ -159,10 +172,33 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'example' => [
+                'example' => 'example',
+            ],
             'renderer' => [
                 'block_separator' => "\r\n",
                 'inner_separator' => "\r\n",
                 'soft_break' => "\r\n",
+            ],
+            'table_of_contents' => [
+                'min_heading_level' => 2,
+                'max_heading_level' => 5,
+                'position' => 'top',
+                'style' => 'bullet',
+                'normalize' => 'relative',
+                'html_class' => 'table-of-contents',
+                'placeholder' => null,
+            ],
+            'heading_permalink' => [
+                'min_heading_level' => 3,
+                'max_heading_level' => 4,
+                'insert' => 'before',
+                'id_prefix' => 'content',
+                'fragment_prefix' => 'content',
+                'html_class' => 'heading-permalink',
+                'title' => 'Permalink',
+                'symbol' => '¶',
+                'aria_hidden' => true,
             ],
         ];
 
@@ -197,21 +233,21 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
-                    'League\CommonMark\Extension\Attributes\AttributesExtension',
-                    'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
-                    'League\CommonMark\Extension\Table\TableExtension',
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
+                    \League\CommonMark\Extension\Attributes\AttributesExtension::class,
+                    \League\CommonMark\Extension\ExternalLink\ExternalLinkExtension::class,
+                    \League\CommonMark\Extension\Table\TableExtension::class,
                 ],
             ],
             [ // Test default extension set
                 'config' => [],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
-                    'League\CommonMark\Extension\Autolink\AutolinkExtension',
-                    'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
-                    'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
-                    'League\CommonMark\Extension\Table\TableExtension',
-                    'League\CommonMark\Extension\TaskList\TaskListExtension',
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
+                    \League\CommonMark\Extension\Autolink\AutolinkExtension::class,
+                    \League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension::class,
+                    \League\CommonMark\Extension\Strikethrough\StrikethroughExtension::class,
+                    \League\CommonMark\Extension\Table\TableExtension::class,
+                    \League\CommonMark\Extension\TaskList\TaskListExtension::class,
                 ],
             ],
             [ // Test empty extensions set
@@ -221,7 +257,18 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 'expected' => [
-                    'League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension',
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
+                ],
+            ],
+            [ // Test custom extension
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => 'VuFindTest\Markdown\ExampleExtension',
+                    ],
+                ],
+                'expected' => [
+                    \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
+                    \VuFindTest\Markdown\ExampleExtension::class,
                 ],
             ],
             [ // Test not valid extensions set
@@ -282,7 +329,25 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMarkdownConverter(array $config): ConverterInterface
     {
+        $disabledServices = [
+            \League\CommonMark\Extension\Autolink\AutolinkExtension::class,
+            \League\CommonMark\Extension\Attributes\AttributesExtension::class,
+            \League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension::class,
+            \League\CommonMark\Extension\ExternalLink\ExternalLinkExtension::class,
+            \League\CommonMark\Extension\Strikethrough\StrikethroughExtension::class,
+            \League\CommonMark\Extension\Table\TableExtension::class,
+            \League\CommonMark\Extension\TaskList\TaskListExtension::class,
+            \League\CommonMark\Extension\TableOfContents\TableOfContentsExtension::class,
+            \League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension::class,
+        ];
         $container = new \VuFindTest\Container\MockContainer($this);
+        foreach ($disabledServices as $service) {
+            $container->disable($service);
+        }
+        $container->set(
+            \VuFindTest\Markdown\ExampleExtension::class,
+            new \VuFindTest\Markdown\ExampleExtension()
+        );
         $container->set(
             \VuFind\Config\PluginManager::class,
             $this->getMockConfigPluginManager(['markdown' => $config])

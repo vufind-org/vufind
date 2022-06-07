@@ -28,7 +28,7 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 use SerialsSolutions\Summon\Laminas as Connector;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;

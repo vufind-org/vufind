@@ -27,7 +27,7 @@
  */
 namespace VuFind\AjaxHandler;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for GetRecordVersions AJAX handler.

@@ -56,7 +56,7 @@ class Clickatell extends AbstractBase
      */
     public function __construct(\Laminas\Config\Config $config, $options = [])
     {
-        parent::__construct($config, $options);
+        parent::__construct($config);
         $this->client = $options['client'] ?? new \Laminas\Http\Client();
     }
 

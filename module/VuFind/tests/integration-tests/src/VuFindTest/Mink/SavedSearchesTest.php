@@ -27,6 +27,8 @@
  */
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\Element;
+
 /**
  * Mink saved searches test class.
  *
@@ -75,7 +77,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testSaveSearch()
+    public function testSaveSearch(): void
     {
         $page = $this->performSearch('test');
 
@@ -111,7 +113,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testSearchHistory()
+    public function testSearchHistory(): void
     {
         // Use "foo \ bar" as our search because the backslash has been known
         // to cause problems in some situations (e.g. PostgreSQL database with
@@ -168,7 +170,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testSavedSearchSecurity()
+    public function testSavedSearchSecurity(): void
     {
         // Log in as user A and get the ID of their saved search:
         $session = $this->getMinkSession();
@@ -210,13 +212,32 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Turn on notifications and reload the page.
+     *
+     * @return Element
+     */
+    protected function activateNotifications(): Element
+    {
+        $this->changeConfigs(
+            [
+                'config' => ['Account' => ['schedule_searches' => true]]
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->reload();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
      * Test that notification settings work correctly.
      *
      * @depends testSaveSearch
      *
      * @return void
      */
-    public function testNotificationSettings()
+    public function testNotificationSettings(): void
     {
         // Add a search to history...
         $page = $this->performSearch('journal');
@@ -232,16 +253,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $scheduleSelector = 'select[name="schedule"]';
         $this->assertNull($page->find('css', $scheduleSelector));
 
-        // Now reconfigure to allow alerts, and refresh the page:
-        $this->changeConfigs(
-            [
-                'config' => ['Account' => ['schedule_searches' => true]]
-            ]
-        );
-        $session = $this->getMinkSession();
-        $session->reload();
-        $page = $session->getPage();
-        $this->waitForPageLoad($page);
+        // Now reconfigure to allow notifications, and refresh the page:
+        $page = $this->activateNotifications();
 
         // Now there should be two alert options visible (one in saved, one in
         // unsaved):
@@ -274,11 +287,52 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that notifications are accessible via the search toolbar
+     *
+     * @depends testSaveSearch
+     *
+     * @return void
+     */
+    public function testNotificationsInSearchToolbar()
+    {
+        // Add a search to history...
+        $page = $this->performSearch('employment');
+
+        // By default, there should be no schedule option in the toolbar:
+        $this->unFindCss($page, '.searchtools .manageSchedule');
+
+        // Now reconfigure to allow alerts, and refresh the page:
+        $page = $this->activateNotifications();
+
+        // Now confirm that we have the expected text:
+        $link = $this->findCss($page, '.searchtools .manageSchedule');
+        $this->assertEquals("Alert schedule: None", $link->getText());
+        $link->click();
+        $this->waitForPageLoad($page);
+
+        // We should now be prompted to log in:
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // We should now be on a page with a schedule selector; let's pick something:
+        $scheduleSelector = 'select[name="schedule"]';
+        $select = $this->findCss($page, $scheduleSelector);
+        $select->selectOption(7);
+        $this->waitForPageLoad($page);
+
+        // Let's confirm that if we repeat the search, the alert will now be set:
+        $page = $this->performSearch('employment');
+        $link = $this->findCss($page, '.searchtools .manageSchedule');
+        $this->assertEquals("Alert schedule: Weekly", $link->getText());
+    }
+
+    /**
      * Retry cleanup method in case of failure during testSavedSearchSecurity.
      *
      * @return void
      */
-    protected function removeUsername2()
+    protected function removeUsername2(): void
     {
         static::removeUsers(['username2']);
     }

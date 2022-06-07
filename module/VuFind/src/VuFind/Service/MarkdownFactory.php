@@ -29,9 +29,6 @@
  */
 namespace VuFind\Service;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -39,6 +36,8 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Markdown Service factory.
@@ -93,6 +92,13 @@ class MarkdownFactory implements FactoryInterface
     protected $extensions;
 
     /**
+     * Dependency injection container
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -120,6 +126,7 @@ class MarkdownFactory implements FactoryInterface
             )
             : self::$defaultExtensions;
         $this->extensions = array_filter($this->extensions);
+        $this->container = $container;
 
         return new MarkdownConverter($this->getEnvironment());
     }
@@ -135,7 +142,12 @@ class MarkdownFactory implements FactoryInterface
         $environment->addExtension(new CommonMarkCoreExtension());
         foreach ($this->extensions as $extension) {
             $extensionClass = $this->getExtensionClass($extension);
-            $environment->addExtension(new $extensionClass());
+            // For case, somebody needs to create extension using custom factory, we
+            // try to get the object from DI container if possible
+            $extensionObject = $this->container->has($extensionClass)
+                ? $this->container->get($extensionClass)
+                : new $extensionClass();
+            $environment->addExtension($extensionObject);
         }
         return $environment;
     }
@@ -152,7 +164,8 @@ class MarkdownFactory implements FactoryInterface
             'html_input' => $mainConfig['html_input'] ?? 'strip',
             'allow_unsafe_links'
                 => (bool)($mainConfig['allow_unsafe_links'] ?? false),
-            'max_nesting_level' => $mainConfig['max_nesting_level'] ?? \PHP_INT_MAX,
+            'max_nesting_level'
+                => (int)($mainConfig['max_nesting_level'] ?? \PHP_INT_MAX),
             'renderer' => [
                 'block_separator'
                     => $mainConfig['renderer']['block_separator'] ?? "\n",
@@ -172,11 +185,13 @@ class MarkdownFactory implements FactoryInterface
      */
     protected function getExtensionClass(string $extension): string
     {
-        $extensionClass = sprintf(
-            'League\CommonMark\Extension\%s\%sExtension',
-            $extension,
-            $extension
-        );
+        $extensionClass = (strpos($extension, '\\') !== false)
+            ? $extension
+            : sprintf(
+                'League\CommonMark\Extension\%s\%sExtension',
+                $extension,
+                $extension
+            );
         if (!class_exists($extensionClass)) {
             throw new ServiceNotCreatedException(
                 sprintf(
@@ -198,9 +213,13 @@ class MarkdownFactory implements FactoryInterface
     protected function getConfigForExtension(string $extension): array
     {
         if (isset($this->config[$extension])) {
-            return [
-                self::$configKeys[$extension] => $this->config[$extension],
-            ];
+            $configKey = self::$configKeys[$extension]
+                ?? $this->config[$extension]['config_key']
+                ?? '';
+            unset($this->config[$extension]['config_key']);
+            return $configKey !== ''
+                ? [ $configKey => $this->config[$extension] ]
+                : [];
         }
         return [];
     }
@@ -245,21 +264,30 @@ class MarkdownFactory implements FactoryInterface
      */
     protected function sanitizeConfig(array $config): array
     {
-        if (isset($config['external_link']['open_in_new_window'])) {
-            $config['external_link']['open_in_new_window']
-                = (bool)$config['external_link']['open_in_new_window'];
-        }
-        if (isset($config['footnote']['container_add_hr'])) {
-            $config['footnote']['container_add_hr']
-                = (bool)$config['footnote']['container_add_hr'];
+        $boolSettingKeys = [
+            ['external_link', 'open_in_new_window'],
+            ['footnote', 'container_add_hr'],
+            ['heading_permalink', 'aria_hidden'],
+        ];
+        foreach ($boolSettingKeys as $key) {
+            if (isset($config[$key[0]][$key[1]])) {
+                $config[$key[0]][$key[1]] = (bool)$config[$key[0]][$key[1]];
+            }
         }
         if (isset($config['table']['wrap']['enabled'])) {
             $config['table']['wrap']['enabled']
                 = (bool)$config['table']['wrap']['enabled'];
         }
-        if (isset($config['heading_permalink']['aria_hidden'])) {
-            $config['heading_permalink']['aria_hidden']
-                = (bool)$config['heading_permalink']['aria_hidden'];
+        $intSettingKeys = [
+            ['table_of_contents', 'min_heading_level'],
+            ['table_of_contents', 'max_heading_level'],
+            ['heading_permalink', 'min_heading_level'],
+            ['heading_permalink', 'max_heading_level'],
+        ];
+        foreach ($intSettingKeys as $key) {
+            if (isset($config[$key[0]][$key[1]])) {
+                $config[$key[0]][$key[1]] = (int)$config[$key[0]][$key[1]];
+            }
         }
         $tableWrapAttributes = [];
         if (isset($config['table']['wrap']['attributes'])) {

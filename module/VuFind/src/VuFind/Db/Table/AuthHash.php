@@ -75,7 +75,7 @@ class AuthHash extends Gateway
      * @param string $type   Hash type
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return \VuFind\Db\Row\AuthHash
+     * @return ?\VuFind\Db\Row\AuthHash
      */
     public function getByHashAndType($hash, $type, $create = true)
     {

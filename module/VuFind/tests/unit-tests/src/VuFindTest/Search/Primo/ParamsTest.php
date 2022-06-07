@@ -63,6 +63,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params->fixPrimoFacetValue('reference_entrys')
         );
         $this->assertEquals(
+            'Newsletter Articles',
+            $params->fixPrimoFacetValue('newsletterarticle')
+        );
+        $this->assertEquals(
+            'Archival Materials / Manuscripts',
+            $params->fixPrimoFacetValue('archival_material_manuscripts')
+        );
+        $this->assertEquals(
             '维普资讯 (Chongqing)',
             $params->fixPrimoFacetValue('维普资讯 (Chongqing)')
         );
@@ -105,7 +113,23 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params->getBackendParameters()->get('filterList')
         );
 
-        // Add a hidden filter:
+        // Remove building filter:
+        $params->removeFilter('building:main');
+        $this->assertEquals(
+            [
+                'format' => [
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'foo',
+                        'bar',
+                    ]
+                ],
+            ],
+            $params->getBackendParameters()->get('filterList')
+        );
+
+        // Add a filter and a hidden filter:
+        $params->addFilter('building:main');
         $params->addHiddenFilter('building:sub');
         $this->assertEquals(
             [
@@ -142,7 +166,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params->getBackendParameters()->get('filterList')
         );
 
-        // Remove building filter:
+        // Remove building:main filter:
         $params->removeFilter('building:main');
         $this->assertEquals(
             [

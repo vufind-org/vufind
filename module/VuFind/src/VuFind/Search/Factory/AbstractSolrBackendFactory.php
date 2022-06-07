@@ -28,14 +28,12 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
-
 use Laminas\Config\Config;
+use Psr\Container\ContainerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
-use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
@@ -65,6 +63,8 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
  */
 abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 {
+    use SharedListenersTrait;
+
     /**
      * Logger.
      *
@@ -406,24 +406,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $connector->setLogger($this->logger);
         }
 
-        if (!empty($searchConfig->SearchCache->adapter)) {
-            $cacheConfig = $searchConfig->SearchCache->toArray();
-            $options = $cacheConfig['options'] ?? [];
-            if (empty($options['namespace'])) {
-                $options['namespace'] = 'Index';
-            }
-            if (empty($options['ttl'])) {
-                $options['ttl'] = 300;
-            }
-            $settings = [
-                'adapter' => $cacheConfig['adapter'],
-                'options' => $options,
-            ];
-            $cache = $this->serviceLocator
-                ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
-                ->createFromArrayConfiguration($settings);
+        if ($cache = $this->createConnectorCache($searchConfig)) {
             $connector->setCache($cache);
         }
+
         return $connector;
     }
 
@@ -551,32 +537,6 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         return empty($normal) && empty($inverted)
             ? null
             : new CustomFilterListener($backend, $normal, $inverted);
-    }
-
-    /**
-     * Get a hide facet value listener for the backend
-     *
-     * @param BackendInterface $backend Search backend
-     * @param Config           $facet   Configuration of facets
-     *
-     * @return mixed null|HideFacetValueListener
-     */
-    protected function getHideFacetValueListener(
-        BackendInterface $backend,
-        Config $facet
-    ) {
-        $hideFacetValue = isset($facet->HideFacetValue)
-            ? $facet->HideFacetValue->toArray() : [];
-        $showFacetValue = isset($facet->ShowFacetValue)
-            ? $facet->ShowFacetValue->toArray() : [];
-        if (empty($hideFacetValue) && empty($showFacetValue)) {
-            return null;
-        }
-        return new HideFacetValueListener(
-            $backend,
-            $hideFacetValue,
-            $showFacetValue
-        );
     }
 
     /**

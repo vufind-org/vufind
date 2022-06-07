@@ -979,7 +979,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param string $policyType The policy type, e.g. LOCN or LIBR.
      * @param string $policyID   The policy ID, e.g. VIDEO-COLL or SWEM.
      *
-     * @return The policy description, if found, or the policy ID, if not.
+     * @return string The policy description, if found, or the policy ID, if not.
      *
      * @todo policy description override
      */
@@ -1476,7 +1476,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];

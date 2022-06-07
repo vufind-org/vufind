@@ -101,6 +101,23 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Slice the record list.
+     *
+     * @param int $offset Offset
+     * @param int $limit  Limit
+     *
+     * @return void
+     */
+    public function slice(int $offset, int $limit): void
+    {
+        $this->records = array_slice(
+            $this->records,
+            $offset,
+            $limit
+        );
+    }
+
+    /**
      * Return first record in response.
      *
      * @return RecordInterface|null
@@ -219,7 +236,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->records[$this->pointer]);
     }
@@ -229,6 +246,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->records[$this->pointer];
@@ -239,7 +257,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->pointer = 0;
     }
@@ -249,7 +267,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         $this->pointer++;
     }
@@ -259,6 +277,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->pointer + $this->getOffset();
@@ -271,7 +290,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
-    public function count()
+    public function count(): int
     {
         return count($this->records);
     }

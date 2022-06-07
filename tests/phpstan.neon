@@ -12,6 +12,6 @@ parameters:
         - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\Amazon[a-zA-Z0-9]* not found#'
     bootstrapFiles:
         - phpstan-constants.php
-    level: 0
+    level: 1
     parallel:
         processTimeout: 600.0
