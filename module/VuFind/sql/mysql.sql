@@ -355,13 +355,20 @@ CREATE TABLE `auth_hash` (
 CREATE TABLE `feedback` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
-  `referrer` mediumtext DEFAULT NULL,
-  `user_agent` varchar(255) DEFAULT NULL,
-  `user_name` varchar(255) DEFAULT NULL,
-  `user_email` varchar(255) DEFAULT NULL,
   `message` longtext,
+  `form_data` json DEFAULT NULL,
+  `form_name` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_by` int(11) DEFAULT NULL,
+  `status` enum('open','in progress','pending','answered','closed') NOT NULL DEFAULT 'open',
+  `site_url` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL
+  KEY `created` (`created`),
+  KEY `status` (`status`),
+  KEY `form_name` (`form_name`(191)),
+  CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `feedback_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
