@@ -493,9 +493,32 @@ class MyResearchController extends AbstractBase
         }
         // Get the row, and fail if the current user doesn't own it.
         $search = $this->getSearchRowSecurely($searchId, $user->id);
+
+        // If the user has just logged in, the search might be a duplicate; if
+        // so, let's switch to the pre-existing version instead.
+        $searchTable = $this->getTable('search');
+        $sessId = $this->serviceLocator
+            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $duplicateId = $this->isDuplicateOfSavedSearch(
+            $searchTable,
+            $search,
+            $sessId,
+            $user->id
+        );
+        if ($duplicateId) {
+            $search->delete();
+            $this->redirect()->toRoute(
+                'myresearch-schedulesearch',
+                [],
+                ['query' => ['searchid' => $duplicateId]]
+            );
+        }
+
+        // Now fetch all the results:
         $resultsManager = $this->serviceLocator
             ->get(\VuFind\Search\Results\PluginManager::class);
         $results = $search->getSearchObject()->deminify($resultsManager);
+
         // Build the form.
         return $this->createViewModel(
             compact('scheduleOptions', 'search', 'results')
