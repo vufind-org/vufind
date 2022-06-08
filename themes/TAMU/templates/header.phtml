@@ -29,7 +29,7 @@
 </div>
 <div class="container appTitle">
   <div class="navbar-header">
-    <h2><a href="<?=$this->url('home')?>">Libraries Catalog</a></h2> 
+    <h2><a href="<?=$this->url('home')?>"><?=$this->config()->get('config')->Site->title?></a></h2>
 
   </div>
   <?php if (!isset($this->layout()->renderingError)): ?>
