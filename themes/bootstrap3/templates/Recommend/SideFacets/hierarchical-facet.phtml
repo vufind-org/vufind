@@ -33,7 +33,7 @@ JS;
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <?php endif; ?>
 <?php
-  $truncateSettings = [
+  $truncateSettings = $this->facets_before_more < 1 ? false : [
     'rows' => $this->facets_before_more,
     'btn-class' => 'facet',
     'wrapper-class' => false,
