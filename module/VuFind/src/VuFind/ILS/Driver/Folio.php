@@ -908,7 +908,7 @@ class Folio extends AbstractAPI implements
                 'barcode' => $trans->item->barcode,
                 'renew' => $trans->renewalCount ?? 0,
                 'renewable' => true,
-                'title' => $trans->item->title,
+                'title' => $trans->item->title ?? '',
             ];
         }
         return $transactions;
@@ -1087,7 +1087,7 @@ class Folio extends AbstractAPI implements
                 'id' => $this->getBibId(null, null, $hold->itemId),
                 'item_id' => $hold->itemId,
                 'reqnum' => $hold->id,
-                'title' => $hold->item->title
+                'title' => $hold->item->title ?? '',
             ];
         }
         return $holds;
@@ -1115,8 +1115,12 @@ class Folio extends AbstractAPI implements
         } catch (Exception $e) {
             $this->throwAsIlsException($e, 'hold_date_invalid');
         }
+        $instance = $this->getInstanceByBibId($holdDetails['id']);
         $requestBody = [
             'itemId' => $holdDetails['item_id'],
+            'holdingsRecordId' => $holdDetails['holding_id'] ?? '',
+            'instanceId' => $instance->id,
+            'requestLevel' => 'Item',
             'requestType' => $holdDetails['status'] == 'Available'
                 ? 'Page' : $default_request,
             'requesterId' => $holdDetails['patron']['id'],
