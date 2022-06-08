@@ -48,13 +48,24 @@ class Database implements HandlerInterface
     protected $table;
 
     /**
+     * Site base url
+     *
+     * @var string
+     */
+    protected $baseUrl;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Db\Table\Feedback $feedbackTable Feedback db table
+     * @param string                    $baseUrl       Site base url
      */
-    public function __construct(\VuFind\Db\Table\Feedback $feedbackTable)
-    {
+    public function __construct(
+        \VuFind\Db\Table\Feedback $feedbackTable,
+        string $baseUrl
+    ) {
         $this->table = $feedbackTable;
+        $this->baseUrl = $baseUrl;
     }
 
     /**
@@ -77,14 +88,15 @@ class Database implements HandlerInterface
         $fields = array_column($fields, 'value', 'name');
 
         $row = $this->table->createRow();
+        $data = $fields;
+        unset($data['message']);
         $row->populate(
             [
                 'user_id' => ($user) ? $user->id : null,
-                'referrer' => $fields['referrer'] ?? null,
-                'user_agent' => $fields['useragent'] ?? null,
-                'user_name' => $fields['name'] ?? null,
-                'user_email' => $fields['email'] ?? null,
                 'message' => $fields['message'] ?? '',
+                'form_data' => json_encode($data),
+                'form_name' => $form->getFormId(),
+                'site_url' => $this->baseUrl,
             ]
         );
         $saved = $row->save();

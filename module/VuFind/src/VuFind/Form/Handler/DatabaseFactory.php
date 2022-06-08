@@ -70,8 +70,12 @@ class DatabaseFactory implements FactoryInterface
         }
 
         $dbTableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $router = $container->get('HttpRouter');
+        $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
+        $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         return new $requestedName(
-            $dbTableManager->get(\VuFind\Db\Table\Feedback::class)
+            $dbTableManager->get(\VuFind\Db\Table\Feedback::class),
+            $baseUrl
         );
     }
 }

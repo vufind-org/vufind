@@ -1119,4 +1119,14 @@ class Form extends \Laminas\Form\Form implements
         }
         return $handlers;
     }
+
+    /**
+     * Get current form id/name
+     *
+     * @return string
+     */
+    public function getFormId(): string
+    {
+        return $this->formConfig['id'] ?? '';
+    }
 }
