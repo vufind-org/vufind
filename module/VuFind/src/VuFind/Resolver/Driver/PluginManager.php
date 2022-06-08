@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         '360link' => Threesixtylink::class,
         'alma' => Alma::class,
         'demo' => Demo::class,
+        'ezb' => Jop::class,
         'jop' => Jop::class,
         'sfx' => Sfx::class,
         'redi' => Redi::class,
