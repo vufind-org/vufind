@@ -166,6 +166,30 @@ $config = [
                     ],
                 ],
             ],
+            'crawler-info' => [
+                'type'    => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => "/crawler",
+                    'defaults' => [
+                        'controller' => 'Content',
+                        'action'     => 'Content',
+                        'page'       => 'crawler'
+
+                    ]
+                ],
+            ],
+            'last_updated-info' => [
+                'type'    => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => "/Last_Updated",
+                    'defaults' => [
+                        'controller' => 'Content',
+                        'action'     => 'Content',
+                        'page'       => 'Last_Updated'
+
+                    ]
+                ],
+            ],
         ],
     ],
     'controllers' => [
