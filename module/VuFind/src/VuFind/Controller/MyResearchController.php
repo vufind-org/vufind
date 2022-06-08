@@ -445,12 +445,27 @@ class MyResearchController extends AbstractBase
         }
         $search = $this->getTable('Search');
         $baseurl = rtrim($this->getServerUrl('home'), '/');
-        $searchCriteria = ['id' => $sid, 'user_id' => $user->id, 'saved' => 1];
-        $savedRow = $search->select($searchCriteria)->current();
+        $savedRow = $this->getSearchRowSecurely($sid, $user->id);
+
+        // In case the user has just logged in, let's deduplicate...
+        $sessId = $this->serviceLocator
+            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $duplicateId = $this->isDuplicateOfSavedSearch(
+            $search,
+            $savedRow,
+            $sessId,
+            $user->id
+        );
+        if ($duplicateId) {
+            $savedRow->delete();
+            $sid = $duplicateId;
+            $savedRow = $this->getSearchRowSecurely($sid, $user->id);
+        }
+
         // If we didn't find an already-saved row, let's save and retry:
-        if (!$savedRow) {
+        if (!($savedRow->saved ?? false)) {
             $this->setSavedFlagSecurely($sid, true, $user->id);
-            $savedRow = $search->select($searchCriteria)->current();
+            $savedRow = $this->getSearchRowSecurely($sid, $user->id);
         }
         if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
             // By default, a first scheduled email will be sent because the database
