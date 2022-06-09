@@ -161,11 +161,25 @@
                     </field>
                 </xsl:if>
 
-                <!-- URL -->
+                <!-- Identifiers (URL and DOI) -->
                 <xsl:for-each select="dc:identifier">
                     <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
                         <field name="url">
                             <xsl:value-of select="." />
+                        </field>
+                    </xsl:if>
+                    <xsl:if test="starts-with(., 'doi:')">
+                        <field name="doi_str_mv">
+                            <xsl:value-of select="substring-after(., 'doi:')" />
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
+
+                <!-- ISBNs -->
+                <xsl:for-each select="dc:relation">
+                    <xsl:if test="starts-with(., 'ISBN:')">
+                        <field name="isbn">
+                            <xsl:value-of select="substring-after(., 'ISBN:')" />
                         </field>
                     </xsl:if>
                 </xsl:for-each>
