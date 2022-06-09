@@ -98,10 +98,14 @@
                 </xsl:if>
 
                 <!-- ADVISOR / CONTRIBUTOR -->
-                <xsl:if test="dc:contributor[normalize-space()]">
-                    <field name="author2">
-                        <xsl:value-of select="dc:contributor[normalize-space()]" />
-                    </field>
+                <xsl:if test="dc:contributor">
+                    <xsl:for-each select="dc:contributor">
+                        <xsl:if test="normalize-space()">
+                            <field name="author2">
+                                <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
+                            </field>
+                        </xsl:if>
+                    </xsl:for-each>
                 </xsl:if>
 
                 <!-- TYPE -->
@@ -116,12 +120,12 @@
                     <xsl:for-each select="dc:creator">
                         <xsl:if test="normalize-space()">
                             <field name="author">
-                                <xsl:value-of select="normalize-space()"/>
+                                <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
                             </field>
                             <!-- use first author value for sorting -->
                             <xsl:if test="position()=1">
                                 <field name="author_sort">
-                                    <xsl:value-of select="normalize-space()"/>
+                                    <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
                                 </field>
                             </xsl:if>
                         </xsl:if>
@@ -185,7 +189,7 @@
                 </xsl:for-each>
 
                 <!-- Work Keys -->
-                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', dc:title[normalize-space()], php:function('VuFind::stripArticles', string(dc:title[normalize-space()])), dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', dc:title[normalize-space()], php:function('VuFind::stripArticles', string(dc:title[normalize-space()])), php:function('VuFind::invertNames', dc:creator)/name, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
                     <field name="work_keys_str_mv">
                         <xsl:value-of select="." />
                     </field>

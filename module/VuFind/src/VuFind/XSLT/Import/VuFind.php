@@ -522,4 +522,42 @@ class VuFind
         }
         return empty($goodMatch) ? $adequateMatch : $goodMatch;
     }
+
+    /**
+     * Invert "Firstname Lastname" authors into "Lastname, Firstname."
+     *
+     * @param string $rawName Raw name
+     *
+     * @return string
+     */
+    public static function invertName(string $rawName): string
+    {
+        // includes the full name, eg.: Bento, Filipe Manuel dos Santos
+        $parts = preg_split('/\s+(?=[^\s]+$)/', $rawName, 2);
+        if (count($parts) != 2) {
+            return $rawName;
+        }
+        [$fnames, $lname] = $parts;
+        return "$lname, $fnames";
+    }
+
+    /**
+     * Call invertName on all matching elements; return a DOMDocument with a
+     * name tag for each inverted name.
+     *
+     * @param array $input DOM elements to adjust
+     *
+     * @return DOMDocument
+     */
+    public static function invertNames($input): DOMDocument
+    {
+        $dom = new DOMDocument('1.0', 'utf-8');
+        foreach ($input as $name) {
+            $inverted = self::invertName($name->textContent);
+            $element = $dom->createElement('name');
+            $element->nodeValue = htmlspecialchars($inverted);
+            $dom->appendChild($element);
+        }
+        return $dom;
+    }
 }
