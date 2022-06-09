@@ -333,7 +333,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             ' (%s)',
             ':',
             true,
-            'https://dx.doi.org/',
+            'https://doi.org/',
             false,
             false
         );
@@ -371,7 +371,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $yearFormat = ', %s',
         $pageNoSeparator = ',',
         $includePubPlace = false,
-        $doiPrefix = 'https://dx.doi.org/',
+        $doiPrefix = 'https://doi.org/',
         $labelPageRange = true,
         $doiArticleComma = true
     ) {
