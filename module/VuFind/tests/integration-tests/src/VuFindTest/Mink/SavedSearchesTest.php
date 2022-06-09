@@ -71,6 +71,28 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Click on the "Save Search" link in a search result set (or fail trying).
+     *
+     * @param Element $page Current page
+     *
+     * @return void
+     */
+    protected function clickSaveLink(Element $page): void
+    {
+        $links = $page->findAll('css', '.searchtools a');
+        foreach ($links as $link) {
+            if ($this->checkVisibility($link)
+                && str_contains($link->getHtml(), 'Save Search')
+            ) {
+                $link->click();
+                return;
+            }
+        }
+
+        $this->fail('Could not find save link.');
+    }
+
+    /**
      * Test saving and clearing a search.
      *
      * @retryCallback tearDownAfterClass
@@ -80,20 +102,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     public function testSaveSearch(): void
     {
         $page = $this->performSearch('test');
-
-        $links = $page->findAll('css', '.searchtools a');
-        $saveLink = null;
-        foreach ($links as $link) {
-            if ($this->checkVisibility($link)
-                && str_contains($link->getHtml(), 'Save Search')
-            ) {
-                $saveLink = $link;
-                break;
-            }
-        }
-
-        $this->assertNotNull($saveLink);
-        $saveLink->click();
+        $this->clickSaveLink($page);
         $this->waitForPageLoad($page);
 
         $this->clickCss($page, '.createAccountLink');
@@ -104,6 +113,39 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
             'Search saved successfully.',
             $this->findCss($page, '.alert.alert-success')->getText()
         );
+    }
+
+    /**
+     * Test that saving a search while logging in does not create a duplicate.
+     *
+     * @depends testSaveSearch
+     *
+     * @return void
+     */
+    public function testSavedSearchDeduplication(): void
+    {
+        // Perform the same search that was already done in testSaveSearch above,
+        // prior to logging in...
+        $page = $this->performSearch('test');
+        $this->clickSaveLink($page);
+        $this->waitForPageLoad($page);
+
+        // When we hit save, we'll be prompted to log in...
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // We want to be sure that this does not create two copies of the same search
+        // in our search history.
+        $this->findAndAssertLink($page, 'Search History')->click();
+        $this->waitForPageLoad($page);
+        $saved = $page->findAll('css', '#saved-searches td a');
+        $callback = function ($link) {
+            return trim($link->getText());
+        };
+        $linkText = implode("\n", array_map($callback, $saved));
+        // Text from all links should only contain one test search + delete control
+        $this->assertEquals("test\nDelete", $linkText);
     }
 
     /**
