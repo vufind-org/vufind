@@ -370,6 +370,39 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that accessing the "manage schedule" screen properly deduplicates
+     * existing saved searches if clicked prior to user login.
+     *
+     * @depends testNotificationsInSearchToolbar
+     *
+     * @return void
+     */
+    public function testNotificationsInSearchToolbarDeduplication()
+    {
+        // Perform the same search as the previous test, and turn on notifications.
+        $page = $this->performSearch('employment');
+        $page = $this->activateNotifications();
+
+        // We are not logged in, so we won't see the appropriate alert schedule yet
+        // (it's always "None" for logged-out users).
+        $link = $this->findCss($page, '.searchtools .manageSchedule');
+        $this->assertEquals("Alert schedule: None", $link->getText());
+        $link->click();
+        $this->waitForPageLoad($page);
+
+        // We should now be prompted to log in:
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // We should now be on a page with a schedule selector; because of the
+        // setting we set in the previous test, and with login deduplication, we
+        // should now see the "7" option already selected:
+        $scheduleSelector = 'select[name="schedule"]';
+        $this->assertEquals(7, $this->findCss($page, $scheduleSelector)->getValue());
+    }
+
+    /**
      * Retry cleanup method in case of failure during testSavedSearchSecurity.
      *
      * @return void
