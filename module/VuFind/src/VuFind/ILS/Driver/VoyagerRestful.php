@@ -306,7 +306,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -347,15 +347,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // User defined hold behaviour
         $is_holdable = true;
 
-        if (isset($this->config['Holds']['valid_hold_statuses'])) {
+        if (!empty($this->config['Holds']['valid_hold_statuses'])) {
             $valid_hold_statuses_array
                 = explode(':', $this->config['Holds']['valid_hold_statuses']);
 
-            if (!empty($valid_hold_statuses_array)) {
-                foreach ($statusArray as $status) {
-                    if (!in_array($status, $valid_hold_statuses_array)) {
-                        $is_holdable = false;
-                    }
+            foreach ($statusArray as $status) {
+                if (!in_array($status, $valid_hold_statuses_array)) {
+                    $is_holdable = false;
                 }
             }
         }
@@ -1695,12 +1693,12 @@ EOT;
     /**
      * Check whether items exist for the given BIB ID
      *
-     * @param int $bibId          BIB ID
-     * @param int $requestGroupId Request group ID or null
+     * @param int  $bibId          BIB ID
+     * @param ?int $requestGroupId Request group ID or null
      *
      * @return bool
      */
-    protected function itemsExist($bibId, $requestGroupId)
+    protected function itemsExist($bibId, ?int $requestGroupId = null)
     {
         $sqlExpressions = [
             'count(i.ITEM_ID) CNT'
@@ -1757,12 +1755,12 @@ EOT;
     /**
      * Check whether there are items available for loan for the given BIB ID
      *
-     * @param int $bibId          BIB ID
-     * @param int $requestGroupId Request group ID or null
+     * @param int  $bibId          BIB ID
+     * @param ?int $requestGroupId Request group ID or null
      *
      * @return bool
      */
-    protected function itemsAvailable($bibId, $requestGroupId)
+    protected function itemsAvailable($bibId, ?int $requestGroupId = null)
     {
         // Build inner query first
         $sqlExpressions = [

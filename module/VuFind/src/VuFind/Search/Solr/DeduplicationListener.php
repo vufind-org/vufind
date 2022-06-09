@@ -36,7 +36,6 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
 
@@ -60,7 +59,7 @@ class DeduplicationListener
     protected $backend;
 
     /**
-     * Superior service manager.
+     * Service container.
      *
      * @var ContainerInterface
      */
@@ -261,13 +260,13 @@ class DeduplicationListener
                         $localPriority = ++$undefPriority;
                     }
                 }
-                if (isset($localPriority) && $localPriority < $priority) {
+                if ($localPriority < $priority) {
                     $dedupId = $localId;
                     $priority = $localPriority;
                 }
                 $dedupData[$source] = [
                     'id' => $localId,
-                    'priority' => $localPriority ?? 99999
+                    'priority' => $localPriority,
                 ];
             }
             $fields['dedup_id'] = $dedupId;
@@ -324,6 +323,7 @@ class DeduplicationListener
             );
             $foundLocalRecord->setRawData($localRecordData);
             $foundLocalRecord->setHighlightDetails($record->getHighlightDetails());
+            $foundLocalRecord->setLabels($record->getLabels());
             $result->replace($record, $foundLocalRecord);
         }
     }

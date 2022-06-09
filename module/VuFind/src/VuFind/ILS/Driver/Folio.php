@@ -432,7 +432,7 @@ class Folio extends AbstractAPI implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         return $this->config[$function] ?? false;
     }
@@ -566,7 +566,7 @@ class Folio extends AbstractAPI implements
                 $supStat = $supplement->statement ?? '';
                 $supNote = $supplement->note ?? '';
                 $statement = trim(sprintf($format, $supStat, $supNote));
-                return $statement ?? '';
+                return $statement;
             };
             $holdingNotes = array_filter(
                 array_map($notesFormatter, $holding->notes ?? [])

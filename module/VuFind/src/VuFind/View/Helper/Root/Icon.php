@@ -239,15 +239,17 @@ class Icon extends AbstractHelper
             $attrs['class'] = trim(($attrs['class'] ?? '') . ' ' . $class);
 
             // Surface set config and add icon and attrs
-            $cached = $this->getView()->render(
-                'Helpers/icons/' . $template,
-                array_merge(
-                    $this->config['sets'][$set] ?? [],
-                    [
-                        'icon' => ($this->esc)($icon),
-                        'attrs' => $this->compileAttrs($attrs),
-                        'extra' => $attrs,
-                    ]
+            $cached = trim(
+                $this->getView()->render(
+                    'Helpers/icons/' . $template,
+                    array_merge(
+                        $this->config['sets'][$set] ?? [],
+                        [
+                            'icon' => ($this->esc)($icon),
+                            'attrs' => $this->compileAttrs($attrs),
+                            'extra' => $attrs,
+                        ]
+                    )
                 )
             );
 

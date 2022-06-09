@@ -2567,13 +2567,13 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMultibackendForDrivers(['testing3' => $ILS]);
 
         $this->setProperty($driver, 'defaultDriver', 'testing3');
-        $methodReturn = $driver->supportsMethod('fail', null);
+        $methodReturn = $driver->supportsMethod('fail', []);
         $this->assertFalse($methodReturn);
 
         //Case: No driver info in params, though default driver has method
         //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getStatus', null);
+        $methodReturn = $driver->supportsMethod('getStatus', []);
         $this->assertTrue($methodReturn);
         $this->setProperty($driver, 'defaultDriver', null);
 
@@ -2593,28 +2593,28 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         //Case: No parameters are given
         //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getStatus', null);
+        $methodReturn = $driver->supportsMethod('getStatus', []);
         $this->assertTrue($methodReturn);
 
         //Case: getLoginDrivers and getDefaultLoginDriver are always supported
         //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getLoginDrivers', null);
+        $methodReturn = $driver->supportsMethod('getLoginDrivers', []);
         $this->assertTrue($methodReturn);
-        $methodReturn = $driver->supportsMethod('getDefaultLoginDriver', null);
+        $methodReturn = $driver->supportsMethod('getDefaultLoginDriver', []);
         $this->assertTrue($methodReturn);
 
         //Case: loginIsHidden is supported when default driver is set and supports
         //it
         //Result: A return of true
         $this->setProperty($driver, 'defaultDriver', 'testing3');
-        $methodReturn = $driver->supportsMethod('loginIsHidden', null);
+        $methodReturn = $driver->supportsMethod('loginIsHidden', []);
         $this->assertTrue($methodReturn);
 
         //Case: loginIsHidden is not supported without a default driver
         //Result: A return of false
         $this->setProperty($driver, 'defaultDriver', null);
-        $methodReturn = $driver->supportsMethod('loginIsHidden', null);
+        $methodReturn = $driver->supportsMethod('loginIsHidden', []);
         $this->assertFalse($methodReturn);
     }
 
@@ -2829,11 +2829,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Demo
      */
-    protected function getMockDemoDriver($methods)
+    protected function getMockDemoDriver()
     {
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
-        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock', $methods)
+        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2863,7 +2863,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
         } elseif ($type == 'Demo') {
-            $mock = $this->getMockDemoDriver($methods);
+            $mock = $this->getMockDemoDriver();
         } else {
             $class = __NAMESPACE__ . '\\' . $type . 'Mock';
             $mock = $this->getMockBuilder($class)

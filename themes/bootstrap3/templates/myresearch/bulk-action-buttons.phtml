@@ -9,16 +9,17 @@
     <label for="myresearchCheckAll"><?=$this->transEsc('select_page')?> | <?=$this->transEsc('with_selected')?>:</label>
   </div>
   <ul class="action-toolbar">
-    <li><button class="toolbar-btn btn-type-email" type="submit" name="email" value="1" title="<?=$this->transEscAttr('email_selected')?>"><?=$this->transEsc('Email') ?></button></li>
+    <li><button class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('email_selected')?>"><?=$this->icon('send-email') ?> <?=$this->transEsc('Email') ?></button>
+    </li>
     <?php if ((null !== $this->list && $this->list->editAllowed($user)) || null === $this->list && $user): ?>
-      <li><button class="toolbar-btn btn-type-delete" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="1" title="<?=$this->transEscAttr('delete_selected')?>"><?=$this->transEsc('Delete') ?></button></li>
+      <li><button class="toolbar-btn" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="1" title="<?=$this->transEscAttr('delete_selected')?>"><?=$this->icon('ui-delete') ?> <?=$this->transEsc('Delete') ?></button></li>
     <?php endif; ?>
     <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-      <li><button class="toolbar-btn btn-type-export" type="submit" name="export" value="1" title="<?=$this->transEscAttr('export_selected')?>"><?=$this->transEsc('Export')?></button></li>
+      <li><button class="toolbar-btn" type="submit" name="export" value="1" title="<?=$this->transEscAttr('export_selected')?>"><?=$this->icon('export') ?> <?=$this->transEsc('Export')?></button></li>
     <?php endif; ?>
-    <li><button class="toolbar-btn btn-type-print" type="submit" name="print" value="1" title="<?=$this->transEscAttr('print_selected')?>" data-lightbox-ignore><?=$this->transEsc('Print')?></button></li>
+    <li><button class="toolbar-btn" type="submit" name="print" value="1" title="<?=$this->transEscAttr('print_selected')?>" data-lightbox-ignore><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></button></li>
     <?php if ($this->cart()->isActive()): ?>
-      <li><button class="toolbar-btn btn-type-add" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="1"><?=$this->transEsc('Add to Book Bag')?></button></li>
+      <li><button class="toolbar-btn" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="1"><?=$this->icon('cart-add') ?> <?=$this->transEsc('Add to Book Bag')?></button></li>
     <?php endif; ?>
   </ul>
 </nav>

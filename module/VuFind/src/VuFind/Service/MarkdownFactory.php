@@ -29,15 +29,15 @@
  */
 namespace VuFind\Service;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use League\CommonMark\ConfigurableEnvironmentInterface;
-use League\CommonMark\Environment;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Environment\EnvironmentBuilderInterface;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Markdown Service factory.
@@ -57,11 +57,14 @@ class MarkdownFactory implements FactoryInterface
      * @var string[]
      */
     protected static $configKeys = [
+        'CommonMarkCore' => 'commonmark',
+        'DefaultAttributes' => 'default_attributes',
         'ExternalLink' => 'external_link',
         'Footnote' => 'footnote',
         'HeadingPermalink' => 'heading_permalink',
         'Mention' => 'mentions',
         'SmartPunct' => 'smartpunct',
+        'Table' => 'table',
         'TableOfContents' => 'table_of_contents',
     ];
 
@@ -73,6 +76,27 @@ class MarkdownFactory implements FactoryInterface
     protected static $defaultExtensions = [
         'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList'
     ];
+
+    /**
+     * Markdown processor configuration
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * Enabled extensions
+     *
+     * @var array
+     */
+    protected $extensions;
+
+    /**
+     * Dependency injection container
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Create an object
@@ -93,104 +117,209 @@ class MarkdownFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $markdownConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('markdown');
+        $this->config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('markdown')->toArray();
+        $this->extensions = isset($this->config['Markdown']['extensions'])
+            ? array_map(
+                'trim',
+                explode(',', $this->config['Markdown']['extensions'])
+            )
+            : self::$defaultExtensions;
+        $this->extensions = array_filter($this->extensions);
+        $this->container = $container;
 
-        $environment = $this->getEnvironment($markdownConfig);
-        $this->addExtensions($environment, $markdownConfig);
-
-        return new MarkdownConverter($environment);
+        return new MarkdownConverter($this->getEnvironment());
     }
 
     /**
      * Get Markdown environment.
      *
-     * @param $markdownConfig Config VuFind Markdown config
-     *
-     * @return ConfigurableEnvironmentInterface
+     * @return EnvironmentBuilderInterface
      */
-    protected function getEnvironment(Config $markdownConfig):
-        ConfigurableEnvironmentInterface
+    protected function getEnvironment(): EnvironmentBuilderInterface
     {
-        $environment = Environment::createCommonMarkEnvironment();
-        $environment->mergeConfig($this->getEnvironmentConfig($markdownConfig));
-
+        $environment = new Environment($this->createConfig());
+        $environment->addExtension(new CommonMarkCoreExtension());
+        foreach ($this->extensions as $extension) {
+            $extensionClass = $this->getExtensionClass($extension);
+            // For case, somebody needs to create extension using custom factory, we
+            // try to get the object from DI container if possible
+            $extensionObject = $this->container->has($extensionClass)
+                ? $this->container->get($extensionClass)
+                : new $extensionClass();
+            $environment->addExtension($extensionObject);
+        }
         return $environment;
     }
 
     /**
-     * Get Markdown environment config.
-     *
-     * @param $markdownConfig Config VuFind Markdown config
+     * Get Markdown base config.
      *
      * @return array
      */
-    protected function getEnvironmentConfig(Config $markdownConfig): array
+    protected function getBaseConfig(): array
     {
-        $mainConfig = $markdownConfig->Markdown;
-
+        $mainConfig = $this->config['Markdown'] ?? [];
         return [
-            'html_input' => $mainConfig->html_input ?? 'strip',
-            'allow_unsafe_links' => $mainConfig->allow_unsafe_links ?? false,
-            'max_nesting_level' => $mainConfig->max_nesting_level ?? \PHP_INT_MAX,
-            'commonmark' => [
-                'enable_em' => $mainConfig->enable_em ?? true,
-                'enable_strong' => $mainConfig->enable_strong ?? true,
-                'use_asterisk' => $mainConfig->use_asterisk ?? true,
-                'use_underscore' => $mainConfig->use_underscore ?? true,
-                'unordered_list_markers' =>
-                    isset($mainConfig->unordered_list_markers)
-                    && $mainConfig->unordered_list_markers instanceof \ArrayAccess
-                        ? $mainConfig->unordered_list_markers->toArray()
-                        : ['-', '*', '+'],
-            ],
+            'html_input' => $mainConfig['html_input'] ?? 'strip',
+            'allow_unsafe_links'
+                => (bool)($mainConfig['allow_unsafe_links'] ?? false),
+            'max_nesting_level'
+                => (int)($mainConfig['max_nesting_level'] ?? \PHP_INT_MAX),
             'renderer' => [
                 'block_separator'
-                    => $mainConfig->renderer['block_separator'] ?? "\n",
+                    => $mainConfig['renderer']['block_separator'] ?? "\n",
                 'inner_separator'
-                    => $mainConfig->renderer['inner_separator'] ?? "\n",
-                'soft_break' => $mainConfig->renderer['soft_break'] ?? "\n",
+                    => $mainConfig['renderer']['inner_separator'] ?? "\n",
+                'soft_break' => $mainConfig['renderer']['soft_break'] ?? "\n",
             ],
         ];
     }
 
     /**
-     * Add extensions to Markdown environment.
+     * Get full class name for given extension
      *
-     * @param $environment    ConfigurableEnvironmentInterface Markdown environment
-     * @param $markdownConfig Config                           VuFind Markdown config
+     * @param string $extension Extension name
      *
-     * @return void
+     * @return string
      */
-    protected function addExtensions(
-        ConfigurableEnvironmentInterface $environment,
-        Config $markdownConfig
-    ): void {
-        $mainConfig = $markdownConfig->Markdown;
-        $extensions = isset($mainConfig->extensions)
-            ? array_map('trim', explode(',', $mainConfig->extensions))
-            : self::$defaultExtensions;
-
-        foreach ($extensions as $ext) {
-            if ($ext === '') {
-                continue;
-            }
-            $extClass = sprintf(
+    protected function getExtensionClass(string $extension): string
+    {
+        $extensionClass = (strpos($extension, '\\') !== false)
+            ? $extension
+            : sprintf(
                 'League\CommonMark\Extension\%s\%sExtension',
-                $ext,
-                $ext
+                $extension,
+                $extension
             );
-            if (!class_exists($extClass)) {
-                throw new ServiceNotCreatedException(
-                    "Could not create markdown service. Extension '$ext' not found"
-                );
-            }
-            $environment->addExtension(new $extClass());
-            if (isset($markdownConfig[$ext])) {
-                $environment->mergeConfig(
-                    [self::$configKeys[$ext] => $markdownConfig->$ext->toArray()]
-                );
+        if (!class_exists($extensionClass)) {
+            throw new ServiceNotCreatedException(
+                sprintf(
+                    "Could not create markdown service. Extension '%s' not found",
+                    $extension
+                )
+            );
+        }
+        return $extensionClass;
+    }
+
+    /**
+     * Get config for given extension
+     *
+     * @param string $extension Extension name
+     *
+     * @return array
+     */
+    protected function getConfigForExtension(string $extension): array
+    {
+        if (isset($this->config[$extension])) {
+            $configKey = self::$configKeys[$extension]
+                ?? $this->config[$extension]['config_key']
+                ?? '';
+            unset($this->config[$extension]['config_key']);
+            return $configKey !== ''
+                ? [ $configKey => $this->config[$extension] ]
+                : [];
+        }
+        return [];
+    }
+
+    /**
+     * Get config for core extension
+     *
+     * @return array
+     */
+    protected function getConfigForCoreExtension(): array
+    {
+        $config = $this->getConfigForExtension('CommonMarkCore');
+        $configOptions = [
+            'enable_em',
+            'enable_strong',
+            'use_asterisk',
+            'use_underscore'
+        ];
+        foreach ($configOptions as $option) {
+            $config['commonmark'][$option]
+                = (bool)($config['commonmark'][$option]
+                    ?? $this->config['Markdown'][$option]
+                    ?? true);
+            unset($this->config['Markdown'][$option]);
+        }
+        $markdown = $this->config['Markdown'] ?? [];
+        $config['commonmark']['unordered_list_markers']
+            = $config['commonmark']['unordered_list_markers']
+                ?? $markdown['unordered_list_markers']
+                ?? ['-', '*', '+'];
+        unset($this->config['Markdown']['unordered_list_markers']);
+
+        return $config;
+    }
+
+    /**
+     * Sanitize some config options
+     *
+     * @param array $config Full config
+     *
+     * @return array
+     */
+    protected function sanitizeConfig(array $config): array
+    {
+        $boolSettingKeys = [
+            ['external_link', 'open_in_new_window'],
+            ['footnote', 'container_add_hr'],
+            ['heading_permalink', 'aria_hidden'],
+        ];
+        foreach ($boolSettingKeys as $key) {
+            if (isset($config[$key[0]][$key[1]])) {
+                $config[$key[0]][$key[1]] = (bool)$config[$key[0]][$key[1]];
             }
         }
+        if (isset($config['table']['wrap']['enabled'])) {
+            $config['table']['wrap']['enabled']
+                = (bool)$config['table']['wrap']['enabled'];
+        }
+        $intSettingKeys = [
+            ['table_of_contents', 'min_heading_level'],
+            ['table_of_contents', 'max_heading_level'],
+            ['heading_permalink', 'min_heading_level'],
+            ['heading_permalink', 'max_heading_level'],
+        ];
+        foreach ($intSettingKeys as $key) {
+            if (isset($config[$key[0]][$key[1]])) {
+                $config[$key[0]][$key[1]] = (int)$config[$key[0]][$key[1]];
+            }
+        }
+        $tableWrapAttributes = [];
+        if (isset($config['table']['wrap']['attributes'])) {
+            $tableWrapAttributes = array_map(
+                'trim',
+                explode(',', $config['table']['wrap']['attributes'])
+            );
+            $config['table']['wrap']['attributes'] = [];
+        }
+        foreach ($tableWrapAttributes as $attribute) {
+            $parts = array_map('trim', explode(':', $attribute));
+            if (2 === count($parts)) {
+                $config['table']['wrap']['attributes'][$parts[0]] = $parts[1];
+            }
+        }
+        return $config;
+    }
+
+    /**
+     * Create full config for markdown converter
+     *
+     * @return array
+     */
+    protected function createConfig(): array
+    {
+        $baseConfig = $this->getBaseConfig();
+        $coreConfig = $this->getConfigForCoreExtension();
+        $config = array_merge($baseConfig, $coreConfig);
+        foreach ($this->extensions as $extension) {
+            $extConfig = $this->getConfigForExtension($extension);
+            $config = array_merge($config, $extConfig);
+        }
+        return $this->sanitizeConfig($config);
     }
 }

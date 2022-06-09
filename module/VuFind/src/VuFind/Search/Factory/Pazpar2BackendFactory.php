@@ -28,11 +28,8 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
-
-use VuFindHttp\HttpService;
 use VuFindSearch\Backend\Pazpar2\Backend;
 use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\QueryBuilder;
@@ -48,7 +45,7 @@ use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Pazpar2BackendFactory implements FactoryInterface
+class Pazpar2BackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -56,13 +53,6 @@ class Pazpar2BackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * VuFind configuration
@@ -84,7 +74,7 @@ class Pazpar2BackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->setup($sm);
         $this->config = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class)
             ->get('Pazpar2');
@@ -128,7 +118,7 @@ class Pazpar2BackendFactory implements FactoryInterface
     {
         $connector = new Connector(
             $this->config->General->base_url,
-            $this->serviceLocator->get(HttpService::class)->createClient()
+            $this->createHttpClient()
         );
         $connector->setLogger($this->logger);
         return $connector;

@@ -1540,7 +1540,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {

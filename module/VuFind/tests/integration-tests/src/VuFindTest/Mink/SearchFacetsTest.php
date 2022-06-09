@@ -117,7 +117,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit, count($items));
         $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .fa-times');
+            ->findAll('css', '#modal #facet-list-count .exclude');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
@@ -138,7 +138,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#modal #facet-list-count')->getText()
         );
         $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .fa-times');
+            ->findAll('css', '#modal #facet-list-count .exclude');
         $this->assertEquals($exclusionActive ? $limit * 2 : 0, count($excludes));
 
         // sort by title
@@ -155,7 +155,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#modal #facet-list-index')->getText()
         );
         $excludes = $page
-            ->findAll('css', '#modal #facet-list-index .fa-times');
+            ->findAll('css', '#modal #facet-list-index .exclude');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // sort by index again
         $this->clickCss($page, '[data-sort="count"]');
@@ -566,5 +566,60 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.reset-filters-btn');
         $this->assertFilterIsStillThere($page);
         $this->assertNoResetFiltersButton($page);
+    }
+
+    /**
+     * Test that OR facets work as expected.
+     *
+     * @return void
+     */
+    public function testOrFacets()
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => ['orFacets' => 'building']
+                ]
+            ]
+        );
+
+        // Do a blank search to determine initial counts
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results');
+        $page = $session->getPage();
+
+        // Extract information about the top two facets from the list:
+        $facets = $this->findCss($page, '#side-collapse-building')->getText();
+        $list = explode(' ', $facets);
+        $firstFacet = array_shift($list);
+        $firstFacetCount = array_shift($list);
+        $secondFacet = array_shift($list);
+        $secondFacetCount = array_shift($list);
+
+        // Facets should be ordered in descending order by count, and should have
+        // non-zero counts...
+        $this->assertTrue($firstFacetCount >= $secondFacetCount);
+        $this->assertTrue($secondFacetCount > 0);
+
+        // Clicking the second facet should restrict the result list:
+        $this->clickCss(
+            $page,
+            '#side-collapse-building a[data-title="' . $secondFacet . '"]'
+        );
+        $this->assertStringContainsString(
+            "Showing 1 - 20 results of $secondFacetCount",
+            $this->findCss($page, '.search-header .search-stats')->getText()
+        );
+
+        // Now clicking the first facet should EXPAND the result list:
+        $expectedTotal = $firstFacetCount + $secondFacetCount;
+        $this->clickCss(
+            $page,
+            '#side-collapse-building a[data-title="' . $firstFacet . '"]'
+        );
+        $this->assertStringContainsString(
+            "Showing 1 - 20 results of $expectedTotal",
+            $this->findCss($page, '.search-header .search-stats')->getText()
+        );
     }
 }

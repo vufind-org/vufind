@@ -183,7 +183,7 @@ class Search extends Gateway
      * @param string $sessId Current user session ID
      * @param int    $userId Current logged-in user ID (or null if none)
      *
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
      */
     public function getOwnedRowById($id, $sessId, $userId)
     {

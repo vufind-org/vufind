@@ -83,7 +83,7 @@ class AbstractRecord extends AbstractBase
      *
      * @var string
      */
-    protected $searchClassId = 'Solr';
+    protected $sourceId = 'Solr';
 
     /**
      * Record driver
@@ -102,8 +102,9 @@ class AbstractRecord extends AbstractBase
     protected function createViewModel($params = null)
     {
         $view = parent::createViewModel($params);
-        $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
         $view->driver = $this->loadRecord();
+        $this->layout()->searchClassId = $view->searchClassId
+            = $view->driver->getSearchBackendIdentifier();
         return $view;
     }
 
@@ -535,7 +536,7 @@ class AbstractRecord extends AbstractBase
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Do CSRF check
-            $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
@@ -694,7 +695,7 @@ class AbstractRecord extends AbstractBase
             }
             $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
-                $this->searchClassId,
+                $this->sourceId,
                 false,
                 $params
             );

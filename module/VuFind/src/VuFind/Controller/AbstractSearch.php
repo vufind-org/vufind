@@ -460,7 +460,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $searchId Primary key value
      *
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
      */
     protected function retrieveSearchSecurely($searchId)
     {

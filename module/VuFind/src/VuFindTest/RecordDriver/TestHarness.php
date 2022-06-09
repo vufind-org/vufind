@@ -39,6 +39,14 @@ namespace VuFindTest\RecordDriver;
 class TestHarness extends \VuFind\RecordDriver\AbstractBase
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setSourceIdentifiers('Solr');
+    }
+
+    /**
      * Magic method to set/retrieve fields.
      *
      * @param string $method Method name being called.

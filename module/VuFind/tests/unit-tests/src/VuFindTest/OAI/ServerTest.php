@@ -75,10 +75,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $server = new Server(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
-            $this->getMockTableManager(),
-            new \Laminas\Config\Config($config),
-            $baseURL,
-            $params
+            $this->getMockTableManager()
         );
         $server->setRecordFormatter($this->getMockRecordFormatter());
         return $server;

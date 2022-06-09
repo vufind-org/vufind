@@ -48,7 +48,7 @@ class WorldcatrecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
-        $this->searchClassId = 'WorldCat';
+        $this->sourceId = 'WorldCat';
 
         // Call standard record controller initialization:
         parent::__construct($sm);
