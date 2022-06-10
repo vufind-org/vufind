@@ -30,6 +30,7 @@ declare(strict_types=1);
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Paginator\Paginator;
 use VuFind\Db\Row\RowGateway;
 
 /**
@@ -46,11 +47,11 @@ class Feedback extends Gateway
     /**
      * Constructor
      *
-     * @param Adapter       $adapter Database adapter
-     * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
-     * @param string        $table   Name of database table to interface with
+     * @param Adapter         $adapter Database adapter
+     * @param PluginManager   $tm      Table manager
+     * @param array           $cfg     Laminas configuration
+     * @param RowGateway|null $rowObj  Row prototype object (null for default)
+     * @param string          $table   Name of database table to interface with
      */
     public function __construct(
         Adapter $adapter,
@@ -60,5 +61,96 @@ class Feedback extends Gateway
         $table = 'feedback'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
+    }
+
+    /**
+     * Get feedback by filter
+     *
+     * @param string|null $formName Form name
+     * @param string|null $siteUrl  Site URL
+     * @param string|null $status   Current status
+     * @param string|null $page     Current page
+     * @param int         $limit    Limit per page
+     *
+     * @return Paginator
+     */
+    public function getFeedbackByFilter(
+        ?string $formName = null,
+        ?string $siteUrl = null,
+        ?string $status = null,
+        ?string $page = null,
+        int $limit = 20
+    ): Paginator {
+        $sql = $this->getSql();
+        $select = $sql->select()->columns(
+            [
+                '*',
+                'user_name' => new \Laminas\Db\Sql\Expression(
+                    "CONCAT_WS(' ', u.firstname, u.lastname)"
+                ),
+                'manager_name' => new \Laminas\Db\Sql\Expression(
+                    "CONCAT_WS(' ', m.firstname, m.lastname)"
+                ),
+            ]
+        );
+        if (null !== $formName) {
+            $select->where->equalTo('form_name', $formName);
+        }
+        if (null !== $siteUrl) {
+            $select->where->equalTo('site_url', $siteUrl);
+        }
+        if (null !== $status) {
+            $select->where->equalTo('status', $status);
+        }
+        $select->join(['u' => 'user'], 'u.id = feedback.user_id', [], 'left')
+            ->join(['m' => 'user'], 'm.id = feedback.updated_by', [], 'left')
+            ->order('created DESC');
+
+        if (null !== $page) {
+            $select->limit($limit);
+            $select->offset($limit * ($page - 1));
+        }
+        $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($select, $sql);
+        $paginator = new \Laminas\Paginator\Paginator($adapter);
+        $paginator->setItemCountPerPage($limit);
+        if (null !== $page) {
+            $paginator->setCurrentPageNumber($page);
+        }
+        return $paginator;
+    }
+
+    /**
+     * Delete feedback by ids
+     *
+     * @param array $ids IDs
+     *
+     * @return int Count of deleted rows
+     */
+    public function deleteByIdArray(array $ids): int
+    {
+        // Do nothing if we have no IDs to delete!
+        if (empty($ids)) {
+            return 0;
+        }
+        $callback = function ($select) use ($ids) {
+            $select->where->in('id', $ids);
+        };
+        return $this->delete($callback);
+    }
+
+    /**
+     * Get available feedback statuses
+     *
+     * @return array
+     */
+    public function getStatuses(): array
+    {
+        return [
+            'open',
+            'in progress',
+            'pending',
+            'answered',
+            'closed',
+        ];
     }
 }
