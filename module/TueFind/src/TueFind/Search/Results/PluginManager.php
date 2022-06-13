@@ -18,9 +18,10 @@ class PluginManager extends \VuFind\Search\Results\PluginManager {
         $this->aliases['solr'] = \TueFind\Search\Solr\Results::class;
         $this->aliases['solrauth'] = \TueFind\Search\SolrAuth\Results::class;
         $this->aliases['solrauthorfacets'] = \TueFind\Search\SolrAuthorFacets\Results::class;
-        $this->aliases['search2'] = \TueFind\Search\Search2\Results::class;
+        $this->aliases['search3'] = \TueFind\Search\Search3\Results::class;
         $this->factories[\TueFind\Search\Solr\Results::class] = \VuFind\Search\Solr\ResultsFactory::class;
         $this->factories[\TueFind\Search\SolrAuth\Results::class] = \VuFind\Search\Solr\ResultsFactory::class;
         $this->factories[\TueFind\Search\SolrAuthorFacets\Results::class] = \VuFind\Search\Solr\ResultsFactory::class;
+        $this->factories[\TueFind\Search\Search3\Results::class] = \TueFind\Search\Search3\ResultsFactory::class;
     }
 }

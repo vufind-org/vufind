@@ -210,6 +210,8 @@ $config = [
             'TueFind\Controller\RedirectController' => 'TueFind\Controller\RedirectControllerFactory',
             'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\Search2recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\Search3recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\Search3Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'initializers' => [
@@ -243,6 +245,10 @@ $config = [
             'rssfeed' => 'TueFind\Controller\RssFeedController',
             'search2record' => 'TueFind\Controller\Search2recordController',
             'Search2Record' => 'TueFind\Controller\Search2recordController',
+            'search3record' => 'TueFind\Controller\Search3recordController',
+            'Search3Record' => 'TueFind\Controller\Search3recordController',
+            'Search3' => 'TueFind\Controller\Search3Controller',
+            'search3' => 'TueFind\Controller\Search3Controller',
             'WikidataProxy' => 'TueFind\Controller\WikidataProxyController',
             'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],
@@ -339,7 +345,7 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
+$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full', 'Search3/Home', 'Search3/Results'];
 
 $routeGenerator = new \TueFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
