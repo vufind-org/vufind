@@ -71,7 +71,8 @@ class Database implements HandlerInterface
     /**
      * Gets data from submitted form and process them.
      * Returns array with keys: (bool) success - mandatory, (string) errorMessages,
-     * (string) successMessage
+     * (string) successMessage, (string) errorMessagesDetailed - used to log an
+     * error
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
@@ -99,14 +100,27 @@ class Database implements HandlerInterface
                 'site_url' => $this->baseUrl,
             ]
         );
-        $saved = $row->save();
+        try {
+            $saved = $row->save();
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'errorMessages' => [
+                    'Could not save your feedback data.'
+                ],
+                'errorMessagesDetailed' => [
+                    'Could not save your feedback data: ' . $e->getMessage()
+                ],
+            ];
+        }
 
         if ($saved) {
             return ['success' => true];
         }
         return [
             'success' => false,
-            'errorMessages' => ['Could not save your Feedback'],
+            'errorMessages' => ['Could not save your feedback data.'],
+            'errorMessagesDetailed' => ['Could not save your feedback data.'],
         ];
     }
 }

@@ -13,8 +13,10 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Model\ViewModel;
 use VuFind\Form\Form;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Controller for configurable forms (feedback etc).
@@ -26,8 +28,10 @@ use VuFind\Form\Form;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FeedbackController extends AbstractBase
+class FeedbackController extends AbstractBase implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Feedback form class
      *
@@ -98,7 +102,7 @@ class FeedbackController extends AbstractBase
         $results = [];
         $success = false;
         foreach ($handlers as $handler) {
-            $result = $handler->handle($form, $params, $user ? $user : null);
+            $result = $handler->handle($form, $params, $user ?: null);
             $success = $success || ($result['success'] ?? false);
             $results[] = $result;
         }
@@ -108,6 +112,7 @@ class FeedbackController extends AbstractBase
         }
         $successMessages = [];
         $errorMessages = [];
+        $errorMessagesDetailed = [];
         foreach ($results as $result) {
             $successMessages[]
                 = $result['successMessage'] ?? $form->getSubmitResponse();
@@ -115,12 +120,20 @@ class FeedbackController extends AbstractBase
                 $errorMessages,
                 $result['errorMessages'] ?? []
             );
+            $errorMessagesDetailed = array_merge(
+                $errorMessagesDetailed,
+                $result['errorMessagesDetailed'] ?? []
+            );
         }
         $view->successMessages = array_unique($successMessages);
         foreach ($errorMessages as $error) {
-            $this->flashMessenger()->addErrorMessage($error);
+            $this->flashMessenger()->addErrorMessage($this->translate($error));
         }
-
+        foreach ($errorMessagesDetailed as $error) {
+            $this->logError(
+                'Error processing form data for ' . "'$formId'" . ': ' . $error
+            );
+        }
         return $view;
     }
 

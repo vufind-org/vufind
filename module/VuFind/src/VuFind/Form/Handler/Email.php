@@ -88,7 +88,8 @@ class Email implements HandlerInterface
     /**
      * Gets data from submitted form and process them.
      * Returns array with keys: (bool) success - mandatory, (string) errorMessages,
-     * (string) successMessage
+     * (string) successMessage, (string) errorMessagesDetailed - used to log an
+     * error
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
@@ -121,7 +122,8 @@ class Email implements HandlerInterface
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
         $sendSuccess = true;
-        $errors = [];
+        $errorsDetailed = [];
+        $success = false;
         foreach ($recipients as $recipient) {
             [$success, $errorMsg] = $this->sendEmail(
                 $recipient['name'],
@@ -136,12 +138,14 @@ class Email implements HandlerInterface
 
             $sendSuccess = $sendSuccess && $success;
             if (!$success) {
-                $errors[]  = $errorMsg;
+                $errorsDetailed[]  = $errorMsg;
             }
         }
         return [
             'success' => $success,
-            'errorMessages' => $errors,
+            'errorMessagesDetailed' => $errorsDetailed,
+            'errorMessages'
+                => $success ? [] : ['Could not send e-mail with your feedback.'],
         ];
     }
 
@@ -186,7 +190,7 @@ class Email implements HandlerInterface
         $replyToEmail,
         $emailSubject,
         $emailMessage
-    ) {
+    ): array {
         try {
             $this->mailer->send(
                 new Address($recipientEmail, $recipientName),

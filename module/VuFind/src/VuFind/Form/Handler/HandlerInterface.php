@@ -43,7 +43,8 @@ interface HandlerInterface
     /**
      * Gets data from submitted form and process them.
      * Returns array with keys: (bool) success - mandatory, (string) errorMessages,
-     * (string) successMessage
+     * (string) successMessage, (string) errorMessagesDetailed - used to log an
+     * error
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
