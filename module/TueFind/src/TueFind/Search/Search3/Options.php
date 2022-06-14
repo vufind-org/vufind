@@ -2,7 +2,7 @@
 
 namespace TueFind\Search\Search3;
 
-class Options extends \TueFind\Search\Search2\Options
+class Options extends \VuFind\Search\Solr\Options
 {
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
@@ -27,4 +27,8 @@ class Options extends \TueFind\Search\Search2\Options
     }
 
 
+    public function getFacetListAction()
+    {
+        return 'search3-facetlist';
+    }
 }

@@ -345,7 +345,7 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full', 'Search3/Home', 'Search3/Results'];
+$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full', 'Search3/Home', 'Search3/Results',  'Search3/FacetList', 'Search3/Versions'];
 
 $routeGenerator = new \TueFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
