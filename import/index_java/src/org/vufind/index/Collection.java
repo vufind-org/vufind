@@ -1,7 +1,14 @@
 /**
-*THIS CODE IS DESIGNED TO WORK WITH VTLS VIRTUA
-*/
-package org.nli.index;
+ * Hierarchical collections indexing routines.
+ *
+ * This code is designed to iterate through the 773 subfield to identify whether
+ * a record is a collection level record or part of a collection.
+ *
+ * code adapted by Owen-Fitz - National Library of Ireland
+ *
+ * Copyright (C) Villanova University 2017.
+ */
+package org.vufind.index;
 
 import org.solrmarc.index.SolrIndexer;
 import org.marc4j.marc.*;
@@ -38,11 +45,13 @@ import java.util.Calendar;
 import java.net.URL;
 import java.text.DecimalFormat;
 
-public class NliCollection
+public class Collection
 {
 
     // Initialize logging category
-    static Logger logger = Logger.getLogger(NliCollection.class.getName());
+    static Logger logger = Logger.getLogger(Collection.class.getName());
+    static String ils_prefix;
+    static Map<String, String> catalog_driver = ConfigManager.instance().getConfigSection("config.ini", "Catalog");
 
      /**
        * Determine the type of hierarcy
@@ -52,6 +61,8 @@ public class NliCollection
        */
 
        public String getHierarchyType(Record record) {
+
+          ils_prefix = catalog_driver.get("ils_prefix") != null ? catalog_driver.get("ils_prefix") : "";
 
           // Check 999 subfield a for "Ancestry":
           List fields = record.getVariableFields("999");
@@ -109,7 +120,7 @@ public class NliCollection
        }
 
         /**
-         * Determine the parent node
+         * Determine the ID of parent node
          *
          * @param  Record          record
          * @return Set   Parent IDs or null
@@ -141,7 +152,7 @@ public class NliCollection
         }
 
         /**
-         * Determine the parent node
+         * Determine the title of parent node
          *
          * @param  Record          record
          * @return Set   Parent Names or null
@@ -278,7 +289,7 @@ public class NliCollection
     			        if (info.contains("is collection")) {
         				    if (subfieldswIter.hasNext()) {
         				        temp  = (Subfield) subfieldswIter.next();
-                                id = getValidVtlsNumber(temp.getData());
+                                id = getValidIlsNumber(temp.getData());
                                 return id;
         				    }
                         }
@@ -290,15 +301,15 @@ public class NliCollection
     }
 
     /**
-     * Modify the 773w field into a valid vtls number
+     * Modify the 773w field into a valid ILS number
      *
      * @param  String          record
-     * @return String          vtls  or null
+     * @return String          ILS number  or null
      */
-    public String getValidVtlsNumber(String record) {
+    public String getValidIlsNumber(String record) {
 
-        // Remove vtls number and fullstops from the string
-        String tmpID = record.replaceAll("vtls","").replaceAll("\\.", " ").replaceAll("\\(", "").replaceAll("\\)", "").toLowerCase();
+        // Remove ILS number and fullstops from the string
+        String tmpID = record.replaceAll(ils_prefix,"").replaceAll("\\.", " ").replaceAll("\\(", "").replaceAll("\\)", "").toLowerCase();
 
         // These are the variations of ID's that we will allow for (IeDuNL)
         String[] allowableIds = {"iedunl", "ledunl", "iedubnl", "ledubnl", "iedunli", "ledunli", "edunl"};
@@ -311,7 +322,7 @@ public class NliCollection
 
         if (isAValidNumber(tmpID)){
             tmpID = "000000000".substring(tmpID.length()) + tmpID;
-            tmpID = "vtls" + tmpID;
+            tmpID = ils_prefix + tmpID;
             return tmpID;
         } else {
             return null;
@@ -446,7 +457,7 @@ public class NliCollection
                         value = temp.getData().replace("A","").trim();
                         tmpID = "000000000".substring(value.length()) + value;
                         if (info.contains("ancestry")) {
-                        	id =  "vtls" + tmpID;
+                        	id =  ils_prefix + tmpID;
                         	result.add(id);
                         }
                     }
@@ -489,7 +500,7 @@ public class NliCollection
         			    if (info.contains("in collection")) {
             				if (subfieldswIter.hasNext()) {
             				    temp  = (Subfield) subfieldswIter.next();
-                                id =  getValidVtlsNumber(temp.getData());
+                                id =  getValidIlsNumber(temp.getData());
                             	result.add(id);
             				}
                 	    }
@@ -497,7 +508,7 @@ public class NliCollection
             			if (info.contains("is collection")) {
             				if (subfieldswIter.hasNext()) {
             				    temp  = (Subfield) subfieldswIter.next();
-                                id = getValidVtlsNumber(temp.getData());
+                                id = getValidIlsNumber(temp.getData());
                             	result.add(id);
             				}
                     	}
@@ -534,7 +545,7 @@ public class NliCollection
                         value = temp.getData().replace("A","").trim();
                         tmpID = "000000000".substring(value.length()) + value;
                         if (info.contains("ancestry")) {
-                        	id =  "vtls" + tmpID;
+                        	id =  ils_prefix + tmpID;
                         	result.add(id);
                         }
                     }
@@ -587,10 +598,10 @@ public class NliCollection
                         title = title.replaceAll("[,.]$", "");
                         temp  = (Subfield) subfieldswIter.next();
                         unformatted_id = temp.getData();
-                    	id = getValidVtlsNumber(unformatted_id);
-                        // if record doesn't have a valid vtls, don't display it
+                    	id = getValidIlsNumber(unformatted_id);
+                        // if record doesn't have a valid ILS prefix, don't display it
                         if (id == null) {
-                            logger.error("While building collection: Expected valid vtls in 773w, got " + unformatted_id);
+                            logger.error("While building collection: Expected valid " + ils_prefix + " in 773w, got " + unformatted_id);
                          } else {
                             String idTitlePair = title + "{{{_ID_}}}" + id;
                             if (info.contains("in collection")) {
@@ -636,7 +647,7 @@ public class NliCollection
                         temp  = (Subfield) subfieldskIter.next();
                         value = temp.getData().replace("A","").trim();;
                         tmpID = "000000000".substring(value.length()) + value;
-                        id =  "vtls" + tmpID;
+                        id =  ils_prefix + tmpID;
                         String idTitlePair = id + "{{{_ID_}}}" + id;
                         if (info.contains("ancestry")) {
                         	result.add(idTitlePair);
