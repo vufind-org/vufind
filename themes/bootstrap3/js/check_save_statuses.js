@@ -4,33 +4,19 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   function displaySaveStatus(itemLists, el) {
     const $item = $(el);
 
-    // No matter what, clear the flag that we have a pending save:
-    $item.removeClass("js-save-pending");
-
-    if (itemLists.length === 0) {
+    if (itemLists.length > 0) {
+      // If we got lists back, display them!
+      var html = '<ul>' + itemLists.map(function convertToLi(l) {
+        return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
+      }).join('') + '</ul>';
+      $item.find('.savedLists').addClass('loaded');
+      $item.find('.js-load').replaceWith(html);
+    } else {
       // If we got nothing back, remove the pending status:
-      $item.find(".js-load").remove();
-
-      return;
+      $item.find('.js-load').remove();
     }
-
-    // If we got lists back, display them!
-    const html =
-      '<ul class="savedLists__ul">' +
-      itemLists
-        .map(function convertToLi(l) {
-          return (
-            '<li><a href="' +
-            l.list_url +
-            '">' +
-            htmlEncode(l.list_title) +
-            "</a></li>"
-          );
-        })
-        .join("") +
-      "</ul>";
-    $item.find(".savedLists").addClass("loaded");
-    $item.find(".js-load").replaceWith(html);
+    // No matter what, clear the flag that we have a pending save:
+    $item.removeClass('js-save-pending');
   }
 
   function checkSaveStatusSuccess(items, response) {

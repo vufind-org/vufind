@@ -24,32 +24,23 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   function displayItemStatus(result, el) {
     const $item = $(el); // todo: remove jQuery
 
-    $item.addClass("js-item-done").removeClass("js-item-pending");
-    $item.find(".status").empty().append(result.availability_message);
-    $item.find(".ajax-availability").removeClass("ajax-availability hidden");
-    if (typeof result.error != "undefined" && result.error.length > 0) {
-      $item
-        .find(".callnumAndLocation")
-        .empty()
-        .addClass("text-danger")
-        .append(result.error);
-      $item.find(".callnumber,.hideIfDetailed,.location").addClass("hidden");
-    } else if (
-      typeof result.full_status != "undefined" &&
-      result.full_status.length > 0 &&
-      $item.find(".callnumAndLocation").length > 0
+    $item.addClass('js-item-done').removeClass('js-item-pending');
+    $item.find('.status').empty().append(result.availability_message);
+    $item.find('.ajax-availability').removeClass('ajax-availability hidden');
+    if (typeof(result.error) != 'undefined'
+          && result.error.length > 0
+    ) {
+      $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
+      $item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
+    } else if (typeof(result.full_status) != 'undefined'
+          && result.full_status.length > 0
+          && $item.find('.callnumAndLocation').length > 0
     ) {
       // Full status mode is on -- display the HTML and hide extraneous junk:
-      $item
-        .find(".callnumAndLocation")
-        .empty()
-        .append(VuFind.updateCspNonce(result.full_status));
-      $item
-        .find(".callnumber,.hideIfDetailed,.location,.status")
-        .addClass("hidden");
-    } else if (
-      typeof result.missing_data !== "undefined" &&
-      result.missing_data
+      $item.find('.callnumAndLocation').empty().append(VuFind.updateCspNonce(result.full_status));
+      $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
+    } else if (typeof(result.missing_data) !== 'undefined'
+          && result.missing_data
     ) {
       // No data is available -- hide the entire status area:
       $item.find('.callnumAndLocation,.status').addClass('hidden');
@@ -60,27 +51,18 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       for (var x = 0; x < result.locationList.length; x++) {
         locationListHTML += '<div class="groupLocation">';
         if (result.locationList[x].availability) {
-          locationListHTML +=
-            '<span class="text-success">' +
-              VuFind.icon("ui-success") + " " +
-              result.locationList[x].location +
-            '</span> ';
+          locationListHTML += '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> '
+                      + result.locationList[x].location + '</span> ';
         } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
                   && result.locationList[x].status_unknown
         ) {
           if (result.locationList[x].location) {
-            locationListHTML +=
-              '<span class="text-warning">' +
-                VuFind.icon("status-indicator") + " " +
-                result.locationList[x].location +
-              '</span> ';
+            locationListHTML += '<span class="text-warning"><i class="fa fa-status-unknown" aria-hidden="true"></i> '
+                          + result.locationList[x].location + '</span> ';
           }
         } else {
-          locationListHTML +=
-            '<span class="text-danger">' +
-              VuFind.icon('ui-failure') + " " +
-              result.locationList[x].location +
-            '</span> ';
+          locationListHTML += '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> '
+                      + result.locationList[x].location + '</span> ';
         }
         locationListHTML += '</div>';
         locationListHTML += '<div class="groupCallnumber">';
