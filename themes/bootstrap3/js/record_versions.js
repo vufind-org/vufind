@@ -35,7 +35,9 @@ VuFind.register("recordVersions", function recordVersions() {
     failure: checkVersionStatusFailure,
   });
 
-  function checkRecordVersions(container = document) {
+  function checkRecordVersions(_container = document) {
+    const container = $(_container);
+
     const elements =
       container.hasClass("record-versions") && container.hasClass("ajax")
         ? container
@@ -64,7 +66,9 @@ VuFind.register("recordVersions", function recordVersions() {
     });
   }
 
-  function init(container = document) {
+  function init($container = document) {
+    const container = $container instanceof Node ? $container : $container[0];
+
     if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkRecordVersions(container);
     } else {

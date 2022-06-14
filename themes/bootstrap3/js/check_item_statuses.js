@@ -193,10 +193,11 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     el.classList.add("js-item-pending");
     el.classList.remove("hidden");
     el.querySelector(".callnumAndLocation").classList.remove("hidden");
-    el.querySelector(".callnumAndLocation .ajax-availability").classList.remove(
-      "hidden"
-    );
-    el.querySelector(".status").classList.remove("hidden");
+    el.querySelector(".callnumAndLocation .ajax-availability").classList.remove("hidden");
+    const statusEl = el.querySelector(".status");
+    if (statusEl) {
+      statusEl.classList.remove("hidden");
+    }
 
     //queue the element into the queue
     checkItemHandlers[handlerName].add({ el, id: hiddenIdEl.value });
@@ -206,7 +207,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     container.querySelectorAll(".ajaxItem").forEach(checkItemStatus);
   }
 
-  function init(container = document) {
+  function init($container = document) {
+    const container = $container instanceof Node ? $container : $container[0];
+
     if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkAllItemStatuses(container);
     } else {

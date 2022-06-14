@@ -130,7 +130,9 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     checkAllSaveStatuses();
   }
 
-  function init(container = document) {
+  function init($container = document) {
+    const container = $container instanceof Node ? $container : $container[0];
+
     if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
       checkAllSaveStatuses(container);
     } else {
