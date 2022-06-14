@@ -98,42 +98,44 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             return $view;
         }
 
-        $handlers = $form->getHandlers();
-        $results = [];
-        $success = false;
-        foreach ($handlers as $handler) {
-            $result = $handler->handle($form, $params, $user ?: null);
-            $success = $success || ($result['success'] ?? false);
-            $results[] = $result;
-        }
-
+        $primaryHandler = $form->getPrimaryHandler();
+        $result = $primaryHandler->handle($form, $params, $user ?: null);
+        $success = $result['success'] ?? false;
         if ($success) {
+            $view->setVariable(
+                'successMessage',
+                $result['successMessage'] ?? $form->getSubmitResponse()
+            );
             $view->setTemplate('feedback/response');
         }
-        $successMessages = [];
-        $errorMessages = [];
-        $errorMessagesDetailed = [];
-        foreach ($results as $result) {
-            $successMessages[]
-                = $result['successMessage'] ?? $form->getSubmitResponse();
-            $errorMessages = array_merge(
-                $errorMessages,
-                $result['errorMessages'] ?? []
-            );
-            $errorMessagesDetailed = array_merge(
-                $errorMessagesDetailed,
-                $result['errorMessagesDetailed'] ?? []
-            );
-        }
-        $view->successMessages = array_unique($successMessages);
-        foreach ($errorMessages as $error) {
+        foreach ($result['errorMessages'] ?? [] as $error) {
             $this->flashMessenger()->addErrorMessage($this->translate($error));
         }
-        foreach ($errorMessagesDetailed as $error) {
+        foreach ($result['errorMessagesDetailed'] ?? [] as $error) {
             $this->logError(
-                'Error processing form data for ' . "'$formId'" . ': ' . $error
+                'Error processing form data for ' . "'$formId'"
+                . ' with primary handler: ' . $error
             );
         }
+
+        $handlers = $form->getSecondaryHandlers();
+        $results = [];
+        foreach ($handlers as $name => $handler) {
+            $result = $handler->handle($form, $params, $user ?: null);
+            $results[$name] = $result;
+        }
+
+        foreach ($results as $handlerName => $result) {
+            $errors
+                = $result['errorMessagesDetailed'] ?? $result['errorMessages'] ?? [];
+            foreach ($errors as $error) {
+                $this->logError(
+                    'Error processing form data for ' . "'$formId'" .
+                    ' with handler ' . "'$handlerName'" . ': ' . $error
+                );
+            }
+        }
+
         return $view;
     }
 

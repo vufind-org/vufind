@@ -36,6 +36,7 @@ use Laminas\Validator\Identical;
 use Laminas\Validator\NotEmpty;
 use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
+use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Form\Handler\PluginManager as HandlerManager;
 
 /**
@@ -865,7 +866,8 @@ class Form extends \Laminas\Form\Form implements
             'submit',
             'title',
             'useCaptcha',
-            'handler',
+            'primaryHandler',
+            'secondaryHandlers',
         ];
     }
 
@@ -1103,19 +1105,27 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get form handlers
+     * Get primary form handler
      *
-     * @return array
+     * @return HandlerInterface
      */
-    public function getHandlers(): array
+    public function getPrimaryHandler(): HandlerInterface
     {
-        $handlerNames = (array)($this->formConfig['handler'] ?? []);
-        if (empty($handlerNames)) {
-            $handlerNames = ['email'];
-        }
+        $handlerName = ($this->formConfig['primaryHandler'] ?? 'email');
+        return $this->handlerManager->get($handlerName);
+    }
+
+    /**
+     * Get secondary form handlers
+     *
+     * @return HandlerInterface[]
+     */
+    public function getSecondaryHandlers(): array
+    {
+        $handlerNames = (array)($this->formConfig['secondaryHandlers'] ?? []);
         $handlers = [];
         foreach ($handlerNames as $handlerName) {
-            $handlers[] = $this->handlerManager->get($handlerName);
+            $handlers[$handlerName] = $this->handlerManager->get($handlerName);
         }
         return $handlers;
     }
