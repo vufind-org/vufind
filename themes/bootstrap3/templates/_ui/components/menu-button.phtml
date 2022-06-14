@@ -1,6 +1,6 @@
 <?php
   $wrapperTag = $this->wrapperTag ?? 'li';
-  $wrapperClass = $this->wrapperClass ?? 'li';
+  $wrapperClass = $this->wrapperClass ?? false;
 
   $toggleTag = $this->toggleTag ?? 'button';
   $toggleAttrs = $this->toggleAttrs ?? [];
@@ -8,7 +8,9 @@
   $href = $this->href ?? $toggleTag == 'button' ? null : '#';
 ?>
 
-<<?=$wrapperTag ?> class="<?=$wrapperClass ?> dropdown">
+<<?=$wrapperTag ?>
+  class="<?=$wrapperClass ? $this->escapeHtmlAttr($wrapperClass) . ' ' : '' ?>dropdown"
+>
   <<?=$toggleTag ?>
     class="dropdown-toggle"
     data-toggle="dropdown"
