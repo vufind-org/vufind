@@ -412,6 +412,8 @@ var TueFind = {
         }, 'fast');
         let searchForm_fulltext = $('#searchForm_fulltext');
         searchForm_fulltext.val(fulltextquery);
+        let searchForm_fulltext_scope = $('#itemFTSearchScope');
+        searchForm_fulltext_scope.val(fulltextscope);
     },
 
     WildcardHandler : function(query_text) {

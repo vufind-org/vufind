@@ -19,7 +19,7 @@
     <br/>
   <?php endforeach; ?>
 <?php elseif (!empty($this->driver->getSuperiorFrom773a())): ?>
-  <?=$this->driver->getSuperiorFrom773a();?>
+  <?=$this->driver->getSuperiorFrom773a()[0];?>
   <br/>
 <?php endif; ?>
 <?=implode(', ', $infos);?>

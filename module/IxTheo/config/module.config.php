@@ -100,6 +100,7 @@ $recordRoutes = [
     // for the nonTabRecordActions added in \IxTheo\Route\RouteGenerator
     'record' => 'Record',
     'search2record' => 'Search2Record',
+    'search3record' => 'Search3Record',
 ];
 $dynamicRoutes = [];
 $staticRoutes = [
