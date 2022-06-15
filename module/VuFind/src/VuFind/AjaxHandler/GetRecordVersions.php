@@ -91,7 +91,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
      * @param string $id     Record id
      * @param string $source Record source
      *
-     * @return array [response data, HTTP status code]
+     * @return string
      */
     protected function getVersionsForRecord($id, $source)
     {
@@ -119,7 +119,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         $id = $params->fromPost('id') ?: $params->fromQuery('id');
         $source = $params->fromPost('source') ?: $params->fromQuery('source');
 
-        if (gettype($id) != 'array') {
+        if (!is_array($id)) {
             return $this->formatResponse($this->getVersionsForRecord($id, $source));
         }
 
