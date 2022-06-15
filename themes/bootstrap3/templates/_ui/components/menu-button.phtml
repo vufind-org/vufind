@@ -14,7 +14,7 @@
   <<?=$toggleTag ?>
     class="dropdown-toggle"
     data-toggle="dropdown"
-    <?php if ($href): ?>href="<?=$href ?>"<?php endif ?>
+    <?php if ($href): ?>href="<?=$this->escapeHtmlAttr($href) ?>"<?php endif ?>
   >
     <?=$this->transEsc($this->toggleLabel) ?>
     <?=$this->icon('dropdown-caret') ?>
