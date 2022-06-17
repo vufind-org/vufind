@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Solr;
 
+use VuFind\I18n\HasSorterInterface;
+use VuFind\I18n\HasSorterTrait;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -43,9 +45,10 @@ use VuFind\Search\UrlQueryHelper;
  * @link     https://vufind.org Main Site
  */
 class HierarchicalFacetHelper implements HierarchicalFacetHelperInterface,
-    TranslatorAwareInterface
+    TranslatorAwareInterface, HasSorterInterface
 {
     use TranslatorAwareTrait;
+    use HasSorterTrait;
 
     /**
      * Helper method for building hierarchical facets:
@@ -102,7 +105,7 @@ class HierarchicalFacetHelper implements HierarchicalFacetHelperInterface,
                 $bText = $b['displayText'] == $b['value']
                     ? $this->formatDisplayText($b['displayText'])
                     : $b['displayText'];
-                return strcasecmp($aText, $bText);
+                return $this->getSorter()->compare($aText, $bText);
             }
             return $a['level'] == $b['level']
                 ? $b['count'] - $a['count']

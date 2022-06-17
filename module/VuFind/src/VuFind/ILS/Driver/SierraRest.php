@@ -43,7 +43,8 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
-    HttpServiceAwareInterface, LoggerAwareInterface
+    HttpServiceAwareInterface, LoggerAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     public const HOLDINGS_LINE_NUMBER = 40;
 
@@ -53,6 +54,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Driver configuration
@@ -2196,7 +2198,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function statusSortFunction($a, $b)
     {
-        $result = strcmp($a['location'], $b['location']);
+        $result = $this->getSorter()->compare($a['location'], $b['location']);
         if ($result === 0 && $this->sortItemsByEnumChron) {
             $result = strnatcmp($b['number'] ?? '', $a['number'] ?? '');
         }
@@ -2375,7 +2377,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function pickupLocationSortFunction($a, $b)
     {
-        $result = strcmp($a['locationDisplay'], $b['locationDisplay']);
+        $result = $this->getSorter()->compare(
+            $a['locationDisplay'],
+            $b['locationDisplay']
+        );
         if ($result == 0) {
             $result = $a['locationID'] - $b['locationID'];
         }

@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Factory for SierraRest ILS driver.
+ * Class UnicornFactory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Moravian Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,8 +23,8 @@
  *
  * @category VuFind
  * @package  ILS_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Driver;
@@ -33,15 +35,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for SierraRest ILS driver.
+ * Class UnicornFactory
  *
  * @category VuFind
  * @package  ILS_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SierraRestFactory extends DriverWithDateConverterFactory
+class UnicornFactory extends DriverWithDateConverterFactory
 {
     /**
      * Create an object
@@ -62,14 +64,7 @@ class SierraRestFactory extends DriverWithDateConverterFactory
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get(\Laminas\Session\SessionManager::class);
-            return new \Laminas\Session\Container("SierraRest_$namespace", $manager);
-        };
-        $driver = parent::__invoke($container, $requestedName, [$sessionFactory]);
+        $driver = parent::__invoke($container, $requestedName);
         $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $driver;
     }
