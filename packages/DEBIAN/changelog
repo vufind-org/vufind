@@ -1,3 +1,9 @@
+vufind 8.1 distribution; urgency=low
+
+  * VuFind 8.1 release (see http://vufind.org/wiki/changelog for details)
+
+ -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 18 Jul 2022 10:00:00 UTC
+
 vufind 8.0.4 distribution; urgency=low
 
   * VuFind 8.0.4 release (see http://vufind.org/wiki/changelog for details)

@@ -55,21 +55,26 @@ public class FormatCalculator
      * Determine whether a record cannot be a book due to findings in leader
      * and fixed fields (008).
      *
-     * @param char formatCode
+     * @param char recordType
      * @param ControlField marc008
      * @return boolean
      */
     protected boolean definitelyNotBookBasedOnRecordType(char recordType, ControlField marc008) {
         switch (recordType) {
+            // Computer file
             case 'm':
-                // If this is a computer file containing numeric data, it is not a book:
-                if (getTypeOfComputerFile(marc008) == 'a') {
-                    return true;
+                // Check the type of computer file:
+                // If it is 'Document', 'Interactive multimedia', 'Combination',
+                // 'Unknown', 'Other', it could be a book; otherwise, it is not a book:
+                char fileType = get008Value(marc008, 26);
+                if (fileType == 'd' || fileType == 'i' || fileType == 'm' || fileType == 'u' || fileType == 'z') {
+                    return false;
                 }
-                break;
+                return true;
             case 'e':   // Cartographic material
             case 'f':   // Manuscript cartographic material
             case 'g':   // Projected medium
+            case 'i':   // Nonmusical sound recording
             case 'j':   // Musical sound recording
             case 'k':   // 2-D nonprojectable graphic
             case 'r':   // 3-D artifact or naturally occurring object
@@ -114,15 +119,17 @@ public class FormatCalculator
                         // 856 field would be labeled as "Electronic"
                         return "";
                 }
-                return "Software";
+                return "ElectronicResource";
             case 'd':
                 return "Globe";
             case 'f':
                 return "Braille";
             case 'g':
                 switch(formatCode2) {
-                    case 'c':
-                    case 'd':
+                    case 'c': // Filmstrip cartridge
+                    case 'd': // Filmslip
+                    case 'f': // Filmstrip, type unspecified
+                    case 'o': // Filmstrip roll
                         return "Filmstrip";
                     case 't':
                         return "Transparency";
@@ -138,18 +145,24 @@ public class FormatCalculator
                         return "Drawing";
                     case 'e':
                         return "Painting";
-                    case 'f':
+                    case 'f': // Photomechanical print
                         return "Print";
                     case 'g':
                         return "Photonegative";
                     case 'j':
                         return "Print";
+                    case 'k':
+                        return "Poster";
                     case 'l':
                         return "Drawing";
-                    case 'o':
-                        return "FlashCard";
                     case 'n':
                         return "Chart";
+                    case 'o':
+                        return "FlashCard";
+                    case 'p':
+                        return "Postcard";
+                    case 's': // Study print
+                        return "Print";
                 }
                 return "Photo";
             case 'm':
@@ -198,47 +211,76 @@ public class FormatCalculator
      * blank string for ambiguous/irrelevant results.
      *
      * @param Record record
+     * @param char recordType
      * @param char bibLevel
-     * @param char formatCode
      * @param ControlField marc008
      * @param boolean couldBeBook
+     * @param List formatCodes007
      * @return String
      */
-    protected String getFormatFromBibLevel(Record record, char bibLevel, char formatCode, ControlField marc008, boolean couldBeBook) {
+    protected String getFormatFromBibLevel(Record record, char recordType, char bibLevel, ControlField marc008, boolean couldBeBook, List formatCodes007) {
         switch (bibLevel) {
-            // Monograph
-            case 'm':
-                if (couldBeBook) {
-                    return (formatCode == 'c') ? "eBook" : "Book";
-                }
-                break;
             // Component parts
             case 'a':
                 return (hasSerialHost(record)) ? "Article" : "BookComponentPart";
             case 'b':
                 return "SerialComponentPart";
+            // Collection and sub-unit will be mapped to 'Kit' below if no other
+            // format can be found. For now return an empty string here.
+            case 'c': // Collection
+            case 'd': // Sub-unit
+                return "";
             // Integrating resources (e.g. loose-leaf binders, databases)
             case 'i':
-                if (formatCode == 'c') {
-                    // Look in 008 to determine type of electronic IntegratingResource
-                    if (marc008 != null) {
-                        switch (marc008.getData().toLowerCase().charAt(21)) {
-                            case 'h':
-                            case 'w':
-                                return "Website";
+                // Look in 008 to determine type of electronic IntegratingResource
+                // Check 008/21 Type of continuing resource
+                // Make sure we have the applicable LDR/06: Language Material
+                if (recordType == 'a') {
+                    switch (get008Value(marc008, 21)) {
+                        case 'h': // Blog
+                        case 'w': // Updating Web site
+                            return "Website";
+                        default: break;
+                    }
+                    // Check 008/22 Form of original item
+                    switch (get008Value(marc008, 22)) {
+                        case 'o': // Online
+                        case 'q': // Direct electronic
+                        case 's': // Electronic
+                            return "OnlineIntegratingResource";
+                        default: break;
+                    }
+                }
+                return "PhysicalIntegratingResource";
+            // Monograph
+            case 'm':
+                if (couldBeBook) {
+                    // Check 008/23 Form of item
+                    // Make sure we have the applicable LDR/06: Language Material; Manuscript Language Material;
+                    if (recordType == 'a' || recordType == 't') {
+                        switch (get008Value(marc008, 23)) {
+                            case 'o': // Online
+                            case 'q': // Direct electronic
+                            case 's': // Electronic
+                                return "eBook";
                             default: break;
                         }
+                    } else if (recordType == 'm') {
+                        // If we made it here and it is a Computer file, set to eBook
+                        // Note: specific types of Computer file, e.g. Video Game, have
+                        // already been excluded in definitelyNotBookBasedOnRecordType()
+                        return "eBook";
                     }
-                    // Default to "OnlineIntegratingResource" even if 008 is missing
-                    return "OnlineIntegratingResource";
-                } else {
-                    return "PhysicalIntegratingResource";
+                    // If we made it here, it should be Book
+                    return "Book";
                 }
+                break;
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
-                if (marc008 != null) {
-                    switch (marc008.getData().toLowerCase().charAt(21)) {
+                // Make sure we have the applicable LDR/06: Language Material
+                if (recordType == 'a') {
+                    switch (get008Value(marc008, 21)) {
                         case 'n':
                             return "Newspaper";
                         case 'p':
@@ -261,26 +303,111 @@ public class FormatCalculator
      *
      * @param Record record
      * @param char recordType
+     * @param ControlField marc008
+     * @param List formatCodes007
      * @return String
      */
-    protected String getFormatFromRecordType(Record record, char recordType) {
+    protected String getFormatFromRecordType(Record record, char recordType, ControlField marc008, List formatCodes007) {
         switch (recordType) {
+            // Language material is mapped to 'Text' below if no other
+            // format can be found. For now return an empty string here.
+            case 'a':
+                return "";
             case 'c':
             case 'd':
                 return "MusicalScore";
             case 'e':
             case 'f':
+                // Check 008/25 Type of cartographic material
+                switch (get008Value(marc008, 25)) {
+                    case 'd':
+                        return "Globe";
+                    case 'e':
+                        return "Atlas";
+                    default: break;
+                }
                 return "Map";
             case 'g':
-                // We're going to rely on the 007 instead for Projected Media
-                //return "Slide";
-                return "";
+                // Check 008/33 Type of visual material
+                switch (get008Value(marc008, 33)) {
+                    case 'f':
+                        return "Filmstrip";
+                    case 't':
+                        return "Transparency";
+                    case 'm':
+                        return "MotionPicture";
+                    case 'v': // Videorecording
+                        return "Video";
+                    default: break;
+                }
+                // Check 008/34 Technique
+                // If set, this is a video rather than a slide
+                switch (get008Value(marc008, 34)) {
+                    case 'a': // Animation
+                    case 'c': // Animation and live action
+                    case 'l': // Live action
+                    case 'u': // Unknown
+                    case 'z': // Other
+                        return "Video";
+                    default: break;
+                }
+                // Insufficient info in LDR and 008 to distinguish still from moving images
+                // If there is a 007 for either "Projected Graphic", "Motion Picture", or "Videorecording"
+                // that should contain more information, so return nothing here.
+                // If no such 007 exists, fall back to "ProjectedMedium"
+                if (formatCodes007.contains('g') || formatCodes007.contains('m') || formatCodes007.contains('v')) {
+                    return "";
+                }
+                return "ProjectedMedium";
             case 'i':
                 return "SoundRecording";
             case 'j':
                 return "MusicRecording";
             case 'k':
-                return "Photo";
+                // Check 008/33 Type of visual material
+                switch (get008Value(marc008, 33)) {
+                    case 'l': // Technical drawing
+                        return "Drawing";
+                    case 'n':
+                        return "Chart";
+                    case 'o':
+                        return "FlashCard";
+                    default: break;
+                }
+                // Insufficient info in LDR and 008 to distinguish image types
+                // If there is a 007 for Nonprojected Graphic, it should have more info, so return nothing here.
+                // If there is no 007 for Nonprojected Graphic, fall back to "Image"
+                return (formatCodes007.contains('k')) ? "" : "Image";
+            // Computer file
+            case 'm':
+                // All computer files return a format of Electronic in isElectronic()
+                // Only set more specific formats here
+                // Check 008/26 Type of computer file
+                switch (get008Value(marc008, 26)) {
+                    case 'a': // Numeric data
+                        return "DataSet";
+                    case 'b': // Computer program
+                        return "Software";
+                    case 'c': // Representational
+                        return "Image";
+                    case 'd': // Document
+                        // Document is too vague and often confusing when combined
+                        // with formats derived from elsewhere in the record
+                        break;
+                    case 'e': //Bibliographic data
+                        return "DataSet";
+                    case 'f': // Font
+                        return "Font";
+                    case 'g': // Game
+                        return "VideoGame";
+                    case 'h': // Sound
+                        return "SoundRecording";
+                    case 'i': // Interactive multimedia
+                        return "InteractiveMultimedia";
+                    default: break;
+                }
+                // If we got here, don't return anything
+                break;
             case 'o':
             case 'p':
                 return "Kit";
@@ -296,17 +423,22 @@ public class FormatCalculator
     }
 
     /**
-     * Extract the computer file type from the 008 field
+     * Extract value at a specific position in 008 field
      *
      * @param ControlField marc008
+     * @param int position
      * @return char
      */
-    protected char getTypeOfComputerFile(ControlField marc008) {
-        // Check the 008 for the type of computer file:
+    protected char get008Value(ControlField marc008, int position) {
+        // Check the 008 at desired position:
         try {
-            return marc008.getData().toLowerCase().charAt(26);
+            return marc008.getData().toLowerCase().charAt(position);
         } catch (java.lang.StringIndexOutOfBoundsException e) {
             // ignore errors (leave the string blank if out of bounds)
+            return ' ';
+        } catch (java.lang.NullPointerException e) {
+            // some malformed 008s result in a NullPointerException
+            // ignore errors (leave the string blank)
             return ' ';
         }
     }
@@ -336,9 +468,10 @@ public class FormatCalculator
      * Determine whether a record is electronic in format.
      *
      * @param Record record
+     * @param char recordType
      * @return boolean
      */
-    protected boolean isElectronic(Record record) {
+    protected boolean isElectronic(Record record, char recordType) {
         /* Example from Villanova of how to use holdings locations to detect online status;
          * You can override this method in a subclass if you wish to use this approach.
         List holdingsFields = record.getVariableFields("852");
@@ -360,6 +493,11 @@ public class FormatCalculator
                     return true;
                 }
             }
+        }
+        // Is this a computer file of some sort?
+        // If so it is electronic
+        if (recordType == 'm') {
+            return true;
         }
         return false;
     }
@@ -422,6 +560,8 @@ public class FormatCalculator
         ControlField marc008 = (ControlField) record.getVariableField("008");
         String formatString;
         char formatCode = ' ';
+        char recordType = Character.toLowerCase(leader.charAt(6));
+        char bibLevel = Character.toLowerCase(leader.charAt(7));
 
         // This record could be a book... until we prove otherwise!
         boolean couldBeBook = true;
@@ -433,7 +573,7 @@ public class FormatCalculator
         if (isThesis(record)) {
             result.add("Thesis");
         }
-        if (isElectronic(record)) {
+        if (isElectronic(record, recordType)) {
             result.add("Electronic");
         }
         if (isConferenceProceeding(record)) {
@@ -442,6 +582,7 @@ public class FormatCalculator
 
         // check the 007 - this is a repeating field
         List fields = record.getVariableFields("007");
+        List<Character> formatCodes007 = new ArrayList<Character>();
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;
@@ -449,6 +590,7 @@ public class FormatCalculator
                 formatField = (ControlField) fieldsIter.next();
                 formatString = formatField.getData().toLowerCase();
                 formatCode = formatString.length() > 0 ? formatString.charAt(0) : ' ';
+                formatCodes007.add(formatCode);
                 if (definitelyNotBookBasedOn007(formatCode)) {
                     couldBeBook = false;
                 }
@@ -466,19 +608,17 @@ public class FormatCalculator
         }
 
         // check the Leader at position 6
-        char recordType = Character.toLowerCase(leader.charAt(6));
         if (definitelyNotBookBasedOnRecordType(recordType, marc008)) {
             couldBeBook = false;
         }
-        String formatFromRecordType = getFormatFromRecordType(record, recordType);
+        String formatFromRecordType = getFormatFromRecordType(record, recordType, marc008, formatCodes007);
         if (formatFromRecordType.length() > 0) {
             result.add(formatFromRecordType);
         }
 
         // check the Leader at position 7
-        char bibLevel = Character.toLowerCase(leader.charAt(7));
         String formatFromBibLevel = getFormatFromBibLevel(
-            record, bibLevel, formatCode, marc008, couldBeBook
+            record, recordType, bibLevel, marc008, couldBeBook, formatCodes007
         );
         if (formatFromBibLevel.length() > 0) {
             result.add(formatFromBibLevel);
@@ -486,9 +626,17 @@ public class FormatCalculator
 
         // Nothing worked -- time to set up a value of last resort!
         if (result.isEmpty()) {
-            // If the leader bit indicates a "Collection," treat it as a kit for now;
+            // If LDR/07 indicates a "Collection" or "Sub-Unit," treat it as a kit for now;
             // this is a rare case but helps cut down on the number of unknowns.
-            result.add(bibLevel == 'c' ? "Kit" : "Unknown");
+            if (bibLevel == 'c' || bibLevel == 'd') {
+                result.add("Kit");
+            } else if (recordType == 'a') {
+                // If LDR/06 indicates "Language material," map to "Text";
+                // this helps cut down on the number of unknowns.
+                result.add("Text");
+            } else {
+                result.add("Unknown");
+            }
         }
 
         return result;

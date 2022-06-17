@@ -214,11 +214,8 @@ class DeduplicationListener
     protected function fetchLocalRecords($event)
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $searchConfig = $config->get($this->searchConfig);
         $dataSourceConfig = $config->get($this->dataSourceConfig);
-        $recordSources = !empty($searchConfig->Records->sources)
-            ? explode(',', $searchConfig->Records->sources)
-            : [];
+        $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $command = $event->getParam('command');
         $params = $command->getSearchParameters();
@@ -329,6 +326,24 @@ class DeduplicationListener
             $foundLocalRecord->setLabels($record->getLabels());
             $result->replace($record, $foundLocalRecord);
         }
+    }
+
+    /**
+     * Get currently active record sources.
+     *
+     * @param EventInterface $event Event
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getActiveRecordSources($event): array
+    {
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
+        $searchConfig = $config->get($this->searchConfig);
+        return !empty($searchConfig->Records->sources)
+            ? explode(',', $searchConfig->Records->sources)
+            : [];
     }
 
     /**
