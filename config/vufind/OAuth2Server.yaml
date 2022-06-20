@@ -1,0 +1,108 @@
+# OAuth2 Server Configuration
+#
+# An example for generating the private/public key pair:
+#
+# openssl genrsa -out local/config/vufind/oauth2_private.key 2048
+# openssl rsa -in local/config/vufind/oauth2_private.key -pubout > local/config/vufind/oauth2_public.key
+#
+
+# Authorization server configuration
+Server:
+  # Create keys e.g. as above and point the following setting to it. The paths can be
+  # absolute or relative to the config directory.
+  privateKeyPath: "oauth2_private.key"
+  publicKeyPath: "oauth2_public.key"
+  # Encryption key used to encrypt payloads. Make sure it is random and long enough
+  # (at least 32 characters)
+  encryptionKey: ""
+# Known clients configuration
+Clients:
+  example:
+    # Client name
+    name: Foo Client
+    # Redirect URI
+    redirectUri: "https://oauth-client/auth"
+    # Whether to use PKCE (see https://tools.ietf.org/html/rfc7636 for details). Must
+    # be enabled for non-confidential clients.
+    pkce: true
+    # Whether the client is confidential (as opposed to a public one such as an
+    # in-browser app)
+    isConfidential: false
+    # Hash of a client secret. You can use the following command to get a hash for a
+    # password: php -r 'echo password_hash("secret",  PASSWORD_DEFAULT) . PHP_EOL;'
+    secret: ""
+# Scope configuration. Keys are scope identifiers. Each identifier should include a
+# description (translation key) to be displayed to the user. The ils field should be
+# set to true if the information comes from a user profile in the library system.
+# This allows VuFind to display the library login or card selection form when
+# appropriate.
+Scopes:
+  openid: # openid is a built-in set required for OpenID
+    description: oauth2_scope_openid
+  id:
+    description: oauth2_scope_unique_id
+  name:
+    description: oauth2_scope_full_name
+  given_name:
+    description: oauth2_scope_given_name
+  family_name:
+    description: oauth2_scope_family_name
+  email:
+    description: oauth2_scope_email
+  birthdate:
+    description: oauth2_scope_birthdate
+    ils: true
+  locale:
+    description: oauth2_scope_locale
+  phone:
+    description: oauth2_scope_phone
+  address:
+    description: oauth2_scope_address
+# Claim set configuration. Claim sets map scopes to sets of user attributes.
+# Note that the OpenID Connect specification defines several standard claims
+# (see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims).
+# Note also that some or most of the information may only be available when the user
+# has an active library card.
+ClaimSets:
+  id:
+    - id
+  openid: # openid is a built-in set required for OpenID
+    - name
+    - email
+    - locale
+    - nonce # This is required for OpenID nonce check
+  name:
+    - name
+  given_name:
+    - given_name
+  family_name:
+    - family_name
+  email:
+    - email
+  birthdate:
+    - birthdate
+  locale:
+    - locale
+  phone:
+    - phone
+  address:
+    - address
+# Mappings from claim id to VuFind user or patron profile fields
+ClaimMappings:
+  id: id
+  name: full_name # special field
+  given_name: firstname
+  family_name: lastname
+  email: email
+  birthdate: birthdate
+  locale: last_language
+  phone: phone
+  address: address_json # special field
+# Grants configuration
+Grants:
+  # Life time for an authorization code (should be kept short). Default is 1 minute.
+  authCodeLifeTime: PT1M
+  # Access token life time. Default is 1 hour.
+  accessTokenLifeTime: PT1H
+  # Refresh token life time (should be kept short). Default is 1 minute.
+  refreshTokenLifeTime: PT1M

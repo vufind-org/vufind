@@ -346,3 +346,21 @@ CREATE TABLE `auth_hash` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `access_tokens`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `access_token` (
+  `id` varchar(255) NOT NULL,
+  `type` varchar(128) NOT NULL,
+  `user_id` int(11) NULL,
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `data` mediumtext DEFAULT NULL,
+  `revoked` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`, `type`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `access_token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
