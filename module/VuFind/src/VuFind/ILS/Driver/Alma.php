@@ -823,6 +823,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
             $profile['email'] = $this->getPreferredEmail($xml);
         }
+        $profile['birthdate'] = (string)($xml->birth_date ?? '');
 
         // Cache the user group code
         $cacheId = 'alma|user|' . $patronId . '|group_code';
