@@ -182,7 +182,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     public function authorizeAction()
     {
         if (!($user = $this->getUser())) {
-            return $this->forceLogin('oauth2_login_message');
+            return $this->forceLogin('external_auth_access_login_message');
         }
 
         // Validate the authorization request:

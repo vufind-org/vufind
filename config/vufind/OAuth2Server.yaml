@@ -38,26 +38,28 @@ Clients:
 # appropriate.
 Scopes:
   openid: # openid is a built-in set required for OpenID
-    description: oauth2_scope_openid
+    description: external_auth_scope_openid
   id:
-    description: oauth2_scope_unique_id
+    description: external_auth_scope_unique_id
   name:
-    description: oauth2_scope_full_name
+    description: external_auth_scope_full_name
   given_name:
-    description: oauth2_scope_given_name
+    description: external_auth_scope_given_name
   family_name:
-    description: oauth2_scope_family_name
+    description: external_auth_scope_family_name
   email:
-    description: oauth2_scope_email
+    description: external_auth_scope_email
   birthdate:
-    description: oauth2_scope_birthdate
+    description: external_auth_scope_birthdate
     ils: true
   locale:
-    description: oauth2_scope_locale
+    description: external_auth_scope_locale
   phone:
-    description: oauth2_scope_phone
+    description: external_auth_scope_phone
+    ils: true
   address:
-    description: oauth2_scope_address
+    description: external_auth_scope_address
+    ils: true
 # Claim set configuration. Claim sets map scopes to sets of user attributes.
 # Note that the OpenID Connect specification defines several standard claims
 # (see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims).
@@ -90,14 +92,14 @@ ClaimSets:
 # Mappings from claim id to VuFind user or patron profile fields
 ClaimMappings:
   id: id
-  name: full_name # special field
+  name: full_name # special field created from firstname + ' ' + lastname
   given_name: firstname
   family_name: lastname
   email: email
   birthdate: birthdate
   locale: last_language
   phone: phone
-  address: address_json # special field
+  address: address_json # special field including all address fields
 # Grants configuration
 Grants:
   # Life time for an authorization code (should be kept short). Default is 1 minute.
