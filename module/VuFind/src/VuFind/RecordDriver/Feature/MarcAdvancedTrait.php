@@ -542,7 +542,11 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         $toc = [];
-        if ($fields = $this->getMarcReader()->getFields('505')) {
+        if ($fields = $this->getMarcReader()->getFields(
+            '505',
+            ['a', 'g', 'r', 't', 'u']
+        )
+        ) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
                 // on the -- separators (filtering out empty chunks). Due to
