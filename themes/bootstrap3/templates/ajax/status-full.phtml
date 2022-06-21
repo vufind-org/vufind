@@ -31,6 +31,9 @@
         <?php else: ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
         <?php endif; ?>
+        <?php if ($item['last_issue_date'] ?? false): ?>
+          <br><span title="<?=$this->transEsc("your_last_issue")?>"><?=$this->icon('history')?> <?=$item['last_issue_date'] ?></span>
+        <?php endif; ?>
       </td>
     </tr>
   <?php endforeach; ?>
