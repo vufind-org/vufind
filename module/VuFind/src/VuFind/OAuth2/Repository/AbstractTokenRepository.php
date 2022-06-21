@@ -150,6 +150,6 @@ class AbstractTokenRepository
      */
     public function getNew()
     {
-        return new ($this->entityClass)();
+        return new $this->entityClass();
     }
 }
