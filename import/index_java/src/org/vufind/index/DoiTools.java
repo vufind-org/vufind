@@ -84,7 +84,7 @@ public class DoiTools
      * @return Set of DOIs
      */
     public Set<String> getDoisFromUrlWithRegEx(final Record record, String fieldSpec, String regEx, String groupIndex) {
-        // Build the regular expression:
+        // Build the regular expression (or retrieve from cache):
         Pattern pattern;
         if (patternCache.containsKey(regEx)) {
             pattern = patternCache.get(regEx);
