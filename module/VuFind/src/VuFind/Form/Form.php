@@ -1125,7 +1125,7 @@ class Form extends \Laminas\Form\Form implements
         $handlerNames = (array)($this->formConfig['secondaryHandlers'] ?? []);
         $handlers = [];
         foreach ($handlerNames as $handlerName) {
-            $handlers[$handlerName] = $this->handlerManager->get($handlerName);
+            $handlers[] = $this->handlerManager->get($handlerName);
         }
         return $handlers;
     }

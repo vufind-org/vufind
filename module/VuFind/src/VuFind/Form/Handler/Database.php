@@ -29,6 +29,9 @@ declare(strict_types=1);
  */
 namespace VuFind\Form\Handler;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareTrait;
+
 /**
  * Class Database
  *
@@ -38,8 +41,10 @@ namespace VuFind\Form\Handler;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Database implements HandlerInterface
+class Database implements HandlerInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Feedback table
      *
@@ -70,21 +75,18 @@ class Database implements HandlerInterface
 
     /**
      * Gets data from submitted form and process them.
-     * Returns array with keys: (bool) success - mandatory, (string) errorMessages,
-     * (string) successMessage, (string) errorMessagesDetailed - used to log an
-     * error
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
      * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
      *
-     * @return array
+     * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
         ?\VuFind\Db\Row\User $user = null
-    ): array {
+    ): bool {
         $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
         $fields = array_column($fields, 'value', 'name');
 
@@ -101,26 +103,12 @@ class Database implements HandlerInterface
             ]
         );
         try {
-            $saved = $row->save();
+            $success = (bool)$row->save();
         } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'errorMessages' => [
-                    'Could not save your feedback data.'
-                ],
-                'errorMessagesDetailed' => [
-                    'Could not save your feedback data: ' . $e->getMessage()
-                ],
-            ];
+            $this->logError('Could not save feedback data: ' . $e->getMessage());
+            return false;
         }
 
-        if ($saved) {
-            return ['success' => true];
-        }
-        return [
-            'success' => false,
-            'errorMessages' => ['Could not save your feedback data.'],
-            'errorMessagesDetailed' => ['Could not save your feedback data.'],
-        ];
+        return $success;
     }
 }

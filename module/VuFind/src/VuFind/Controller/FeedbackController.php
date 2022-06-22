@@ -99,41 +99,19 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         }
 
         $primaryHandler = $form->getPrimaryHandler();
-        $result = $primaryHandler->handle($form, $params, $user ?: null);
-        $success = $result['success'] ?? false;
+        $success = $primaryHandler->handle($form, $params, $user ?: null);
         if ($success) {
-            $view->setVariable(
-                'successMessage',
-                $result['successMessage'] ?? $form->getSubmitResponse()
-            );
+            $view->setVariable('successMessage', $form->getSubmitResponse());
             $view->setTemplate('feedback/response');
-        }
-        foreach ($result['errorMessages'] ?? [] as $error) {
-            $this->flashMessenger()->addErrorMessage($this->translate($error));
-        }
-        foreach ($result['errorMessagesDetailed'] ?? [] as $error) {
-            $this->logError(
-                'Error processing form data for ' . "'$formId'"
-                . ' with primary handler: ' . $error
+        } else {
+            $this->flashMessenger()->addErrorMessage(
+                $this->translate('could_not_process_feedback')
             );
         }
 
         $handlers = $form->getSecondaryHandlers();
-        $results = [];
-        foreach ($handlers as $name => $handler) {
-            $result = $handler->handle($form, $params, $user ?: null);
-            $results[$name] = $result;
-        }
-
-        foreach ($results as $handlerName => $result) {
-            $errors
-                = $result['errorMessagesDetailed'] ?? $result['errorMessages'] ?? [];
-            foreach ($errors as $error) {
-                $this->logError(
-                    'Error processing form data for ' . "'$formId'" .
-                    ' with handler ' . "'$handlerName'" . ': ' . $error
-                );
-            }
+        foreach ($handlers as $handler) {
+            $handler->handle($form, $params, $user ?: null);
         }
 
         return $view;

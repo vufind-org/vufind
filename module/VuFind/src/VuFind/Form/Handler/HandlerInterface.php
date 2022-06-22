@@ -42,19 +42,16 @@ interface HandlerInterface
 {
     /**
      * Gets data from submitted form and process them.
-     * Returns array with keys: (bool) success - mandatory, (string) errorMessages,
-     * (string) successMessage, (string) errorMessagesDetailed - used to log an
-     * error
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
      * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
      *
-     * @return array
+     * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
         ?\VuFind\Db\Row\User $user = null
-    ): array;
+    ): bool;
 }

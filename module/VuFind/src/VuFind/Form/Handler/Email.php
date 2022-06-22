@@ -30,10 +30,12 @@ declare(strict_types=1);
 namespace VuFind\Form\Handler;
 
 use Laminas\Config\Config;
+use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mail\Address;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
+use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
 
 /**
@@ -45,8 +47,10 @@ use VuFind\Mailer\Mailer;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Email implements HandlerInterface
+class Email implements HandlerInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * View renderer
      *
@@ -95,13 +99,13 @@ class Email implements HandlerInterface
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
      * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
      *
-     * @return array
+     * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
         ?\VuFind\Db\Row\User $user = null
-    ): array {
+    ): bool {
         $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
         $emailMessage = $this->viewRenderer->partial(
             'Email/form.phtml',
@@ -122,7 +126,6 @@ class Email implements HandlerInterface
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
         $sendSuccess = true;
-        $errorsDetailed = [];
         $success = false;
         foreach ($recipients as $recipient) {
             [$success, $errorMsg] = $this->sendEmail(
@@ -138,15 +141,10 @@ class Email implements HandlerInterface
 
             $sendSuccess = $sendSuccess && $success;
             if (!$success) {
-                $errorsDetailed[]  = $errorMsg;
+                $this->logError($errorMsg);
             }
         }
-        return [
-            'success' => $success,
-            'errorMessagesDetailed' => $errorsDetailed,
-            'errorMessages'
-                => $success ? [] : ['Could not send e-mail with your feedback.'],
-        ];
+        return $success;
     }
 
     /**
