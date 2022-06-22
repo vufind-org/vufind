@@ -100,7 +100,8 @@ ClaimMappings:
   locale: last_language
   phone: phone
   address: address_json # special field including all address fields
-# Grants configuration
+# Grants configuration. Life times are indicated as ISO 8601 periods. See
+# https://en.wikipedia.org/wiki/ISO_8601#Durations for more information.
 Grants:
   # Life time for an authorization code (should be kept short). Default is 1 minute.
   authCodeLifeTime: PT1M
