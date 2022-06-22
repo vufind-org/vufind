@@ -149,20 +149,21 @@ class CartController extends AbstractBase
         $this->followup()->retrieveAndClear('cartAction');
         $this->followup()->retrieveAndClear('cartIds');
 
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $params = $this->params();
+        $ids = null === $params->fromPost('selectAll')
+            ? ($params->fromPost('ids') ?? $params->fromQuery('ids'))
+            : $params->fromPost('idsAll');
 
         // Add items if necessary:
-        if (strlen($this->params()->fromPost('empty', '')) > 0) {
+        if ($params->fromPost('empty')) {
             $this->getCart()->emptyCart();
-        } elseif (strlen($this->params()->fromPost('delete', '')) > 0) {
+        } elseif ($params->fromPost('delete') || $params->fromQuery('delete')) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
                 $this->getCart()->removeItems($ids);
             }
-        } elseif (strlen($this->params()->fromPost('add', '')) > 0) {
+        } elseif ($params->fromPost('add') || $params->fromQuery('add')) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {

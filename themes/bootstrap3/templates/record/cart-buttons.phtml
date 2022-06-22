@@ -9,14 +9,15 @@
       <span class="cart-link-label btn-type-minus"><?=$this->transEsc('Remove from Book Bag') ?></span>
     </a>
     <noscript>
-      <form method="post" name="addForm" action="<?=$this->url('cart-processor')?>">
-        <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
-        <?php if ($cart->contains($cartId)): ?>
-          <input class="btn btn-default" type="submit" name="delete" value="<?=$this->transEscAttr('Remove from Book Bag')?>"/>
-        <?php else: ?>
-          <input class="btn btn-default" type="submit" name="add" value="<?=$this->transEscAttr('Add to Book Bag')?>"/>
-        <?php endif; ?>
-      </form>
+      <?php if (!$cart->contains($cartId)): ?>
+        <a href="<?=$this->url('cart-processor', [], ['query' => ['ids[]' => $cartId, 'add' => '1']])?>" class="cart-add">
+          <span class="cart-link-label btn-type-add"><?=$this->transEsc('Add to Book Bag') ?></span>
+        </a>
+      <?php else: ?>
+        <a href="<?=$this->url('cart-processor', [], ['query' => ['ids[]' => $cartId, 'delete' => '1']])?>" class="cart-remove">
+          <span class="cart-link-label btn-type-minus"><?=$this->transEsc('Remove from Book Bag') ?></span>
+        </a>
+      <?php endif; ?>
     </noscript>
   </span>
 <?php endif; ?>
