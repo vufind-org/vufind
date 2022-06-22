@@ -104,11 +104,14 @@ class FeedbackController extends AbstractAdmin
         $confirm = $this->getParam('confirm');
         $feedbackTable = $this->getFeedbackTable();
         $originUrl = $this->url()->fromRoute('admin/feedback');
+        $formName = $this->getParam('form_name');
+        $siteUrl = $this->getParam('site_url');
+        $status = $this->getParam('status');
         $originUrl .= '?' . http_build_query(
             [
-                'form_name' => $this->getParam('form_name'),
-                'site_url' => $this->getParam('site_url'),
-                'status' => $this->getParam('status'),
+                'form_name' => empty($formName) ? 'ALL' : $formName,
+                'site_url' => empty($siteUrl) ? 'ALL' : $siteUrl,
+                'status' => empty($status) ? 'ALL' : $status,
             ]
         );
         $newUrl = $this->url()->fromRoute('admin/feedback', ['action' => 'Delete']);
