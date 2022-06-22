@@ -42,8 +42,11 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class BrowseController extends AbstractBase
+class BrowseController extends AbstractBase implements
+    \VuFind\I18n\HasSorterInterface
 {
+    use \VuFind\I18n\HasSorterTrait;
+
     /**
      * VuFind configuration
      *
@@ -81,6 +84,7 @@ class BrowseController extends AbstractBase
                 $this->disabledFacets[] = $key;
             }
         }
+        $this->setSorter($sm->get(\VuFind\I18n\Sorter::class));
         parent::__construct($sm);
     }
 
@@ -650,7 +654,10 @@ class BrowseController extends AbstractBase
                 && $this->config->Browse->alphabetical_order
             ) {
                 $callback = function ($a, $b) {
-                    return strcoll($a['displayText'], $b['displayText']);
+                    return $this->getSorter()->compare(
+                        $a['displayText'],
+                        $b['displayText']
+                    );
                 };
                 usort($result[$facet]['list'], $callback);
             }

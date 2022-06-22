@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Factory for SierraRest ILS driver.
+ * Class AbstractBaseFactory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Moravian Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +22,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  HierarchyTree_DataFormatter
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\Hierarchy\TreeDataFormatter;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -33,15 +35,16 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for SierraRest ILS driver.
+ * Class AbstractBaseFactory
  *
  * @category VuFind
- * @package  ILS_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  HierarchyTree_DataFormatter
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SierraRestFactory extends DriverWithDateConverterFactory
+class AbstractBaseFactory
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,15 +65,11 @@ class SierraRestFactory extends DriverWithDateConverterFactory
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+        if ($options !== null) {
+            throw new \Exception('Unexpected options sent to factory!');
         }
-        $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get(\Laminas\Session\SessionManager::class);
-            return new \Laminas\Session\Container("SierraRest_$namespace", $manager);
-        };
-        $driver = parent::__invoke($container, $requestedName, [$sessionFactory]);
-        $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
-        return $driver;
+        $treeDataFormatter = new $requestedName();
+        $treeDataFormatter->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $treeDataFormatter;
     }
 }

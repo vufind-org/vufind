@@ -105,7 +105,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Sierra::class => InvokableFactory::class,
         SierraRest::class => SierraRestFactory::class,
         Symphony::class => SymphonyFactory::class,
-        Unicorn::class => DriverWithDateConverterFactory::class,
+        Unicorn::class => UnicornFactory::class,
         Virtua::class => InvokableFactory::class,
         Voyager::class => DriverWithDateConverterFactory::class,
         VoyagerRestful::class => VoyagerRestfulFactory::class,
