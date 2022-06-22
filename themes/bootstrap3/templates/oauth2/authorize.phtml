@@ -21,7 +21,7 @@
   <h2><?=$this->escapeHtml($clientName)?></h2>
   <?=$this->flashmessages()?>
   <div class="oauth2-prompt">
-    <?=$this->translate('external_auth_prompt_html', ['%%clientName%%' => $this->escapeHtmlAttr($clientName)])?>
+    <?=$this->translate('external_auth_prompt_html')?>
     <ul>
       <?php foreach ($scopes as $scope): ?>
         <li><?=$this->escapeHtml($scope)?></li>
