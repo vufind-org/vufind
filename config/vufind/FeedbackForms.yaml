@@ -156,10 +156,7 @@ forms:
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
-    handler:
-      - email
-      #- database
-
+    primaryHandler: email
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
     response: Thank you for your feedback.
@@ -186,6 +183,7 @@ forms:
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
     response: Thank you for your feedback.
+    primaryHandler: email
 
     recipient:
       name: Your Library
@@ -249,5 +247,3 @@ forms:
         options:
           - Yes
           - No
-
-
