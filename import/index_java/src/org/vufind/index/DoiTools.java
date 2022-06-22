@@ -19,7 +19,9 @@ package org.vufind.index;
  */
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Set;
@@ -34,6 +36,7 @@ public class DoiTools
 {
     // Initialize logging category
     static Logger logger = Logger.getLogger(DoiTools.class.getName());
+    private static Map<String, Pattern> patternCache = new ConcurrentHashMap<>();
 
     /**
      * URL-decode a DOI that has been extracted from a URL
@@ -82,7 +85,13 @@ public class DoiTools
      */
     public Set<String> getDoisFromUrlWithRegEx(final Record record, String fieldSpec, String regEx, String groupIndex) {
         // Build the regular expression:
-        Pattern pattern = Pattern.compile(regEx);
+        Pattern pattern;
+        if (patternCache.containsKey(regEx)) {
+            pattern = patternCache.get(regEx);
+        } else {
+            pattern = Pattern.compile(regEx);
+            patternCache.put(regEx, pattern);
+        }
 
         // Initialize our return value:
         Set<String> result = new LinkedHashSet<String>();
