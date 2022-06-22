@@ -69,7 +69,7 @@
 <?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
   <?php foreach ($activeFacets as $field => $facetName): ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>">
-      <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
+      <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
         <?=$this->transEsc($facetName)?>
       </button>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
