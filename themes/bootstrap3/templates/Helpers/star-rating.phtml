@@ -1,14 +1,20 @@
 <?php
-  $id = uniqid();
+  $id = $this->escapeHtmlAttr(uniqid());
   $labelAttrs = !empty($this->labelAttrs) ? (' ' . implode(' ', $this->labelAttrs)) : '';
   $inputAttrs = !empty($this->inputAttrs) ? (' ' . implode(' ', $this->inputAttrs)) : '';
-  $rating = $ratingData['rating'] ?? 0;
+  $rating = $ratingData['count'] ? ($ratingData['rating'] ?? 0) : null;
+  // Unique name for the fields of read-only ratings so that displaying multiple ratings on a page works:
+  $fieldName = $this->readonly ? "rating_{$id}" : 'rating';
 ?>
 <div class="star-rating<?=$this->readonly ? ' readonly' : ''?>">
+  <label class="rating__label hidden" for="rating_<?=$id?>_none" aria-label="<?=$this->transEsc('rating_none')?>"<?=$labelAttrs?>>
+    &nbsp;
+  </label>
+  <input class="rating__input hidden" name="<?=$fieldName?>" id="rating_<?=$id?>_none" value="" type="radio" autocomplete="off"<?=null === $rating ? 'checked' :''?><?=$inputAttrs?>>
   <label class="rating__label" for="rating_<?=$id?>_0" aria-label="<?=$this->transEsc('rating_0')?>"<?=$labelAttrs?>>
     &nbsp;
   </label>
-  <input class="rating__input rating__input--none" name="rating" id="rating_<?=$id?>_0" value="0" type="radio" autocomplete="off" <?=0 === $rating ? 'checked' :''?><?=$inputAttrs?>>
+  <input class="rating__input" name="<?=$fieldName?>" id="rating_<?=$id?>_0" value="0" type="radio" autocomplete="off"<?=0 === $rating ? 'checked' :''?><?=$inputAttrs?>>
   <?php for ($level = 10; $level <= 100; $level += 10): ?>
     <?php
       $fieldId = "rating_{$id}_$level";
@@ -20,6 +26,6 @@
     <label class="rating__label<?=$class?>" for="<?=$fieldId?>" aria-label="<?=$this->transEsc("rating_$level")?>"<?=$labelAttrs?>>
       <?=$icon?>
     </label>
-    <input class="rating__input" name="rating" id="<?=$fieldId?>" value="<?=$level ?>" type="radio" autocomplete="off" <?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked' : ''?><?=$this->readonly ? ' disabled' : ''?><?=$inputAttrs?>>
+    <input class="rating__input" name="<?=$fieldName?>" id="<?=$fieldId?>" value="<?=$level ?>" type="radio" autocomplete="off"<?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked' : ''?><?=$this->readonly ? ' disabled' : ''?><?=$inputAttrs?>>
   <?php endfor; ?>
 </div>

@@ -164,28 +164,23 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Add or update user's rating for the current resource.
      *
-     * @param \VuFind\Db\Row\User $user   User
-     * @param int                 $rating Rating
+     * @param int $userId User ID
+     * @param int $rating Rating
      *
      * @throws LoginRequiredException
      * @throws \Exception
      * @return int ID of newly-created rating
      */
-    public function addOrUpdateRating(\VuFind\Db\Row\User $user, int $rating)
+    public function addOrUpdateRating(int $userId, int $rating): int
     {
-        if (!isset($user->id)) {
-            throw new LoginRequiredException(
-                "Can't add ratings without logging in."
-            );
-        }
         if ($rating < 0 || $rating > 100) {
             throw new \Exception('Rating value out of range');
         }
 
         $ratings = $this->getDbTable('Ratings');
-        $callback = function ($select) use ($user) {
+        $callback = function ($select) use ($userId) {
             $select->where->equalTo('ratings.resource_id', $this->id);
-            $select->where->equalTo('ratings.user_id', $user->id);
+            $select->where->equalTo('ratings.user_id', $userId);
         };
         if ($existing = $ratings->select($callback)->current()) {
             $existing->rating = $rating;
@@ -194,7 +189,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         }
 
         $row = $ratings->createRow();
-        $row->user_id = $user->id;
+        $row->user_id = $userId;
         $row->resource_id = $this->id;
         $row->rating = $rating;
         $row->created = date('Y-m-d H:i:s');

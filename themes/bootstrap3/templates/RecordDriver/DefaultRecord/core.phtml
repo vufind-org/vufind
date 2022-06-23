@@ -3,13 +3,15 @@
 ?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?php
-    $QRCode = $this->record($this->driver)->getQRCode("core");
-    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
+    $recordHelper = $this->record($this->driver);
+    $QRCode = $recordHelper->getQRCode("core");
+    $coverDetails = $recordHelper->getCoverDetails('core', 'medium', $recordHelper->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = ($this->previewOverride ?? false)
-      ? $this->previewOverride : $this->record($this->driver)->getPreviews();
+      ? $this->previewOverride : $recordHelper->getPreviews();
+    $rating = $recordHelper->isRatingEnabled();
   ?>
-  <?php if ($QRCode || $cover || $preview): ?>
+  <?php if ($QRCode || $cover || $preview || $rating): ?>
     <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
       <?php /* Display thumbnail if appropriate: */ ?>
       <?php if($cover): ?>
@@ -24,8 +26,8 @@
       <?php endif; ?>
 
       <?php /* Display rating if enabled: */ ?>
-      <?php if ($this->record($this->driver)->isRatingEnabled()): ?>
-        <?=$this->record($driver)->renderTemplate('rating.phtml')?>
+      <?php if ($rating): ?>
+        <?=$recordHelper->renderTemplate('rating.phtml')?>
       <?php endif; ?>
 
       <?php // if you have a preview tab but want to move or remove the preview link
@@ -54,7 +56,7 @@
     <?php endif; ?>
 
     <?php if ($this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
-      <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+      <?=$recordHelper->renderTemplate('versions-link.phtml')?>
     <?php endif; ?>
 
     <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>

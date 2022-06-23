@@ -162,6 +162,16 @@ class AbstractRecord extends AbstractBase
                 $driver
             );
             $resource->addComment($comment, $user);
+
+            // Save rating if enabled:
+            $recordHelper = $this->getViewRenderer()->plugin('record');
+            if ($recordHelper($driver)->isRatingEnabled()
+                && null !== ($rating = $this->params()->fromPost('rating'))
+                && '' !== $rating
+            ) {
+                $driver->addOrUpdateRating($user->id, intval($rating));
+            }
+
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
@@ -289,7 +299,7 @@ class AbstractRecord extends AbstractBase
 
         // Save rating, if any:
         if (null !== ($rating = $this->params()->fromPost('rating'))) {
-            $driver->addOrUpdateRating($user, intval($rating));
+            $driver->addOrUpdateRating($user->id, intval($rating));
             $this->flashMessenger()->addSuccessMessage('rating_add_success');
             if ($this->inLightbox()) {
                 return $this->getRefreshResponse();
@@ -300,7 +310,7 @@ class AbstractRecord extends AbstractBase
         // Display the "add rating" form:
         $view = $this->createViewModel(
             [
-                'currentRating' => $driver->getRatingData($user)
+                'currentRating' => $driver->getRatingData($user->id)
             ]
         );
         return $view;

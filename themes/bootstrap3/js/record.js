@@ -82,6 +82,24 @@ function refreshCommentList($target, recordId, recordSource) {
     });
 }
 
+function refreshRecordRating(recordId, recordSource) {
+  let rating = document.querySelector('.media-left .rating');
+  if (!rating) {
+    return;
+  }
+  fetch(VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
+    method: 'getRecordRating',
+    id: recordId,
+    source: recordSource
+  }))
+    .then(response => response.json())
+    .then(result => {
+      rating.outerHTML = result.data.html;
+      // Bind lightbox to the new content:
+      VuFind.lightbox.bind(document.querySelector('.media-left .rating'));
+    });
+}
+
 function registerAjaxCommentRecord(_context) {
   var context = typeof _context === "undefined" ? document : _context;
   // Form submission
@@ -93,6 +111,9 @@ function registerAjaxCommentRecord(_context) {
     var data = {};
     $(form).find("input,textarea").each(function appendCaptchaData() {
       var input = $(this);
+      if (input.attr('type') === 'radio' && !input.prop('checked')) {
+        return true;
+      }
       data[input.attr('name')] = input.val();
     });
     $.ajax({
@@ -108,6 +129,7 @@ function registerAjaxCommentRecord(_context) {
           $tab = $form.closest('.tab-pane');
         }
         refreshCommentList($tab, id, recordSource);
+        refreshRecordRating(id, recordSource);
         $form.find('textarea[name="comment"]').val('');
         $form.find('input[type="submit"]').button('loading');
         resetCaptcha($form);

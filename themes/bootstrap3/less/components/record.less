@@ -65,11 +65,24 @@
     min-width: 25%;
     font-style: unset;
   }
-  .comment-form .text-form { width: 100%; }
-  .comment-form > label { flex: 0 0 auto; }
-  .comment-form textarea {
-    display: block;
-    width: 100%;
+  .comment-form {
+    .text-form {
+      width: 100%;
+    }
+    & > label {
+      flex: 0 0 auto;
+    }
+    textarea {
+      display: block;
+      width: 100%;
+      float: left;
+    }
+    .comment-rating {
+      float: left;
+    }
+    .btn {
+      margin-top: 0.5rem;
+    }
   }
 }
 

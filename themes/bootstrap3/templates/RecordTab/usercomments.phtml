@@ -1,6 +1,7 @@
 <?php
   // Set page title.
   $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
+  $ratingEnabled = $this->record($this->driver)->isRatingEnabled();
 ?>
 
 <div class="comment-list">
@@ -11,12 +12,18 @@
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
   <label class="comment-label"><?=$this->transEsc("Your Comment")?></label>
   <?php $user = $this->auth()->isLoggedIn() ?>
-  <?php if($user): ?>
+  <?php if ($user): ?>
     <div class="text-form">
       <textarea name="comment" class="form-control" rows="3" required></textarea>
+      <?php if ($ratingEnabled): ?>
+        <div class="comment-rating">
+          <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->driver->getRatingData($user->id)]);?>
+        </div>
+      <?php endif; ?>
       <?php if ($this->tab->isCaptchaActive()): ?>
         <?=$this->captcha()->html(true, false) ?>
       <?php endif; ?>
+      <div class="clearfix"></div>
       <input class="btn btn-primary" data-loading-text="<?=$this->transEscAttr('Submitting') ?>" type="submit" value="<?=$this->transEscAttr("Add your comment")?>"/>
     </div>
   <?php else: ?>
