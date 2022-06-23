@@ -12,9 +12,7 @@
   <<?=$headTag?>><?=$this->escapeHtml($title)?></<?=$headTag?>>
 <?php endif; ?>
 <?=$this->flashmessages()?>
-<?php if (!empty($this->successMessage)): ?>
-  <div role="status" class="alert alert-success">
-    <?=$this->translate($this->successMessage) ?>
-  </div>
-<?php endif; ?>
+<div role="status" class="alert alert-success">
+  <?=$this->translate($this->successMessage) ?>
+</div>
 <?php if (!$this->inLightbox): ?></div><?php endif; ?>
