@@ -59,7 +59,7 @@ class NormalizedSearch
     /**
      * Minified version of search
      *
-     * @var minSO
+     * @var Minified
      */
     protected $minified;
 
@@ -94,7 +94,9 @@ class NormalizedSearch
     {
         $this->resultsManager = $resultsManager;
         $this->raw = $results;
-        // Normalize the URL params by minifying and deminifying the search object
+        // Normalize the URL params by minifying and deminifying the search object;
+        // note that we use the "minSO" subclass of the Minified class so that it
+        // serializes as small as possible in the database.
         $this->minified = new minSO($results);
         $this->normalized = $this->minified->deminify($resultsManager);
         $this->url = $this->normalized->getUrlQuery()->getParams();
@@ -117,9 +119,9 @@ class NormalizedSearch
     /**
      * Get minified version of search.
      *
-     * @return minSO
+     * @return Minified
      */
-    public function getMinified(): minSO
+    public function getMinified(): Minified
     {
         return $this->minified;
     }
@@ -157,11 +159,11 @@ class NormalizedSearch
     /**
      * Is this search equivalent to the provided minified search?
      *
-     * @param minSO $otherSearch Search to compare against
+     * @param Minified $otherSearch Search to compare against
      *
      * @return bool
      */
-    public function isEquivalentToMinifiedSearch(minSO $otherSearch): bool
+    public function isEquivalentToMinifiedSearch(Minified $otherSearch): bool
     {
         // Deminify the other search:
         $searchToCheck = $otherSearch->deminify($this->resultsManager);
