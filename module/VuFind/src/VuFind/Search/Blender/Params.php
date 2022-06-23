@@ -119,7 +119,7 @@ class Params extends \VuFind\Search\Solr\Params
             'type',
             'sort',
             'filter',
-            'hiddenFilter'
+            'hiddenFilters'
         ];
         foreach ($this->searchParams as $params) {
             $translatedRequest = clone $request;

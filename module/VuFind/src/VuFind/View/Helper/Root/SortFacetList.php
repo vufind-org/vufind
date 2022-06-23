@@ -39,8 +39,11 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SortFacetList extends AbstractHelper
+class SortFacetList extends AbstractHelper implements
+    \VuFind\I18n\HasSorterInterface
 {
+    use \VuFind\I18n\HasSorterTrait;
+
     /**
      * Turns facet information into an alphabetical list.
      *
@@ -64,7 +67,7 @@ class SortFacetList extends AbstractHelper
                 ->addFacet($field, $value['value'])->getParams();
             $facets[$url] = $value['displayText'];
         }
-        natcasesort($facets);
+        $this->getSorter()->natsort($facets);
         return $facets;
     }
 }

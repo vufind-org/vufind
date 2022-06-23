@@ -69,7 +69,7 @@ class DemoFactory extends DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container('DemoDriver' . $ns, $manager);
         };
-        return parent::__invoke(
+        $driver = parent::__invoke(
             $container,
             $requestedName,
             [
@@ -78,5 +78,7 @@ class DemoFactory extends DriverWithDateConverterFactory
                 $container->get('Request')
             ]
         );
+        $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $driver;
     }
 }
