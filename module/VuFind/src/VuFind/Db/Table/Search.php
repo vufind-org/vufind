@@ -323,14 +323,14 @@ class Search extends Gateway
     /**
      * Update the select statement to find records to delete.
      *
-     * @param Select $select  Select clause
-     * @param int    $daysOld Age in days of an "expired" record.
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld)
+    protected function expirationCallback($select, $dateLimit)
     {
-        $expireDate = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
-        $select->where->lessThan('created', $expireDate)->equalTo('saved', 0);
+        $select->where->lessThan('created', $dateLimit)->equalTo('saved', 0);
     }
 }
