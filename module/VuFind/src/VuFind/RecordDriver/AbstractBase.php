@@ -77,6 +77,13 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     protected $fields = [];
 
     /**
+     * Cache for rating data
+     *
+     * @var array
+     */
+    protected $ratingCache = [];
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
@@ -242,12 +249,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getRatingData(?int $userId = null)
     {
-        $table = $this->getDbTable('Ratings');
-        return $table->getForResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            $userId
-        );
+        // Cache data since comments list may ask for same information repeatedly:
+        $cacheKey = $userId ?? '-';
+        if (!isset($this->ratingCache[$cacheKey])) {
+            $table = $this->getDbTable('Ratings');
+            $this->ratingCache[$cacheKey] = $table->getForResource(
+                $this->getUniqueId(),
+                $this->getSourceIdentifier(),
+                $userId
+            );
+        }
+        return $this->ratingCache[$cacheKey];
     }
 
     /**
@@ -260,6 +272,8 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function addOrUpdateRating(int $userId, int $rating): void
     {
+        // Clear rating cache:
+        $this->ratingCache = [];
         $resources = $this->getDbTable('Resource');
         $resource = $resources->findResource(
             $this->getUniqueId(),
