@@ -171,7 +171,7 @@
           // Add JS Variables for QrCode
           $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
-        <span class="hidden-xs">
+        <div class="hidden-xs">
           <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink">
             <i class="result-link-icon fa fa-fw fa-qrcode" aria-hidden="true"></i>
             <span class="result-link-label"><?=$this->transEsc('qrcode_show')?></span>
@@ -181,7 +181,7 @@
               <img alt="<?=$this->transEscAttr('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
             </script>
           </div><br/>
-        </span>
+        </div>
       <?php endif; ?>
 
       <?php if ($this->cart()->isActiveInSearch() && isset($this->params) && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
