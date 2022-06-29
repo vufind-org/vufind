@@ -32,6 +32,7 @@ use Laminas\Http\Client;
 use Laminas\Stdlib\ArrayUtils;
 use Traversable;
 use VuFind\Cache\Manager as CacheManager;
+use VuFindHttp\HttpService;
 
 /**
  * Caching downloader.
@@ -44,13 +45,6 @@ use VuFind\Cache\Manager as CacheManager;
  */
 class CachingDownloader
 {
-    /**
-     * HTTP client
-     *
-     * @var Client
-     */
-    protected $client;
-
     /**
      * CacheManager to update caches if necessary.
      *
@@ -73,6 +67,13 @@ class CachingDownloader
     protected $cache;
 
     /**
+     * HTTP service
+     *
+     * @var HttpService
+     */
+    protected $httpService;
+
+    /**
      * These result modes indicate whether the responses should be decoded.
      */
     public const RESULT_MODE_RAW = 'RAW';
@@ -81,12 +82,12 @@ class CachingDownloader
     /**
      * Constructor
      *
-     * @param Client $client       HTTP client
-     * @param string $cacheManager Base directory for cache
+     * @param HttpService $httpService  HTTP service
+     * @param string      $cacheManager Base directory for cache
      */
-    public function __construct(Client $client, CacheManager $cacheManager)
+    public function __construct(HttpService $httpService, CacheManager $cacheManager)
     {
-        $this->client = $client;
+        $this->httpService = $httpService;
         $this->cacheManager = $cacheManager;
         $this->setCacheId('downloader');
     }
@@ -105,36 +106,19 @@ class CachingDownloader
     }
 
     /**
-     * Set client options (HTTP headers and so on).
-     *
-     * @param array|Traversable $options Client options (e.g. HTTP headers)
-     *
-     * @return void
-     */
-    public function setClientOptions($options)
-    {
-        $this->client->setOptions($options);
-
-        if ($options instanceof Traversable) {
-            $options = ArrayUtils::iteratorToArray($options);
-        }
-        $this->cacheOptions = array_merge($this->cacheOptions, $options);
-        ksort($this->cacheOptions);
-    }
-
-    /**
      * Download a resorce using the cache in the background.
      *
      * @param string $url        URL
+     * @param array  $params     Request parameters (e.g. additional headers)
      * @param string $resultMode See self::RESULT_MODE_... constants
      *
      * @return string
      */
-    public function download($url, $resultMode = self::RESULT_MODE_RAW)
+    public function download($url, $params=[], $resultMode = self::RESULT_MODE_RAW)
     {
         $cacheItemKey = md5($url);
-        foreach ($this->cacheOptions as $optionKey => $optionValue) {
-            $cacheItemKey .= '#' . $optionKey . '§' . $optionValue;
+        foreach ($params as $paramKey => $paramValue) {
+            $cacheItemKey .= '#' . $paramKey . '§' . $paramValue;
         }
 
         // Return item if exists in cache
@@ -144,7 +128,7 @@ class CachingDownloader
         }
 
         // Add new item to cache if not exists
-        $response = $this->client->setUri($url)->send();
+        $response = $this->httpService->get($url, $params);
         if (!$response->isOk()) {
             throw new \Exception('Could not resolve URL: ' . $url);
         }

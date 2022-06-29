@@ -47,14 +47,6 @@ trait CachingDownloaderAwareTrait
     protected $downloaderCacheId = 'downloader';
 
     /**
-     * Client options. This can be overridden, e.g. to set a specific
-     * user-agent.
-     *
-     * @var array
-     */
-    protected $downloaderClientOptions = [];
-
-    /**
      * Caching downloader
      *
      * @var CachingDownloader
@@ -72,6 +64,5 @@ trait CachingDownloaderAwareTrait
     {
         $this->cachingDownloader = $cachingDownloader;
         $this->cachingDownloader->setCacheId($this->downloaderCacheId);
-        $this->cachingDownloader->setClientOptions($this->downloaderClientOptions);
     }
 }
