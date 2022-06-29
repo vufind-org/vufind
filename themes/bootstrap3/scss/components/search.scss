@@ -201,12 +201,20 @@ header .container.navbar { margin-bottom: 0; }
   display: inline-flex;
   text-decoration: none;
 }
-.result-link-icon,
-.cart-link-icon {
+.result-links .result-link-icon,
+.result-links .cart-link-icon {
   flex: none;
+  margin-right: 0.25rem;
+  padding: 0;
   line-height: inherit;
+
+  .rtl & {
+    margin-left: 0.25rem;
+    margin-right: 0;
+  }
 }
-.result-link-label,
+
+a:hover .result-link-label,
 .cart-add:hover .cart-link-label,
 .cart-remove:hover .cart-link-label {
   color: $link-hover-color;
@@ -237,10 +245,6 @@ header .container.navbar { margin-bottom: 0; }
   .savedLists.loaded { display: block; }
 }
 body.rtl {
-  .result .btn-bookbag-toggle .fa {
-    margin-left: .3rem;
-    margin-right: 0;
-  }
   @media (min-width: 768px) {
     .result-body,
     .result-links { float: right; }
