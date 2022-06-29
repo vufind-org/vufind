@@ -237,9 +237,9 @@ $(document).ready(function registerAccountAjax() {
     render: function render($element, status, ICON_LEVELS) {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.html(
-          statusIcon("my-account-notification", "text-success", "account_requests_available")
-        );
+        var html = statusIcon("my-account-notification", "text-success", "account_requests_available");
+        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
+        $element.html(html);
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
         $element.html(
