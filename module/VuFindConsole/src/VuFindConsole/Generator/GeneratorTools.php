@@ -27,11 +27,11 @@
  */
 namespace VuFindConsole\Generator;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
+use Psr\Container\ContainerInterface;
 
 /**
  * Generator tools.
@@ -330,7 +330,7 @@ class GeneratorTools
                 );
                 $param1 = [
                     'name' => 'container',
-                    'type' => 'Interop\Container\ContainerInterface'
+                    'type' => 'Psr\Container\ContainerInterface'
                 ];
                 $param2 = [
                     'name' => 'requestedName',

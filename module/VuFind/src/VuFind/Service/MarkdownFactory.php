@@ -29,9 +29,6 @@
  */
 namespace VuFind\Service;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -39,6 +36,8 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Markdown Service factory.
@@ -60,6 +59,7 @@ class MarkdownFactory implements FactoryInterface
     protected static $configKeys = [
         'CommonMarkCore' => 'commonmark',
         'DefaultAttributes' => 'default_attributes',
+        'DisallowedRawHtml' => 'disallowed_raw_html',
         'ExternalLink' => 'external_link',
         'Footnote' => 'footnote',
         'HeadingPermalink' => 'heading_permalink',

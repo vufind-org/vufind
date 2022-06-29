@@ -45,9 +45,11 @@ use VuFind\Marc\MarcReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
-class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Host
@@ -134,7 +136,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -320,17 +322,16 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $items[] = $item;
         }
 
-        if (!empty($items)) {
-            // sort the items by shelving key in descending order, then ascending by
-            // copy number
-            $cmp = function ($a, $b) {
-                if ($a['shelving_key'] == $b['shelving_key']) {
-                    return $a['number'] - $b['number'];
-                }
-                return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by shelving key in descending order, then ascending by
+        // copy number
+        $cmp = function ($a, $b) {
+            if ($a['shelving_key'] == $b['shelving_key']) {
+                return $a['number'] - $b['number'];
+            }
+            return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
+        };
+        usort($items, $cmp);
+
         return $items;
     }
 
@@ -824,16 +825,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             ];
         }
 
-        if (!empty($items)) {
-            // sort the items by due date
-            $cmp = function ($a, $b) {
-                if ($a['duedate_raw'] == $b['duedate_raw']) {
-                    return $a['id'] < $b['id'] ? -1 : 1;
-                }
-                return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by due date
+        $cmp = function ($a, $b) {
+            if ($a['duedate_raw'] == $b['duedate_raw']) {
+                return $a['id'] < $b['id'] ? -1 : 1;
+            }
+            return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
+        };
+        usort($items, $cmp);
 
         return $items;
     }
@@ -861,7 +860,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $name = ($code == $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
-        asort($courses);
+        $this->getSorter()->asort($courses);
         return $courses;
     }
 
@@ -887,7 +886,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $user);
             $users[$id] = $name;
         }
-        asort($users);
+        $this->getSorter()->asort($users);
         return $users;
     }
 
@@ -913,7 +912,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $dept);
             $depts[$id] = $name;
         }
-        asort($depts);
+        $this->getSorter()->asort($depts);
         return $depts;
     }
 

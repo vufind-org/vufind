@@ -37,6 +37,10 @@ use VuFindTheme\ThemeInfo;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @method getWhitespace(string|int $indent)
+ * @method getIndent()
+ * @method getSeparator()
  */
 class HeadLink extends \Laminas\View\Helper\HeadLink
     implements \Laminas\Log\LoggerAwareInterface

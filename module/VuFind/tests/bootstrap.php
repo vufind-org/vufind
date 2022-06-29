@@ -15,6 +15,7 @@ chdir(APPLICATION_PATH);
 if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
     $loader = new Composer\Autoload\ClassLoader();
+    $loader->addClassMap(['minSO' => __DIR__ . '/../src/VuFind/Search/minSO.php']);
     $loader->add('VuFindTest', __DIR__ . '/unit-tests/src');
     $loader->add('VuFindTest', __DIR__ . '/../src');
     // Dynamically discover all module src directories:

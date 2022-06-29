@@ -27,7 +27,7 @@
  */
 namespace VuFindConsole\Command\Generate;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use VuFindConsole\Generator\GeneratorTools;
 
 /**

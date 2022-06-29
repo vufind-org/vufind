@@ -355,7 +355,7 @@ abstract class Base
                             = $finalParameterName . '=' . urlencode($subValue);
                     }
                 } else {
-                    $queryParameters[] = $key . '=' . urlencode($value);
+                    $queryParameters[] = $key . '=' . urlencode($value ?? '');
                 }
             }
         }
@@ -387,10 +387,7 @@ abstract class Base
     ) {
         // Build Query String Parameters
         $queryParameters = $this->createQSFromArray($params);
-        $queryString = '';
-        if (null != $queryParameters && !empty($queryParameters)) {
-            $queryString = implode('&', $queryParameters);
-        }
+        $queryString = implode('&', $queryParameters);
         $this->debugPrint("Querystring to use: $queryString ");
         // Build headers
         $headers = [
@@ -398,7 +395,7 @@ abstract class Base
             'Content-Type' => $this->contentType,
             'Accept-Encoding' => 'gzip,deflate'
         ];
-        if (null != $headerParams && !empty($headerParams)) {
+        if (null != $headerParams) {
             foreach ($headerParams as $key => $value) {
                 $headers[$key] = $value;
             }

@@ -407,9 +407,12 @@ class AbstractSearch extends AbstractBase
         // Search toolbar
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $view->showBulkOptions = isset($config->Site->showBulkOptions)
-          && $config->Site->showBulkOptions;
+        $view->showBulkOptions = $config->Site->showBulkOptions ?? false;
 
+        // Schedule options for footer tools
+        $view->scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
         return $view;
     }
 
@@ -427,8 +430,7 @@ class AbstractSearch extends AbstractBase
         $default = null;
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        if (isset($config->Record->jump_to_single_search_result)
-            && $config->Record->jump_to_single_search_result
+        if (($config->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
         ) {
             $default = 1;
@@ -458,7 +460,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $searchId Primary key value
      *
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
      */
     protected function retrieveSearchSecurely($searchId)
     {
@@ -482,7 +484,7 @@ class AbstractSearch extends AbstractBase
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
-            $this->getResultsManager(),
+            $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
             $results,
             $sessId,
             $user->id ?? null
@@ -556,15 +558,13 @@ class AbstractSearch extends AbstractBase
             // Check to see if there is an existing range in the search object:
             if ($savedSearch) {
                 $filters = $savedSearch->getParams()->getRawFilters();
-                if (isset($filters[$field])) {
-                    foreach ($filters[$field] as $current) {
-                        if ($range = SolrUtils::parseRange($current)) {
-                            $from = $range['from'] == '*' ? '' : $range['from'];
-                            $to = $range['to'] == '*' ? '' : $range['to'];
-                            $savedSearch->getParams()
-                                ->removeFilter($field . ':' . $current);
-                            break;
-                        }
+                foreach ($filters[$field] ?? [] as $current) {
+                    if ($range = SolrUtils::parseRange($current)) {
+                        $from = $range['from'] == '*' ? '' : $range['from'];
+                        $to = $range['to'] == '*' ? '' : $range['to'];
+                        $savedSearch->getParams()
+                            ->removeFilter($field . ':' . $current);
+                        break;
                     }
                 }
             }

@@ -30,6 +30,8 @@
           'Recommend/SideFacets/hierarchical-facet.phtml',
           [
             'allowExclude' => $this->recommend->excludeAllowed($facet),
+            // Allow hierarchical facets to be untruncated with showMore setting < 1
+            'facets_before_more' => $this->recommend->getShowMoreSetting($facet, 0),
             'title' => $facet,
             'sortOptions' => $hierarchicalFacetSortOptions[$facet] ?? $hierarchicalFacetSortOptions['*'] ?? null,
             'collapsedFacets' => $this->collapsedFacets,

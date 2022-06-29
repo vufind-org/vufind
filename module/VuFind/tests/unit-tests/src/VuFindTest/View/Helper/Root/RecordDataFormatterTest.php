@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -77,6 +77,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)->disableOriginalConstructor()->getMock()
             ),
             'context' => $context,
+            'config' => new \VuFind\View\Helper\Root\Config($container->get(\VuFind\Config\PluginManager::class)),
             'doi' => new \VuFind\View\Helper\Root\Doi($context),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],

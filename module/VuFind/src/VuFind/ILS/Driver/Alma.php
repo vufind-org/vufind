@@ -1367,7 +1367,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if ($function == 'patronLogin') {
             return [

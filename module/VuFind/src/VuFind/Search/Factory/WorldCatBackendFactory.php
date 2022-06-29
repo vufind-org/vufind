@@ -28,7 +28,7 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 use VuFindSearch\Backend\WorldCat\Backend;
 use VuFindSearch\Backend\WorldCat\Connector;

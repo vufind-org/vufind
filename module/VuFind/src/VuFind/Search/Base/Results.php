@@ -103,6 +103,13 @@ abstract class Results
     protected $savedSearch = null;
 
     /**
+     * How frequently will a user be notified about this search (0 = never)?
+     *
+     * @var int
+     */
+    protected $notificationFrequency = null;
+
+    /**
      * Query start time
      *
      * @var float
@@ -459,6 +466,27 @@ abstract class Results
     }
 
     /**
+     * How frequently (in days) will the current user be notified about updates to
+     * these search results (0 = never)?
+     *
+     * @return int
+     * @throws \Exception
+     */
+    public function getNotificationFrequency(): int
+    {
+        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
+        // is called...  blow up if somebody tries to get data that is not yet
+        // available.
+        if (null === $this->notificationFrequency) {
+            throw new \Exception(
+                'Cannot retrieve notification frequency before '
+                . 'updateSaveStatus is called.'
+            );
+        }
+        return $this->notificationFrequency;
+    }
+
+    /**
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
@@ -470,6 +498,8 @@ abstract class Results
     {
         $this->searchId = $row->id;
         $this->savedSearch = ($row->saved == true);
+        $this->notificationFrequency = $this->savedSearch
+            ? $row->notification_frequency : 0;
     }
 
     /**
