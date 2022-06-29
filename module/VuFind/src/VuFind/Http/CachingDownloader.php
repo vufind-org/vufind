@@ -130,7 +130,7 @@ class CachingDownloader
         // Add new item to cache if not exists
         $response = $this->httpService->get($url, $params);
         if (!$response->isOk()) {
-            throw new \Exception('Could not resolve URL: ' . $url);
+            throw new \Exception('Could not download URL: ' . $url);
         }
         $body = $response->getBody();
         $this->cache->addItem($cacheItemKey, $body);
