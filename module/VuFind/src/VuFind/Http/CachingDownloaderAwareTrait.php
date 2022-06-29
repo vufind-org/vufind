@@ -39,7 +39,7 @@ namespace VuFind\Http;
 trait CachingDownloaderAwareTrait
 {
     /**
-     * Cache ID. This can be overridden by child classes if we want to use
+     * Cache ID. This can be overridden by child classes if they want to use
      * a separate cache.
      *
      * @var string
