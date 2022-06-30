@@ -44,6 +44,7 @@
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field
+#
 #   primaryHandler (string)   Handlers to process form data - default is 'email', available
 #                             options are: 'email', 'database'. When this handler fails, the
 #                             whole feedback send action fails. You can add your own handler
@@ -57,6 +58,7 @@
 #                             Example:
 #                               secondaryHandlers:
 #                                 - email
+#
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
 #     post (string) Help text displayed at the end of the form (translation key)
