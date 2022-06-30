@@ -1,7 +1,7 @@
 <?php $results = $this->recommend->getResults(); ?>
 <?php if(!empty($results)): ?>
   <ul class="list-group" id="side-panel-dpla">
-    <li class="list-group-item title<?php if($this->recommend->isCollapsed()): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-dpla">
+    <li class="list-group-item title<?php if($this->recommend->isCollapsed()): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-dpla">
       DPLA
     </li>
     <div id="side-collapse-dpla" class="collapse<?php if(!$this->recommend->isCollapsed()): ?> in<?php endif ?>">

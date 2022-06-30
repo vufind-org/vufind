@@ -56,6 +56,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'PAIA' =>
             [
                 'baseUrl'            => 'http://paia.gbv.de/',
+                'grantType'          => 'password',
             ]
     ];
 

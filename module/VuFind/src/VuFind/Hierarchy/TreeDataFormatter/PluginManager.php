@@ -27,8 +27,6 @@
  */
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Hierarchy tree data formatter plugin manager
  *
@@ -56,8 +54,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Json::class => InvokableFactory::class,
-        Xml::class => InvokableFactory::class,
+        Json::class => AbstractBaseFactory::class,
+        Xml::class => AbstractBaseFactory::class,
     ];
 
     /**

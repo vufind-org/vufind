@@ -68,12 +68,14 @@ class GetItemStatusesFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
+        $handler = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\ILS\Logic\Holds::class)
         );
+        $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $handler;
     }
 }
