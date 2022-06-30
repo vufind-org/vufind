@@ -897,12 +897,25 @@ class Folio extends AbstractAPI implements
             '/circulation/loans',
             $query
         ) as $trans) {
-            $date = date_create($trans->dueDate);
+            
+            $date = new DateTime($trans->dueDate, new DateTimeZone('UTC'));
+            $loc = (new DateTime)->getTimezone();
+            $date->setTimezone($loc);
+
+            $dueStatus = false;
+            $tmpDueDate = strtotime($trans->dueDate);
+
+            $now = time();
+            if($now > $tmpDueDate){
+                $dueStatus = 'overdue';
+            }
+            elseif($now > $tmpDueDate - (1 * 24 * 60 * 60)){
+                $dueStatus = 'due';
+            }
             $transactions[] = [
-                'duedate' => date_format($date, "j M Y"),
-                'dueTime' => date_format($date, "g:i:s a"),
-                // TODO: Due Status
-                // 'dueStatus' => $trans['itemId'],
+                'duedate' => $date->format('d F Y'),
+                'dueTime' => $date->format('g:i a'),
+                'dueStatus' => $dueStatus,
                 'id' => $this->getBibId($trans->item->instanceId),
                 'item_id' => $trans->item->id,
                 'barcode' => $trans->item->barcode,
