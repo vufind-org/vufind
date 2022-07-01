@@ -33,12 +33,26 @@
         <tr>
           <th><?=$this->transEsc('Start Time')?>: </th>
           <?php $startTime = $core->xpath('//lst[@name="' . $coreName . '"]/date[@name="startTime"]') ?>
-          <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, (string)array_pop($startTime)))?></td>
+          <td>
+            <?php $startTime = (string)array_pop($startTime); ?>
+            <?php if (!empty($startTime)): ?>
+              <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $startTime))?>
+            <?php else: ?>
+              <?=$this->transEsc('index_unknown_datetime')?>
+            <?php endif; ?>
+          </td>
         </tr>
         <tr>
           <th><?=$this->transEsc('Last Modified')?>: </th>
           <?php $lastModified = $core->xpath('//lst[@name="' . $coreName . '"]/lst/date[@name="lastModified"]') ?>
-          <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, (string)array_pop($lastModified)))?></td>
+          <td>
+            <?php $lastModified = (string)array_pop($lastModified); ?>
+            <?php if (!empty($lastModified)):?>
+              <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $lastModified))?>
+            <?php else: ?>
+              <?=$this->transEsc('index_unknown_datetime')?>
+            <?php endif; ?>
+            </td>
         </tr>
         <tr>
           <th><?=$this->transEsc('Uptime')?>: </th>
