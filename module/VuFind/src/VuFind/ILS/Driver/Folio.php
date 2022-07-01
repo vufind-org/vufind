@@ -27,6 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -897,7 +899,6 @@ class Folio extends AbstractAPI implements
             '/circulation/loans',
             $query
         ) as $trans) {
-            
             $date = new DateTime($trans->dueDate, new DateTimeZone('UTC'));
             $loc = (new DateTime)->getTimezone();
             $date->setTimezone($loc);
@@ -906,10 +907,9 @@ class Folio extends AbstractAPI implements
             $tmpDueDate = strtotime($trans->dueDate);
 
             $now = time();
-            if($now > $tmpDueDate){
+            if ($now > $tmpDueDate) {
                 $dueStatus = 'overdue';
-            }
-            elseif($now > $tmpDueDate - (1 * 24 * 60 * 60)){
+            } elseif ($now > $tmpDueDate - (1 * 24 * 60 * 60)) {
                 $dueStatus = 'due';
             }
             $transactions[] = [
