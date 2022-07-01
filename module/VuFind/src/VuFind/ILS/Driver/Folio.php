@@ -27,6 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -605,7 +607,10 @@ class Folio extends AbstractAPI implements
                     $item->itemLevelCallNumber ?? ''
                 );
 
-                $dueDate = new DateTime($item->status->date, new DateTimeZone('UTC'));
+                $dueDate = new DateTime(
+                    $item->status->date,
+                    new DateTimeZone('UTC')
+                );
                 $loc = (new DateTime)->getTimezone();
                 $dueDate->setTimezone($loc);
 
