@@ -38,8 +38,7 @@
         <tr>
           <th><?=$this->transEsc('Last Modified')?>: </th>
           <?php $lastModified = $core->xpath('//lst[@name="' . $coreName . '"]/lst/date[@name="lastModified"]') ?>
-          <td><?php //=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, (string)array_pop($lastModified)))?></td>
-          <td><?=array_pop($lastModified)?></td>
+          <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, (string)array_pop($lastModified)))?></td>
         </tr>
         <tr>
           <th><?=$this->transEsc('Uptime')?>: </th>
