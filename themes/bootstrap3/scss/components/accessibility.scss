@@ -8,12 +8,12 @@ a {
 }
 
 /* AAA Color Contrasts */
-$badge-bg: #595959;
+$badge-bg: #595959 !default;
 
-$breadcrumb-color: #535353;
-$breadcrumb-active-color: #444;
+$breadcrumb-color: #535353 !default;
+$breadcrumb-active-color: #444 !default;
 
-$state-danger-text: #8a211e;
+$state-danger-text: #8a211e !default;
 .alert-danger,
 .alert-danger a {
   color: $state-danger-text;
