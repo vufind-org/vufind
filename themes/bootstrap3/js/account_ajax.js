@@ -236,6 +236,9 @@ $(document).ready(function registerAccountAjax() {
       if (status.in_transit > 0) {
         html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
+      if (status.other > 0) {
+        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+      }
       if (html !== '') {
         $element.html(html);
       } else {
@@ -245,7 +248,7 @@ $(document).ready(function registerAccountAjax() {
       return level;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
   });
 
@@ -262,6 +265,9 @@ $(document).ready(function registerAccountAjax() {
       if (status.in_transit > 0) {
         html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
+      if (status.other > 0) {
+        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+      }
       if (html !== '') {
         $element.html(html);
       } else {
@@ -271,7 +277,7 @@ $(document).ready(function registerAccountAjax() {
       return level;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
   });
 
@@ -288,6 +294,9 @@ $(document).ready(function registerAccountAjax() {
       if (status.in_transit > 0) {
         html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
+      if (status.other > 0) {
+        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+      }
       if (html !== '') {
         $element.html(html);
       } else {
@@ -297,7 +306,7 @@ $(document).ready(function registerAccountAjax() {
       return level;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
   });
 });

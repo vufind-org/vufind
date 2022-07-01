@@ -274,13 +274,17 @@ footer {
   margin-top: 3px;
 }
 
-.checkedout-status .badge {
+.checkedout-status .badge,
+.holds-status .badge,
+.storageretrievalrequests-status .badge,
+.illrequests-status .badge {
   border-radius: 2px;
   margin: 0 2px;
   border: 1px solid; /* color inherited from bootstrap */
   height: 20px;
 }
 .myresearch-menu .active .status .badge {
+  border-radius: 2px;
   color: #fff;
   background-color: transparent;
   border: 1px solid #fff;
