@@ -145,20 +145,4 @@ class Feedback extends Gateway
         };
         return $this->delete($callback);
     }
-
-    /**
-     * Get available feedback statuses
-     *
-     * @return array
-     */
-    public function getStatuses(): array
-    {
-        return [
-            'open',
-            'in progress',
-            'pending',
-            'answered',
-            'closed',
-        ];
-    }
 }

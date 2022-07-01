@@ -84,7 +84,7 @@ class FeedbackController extends AbstractAdmin
         $view->setVariables(
             [
                 'feedback' => $feedback,
-                'statuses' => $feedbackTable->getStatuses(),
+                'statuses' => $this->getStatuses(),
                 'uniqueForms' => $this->getUniqueColumn('form_name'),
                 'uniqueSites' => $this->getUniqueColumn('site_url'),
                 'params' => $this->params
@@ -286,5 +286,21 @@ class FeedbackController extends AbstractAdmin
     {
         return ("ALL" !== $value && null !== $value)
             ? $value : null;
+    }
+
+    /**
+     * Get available feedback statuses
+     *
+     * @return array
+     */
+    protected function getStatuses(): array
+    {
+        return [
+            'open',
+            'in progress',
+            'pending',
+            'answered',
+            'closed',
+        ];
     }
 }
