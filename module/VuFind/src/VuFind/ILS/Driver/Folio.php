@@ -607,12 +607,16 @@ class Folio extends AbstractAPI implements
                     $item->itemLevelCallNumber ?? ''
                 );
 
-                $dueDate = new DateTime(
-                    $item->status->date,
-                    new DateTimeZone('UTC')
-                );
-                $loc = (new DateTime)->getTimezone();
-                $dueDate->setTimezone($loc);
+                $dueDateValue = '';
+                if ($item->status->name == 'Checked out') {
+                    $dueDate = new DateTime(
+                        $item->status->date,
+                        new DateTimeZone('UTC')
+                    );
+                    $loc = (new DateTime)->getTimezone();
+                    $dueDate->setTimezone($loc);
+                    $dueDateValue = $dueDate->format('j F Y');
+                }
 
                 $items[] = $callNumberData + [
                     'id' => $bibId,
@@ -621,7 +625,7 @@ class Folio extends AbstractAPI implements
                     'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
-                    'duedate' => $dueDate->format('j F Y'),
+                    'duedate' => $dueDateValue,
                     'availability' => $item->status->name == 'Available',
                     'is_holdable' => $this->isHoldable($locationName),
                     'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
