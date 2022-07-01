@@ -41,7 +41,7 @@ namespace VuFind\Form\Handler;
 interface HandlerInterface
 {
     /**
-     * Gets data from submitted form and process them.
+     * Get data from submitted form and process them.
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params

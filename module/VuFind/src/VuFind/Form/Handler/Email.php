@@ -90,10 +90,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
     }
 
     /**
-     * Gets data from submitted form and process them.
-     * Returns array with keys: (bool) success - mandatory, (string) errorMessages,
-     * (string) successMessage, (string) errorMessagesDetailed - used to log an
-     * error
+     * Get data from submitted form and process them.
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
