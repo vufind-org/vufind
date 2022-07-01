@@ -1101,7 +1101,7 @@ class Form extends \Laminas\Form\Form implements
      */
     protected function getElementId(string $id): string
     {
-        return 'form_' . $this->formConfig['id'] . '_' . $id;
+        return 'form_' . $this->getFormId() . '_' . $id;
     }
 
     /**
