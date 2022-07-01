@@ -73,11 +73,9 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
         foreach ($requests as $request) {
             if (!empty($request['available'])) {
                 $status['available'] += 1;
-            }
-            else if (!empty($request['in_transit'])) {
+            } elseif (!empty($request['in_transit'])) {
                 $status['in_transit'] += 1;
-            }
-            else {
+            } else {
                 $status['other'] += 1;
             }
         }
