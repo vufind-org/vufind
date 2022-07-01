@@ -385,6 +385,7 @@ updated_by int DEFAULT NULL,
 status feedback_status NOT NULL DEFAULT 'open',
 site_url varchar(255) NOT NULL,
 PRIMARY KEY (id),
+KEY user_id (user_id),
 CONSTRAINT feedback_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL,
 CONSTRAINT feedback_ibfk_2 FOREIGN KEY (updated_by) REFERENCES "user" (id) ON DELETE SET NULL
 );
