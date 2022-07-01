@@ -111,7 +111,11 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
 
         $handlers = $form->getSecondaryHandlers();
         foreach ($handlers as $handler) {
-            $handler->handle($form, $params, $user ?: null);
+            try {
+                $handler->handle($form, $params, $user ?: null);
+            } catch (\Exception $e) {
+                $this->logError($e->getMessage());
+            }
         }
 
         return $view;
