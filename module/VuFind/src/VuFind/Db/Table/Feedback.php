@@ -102,9 +102,17 @@ class Feedback extends Gateway
         if (null !== $status) {
             $select->where->equalTo('status', $status);
         }
-        $select->join(['u' => 'user'], 'u.id = feedback.user_id', [], 'left')
-            ->join(['m' => 'user'], 'm.id = feedback.updated_by', [], 'left')
-            ->order('created DESC');
+        $select->join(
+            ['u' => 'user'],
+            'u.id = feedback.user_id',
+            [],
+            $select::JOIN_LEFT
+        )->join(
+            ['m' => 'user'],
+            'm.id = feedback.updated_by',
+            [],
+            $select::JOIN_LEFT
+        )->order('created DESC');
 
         if (null !== $page) {
             $select->limit($limit);
