@@ -1123,11 +1123,7 @@ class Form extends \Laminas\Form\Form implements
     public function getSecondaryHandlers(): array
     {
         $handlerNames = (array)($this->formConfig['secondaryHandlers'] ?? []);
-        $handlers = [];
-        foreach ($handlerNames as $handlerName) {
-            $handlers[] = $this->handlerManager->get($handlerName);
-        }
-        return $handlers;
+        return array_map([$this->handlerManager, 'get'], $handlerNames);
     }
 
     /**
