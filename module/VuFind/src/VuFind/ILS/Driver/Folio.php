@@ -609,13 +609,25 @@ class Folio extends AbstractAPI implements
 
                 $dueDateValue = '';
                 if ($item->status->name == 'Checked out') {
-                    $dueDate = new DateTime(
-                        $item->status->date,
-                        new DateTimeZone('UTC')
-                    );
-                    $loc = (new DateTime)->getTimezone();
-                    $dueDate->setTimezone($loc);
-                    $dueDateValue = $dueDate->format('j F Y');
+                    // extract itemId & construct query
+                    $query = [
+                        'query' => 'itemId==' . $item->id
+                    ];
+                    // call /circulation/loans to extract dueDate
+                    foreach ($this->getPagedResults(
+                        'loans',
+                        '/circulation/loans',
+                        $query
+                    ) as $loan) { 
+                        $dueDate = new DateTime(
+                            $loan->dueDate,
+                            new DateTimeZone('UTC')
+                        );
+                        $loc = (new DateTime)->getTimezone();
+                        $dueDate->setTimezone($loc);
+                        $dueDateValue = $this->dateConverter
+                            ->convertToDisplayDateAndTime('U', $dueDate->format('U'));
+                    }
                 }
 
                 $items[] = $callNumberData + [
