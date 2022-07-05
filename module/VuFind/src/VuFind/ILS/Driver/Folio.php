@@ -904,7 +904,7 @@ class Folio extends AbstractAPI implements
             $date->setTimezone($loc);
 
             $dueStatus = false;
-            $tmpDueDate = strtotime($trans->dueDate);
+            $tmpDueDate = $date->getTimestamp();
 
             $now = time();
             if ($now > $tmpDueDate) {
