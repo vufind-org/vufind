@@ -9,5 +9,7 @@
     <?php if ($this->user != false && $this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
       <br><a href="<?=$this->url('myresearch-publications')?>">Would you like to publish something?</a>
     <?php endif; ?>
+  <?php elseif ($this->user != false && $this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
+    <span class="save-record toolbar-btn btn-type-save">Another user already has rights to this authority record</span>
   <?php endif; ?>
 </div>
