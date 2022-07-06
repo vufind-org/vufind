@@ -283,6 +283,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     {
         $input = [];
         $output = new \DOMDocument('1.0', 'utf-8');
+        // Leverage the data provider to create an array of input elements and
+        // an expected output document to compare against real output:
         foreach ($this->nameProvider() as $current) {
             $input[] = new \DOMElement('name', $current[0]);
             $output->appendChild(new \DOMElement('name', $current[1]));
