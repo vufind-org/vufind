@@ -20,7 +20,7 @@ forms:
              - option-1
              - option-2
         label: select2
-        
+
       - name: select3
         type: select
         options:
@@ -151,8 +151,46 @@ forms:
         label: checkbox
         requireOne: true
 
+  TestSenderFields:
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: phone
+        type: text
+        label: Phone Number
+        group: __sender__
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments
+        required: true
+
+  TestSenderFieldsWithSettings:
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+        settings:
+        - size: 100
+      - name: phone
+        type: text
+        label: Phone Number
+        group: __sender__
+      - name: email
+        type: email
+        label: feedback_email
+        settings:
+        - [aria-label, Test label]
+      - name: message
+        type: textarea
+        label: Comments
+        required: true
+
   TestSubjectEmailWithPlaceholders:
-    emailSubject: Subject %%text1%% %%text2%% %%checkbox%% 
+    emailSubject: Subject %%text1%% %%text2%% %%checkbox%%
     fields:
       - name: text1
         type: text

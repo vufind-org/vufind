@@ -50,8 +50,8 @@ class Missing extends DefaultRecord
      */
     public function __construct($mainConfig = null, $recordConfig = null)
     {
-        $this->sourceIdentifier = 'missing';
         parent::__construct($mainConfig, $recordConfig);
+        $this->setSourceIdentifiers('missing');
     }
 
     /**

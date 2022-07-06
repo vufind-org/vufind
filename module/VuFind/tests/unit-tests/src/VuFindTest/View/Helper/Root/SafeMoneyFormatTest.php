@@ -80,21 +80,19 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      */
     public function testFormatting()
     {
-        $escaper = new \Laminas\View\Helper\EscapeHtml();
-        $view = new \Laminas\View\Renderer\PhpRenderer();
-        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $container->set('escapeHtml', $escaper);
-        $view->setHelperPluginManager($container);
-
         // test default settings
-        $smf = new SafeMoneyFormat();
-        $smf->setView($view);
+        $smf = new SafeMoneyFormat(
+            new \VuFind\Service\CurrencyFormatter(),
+            new \Laminas\View\Helper\EscapeHtml()
+        );
         $this->assertEquals('$3.00', $smf(3));
         $this->assertEquals('€3.00', $smf(3, 'EUR'));
 
         // test override default currency
-        $smf = new SafeMoneyFormat('EUR');
-        $smf->setView($view);
+        $smf = new SafeMoneyFormat(
+            new \VuFind\Service\CurrencyFormatter('EUR'),
+            new \Laminas\View\Helper\EscapeHtml()
+        );
         $this->assertEquals('€3.00', $smf(3));
         $this->assertEquals('$3.00', $smf(3, 'USD'));
     }

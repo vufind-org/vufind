@@ -31,8 +31,8 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Row\User;
 use VuFind\ILS\Connection;
+use VuFind\Service\CurrencyFormatter;
 use VuFind\Session\Settings as SessionSettings;
-use VuFind\View\Helper\Root\SafeMoneyFormat;
 
 /**
  * "Get User Fines" AJAX handler
@@ -46,30 +46,30 @@ use VuFind\View\Helper\Root\SafeMoneyFormat;
 class GetUserFines extends AbstractIlsAndUserAction
 {
     /**
-     * Money formatting view helper
+     * Currency formatter
      *
-     * @var SafeMoneyFormat
+     * @var CurrencyFormatter
      */
-    protected $safeMoneyFormat;
+    protected $currencyFormatter;
 
     /**
      * Constructor
      *
-     * @param SessionSettings  $ss               Session settings
-     * @param Connection       $ils              ILS connection
-     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
-     * @param User|bool        $user             Logged in user (or false)
-     * @param SafeMoneyFormat  $safeMoneyFormat  Money formatting view helper
+     * @param SessionSettings   $ss                Session settings
+     * @param Connection        $ils               ILS connection
+     * @param ILSAuthenticator  $ilsAuthenticator  ILS authenticator
+     * @param User|bool         $user              Logged in user (or false)
+     * @param CurrencyFormatter $currencyFormatter Currency formatter
      */
     public function __construct(
         SessionSettings $ss,
         Connection $ils,
         ILSAuthenticator $ilsAuthenticator,
         $user,
-        SafeMoneyFormat $safeMoneyFormat
+        CurrencyFormatter $currencyFormatter
     ) {
         parent::__construct($ss, $ils, $ilsAuthenticator, $user);
-        $this->safeMoneyFormat = $safeMoneyFormat;
+        $this->currencyFormatter = $currencyFormatter;
     }
 
     /**
@@ -94,7 +94,7 @@ class GetUserFines extends AbstractIlsAndUserAction
             $sum += $fine['balance'];
         }
         $value = $sum / 100;
-        $display = ($this->safeMoneyFormat)($sum / 100);
+        $display = $this->currencyFormatter->convertToDisplayFormat($value);
         return $this->formatResponse(compact('value', 'display'));
     }
 }

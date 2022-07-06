@@ -15,15 +15,26 @@
     'wrapper-class' => false,
     'wrapper-tagname' => 'div',
   ];
+  $facetLightboxParams = http_build_query(
+      [
+          'facet' => $this->title,
+          'facetop' => $this->cluster['list'][0]['operator'] ?? 'AND',
+          'facetexclude' => $this->allowExclude ? 1 : 0,
+      ],
+      '',
+      '&amp;'
+  );
+  $moreUrl = '#';
+  if ($facetLightbox) {
+    $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+    if (!empty($this->baseUriExtra)) {
+      $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
+    }
+  }
 ?>
 <div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
     <?php if ($i == $this->facets_before_more): ?>
-      <?php
-        $moreUrl = $facetLightbox
-          ? $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0)
-          : '#';
-      ?>
       <?php if ($alwaysUseLightbox): ?>
         <a class="facet narrow-toggle more-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
           <span class="text"><?=$this->transEsc('more_ellipsis')?></span>
@@ -42,13 +53,7 @@
 
   <?php /* LESS and SEE MORE links */ ?>
   <?php if (isset($i) && $i >= $this->facets_before_more): ?>
-    <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
-      <?php
-        $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
-        if (!empty($this->baseUriExtra)) {
-          $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
-        }
-      ?>
+    <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox): ?>
       <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
         <span class="text"><?=$this->transEsc('see_all_ellipsis')?></span>
       </a>

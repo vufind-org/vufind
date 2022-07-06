@@ -75,21 +75,6 @@ class ContentController extends AbstractBase
     }
 
     /**
-     * Action called if matched action does not exist
-     *
-     * @return ViewModel
-     */
-    public function notFoundAction(): ViewModel
-    {
-        $response   = $this->response;
-
-        if ($response instanceof \Laminas\Http\Response) {
-            return $this->createHttpNotFoundModel($response);
-        }
-        return $this->createConsoleNotFoundModel($response);
-    }
-
-    /**
      * Get ViewModel for markdown based page
      *
      * @param string $page Page name/route (if applicable)

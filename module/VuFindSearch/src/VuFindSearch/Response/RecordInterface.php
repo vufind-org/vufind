@@ -47,8 +47,21 @@ interface RecordInterface
      * @param string $identifier Backend identifier
      *
      * @return void
+     *
+     * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier);
+
+    /**
+     * Set the source backend identifiers.
+     *
+     * @param string $recordSourceId  Record source identifier
+     * @param string $searchBackendId Search backend identifier (if different from
+     * $recordSourceId)
+     *
+     * @return void
+     */
+    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '');
 
     /**
      * Return the source backend identifier.
@@ -56,4 +69,38 @@ interface RecordInterface
      * @return string
      */
     public function getSourceIdentifier();
+
+    /**
+     * Return the search backend identifier used to find the record.
+     *
+     * @return string
+     */
+    public function getSearchBackendIdentifier();
+
+    /**
+     * Add a label for the record
+     *
+     * @param string $label Label, may be a translation key
+     * @param string $class Label class
+     *
+     * @return void
+     */
+    public function addLabel(string $label, string $class);
+
+    /**
+     * Set the labels for the record
+     *
+     * @param array $labels An array of associative arrays with keys 'label' and
+     * 'class'
+     *
+     * @return void
+     */
+    public function setLabels(array $labels);
+
+    /**
+     * Return all labels for the record
+     *
+     * @return array An array of associative arrays with keys 'label' and 'class'
+     */
+    public function getLabels();
 }

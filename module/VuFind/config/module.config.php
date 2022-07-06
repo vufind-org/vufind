@@ -338,7 +338,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'League\CommonMark\MarkdownConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
@@ -394,6 +394,7 @@ $config = [
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
+            'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',
             'VuFind\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'VuFind\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\ILS\Logic\Holds' => 'VuFind\ILS\Logic\LogicFactory',
@@ -420,16 +421,17 @@ $config = [
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Role\PermissionDeniedManagerFactory',
             'VuFind\Search\BackendManager' => 'VuFind\Search\BackendManagerFactory',
-            'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
-            'VuFind\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'VuFind\Search\FacetCache\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Factory\UrlQueryHelperFactory' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
+            'VuFind\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'VuFind\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Search\SearchNormalizer' => 'VuFind\Search\SearchNormalizerFactory',
             'VuFind\Search\SearchRunner' => 'VuFind\Search\SearchRunnerFactory',
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',
+            'VuFind\Search\Solr\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelperFactory',
             'VuFind\Security\CspHeaderGenerator' => 'VuFind\Security\CspHeaderGeneratorFactory',
             'VuFind\Security\NonceGenerator' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Service\CurrencyFormatter' => 'VuFind\Service\CurrencyFormatterFactory',
@@ -442,7 +444,7 @@ $config = [
             'VuFind\Tags' => 'VuFind\TagsFactory',
             'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
-            'VuFind\Validator\Csrf' => 'VuFind\Validator\CsrfFactory',
+            'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
@@ -461,6 +463,7 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'League\CommonMark\MarkdownConverterInterface' => 'League\CommonMark\ConverterInterface',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
@@ -521,7 +524,9 @@ $config = [
             'VuFind\Translator' => 'Laminas\Mvc\I18n\Translator',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
-            'Laminas\Validator\Csrf' => 'VuFind\Validator\Csrf',
+            'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
         ],
         'shared' => [
             'VuFind\Form\Form' => false,
@@ -653,6 +658,13 @@ $recordRoutes = [
     'search2collectionrecord' => 'Search2Record',
 ];
 
+// Define non tab record actions
+$nonTabRecordActions = [
+    'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
+    'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink',
+];
+
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
     'Feedback' => ['feedback-form' => 'Form/[:id]'],
@@ -702,7 +714,7 @@ $staticRoutes = [
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
-    'Search/Advanced', 'Search/CollectionFacetList',
+    'Search/Advanced', 'Search/Blended', 'Search/CollectionFacetList',
     'Search/EditMemory', 'Search/Email',
     'Search/FacetList', 'Search/History', 'Search/Home', 'Search/NewItem',
     'Search/OpenSearch', 'Search/Reserves', 'Search/ReservesFacetList',
@@ -721,6 +733,7 @@ $staticRoutes = [
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addNonTabRecordActions($config, $nonTabRecordActions);
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);

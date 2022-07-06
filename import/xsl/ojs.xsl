@@ -10,6 +10,7 @@
     <xsl:param name="id_tag_name">identifier</xsl:param>
     <xsl:param name="change_tracking_core">biblio</xsl:param>
     <xsl:param name="change_tracking_date_tag_name"></xsl:param>
+    <xsl:param name="preferred_lang"></xsl:param>
     <xsl:param name="workKey_include_regEx"></xsl:param>
     <xsl:param name="workKey_exclude_regEx"></xsl:param>
     <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
@@ -111,20 +112,50 @@
                 </xsl:if>
 
                 <!-- TITLE -->
-                <xsl:if test="dc:title[normalize-space()]">
-                    <field name="title">
-                        <xsl:value-of select="dc:title[normalize-space()]"/>
-                    </field>
-                    <field name="title_short">
-                        <xsl:value-of select="dc:title[normalize-space()]"/>
-                    </field>
-                    <field name="title_full">
-                        <xsl:value-of select="dc:title[normalize-space()]"/>
-                    </field>
-                    <field name="title_sort">
-                        <xsl:value-of select="php:function('VuFind::stripArticles', string(dc:title[normalize-space()]))"/>
-                    </field>
-                </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="dc:title[@xml:lang=$preferred_lang][normalize-space()]">
+                        <field name="title">
+                            <xsl:value-of select="dc:title[@xml:lang=$preferred_lang][normalize-space()]"/>
+                        </field>
+                        <field name="title_short">
+                            <xsl:value-of select="dc:title[@xml:lang=$preferred_lang][normalize-space()]"/>
+                        </field>
+                        <field name="title_full">
+                            <xsl:value-of select="dc:title[@xml:lang=$preferred_lang][normalize-space()]"/>
+                        </field>
+                        <field name="title_sort">
+                            <xsl:value-of select="php:function('VuFind::stripArticles', string(dc:title[@xml:lang=$preferred_lang][normalize-space()]))"/>
+                        </field>
+                        <xsl:for-each select="dc:title[@xml:lang!=$preferred_lang][normalize-space()]">
+                            <field name="title_alt">
+                                <xsl:value-of select="."/>
+                            </field>
+                        </xsl:for-each>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:for-each select="dc:title[normalize-space()]">
+                            <xsl:if test="position()=1">
+                                <field name="title">
+                                    <xsl:value-of select="."/>
+                                </field>
+                                <field name="title_short">
+                                    <xsl:value-of select="."/>
+                                </field>
+                                <field name="title_full">
+                                    <xsl:value-of select="."/>
+                                </field>
+                                <field name="title_sort">
+                                    <xsl:value-of select="php:function('VuFind::stripArticles', string(.))"/>
+                                </field>
+                            </xsl:if>
+                            <xsl:if test="position()>1">
+                                <field name="title_alt">
+                                    <xsl:value-of select="."/>
+                                </field>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </xsl:otherwise>
+                </xsl:choose>
 
                 <!-- DESCRIPTION -->
                 <xsl:if test="dc:description">
