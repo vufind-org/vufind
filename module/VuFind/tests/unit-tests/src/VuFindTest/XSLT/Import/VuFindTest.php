@@ -244,4 +244,52 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
             );
         }
     }
+
+    /**
+     * DataProvider for name-related tests
+     *
+     * @return array
+     */
+    public function nameProvider(): array
+    {
+        return [
+            'single name' => ['foo', 'foo'],
+            'two-part name' => ['foo bar', 'bar, foo'],
+            'long name' => ['foo bar baz xyzzy', 'xyzzy, foo bar baz'],
+        ];
+    }
+
+    /**
+     * Test the invertName helper.
+     *
+     * @param string $input  Input to test
+     * @param string $output Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider nameProvider
+     */
+    public function testInvertName(string $input, string $output): void
+    {
+        $this->assertEquals($output, VuFind::invertName($input));
+    }
+
+    /**
+     * Test the invertNames helper.
+     *
+     * @return void
+     */
+    public function testInvertNames(): void
+    {
+        $input = [];
+        $output = new \DOMDocument('1.0', 'utf-8');
+        foreach ($this->nameProvider() as $current) {
+            $input[] = new \DOMElement('name', $current[0]);
+            $output->appendChild(new \DOMElement('name', $current[1]));
+        }
+        $this->assertEquals(
+            $output->saveXML(),
+            VuFind::invertNames($input)->saveXML()
+        );
+    }
 }
