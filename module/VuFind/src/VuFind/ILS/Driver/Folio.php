@@ -900,21 +900,29 @@ class Folio extends AbstractAPI implements
             $query
         ) as $trans) {
             $date = new DateTime($trans->dueDate, new DateTimeZone('UTC'));
-            $loc = (new DateTime)->getTimezone();
-            $date->setTimezone($loc);
+            $localTimezone = (new DateTime)->getTimezone();
+            $date->setTimezone($localTimezone);
 
             $dueStatus = false;
-            $tmpDueDate = $date->getTimestamp();
+            $dueDateTimestamp = $date->getTimestamp();
 
             $now = time();
-            if ($now > $tmpDueDate) {
+            if ($now > $dueDateTimestamp) {
                 $dueStatus = 'overdue';
-            } elseif ($now > $tmpDueDate - (1 * 24 * 60 * 60)) {
+            } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
                 $dueStatus = 'due';
             }
             $transactions[] = [
-                'duedate' => $date->format('d F Y'),
-                'dueTime' => $date->format('g:i a'),
+                'duedate' =>
+                    $this->dateConverter->convertToDisplayDate(
+                        'U',
+                        $dueDateTimestamp
+                    ),
+                'dueTime' =>
+                    $this->dateConverter->convertToDisplayTime(
+                        'U',
+                        $dueDateTimestamp
+                    ),
                 'dueStatus' => $dueStatus,
                 'id' => $this->getBibId($trans->item->instanceId),
                 'item_id' => $trans->item->id,
