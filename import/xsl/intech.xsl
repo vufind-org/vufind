@@ -72,13 +72,6 @@
                     </xsl:for-each>
                 </xsl:if>
 
-                <!-- FORMAT -->
-                <!-- populating the format field with dc.type instead, see TYPE below.
-                     if you like, you can uncomment this to add a hard-coded format
-                     in addition to the dynamic ones extracted from the record.
-                <field name="format">Online</field>
-                -->
-
                 <!-- SUBJECT -->
                 <xsl:if test="dc:subject">
                     <xsl:for-each select="dc:subject">
@@ -109,9 +102,10 @@
                 </xsl:if>
 
                 <!-- TYPE -->
+                <field name="format">Electronic</field>
                 <xsl:if test="dc:type">
                     <field name="format">
-                        <xsl:value-of select="dc:type" />
+                        <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(dc:type)), 'intech_format_map.properties')"/>
                     </field>
                 </xsl:if>
 
