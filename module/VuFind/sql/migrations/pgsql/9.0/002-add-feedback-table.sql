@@ -1,4 +1,3 @@
-CREATE TYPE feedback_status AS enum('open','in progress','pending','answered','closed');
 CREATE TABLE feedback (
 id SERIAL,
 user_id int DEFAULT NULL,
@@ -8,7 +7,7 @@ form_name varchar(255) NOT NULL,
 created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 updated timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 updated_by int DEFAULT NULL,
-status feedback_status NOT NULL DEFAULT 'open',
+status varchar(255) NOT NULL DEFAULT 'open',
 site_url varchar(255) NOT NULL,
 PRIMARY KEY (id),
 KEY user_id (user_id),
