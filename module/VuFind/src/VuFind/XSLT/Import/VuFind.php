@@ -526,6 +526,8 @@ class VuFind
     /**
      * Is the provided name inverted ("Last, First") or not ("First Last")?
      *
+     * @param string $name Name to check
+     *
      * @return bool
      */
     public static function isInvertedName(string $name): bool
