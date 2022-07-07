@@ -121,7 +121,6 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
       </table>
       <input type="submit" name="deleteSelected" value="<?=$this->transEscAttr('delete_selected')?>" class="btn btn-default">
       <input type="submit" name="deletePage" value="<?=$this->transEscAttr('delete_page')?>" class="btn btn-default">
-      <input type="submit" name="deleteFilter" value="<?=$this->transEscAttr('delete_all')?>" class="btn btn-danger">
     </form>
     <?=$this->paginationControl($this->feedback, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
   <?php else:?>
