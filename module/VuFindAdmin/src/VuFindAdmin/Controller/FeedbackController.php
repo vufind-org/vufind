@@ -73,15 +73,13 @@ class FeedbackController extends AbstractAdmin
     public function homeAction()
     {
         $this->params = $this->params()->fromQuery();
-        $view = $this->createViewModel();
-        $view->setTemplate('admin/feedback/home');
         $feedbackTable = $this->getFeedbackTable();
         $feedback = $feedbackTable->getFeedbackByFilter(
             $this->convertFilter($this->getParam('form_name')),
             $this->convertFilter($this->getParam('site_url')),
             $this->convertFilter($this->getParam('status'))
         );
-        $view->setVariables(
+        $view = $this->createViewModel(
             [
                 'feedback' => $feedback,
                 'statuses' => $this->getStatuses(),
@@ -90,6 +88,7 @@ class FeedbackController extends AbstractAdmin
                 'params' => $this->params
             ]
         );
+        $view->setTemplate('admin/feedback/home');
         return $view;
     }
 
