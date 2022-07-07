@@ -46,7 +46,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
       <label for="feedbacksubmit">
         <input type="submit" id="feedbacksubmit" value="<?=$this->transEscAttr('Filter')?>" class="btn btn-primary" />
       </label>
-      <?php if ((null !== ($this->params['form_name'] ?? null)) || (null !== ($this->params['site_url'] ?? null)) || (null !== ($this->params['status'] ?? null))):?>
+      <?php if (('ALL' !== ($this->params['form_name'] ?? 'ALL')) || ('ALL' !== ($this->params['site_url'] ?? 'ALL')) || ('ALL' !== ($this->params['status'] ?? 'ALL'))):?>
         <a class = "btn btn-link" href="<?=$this->url('admin/feedback'); ?>"><?=$this->translate('clear_feedback_filter')?></a>
       <?php endif;?>
     </div>
