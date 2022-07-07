@@ -193,7 +193,7 @@ class TagsController extends AbstractAdmin
         // Default all messages to "All"; we'll make them more specific as needed:
         $userMsg = $tagMsg = $resourceMsg = 'All';
 
-        $userId = $this->getParam('user_id');
+        $userId = intval($this->getParam('user_id'));
         if ($userId) {
             $user = $this->getTable('user')->select(['id' => $userId])->current();
             if (!is_object($user)) {
@@ -202,7 +202,7 @@ class TagsController extends AbstractAdmin
             $userMsg = "{$user->username} ({$user->id})";
         }
 
-        $tagId = $this->getParam('tag_id');
+        $tagId = intval($this->getParam('tag_id'));
         if ($tagId) {
             $tag = $this->getTable('tags')->select(['id' => $tagId])->current();
             if (!is_object($tag)) {
@@ -211,7 +211,7 @@ class TagsController extends AbstractAdmin
             $tagMsg = "{$tag->tag} ({$tag->id})";
         }
 
-        $resourceId = $this->getParam('resource_id');
+        $resourceId = intval($this->getParam('resource_id'));
         if ($resourceId) {
             $resource = $this->getTable('resource')
                 ->select(['id' => $resourceId])->current();
