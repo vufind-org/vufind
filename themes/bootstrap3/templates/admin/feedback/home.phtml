@@ -52,11 +52,16 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
     </div>
   </form>
 
+  <?php ob_start(); ?>
+    <input type="submit" name="deleteSelected" value="<?=$this->transEscAttr('delete_selected')?>" class="btn btn-default">
+    <input type="submit" name="deletePage" value="<?=$this->transEscAttr('delete_page')?>" class="btn btn-default">
+  <?php $deleteButtons = ob_get_clean(); ?>
   <?php if (count($this->feedback) > 0):?>
     <form action="<?=$this->url('admin/feedback', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="form_name" value="<?=$this->escapeHtmlAttr($this->params['form_name'] ?? '') ?>" />
       <input type="hidden" name="site_url" value="<?=$this->escapeHtmlAttr($this->params['site_url'] ?? '') ?>" />
       <input type="hidden" name="status" value="<?=$this->escapeHtmlAttr($this->params['status'] ?? '') ?>" />
+      <?=$deleteButtons?>
       <table class="table table-striped">
         <tr>
           <th><?=$this->transEsc('Form name')?></th>
@@ -119,8 +124,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
           </tr>
         <?php endforeach; ?>
       </table>
-      <input type="submit" name="deleteSelected" value="<?=$this->transEscAttr('delete_selected')?>" class="btn btn-default">
-      <input type="submit" name="deletePage" value="<?=$this->transEscAttr('delete_page')?>" class="btn btn-default">
+      <?=$deleteButtons?>
     </form>
     <?=$this->paginationControl($this->feedback, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
   <?php else:?>
