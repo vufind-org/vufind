@@ -37,7 +37,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach ($this->statuses as $status): ?>
             <option value="<?=$this->escapeHtmlAttr($status)?>"<?php if ($status == ($this->params['status'] ?? null)): ?> selected="selected"<?php endif;?>>
-              <?=$this->transEsc('feedback_status_' . $status)?>
+              <?=$this->transEsc('feedback_status_' . $status, [], $status)?>
             </option>
           <?php endforeach; ?>
         </select>
@@ -126,7 +126,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
               <select class="form-control status_update" name="status_update">
                 <?php foreach ($this->statuses as $status): ?>
                   <option value="<?=$this->escapeHtmlAttr($status)?>"<?=$status == $feedbackItem->status ? ' selected="selected"' : ''?>>
-                    <?=$this->transEsc('feedback_status_' . $status)?>
+                    <?=$this->transEsc('feedback_status_' . $status, [], $status)?>
                   </option>
                 <?php endforeach; ?>
               </select>
