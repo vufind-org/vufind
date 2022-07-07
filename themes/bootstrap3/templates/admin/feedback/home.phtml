@@ -81,7 +81,17 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
               <?=$this->escapeHtml($feedbackItem->form_name)?>
             </td>
             <td><?=$this->escapeHtml($feedbackItem->site_url)?></td>
-            <td><?=$this->escapeHtml($feedbackItem->message)?></td>
+            <td>
+              <span id="shortMessage_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" class="collapse in message_<?=$this->escapeHtmlAttr($feedbackItem->id)?>"><?=$this->truncate($feedbackItem->message, 100, '')?></span>
+              <?php if (strlen(($feedbackItem->message)) > 100): ?>
+                <span id="fullMessage_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" class="collapse fullMessage message_<?=$this->escapeHtmlAttr($feedbackItem->id)?>"><?=$feedbackItem->message?></span>
+                <a id="toggleButton_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" data-toggle="collapse" data-target=".message_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" aria-controls="fullMessage_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" aria-expanded="false" >
+                  <?=$this->transEsc('more_ellipsis')?>
+                </a>
+              <?php endif; ?>
+            </td>
+
+              <?php //$this->escapeHtml($feedbackItem->message)?>
             <td>
               <?php if (!empty($data)): ?>
                 <a href="#" class="btn btn-default btn-info" data-toggle="modal" data-target="#feedback-<?=$feedbackItem->id?>">
@@ -149,6 +159,14 @@ $(document).ready(function() {
             '</form>');
         $('body').append(form);
         form.submit();
+    });
+
+    $('.fullMessage').on('show.bs.collapse', function() {
+        const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+        $('#toggleButton_' + id).text(VuFind.translate('less_ellipsis'));
+    }).on('hide.bs.collapse', function() {
+        const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+        $('#toggleButton_' + id).text(VuFind.translate('more_ellipsis'));
     });
 });
 JS;
