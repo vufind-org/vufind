@@ -191,7 +191,7 @@ class TagsController extends AbstractAdmin
     protected function getConfirmDeleteMessages($count)
     {
         // Default all messages to "All"; we'll make them more specific as needed:
-        $userMsg = $tagMsg = $resourceMsg = 'All';
+        $userMsg = $tagMsg = $resourceMsg = $this->translate('All');
 
         $userId = intval($this->getParam('user_id'));
         if ($userId) {
