@@ -37,7 +37,7 @@
             <?php $startTime = (string)array_pop($startTime); ?>
             <?=!empty($startTime)
               ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $startTime))
-              : $this->transEsc('index_unknown_datetime')
+              : '-'
             ?>
           </td>
         </tr>
@@ -48,7 +48,7 @@
             <?php $lastModified = (string)array_pop($lastModified); ?>
             <?=!empty($lastModified)
               ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $lastModified))
-              : $this->transEsc('index_unknown_datetime')
+              : '-'
             ?>
             </td>
         </tr>
