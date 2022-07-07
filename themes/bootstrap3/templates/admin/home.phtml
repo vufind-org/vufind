@@ -35,11 +35,10 @@
           <?php $startTime = $core->xpath('//lst[@name="' . $coreName . '"]/date[@name="startTime"]') ?>
           <td>
             <?php $startTime = (string)array_pop($startTime); ?>
-            <?php if (!empty($startTime)): ?>
-              <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $startTime))?>
-            <?php else: ?>
-              <?=$this->transEsc('index_unknown_datetime')?>
-            <?php endif; ?>
+            <?=!empty($startTime)
+              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $startTime))
+              : $this->transEsc('index_unknown_datetime')
+            ?>
           </td>
         </tr>
         <tr>
@@ -47,11 +46,10 @@
           <?php $lastModified = $core->xpath('//lst[@name="' . $coreName . '"]/lst/date[@name="lastModified"]') ?>
           <td>
             <?php $lastModified = (string)array_pop($lastModified); ?>
-            <?php if (!empty($lastModified)):?>
-              <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $lastModified))?>
-            <?php else: ?>
-              <?=$this->transEsc('index_unknown_datetime')?>
-            <?php endif; ?>
+            <?=!empty($lastModified)
+              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $lastModified))
+              : $this->transEsc('index_unknown_datetime')
+            ?>
             </td>
         </tr>
         <tr>
