@@ -260,6 +260,36 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * DataProvider for testIsInvertedName().
+     *
+     * @return array
+     */
+    public function isInvertedNameProvider(): array
+    {
+        return [
+            ['foo bar', false],
+            ['foo bar, jr.', false],
+            ['bar, foo', true],
+            ['bar, foo, jr.', true],
+        ];
+    }
+
+    /**
+     * Test the isInvertedName helper.
+     *
+     * @param string $input  Input to test
+     * @param bool   $output Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider isInvertedNameProvider
+     */
+    public function testIsInvertedName(string $input, bool $output): void
+    {
+        $this->assertEquals($output, VuFind::isInvertedName($input));
+    }
+
+    /**
      * Test the invertName helper.
      *
      * @param string $input  Input to test

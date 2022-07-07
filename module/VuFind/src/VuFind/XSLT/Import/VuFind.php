@@ -524,6 +524,28 @@ class VuFind
     }
 
     /**
+     * Is the provided name inverted ("Last, First") or not ("First Last")?
+     *
+     * @return bool
+     */
+    public static function isInvertedName(string $name): bool
+    {
+        $parts = explode(',', $name);
+        // If there are no commas, it's not inverted...
+        if (count($parts) < 2) {
+            return false;
+        }
+        // If there are commas, let's see if the last part is a title,
+        // in which case it could go either way, so we need to recalculate.
+        $lastPart = array_pop($parts);
+        $titles = ['jr', 'sr', 'dr', 'mrs', 'ii', 'iii', 'iv'];
+        if (in_array(strtolower(trim($lastPart, ' .')), $titles)) {
+            return count($parts) > 1;
+        }
+        return true;
+    }
+
+    /**
      * Invert "Firstname Lastname" authors into "Lastname, Firstname."
      *
      * @param string $rawName Raw name
@@ -553,7 +575,9 @@ class VuFind
     {
         $dom = new DOMDocument('1.0', 'utf-8');
         foreach ($input as $name) {
-            $inverted = self::invertName($name->textContent);
+            $inverted = self::isInvertedName($name->textContent)
+                ? $name->textContent
+                : self::invertName($name->textContent);
             $element = $dom->createElement('name');
             $element->nodeValue = htmlspecialchars($inverted);
             $dom->appendChild($element);
