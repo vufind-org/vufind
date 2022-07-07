@@ -44,25 +44,19 @@ use VuFind\Db\Table\Feedback;
 class FeedbackController extends AbstractAdmin
 {
     /**
-     * Params
-     *
-     * @var array
-     */
-    protected $params;
-
-    /**
      * Get the url parameters
      *
-     * @param string $param A key to check the url params for
+     * @param string $param          A key to check the url params for
+     * @param bool   $prioritizePost If true, check the POST params first
      *
      * @return string
      */
-    protected function getParam($param)
+    protected function getParam($param, $prioritizePost = false)
     {
-        return $this->params[$param] ?? $this->params()->fromPost(
-            $param,
-            $this->params()->fromQuery($param, null)
-        );
+        $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
+        $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
+        return $this->params()->$primary($param)
+            ?? $this->params()->$secondary($param);
     }
 
     /**
@@ -72,7 +66,6 @@ class FeedbackController extends AbstractAdmin
      */
     public function homeAction()
     {
-        $this->params = $this->params()->fromQuery();
         $feedbackTable = $this->getFeedbackTable();
         $feedback = $feedbackTable->getFeedbackByFilter(
             $this->convertFilter($this->getParam('form_name')),
@@ -85,7 +78,8 @@ class FeedbackController extends AbstractAdmin
                 'statuses' => $this->getStatuses(),
                 'uniqueForms' => $this->getUniqueColumn('form_name'),
                 'uniqueSites' => $this->getUniqueColumn('site_url'),
-                'params' => $this->params
+                'params'
+                    => $this->params()->fromQuery() + $this->params()->fromPost(),
             ]
         );
         $view->setTemplate('admin/feedback/home');
@@ -99,13 +93,12 @@ class FeedbackController extends AbstractAdmin
      */
     public function deleteAction()
     {
-        $this->params = $this->params()->fromPost();
-        $confirm = $this->getParam('confirm');
+        $confirm = $this->getParam('confirm', true);
         $feedbackTable = $this->getFeedbackTable();
         $originUrl = $this->url()->fromRoute('admin/feedback');
-        $formName = $this->getParam('form_name');
-        $siteUrl = $this->getParam('site_url');
-        $status = $this->getParam('status');
+        $formName = $this->getParam('form_name', true);
+        $siteUrl = $this->getParam('site_url', true);
+        $status = $this->getParam('status', true);
         $originUrl .= '?' . http_build_query(
             [
                 'form_name' => empty($formName) ? 'ALL' : $formName,
@@ -115,9 +108,9 @@ class FeedbackController extends AbstractAdmin
         );
         $newUrl = $this->url()->fromRoute('admin/feedback', ['action' => 'Delete']);
 
-        $ids = null === $this->getRequest()->getPost('deletePage')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = null === $this->getParam('deletePage', true)
+            ? $this->getParam('ids', true)
+            : $this->getParam('idsAll', true);
 
         if (!is_array($ids) || empty($ids)) {
             $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
@@ -152,19 +145,17 @@ class FeedbackController extends AbstractAdmin
      */
     protected function confirmDelete(array $ids, string $originUrl, string $newUrl)
     {
-        $count = count($ids);
-
         $data = [
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
                 'title' => "confirm_delete_feedback",
-                'messages' => $this->getConfirmDeleteMessages($count),
+                'messages' => $this->getConfirmDeleteMessages(count($ids)),
                 'ids' => $ids,
                 'extras' => [
-                    'form_name' => $this->getParam('form_name'),
-                    'site_url' => $this->getParam('site_url'),
-                    'status' => $this->getParam('status'),
+                    'form_name' => $this->getParam('form_name', true),
+                    'site_url' => $this->getParam('site_url', true),
+                    'status' => $this->getParam('status', true),
                     'ids' => $ids,
                 ]
             ]
@@ -184,31 +175,28 @@ class FeedbackController extends AbstractAdmin
         // Default all messages to "All"; we'll make them more specific as needed:
         $allMessage = $this->translate('All');
 
-        $formName = $this->getParam('form_name');
-        $formMessage = $formName ?: $allMessage;
-        $formMessage = $formMessage === "ALL" ? $allMessage : $formMessage;
+        $params = ['form_name', 'site_url', 'status'];
+        $paramMessages = [];
+        foreach ($params as $param) {
+            $value = $this->getParam($param, true);
+            $message = $value ?: $allMessage;
+            $message = $message === 'ALL' ? $allMessage : $message;
+            $paramMessages[$param] = $message;
+        }
 
-        $siteUrl = $this->getParam('site_url');
-        $siteMessage = $siteUrl ?: $allMessage;
-        $siteMessage = $siteMessage === "ALL" ? $allMessage : $siteMessage;
-
-        $status = $this->getParam('status');
-        $statusMessage = $status ?: $allMessage;
-        $statusMessage = $statusMessage === "ALL" ? $allMessage : $statusMessage;
-
-        $messages = [
-            [
-                'msg' => 'feedback_delete_warning',
-                'tokens' => ['%count%' => $count]
-            ]
+        $messages = [];
+        $messages[] = [
+            'msg' => 'feedback_delete_warning',
+            'tokens' => ['%count%' => $count]
         ];
-        if ($formName || $siteUrl || $status) {
+
+        if (array_filter(array_map([$this, 'getParam'], $params))) {
             $messages[] = [
                 'msg' => 'feedback_delete_filter',
                 'tokens' => [
-                    '%formname%' => $formMessage,
-                    '%siteurl%' => $siteMessage,
-                    '%status%' => $statusMessage,
+                    '%formname%' => $paramMessages['form_name'],
+                    '%siteurl%' => $paramMessages['site_url'],
+                    '%status%' => $paramMessages['status'],
                 ]
             ];
         }
@@ -223,10 +211,9 @@ class FeedbackController extends AbstractAdmin
      */
     public function updateStatusAction()
     {
-        $this->params = $this->params()->fromPost();
         $feedbackTable = $this->getFeedbackTable();
-        $status = $this->getParam('status');
-        $id = $this->getParam('id');
+        $status = $this->getParam('status', true);
+        $id = $this->getParam('id', true);
         $feedback = $feedbackTable->select(['id' => $id])->current();
         $feedback->status = $status;
         $success = $feedback->save();
