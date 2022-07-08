@@ -43,6 +43,8 @@ use VuFind\Config\Writer as ConfigWriter;
  */
 class InstallController extends AbstractBase
 {
+    public const MINIMAL_PHP_VERSION = '7.4.1';
+
     /**
      * Use preDispatch event to block access when appropriate.
      *
@@ -227,8 +229,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v7.3.0:
-        return PHP_VERSION_ID >= 70300;
+        // We need at least PHP version as defined in MINIMAL_PHP_VERSION:
+        return PHP_VERSION_ID >= $this->getMinimalPhpVersionId();
     }
 
     /**
@@ -261,8 +263,9 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = "VuFind requires PHP version 7.2 or newer; you are running "
-                . phpversion() . ".  Please upgrade.";
+            $msg = "VuFind requires PHP version " . $this->getMinimalPhpVersion()
+                . " or newer; you are running " . phpversion()
+                . ".  Please upgrade.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -921,5 +924,26 @@ class InstallController extends AbstractBase
             }
         }
         return $this->createViewModel(['checks' => $checks]);
+    }
+
+    /**
+     * Get minimal PHP version required for VuFind to run.
+     *
+     * @return string
+     */
+    protected function getMinimalPhpVersion(): string
+    {
+        return self::MINIMAL_PHP_VERSION;
+    }
+
+    /**
+     * Get minimal PHP version ID required for VuFind to run.
+     *
+     * @return int
+     */
+    protected function getMinimalPhpVersionId(): int
+    {
+        $version = explode('.', self::MINIMAL_PHP_VERSION);
+        return $version[0] * 10000 + $version[1] * 100 + $version[2];
     }
 }
