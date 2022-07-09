@@ -261,7 +261,7 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = "VuFind requires PHP version 7.2 or newer; you are running "
+            $msg = "VuFind requires PHP version 7.3 or newer; you are running "
                 . phpversion() . ".  Please upgrade.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
