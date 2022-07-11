@@ -43,8 +43,6 @@ use VuFind\Config\Writer as ConfigWriter;
  */
 class InstallController extends AbstractBase
 {
-    public const MINIMAL_PHP_VERSION = '7.4.1';
-
     /**
      * Use preDispatch event to block access when appropriate.
      *
@@ -933,7 +931,21 @@ class InstallController extends AbstractBase
      */
     protected function getMinimalPhpVersion(): string
     {
-        return self::MINIMAL_PHP_VERSION;
+        $composer = $this->getComposerJson();
+        if (empty($composer)) {
+            throw new \Exception('Cannot find composer.json');
+        }
+        $rawVersion = $composer['require']['php'] ?? '';
+        $version = preg_replace('/[^0-9. ]/', '', $rawVersion);
+        $version = preg_split('/[. ]/', $version);
+        if (count($version) >= 3) {
+            return sprintf('%d.%d.%d', $version[0], $version[1], $version[2]);
+        }
+        $version = $composer['config']['platform']['php'] ?? '';
+        if (!empty($version)) {
+            return $version;
+        }
+        throw new \Exception('Cannot parse PHP version from composer.json');
     }
 
     /**
@@ -943,7 +955,25 @@ class InstallController extends AbstractBase
      */
     protected function getMinimalPhpVersionId(): int
     {
-        $version = explode('.', self::MINIMAL_PHP_VERSION);
+        $version = explode('.', $this->getMinimalPhpVersion());
         return $version[0] * 10000 + $version[1] * 100 + $version[2];
+    }
+
+    /**
+     * Get composer.json data as array
+     *
+     * @return array
+     */
+    protected function getComposerJson(): array
+    {
+        try {
+            $composerJsonFileName = APPLICATION_PATH . '/composer.json';
+            if (file_exists($composerJsonFileName)) {
+                return json_decode(file_get_contents($composerJsonFileName), true);
+            }
+        } catch (\Throwable $exception) {
+            return [];
+        }
+        return [];
     }
 }
