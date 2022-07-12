@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Factory for configurable forms.
+ * Class DatabaseFactory
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) Moravian Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,28 +23,28 @@
  *
  * @category VuFind
  * @package  Form
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Form;
+namespace VuFind\Form\Handler;
 
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
-use Psr\Container\ContainerInterface;
 
 /**
- * Factory for configurable forms.
+ * Class DatabaseFactory
  *
  * @category VuFind
  * @package  Form
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FormFactory implements FactoryInterface
+class DatabaseFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -67,17 +69,13 @@ class FormFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->toArray();
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $viewHelperManager = $container->get('ViewHelperManager');
-        $handlerManager = $container->get(\VuFind\Form\Handler\PluginManager::class);
-
+        $dbTableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $router = $container->get('HttpRouter');
+        $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
+        $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         return new $requestedName(
-            $yamlReader,
-            $viewHelperManager,
-            $handlerManager,
-            $config
+            $dbTableManager->get(\VuFind\Db\Table\Feedback::class),
+            $baseUrl
         );
     }
 }

@@ -45,6 +45,20 @@
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field
 #
+#   primaryHandler (string)   Handlers to process form data - default is 'email', available
+#                             options are: 'email', 'database'. When this handler fails, the
+#                             whole feedback send action fails. You can add your own handler
+#                             by implementing \VuFind\Form\Handler\HandlerInterface, and adding
+#                             it to module config under key:
+#                               'vufind' -> 'plugin_manager' -> 'form_handler'
+#                             Example:
+#                               primaryHandler: database
+#   secondaryHandlers (array) Additional handlers could be defined here. They can fail silently,
+#                             but could be useful as safety/notify handlers.
+#                             Example:
+#                               secondaryHandlers:
+#                                 - email
+#
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
 #     post (string) Help text displayed at the end of the form (translation key)
@@ -146,7 +160,7 @@ forms:
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
-
+    primaryHandler: email
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
     response: Thank you for your feedback.
@@ -173,6 +187,7 @@ forms:
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
     response: Thank you for your feedback.
+    primaryHandler: email
 
     recipient:
       name: Your Library
@@ -236,5 +251,3 @@ forms:
         options:
           - Yes
           - No
-
-

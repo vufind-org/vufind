@@ -1,10 +1,10 @@
 <?php
 /**
- * Database table plugin manager
+ * Form handler plugin manager
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Moravian Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,21 +20,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Form
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Db\Table;
+namespace VuFind\Form\Handler;
 
 /**
- * Database table plugin manager
+ * Form handler plugin manager
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Form
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
@@ -44,21 +44,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'changetracker' => ChangeTracker::class,
-        'comments' => Comments::class,
-        'externalsession' => ExternalSession::class,
-        'oairesumption' => OaiResumption::class,
-        'record' => Record::class,
-        'resource' => Resource::class,
-        'resourcetags' => ResourceTags::class,
-        'search' => Search::class,
-        'session' => Session::class,
-        'shortlinks' => Shortlinks::class,
-        'tags' => Tags::class,
-        'user' => User::class,
-        'usercard' => UserCard::class,
-        'userlist' => UserList::class,
-        'userresource' => UserResource::class,
+        'database' => Database::class,
+        'email' => Email::class,
     ];
 
     /**
@@ -67,23 +54,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AuthHash::class => GatewayFactory::class,
-        ChangeTracker::class => GatewayFactory::class,
-        Comments::class => GatewayFactory::class,
-        ExternalSession::class => GatewayFactory::class,
-        Feedback::class => GatewayFactory::class,
-        OaiResumption::class => GatewayFactory::class,
-        Record::class => GatewayFactory::class,
-        Resource::class => ResourceFactory::class,
-        ResourceTags::class => CaseSensitiveTagsFactory::class,
-        Search::class => GatewayFactory::class,
-        Session::class => GatewayFactory::class,
-        Shortlinks::class => GatewayFactory::class,
-        Tags::class => CaseSensitiveTagsFactory::class,
-        User::class => UserFactory::class,
-        UserCard::class => GatewayFactory::class,
-        UserList::class => UserListFactory::class,
-        UserResource::class => GatewayFactory::class,
+        Database::class => DatabaseFactory::class,
+        Email::class => EmailFactory::class,
     ];
 
     /**
@@ -111,6 +83,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return Gateway::class;
+        return HandlerInterface::class;
     }
 }
