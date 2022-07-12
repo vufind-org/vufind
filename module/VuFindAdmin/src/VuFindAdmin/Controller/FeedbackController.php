@@ -127,7 +127,7 @@ class FeedbackController extends AbstractAdmin
         $this->flashMessenger()->addMessage(
             [
                 'msg' => 'feedback_delete_success',
-                'tokens' => ['%count%' => $delete]
+                'tokens' => ['%%count%%' => $delete]
             ],
             'success'
         );
@@ -187,16 +187,16 @@ class FeedbackController extends AbstractAdmin
         $messages = [];
         $messages[] = [
             'msg' => 'feedback_delete_warning',
-            'tokens' => ['%count%' => $count]
+            'tokens' => ['%%count%%' => $count]
         ];
 
         if (array_filter(array_map([$this, 'getParam'], $params))) {
             $messages[] = [
                 'msg' => 'feedback_delete_filter',
                 'tokens' => [
-                    '%formname%' => $paramMessages['form_name'],
-                    '%siteurl%' => $paramMessages['site_url'],
-                    '%status%' => $paramMessages['status'],
+                    '%%formname%%' => $paramMessages['form_name'],
+                    '%%siteurl%%' => $paramMessages['site_url'],
+                    '%%status%%' => $paramMessages['status'],
                 ]
             ];
         }
