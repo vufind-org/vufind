@@ -212,10 +212,10 @@ class FeedbackController extends AbstractAdmin
     public function updateStatusAction()
     {
         $feedbackTable = $this->getFeedbackTable();
-        $status = $this->getParam('status', true);
+        $newStatus = $this->getParam('new_status', true);
         $id = $this->getParam('id', true);
         $feedback = $feedbackTable->select(['id' => $id])->current();
-        $feedback->status = $status;
+        $feedback->status = $newStatus;
         $success = $feedback->save();
         if ($success) {
             $this->flashMessenger()->addMessage(
@@ -228,7 +228,17 @@ class FeedbackController extends AbstractAdmin
                 'error'
             );
         }
-        return $this->redirect()->toRoute('admin/feedback');
+        return $this->redirect()->toRoute(
+            'admin/feedback',
+            [],
+            [
+                'query' => [
+                    'form_name' => $this->getParam('form_name'),
+                    'site_url' => $this->getParam('site_url'),
+                    'status' => $this->getParam('status'),
+                ],
+            ]
+        );
     }
 
     /**
