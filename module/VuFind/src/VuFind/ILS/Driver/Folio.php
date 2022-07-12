@@ -544,6 +544,11 @@ class Folio extends AbstractAPI implements
      */
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
+        $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
+        $showTime = $this->config['Availability']['showTime'] ?? true;
+        $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $dueDateItemCount = 0;
+
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
@@ -608,7 +613,10 @@ class Folio extends AbstractAPI implements
                 );
 
                 $dueDateValue = '';
-                if ($item->status->name == 'Checked out') {
+                if ($item->status->name == 'Checked out'
+                    && $showDueDate
+                    && $dueDateItemCount < $maxNumDueDateItems
+                ) {
                     // extract itemId & construct query
                     $query = [
                         'query' => 'itemId==' . $item->id
@@ -618,16 +626,29 @@ class Folio extends AbstractAPI implements
                         'loans',
                         '/circulation/loans',
                         $query
-                    ) as $loan) { 
-                        $dueDate = new DateTime(
-                            $loan->dueDate,
-                            new DateTimeZone('UTC')
-                        );
-                        $loc = (new DateTime)->getTimezone();
-                        $dueDate->setTimezone($loc);
-                        $dueDateValue = $this->dateConverter
-                            ->convertToDisplayDateAndTime('U', $dueDate->format('U'));
+                    ) as $loan) {
+                        if (!isset($loan->returnDate)) {
+                            $dueDate = new DateTime(
+                                $loan->dueDate,
+                                new DateTimeZone('UTC')
+                            );
+                            $localTimezone = (new DateTime)->getTimezone();
+                            $dueDate->setTimezone($localTimezone);
+                            $dueDateValue = $this->dateConverter
+                                ->convertToDisplayDate(
+                                    'U',
+                                    $dueDate->format('U')
+                                );
+                            if ($showTime) {
+                                $dueDateValue = $this->dateConverter
+                                    ->convertToDisplayDateAndTime(
+                                        'U',
+                                        $dueDate->format('U')
+                                    );
+                            }
+                        }
                     }
+                    $dueDateItemCount += 1;
                 }
 
                 $items[] = $callNumberData + [
