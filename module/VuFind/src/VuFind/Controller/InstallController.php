@@ -227,7 +227,7 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP version as defined in MINIMAL_PHP_VERSION:
+        // We need at least PHP version as defined in composer.json file:
         return PHP_VERSION_ID >= $this->getMinimalPhpVersionId();
     }
 
