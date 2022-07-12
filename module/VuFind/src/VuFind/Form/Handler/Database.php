@@ -90,25 +90,23 @@ class Database implements HandlerInterface, LoggerAwareInterface
         $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
         $fields = array_column($fields, 'value', 'name');
 
-        $row = $this->table->createRow();
-        $data = $fields;
-        unset($data['message']);
-        $row->populate(
-            [
-                'user_id' => ($user) ? $user->id : null,
-                'message' => $fields['message'] ?? '',
-                'form_data' => json_encode($data),
-                'form_name' => $form->getFormId(),
-                'site_url' => $this->baseUrl,
-            ]
-        );
+        $formData = $fields;
+        unset($formData['message']);
+        $data = [
+            'user_id' => ($user) ? $user->id : null,
+            'message' => $fields['message'] ?? '',
+            'form_data' => json_encode($formData),
+            'form_name' => $form->getFormId(),
+            'site_url' => $this->baseUrl,
+            'created' => date('Y-m-d H:i:s'),
+            'updated' => date('Y-m-d H:i:s'),
+        ];
         try {
-            $success = (bool)$row->save();
+            $success = (bool)$this->table->insert($data);
         } catch (\Exception $e) {
             $this->logError('Could not save feedback data: ' . $e->getMessage());
             return false;
         }
-
         return $success;
     }
 }
