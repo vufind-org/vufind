@@ -939,11 +939,12 @@ class InstallController extends AbstractBase
             ?? $composer['config']['platform']['php']
             ?? '';;
         $version = preg_replace('/[^0-9. ]/', '', $rawVersion);
-        $versionParts = preg_split('/[. ]/', $version);
-        if (count($versionParts) >= 3) {
-            return sprintf('%d.%d.%d', ...$versionParts);
+        if (empty($version) || !preg_match('/^[0-9]/', $version)) {
+            throw new \Exception('Cannot parse PHP version from composer.json');
         }
-        throw new \Exception('Cannot parse PHP version from composer.json');
+        $versionParts = preg_split('/[. ]/', $version);
+        $versionParts = array_pad($versionParts, 3, '0');
+        return sprintf('%d.%d.%d', ...$versionParts);
     }
 
     /**
