@@ -937,7 +937,7 @@ class InstallController extends AbstractBase
         }
         $rawVersion = $composer['require']['php']
             ?? $composer['config']['platform']['php']
-            ?? '';;
+            ?? '';
         $version = preg_replace('/[^0-9. ]/', '', $rawVersion);
         if (empty($version) || !preg_match('/^[0-9]/', $version)) {
             throw new \Exception('Cannot parse PHP version from composer.json');
