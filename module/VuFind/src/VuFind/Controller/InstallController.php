@@ -935,15 +935,13 @@ class InstallController extends AbstractBase
         if (empty($composer)) {
             throw new \Exception('Cannot find composer.json');
         }
-        $rawVersion = $composer['require']['php'] ?? '';
+        $rawVersion = $composer['require']['php']
+            ?? $composer['config']['platform']['php']
+            ?? '';;
         $version = preg_replace('/[^0-9. ]/', '', $rawVersion);
-        $version = preg_split('/[. ]/', $version);
-        if (count($version) >= 3) {
-            return sprintf('%d.%d.%d', $version[0], $version[1], $version[2]);
-        }
-        $version = $composer['config']['platform']['php'] ?? '';
-        if (!empty($version)) {
-            return $version;
+        $versionParts = preg_split('/[. ]/', $version);
+        if (count($versionParts) >= 3) {
+            return sprintf('%d.%d.%d', ...$versionParts);
         }
         throw new \Exception('Cannot parse PHP version from composer.json');
     }
