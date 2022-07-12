@@ -189,7 +189,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     protected function getMinimalPhpVersionMethod(): \ReflectionMethod
     {
         $method = new \ReflectionMethod(
-            '\VuFind\Controller\InstallController',
+            InstallController::class,
             'getMinimalPhpVersion'
         );
         $method->setAccessible(true);
