@@ -142,6 +142,40 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
                 ],
                 '7.0.0',
             ],
+            [
+                [
+                    'require' => [
+                        'php' => '5.8.0 || 5.9.0',
+                    ],
+                ],
+                '5.8.0',
+            ],
+            [
+                [
+                    'require' => [
+                        'php' => '^5.7',
+                    ],
+                ],
+                '5.7.0',
+            ],
+            [
+                [
+                    'require' => [
+                        'php' => '^5',
+                    ],
+                ],
+                '5.0.0',
+            ],
+            [
+                [
+                    'config' => [
+                        'platform' => [
+                            'php' => '4',
+                        ],
+                    ],
+                ],
+                '4.0.0',
+            ],
         ];
     }
 
