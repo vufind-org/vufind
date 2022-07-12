@@ -234,7 +234,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         $validCustomTagPattern = '/^[a-z]' . $PCENChar . '(\-' . $PCENChar . ')+$/u';
 
         // Is valid custom tag?
-        if (!preg_match($validCustomTagPattern, strtolower($lowerTagName))) {
+        if (!preg_match($validCustomTagPattern, $lowerTagName)) {
             throw new \InvalidArgumentException('Invalid tag name: ' . $tagName);
         }
     }
