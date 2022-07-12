@@ -66,7 +66,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMinimalPhpVersionWithMissingFile()
     {
-        $controller = $this->mockController([]);
+        $controller = $this->mockControllerWithComposerJson([]);
         $method = $this->getMinimalPhpVersionMethod();
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot find composer.json');
@@ -80,7 +80,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMinimalPhpVersionWithMissingPhpVersion()
     {
-        $controller = $this->mockController(['name' => 'vufind/vufind']);
+        $controller = $this->mockControllerWithComposerJson(['name' => 'vufind/vufind']);
         $method = $this->getMinimalPhpVersionMethod();
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot parse PHP version from composer.json');
@@ -153,7 +153,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMinimalPhpVersion($json, $expected)
     {
-        $controller = $this->mockController($json);
+        $controller = $this->mockControllerWithComposerJson($json);
         $method = $this->getMinimalPhpVersionMethod();
         $this->assertEquals(
             $expected,
@@ -168,8 +168,9 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      *
      * @return InstallController
      */
-    protected function mockController(array $json): InstallController
-    {
+    protected function mockControllerWithComposerJson(
+        array $json
+    ): InstallController {
         $controller = $this->getMockBuilder(InstallController::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getComposerJson'])
