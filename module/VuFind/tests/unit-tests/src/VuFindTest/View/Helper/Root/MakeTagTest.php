@@ -21,6 +21,7 @@
  *
  * @category VuFind
  * @package  Tests
+ * @author   Chris Hallberg <crhallberg@gmail.com>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
@@ -34,6 +35,7 @@ use VuFind\View\Helper\Root\MakeTag;
  *
  * @category VuFind
  * @package  Tests
+ * @author   Chris Hallberg <crhallberg@gmail.com>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
