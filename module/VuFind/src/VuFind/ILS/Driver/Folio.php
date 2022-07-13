@@ -545,7 +545,7 @@ class Folio extends AbstractAPI implements
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
-        $showTime = $this->config['Availability']['showTime'] ?? true;
+        $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
         $dueDateItemCount = 0;
 
@@ -617,38 +617,8 @@ class Folio extends AbstractAPI implements
                     && $showDueDate
                     && $dueDateItemCount < $maxNumDueDateItems
                 ) {
-                    // extract itemId & construct query
-                    $query = [
-                        'query' => 'itemId==' . $item->id
-                    ];
-                    // call /circulation/loans to extract dueDate
-                    foreach ($this->getPagedResults(
-                        'loans',
-                        '/circulation/loans',
-                        $query
-                    ) as $loan) {
-                        if (!isset($loan->returnDate)) {
-                            $dueDate = new DateTime(
-                                $loan->dueDate,
-                                new DateTimeZone('UTC')
-                            );
-                            $localTimezone = (new DateTime)->getTimezone();
-                            $dueDate->setTimezone($localTimezone);
-                            $dueDateValue = $this->dateConverter
-                                ->convertToDisplayDate(
-                                    'U',
-                                    $dueDate->format('U')
-                                );
-                            if ($showTime) {
-                                $dueDateValue = $this->dateConverter
-                                    ->convertToDisplayDateAndTime(
-                                        'U',
-                                        $dueDate->format('U')
-                                    );
-                            }
-                        }
-                    }
-                    $dueDateItemCount += 1;
+                    $dueDateValue = $this->getDueDate($item->id, $showTime);
+                    $dueDateItemCount++;
                 }
 
                 $items[] = $callNumberData + [
@@ -674,6 +644,53 @@ class Folio extends AbstractAPI implements
             }
         }
         return $items;
+    }
+
+    /**
+     * Support method for getHolding(): obtaining the Due Date from OKAPI
+     * by calling /circulation/loans with the item->id, adjusting the
+     * timezone and formatting in universal time with or without due time
+     *
+     * @param string $itemId   ID for the item to query
+     * @param bool   $showTime Determines if date or date & time is returned
+     *
+     * @return string
+     */
+    protected function getDueDate($itemId, $showTime)
+    {
+        $dueDateValue = '';
+        $query = [
+            'query' => 'itemId==' . $itemId
+        ];
+        foreach ($this->getPagedResults(
+            'loans',
+            '/circulation/loans',
+            $query
+        ) as $loan) {
+            // many loans are returned for an item, the one we want
+            // is the one without a returnDate
+            if (!isset($loan->returnDate)) {
+                $dueDate = new DateTime(
+                    $loan->dueDate,
+                    new DateTimeZone('UTC')
+                );
+                $localTimezone = (new DateTime)->getTimezone();
+                $dueDate->setTimezone($localTimezone);
+                $dueDateValue = $this->dateConverter
+                    ->convertToDisplayDate(
+                        'U',
+                        $dueDate->format('U')
+                    );
+                if ($showTime) {
+                    $dueDateValue = $this->dateConverter
+                        ->convertToDisplayDateAndTime(
+                            'U',
+                            $dueDate->format('U')
+                        );
+                }
+            }
+        }
+        return $dueDateValue;
     }
 
     /**
