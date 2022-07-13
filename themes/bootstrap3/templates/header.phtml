@@ -50,6 +50,7 @@
           <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
             <?=$this->component('menu-button', [
               'toggleLabel' => 'Theme',
+              'wrapperTag' => 'li',
               'menuItems' => array_map(
                 function ($current) {
                   $item = $current;
@@ -65,8 +66,9 @@
 
           <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
             <?=$this->component('menu-button', [
-              'wrapperClass' => 'language',
               'toggleLabel' => 'Language',
+              'wrapperClass' => 'language',
+              'wrapperTag' => 'li',
               'menuItems' => array_map(
                 function ($langCode, $langName) {
                   return [
