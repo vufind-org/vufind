@@ -146,7 +146,7 @@
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
               <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
-                <?=$this->icon('external-link', 'result-link-icon') ?> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
+                <?=$this->icon('external-link', 'icon-link__icon') ?> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
           <?php endforeach; ?>
         <?php endif; ?>
       <?php endif; ?>
@@ -174,9 +174,9 @@
           $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <div class="hidden-xs">
-          <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink">
-            <?=$this->icon('qrcode', 'result-link-icon') ?>
-            <span class="result-link-label"><?=$this->transEsc('qrcode_show')?></span>
+          <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink result-link icon-link">
+            <?=$this->icon('qrcode', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('qrcode_show')?></span>
           </a>
           <div class="qrcode hidden">
             <script type="text/template" class="qrCodeImgTag">
@@ -193,9 +193,9 @@
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
           <?php /* Add to favorites */ ?>
-          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
-            <?=$this->icon('user-favorites', 'result-link-icon') ?>
-            <span class="result-link-label"><?=$this->transEsc('Add to favorites')?></span>
+          <a class="result-link icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+            <?=$this->icon('user-favorites', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
           </a><br/>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block?>
@@ -211,9 +211,9 @@
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <?=$this->icon('tree-context', 'result-link-icon') ?>
-            <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID]))?>" data-lightbox-post="tab=hierarchytree">
-              <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
+            <a class="hierarchyTreeLinkText icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID]))?>" data-lightbox-post="tab=hierarchytree">
+              <?=$this->icon('tree-context', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?></span>
             </a>
           </div>
         <?php endforeach; ?>

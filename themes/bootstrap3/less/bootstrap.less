@@ -49,6 +49,22 @@ label { cursor: pointer; }
     background-color: @well-bg;
 }
 
+.icon-link {
+  display: inline-flex;
+  gap: 0.25rem;
+  text-decoration: none;
+}
+.icon-link__icon {
+  flex: none;
+  padding: 0;
+  line-height: inherit;
+  color: @link-color;
+}
+.icon-link:hover .icon-link__label {
+  color: @link-hover-color;
+  text-decoration: @link-hover-decoration;
+}
+
 // Improve contrast
 .btn.disabled:active,
 .btn.disabled:focus,
