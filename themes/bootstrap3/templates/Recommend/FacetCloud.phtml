@@ -17,7 +17,7 @@
                     . $this->escapeHtml($facetItem['displayText'])
                     . '</a> (' . $this->escapeHtml($facetItem['count']) . ')';
             } else {
-                echo ', ...';
+                echo ', ' . $this->transEsc('eol_ellipsis');
                 break;
             }
         }

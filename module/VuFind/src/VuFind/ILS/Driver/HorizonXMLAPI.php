@@ -116,7 +116,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -651,6 +651,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                         "GetXML"     => "true"
                         ];
 
+        $cancelData = [];
         foreach ($data as $values) {
             $cancelData[] = $values['bib_id'] . ':' . $values['item_id'];
         }
@@ -659,6 +660,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
         $response = $this->makeRequest($params);
 
+        $count = 0;
         // No Indication of Success or Failure
         if ($response !== false && !$response->error->message) {
             $keys = [];
@@ -670,7 +672,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 }
             }
 
-            $count = 0;
             // Go through the submited bib ids and look for a match
             foreach ($data as $values) {
                 $itemID = $values['item_id'];
@@ -818,7 +819,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
                 // Convert Horizon Format to display format
                 if (!empty($dueDate)) {
-                    $currentDueDate = $this->dateFormat->convertToDisplayDate(
+                    $dueDate = $this->dateFormat->convertToDisplayDate(
                         $this->wsDateFormat,
                         $dueDate
                     );
@@ -827,7 +828,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 if ($currentRenewals > $origRenewals) {
                     $response['details'][$ikey] = [
                         'item_id' => $ikey,
-                        'new_date' =>  $currentDueDate,
+                        'new_date' =>  $dueDate,
                         'success' => true
                     ];
                 } else {

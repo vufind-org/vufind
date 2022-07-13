@@ -6,6 +6,7 @@ $config = [
         'factories' => [
             'VuFindAdmin\Controller\AdminController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\ConfigController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindAdmin\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\MaintenanceController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -15,6 +16,7 @@ $config = [
         'aliases' => [
             'Admin' => 'VuFindAdmin\Controller\AdminController',
             'AdminConfig' => 'VuFindAdmin\Controller\ConfigController',
+            'AdminFeedback' => 'VuFindAdmin\Controller\FeedbackController',
             'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
             'AdminSocial' => 'VuFindAdmin\Controller\SocialstatsController',
             'AdminTags' => 'VuFindAdmin\Controller\TagsController',
@@ -50,6 +52,16 @@ $config = [
                             'route'    => '/Config[/:action]',
                             'defaults' => [
                                 'controller' => 'AdminConfig',
+                                'action'     => 'Home',
+                            ]
+                        ]
+                    ],
+                    'feedback' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Feedback[/:action]',
+                            'defaults' => [
+                                'controller' => 'AdminFeedback',
                                 'action'     => 'Home',
                             ]
                         ]

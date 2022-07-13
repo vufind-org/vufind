@@ -9,17 +9,17 @@
     </div>
     <ul class="action-toolbar">
       <?php if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>
-        <li><button id="ribbon-email" class="toolbar-btn btn-type-email" type="submit" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Email')?></button></li>
+        <li><button id="<?=$this->idPrefix?>ribbon-email" class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('send-email') ?> <?=$this->transEsc('Email')?></button></li>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-          <li><button id="ribbon-export" class="toolbar-btn btn-type-export" type="submit" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Export')?></button></li>
+          <li><button id="<?=$this->idPrefix?>ribbon-export" class="toolbar-btn" type="submit" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('export') ?> <?=$this->transEsc('Export')?></button></li>
         <?php endif; ?>
-        <li><button id="ribbon-print" class="toolbar-btn btn-type-print" type="submit" name="print" value="1" title="<?=$this->transEscAttr('bookbag_print_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Print')?></button></li>
+        <li><button id="<?=$this->idPrefix?>ribbon-print" class="toolbar-btn" type="submit" name="print" value="1" title="<?=$this->transEscAttr('bookbag_print_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></button></li>
         <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><button id="ribbon-save" class="toolbar-btn btn-type-save" type="submit" name="saveCart" value="1" title="<?=$this->transEscAttr('bookbag_save_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Save')?></button></li>
+          <li><button id="<?=$this->idPrefix?>ribbon-save" class="toolbar-btn" type="submit" name="saveCart" value="1" title="<?=$this->transEscAttr('bookbag_save_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('user-list-add') ?> <?=$this->transEsc('Save')?></button></li>
         <?php endif; ?>
       <?php endif; ?>
       <?php if (isset($this->showCartControls) && $this->showCartControls): ?>
-        <li><button id="<?=$this->idPrefix?>updateCart" type="submit" class="toolbar-btn btn-type-add" name="add" value="1"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Add to Book Bag')?></button></li>
+        <li><button id="<?=$this->idPrefix?>updateCart" type="submit" class="toolbar-btn" name="add" value="1"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('cart-add') ?> <?=$this->transEsc('Add to Book Bag')?></button></li>
       <?php endif; ?>
     </ul>
   </nav>

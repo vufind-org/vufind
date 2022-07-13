@@ -21,23 +21,23 @@
     <?php if (isset($this->prevpage)): ?>
       <li>
         <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->prevpage]]))?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
-          <i class="fa fa-angle-left" aria-hidden="true"></i>
+          <?=$this->icon('page-prev') ?>
           <?=$this->transEsc('Prev')?>
         </a>
       </li>
     <?php else: ?>
-      <li class="disabled" aria-hidden="true"><i class="fa fa-angle-left"></i> <?=$this->transEsc('Prev')?></li>
+      <li class="disabled" aria-hidden="true"><a disabled><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
     <?php endif; ?>
 
     <?php if (isset($this->nextpage)): ?>
       <li>
         <a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->nextpage]]))?>" aria-label="<?=$this->transEscAttr('page_next')?>">
           <?=$this->transEsc('Next')?>
-          <i class="fa fa-angle-right" aria-hidden="true"></i>
+          <?=$this->icon('page-next') ?>
         </a>
       </li>
     <?php else: ?>
-      <li class="disabled" aria-hidden="true"><?=$this->transEsc('Next')?> <i class="fa fa-angle-right"></i></li>
+      <li class="disabled" aria-hidden="true"><a disabled><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
     <?php endif; ?>
   </ul>
 <?php $pageLinks = ob_get_contents(); ?>
@@ -135,7 +135,9 @@
                 foreach ($item['extras'][$extraName] as $j => $e):
                   $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
                 endforeach;
-                echo empty($extraDisplayArray) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
+                echo empty($extraDisplayArray)
+                  ? '&nbsp;'
+                  : implode('<br />', array_map([$this, 'escapeHtml'], $extraDisplayArray));
               ?>
             </td>
           <?php endforeach; ?>

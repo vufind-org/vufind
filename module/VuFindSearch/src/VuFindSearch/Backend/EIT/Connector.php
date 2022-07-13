@@ -119,7 +119,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $response = $this->call('GET', $params->getArrayCopy());
         $xml = simplexml_load_string($response);
         $finalDocs = [];
-        foreach ($xml->SearchResults->records->rec as $doc) {
+        foreach ($xml->SearchResults->records->rec ?? [] as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
         }
         return [
@@ -211,7 +211,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $response = $this->call('GET', $params->getArrayCopy());
         $xml = simplexml_load_string($response);
         $finalDocs = [];
-        foreach ($xml->SearchResults->records->rec as $doc) {
+        foreach ($xml->SearchResults->records->rec ?? [] as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
         }
         return [

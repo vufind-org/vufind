@@ -89,8 +89,8 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'CleanDOI' => 'myDOI',
             ],
             'apa' => 'Lewis, S. (2007). <i>Even if you &quot;test&quot; Medical-surgical nursing: Assessment and management of clinical problems on top of crazy capitalization</i> (7th ed.). Mosby Elsevier. https://doi.org/myDOI',
-            'mla' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://dx.doi.org/myDOI.',
+            'mla' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. Mosby Elsevier, 2007. https://doi.org/myDOI.',
+            'chicago' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://doi.org/myDOI.',
         ],
         [
             'raw' => [
@@ -353,8 +353,8 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'CleanDOI' => 'testDOI'
             ],
             'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21. https://doi.org/testDOI',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://dx.doi.org/testDOI.',
+            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21, https://doi.org/testDOI.',
+            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://doi.org/testDOI.',
         ]
         // @codingStandardsIgnoreEnd
     ];
@@ -386,6 +386,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($current['chicago'], $chicago);
         }
 
+        $cb = $citation($driver);
         // Test a couple of illegal citation formats:
         $this->assertEquals('', $cb->getCitation(''));
         $this->assertEquals('', $cb->getCitation('Citation'));

@@ -10,6 +10,8 @@
     <?php
       // Format the page title using the translation system:
       $siteConfig = $this->config()->get('config')->Site;
+      // Disabled escaping of title temporarily so that we get it unescaped first:
+      $this->headTitle()->setAutoEscape(false);
       $fullTitle = $this->translate(
           'title_wrapper',
           [
@@ -18,6 +20,8 @@
             '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::'
           ]
       );
+      // Enable escaping again for proper output:
+      $this->headTitle()->setAutoEscape(true);
       echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
 
       // Set up OpenSearch link:
@@ -34,8 +38,8 @@
       // may not load correctly. Thus, we render early, but use this later.
       $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
     ?>
-    <!-- RTL styling -->
     <?php if ($this->layout()->rtl) {
+      // RTL styling
       $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
     } ?>
     <?=$this->headLink()?>
@@ -50,16 +54,13 @@
         if ($cart->isActive()) {
           $this->headScript()->appendFile("vendor/js.cookie.js");
           $this->headScript()->appendFile("cart.js");
-          $domain = $cart->getCookieDomain();
-          if (!empty($domain)) {
+          if ($domain = $cart->getCookieDomain()) {
             $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
           }
-          $cookiePath = $cart->getCookiePath();
-          if (!empty($cookiePath)) {
+          if ($cookiePath = $cart->getCookiePath()) {
             $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
           }
-          $cookieSameSite = $cart->getCookieSameSite();
-          if (null !== $cookieSameSite) {
+          if ($cookieSameSite = $cart->getCookieSameSite()) {
             $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
           }
         }
@@ -119,10 +120,7 @@ JS;
     </header>
     <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
       <div class="container">
-        <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
-          && !empty($this->layout()->breadcrumbs)
-          && $this->layout()->breadcrumbs !== false
-        ): ?>
+        <?php if (!empty($this->layout()->showBreadcrumbs ?? true) && !empty($this->layout()->breadcrumbs)): ?>
           <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
         <?php endif; ?>
       </div>
@@ -138,7 +136,7 @@ JS;
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal">
-            <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+            <?=$this->icon('lightbox-close', ['aria-label' => $this->transEscAttr('Close')]) ?>
           </button>
           <div class="modal-body"></div>
         </div>

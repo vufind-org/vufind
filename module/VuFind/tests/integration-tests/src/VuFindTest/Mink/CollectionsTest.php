@@ -27,6 +27,8 @@
  */
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\Element;
+
 /**
  * Mink test class for basic collection functionality.
  *
@@ -62,7 +64,6 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $path = '/Collection/subcollection1/HierarchyTree';
         $session->visit($this->getVuFindUrl() . $path);
-        $this->snooze();
         return $session->getPage();
     }
 
@@ -117,10 +118,8 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         $input = $this->findCss($page, '#keywordFilter_lookfor');
         $input->setValue('Subcollection 2');
         $this->findCss($page, '#keywordFilterForm .btn')->press();
-        $this->snooze();
 
-        $results = $page->findAll('css', '.result');
-        $this->assertEquals(2, count($results));
+        $this->waitStatement('$(".result").length === 2');
     }
 
     /**
@@ -152,17 +151,15 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.hierarchyTreeLink');
 
         $page = $this->goToCollectionHierarchy();
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Subcollection 1'
         );
         $this->clickCss($page, '[recordid="colitem2"] a');
-        $this->snooze();
 
-        $this->assertEquals(
-            trim($this->findCss($page, '#tree-preview h2')->getText()),
-            'Collection item 2'
-        );
+        $this->waitStatement('$("#tree-preview h2").text().trim() === "Collection item 2"');
+
         $this->assertEquals(
             $this->getMinkSession()->getCurrentUrl(),
             $this->getVuFindUrl() . '/Collection/subcollection1/HierarchyTree'

@@ -45,6 +45,20 @@
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field
 #
+#   primaryHandler (string)   Handlers to process form data - default is 'email', available
+#                             options are: 'email', 'database'. When this handler fails, the
+#                             whole feedback send action fails. You can add your own handler
+#                             by implementing \VuFind\Form\Handler\HandlerInterface, and adding
+#                             it to module config under key:
+#                               'vufind' -> 'plugin_manager' -> 'form_handler'
+#                             Example:
+#                               primaryHandler: database
+#   secondaryHandlers (array) Additional handlers could be defined here. They can fail silently,
+#                             but could be useful as safety/notify handlers.
+#                             Example:
+#                               secondaryHandlers:
+#                                 - email
+#
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
 #     post (string) Help text displayed at the end of the form (translation key)
@@ -53,12 +67,14 @@
 #
 #   fields (array) List of form elements with the following options:
 #
-#     name (string)        Element name
+#     name (string)        Element name (see below for reserved element names)
 #     label (string)       Element label (translation key)
 #     required (boolean)   Is the element required? (for checkbox elements this means that
 #                          all options have to be selected.)
 #     requireOne (boolean) Require at least one checkbox option to be selected.
 #     settings (array)     HTML attributes as key-value pairs, for example:
+#       - class: "custom-css-class another-class"
+#                          or
 #       - [class, "custom-css-class another-class"]
 #     type (string)        Element type (text|textarea|date|email|url|select|radio|checkbox|hidden)
 #
@@ -114,6 +130,19 @@
 #       settings:
 #         - [placeholder, Please select...]
 #
+#
+# Reserved element names:
+#
+# - name       Sender name. You can add the field to fields configuration to define
+#              its position on the form.
+# - email      Sender email. You can add the field to fields configuration to define
+#              its position on the form.
+# - referrer   Used for browser's referrer information when reportReferrer is
+#              enabled.
+# - useragent  Used for reporting browser's user agent string when reportUserAgent is
+#              enabled.
+# - submit     Form submit button.
+#
 #-----------------------------------------------------------------------------------
 
 forms:
@@ -131,7 +160,7 @@ forms:
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
-
+    primaryHandler: email
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
     response: Thank you for your feedback.
@@ -158,6 +187,7 @@ forms:
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
     response: Thank you for your feedback.
+    primaryHandler: email
 
     recipient:
       name: Your Library
@@ -221,5 +251,3 @@ forms:
         options:
           - Yes
           - No
-
-

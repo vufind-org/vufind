@@ -2,12 +2,15 @@
   <ul class="nav nav-tabs">
     <?php foreach ($searchTabs as $tab): ?>
         <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
-          <li<?=$tab['selected'] ? ' class="active"' : ''?>>
-            <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+          <li<?=$tab['selected'] ? ' class="active"' : ''?><?=$this->showCounts ? ' data-show-counts' : ''?>>
+            <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?> data-source="<?=$this->escapeHtmlAttr($tab['class'])?>"><?=$this->transEsc($tab['label']); ?></a>
           </li>
         <?php elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
             <?=$block?>
         <?php endif; ?>
     <?php endforeach; ?>
   </ul>
+  <?php if ($this->showCounts): ?>
+    <?php $this->headScript()->appendFile('resultcount.js'); ?>
+  <?php endif; ?>
 <?php endif; ?>

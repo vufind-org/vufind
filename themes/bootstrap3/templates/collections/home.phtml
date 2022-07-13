@@ -3,10 +3,12 @@
   $this->layout()->breadcrumbs = '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a>';
   $filterList = [];
   $filterString = '';
-  foreach ($filters['Other'] ?? [] as $filter) {
-    $filter['urlPart'] = $filter['field'] . ':' . $filter['value'];
-    $filterList[] = $filter;
-    $filterString .= '&' . urlencode('filter[]') . '=' . urlencode($filter['urlPart']);
+  foreach ($filters ?? [] as $label => $filterBatch) {
+    foreach ($filterBatch as $filter) {
+      $filter['urlPart'] = $filter['field'] . ':' . $filter['value'];
+      $filterList[] = $filter;
+      $filterString .= '&' . urlencode('filter[]') . '=' . urlencode($filter['urlPart']);
+    }
   }
 ?>
 
@@ -15,14 +17,14 @@
   <form class="form-inline" method="GET" action="<?=$this->url('collections-home')?>">
     <ul class="pager">
       <?php if (isset($prevpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_prev')?>"><i class="fa fa-angle-left" aria-hidden="true"></i> <?=$this->transEsc('Prev')?></a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_prev')?>"><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
       <?php else: ?>
-        <li class="disabled" aria-hidden="true"><a href="#"><i class="fa fa-angle-left"></i> <?=$this->transEsc('Prev')?></a></li>
+        <li class="disabled" aria-hidden="true"><a disabled><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
       <?php endif; ?>
       <?php if (isset($nextpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_next')?>"><?=$this->transEsc('Next')?> <i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_next')?>"><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
       <?php else: ?>
-        <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> <i class="fa fa-angle-right"></i></a></li>
+        <li class="disabled"><a disabled><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
       <?php endif; ?>
       <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Jump to')?>" />
       <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control" />
@@ -47,7 +49,7 @@
         }
       ?>
       <a href="<?=$this->escapeHtmlAttr($removalUrl)?>">
-        <i class="fa fa-trash" title="<?=$this->transEscAttr('Delete') ?>"></i>
+        <?=$this->icon('ui-remove') ?>
         <?=$this->escapeHtml($filter['displayText'])?>
       </a>
     </li>

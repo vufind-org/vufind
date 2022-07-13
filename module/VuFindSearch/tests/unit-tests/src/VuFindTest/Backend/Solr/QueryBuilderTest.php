@@ -869,4 +869,53 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             );
         }
     }
+
+    /**
+     * Test a fully negated query.
+     *
+     * @return void
+     */
+    public function testNegatedQuery()
+    {
+        $group = new QueryGroup('NOT', [new Query('q')]);
+        $qb = new QueryBuilder([]);
+        $response = $qb->build($group);
+        $this->assertEquals(['(*:* NOT (q))'], $response->get('q'));
+    }
+
+    /**
+     * Test a negated clause of an AND query.
+     *
+     * @return void
+     */
+    public function testNegatedAndQuery()
+    {
+        $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
+        $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
+        $group = new QueryGroup('AND', [$subgroup1, $subgroup2]);
+        $qb = new QueryBuilder([]);
+        $response = $qb->build($group);
+        $this->assertEquals(
+            ['((*:* NOT (q1 OR q2)) AND (q3 AND q4))'],
+            $response->get('q')
+        );
+    }
+
+    /**
+     * Test a negated clause of an OR query.
+     *
+     * @return void
+     */
+    public function testNegatedOrQuery()
+    {
+        $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
+        $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
+        $group = new QueryGroup('OR', [$subgroup1, $subgroup2]);
+        $qb = new QueryBuilder([]);
+        $response = $qb->build($group);
+        $this->assertEquals(
+            ['((*:* NOT (q1 OR q2)) OR (q3 AND q4))'],
+            $response->get('q')
+        );
+    }
 }

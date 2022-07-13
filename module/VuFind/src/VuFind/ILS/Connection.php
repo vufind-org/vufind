@@ -49,6 +49,8 @@ use VuFind\ILS\Driver\DriverInterface;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
+ *
+ * @method array getStatus(string $id)
  */
 class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 {
@@ -867,7 +869,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // If we need to perform a health check, try to do a random item lookup
         // before proceeding.
         if ($healthCheck) {
-            $this->getStatus('1');
+            $this->getStatus($this->config->healthCheckId ?? '1');
         }
 
         // If we're encountering failures, let's go into ils-offline mode if

@@ -370,7 +370,8 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             'Sort' => $params->getSort(),
             'Page' => $params->getPage(),
             'Limit' => $params->getLimit(),
-            'View' => $params->getView()
+            'View' => $params->getView(),
+            'Context' => $this->context ?: 'page'
         ];
     }
 
@@ -405,6 +406,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $institutions = $institutions;
 
         return [
+            'Context' => $this->context ?: 'page',
             'RecordFormat' => $formats,
             'RecordData' => "$id|$author|$title",
             'RecordInstitution' => $institutions
@@ -418,7 +420,9 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getLightboxCustomData(): array
     {
-        return [];
+        return [
+            'Context' => $this->context ?: 'page'
+        ];
     }
 
     /**
@@ -428,7 +432,9 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getGenericCustomData(): array
     {
-        return [];
+        return [
+            'Context' => $this->context ?: 'page'
+        ];
     }
 
     /**
@@ -438,9 +444,12 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getOpeningTrackingCode(): string
     {
+        $escape = $this->getView()->plugin('escapejs');
+        $pageUrl = $escape($this->getPageUrl());
         $code = <<<EOT
 var _paq = window._paq = window._paq || [];
 _paq.push(['enableLinkTracking']);
+_paq.push(['setCustomUrl', '$pageUrl']);
 
 EOT;
         if ($this->disableCookies) {
@@ -458,18 +467,19 @@ EOT;
     protected function getClosingTrackingCode(): string
     {
         $escape = $this->getView()->plugin('escapejs');
-        $url = $escape($this->url);
         $trackerUrl = $escape($this->getTrackerUrl());
-        $pageUrl = $escape($this->getPageUrl());
+        $url = $escape($this->getTrackerJsUrl());
         return <<<EOT
 (function() {
-  var u='$url';
-  _paq.push(['setTrackerUrl', '$trackerUrl']);
-  _paq.push(['setSiteId', '{$this->siteId}']);
-  _paq.push(['setCustomUrl', '$pageUrl']);
-  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  g.type='text/javascript'; g.async=true; g.src=u+'matomo.js';
-  s.parentNode.insertBefore(g,s);
+  var d=document;
+  if (!d.getElementById('_matomo_js_script')) {
+    _paq.push(['setTrackerUrl', '$trackerUrl']);
+    _paq.push(['setSiteId', {$this->siteId}]);
+    var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.src='$url';
+    g.id = '_matomo_js_script';
+    s.parentNode.insertBefore(g,s);
+  }
 })();
 
 EOT;
@@ -483,16 +493,14 @@ EOT;
     protected function getPageUrl(): string
     {
         $path = $this->request->getUri()->toString();
+        // Replace 'AjaxTab' with tab name in record page URLs:
         $routeMatch = $this->router->match($this->request);
         if ($routeMatch
-            && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
+            && substr($routeMatch->getMatchedRouteName(), -8) === '-ajaxtab'
+            && null !== ($pos = strrpos($path, '/AjaxTab'))
+            && ($tab = $this->request->getPost('tab'))
         ) {
-            // Replace 'AjaxTab' with tab name in record page URLs
-            $replace = 'AjaxTab';
-            $tab = $this->request->getPost('tab');
-            if (null !== ($pos = strrpos($path, $replace))) {
-                $path = substr_replace($path, $tab, $pos, $pos + strlen($replace));
-            }
+            $path = substr_replace($path, $tab, $pos + 1, 7);
         }
         return $path;
     }
@@ -512,13 +520,21 @@ EOT;
         }
 
         $escape = $this->getView()->plugin('escapejs');
-        $code = '';
+        $code = <<<EOT
+_paq.push(['deleteCustomVariables','page']);
+
+EOT;
         $i = 0;
         foreach ($customData as $key => $value) {
             ++$i;
+            // We're committed to tracking a maximum of 10 custom variables at a
+            // time:
+            if ($i > 10) {
+                break;
+            }
             $value = $escape($value);
             $code .= <<<EOT
-_paq.push(['setCustomVariable','$i','$key','$value']);
+_paq.push(['setCustomVariable',$i,'$key','$value','page']);
 
 EOT;
         }
@@ -671,6 +687,16 @@ EOT;
     protected function getTrackerUrl(): string
     {
         return $this->url . 'matomo.php';
+    }
+
+    /**
+     * Get Matomo tracker JS URL
+     *
+     * @return string
+     */
+    protected function getTrackerJsUrl(): string
+    {
+        return $this->url . 'matomo.js';
     }
 
     /**
