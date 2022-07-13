@@ -8,6 +8,12 @@
   list-style: none;
   padding: 0;
   margin: 0;
+
+  &.search-results-solr-auth {
+    .media-left, .media-right {
+      display: none;
+    }
+  }
 }
 
 // Hide these on mobile
@@ -488,10 +494,6 @@ body.rtl {
 }
 .active-filters .search-filter-remove:hover {
   color: red;
-}
-.search-filter-remove::after {
-  content: "\f2d3"; /* fa-window-close */
-  font-family: "FontAwesome";
 }
 .search-filter-dropdown {
   display: inline-block;

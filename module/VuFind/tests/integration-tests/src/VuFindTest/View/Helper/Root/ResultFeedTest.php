@@ -94,11 +94,21 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockTranslator()
     {
+        $translations = [
+            'Results for' => 'Results for',
+            'showing_results_of_html' => 'Showing <strong>%%start%% - %%end%%'
+                . '</strong> results of <strong>%%total%%</strong>'
+        ];
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
         $mock->expects($this->any())->method('translate')
-            ->withConsecutive(['Results for'], ['showing_results_of_html', 'default'])
-            ->willReturnOnConsecutiveCalls('Results for', 'Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>');
+            ->will(
+                $this->returnCallback(
+                    function ($str, $params, $default) use ($translations) {
+                        return $translations[$str] ?? $default ?? $str;
+                    }
+                )
+            );
         return $mock;
     }
 

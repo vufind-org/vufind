@@ -460,7 +460,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $searchId Primary key value
      *
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
      */
     protected function retrieveSearchSecurely($searchId)
     {
@@ -484,7 +484,7 @@ class AbstractSearch extends AbstractBase
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
-            $this->getResultsManager(),
+            $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
             $results,
             $sessId,
             $user->id ?? null

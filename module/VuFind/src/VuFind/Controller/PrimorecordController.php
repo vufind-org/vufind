@@ -49,7 +49,7 @@ class PrimorecordController extends AbstractRecord
     {
         // Override some defaults:
         $this->accessPermission = 'access.PrimoModule';
-        $this->searchClassId = 'Primo';
+        $this->sourceId = 'Primo';
         $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:

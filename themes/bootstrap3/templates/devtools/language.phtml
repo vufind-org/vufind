@@ -82,8 +82,8 @@ Current filter mode: <?=$includeOptional ? "Unfiltered" : "Mandatory strings onl
 <?php endif; ?>
 
 <h2>Directories</h2>
-<p>Languages in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirLang)?></em> as .ini files.</p>
-<p>Translation of Help in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
+<p>Languages in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirLang)?></em> as .ini files.</p>
+<p>Translation of Help in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
 
 <template id="template-copy-btn">
   <div class="float-right"><?=$this->copyToClipboardButton('.translation-output'); ?></div>

@@ -162,7 +162,7 @@ class CopyStringCommand extends AbstractCommand
         $this->createMissingFiles($targetDir->path, array_keys($sources));
 
         // Now copy the values to their destination:
-        $targetCallback = function ($full) use ($output, $targetKey, $sources) {
+        $targetCallback = function ($full) use ($targetKey, $sources) {
             if (isset($sources[basename($full)])) {
                 $this->addLineToFile($full, $targetKey, $sources[basename($full)]);
                 $this->normalizer->normalizeFile($full);

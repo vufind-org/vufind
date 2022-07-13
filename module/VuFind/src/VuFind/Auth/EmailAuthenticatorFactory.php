@@ -27,10 +27,10 @@
  */
 namespace VuFind\Auth;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for email authenticator module.
@@ -68,7 +68,7 @@ class EmailAuthenticatorFactory
         }
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
-            $container->get(\VuFind\Validator\Csrf::class),
+            $container->get(\VuFind\Validator\CsrfInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
             $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),

@@ -3,11 +3,11 @@
   <?php $cartId = $this->source . '|' . $this->id; ?>
   <span class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->id)?>" data-cart-source="<?=$this->escapeHtmlAttr($this->source)?>">
     <a href="#" class="cart-add hidden<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>">
-      <i class="cart-link-icon fa fa-fw fa-plus-circle" aria-hidden="true"></i>
+      <?=$this->icon('cart-add') ?>
       <span class="cart-link-label"><?=$this->transEsc('Add to Book Bag') ?></span>
     </a>
     <a href="#" class="cart-remove hidden<?php if($cart->contains($cartId)): ?> correct<?php endif ?>">
-      <i class="cart-link-icon fa fa-fw fa-minus-circle" aria-hidden="true"></i>
+      <?=$this->icon('cart-remove') ?>
       <span class="cart-link-label"><?=$this->transEsc('Remove from Book Bag') ?></span>
     </a>
     <noscript>

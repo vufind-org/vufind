@@ -136,13 +136,16 @@ abstract class AbstractRequestBase extends AbstractPlugin
     }
 
     /**
-     * Get remembered valid IDs
+     * Validate supplied IDs against remembered IDs. Returns true if all supplied
+     * IDs are remembered, otherwise returns false.
      *
-     * @return array
+     * @param array $ids IDs to validate
+     *
+     * @return bool
      */
-    public function getValidIds(): array
+    public function validateIds($ids): bool
     {
-        return $this->getSession()->validIds ?? [];
+        return (bool)array_diff($ids, $this->getValidIds());
     }
 
     /**
@@ -353,5 +356,15 @@ abstract class AbstractRequestBase extends AbstractPlugin
             date('d') + $d,
             date('Y') + $y
         );
+    }
+
+    /**
+     * Get remembered valid IDs
+     *
+     * @return array
+     */
+    protected function getValidIds(): array
+    {
+        return $this->getSession()->validIds ?? [];
     }
 }

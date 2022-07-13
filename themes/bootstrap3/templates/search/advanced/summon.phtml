@@ -16,7 +16,7 @@
             foreach ($list['list'] as $i => $value) {
               $sorted[$i] = $value['displayText'];
             }
-            natcasesort($sorted);
+            $this->sorter()->natsort($sorted);
           ?>
           <?php foreach ($sorted as $i => $display): ?>
             <?php $value = $list['list'][$i]; ?>

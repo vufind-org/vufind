@@ -1,5 +1,5 @@
 /*global VuFind */
-/*exported collapseTopFacets, initFacetTree */
+/*exported initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
@@ -19,16 +19,10 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     }
     item.setAttribute('title', facet.displayText);
     item.setAttribute('role', 'menuitem');
-    var icon = document.createElement('i');
-    icon.className = 'fa';
     if (facet.operator === 'OR') {
-      if (facet.isApplied) {
-        icon.className += ' fa-check-square-o';
-        icon.title = selected;
-      } else {
-        icon.className += ' fa-square-o';
-        icon.setAttribute('aria-hidden', 'true');
-      }
+      var icon = document.createElement('span');
+      icon.className = "hierarchy-facet-icon";
+      icon.innerHTML = facet.isApplied ? VuFind.icon("facet-checked", { title: selected }) : VuFind.icon("facet-unchecked");
       item.appendChild(icon);
     }
     var description = document.createElement('span');
@@ -50,10 +44,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         a.className = 'exclude';
         a.setAttribute('href', excludeUrl);
         a.setAttribute('title', excludeTitle);
-
-        var inIcon = document.createElement('i');
-        inIcon.className = 'fa fa-times';
-        a.appendChild(inIcon);
+        a.innerHTML = VuFind.icon("facet-exclude");
         html.appendChild(a);
       }
     }
@@ -136,20 +127,6 @@ function initFacetTree(treeNode, inSidebar)
       buildFacetTree(treeNode, response.data.facets, inSidebar);
     }
   );
-}
-
-function collapseTopFacets() {
-  $('.top-facets').each(function setupToCollapses() {
-    $(this).find('.collapse').removeClass('in');
-    $(this).on('show.bs.collapse', function toggleTopFacet() {
-      $(this).find('.top-title .fa').removeClass('fa-caret-right');
-      $(this).find('.top-title .fa').addClass('fa-caret-down');
-    });
-    $(this).on('hide.bs.collapse', function toggleTopFacet() {
-      $(this).find('.top-title .fa').removeClass('fa-caret-down');
-      $(this).find('.top-title .fa').addClass('fa-caret-right');
-    });
-  });
 }
 
 /* --- Side Facets --- */

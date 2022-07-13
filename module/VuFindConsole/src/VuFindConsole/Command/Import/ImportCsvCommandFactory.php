@@ -27,8 +27,8 @@
  */
 namespace VuFindConsole\Command\Import;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for CSV import command.
