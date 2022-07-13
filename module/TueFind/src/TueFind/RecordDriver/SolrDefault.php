@@ -71,6 +71,18 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             $this->fields['topic_standardized'] : '';
     }
 
+    public function getAllClassificationHeadings()
+    {
+        $result = array();
+        if(isset($this->fields['ixtheo_notation']) && is_array($this->fields['ixtheo_notation'])) {
+            $ixtheo_notation = $this->fields['ixtheo_notation'];
+            foreach($ixtheo_notation as $notation) {
+                $result[] = "ixtheo-".$notation;
+            }
+        }
+        return $result;
+    }
+
     public function getAllSubjectHeadingsFlat()
     {
         $result     = array();

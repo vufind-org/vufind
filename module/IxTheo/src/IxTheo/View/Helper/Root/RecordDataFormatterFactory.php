@@ -92,6 +92,12 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec->setTemplateLine(
             'Standardized Subjects', 'getAllStandardizedSubjectHeadings', 'data-allStandardizedSubjectHeadings.phtml'
         );
+
+        // Classification (IxTheo-specific)
+        $spec->setTemplateLine(
+            'IxTheo Classification', 'getAllClassificationHeadings', 'data-classification.phtml'
+        );
+
         // Non-standardized Subjects (IxTheo-specific)
         $spec->setTemplateLine(
             'Nonstandardized Subjects', 'getAllNonStandardizedSubjectHeadings', 'data-allNonStandardizedSubjectHeadings.phtml'
