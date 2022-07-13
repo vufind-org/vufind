@@ -97,16 +97,13 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
         $attrs = [],
         $options = []
     ) {
-        $makeTag = $this->getView()->plugin('makeTag');
-
         $mergedAttrs = $this->mergeAttributes($href, $attrs, $options);
 
         // Span instead of anchor when no href present
-        if (empty($mergedAttrs['href'])) {
-            return $makeTag('span', $contents, $mergedAttrs, $options);
-        }
+        $tag = empty($mergedAttrs['href']) ? 'span' : 'a';
 
         // Forward to makeTag helper
-        return $makeTag('a', $contents, $mergedAttrs, $options);
+        $makeTag = $this->getView()->plugin('makeTag');
+        return $makeTag($tag, $contents, $mergedAttrs, $options);
     }
 }
