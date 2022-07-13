@@ -57,9 +57,11 @@ abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
             ->expects($this->atLeastOnce())
             ->method('plugin')
             ->with(
-                $this->callback(function ($helper) use ($helpers) {
-                    return isset($helpers[strtolower($helper)]);
-                })
+                $this->callback(
+                    function ($helper) use ($helpers) {
+                        return isset($helpers[strtolower($helper)]);
+                    }
+                )
             )
             ->willReturnCallback(
                 function ($helper) use ($helpers) {
