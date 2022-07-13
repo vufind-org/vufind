@@ -23,10 +23,15 @@
 }
 .related__title .related__icon {
   float: left;
-  width: 1.375em;
+  margin-right: 0.25rem;
   text-align: left;
   line-height: 1.4;
   background-position-x: left;
+
+  .rtl & {
+    margin-left: 0;
+    margin-right: 0.25rem;
+  }
 }
 
 .media-body h1 { margin-top: 0; }
