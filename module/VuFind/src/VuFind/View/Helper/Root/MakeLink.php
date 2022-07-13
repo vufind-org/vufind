@@ -56,7 +56,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
 
         // Merge all attributes
         $mergedAttrs = array_merge(
-            $attrs ?? [],
+            $attrs,
             !empty($href) ? ['href' => $href] : []
         );
 
