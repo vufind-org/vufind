@@ -234,7 +234,8 @@ public class IxTheoPublisherTools extends org.vufind.index.PublisherTools {
         }
 
         if (!pubNames.isEmpty()) {
-            publishers.addAll(pubNames);
+	    if (publishers.isEmpty() && !pubNames.contains(placeholderForPublisher))
+                publishers.addAll(pubNames);
         } else if (!copyNames.isEmpty()) {
             publishers.addAll(copyNames);
         }
