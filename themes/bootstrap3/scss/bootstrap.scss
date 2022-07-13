@@ -52,6 +52,11 @@ label { cursor: pointer; }
 .icon-link {
   display: inline-flex;
   gap: 0.25rem;
+}
+.icon-link,
+.icon-link:active,
+.icon-link:focus,
+.icon-link:hover {
   text-decoration: none;
 }
 .icon-link__icon {
@@ -60,9 +65,16 @@ label { cursor: pointer; }
   line-height: inherit;
   color: $link-color;
 }
+.icon-link__label {
+  text-decoration: $link-hover-decoration;
+}
 .icon-link:hover .icon-link__label {
   color: $link-hover-color;
-  text-decoration: $link-hover-decoration;
+  text-decoration: none;
+}
+.icon-link.active .icon-link__icon,
+.icon-link.active .icon-link__label {
+  color: #fff;
 }
 
 // Improve contrast
