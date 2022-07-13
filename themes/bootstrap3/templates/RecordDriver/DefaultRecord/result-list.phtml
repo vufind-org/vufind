@@ -194,7 +194,7 @@
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
           <?php /* Add to favorites */ ?>
           <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
-            <?=$this->icon('user-favorites') ?>
+            <?=$this->icon('user-favorites', 'result-link-icon') ?>
             <span class="result-link-label"><?=$this->transEsc('Add to favorites')?></span>
           </a><br/>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
@@ -211,7 +211,7 @@
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <?=$this->icon('tree-context') ?>
+            <?=$this->icon('tree-context', 'result-link-icon') ?>
             <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID]))?>" data-lightbox-post="tab=hierarchytree">
               <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
             </a>
