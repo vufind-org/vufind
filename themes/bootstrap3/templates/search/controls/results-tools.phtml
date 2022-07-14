@@ -1,16 +1,35 @@
 <div class="searchtools hidden-print">
   <strong><?=$this->transEsc('Search Tools')?>:</strong>
-  <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell" aria-hidden="true"></i> <?=$this->transEsc('Get RSS Feed')?></a>
-  &mdash;
+  <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>">
+    <?=$this->icon('search-rss') ?>
+    <?=$this->transEsc('Get RSS Feed')?>
+  </a>
+  &ndash;
   <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
-    <i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this Search')?>
+    <?=$this->icon('send-email') ?>
+    <?=$this->transEsc('Email this Search')?>
   </a>
   <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled' && is_numeric($this->results->getSearchId())): ?>
-    &mdash;
+    &ndash;
     <?php if ($this->results->isSavedSearch()): ?>
-      <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc('save_search_remove')?></a>
+      <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>">
+        <?=$this->icon('search-delete') ?>
+        <?=$this->transEsc('save_search_remove')?>
+      </a>
     <?php else: ?>
-      <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc('save_search')?></a>
+      <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>">
+        <?=$this->icon('search-save') ?>
+        <?=$this->transEsc('save_search')?>
+      </a>
+    <?php endif; ?>
+    <?php if ($this->accountCapabilities()->isScheduledSearchEnabled() && !empty($this->scheduleOptions)): ?>
+      &ndash;
+      <a class="manageSchedule" href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>">
+        <?=$this->icon('search-schedule-alert') ?>
+        <?=$this->transEsc('history_schedule')?>:
+        <?php $freq = $this->results->getNotificationFrequency(); ?>
+        <?=$this->transEsc($this->scheduleOptions[$freq] ?? $freq)?>
+      </a>
     <?php endif; ?>
   <?php endif; ?>
 </div>

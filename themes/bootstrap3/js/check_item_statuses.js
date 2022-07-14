@@ -47,18 +47,27 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       for (var x = 0; x < result.locationList.length; x++) {
         locationListHTML += '<div class="groupLocation">';
         if (result.locationList[x].availability) {
-          locationListHTML += '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML +=
+            '<span class="text-success">' +
+              VuFind.icon("ui-success") + " " +
+              result.locationList[x].location +
+            '</span> ';
         } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
                   && result.locationList[x].status_unknown
         ) {
           if (result.locationList[x].location) {
-            locationListHTML += '<span class="text-warning"><i class="fa fa-status-unknown" aria-hidden="true"></i> '
-                          + result.locationList[x].location + '</span> ';
+            locationListHTML +=
+              '<span class="text-warning">' +
+                VuFind.icon("status-indicator") + " " +
+                result.locationList[x].location +
+              '</span> ';
           }
         } else {
-          locationListHTML += '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML +=
+            '<span class="text-danger">' +
+              VuFind.icon('ui-failure') + " " +
+              result.locationList[x].location +
+            '</span> ';
         }
         locationListHTML += '</div>';
         locationListHTML += '<div class="groupCallnumber">';
@@ -157,6 +166,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         .fail( this.itemStatusFail)
         .always(function queueAjaxAlways() {
           this.itemStatusRunning = false;
+          VuFind.emit("item-status-done");
         });
     }//end runItemAjaxForQueue
   };
@@ -180,7 +190,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       return;
     }
     if ($item.find('.hiddenId').length === 0) {
-      return false;
+      return;
     }
     var id = $item.find('.hiddenId').val();
     var handlerName = 'ils';
@@ -205,7 +215,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
   function init(_container) {
-    if (typeof Hunt === 'undefined') {
+    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
       checkItemStatuses(_container);
     } else {
       var container = typeof _container === 'undefined'

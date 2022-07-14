@@ -36,6 +36,8 @@ use Laminas\Validator\Identical;
 use Laminas\Validator\NotEmpty;
 use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
+use VuFind\Form\Handler\HandlerInterface;
+use VuFind\Form\Handler\PluginManager as HandlerManager;
 
 /**
  * Configurable form.
@@ -112,10 +114,18 @@ class Form extends \Laminas\Form\Form implements
     protected $viewHelperManager;
 
     /**
+     * Handler plugin manager
+     *
+     * @var HandlerManager
+     */
+    protected $handlerManager;
+
+    /**
      * Constructor
      *
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
+     * @param HandlerManager      $handlerManager    Handler plugin manager
      * @param array               $config            VuFind main configuration
      * (optional)
      *
@@ -124,6 +134,7 @@ class Form extends \Laminas\Form\Form implements
     public function __construct(
         YamlReader $yamlReader,
         HelperPluginManager $viewHelperManager,
+        HandlerManager $handlerManager,
         array $config = null
     ) {
         parent::__construct();
@@ -132,6 +143,7 @@ class Form extends \Laminas\Form\Form implements
         $this->defaultFormConfig = $config['Feedback'] ?? null;
         $this->yamlReader = $yamlReader;
         $this->viewHelperManager = $viewHelperManager;
+        $this->handlerManager = $handlerManager;
     }
 
     /**
@@ -325,7 +337,7 @@ class Form extends \Laminas\Form\Form implements
             );
         }
 
-        return trim($this->translate($subject, $translated));
+        return trim($this->translate($subject, $mappings));
     }
 
     /**
@@ -400,10 +412,10 @@ class Form extends \Laminas\Form\Form implements
             $valueLabel = null;
 
             if (in_array($type, ['radio', 'select'])) {
+                $option = null;
                 if (isset($el['options'])) {
                     $option = $el['options'][$value] ?? null;
                 } elseif (isset($el['optionGroups'])) {
-                    $option = null;
                     foreach ($el['optionGroups'] as $group) {
                         if (isset($group['options'][$value])) {
                             $option = $group['options'][$value];
@@ -571,12 +583,12 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Merge local configuration into default configuration.
      *
-     * @param array $config      Default configuration
-     * @param array $localConfig Local configuration
+     * @param array  $config      Default configuration
+     * @param ?array $localConfig Local configuration
      *
      * @return array
      */
-    protected function mergeLocalConfig($config, $localConfig)
+    protected function mergeLocalConfig($config, $localConfig = null)
     {
         return $localConfig ?? $config;
     }
@@ -854,6 +866,8 @@ class Form extends \Laminas\Form\Form implements
             'submit',
             'title',
             'useCaptcha',
+            'primaryHandler',
+            'secondaryHandlers',
         ];
     }
 
@@ -1087,6 +1101,38 @@ class Form extends \Laminas\Form\Form implements
      */
     protected function getElementId(string $id): string
     {
-        return 'form_' . $this->formConfig['id'] . '_' . $id;
+        return 'form_' . $this->getFormId() . '_' . $id;
+    }
+
+    /**
+     * Get primary form handler
+     *
+     * @return HandlerInterface
+     */
+    public function getPrimaryHandler(): HandlerInterface
+    {
+        $handlerName = ($this->formConfig['primaryHandler'] ?? 'email');
+        return $this->handlerManager->get($handlerName);
+    }
+
+    /**
+     * Get secondary form handlers
+     *
+     * @return HandlerInterface[]
+     */
+    public function getSecondaryHandlers(): array
+    {
+        $handlerNames = (array)($this->formConfig['secondaryHandlers'] ?? []);
+        return array_map([$this->handlerManager, 'get'], $handlerNames);
+    }
+
+    /**
+     * Get current form id/name
+     *
+     * @return string
+     */
+    public function getFormId(): string
+    {
+        return $this->formConfig['id'] ?? '';
     }
 }

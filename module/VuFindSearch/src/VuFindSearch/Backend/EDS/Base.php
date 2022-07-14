@@ -159,7 +159,7 @@ abstract class Base
      * Creates a new session
      *
      * @param string $profile   Profile to use
-     * @param string $isGuest   Whether or not this sesssion will be a guest session
+     * @param string $isGuest   Whether or not this session will be a guest session
      * @param string $authToken Authentication token
      *
      * @return array
@@ -176,7 +176,7 @@ abstract class Base
         $qs = ['profile' => $profile, 'guest' => $isGuest];
         $url = $this->edsApiHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
-        return $this->call($url, $headers, $qs);
+        return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
 
     /**
@@ -269,11 +269,19 @@ abstract class Base
      */
     public function autocomplete($query, $type, $data, $raw = false)
     {
-        // build request
-        $url = $data['url'] . '?idx=' . urlencode($type) .
-            '&token=' . urlencode($data['token']) .
-            '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
-            urlencode($data['custid']) . '"]}]&term=' . urlencode($query);
+        // $filters is an array of filter objects
+        // filter objects consist of name and an array of values (customer ids)
+        $filters = [['name' => 'custid', 'values' => [$data['custid']]]];
+
+        $params = [
+            'idx' => $type,
+            'token' => $data['token'],
+            'filters' => json_encode($filters),
+            'term' => $query,
+        ];
+
+        $url = $data['url'] . '?' . http_build_query($params);
+
         $this->debugPrint("Autocomplete URL: " . $url);
         $response = $this->call($url, null, null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
@@ -314,7 +322,7 @@ abstract class Base
             $authInfo['Options'] = $params;
         }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null, null, 'POST', $messageBody);
+        return $this->call($url, null, null, 'POST', $messageBody, '', false);
     }
 
     /**
@@ -347,7 +355,7 @@ abstract class Base
                             = $finalParameterName . '=' . urlencode($subValue);
                     }
                 } else {
-                    $queryParameters[] = $key . '=' . urlencode($value);
+                    $queryParameters[] = $key . '=' . urlencode($value ?? '');
                 }
             }
         }
@@ -363,6 +371,7 @@ abstract class Base
      * @param string $method        The HTTP Method to use
      * @param string $message       Message to POST if $method is POST
      * @param string $messageFormat Format of request $messageBody and responses
+     * @param bool   $cacheable     Whether the request is cacheable
      *
      * @throws ApiException
      * @return object         EDS API response (or an Error object).
@@ -373,14 +382,12 @@ abstract class Base
         $params = [],
         $method = 'GET',
         $message = null,
-        $messageFormat = ""
+        $messageFormat = "",
+        $cacheable = true
     ) {
         // Build Query String Parameters
         $queryParameters = $this->createQSFromArray($params);
-        $queryString = '';
-        if (null != $queryParameters && !empty($queryParameters)) {
-            $queryString = implode('&', $queryParameters);
-        }
+        $queryString = implode('&', $queryParameters);
         $this->debugPrint("Querystring to use: $queryString ");
         // Build headers
         $headers = [
@@ -388,7 +395,7 @@ abstract class Base
             'Content-Type' => $this->contentType,
             'Accept-Encoding' => 'gzip,deflate'
         ];
-        if (null != $headerParams && !empty($headerParams)) {
+        if (null != $headerParams) {
             foreach ($headerParams as $key => $value) {
                 $headers[$key] = $value;
             }
@@ -399,18 +406,19 @@ abstract class Base
             $queryString,
             $headers,
             $message,
-            $messageFormat
+            $messageFormat,
+            $cacheable
         );
         return $this->process($response);
     }
 
     /**
-     * Process EDSAPI response message
+     * Process EDS API response message
      *
-     * @param array $input The raw response from Summon
+     * @param string $input The raw response from EDS API
      *
      * @throws ApiException
-     * @return array       The processed response from EDS API
+     * @return array        The processed response from EDS API
      */
     protected function process($input)
     {
@@ -459,6 +467,7 @@ abstract class Base
      * @param array  $headers       HTTP headers to send
      * @param string $messageBody   Message body to for HTTP Request
      * @param string $messageFormat Format of request $messageBody and responses
+     * @param bool   $cacheable     Whether the request is cacheable
      *
      * @return string             HTTP response body
      */
@@ -468,6 +477,7 @@ abstract class Base
         $queryString,
         $headers,
         $messageBody,
-        $messageFormat
+        $messageFormat,
+        $cacheable = true
     );
 }

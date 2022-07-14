@@ -52,9 +52,10 @@ use Laminas\Http\Client as HttpClient;
 class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
-     * The HTTP_Request object used for API transactions
+     * HTTP client used for API transactions
      *
      * @var HttpClient
      */
@@ -348,14 +349,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Small wrapper for sendRequest, process to simplify error handling.
      *
-     * @param string $qs     Query string
-     * @param array  $params Request parameters
-     * @param string $method HTTP method
+     * @param string $qs        Query string
+     * @param array  $params    Request parameters
+     * @param string $method    HTTP method
+     * @param bool   $cacheable Whether the request is cacheable
      *
      * @return object    The parsed primo data
      * @throws \Exception
      */
-    protected function call($qs, $params = [], $method = 'GET')
+    protected function call($qs, $params = [], $method = 'GET', $cacheable = true)
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
@@ -366,22 +368,36 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             throw new \Exception('POST not supported');
         }
 
-        // Send Request
         $this->client->setUri($baseUrl);
-        $result = $this->client->setMethod($method)->send();
-        if (!$result->isSuccess()) {
-            throw new \Exception($result->getBody());
+        $this->client->setMethod($method);
+        // Check cache:
+        $resultBody = null;
+        $cacheKey = null;
+        if ($cacheable && $this->cache) {
+            $cacheKey = $this->getCacheKey($this->client);
+            $resultBody = $this->getCachedData($cacheKey);
         }
-        return $this->process($result->getBody(), $params);
+        if (null === $resultBody) {
+            // Send request:
+            $result = $this->client->send();
+            $resultBody = $result->getBody();
+            if (!$result->isSuccess()) {
+                throw new \Exception($resultBody);
+            }
+            if ($cacheKey) {
+                $this->putCachedData($cacheKey, $resultBody);
+            }
+        }
+        return $this->process($resultBody, $params);
     }
 
     /**
      * Translate Primo's XML into array of arrays.
      *
-     * @param array $data   The raw xml from Primo
-     * @param array $params Request parameters
+     * @param string $data   The raw xml from Primo
+     * @param array  $params Request parameters
      *
-     * @return array      The processed response from Primo
+     * @return array The processed response from Primo
      */
     protected function process($data, $params = [])
     {
@@ -454,14 +470,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 = substr((string)$prefix->PrimoNMBib->record->control->recordid, 3);
             $item['title']
                 = (string)$prefix->PrimoNMBib->record->display->title;
-            // format
-            $item['format'] = ucwords(
+            // Format -- Convert to displayable words and return as an array:
+            $format = ucwords(
                 str_replace(
                     '_',
                     ' ',
                     (string)$prefix->PrimoNMBib->record->display->type
                 )
             );
+            $item['format'] = [$format];
             // creators
             $creator
                 = trim((string)$prefix->PrimoNMBib->record->display->creator);
@@ -763,6 +780,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     $value
                 );
             }
+            // Unset reference:
+            unset($value);
             $record[$field] = is_array($fieldData) ? $values : $values[0];
 
             if ($highlight) {

@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
@@ -7,6 +8,7 @@ $modules = [
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
+    'Laminas\Cache\Storage\Adapter\Memcached',
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Form',
     'Laminas\Router',
@@ -42,7 +44,7 @@ if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
 
 // Set up cache directory (be sure to keep separate cache for CLI vs. web and
 // to account for potentially variant environment settings):
-$baseDir = ($local = getenv('VUFIND_LOCAL_DIR')) ? $local : 'data';
+$baseDir = ($local = getenv('VUFIND_LOCAL_DIR')) ? $local : APPLICATION_PATH . '/data';
 $cacheDir = ($cache = getenv('VUFIND_CACHE_DIR')) ? $cache : $baseDir . '/cache';
 if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
@@ -77,15 +79,15 @@ return [
     'modules' => array_unique($modules),
     'module_listener_options' => [
         'config_glob_paths'    => [
-            'config/autoload/{,*.}{global,local}.php',
+            APPLICATION_PATH . '/config/autoload/{,*.}{global,local}.php',
         ],
         'config_cache_enabled' => $useCache,
         'module_map_cache_enabled' => $useCache,
         'check_dependencies' => (APPLICATION_ENV == 'development'),
         'cache_dir'            => $cacheDir,
         'module_paths' => [
-            './module',
-            './vendor',
+            APPLICATION_PATH . '/module',
+            APPLICATION_PATH . '/vendor',
         ],
     ],
     'service_manager' => [

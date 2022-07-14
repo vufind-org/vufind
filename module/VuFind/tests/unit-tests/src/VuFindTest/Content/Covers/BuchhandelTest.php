@@ -33,7 +33,7 @@ use VuFind\Content\Covers\Buchhandel;
 use VuFindCode\ISBN;
 
 /**
- * Unit tests for Booksite cover loader.
+ * Unit tests for Buchhandel cover loader.
  *
  * @category VuFind
  * @package  Tests

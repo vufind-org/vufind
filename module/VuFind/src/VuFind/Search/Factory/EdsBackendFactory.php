@@ -27,8 +27,7 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
-
+use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
@@ -45,6 +44,8 @@ use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
  */
 class EdsBackendFactory extends AbstractBackendFactory
 {
+    use SharedListenersTrait;
+
     /**
      * Logger.
      *
@@ -87,7 +88,9 @@ class EdsBackendFactory extends AbstractBackendFactory
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
-        return $this->createBackend($connector);
+        $backend = $this->createBackend($connector);
+        $this->createListeners($backend);
+        return $backend;
     }
 
     /**
@@ -153,6 +156,9 @@ class EdsBackendFactory extends AbstractBackendFactory
             )
         );
         $connector->setLogger($this->logger);
+        if ($cache = $this->createConnectorCache($this->edsConfig)) {
+            $connector->setCache($cache);
+        }
         return $connector;
     }
 
@@ -182,5 +188,23 @@ class EdsBackendFactory extends AbstractBackendFactory
             return $driver;
         };
         return new RecordCollectionFactory($callback);
+    }
+
+    /**
+     * Create listeners.
+     *
+     * @param Backend $backend Backend
+     *
+     * @return void
+     */
+    protected function createListeners(Backend $backend)
+    {
+        $events = $this->serviceLocator->get('SharedEventManager');
+
+        // Attach hide facet value listener:
+        $hfvListener = $this->getHideFacetValueListener($backend, $this->edsConfig);
+        if ($hfvListener) {
+            $hfvListener->attach($events);
+        }
     }
 }

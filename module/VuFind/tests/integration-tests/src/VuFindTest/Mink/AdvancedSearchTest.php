@@ -53,7 +53,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $path = '/Search/Advanced';
         $session->visit($this->getVuFindUrl() . $path);
-        return $session->getPage();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
     }
 
     /**
@@ -106,19 +108,17 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAdvancedSearch()
+    public function testAdvancedSearchForm()
     {
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
 
         // Add a group
         $session->executeScript("addGroup()");
-        $this->snooze();
         $this->findCss($page, '#group1');
 
         // Add a search term
         $session->executeScript("addSearch(0)"); // add_search_link_0 click
-        $this->snooze();
         $this->findCss($page, '#search0_3');
         // No visible x next to lonely search term
         $this->findCss($page, '#search1_0 .adv-term-remove.hidden');
@@ -191,6 +191,72 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that the advanced search form works correctly with a NOT group combined
+     * with another group.
+     *
+     * @return void
+     */
+    public function testAdvancedMultiGroupSearchWithNotOperator()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Add a group
+        $session->executeScript("addGroup()");
+        $this->findCss($page, '#group1');
+
+        // Enter search criteria
+        $this->findCss($page, '#search_lookfor0_0')->setValue('building:"journals.mrc"');
+        $this->findCss($page, '#search_type1_0')->selectOption('Title');
+        $this->findCss($page, '#search_lookfor1_0')->setValue('rational');
+        $this->findCss($page, '#search_bool1')->selectOption('NOT');
+
+        // Submit search form
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search and result count
+        $this->assertEquals(
+            '(All Fields:building:"journals.mrc") NOT ((Title:rational))',
+            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+        );
+        $this->assertMatchesRegularExpression(
+            '/Showing 1 - 7 results of 7, query time: .*/',
+            trim($this->findCss($page, '.search-stats')->getText())
+        );
+    }
+
+    /**
+     * Test that a pure NOT search gives us results.
+     *
+     * @return void
+     */
+    public function testAdvancedSingleGroupSearchWithNotOperator()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Enter search criteria
+        $this->findCss($page, '#search_type0_0')->selectOption('Title');
+        $this->findCss($page, '#search_lookfor0_0')->setValue('rational');
+        $this->findCss($page, '#search_bool0')->selectOption('NOT');
+
+        // Submit search form
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search and result count
+        $this->assertEquals(
+            '() NOT ((Title:rational))',
+            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+        );
+        preg_match(
+            '/Showing \d+ - \d+ results of (\d+), query time: .*/',
+            trim($this->findCss($page, '.search-stats')->getText()),
+            $matches
+        );
+        $this->assertTrue($matches[1] > 0);
+    }
+
+    /**
      * Test default limit sorting
      *
      * @return void
@@ -207,7 +273,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
         $this->clickCss($page, '.language.dropdown li:not(.active) a');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
@@ -243,7 +309,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
         $this->clickCss($page, '.language.dropdown li:not(.active) a');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Buch E-Book Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',

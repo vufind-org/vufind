@@ -50,7 +50,7 @@ class EdsrecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
-        $this->searchClassId = 'EDS';
+        $this->sourceId = 'EDS';
         $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:

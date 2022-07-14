@@ -55,7 +55,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $conn = $this->getConnectorMock(['call']);
         $expectedUri = 'http://foo?idx=rawdata&token=auth1234'
-            . '&filters=[{"name"%3A"custid"%2C"values"%3A["foo"]}]&term=bla';
+            . '&filters=%5B%7B%22name%22%3A%22custid%22%2C%22values%22%3A%5B%22foo%22%5D%7D%5D&term=bla';
         $conn->expects($this->once())
             ->method('call')
             ->with($this->equalTo($expectedUri))
@@ -160,6 +160,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('bwh,201305180751PR.NEWS.USPR.HS16615', $recs[2]->getUniqueID());
         $this->assertEquals(65924, $coll->getTotal());
+        $this->assertEquals(0, $coll->getOffset());
         $rawFacets = $coll->getRawFacets();
         $this->assertEquals(7, count($rawFacets));
         $this->assertEquals('SourceType', $rawFacets[0]['Id']);
@@ -169,8 +170,19 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
         $this->assertEquals(count($facets), count($rawFacets));
-        $this->assertEquals(8, count($facets['SourceType']['counts']));
-        $this->assertEquals(0, $coll->getOffset());
+        $this->assertEquals(
+            [
+                'News' => 12055,
+                'Academic Journals' => 2855,
+                'Magazines' => 783,
+                'Books' => 226,
+                'eBooks' => 208,
+                'Reports' => 47,
+                'Reviews' => 5,
+                'Conference Materials' => 2,
+            ],
+            $facets['SourceType']
+        );
     }
 
     /**

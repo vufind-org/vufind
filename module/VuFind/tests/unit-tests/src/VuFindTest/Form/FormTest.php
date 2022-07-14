@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -37,6 +38,7 @@ use VuFind\Form\Form;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -55,7 +57,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
@@ -79,6 +82,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'Laminas\InputFilter\InputFilter',
             get_class($form->getInputFilter())
         );
+        $this->assertEquals(0, count($form->getSecondaryHandlers()));
     }
 
     /**
@@ -96,6 +100,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $form = new Form(
             new YamlReader(),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class),
             ['Feedback' => $defaults]
         );
         $this->assertEquals(
@@ -117,7 +122,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('foo');
     }
@@ -131,7 +137,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('FeedbackSite');
 
@@ -263,7 +270,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('FeedbackSite');
 
@@ -424,7 +432,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             $this->getMockTestFormYamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId($formId);
         return $form;
@@ -784,5 +793,54 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->setData(['checkbox' => ['o1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
+    }
+
+    /**
+     * Function to get testEmailSubjects data.
+     *
+     * @return array
+     */
+    public function getEmailSubjectsData(): array
+    {
+        return [
+            'with placeholders'
+                => [
+                    'TestSubjectEmailWithPlaceholders',
+                    'Subject One Two option-1'
+                ],
+            'without placeholders'
+                => [
+                    'TestSubjectEmailWithoutPlaceholders',
+                    'Subject without placeholders'
+                ],
+       ];
+    }
+
+    /**
+     * Test email subjects.
+     * @dataProvider getEmailSubjectsData
+     *
+     * @param string $formToTest      ID of the form to test.
+     * @param string $expectedSubject String to be expected.
+     *
+     * @return void
+     */
+    public function testEmailSubjects(
+        string $formToTest,
+        string $expectedSubject
+    ): void {
+        $form = $this->getMockTestForm($formToTest);
+        $form->setData(
+            [
+                'text1' => 'One',
+                'text2' => 'Two',
+                'checkbox' => ['o1']
+            ]
+        );
+        $this->assertTrue($form->isValid());
+        $this->assertEquals(
+            $expectedSubject,
+            $form->getEmailSubject($form->getData())
+        );
     }
 }

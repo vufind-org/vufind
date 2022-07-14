@@ -27,11 +27,11 @@
  */
 namespace VuFind\Captcha;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Image CAPTCHA factory.
@@ -96,10 +96,13 @@ class ImageFactory implements FactoryInterface
             $imageOptions['lineNoiseLevel'] = $config->Captcha->image_lineNoiseLevel;
         }
 
+        $baseUrl = rtrim(
+            ($container->get('ViewHelperManager')->get('url'))('home') ?? '',
+            '/'
+        );
         return new $requestedName(
             new \Laminas\Captcha\Image($imageOptions),
-            rtrim(($container->get('ViewHelperManager')->get('url'))('home'), '/')
-                . '/cache/'
+            "$baseUrl/cache/"
         );
     }
 }

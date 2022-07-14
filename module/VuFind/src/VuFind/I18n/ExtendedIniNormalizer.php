@@ -43,19 +43,20 @@ class ExtendedIniNormalizer
     /**
      * Normalize a directory on disk.
      *
-     * @param string $dir Directory to normalize.
+     * @param string $dir    Directory to normalize.
+     * @param string $filter File name filter.
      *
      * @return void
      */
-    public function normalizeDirectory($dir)
+    public function normalizeDirectory($dir, $filter)
     {
         $dir = rtrim($dir, '/');
         $handle = opendir($dir);
         while ($file = readdir($handle)) {
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
-                $this->normalizeDirectory($full);
-            } elseif (substr($file, -4) == '.ini') {
+                $this->normalizeDirectory($full, $filter);
+            } elseif ($this->filenameMatchesFilter($file, $filter)) {
                 $this->normalizeFile($full);
             }
         }
@@ -92,6 +93,9 @@ class ExtendedIniNormalizer
         // Strip off UTF-8 BOM if necessary.
         $bom = html_entity_decode('&#xFEFF;', ENT_NOQUOTES, 'UTF-8');
         $fileArray[0] = str_replace($bom, '', $fileArray[0]);
+
+        // Safeguard to avoid messing up wrong ini files:
+        $this->checkFileFormat($fileArray, $file);
 
         $comments = $this->extractComments($fileArray);
         $strings = $this->formatAsString($reader->getTextDomain($fileArray, false));
@@ -150,5 +154,57 @@ class ExtendedIniNormalizer
             }
         }
         return $comments;
+    }
+
+    /**
+     * Check if the given filename matches the filter pattern
+     *
+     * @param string $filename Filename
+     * @param string $filter   Filter
+     *
+     * @return bool
+     */
+    protected function filenameMatchesFilter(string $filename, string $filter): bool
+    {
+        foreach (explode('|', $filter) as $pattern) {
+            if (fnmatch($pattern, $filename)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check that the file to process is a valid language file.
+     *
+     * Throws an exception if unexpected content is detected.
+     *
+     * @param array  $lines    File contents
+     * @param string $filename Filename
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function checkFileFormat(array $lines, string $filename): void
+    {
+        $lineNum = 0;
+        foreach ($lines as $line) {
+            ++$lineNum;
+            $line = trim($line);
+            if ('' === $line || strncmp($line, ';', 1) === 0) {
+                continue;
+            }
+            if (substr($line, 0, 1) === '[' && substr($line, -1) === ']') {
+                throw new \Exception(
+                    "Cannot normalize a file with sections; $filename line $lineNum"
+                    . " contains: $line"
+                );
+            }
+            if (strstr($line, '=') === false) {
+                throw new \Exception(
+                    "Equals sign not found in $filename line $lineNum: $line"
+                );
+            }
+        }
     }
 }

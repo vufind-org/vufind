@@ -27,9 +27,10 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
-
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Abstract factory for backends.
@@ -43,7 +44,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 abstract class AbstractBackendFactory implements FactoryInterface
 {
     /**
-     * Superior service manager.
+     * Service container.
      *
      * @var ContainerInterface
      */
@@ -82,11 +83,39 @@ abstract class AbstractBackendFactory implements FactoryInterface
     ): \Laminas\Http\Client {
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $options = $options ?? [];
         if (null !== $timeout) {
             $options['timeout'] = $timeout;
         }
         $client->setOptions($options);
         return $client;
+    }
+
+    /**
+     * Create cache for the connector if enabled in configuration
+     *
+     * @param Config $searchConfig Search configuration
+     *
+     * @return ?StorageInterface
+     */
+    protected function createConnectorCache(Config $searchConfig): ?StorageInterface
+    {
+        if (empty($searchConfig->SearchCache->adapter)) {
+            return null;
+        }
+        $cacheConfig = $searchConfig->SearchCache->toArray();
+        $options = $cacheConfig['options'] ?? [];
+        if (empty($options['namespace'])) {
+            $options['namespace'] = 'Index';
+        }
+        if (empty($options['ttl'])) {
+            $options['ttl'] = 300;
+        }
+        $settings = [
+            'adapter' => $cacheConfig['adapter'],
+            'options' => $options,
+        ];
+        return $this->serviceLocator
+            ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+            ->createFromArrayConfiguration($settings);
     }
 }

@@ -44,19 +44,14 @@ use VuFindSearch\Response\RecordInterface;
  */
 class Record implements RecordInterface
 {
+    use \VuFindSearch\Response\RecordTrait;
+
     /**
      * SOLR fields.
      *
      * @var array
      */
     protected $fields;
-
-    /**
-     * Source identifier.
-     *
-     * @var string
-     */
-    protected $source;
 
     /**
      * Constructor.
@@ -68,28 +63,7 @@ class Record implements RecordInterface
     public function __construct(array $fields)
     {
         $this->fields = $fields;
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        $this->source = $identifier;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier()
-    {
-        return $this->source;
+        $this->setSourceIdentifiers('Solr');
     }
 
     /**

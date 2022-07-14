@@ -188,3 +188,35 @@ forms:
         type: textarea
         label: Comments
         required: true
+
+  TestSubjectEmailWithPlaceholders:
+    emailSubject: Subject %%text1%% %%text2%% %%checkbox%%
+    fields:
+      - name: text1
+        type: text
+        label: Sender Name
+      - name: text2
+        type: text
+        label: Topic
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+        label: checkbox
+
+  TestSubjectEmailWithoutPlaceholders:
+    emailSubject: Subject without placeholders
+    fields:
+      - name: text1
+        type: text
+        label: Sender Name
+      - name: text2
+        type: text
+        label: Topic
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+        label: checkbox

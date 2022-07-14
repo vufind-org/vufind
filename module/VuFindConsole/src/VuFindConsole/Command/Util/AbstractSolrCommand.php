@@ -29,7 +29,6 @@ namespace VuFindConsole\Command\Util;
 
 use Symfony\Component\Console\Command\Command;
 use VuFind\Solr\Writer;
-use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Generic base class for Solr commands.
@@ -40,7 +39,7 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractSolrCommand extends RelativeFileAwareCommand
+abstract class AbstractSolrCommand extends Command
 {
     /**
      * Solr writer

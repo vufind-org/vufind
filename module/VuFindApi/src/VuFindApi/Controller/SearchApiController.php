@@ -154,12 +154,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
-     * Get Swagger specification JSON fragment for services provided by the
+     * Get API specification JSON fragment for services provided by the
      * controller
      *
      * @return string
      */
-    public function getSwaggerSpecFragment()
+    public function getApiSpecFragment()
     {
         $config = $this->getConfig();
         $results = $this->getResultsManager()->get($this->searchClassId);
@@ -184,7 +184,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'maxLimit' => $this->maxLimit,
         ];
         $json = $this->getViewRenderer()->render(
-            'searchapi/swagger',
+            'searchapi/openapi',
             $viewParams
         );
         return $json;
@@ -217,9 +217,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $headers->addHeaderLine('Access-Control-Max-Age', '86400');
 
             return $this->output(null, 204);
-        }
-        if (null !== $request->getQuery('swagger')) {
-            return $this->createSwaggerSpec();
         }
         return parent::onDispatch($e);
     }

@@ -86,6 +86,14 @@ class SideFacets extends AbstractFacets
     protected $checkboxFacets = [];
 
     /**
+     * Should we display dynamically-generated checkbox facets that are not
+     * explicitly configured in $checkboxFacets?
+     *
+     * @var bool
+     */
+    protected $showDynamicCheckboxFacets = true;
+
+    /**
      * Settings controlling how lightbox is used for facet display.
      *
      * @var bool|string
@@ -156,6 +164,7 @@ class SideFacets extends AbstractFacets
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
         $checkboxSection = $settings[1] ?? false;
         $iniName = $settings[2] ?? 'facets';
+        $showDynamicCheckboxFacets = $settings[3] ?? true;
 
         // Load the desired facet information...
         $config = $this->configLoader->get($iniName);
@@ -195,6 +204,11 @@ class SideFacets extends AbstractFacets
             ? $config->$checkboxSection->toArray() : [];
         if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
+        if (!$showDynamicCheckboxFacets
+            || strtolower(trim($showDynamicCheckboxFacets)) === 'false'
+        ) {
+            $this->showDynamicCheckboxFacets = false;
         }
 
         // Show more settings:
@@ -256,8 +270,10 @@ class SideFacets extends AbstractFacets
      */
     public function getCheckboxFacetSet()
     {
-        return $this->results->getParams()
-            ->getCheckboxFacets(array_keys($this->checkboxFacets));
+        return $this->results->getParams()->getCheckboxFacets(
+            array_keys($this->checkboxFacets),
+            $this->showDynamicCheckboxFacets
+        );
     }
 
     /**
@@ -377,13 +393,14 @@ class SideFacets extends AbstractFacets
      * defaults to 6
      *
      * @param string $facetName Name of the facet to get
+     * @param int    $default   Value to use if configuration is absent/invalid
      *
      * @return int
      */
-    public function getShowMoreSetting($facetName)
+    public function getShowMoreSetting($facetName, $default = 6)
     {
         // Look for either facet-specific configuration or else a configured
-        // default. If neither is found, initialize return value to 0.
+        // default. If neither is found, initialize return value to null.
         $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
             $val = intval($this->showMoreSettings[$facetName]);
@@ -391,8 +408,8 @@ class SideFacets extends AbstractFacets
             $val = intval($this->showMoreSettings['*']);
         }
 
-        // Validate the return value, defaulting to 6 if missing/invalid
-        return (isset($val) && $val > 0) ? $val : 6;
+        // Validate the return value, using default if missing/invalid
+        return (isset($val) && $val > 0) ? $val : $default;
     }
 
     /**

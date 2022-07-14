@@ -44,6 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'solr' => Solr::class,
         'summon' => Summon::class,
     ];
 
@@ -53,7 +54,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Summon::class => SummonFactory::class,
+        Solr::class => SolrFactory::class,
+        Summon::class => AbstractFallbackLoaderFactory::class,
     ];
 
     /**

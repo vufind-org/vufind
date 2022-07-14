@@ -46,6 +46,7 @@ class MarcCollectionFile implements \Iterator
     protected $serializations = [
         'ISO2709' => Serialization\Iso2709::class,
         'MARCXML' => Serialization\MarcXml::class,
+        'JSON' => Serialization\MarcInJson::class,
     ];
 
     /**
@@ -137,6 +138,7 @@ class MarcCollectionFile implements \Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (null === $this->record) {
@@ -150,6 +152,7 @@ class MarcCollectionFile implements \Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;

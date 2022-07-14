@@ -40,6 +40,8 @@ use VuFind\Recommend\ExpandFacets;
  */
 class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test getEmptyResults()
      *
@@ -59,18 +61,26 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
      */
     public function testFacetInit()
     {
-        $configLoader = $this->getMockConfigLoader(
-            [
+        $config = [
+            'facets' => [
                 'Results' => [
                     'format' => 'Format',
                 ],
             ]
-        );
+        ];
         $results = $this->getMockResults();
         $params = $results->getParams();
-        $params->expects($this->once())->method('addFacet')->with($this->equalTo('format'), $this->equalTo('Format'));
-        $results->expects($this->once())->method('getFacetList')->with($this->equalTo(['format' => 'Format']))->will($this->returnValue(['foo']));
-        $ef = $this->getExpandFacets($configLoader, $results);
+        $params->expects($this->once())
+            ->method('addFacet')
+            ->with($this->equalTo('format'), $this->equalTo('Format'));
+        $results->expects($this->once())
+            ->method('getFacetList')
+            ->with($this->equalTo(['format' => 'Format']))
+            ->will($this->returnValue(['foo']));
+        $ef = $this->getExpandFacets(
+            $this->getMockConfigPluginManager($config, [], $this->once()),
+            $results
+        );
         $this->assertEquals(['foo'], $ef->getExpandedSet());
     }
 
@@ -81,46 +91,31 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
      * @param \VuFind\Search\Solr\Results  $results      populated results object
      * @param \VuFind\Search\Solr\Results  $emptyResults empty results object
      * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters      $request      request
+     * @param \Laminas\Stdlib\Parameters   $request      request
      *
      * @return ExpandFacets
      */
-    protected function getExpandFacets($configLoader = null, $results = null, $emptyResults = null, $settings = '', $request = null)
-    {
-        if (null === $configLoader) {
-            $configLoader = $this->getMockConfigLoader();
-        }
+    protected function getExpandFacets(
+        $configLoader = null,
+        $results = null,
+        $emptyResults = null,
+        $settings = '',
+        $request = null
+    ) {
         if (null === $results) {
             $results = $this->getMockResults();
         }
-        if (null === $emptyResults) {
-            $emptyResults = $this->getMockResults();
-        }
-        if (null === $request) {
-            $request = new \Laminas\Stdlib\Parameters([]);
-        }
-        $sf = new ExpandFacets($configLoader, $emptyResults);
+        $sf = new ExpandFacets(
+            $configLoader ?? $this->getMockConfigPluginManager([]),
+            $emptyResults ?? $this->getMockResults()
+        );
         $sf->setConfig($settings);
-        $sf->init($results->getParams(), $request);
+        $sf->init(
+            $results->getParams(),
+            $request ?? new \Laminas\Stdlib\Parameters([])
+        );
         $sf->process($results);
         return $sf;
-    }
-
-    /**
-     * Get a mock config loader.
-     *
-     * @param array  $config Configuration to return
-     * @param string $key    Key to store configuration under
-     *
-     * @return \VuFind\Config\PluginManager
-     */
-    protected function getMockConfigLoader($config = [], $key = 'facets')
-    {
-        $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $loader->expects($this->once())->method('get')->with($this->equalTo($key))
-            ->will($this->returnValue(new \Laminas\Config\Config($config)));
-        return $loader;
     }
 
     /**
