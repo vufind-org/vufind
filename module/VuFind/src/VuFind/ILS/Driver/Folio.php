@@ -647,6 +647,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Convert a FOLIO date string to a DateTime object.
+     *
+     * @param string $str FOLIO date string
+     *
+     * @return DateTime
+     */
+    protected function getDateTimeFromString(string $str): DateTime
+    {
+        $dateTime = new DateTime($str, new DateTimeZone('UTC'));
+        $localTimezone = (new DateTime)->getTimezone();
+        $dateTime->setTimezone($localTimezone);
+        return $dateTime;
+    }
+
+    /**
      * Support method for getHolding(): obtaining the Due Date from OKAPI
      * by calling /circulation/loans with the item->id, adjusting the
      * timezone and formatting in universal time with or without due time
@@ -667,12 +682,7 @@ class Folio extends AbstractAPI implements
             // many loans are returned for an item, the one we want
             // is the one without a returnDate
             if (!isset($loan->returnDate) && isset($loan->dueDate)) {
-                $dueDate = new DateTime(
-                    $loan->dueDate,
-                    new DateTimeZone('UTC')
-                );
-                $localTimezone = (new DateTime)->getTimezone();
-                $dueDate->setTimezone($localTimezone);
+                $dueDate = $this->getDateTimeFromString($loan->dueDate);
                 $method = $showTime
                     ? 'convertToDisplayDateAndTime' : 'convertToDisplayDate';
                 return $this->dateConverter->$method('U', $dueDate->format('U'));
@@ -950,11 +960,8 @@ class Folio extends AbstractAPI implements
             '/circulation/loans',
             $query
         ) as $trans) {
-            $date = new DateTime($trans->dueDate, new DateTimeZone('UTC'));
-            $localTimezone = (new DateTime)->getTimezone();
-            $date->setTimezone($localTimezone);
-
             $dueStatus = false;
+            $date = $this->getDateTimeFromString($trans->dueDate);
             $dueDateTimestamp = $date->getTimestamp();
 
             $now = time();
