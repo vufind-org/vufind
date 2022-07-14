@@ -658,39 +658,27 @@ class Folio extends AbstractAPI implements
      */
     protected function getDueDate($itemId, $showTime)
     {
-        $dueDateValue = '';
-        $query = [
-            'query' => 'itemId==' . $itemId
-        ];
+        $query = 'itemId==' . $itemId;
         foreach ($this->getPagedResults(
             'loans',
             '/circulation/loans',
-            $query
+            compact('query')
         ) as $loan) {
             // many loans are returned for an item, the one we want
             // is the one without a returnDate
-            if (!isset($loan->returnDate)) {
+            if (!isset($loan->returnDate) && isset($loan->dueDate)) {
                 $dueDate = new DateTime(
                     $loan->dueDate,
                     new DateTimeZone('UTC')
                 );
                 $localTimezone = (new DateTime)->getTimezone();
                 $dueDate->setTimezone($localTimezone);
-                $dueDateValue = $this->dateConverter
-                    ->convertToDisplayDate(
-                        'U',
-                        $dueDate->format('U')
-                    );
-                if ($showTime) {
-                    $dueDateValue = $this->dateConverter
-                        ->convertToDisplayDateAndTime(
-                            'U',
-                            $dueDate->format('U')
-                        );
-                }
+                $method = $showTime
+                    ? 'convertToDisplayDateAndTime' : 'convertToDisplayDate';
+                return $this->dateConverter->$method('U', $dueDate->format('U'));
             }
         }
-        return $dueDateValue;
+        return '';
     }
 
     /**
