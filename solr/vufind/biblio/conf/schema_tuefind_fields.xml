@@ -49,6 +49,7 @@
     <field name="fulltext_summary_unstemmed" type="textProper" indexed="true" stored="false"/>
     <field name="fulltext_references" type="text" indexed="true" stored="false"/>
     <field name="fulltext_references_unstemmed" type="textProper" indexed="true" stored="false"/>
+    <field name="special_collection" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- COMMON copyFields -->
     <copyField source="id" dest="ids"/>

@@ -90,6 +90,10 @@ var TueFind = {
         return '<div id="snippets_' + doc_id + '">' +  VuFind.translate('No Matches') + '</div>';
     },
 
+    GetProxyErrorMessage(doc_id) {
+        return '<div id="snippets_' + doc_id + '" class="alert alert-danger">' +  VuFind.translate('Proxy Error') + '</div>';
+    },
+
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
         var valid_synonym_terms = new RegExp('lang|all');
         synonyms = synonyms.match(valid_synonym_terms) ? synonyms : false;
@@ -101,6 +105,15 @@ var TueFind = {
             dataType: "json",
             success: function (json) {
                 $(document).ready(function () {
+                    if (json.status === 'PROXY_ERROR') {
+                        if (verbose) {
+                             $("#snippets_" + doc_id).replaceWith(TueFind.GetProxyErrorMessage(doc_id));
+                        }
+                        $("#snippet_place_holder_" + doc_id).each(function () {
+                                $(this).replaceWith(TueFind.GetProxyErrorMessage(doc_id));
+                        });
+                        return;
+                    }
                     var snippets = json['snippets'];
                     $("#snippet_place_holder_" + doc_id).each(function () {
                         if (snippets)
