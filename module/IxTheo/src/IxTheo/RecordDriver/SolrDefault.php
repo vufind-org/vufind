@@ -332,4 +332,17 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     {
         return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
     }
+    
+
+    public function getAllClassification()
+    {
+        $result = array();
+        if(isset($this->fields['ixtheo_notation']) && is_array($this->fields['ixtheo_notation'])) {
+            $ixtheo_notation = $this->fields['ixtheo_notation'];
+            foreach($ixtheo_notation as $notation) {
+                $result[] = $notation;
+            }
+        }
+        return $result;
+    }
 }

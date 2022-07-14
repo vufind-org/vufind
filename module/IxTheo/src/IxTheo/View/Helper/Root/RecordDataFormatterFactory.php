@@ -95,7 +95,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
 
         // Classification (IxTheo-specific)
         $spec->setTemplateLine(
-            'IxTheo Classification', 'getAllClassificationHeadings', 'data-classification.phtml'
+            'IxTheo Classification', 'getAllClassification', 'data-classification.phtml'
         );
 
         // Non-standardized Subjects (IxTheo-specific)
