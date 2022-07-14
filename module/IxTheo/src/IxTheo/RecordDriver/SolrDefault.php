@@ -334,7 +334,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
 
-    public function getIxTheoClassification()
+    public function getIxTheoClassifications()
     {
         $result = array();
         if(isset($this->fields['ixtheo_notation']) && is_array($this->fields['ixtheo_notation'])) {
