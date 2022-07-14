@@ -1,5 +1,5 @@
 <?php foreach ($data as $notation): ?>
   <?php if (!empty($notation)): ?>
-    <?=$this->transEsc($notation)?><br />
+    <a href="/Search/Results?type=AllFields&filter%5B%5D=%7Eixtheo_notation_facet%3A%22<?=$notation[0];?>%22"><?=$this->transEsc($notation[1])?></a><br />
   <?php endif; ?>
 <?php endforeach; ?>
