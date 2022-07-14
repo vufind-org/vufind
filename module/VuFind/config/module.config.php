@@ -540,6 +540,21 @@ $config = [
             'VuFind\Form\Form' => false,
         ],
     ],
+    'doctrine' => [
+        'cache' => [
+            'filesystem' => [
+                'directory' => LOCAL_CACHE_DIR . '/doctrine',
+            ],
+        ],
+        'configuration' => [
+            'orm_default' => [
+                'query_cache' => 'filesystem',
+                'result_cache' => 'filesystem',
+                'metadata_cache' => 'filesystem',
+                'hydration_cache' => 'filesystem',
+            ],
+        ],
+    ],
     'translator' => [],
     'translator_plugins' => [
         'factories' => [
