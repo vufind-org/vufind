@@ -544,6 +544,11 @@ class Folio extends AbstractAPI implements
      */
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
+        $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
+        $showTime = $this->config['Availability']['showTime'] ?? false;
+        $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $dueDateItemCount = 0;
+
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
@@ -606,6 +611,16 @@ class Folio extends AbstractAPI implements
                     $item->itemLevelCallNumberPrefix ?? '',
                     $item->itemLevelCallNumber ?? ''
                 );
+
+                $dueDateValue = '';
+                if ($item->status->name == 'Checked out'
+                    && $showDueDate
+                    && $dueDateItemCount < $maxNumDueDateItems
+                ) {
+                    $dueDateValue = $this->getDueDate($item->id, $showTime);
+                    $dueDateItemCount++;
+                }
+
                 $items[] = $callNumberData + [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -613,6 +628,7 @@ class Folio extends AbstractAPI implements
                     'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
+                    'duedate' => $dueDateValue,
                     'availability' => $item->status->name == 'Available',
                     'is_holdable' => $this->isHoldable($locationName),
                     'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
@@ -628,6 +644,53 @@ class Folio extends AbstractAPI implements
             }
         }
         return $items;
+    }
+
+    /**
+     * Support method for getHolding(): obtaining the Due Date from OKAPI
+     * by calling /circulation/loans with the item->id, adjusting the
+     * timezone and formatting in universal time with or without due time
+     *
+     * @param string $itemId   ID for the item to query
+     * @param bool   $showTime Determines if date or date & time is returned
+     *
+     * @return string
+     */
+    protected function getDueDate($itemId, $showTime)
+    {
+        $dueDateValue = '';
+        $query = [
+            'query' => 'itemId==' . $itemId
+        ];
+        foreach ($this->getPagedResults(
+            'loans',
+            '/circulation/loans',
+            $query
+        ) as $loan) {
+            // many loans are returned for an item, the one we want
+            // is the one without a returnDate
+            if (!isset($loan->returnDate)) {
+                $dueDate = new DateTime(
+                    $loan->dueDate,
+                    new DateTimeZone('UTC')
+                );
+                $localTimezone = (new DateTime)->getTimezone();
+                $dueDate->setTimezone($localTimezone);
+                $dueDateValue = $this->dateConverter
+                    ->convertToDisplayDate(
+                        'U',
+                        $dueDate->format('U')
+                    );
+                if ($showTime) {
+                    $dueDateValue = $this->dateConverter
+                        ->convertToDisplayDateAndTime(
+                            'U',
+                            $dueDate->format('U')
+                        );
+                }
+            }
+        }
+        return $dueDateValue;
     }
 
     /**
