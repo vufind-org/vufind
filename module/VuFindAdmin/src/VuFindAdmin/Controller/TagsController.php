@@ -128,19 +128,20 @@ class TagsController extends AbstractAdmin
         $view->uniqueTags      = $this->getUniqueTags();
         $view->uniqueUsers     = $this->getUniqueUsers();
         $view->uniqueResources = $this->getUniqueResources();
+        $page = $this->getParam('page', false, '1');
         $resourceTags = $this->tagService->getResourceTags(
-            $this->convertFilter($this->getParam('user_id')),
-            $this->convertFilter($this->getParam('resource_id')),
-            $this->convertFilter($this->getParam('tag_id')),
-            $this->getParam('order'),
-            $this->params['page'] ?? '1'
+            $this->convertFilter($this->getParam('user_id', false)),
+            $this->convertFilter($this->getParam('resource_id', false)),
+            $this->convertFilter($this->getParam('tag_id', false)),
+            $this->getParam('order', false),
+            $page
         );
         $view->results = new \Laminas\Paginator\Paginator(
             new \DoctrineORMModule\Paginator\Adapter\DoctrinePaginator(
                 $resourceTags
             )
         );
-        $view->results->setCurrentPageNumber($this->params['page'] ?? "1");
+        $view->results->setCurrentPageNumber($page);
         $view->results->setItemCountPerPage(20);
         $view->params = $this->params()->fromQuery();
         return $view;
