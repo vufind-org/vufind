@@ -54,29 +54,6 @@ class LibraryCardsController extends AbstractBase
             return $this->forceLogin();
         }
 
-        // Check for "delete card" request; parameter may be in GET or POST depending
-        // on calling context.
-        $deleteId = $this->params()->fromPost(
-            'delete',
-            $this->params()->fromQuery('delete')
-        );
-        if ($deleteId) {
-            // If the user already confirmed the operation, perform the delete now;
-            // otherwise prompt for confirmation:
-            $confirm = $this->params()->fromPost(
-                'confirm',
-                $this->params()->fromQuery('confirm')
-            );
-            if ($confirm) {
-                $success = $this->performDeleteLibraryCard($deleteId);
-                if ($success !== true) {
-                    return $success;
-                }
-            } else {
-                return $this->confirmDeleteLibraryCard($deleteId);
-            }
-        }
-
         // Connect to the ILS for login drivers:
         $catalog = $this->getILS();
 

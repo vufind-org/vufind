@@ -111,7 +111,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     public function getList(\VuFind\RecordDriver\AbstractBase $driver)
     {
         $retVal = [];
-        $config = $this->getConfigForSource($driver->getSourceIdentifier());
+        $config = $this->getConfigForSource($driver->getSearchBackendIdentifier());
         foreach ($config as $current) {
             $parts = explode(':', $current, 2);
             $type = $parts[0];

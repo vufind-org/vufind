@@ -42,6 +42,25 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
 class SearchController extends AbstractSolrSearch
 {
     /**
+     * Blended search action.
+     *
+     * @return mixed
+     */
+    public function blendedAction()
+    {
+        $saveId = $this->searchClassId;
+        try {
+            $this->searchClassId = 'Blender';
+            $view = $this->resultsAction();
+        } catch (\Exception $e) {
+            $this->searchClassId = $saveId;
+            throw $e;
+        }
+        $this->searchClassId = $saveId;
+        return $view;
+    }
+
+    /**
      * Show facet list for Solr-driven collections.
      *
      * @return mixed

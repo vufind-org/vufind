@@ -1568,7 +1568,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if ($function == 'Holds') {
             $extraHoldFields = empty($this->getPickUpLocations(null))
@@ -1900,7 +1900,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:CancelRequestItemResponse/' .
                 'ns1:UserId/ns1:UserIdentifierValue'
             );
-            $itemId = $itemId ?? $requestId;
+            $itemId = $itemId ?: $requestId;
             try {
                 $this->checkResponseForError($cancelRequestResponse);
             } catch (ILSException $exception) {
@@ -2812,7 +2812,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $location = $collection = null;
         $initialLevel = 0;
-        foreach ($locations ?? [] as $loc) {
+        foreach ($locations as $loc) {
             $this->registerNamespaceFor($loc);
             $name = $loc->xpath('ns1:LocationNameValue');
             $name = (string)($name[0] ?? '');

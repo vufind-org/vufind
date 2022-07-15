@@ -58,19 +58,19 @@
   <div id="account-actions">
     <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-changeemail') ?>">
-        <i class="fa fa-fw fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Change Email Address') ?>
+        <?=$this->icon('profile-email') ?> <?=$this->transEsc('Change Email Address') ?>
       </a>
     <?php endif; ?>
 
     <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
-        <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
+        <?=$this->icon('profile-change-password') ?> <?=$this->transEsc('Change Password') ?>
       </a>
     <?php endif; ?>
 
     <?php if ($this->accountDeletion): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox>
-        <i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?>
+        <?=$this->icon('profile-delete') ?> <?=$this->transEsc('delete_account_title') ?>
       </a>
     <?php endif; ?>
   </div>

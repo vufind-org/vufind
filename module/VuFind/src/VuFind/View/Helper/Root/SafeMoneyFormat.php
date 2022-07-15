@@ -28,7 +28,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use NumberFormatter;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\Service\CurrencyFormatter;
 
 /**
  * Safe money format view helper
@@ -42,42 +43,35 @@ use NumberFormatter;
 class SafeMoneyFormat extends AbstractHelper
 {
     /**
-     * Default currency format (ISO 4217) to use.
+     * CurrencyFormatter
      *
-     * @var string
+     * @var CurrencyFormatter
      */
-    protected $defaultCurrency;
+    protected $currencyFormatter;
 
     /**
-     * Number formatter.
+     * Escape helper
      *
-     * @var NumberFormatter
+     * @var EscapeHtml
      */
-    protected $formatter;
+    protected $escapeHtml;
 
     /**
      * Constructor
      *
-     * @param string $defaultCurrency Default currency format (ISO 4217) to use (null
-     * for default from locale)
+     * @param CurrencyFormatter $currencyFormatter Currency formatter
+     * @param EscapeHtml        $escapeHtml        Escaper
      */
-    public function __construct($defaultCurrency = null)
-    {
-        // Initialize number formatter:
-        $locale = setlocale(LC_MONETARY, 0);
-        $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
-
-        // Initialize default currency:
-        if (null === $defaultCurrency) {
-            $localeInfo = localeconv();
-            $defaultCurrency = isset($localeInfo['int_curr_symbol'])
-                ? trim($localeInfo['int_curr_symbol']) : '';
-        }
-        $this->defaultCurrency = empty($defaultCurrency) ? 'USD' : $defaultCurrency;
+    public function __construct(
+        CurrencyFormatter $currencyFormatter,
+        EscapeHtml $escapeHtml
+    ) {
+        $this->currencyFormatter = $currencyFormatter;
+        $this->escapeHtml = $escapeHtml;
     }
 
     /**
-     * Currency-rendering logic.
+     * Convert currency to display format and escape the result
      *
      * @param float  $number   The number to format
      * @param string $currency Currency format (ISO 4217) to use (null for default)
@@ -86,23 +80,9 @@ class SafeMoneyFormat extends AbstractHelper
      */
     public function __invoke($number, $currency = null)
     {
-        if (null === $currency) {
-            $currency = $this->defaultCurrency;
-        }
-        $escaper = $this->getView()->plugin('escapeHtml');
-        // Workaround for a problem in ICU library < 4.9 causing formatCurrency to
-        // fail if locale has comma as a decimal separator.
-        // (see https://bugs.php.net/bug.php?id=54538)
-        $locale = setlocale(LC_NUMERIC, 0);
-        $codes = [
-            'en_us.UTF-8', 'en_us.UTF8', 'en_us', 'en_US.UTF-8', 'en_US.UTF8',
-            'en_US'
-        ];
-        setlocale(LC_NUMERIC, $codes);
-        $result = $escaper(
-            $this->formatter->formatCurrency((float)$number, $currency)
+        $result = ($this->escapeHtml)(
+            $this->currencyFormatter->convertToDisplayFormat($number, $currency)
         );
-        setlocale(LC_NUMERIC, $locale);
         return $result;
     }
 }

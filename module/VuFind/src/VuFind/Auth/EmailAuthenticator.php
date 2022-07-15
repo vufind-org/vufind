@@ -31,6 +31,7 @@ use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Class for managing email-based authentication.
@@ -58,7 +59,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * CSRF Validator
      *
-     * @var \VuFind\Validator\Csrf $csrf CSRF validator
+     * @var CsrfInterface
      */
     protected $csrf = null;
 
@@ -108,7 +109,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * Constructor
      *
      * @param \Laminas\Session\SessionManager          $session      Session Manager
-     * @param \VuFind\Validator\Csrf                   $csrf         CSRF Validator
+     * @param CsrfInterface                            $csrf         CSRF Validator
      * @param \VuFind\Mailer\Mailer                    $mailer       Mailer
      * @param \Laminas\View\Renderer\RendererInterface $viewRenderer View Renderer
      * @param RemoteAddress                            $remoteAddr   Remote address
@@ -117,7 +118,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      */
     public function __construct(
         \Laminas\Session\SessionManager $session,
-        \VuFind\Validator\Csrf $csrf,
+        CsrfInterface $csrf,
         \VuFind\Mailer\Mailer $mailer,
         \Laminas\View\Renderer\RendererInterface $viewRenderer,
         RemoteAddress $remoteAddr,

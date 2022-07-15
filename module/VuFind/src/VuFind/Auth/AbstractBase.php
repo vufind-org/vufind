@@ -193,7 +193,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         } catch (AuthException $e) {
             return false;
         }
-        return isset($user) && $user instanceof User;
+        return $user instanceof User;
     }
 
     /**

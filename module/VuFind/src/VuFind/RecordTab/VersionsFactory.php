@@ -29,7 +29,7 @@
  */
 namespace VuFind\RecordTab;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for building the Versions tab.

@@ -40,9 +40,11 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CollectionsController extends AbstractBase
+class CollectionsController extends AbstractBase implements
+    \VuFind\I18n\HasSorterInterface
 {
     use Feature\AlphaBrowseTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * VuFind configuration
@@ -60,6 +62,7 @@ class CollectionsController extends AbstractBase
     public function __construct(ServiceLocatorInterface $sm, Config $config)
     {
         $this->config = $config;
+        $this->setSorter($sm->get(\VuFind\I18n\Sorter::class));
         parent::__construct($sm);
     }
 
@@ -286,7 +289,7 @@ class CollectionsController extends AbstractBase
             $valuesSorted[$resKey]
                 = $this->normalizeForBrowse($resVal['displayText']);
         }
-        asort($valuesSorted);
+        $this->getSorter()->asort($valuesSorted);
 
         // Now the $valuesSorted is in the right order
         return $valuesSorted;

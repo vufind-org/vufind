@@ -138,7 +138,6 @@ trait FacetLimitTrait
         // Check for a different limit for hierarchical facets:
         if (null !== $this->hierarchicalFacetLimit
             && $limit !== $this->hierarchicalFacetLimit
-            && is_callable([$this->getOptions(), 'getHierarchicalFacets'])
         ) {
             $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
             if (in_array($field, $hierarchicalFacets)) {

@@ -405,7 +405,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return SearchHandler|null
      */
-    protected function getSearchHandler($handler, $searchString)
+    protected function getSearchHandler($handler, string $searchString)
     {
         $handler = $handler ? strtolower($handler) : $handler;
         if ($handler) {
@@ -413,7 +413,7 @@ class QueryBuilder implements QueryBuilderInterface
             // to check for a handler first before doing multiple string
             // operations to determine eligibility for exact handling.
             if (isset($this->exactSpecs[$handler])) {
-                $searchString = isset($searchString) ? trim($searchString) : '';
+                $searchString = trim($searchString);
                 if (strlen($searchString) > 1
                     && substr($searchString, 0, 1) == '"'
                     && substr($searchString, -1, 1) == '"'
