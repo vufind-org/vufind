@@ -152,6 +152,57 @@ class JopTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test implicit downgrade of open url
+     *
+     * @return void
+     */
+    public function testDowngradeOpenUrl()
+    {
+        $ipAddr = '1.2.3.4';
+        $connector = $this->createConnector(null, $ipAddr);
+        $expected = 'http://services.d-nb.de/fize-service/gvr/full.xml?'
+            . 'genre=article'
+            . '&date=2022-07-14'
+            . '&issn=0123456789'
+            . '&isbn=9876543210'
+            . '&volume=I'
+            . '&issue=test'
+            . '&spage=1'
+            . '&pages=9'
+            . '&pid=client_ip%3D' . $ipAddr;
+        $this->assertEquals(
+            $expected,
+            $connector->getResolverUrl(
+                'ctx_ver=Z39.88-2004'
+                . '&rft.date=2022-07-14'
+                . '&rft.issn=0123456789'
+                . '&rft.isbn=9876543210'
+                . '&rft.volume=I'
+                . '&rft.issue=test'
+                . '&rft.spage=1'
+                . '&rft.pages=9'
+            )
+        );
+    }
+
+    /**
+     * Test implicit call of downgradeOpenUrl
+     *
+     * @return void
+     */
+    public function testDowngradeOpenUrlWithoutMappingKey()
+    {
+        $ipAddr = '1.2.3.4';
+        $connector = $this->createConnector(null, $ipAddr);
+        $expected = 'http://services.d-nb.de/fize-service/gvr/full.xml?'
+            . 'genre=article&pid=client_ip%3D' . $ipAddr;
+        $this->assertEquals(
+            $expected,
+            $connector->getResolverUrl('ctx_ver=Z39.88-2004')
+        );
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file

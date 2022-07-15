@@ -212,7 +212,9 @@ class Jop extends AbstractBase
      */
     protected function downgradeOpenUrl($parsed)
     {
-        $downgraded = [];
+        // we need 'genre' but only the values
+        // article or journal are allowed...
+        $downgraded[] = "genre=article";
 
         // prepare content for downgrading
         // resolver only accepts date formats YYYY, YYYY-MM, and YYYY-MM-DD
@@ -245,13 +247,8 @@ class Jop extends AbstractBase
                 }
             }
         }
-        if (!empty($downgraded)) {
-            // we need 'genre' but only the values
-            // article or journal are allowed...
-            return "genre=article&" . implode('&', $downgraded);
-        }
 
-        return implode('&', $parsed);
+        return implode('&', $downgraded);
     }
 
     /**
