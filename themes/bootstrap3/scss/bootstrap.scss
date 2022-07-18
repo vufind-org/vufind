@@ -264,11 +264,11 @@ footer {
 .myresearch-menu .status.ok { color: $state-success-text; }
 .myresearch-menu .status .warn,
 .myresearch-menu .status.warn { color: $state-warning-text; }
-.myresearch-menu .status .overdue,
-.myresearch-menu .status.overdue { color: $state-danger-text; }
+.myresearch-menu .status .danger,
+.myresearch-menu .status.danger { color: $state-danger-text; }
 .myresearch-menu .badge.ok { background-color: $state-success-bg; }
 .myresearch-menu .badge.warn { background-color: $state-warning-bg; }
-.myresearch-menu .badge.overdue { background-color: $state-danger-bg; }
+.myresearch-menu .badge.danger { background-color: $state-danger-bg; }
 .myresearch-menu .status .fa {
   height: 1rem;
   margin-top: 3px;
@@ -297,12 +297,12 @@ footer {
   background-color: $state-warning-text;
   border-color: $state-warning-bg;
 }
-.myresearch-menu .active .overdue {
+.myresearch-menu .active .danger {
   background-color: $state-danger-text;
   border-color: $state-danger-bg;
 }
 .myresearch-menu .active .warn { background-color: $state-warning-text; }
-.myresearch-menu .active .overdue { background-color: $state-danger-text; }
+.myresearch-menu .active .danger { background-color: $state-danger-text; }
 .myresearch-menu .active .text-success { color: $state-success-bg; }
 .myresearch-menu .active .text-warning { color: $state-warning-bg; }
 .myresearch-menu .active .text-danger { color: $state-danger-bg; }

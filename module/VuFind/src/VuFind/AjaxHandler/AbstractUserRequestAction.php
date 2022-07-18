@@ -72,11 +72,11 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
         ];
         foreach ($requests as $request) {
             if (!empty($request['available'])) {
-                $status['available'] += 1;
+                $status['available'] ++;
             } elseif (!empty($request['in_transit'])) {
-                $status['in_transit'] += 1;
+                $status['in_transit'] ++;
             } else {
-                $status['other'] += 1;
+                $status['other'] ++;
             }
         }
         return $this->formatResponse($status);
