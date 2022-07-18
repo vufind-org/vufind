@@ -49,7 +49,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         if (result.locationList[x].availability) {
           locationListHTML +=
             '<span class="text-success">' +
-              VuFind.icon("ui-success") + " " +
+              VuFind.icon("status-available") + " " +
               result.locationList[x].location +
             '</span> ';
         } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
@@ -65,7 +65,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         } else {
           locationListHTML +=
             '<span class="text-danger">' +
-              VuFind.icon('ui-failure') + " " +
+              VuFind.icon('status-unavailable') + " " +
               result.locationList[x].location +
             '</span> ';
         }
