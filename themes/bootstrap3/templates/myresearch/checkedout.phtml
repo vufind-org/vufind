@@ -5,6 +5,8 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checked Out Items') . '</li>';
 
+  $this->headScript()->appendFile('checkouts.js');
+
   // Check if "Renew All" button can be displayed:
   $renewAll = !$this->ilsPaging || !$paginator;
 ?>
@@ -42,15 +44,30 @@
     <?php if ($this->renewForm): ?>
     <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut" data-disable-on-submit>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf"/>
+      <input type="hidden" id="submitType" name="renewSelected" value="1">
       <div class="toolbar">
         <div class="checkbox">
           <label>
             <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
             <?=$this->transEsc('select_page')?>
           </label>
-          <input type="submit" class="btn btn-default" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr("renew_selected")?>" />
+          <div class="btn-group">
+            <input type="submit" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr('renew_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+            <ul class="dropdown-menu">
+              <li class="disabled"><a><?=$this->transEsc('confirm_renew_selected_text')?></a></li>
+              <li><a href="#" id="confirm_renew_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+              <li><a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            </ul>
+          </div>
           <?php if ($renewAll): ?>
-            <input type="submit" class="btn btn-default" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" />
+            <div class="btn-group">
+              <input type="submit" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li class="disabled"><a><?=$this->transEsc('confirm_renew_all_text')?></a></li>
+                <li><a href="#" id="confirm_renew_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
           <?php endif; ?>
         </div>
       </div>
