@@ -4,7 +4,7 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestType) {
+function checkRequestIsValid(element, requestType, icon = 'place-hold') {
   var recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
   var vars = deparam(element.href);
   vars.id = recordId;
@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType) {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html(VuFind.icon('place-hold') + VuFind.updateCspNonce(response.data.msg));
+          .html(VuFind.icon(icon) + VuFind.updateCspNonce(response.data.msg));
       } else {
         $(element).remove();
       }
@@ -36,13 +36,13 @@ function checkRequestIsValid(element, requestType) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function checkRequest() {
-    checkRequestIsValid(this, 'Hold');
+    checkRequestIsValid(this, 'Hold', 'place-hold');
   });
   $('.checkStorageRetrievalRequest').each(function checkStorageRetrievalRequest() {
-    checkRequestIsValid(this, 'StorageRetrievalRequest');
+    checkRequestIsValid(this, 'StorageRetrievalRequest', 'place-storage-retrieval');
   });
   $('.checkILLRequest').each(function checkILLRequest() {
-    checkRequestIsValid(this, 'ILLRequest');
+    checkRequestIsValid(this, 'ILLRequest', 'place-ill-request');
   });
 }
 
