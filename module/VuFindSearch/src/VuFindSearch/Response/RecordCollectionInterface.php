@@ -49,9 +49,8 @@ interface RecordCollectionInterface extends \Countable, \Iterator
     /**
      * Return available facets.
      *
-     * Returns an associative array with the internal field name as key. The
-     * value is an associative array of the available facets for the field,
-     * indexed by facet value.
+     * Returns an associative array with the field name as key. The value is an
+     * associative array of available facets for the field, indexed by facet value.
      *
      * @return array
      */
@@ -63,6 +62,16 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @return array
      */
     public function getRecords();
+
+    /**
+     * Return any errors.
+     *
+     * Each error can be a translatable string or an array that the Flashmessages
+     * view helper understands.
+     *
+     * @return array
+     */
+    public function getErrors();
 
     /**
      * Return offset in the total search result set.
@@ -84,8 +93,21 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @param string $identifier Backend identifier
      *
      * @return void
+     *
+     * @deprecated Use setSourceIdentifiers instead
      */
     public function setSourceIdentifier($identifier);
+
+    /**
+     * Set the source backend identifiers.
+     *
+     * @param string $identifier      Record source identifier
+     * @param string $searchBackendId Search backend identifier (if different from
+     * $recordSourceId)
+     *
+     * @return void
+     */
+    public function setSourceIdentifiers($identifier, $searchBackendId = '');
 
     /**
      * Return the source backend identifier.

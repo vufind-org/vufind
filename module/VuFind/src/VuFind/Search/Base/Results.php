@@ -103,6 +103,13 @@ abstract class Results
     protected $savedSearch = null;
 
     /**
+     * How frequently will a user be notified about this search (0 = never)?
+     *
+     * @var int
+     */
+    protected $notificationFrequency = null;
+
+    /**
      * Query start time
      *
      * @var float
@@ -164,6 +171,13 @@ abstract class Results
      * @var UrlQueryHelperFactory
      */
     protected $urlQueryHelperFactory = null;
+
+    /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelperInterface
+     */
+    protected $hierarchicalFacetHelper = null;
 
     /**
      * Constructor
@@ -452,6 +466,27 @@ abstract class Results
     }
 
     /**
+     * How frequently (in days) will the current user be notified about updates to
+     * these search results (0 = never)?
+     *
+     * @return int
+     * @throws \Exception
+     */
+    public function getNotificationFrequency(): int
+    {
+        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
+        // is called...  blow up if somebody tries to get data that is not yet
+        // available.
+        if (null === $this->notificationFrequency) {
+            throw new \Exception(
+                'Cannot retrieve notification frequency before '
+                . 'updateSaveStatus is called.'
+            );
+        }
+        return $this->notificationFrequency;
+    }
+
+    /**
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
@@ -463,6 +498,8 @@ abstract class Results
     {
         $this->searchId = $row->id;
         $this->savedSearch = ($row->saved == true);
+        $this->notificationFrequency = $this->savedSearch
+            ? $row->notification_frequency : 0;
     }
 
     /**
@@ -555,6 +592,38 @@ abstract class Results
     }
 
     /**
+     * Get extra data for the search.
+     *
+     * Extra data can be used to store local implementation-specific information.
+     * Contents must be serializable. It is recommended to make the array as small
+     * as possible.
+     *
+     * @return array
+     */
+    public function getExtraData(): array
+    {
+        // Not implemented in the base class
+        return [];
+    }
+
+    /**
+     * Set extra data for the search.
+     *
+     * @param array $data Extra data
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function setExtraData(array $data): void
+    {
+        // Not implemented in the base class
+        if (!empty($data)) {
+            error_log(get_class($this) . ': Extra data passed but not handled');
+        }
+    }
+
+    /**
      * Restore settings from a minified object found in the database.
      *
      * @param \VuFind\Search\Minified $minified Minified Search Object
@@ -567,6 +636,7 @@ abstract class Results
         $this->queryStartTime = $minified->i;
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
+        $this->setExtraData($minified->ex);
     }
 
     /**
@@ -649,6 +719,19 @@ abstract class Results
     }
 
     /**
+     * Set hierarchical facet helper
+     *
+     * @param HierarchicalFacetHelperInterface $helper Hierarchical facet helper
+     *
+     * @return void
+     */
+    public function setHierarchicalFacetHelper(
+        HierarchicalFacetHelperInterface $helper
+    ) {
+        $this->hierarchicalFacetHelper = $helper;
+    }
+
+    /**
      * Get complete facet counts for several index fields
      *
      * @param array  $facetfields  name of the Solr fields to return facets for
@@ -701,5 +784,79 @@ abstract class Results
             $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
+    }
+
+    /**
+     * A helper method that converts the list of facets for the last search from
+     * RecordCollection's facet list.
+     *
+     * @param array $facetList Facet list
+     * @param array $filter    Array of field => on-screen description listing
+     * all of the desired facet fields; set to null to get all configured values.
+     *
+     * @return array Facets data arrays
+     */
+    protected function buildFacetList(array $facetList, array $filter = null): array
+    {
+        // If there is no filter, we'll use all facets as the filter:
+        if (null === $filter) {
+            $filter = $this->getParams()->getFacetConfig();
+        }
+
+        // Start building the facet list:
+        $result = [];
+
+        // Loop through every field returned by the result set
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        $hierarchicalFacets
+            = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
+            ? $this->getOptions()->getHierarchicalFacets()
+            : [];
+        foreach (array_keys($filter) as $field) {
+            $data = $facetList[$field] ?? [];
+            // Skip empty arrays:
+            if (count($data) < 1) {
+                continue;
+            }
+            // Initialize the settings for the current field
+            $result[$field] = [
+                'label' => $filter[$field],
+                'list' => []
+            ];
+            // Should we translate values for the current facet?
+            $translate = in_array($field, $translatedFacets);
+            $hierarchical = in_array($field, $hierarchicalFacets);
+            $operator = $this->getParams()->getFacetOperator($field);
+            // Loop through values:
+            foreach ($data as $value => $count) {
+                $displayText = $this->getParams()
+                    ->getFacetValueRawDisplayText($field, $value);
+                if ($hierarchical) {
+                    if (!$this->hierarchicalFacetHelper) {
+                        throw new \Exception(
+                            get_class($this)
+                            . ': hierarchical facet helper unavailable'
+                        );
+                    }
+                    $displayText = $this->hierarchicalFacetHelper
+                        ->formatDisplayText($displayText);
+                }
+                $displayText = $translate
+                    ? $this->getParams()->translateFacetValue($field, $displayText)
+                    : $displayText;
+                $isApplied = $this->getParams()->hasFilter("$field:" . $value)
+                    || $this->getParams()->hasFilter("~$field:" . $value);
+
+                // Store the collected values:
+                $result[$field]['list'][] = compact(
+                    'value',
+                    'displayText',
+                    'count',
+                    'operator',
+                    'isApplied'
+                );
+            }
+        }
+        return $result;
     }
 }

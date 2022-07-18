@@ -4,6 +4,7 @@
   <a href="<?=$this->url('admin/config')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "config" ? ' active' : ''?>"><?=$this->transEsc('Configuration')?></a>
   <a href="<?=$this->url('admin/maintenance')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "maintenance" ? ' active' : ''?>"><?=$this->transEsc('System Maintenance')?></a>
   <a href="<?=$this->url('admin/tags')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "tags" ? ' active' : ''?>"><?=$this->transEsc('Tag Maintenance')?></a>
+  <a href="<?=$this->url('admin/feedback')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "feedback" ? ' active' : ''?>"><?=$this->transEsc('Feedback Management')?></a>
   <?php if ($this->overdrive()->showOverdriveAdminLink()):?>
     <a href="<?=$this->url('admin/overdrive')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "overdrive" ? ' active' : ''?>"><?=$this->transEsc('Overdrive API')?></a>
   <?php endif;?>

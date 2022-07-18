@@ -342,7 +342,7 @@ class Cart
     }
 
     /**
-     * Get cookie SameSite attribute (null if unset).
+     * Get cookie SameSite attribute.
      *
      * @return string
      */

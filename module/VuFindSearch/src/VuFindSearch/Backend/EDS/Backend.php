@@ -200,7 +200,7 @@ class Backend extends AbstractBackend
         }
 
         // create query parameters from VuFind data
-        $queryString = !empty($query) ? $query->getAllTerms() : '';
+        $queryString = $query->getAllTerms();
         $paramsStr = implode('&', null !== $params ? $params->request() : []);
         $this->debugPrint(
             "Query: $queryString, Limit: $limit, Offset: $offset, "

@@ -23,13 +23,15 @@
   $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
   echo $this->inlineScript();
 ?>
-<?php if (count($hierarchyTreeList) > 1): ?>
+<?php if (count($hierarchyTreeList) > 0): ?>
   <div id="treeSelector">
     <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
       <?php if($activeTree == $hierarchy): ?>
-        <i class="fa fa-sitemap" aria-hidden="true"></i> <?=$this->escapeHtml($hierarchyTitle)?>
+        <?=$this->icon('hierarchy-tree') ?>
+        <?=$this->escapeHtml($hierarchyTitle)?>
       <?php else: ?>
-        <i class="fa fa-sitemap text-muted" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <?=$this->icon('hierarchy-tree', ['class' => 'text-muted']) ?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
       <?php endif; ?>
     <?php endforeach; ?>
   </div>
@@ -49,7 +51,7 @@
       <div id="treeSearchNoResults" class="alert alert-danger hidden"><?=$this->transEsc('nohit_heading')?></div>
       <div id="treeSearchLimitReached" class="alert alert-danger hidden"><?=$this->translate('tree_search_limit_reached_html', ['%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()])?></div>
     <?php endif; ?>
-    <div id="hierarchyLoading" class="hide"><?=$this->icon('spinner') ?> <?=$this->transEsc("Loading")?>...</div>
+    <div id="hierarchyLoading" class="hide"><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></div>
     <div id="hierarchyTree" class="hierarchy-tree">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenRecordId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($activeTree)?>" class="hiddenHierarchyId" />

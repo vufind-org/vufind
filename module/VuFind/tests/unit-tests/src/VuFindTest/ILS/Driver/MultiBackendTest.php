@@ -29,6 +29,7 @@
  */
 namespace VuFindTest\ILS\Driver;
 
+use Laminas\Config\Exception\RuntimeException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
 
@@ -44,6 +45,7 @@ use VuFind\ILS\Driver\MultiBackend;
  */
 class MultiBackendTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -71,14 +73,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testMissingILSConfiguration()
     {
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
-            );
         $driver = new MultiBackend(
-            $mockPM,
+            $this->getMockFailingConfigPluginManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
@@ -97,15 +93,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithoutDriverConfigPath()
     {
-        $configData = ['config' => 'values'];
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->once())
-            ->method('get')
-            ->with('d1')
-            ->will(
-                $this->returnValue($config)
-            );
+        $mockPM = $this->getMockConfigPluginManager(
+            ['d1' => ['config' => 'values']],
+            [],
+            $this->once()
+        );
         $ils = $this->getMockILS('Voyager');
         $driver = new MultiBackend(
             $mockPM,
@@ -126,15 +118,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithDriverConfigPath()
     {
-        $configData = ['config' => 'values'];
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->once())
-            ->method('get')
-            ->with('configpath/d1')
-            ->will(
-                $this->returnValue($config)
-            );
+        $mockPM = $this->getMockConfigPluginManager(
+            ['configpath/d1' => ['config' => 'values']],
+            [],
+            $this->once()
+        );
         $ils = $this->getMockILS('Voyager');
         $driver = new MultiBackend(
             $mockPM,
@@ -175,14 +163,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $writer = new \Laminas\Log\Writer\Mock();
         $logger->addWriter($writer);
 
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
-            );
         $driver = new MultiBackend(
-            $mockPM,
+            $this->getMockFailingConfigPluginManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
@@ -296,15 +278,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $val = $this->callMethod($driver, 'getDriverConfig', ['good']);
         $this->assertEquals($configData, $val);
 
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
-            );
         $driver = new MultiBackend(
-            $mockPM,
+            $this->getMockFailingConfigPluginManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
@@ -2592,13 +2567,13 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMultibackendForDrivers(['testing3' => $ILS]);
 
         $this->setProperty($driver, 'defaultDriver', 'testing3');
-        $methodReturn = $driver->supportsMethod('fail', null);
+        $methodReturn = $driver->supportsMethod('fail', []);
         $this->assertFalse($methodReturn);
 
         //Case: No driver info in params, though default driver has method
         //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getStatus', null);
+        $methodReturn = $driver->supportsMethod('getStatus', []);
         $this->assertTrue($methodReturn);
         $this->setProperty($driver, 'defaultDriver', null);
 
@@ -2618,28 +2593,28 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         //Case: No parameters are given
         //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getStatus', null);
+        $methodReturn = $driver->supportsMethod('getStatus', []);
         $this->assertTrue($methodReturn);
 
         //Case: getLoginDrivers and getDefaultLoginDriver are always supported
         //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getLoginDrivers', null);
+        $methodReturn = $driver->supportsMethod('getLoginDrivers', []);
         $this->assertTrue($methodReturn);
-        $methodReturn = $driver->supportsMethod('getDefaultLoginDriver', null);
+        $methodReturn = $driver->supportsMethod('getDefaultLoginDriver', []);
         $this->assertTrue($methodReturn);
 
         //Case: loginIsHidden is supported when default driver is set and supports
         //it
         //Result: A return of true
         $this->setProperty($driver, 'defaultDriver', 'testing3');
-        $methodReturn = $driver->supportsMethod('loginIsHidden', null);
+        $methodReturn = $driver->supportsMethod('loginIsHidden', []);
         $this->assertTrue($methodReturn);
 
         //Case: loginIsHidden is not supported without a default driver
         //Result: A return of false
         $this->setProperty($driver, 'defaultDriver', null);
-        $methodReturn = $driver->supportsMethod('loginIsHidden', null);
+        $methodReturn = $driver->supportsMethod('loginIsHidden', []);
         $this->assertFalse($methodReturn);
     }
 
@@ -2700,7 +2675,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($sm = null)
     {
         $driver = new MultiBackend(
-            $this->getPluginManager(),
+            $this->getMockConfigPluginManager([], ['config' => 'values']),
             $this->getMockILSAuthenticator(),
             $sm ?? $this->getMockSM()
         );
@@ -2805,22 +2780,6 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Method to get a fresh Plugin Manager.
-     *
-     * @return mixed A MultiBackend instance.
-     */
-    protected function getPluginManager()
-    {
-        $configData = ['config' => 'values'];
-        $config = new \Laminas\Config\Config($configData);
-        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will($this->returnValue($config));
-        return $mockPM;
-    }
-
-    /**
      * Method to get a patron with the given username
      *
      * @param string $username The username to use
@@ -2870,11 +2829,11 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Demo
      */
-    protected function getMockDemoDriver($methods)
+    protected function getMockDemoDriver()
     {
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
-        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock', $methods)
+        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2904,7 +2863,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
         } elseif ($type == 'Demo') {
-            $mock = $this->getMockDemoDriver($methods);
+            $mock = $this->getMockDemoDriver();
         } else {
             $class = __NAMESPACE__ . '\\' . $type . 'Mock';
             $mock = $this->getMockBuilder($class)

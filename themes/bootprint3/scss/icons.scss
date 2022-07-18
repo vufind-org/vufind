@@ -2,8 +2,7 @@ $bp3-icon-path: '../../bootprint3/images/icons';
 
 .doi-icon { width: 16px; }
 
-.bp-icon,
-[class*="btn-type-"]::before {
+.bp-icon {
   background-position: center center;
   background-repeat: no-repeat;
   color: transparent !important;
@@ -17,39 +16,6 @@ $bp3-icon-path: '../../bootprint3/images/icons';
   width: 16px;
 }
 .fa-x { background-image: url("#{$bp3-icon-path}/page_white.png"); @extend .bp-icon; }
-
-/**
- * Toolbar Button Icons
- */
-[class*="btn-type-"]::before {
-  margin-right: .25rem;
-}
-.btn-type-add::before,
-i.fa-plus-circle { background-image: url("#{$bp3-icon-path}/add.png"); @extend .bp-icon; }
-.btn-type-cite::before,
-i.fa-asterisk { background-image: url("#{$bp3-icon-path}/list.png"); @extend .bp-icon; }
-.btn-type-delete::before,
-i.fa-trash,
-i.fa-trash-o { background-image: url("#{$bp3-icon-path}/bin.png"); @extend .bp-icon; }
-.btn-type-email::before,
-i.fa-email,
-i.fa-envelope,
-i.fa-envelope-o { background-image: url("#{$bp3-icon-path}/email.png"); @extend .bp-icon; }
-.btn-type-empty::before,
-i.fa-close { background-image: url("#{$bp3-icon-path}/cross.png"); @extend .bp-icon; }
-.btn-type-export::before,
-i.fa-external-link { background-image: url("#{$bp3-icon-path}/link_go.png"); @extend .bp-icon; }
-.btn-type-minus::before,
-i.fa-minus-circle,
-i.fa-minus-sign { background-image: url("#{$bp3-icon-path}/delete.png"); @extend .bp-icon; }
-.btn-type-permalink::before,
-i.fa-link { background-image: url("#{$bp3-icon-path}/link.png"); @extend .bp-icon; }
-.btn-type-phone::before,
-i.fa-mobile { background-image: url("#{$bp3-icon-path}/phone.png"); @extend .bp-icon; }
-.btn-type-print::before,
-i.fa-print { background-image: url("#{$bp3-icon-path}/printer.png"); @extend .bp-icon; }
-.btn-type-save::before,
-i.fa-star { background-image: url("#{$bp3-icon-path}/star.png"); @extend .bp-icon; }
 
 /**
  * Other FontAwesome overrides

@@ -199,7 +199,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testCaching(): void
     {
         $expected = '<span class="icon--font fa&#x20;fa-foo" '
-            . 'bar="baz" role="img" aria-hidden="true"></span>' . "\n";
+            . 'bar="baz" role="img" aria-hidden="true"></span>';
         $key = 'foo+c0dc783820069fb9337be7366f7945bf';
 
         // Create a mock cache that simulates normal cache functionality;
@@ -229,7 +229,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, null, $plugins);
         $expected = '<img class="icon--img" src="baz.png" aria-hidden="true"/>';
-        $this->assertEquals($expected, trim($helper('bar')));
+        $this->assertEquals($expected, $helper('bar'));
     }
 
     /**
@@ -243,7 +243,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zzz.png')];
         $helper = $this->getIconHelper(null, null, null, $plugins);
         $expected = '<img class="icon--img weird:class foo" src="zzz.png" aria-hidden="true"/>';
-        $this->assertEquals($expected, trim($helper('extraClassy')));
+        $this->assertEquals($expected, $helper('extraClassy'));
     }
 
     /**
@@ -259,7 +259,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
             = '<img class="icon--img myclass" src="baz.png" aria-hidden="true"/>';
         // Send a string, validating the shortcut where strings are treated as
         // classes, in addition to confirming that extras work for image icons.
-        $this->assertEquals($expected, trim($helper('bar', 'myclass')));
+        $this->assertEquals($expected, $helper('bar', 'myclass'));
     }
 
     /**
@@ -273,13 +273,13 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zab.png')];
         $helper = $this->getIconHelper(null, null, null, $plugins, true);
         $expected = '<img class="icon--img" src="zab.png" aria-hidden="true"/>';
-        $this->assertEquals($expected, trim($helper('bar')));
+        $this->assertEquals($expected, $helper('bar'));
 
         // RTL does not exist
         $plugins = ['imageLink' => $this->getMockImageLink('icons/ltronly.png')];
         $helper = $this->getIconHelper(null, null, null, $plugins, true);
         $expected = '<img class="icon--img" src="ltronly.png" aria-hidden="true"/>';
-        $this->assertEquals($expected, trim($helper('ltronly')));
+        $this->assertEquals($expected, $helper('ltronly'));
     }
 
     /**
@@ -293,7 +293,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $expected = '<span class="icon--font fa&#x20;fa-foo" '
             . 'role="img" aria-hidden="true"></span>';
         // same is an alias for foo!
-        $this->assertEquals($expected, trim($helper('same')));
+        $this->assertEquals($expected, $helper('same'));
     }
 
     /**
@@ -332,7 +332,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     <use xlink:href="mysprites.svg#sprite"></use>
 </svg>
 EXPECTED;
-        $this->assertEquals($expected, trim($helper('xyzzy')));
+        $this->assertEquals($expected, $helper('xyzzy'));
     }
 
     /**
@@ -350,8 +350,8 @@ EXPECTED;
 </svg>
 EXPECTED;
         $this->assertEquals(
-            $expected,
-            trim($helper('xyzzy', ['class' => 'myclass', 'data-foo' => 'bar']))
+            trim($expected),
+            $helper('xyzzy', ['class' => 'myclass', 'data-foo' => 'bar'])
         );
     }
 }

@@ -98,7 +98,7 @@ class GetLuceneHelperCommandTest extends TestCase
             ->will($this->returnValue('bar'));
         $backend->expects($this->once())->method('getQueryBuilder')
             ->will($this->returnValue($qb));
-        $command = new GetLuceneHelperCommand('bar', []);
+        $command = new GetLuceneHelperCommand('bar');
         $this->assertEquals($helper, $command->execute($backend)->getResult());
     }
 }

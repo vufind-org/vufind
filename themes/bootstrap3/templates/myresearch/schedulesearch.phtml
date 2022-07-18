@@ -1,0 +1,60 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Manage Scheduled Alerts'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . '<li class="active">' . $this->transEsc('Manage Scheduled Alerts') . '</li>';
+
+  $user = $this->auth()->isLoggedIn();
+?>
+
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?php if (!empty($user->email)): ?>
+    <div class="alert alert-info alert-email-notification">
+      <?=$this->transEsc("alert_email_address") . ': ' . $this->escapeHtml($user->email) ?>
+      <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
+        (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
+      <?php endif; ?>
+    </div>
+  <?php else: ?>
+    <div class="alert alert-danger alert-email-notification">
+      <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
+    </div>
+  <?php endif; ?>
+  <table>
+    <tr>
+      <th><?=$this->transEsc("history_search")?>: </th>
+      <td>
+        <?php $desc = $this->results->getParams()->getDisplayQuery(); ?>
+        <?=empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc)?>
+      </td>
+    </tr>
+    <tr>
+      <th><?=$this->transEsc('history_schedule')?>: </th>
+      <td>
+        <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
+          <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEscAttr("history_schedule")?>">
+            <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
+              <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($this->search->notification_frequency == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
+            <?php endforeach; ?>
+          </select>
+          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->search->id) ?>"/>
+        </form>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <?=
+    $this->context($this)->renderInContext(
+        "myresearch/menu.phtml",
+        ['active' => 'history']
+    );
+  ?>
+</div>

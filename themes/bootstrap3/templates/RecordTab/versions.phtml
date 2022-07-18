@@ -19,7 +19,7 @@
     </div>
     <div class="search-controls">
       <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
-        <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+        <?=$this->icon('more') ?> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
       </a>
     </div>
   </nav>
@@ -33,7 +33,7 @@
   <div class="search-tools hidden-print">
     <div class="search-controls">
       <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
-        <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+        <?=$this->icon('more') ?> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
       </a>
     </div>
   </div>

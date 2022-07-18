@@ -27,10 +27,10 @@
  */
 namespace VuFind\ILS\Driver;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for KohaRest ILS driver.
@@ -71,10 +71,12 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
         };
         $currencyFormatter
             = $container->get(\VuFind\Service\CurrencyFormatter::class);
-        return parent::__invoke(
+        $driver = parent::__invoke(
             $container,
             $requestedName,
             [$sessionFactory, $currencyFormatter]
         );
+        $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $driver;
     }
 }

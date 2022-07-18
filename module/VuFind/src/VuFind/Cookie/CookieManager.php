@@ -221,7 +221,7 @@ class CookieManager
         }
         return setcookie(
             $key,
-            $value,
+            $value ?? '',
             [
                 'expires' => $expire,
                 'path' => $path,

@@ -58,7 +58,7 @@ class HierarchicalFacetListener
     protected $backend;
 
     /**
-     * Superior service manager.
+     * Service container.
      *
      * @var ServiceLocatorInterface
      */

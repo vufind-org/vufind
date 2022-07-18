@@ -440,21 +440,14 @@ class Backend extends AbstractBackend
     ) {
         $connector = $this->getConnector();
 
-        // If we have a custom timeout, remember the old timeout value and then
-        // override it with a different one:
-        $oldTimeout = null;
-        if (is_int($timeout ?? null)) {
-            $oldTimeout = $connector->getTimeout();
-            $connector->setTimeout($timeout);
-        }
-
         // Write!
-        $connector->write($doc, $handler ?? 'update', $params);
-
-        // Restore previous timeout value, if necessary:
-        if (null !== $oldTimeout) {
-            $connector->setTimeout($oldTimeout);
-        }
+        $connector->callWithHttpOptions(
+            is_int($timeout ?? null) ? compact('timeout') : [],
+            'write',
+            $doc,
+            $handler,
+            $params
+        );
 
         // Save the core name in the results in case the caller needs it.
         return ['core' => $connector->getCore()];

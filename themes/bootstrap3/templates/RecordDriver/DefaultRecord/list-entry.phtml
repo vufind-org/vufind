@@ -85,7 +85,10 @@
                   echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
                 }
                 if (!empty($snippet['snippet'])) {
-                  echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
+                  echo $this->translate(
+                      'highlight_snippet_html',
+                      ['%%snippet%%' => $this->highlight($snippet['snippet'])]
+                  ) . '<br/>';
                 }
               }
             } ?>
@@ -125,11 +128,11 @@
             <?php if ($this->driver->supportsAjaxStatus()): ?>
               <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
               <span class="callnumber ajax-availability hidden">
-                <?=$this->transEsc('Loading')?>...<br/>
+                <?=$this->transEsc('loading_ellipsis')?><br/>
               </span>
               <strong><?=$this->transEsc('Located')?>:</strong>
               <span class="location ajax-availability hidden">
-                <?=$this->transEsc('Loading')?>...
+                <?=$this->transEsc('loading_ellipsis')?>
               </span>
               <div class="locationDetails"></div>
             <?php else: ?>
@@ -165,7 +168,7 @@
             <?php if (!is_array($urls)) { $urls = []; }
               if(!$this->driver->isCollection()):
                 foreach ($urls as $current): ?>
-                  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+                  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=$this->icon('external-link') ?> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
                 <?php endforeach; ?>
               <?php endif; ?>
             <?php endif; ?>
@@ -174,7 +177,7 @@
           <?=$this->record($this->driver)->getFormatList() ?>
 
           <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
-            <span class="status ajax-availability hidden"><?=$this->transEsc('Loading')?>...</span>
+            <span class="status ajax-availability hidden"><?=$this->transEsc('loading_ellipsis')?></span>
             <br/><br/>
           <?php endif; ?>
           <?=$this->record($this->driver)->getPreviews()?>
@@ -182,7 +185,7 @@
       </div>
 
       <div class="result-links hidden-print">
-        <i class="fa fa-fw fa-edit" aria-hidden="true"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+        <?=$this->icon('user-list-entry-edit') ?> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
         <?php /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
           $deleteUrl = null === $list_id
               ? $this->url('myresearch-favorites')
@@ -192,7 +195,7 @@
           $dLabel = 'delete-label-' . preg_replace('[\W]', '-', $id);
         ?>
         <div class="dropdown">
-          <i class="fa fa-fw fa-trash-o" aria-hidden="true"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" href="<?=$deleteUrlGet ?>">
+          <?=$this->icon('user-list-remove') ?> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" href="<?=$deleteUrlGet ?>">
             <?=$this->transEsc('Delete') ?>
           </a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">

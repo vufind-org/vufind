@@ -29,10 +29,10 @@
 namespace VuFindConsole\Command\Harvest;
 
 use SimpleXMLElement;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: Merge MARC records.
@@ -44,7 +44,7 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MergeMarcCommand extends RelativeFileAwareCommand
+class MergeMarcCommand extends Command
 {
     /**
      * XML namespace for MARC21.

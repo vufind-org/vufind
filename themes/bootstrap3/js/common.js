@@ -94,13 +94,44 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name) {
+  var icon = function icon(name, attrs = {}) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
 
     var html = _icons[name];
+
+    // Add additional attributes
+    function addAttrs(_html, _attrs = {}) {
+      var mod = String(_html);
+      for (var attr in _attrs) {
+        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
+          var sliceStart = html.indexOf(" ");
+          var sliceEnd = sliceStart;
+          var value = _attrs[attr];
+          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
+          var existing = html.match(regex);
+          if (existing) {
+            sliceStart = existing.index;
+            sliceEnd = sliceStart + existing[0].length;
+            value = existing[2] + " " + value;
+          }
+          mod = mod.slice(0, sliceStart) +
+              " " + attr + '="' + value + '"' +
+              mod.slice(sliceEnd);
+        }
+      }
+      return mod;
+    }
+
+    if (typeof attrs == "string") {
+      return addAttrs(html, { class: attrs });
+    }
+
+    if (Object.keys(attrs).length > 0) {
+      return addAttrs(html, attrs);
+    }
 
     return html;
   };
@@ -111,8 +142,8 @@ var VuFind = (function VuFind() {
   };
   var loading = function loading(text = null, extraClass = "") {
     let className = ("loading-spinner " + extraClass).trim();
-    let string = translate(text === null ? "loading" : text);
-    return '<span class="' + className + '">' + icon('spinner') + string + '...</span>';
+    let string = translate(text === null ? 'loading_ellipsis' : text);
+    return '<span class="' + className + '">' + icon('spinner') + string + '</span>';
   };
 
   /**
@@ -159,6 +190,10 @@ var VuFind = (function VuFind() {
     });
   };
 
+  var isPrinting = function() {
+    return Boolean(window.location.search.match(/[?&]print=/));
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -170,6 +205,7 @@ var VuFind = (function VuFind() {
     emit: emit,
     getCspNonce: getCspNonce,
     icon: icon,
+    isPrinting: isPrinting,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
@@ -334,7 +370,7 @@ function setupAutocomplete() {
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
-    loadingString: VuFind.translate('loading') + '...',
+    loadingString: VuFind.translate('loading_ellipsis'),
     // Auto-submit selected item
     callback: acCallback,
     // AJAX call for autocomplete results

@@ -1,11 +1,20 @@
 <?php
   $options = $this->results->getParams()->getOptions();
   $facetLightbox = $options->getFacetListAction();
+  $facetLightboxParams = http_build_query(
+      [
+          'facet' => $this->facet,
+          'facetop' => $this->operator,
+          'facetexclude' => $this->exclude,
+      ],
+      '',
+      '&amp;'
+  );
   if (empty($this->sortOptions)) {
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
-  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . urlencode($this->exclude) . '&amp;facetop=' . urlencode($this->operator);
+  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
   $searchAction = $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
@@ -30,7 +39,7 @@
     <div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
       <?php if ($active): ?>
         <?php if ($this->page > 1): ?>
-          <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . urlencode($this->sort) ?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?> ...</a>
+          <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . urlencode($this->sort) ?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev_ellipsis') ?></a>
         <?php endif; ?>
         <?php foreach ($this->data as $item): ?>
           <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
@@ -44,7 +53,7 @@
       <?php endif; ?>
       <?php if ($this->anotherPage): ?>
         <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page + 1) . '&amp;facetsort=' . urlencode($key) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
-          <span class="text"><?=$this->translate('more') ?> ...</span>
+          <span class="text"><?=$this->translate('more_ellipsis') ?></span>
         </a>
       <?php endif; ?>
     </div>

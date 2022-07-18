@@ -139,6 +139,25 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test disabling JS.
+     *
+     * @return void
+     */
+    public function testJsDisabling()
+    {
+        $container = new ResourceContainer();
+        $container->addJs(['a', 'b', 'c']);
+        $container->addJs(['file' => 'b', 'disabled' => true]);
+        $this->assertEquals(
+            [
+                ['file' => 'a', 'position' => 'header'],
+                ['file' => 'c', 'position' => 'header'],
+            ],
+            array_values($container->getJs('header'))
+        );
+    }
+
+    /**
      * Test Exception for priority + load_after in same js entry.
      *
      * @return void
