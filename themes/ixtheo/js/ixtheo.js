@@ -64,14 +64,54 @@ var IxTheo = {
 	}
       }
     });
-  }
+  },
+
+  SetPositionClearButton: function () {
+      let bodyWidth = $('body').width();
+      let searchFormObj = $('#searchForm_lookfor');
+      let searchInputWidth = searchFormObj.width();
+      let fixWidthClosed = 124;
+      if(bodyWidth < 1180 &&  bodyWidth > 975) {
+        fixWidthClosed = 56;
+      }
+      if(bodyWidth < 975 && bodyWidth > 500) {
+        fixWidthClosed = 44;
+      }
+      if(bodyWidth < 520) {
+        fixWidthClosed = 30;
+      }
+      let x = Math.round(searchInputWidth) + fixWidthClosed;
+      let visible = "none";
+      if(searchFormObj.val().length > 0) {
+          visible = "block";
+      }
+      $('.clear_search_input_span').css({"left":x+"px","display":visible});
+
+    }
 };
 
 
 $(document).ready(function() {
+
+  $('#searchForm_lookfor').change(function() {
+      IxTheo.SetPositionClearButton();
+  })
+
+  IxTheo.SetPositionClearButton();
+
+  $( window ).resize(function() {
+    IxTheo.SetPositionClearButton();
+  });
+
+  $('.clear_search_input_span').click(function(){
+      $('#searchForm_lookfor').val("");
+      IxTheo.SetPositionClearButton();
+  })
+
   var previous_handler;
   $("#searchForm_type").on('focus', function() {
     previous_handler = this.value;
+    IxTheo.SetPositionClearButton();
   }).change(function adjustSearchSort(e) {
     if (previous_handler == 'BibleRangeSearch') {
       var default_sort = $("#sort_options_1").data('default_sort');
@@ -82,5 +122,7 @@ $(document).ready(function() {
       $("#sort_options_1").on();
       return false;
     }
+    IxTheo.SetPositionClearButton();
   });
+
 });
