@@ -5,10 +5,11 @@ class StatusAjaxQueue {
     this.payload = [];
 
     const noop = () => {};
+    const promiseNoop = () => Promise.reject();
 
-    this.runFn = run ?? () => Promise.reject();
-    this.successFn = success ?? noop;
-    this.failureFn = failure ?? noop;
+    this.runFn = run ? run : promiseNoop;
+    this.successFn = success ? success : noop;
+    this.failureFn = failure ? failure : noop;
 
     // move once Javascript is modularized
     function debounce(func, delay = 300) {
