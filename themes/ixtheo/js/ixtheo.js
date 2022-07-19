@@ -67,10 +67,11 @@ var IxTheo = {
   },
 
   SetPositionClearButton: function () {
+      let clearSpan = $('.clear_search_input_span');
       let bodyWidth = $('body').width();
       let searchFormObj = $('#searchForm_lookfor');
       let searchInputWidth = searchFormObj.width();
-      let fixWidthClosed = 124;
+      let fixWidthClosed = clearSpan.data('x-position');
       if(bodyWidth < 1180 &&  bodyWidth > 975) {
         fixWidthClosed = 56;
       }
@@ -83,10 +84,9 @@ var IxTheo = {
       let x = Math.round(searchInputWidth) + fixWidthClosed;
       let visible = "none";
       if(searchFormObj.val().length > 0) {
-          visible = "block";
+        visible = "block";
       }
-      $('.clear_search_input_span').css({"left":x+"px","display":visible});
-
+      clearSpan.css({"left":x+"px","display":visible});
     }
 };
 
@@ -94,7 +94,7 @@ var IxTheo = {
 $(document).ready(function() {
 
   $('#searchForm_lookfor').change(function() {
-      IxTheo.SetPositionClearButton();
+    IxTheo.SetPositionClearButton();
   })
 
   IxTheo.SetPositionClearButton();
@@ -104,8 +104,9 @@ $(document).ready(function() {
   });
 
   $('.clear_search_input_span').click(function(){
-      $('#searchForm_lookfor').val("");
-      IxTheo.SetPositionClearButton();
+    $('#searchForm_lookfor').val("");
+    $("#searchForm").submit();
+    IxTheo.SetPositionClearButton();
   })
 
   var previous_handler;
