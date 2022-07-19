@@ -13,6 +13,6 @@
 <?php endif; ?>
 <?=$this->flashmessages()?>
 <div role="status" class="alert alert-success">
-  <?=$this->translate($form->getSubmitResponse()) ?>
+  <?=$this->translate($this->successMessage) ?>
 </div>
 <?php if (!$this->inLightbox): ?></div><?php endif; ?>
