@@ -243,6 +243,7 @@ return [
             'status-indicator' => 'FontAwesome:circle',
             'status-pending' => 'FontAwesome:clock-o',
             'status-ready' => 'FontAwesome:bell',
+            'status-unknown' => 'FontAwesome:circle',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',
             'tree-context' => 'FontAwesome:sitemap',
