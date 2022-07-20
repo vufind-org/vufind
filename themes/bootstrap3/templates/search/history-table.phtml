@@ -40,12 +40,15 @@
         <?php if (isset($this->schedule[$info->getSearchId()])): ?>
           <?php $schedule = $this->schedule[$info->getSearchId()]; ?>
             <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
-              <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEscAttr("history_schedule")?>">
+              <select name="schedule" class="form-control" aria-haspopup="true" title="<?=$this->transEscAttr("history_schedule")?>">
                 <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
                   <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($schedule == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
                 <?php endforeach; ?>
               </select>
               <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($info->getSearchId()) ?>"/>
+              <button type="submit" class="btn btn-primary" aria-label="<?=$this->transEsc("Set")?>">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+              </button>
             </form>
           <?php else: ?>
             <span class="disable"><?=$this->transEsc("cannot set")?></span>

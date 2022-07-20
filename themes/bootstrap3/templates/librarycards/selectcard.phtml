@@ -2,7 +2,7 @@
   <?php $cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
     <form class="form-inline" action="<?=$this->url('librarycards-selectcard')?>" method="get" data-clear-account-cache>
       <label for="library_card"><?=$this->transEsc('Library Card')?></label>
-      <select id="library_card" name="cardID" class="jumpMenu form-control">
+      <select id="library_card" name="cardID" class="form-control">
         <?php if (null === $this->user->cat_username): ?>
           <option value="" selected="selected">-</option>
         <?php endif; ?>
@@ -22,6 +22,9 @@
         <?php endforeach; ?>
       </select>
       <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEscAttr("Set")?>" /></noscript>
+      <button type="submit" class="btn btn-primary" aria-label="<?=$this->transEsc("Set")?>">
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+      </button>
     </form>
   <?php endif; ?>
 <?php endif; ?>
