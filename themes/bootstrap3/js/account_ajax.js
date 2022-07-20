@@ -204,10 +204,10 @@ $(document).ready(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.ok > 0) {
-        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
       }
       if (status.warn > 0) {
-        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
         level = ICON_LEVELS.WARNING;
       }
       if (status.overdue > 0) {
@@ -230,11 +230,11 @@ $(document).ready(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
       if (status.other > 0) {
         html += '<span class="badge account-alert" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
@@ -259,11 +259,11 @@ $(document).ready(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
       if (status.other > 0) {
         html += '<span class="badge account-alert" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
@@ -288,11 +288,11 @@ $(document).ready(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
       }
       if (status.in_transit > 0) {
-        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
       }
       if (status.other > 0) {
         html += '<span class="badge account-alert" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
