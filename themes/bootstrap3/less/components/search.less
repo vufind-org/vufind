@@ -44,6 +44,19 @@ header .container.navbar { margin-bottom: 0; }
   line-height: @input-height-base;
   padding-right: .5rem;
 }
+
+.search-sort,
+.search-result-limit {
+  .form-control {
+    max-width: 180px;
+  }
+
+  .btn {
+    border-color: @brand-primary;
+    height: fit-content;
+  }
+}
+
 .search-stats {
   display: block;
   padding-top: 0.5rem;

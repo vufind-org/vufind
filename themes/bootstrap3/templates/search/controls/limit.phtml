@@ -9,5 +9,8 @@
       <?php endforeach; ?>
     </select>
     <noscript><input type="submit" value="<?=$this->transEscAttr("Set")?>" /></noscript>
+    <button type="submit" class="btn btn-primary" aria-label="<?=$this->transEsc("Set")?>">
+      <i class="fa fa-refresh" aria-hidden="true"></i>
+    </button>
   </form>
 <?php endif; ?>
