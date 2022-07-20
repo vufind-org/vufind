@@ -98,9 +98,10 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
-        $connector      = new Connector('http://example.org/', $handlermap);
-        $this->backend  = new Backend($connector);
+        $handlermap    = new HandlerMap(['select' => ['fallback' => true]]);
+        $client        = new \Laminas\Http\Client();
+        $connector     = new Connector('http://example.org/', $handlermap, $client);
+        $this->backend = new Backend($connector);
     }
 
     /**

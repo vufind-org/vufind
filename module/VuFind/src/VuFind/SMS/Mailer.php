@@ -80,7 +80,7 @@ class Mailer extends AbstractBase
     public function __construct(\Laminas\Config\Config $config, $options = [])
     {
         // Set up parent object first:
-        parent::__construct($config, $options);
+        parent::__construct($config);
 
         // If found, use carriers from SMS configuration; otherwise, fall back to the
         // default list of US carriers.

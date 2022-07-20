@@ -97,20 +97,6 @@ class SolrMarcRemote extends SolrMarc implements
     }
 
     /**
-     * Get access to the raw File_MARC object.
-     *
-     * @return     \File_MARCBASE
-     * @throws     \Exception
-     * @throws     \File_MARC_Exception
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        $this->verifyFullRecordIsAvailable();
-        return parent::getMarcRecord();
-    }
-
-    /**
      * Load the fullrecord field if not already loaded
      *
      * @return void

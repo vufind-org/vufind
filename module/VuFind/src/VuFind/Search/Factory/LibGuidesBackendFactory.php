@@ -28,9 +28,8 @@
  */
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
@@ -46,7 +45,7 @@ use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class LibGuidesBackendFactory implements FactoryInterface
+class LibGuidesBackendFactory extends AbstractBackendFactory
 {
     /**
      * Logger.
@@ -54,13 +53,6 @@ class LibGuidesBackendFactory implements FactoryInterface
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * LibGuides configuration
@@ -82,7 +74,7 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->setup($sm);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         $this->libGuidesConfig = $configReader->get('LibGuides');
@@ -130,12 +122,13 @@ class LibGuidesBackendFactory implements FactoryInterface
         // Get base URI, if available:
         $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
 
-        // Build HTTP client:
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient($baseUrl);
-        $timeout = $this->libGuidesConfig->General->timeout ?? 30;
-        $client->setOptions(['timeout' => $timeout]);
-        $connector = new Connector($iid, $client, $ver, $baseUrl);
+        // Create connector:
+        $connector = new Connector(
+            $iid,
+            $this->createHttpClient($this->libGuidesConfig->General->timeout ?? 30),
+            $ver,
+            $baseUrl
+        );
         $connector->setLogger($this->logger);
         return $connector;
     }

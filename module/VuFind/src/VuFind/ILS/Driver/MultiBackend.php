@@ -1042,11 +1042,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         $source = null;
         if (!empty($params)) {
-            $source = $this->getSourceForMethod($function, $params ?? []);
+            $source = $this->getSourceForMethod($function, $params);
         }
         if (!$source) {
             try {
@@ -1083,13 +1083,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
      */
-    public function supportsMethod($method, $params)
+    public function supportsMethod(string $method, array $params)
     {
         if ($method == 'getLoginDrivers' || $method == 'getDefaultLoginDriver') {
             return true;
         }
 
-        $source = $this->getSourceForMethod($method, $params ?? []);
+        $source = $this->getSourceForMethod($method, $params);
         if (!$source && $this->defaultDriver) {
             $source = $this->defaultDriver;
         }

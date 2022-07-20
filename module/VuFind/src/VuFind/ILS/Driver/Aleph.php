@@ -1873,18 +1873,16 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($func, $params = null)
+    public function getConfig($func, $params = [])
     {
         if ($func == "Holds") {
             $holdsConfig = $this->config['Holds'] ?? [];
-            return [
-                "HMACKeys" => $holdsConfig['HMACKeys'] ?? "id:item_id",
-                "extraHoldFields"
-                    => $holdsConfig['extraHoldFields']
-                        ?? "comments:requiredByDate:pickUpLocation",
-                "defaultRequiredDate"
-                    => $holdsConfig['defaultRequiredDate'] ?? "0:1:0"
+            $defaults = [
+                'HMACKeys' => 'id:item_id',
+                'extraHoldFields' => 'comments:requiredByDate:pickUpLocation',
+                'defaultRequiredDate' => '0:1:0',
             ];
+            return $holdsConfig + $defaults;
         } elseif ('getMyTransactionHistory' === $func) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
                 return false;

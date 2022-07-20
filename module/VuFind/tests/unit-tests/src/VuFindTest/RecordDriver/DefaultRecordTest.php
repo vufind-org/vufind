@@ -135,7 +135,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
           'size' => 'small',
           'title' => 'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
           'recordid' => 'testbug2',
-          'source' => 'Solr',
+          'source' => '',
           'isbn' => '8820737493',
           'oclc' => '30585539'];
         $this->assertEquals($thumbnail, $this->getDriver()->getThumbnail());

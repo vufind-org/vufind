@@ -64,11 +64,6 @@ class WorldCat extends DefaultRecord
             $data = $data['fullrecord'];
         }
 
-        // Make sure the XML has an appropriate header:
-        if (strlen($data) > 2 && substr($data, 0, 2) != '<?') {
-            $data = '<?xml version="1.0"?>' . $data;
-        }
-
         // Map the WorldCat response into a format that the parent Solr-based
         // record driver can understand.
         parent::setRawData(['fullrecord' => $data]);

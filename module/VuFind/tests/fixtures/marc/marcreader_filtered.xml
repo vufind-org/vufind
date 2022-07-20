@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns='http://www.loc.gov/MARC21/slim'
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+>
+
+<record>
+  <leader>00000cam a22000004i 4500</leader>
+  <datafield tag="100" ind1="0" ind2="0">
+    <subfield code="a">Author, Test</subfield>
+    <subfield code="0">(TEST)123</subfield>
+  </datafield>
+  <datafield tag="110" ind1="0" ind2="0">
+    <subfield code="a">Corp</subfield>
+  </datafield>
+  <datafield tag="245" ind1="0" ind2="4">
+    <subfield code="a">The Foo:</subfield>
+    <subfield code="b">Bar!</subfield>
+  </datafield>
+  <datafield tag="505" ind1="8" ind2=" ">
+    <subfield code="a">Screenwriting Tip #30;</subfield>
+  </datafield>
+  <datafield tag="650" ind1=" " ind2=" ">
+    <subfield code="a">Foo</subfield>
+  </datafield>
+  <datafield tag="650" ind1=" " ind2=" ">
+    <subfield code="a">Bar</subfield>
+  </datafield>
+</record>
+</collection>

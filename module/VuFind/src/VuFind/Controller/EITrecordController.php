@@ -52,7 +52,7 @@ class EITrecordController extends AbstractRecord
     {
         // Override some defaults:
         $this->accessPermission = 'access.EITModule';
-        $this->searchClassId = 'EIT';
+        $this->sourceId = 'EIT';
         $this->defaultTab = 'Description';
 
         // Call standard record controller initialization:

@@ -48,12 +48,15 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
+class VoyagerRestful extends Voyager implements
+    \VuFindHttp\HttpServiceAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Web services host
@@ -306,7 +309,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -347,15 +350,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // User defined hold behaviour
         $is_holdable = true;
 
-        if (isset($this->config['Holds']['valid_hold_statuses'])) {
+        if (!empty($this->config['Holds']['valid_hold_statuses'])) {
             $valid_hold_statuses_array
                 = explode(':', $this->config['Holds']['valid_hold_statuses']);
 
-            if (!empty($valid_hold_statuses_array)) {
-                foreach ($statusArray as $status) {
-                    if (!in_array($status, $valid_hold_statuses_array)) {
-                        $is_holdable = false;
-                    }
+            foreach ($statusArray as $status) {
+                if (!in_array($status, $valid_hold_statuses_array)) {
+                    $is_holdable = false;
                 }
             }
         }
@@ -760,7 +761,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 if (isset($locationOrder[$bLoc])) {
                     return 1;
                 }
-                return strcasecmp($a['locationDisplay'], $b['locationDisplay']);
+                return $this->getSorter()->compare(
+                    $a['locationDisplay'],
+                    $b['locationDisplay']
+                );
             };
             usort($pickResponse, $sortFunction);
         }
@@ -835,7 +839,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if (isset($requestGroupOrder[$b['id']])) {
             return 1;
         }
-        return strcasecmp($a['name'], $b['name']);
+        return $this->getSorter()->compare($a['name'], $b['name']);
     }
 
     /**
@@ -1695,12 +1699,12 @@ EOT;
     /**
      * Check whether items exist for the given BIB ID
      *
-     * @param int $bibId          BIB ID
-     * @param int $requestGroupId Request group ID or null
+     * @param int  $bibId          BIB ID
+     * @param ?int $requestGroupId Request group ID or null
      *
      * @return bool
      */
-    protected function itemsExist($bibId, $requestGroupId)
+    protected function itemsExist($bibId, ?int $requestGroupId = null)
     {
         $sqlExpressions = [
             'count(i.ITEM_ID) CNT'
@@ -1757,12 +1761,12 @@ EOT;
     /**
      * Check whether there are items available for loan for the given BIB ID
      *
-     * @param int $bibId          BIB ID
-     * @param int $requestGroupId Request group ID or null
+     * @param int  $bibId          BIB ID
+     * @param ?int $requestGroupId Request group ID or null
      *
      * @return bool
      */
-    protected function itemsAvailable($bibId, $requestGroupId)
+    protected function itemsAvailable($bibId, ?int $requestGroupId = null)
     {
         // Build inner query first
         $sqlExpressions = [
