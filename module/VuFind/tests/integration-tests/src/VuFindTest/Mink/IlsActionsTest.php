@@ -551,6 +551,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test submitting with no selected checkboxes:
         $this->clickCss($page, '#renewSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'No items were selected',
             $this->findCss($page, '.alert.alert-danger')->getText()
@@ -558,6 +559,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test "renew all":
         $this->clickCss($page, '#renewAll');
+        $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Renewal Successful',
             $this->findCss($page, '.alert.alert-success')->getText()

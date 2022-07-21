@@ -71,10 +71,12 @@ class FormFactory implements FactoryInterface
             ->get('config')->toArray();
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $viewHelperManager = $container->get('ViewHelperManager');
+        $handlerManager = $container->get(\VuFind\Form\Handler\PluginManager::class);
 
         return new $requestedName(
             $yamlReader,
             $viewHelperManager,
+            $handlerManager,
             $config
         );
     }
