@@ -166,6 +166,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         .fail( this.itemStatusFail)
         .always(function queueAjaxAlways() {
           this.itemStatusRunning = false;
+          VuFind.emit("item-status-done");
         });
     }//end runItemAjaxForQueue
   };
@@ -189,7 +190,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       return;
     }
     if ($item.find('.hiddenId').length === 0) {
-      return false;
+      return;
     }
     var id = $item.find('.hiddenId').val();
     var handlerName = 'ils';
@@ -214,7 +215,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
   function init(_container) {
-    if (typeof Hunt === 'undefined') {
+    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
       checkItemStatuses(_container);
     } else {
       var container = typeof _container === 'undefined'

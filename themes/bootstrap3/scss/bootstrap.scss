@@ -260,45 +260,49 @@ footer {
   display: flex;
   flex: none;
 }
-.myresearch-menu .status .ok,
-.myresearch-menu .status.ok { color: $state-success-text; }
-.myresearch-menu .status .warn,
-.myresearch-menu .status.warn { color: $state-warning-text; }
-.myresearch-menu .status .overdue,
-.myresearch-menu .status.overdue { color: $state-danger-text; }
-.myresearch-menu .badge.ok { background-color: $state-success-bg; }
-.myresearch-menu .badge.warn { background-color: $state-warning-bg; }
-.myresearch-menu .badge.overdue { background-color: $state-danger-bg; }
+.myresearch-menu .status .account-info,
+.myresearch-menu .status.account-info { color: $state-success-text; }
+.myresearch-menu .status .account-warning,
+.myresearch-menu .status.account-warning { color: $state-warning-text; }
+.myresearch-menu .status .account-alert,
+.myresearch-menu .status.account-alert { color: $state-danger-text; }
+.myresearch-menu .badge.account-info { background-color: $state-success-bg; }
+.myresearch-menu .badge.account-warning { background-color: $state-warning-bg; }
+.myresearch-menu .badge.account-alert { background-color: $state-danger-bg; }
 .myresearch-menu .status .fa {
   height: 1rem;
   margin-top: 3px;
 }
 
-.checkedout-status .badge {
+.checkedout-status .badge,
+.holds-status .badge,
+.storageretrievalrequests-status .badge,
+.illrequests-status .badge {
   border-radius: 2px;
   margin: 0 2px;
   border: 1px solid; /* color inherited from bootstrap */
   height: 20px;
 }
 .myresearch-menu .active .status .badge {
+  border-radius: 2px;
   color: #fff;
   background-color: transparent;
   border: 1px solid #fff;
 }
-.myresearch-menu .active .ok {
+.myresearch-menu .active .account-info {
   background-color: $state-success-text;
   border-color: $state-success-bg;
 }
-.myresearch-menu .active .warn {
+.myresearch-menu .active .account-warning {
   background-color: $state-warning-text;
   border-color: $state-warning-bg;
 }
-.myresearch-menu .active .overdue {
+.myresearch-menu .active .account-alert {
   background-color: $state-danger-text;
   border-color: $state-danger-bg;
 }
-.myresearch-menu .active .warn { background-color: $state-warning-text; }
-.myresearch-menu .active .overdue { background-color: $state-danger-text; }
+.myresearch-menu .active .account-warning { background-color: $state-warning-text; }
+.myresearch-menu .active .account-alert { background-color: $state-danger-text; }
 .myresearch-menu .active .text-success { color: $state-success-bg; }
 .myresearch-menu .active .text-warning { color: $state-warning-bg; }
 .myresearch-menu .active .text-danger { color: $state-danger-bg; }

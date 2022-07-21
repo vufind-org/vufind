@@ -119,7 +119,7 @@ class User extends Gateway
      *
      * @param string $catId Catalog ID.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByCatalogId($catId)
     {

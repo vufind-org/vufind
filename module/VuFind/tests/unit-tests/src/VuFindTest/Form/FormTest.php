@@ -57,7 +57,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
@@ -81,6 +82,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'Laminas\InputFilter\InputFilter',
             get_class($form->getInputFilter())
         );
+        $this->assertEquals(0, count($form->getSecondaryHandlers()));
     }
 
     /**
@@ -98,6 +100,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $form = new Form(
             new YamlReader(),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class),
             ['Feedback' => $defaults]
         );
         $this->assertEquals(
@@ -119,7 +122,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('foo');
     }
@@ -133,7 +137,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('FeedbackSite');
 
@@ -265,7 +270,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('FeedbackSite');
 
@@ -426,7 +432,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             $this->getMockTestFormYamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId($formId);
         return $form;
