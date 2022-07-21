@@ -59,7 +59,7 @@ class Jop extends AbstractBase
      *
      * @var string
      */
-    protected static $xpathTitleSelector = 'Title';
+    protected $xpathTitleSelector = 'Title';
 
     /**
      * HTTP client
@@ -302,7 +302,7 @@ class Jop extends AbstractBase
             // get title from XPath Element defined in $xpathTitleSelector
             $titleXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
                 "Result[@state={$state}][" . ($i + 1) . "]/" .
-                static::$xpathTitleSelector;
+                $this->xpathTitleSelector;
             $title = $xpath->query($titleXP, $result)->item(0);
             if (isset($title)) {
                 $record['title'] = strip_tags($title->nodeValue);
