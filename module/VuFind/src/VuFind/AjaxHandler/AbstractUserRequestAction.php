@@ -67,14 +67,16 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
         $requests = $this->ils->{$this->lookupMethod}($patron);
         $status = [
             'available' => 0,
-            'in_transit' => 0
+            'in_transit' => 0,
+            'other' => 0
         ];
         foreach ($requests as $request) {
-            if ($request['available'] ?? false) {
-                $status['available'] += 1;
-            }
-            if ($request['in_transit'] ?? false) {
-                $status['in_transit'] += 1;
+            if (!empty($request['available'])) {
+                $status['available'] ++;
+            } elseif (!empty($request['in_transit'])) {
+                $status['in_transit'] ++;
+            } else {
+                $status['other'] ++;
             }
         }
         return $this->formatResponse($status);
