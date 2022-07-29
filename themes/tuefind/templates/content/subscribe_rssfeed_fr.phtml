@@ -1,0 +1,14 @@
+<h1><?=$this->transEsc('Get Newsfeed')?></h1>
+<p>Il y a plusieurs façons de s’abonner au flux RSS :</p>
+<ul>
+  <li>Vous pouvez vous abonner au flux complet avec un <b><a href="https://www.rss-readers.org/" target="_blank" data-lightbox-ignore>logiciel agrégateur</a></b>. Un tel logiciel doit être installé sur votre système.</li>
+  <li>Vous pouvez également utiliser votre compte d’utilisateur IxTheo pour produire votre propre fil d’actualités</li>
+  <ul>
+    <li>Votre pouvez ensuite lire votre fil personnalisé avec un <b>logiciel agrégateur</b>,</li>
+    <li>Ou vous pouvez recevoir un <b>mail</b> vous avisant de la présence de nouveaux articles.</li>
+  </ul>
+</ul>
+<p>
+  <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button" data-lightbox-ignore><i class="fa fa-rss"></i> S’abonner au flux complet avec un agrégateur</a>
+  <a href="<?=$this->url('myresearch-rssfeedsettings')?>" class="read-more-trigger" role="button" data-lightbox-ignore><i class="fa fa-rss"></i> Configurer votre fil personnalisé</a>
+</p>
