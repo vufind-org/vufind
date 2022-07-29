@@ -500,7 +500,6 @@ public class FormatCalculator
             return true;
         }
 
-
         if (isOnlineAccordingTo338(record)) {
             return true;
         }
