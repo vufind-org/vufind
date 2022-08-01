@@ -145,7 +145,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testSuccessfulTransaction()
     {
-        $user = $this->getmockBuilder(User::class)
+        $user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->onlyMethods([])
             ->getMock();
