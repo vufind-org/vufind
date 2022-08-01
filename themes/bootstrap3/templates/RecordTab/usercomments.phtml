@@ -1,7 +1,6 @@
 <?php
   // Set page title.
   $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
-  $ratingEnabled = $this->record($this->driver)->isRatingEnabled();
 ?>
 
 <div class="comment-list">
@@ -15,7 +14,7 @@
   <?php if ($user): ?>
     <div class="text-form">
       <textarea name="comment" class="form-control" rows="3" required></textarea>
-      <?php if ($ratingEnabled): ?>
+      <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">
           <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->driver->getRatingData($user->id)]);?>
         </div>

@@ -672,17 +672,6 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if rating the record is enabled
-     *
-     * @return bool
-     */
-    public function isRatingEnabled(): bool
-    {
-        return !empty($this->config->Social->rating)
-            && $this->driver->tryMethod('isRatingAllowed', [], true);
-    }
-
-    /**
      * Get all the links associated with this record depending on the OpenURL setting
      * replace_other_urls.  Returns an array of associative arrays each containing
      * 'desc' and 'url' keys.

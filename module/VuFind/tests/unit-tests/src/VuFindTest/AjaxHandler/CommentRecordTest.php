@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\AjaxHandler\CommentRecord;
 use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
@@ -36,7 +35,6 @@ use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\RecordDriver\DefaultRecord;
-use VuFind\View\Helper\Root\Record;
 
 /**
  * CommentRecord test class.
@@ -75,30 +73,6 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
         );
         $capabilities = new AccountCapabilities($cfg, $authManager);
         $this->container->set(AccountCapabilities::class, $capabilities);
-
-        // Mock view renderer and record helper:
-        $recordHelper = $this->getMockBuilder(Record::class)->getMock();
-        $recordHelper->expects($this->any())
-            ->method('isRatingEnabled')
-            ->will($this->returnValue(true));
-        $recordHelper->expects($this->any())
-            ->method('__invoke')
-            ->will($this->returnValue($recordHelper));
-        $helpers = [
-            'record' => $recordHelper,
-        ];
-        $viewRenderer = $this->getMockBuilder(PhpRenderer::class)
-            ->getMock();
-        $viewRenderer->expects($this->any())
-            ->method('plugin')
-            ->will(
-                $this->returnCallback(
-                    function ($name) use ($helpers) {
-                        return $helpers[$name] ?? null;
-                    }
-                )
-            );
-        $this->container->set('ViewRenderer', $viewRenderer);
 
         // Build the handler:
         $factory = new CommentRecordFactory();
@@ -184,6 +158,9 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->container->set(ResourceTable::class, $table);
 
         $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();
+        $driver->expects($this->once())
+            ->method('isRatingAllowed')
+            ->will($this->returnValue(true));
         $driver->expects($this->once())
             ->method('addOrUpdateRating')
             ->with($user->id, 100);

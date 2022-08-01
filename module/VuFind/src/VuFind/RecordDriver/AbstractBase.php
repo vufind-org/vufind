@@ -356,6 +356,16 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Check if rating the record is allowed.
+     *
+     * @return bool
+     */
+    public function isRatingAllowed(): bool
+    {
+        return !empty($this->recordConfig->Social->rating);
+    }
+
+    /**
      * Store a piece of supplemental information in the record driver.
      *
      * @param string $key Name of stored information

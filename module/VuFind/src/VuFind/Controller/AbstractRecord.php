@@ -163,9 +163,8 @@ class AbstractRecord extends AbstractBase
             );
             $resource->addComment($comment, $user);
 
-            // Save rating if enabled:
-            $recordHelper = $this->getViewRenderer()->plugin('record');
-            if ($recordHelper($driver)->isRatingEnabled()
+            // Save rating if allowed:
+            if ($driver->isRatingAllowed()
                 && null !== ($rating = $this->params()->fromPost('rating'))
                 && '' !== $rating
             ) {
@@ -291,9 +290,8 @@ class AbstractRecord extends AbstractBase
         // Obtain the current record object:
         $driver = $this->loadRecord();
 
-        // Make sure ratings are enabled for the driver:
-        $recordHelper = $this->getViewRenderer()->plugin('record');
-        if (!$recordHelper($driver)->isRatingEnabled()) {
+        // Make sure ratings are allowed for the record:
+        if (!$driver->isRatingAllowed()) {
             throw new ForbiddenException('rating_disabled');
         }
 

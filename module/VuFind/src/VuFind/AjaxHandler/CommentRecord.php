@@ -33,7 +33,6 @@ use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
-use VuFind\View\Helper\Root\Record as RecordHelper;
 
 /**
  * AJAX handler to comment on a record.
@@ -84,13 +83,6 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     protected $recordLoader;
 
     /**
-     * Record helper
-     *
-     * @var RecordHelper
-     */
-    protected $recordHelper;
-
-    /**
      * Constructor
      *
      * @param Resource     $table   Resource database table
@@ -98,22 +90,19 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      * @param User|bool    $user    Logged in user (or false)
      * @param bool         $enabled Are comments enabled?
      * @param RecordLoader $loader  Record loader
-     * @param RecordHelper $helper  Record helper
      */
     public function __construct(
         Resource $table,
         Captcha $captcha,
         $user,
         $enabled,
-        RecordLoader $loader,
-        RecordHelper $helper
+        RecordLoader $loader
     ) {
         $this->table = $table;
         $this->captcha = $captcha;
         $this->user = $user;
         $this->enabled = $enabled;
         $this->recordLoader = $loader;
-        $this->recordHelper = $helper;
     }
 
     /**
@@ -176,7 +165,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         $resource = $this->table->findResource($id, $source);
         $commentId = $resource->addComment($comment, $this->user);
 
-        if (($this->recordHelper)($driver)->isRatingEnabled()
+        if ($driver->isRatingAllowed()
             && null !== ($rating = $params->fromPost('rating'))
             && '' !== $rating
         ) {

@@ -2,7 +2,6 @@
 <?php if (empty($comments) || count($comments) == 0): ?>
   <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <?php else: ?>
-  <?php $ratingEnabled = $this->record($this->driver)->isRatingEnabled(); ?>
   <?php foreach ($comments as $comment): ?>
     <div class="comment">
       <div class="comment-name">
@@ -17,7 +16,7 @@
       <div class="comment-text">
         <?=$this->escapeHtml($comment->comment)?>
       </div>
-      <?php if ($ratingEnabled): ?>
+      <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">
           <?php $ratingData = $this->driver->getRatingData($comment->user_id); ?>
           <?php if ($ratingData['count']): ?>
