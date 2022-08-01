@@ -14,6 +14,34 @@
     $panelWidth = "col-md-6";
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
+
+<div class="col-md-12 ix-panel-news tf-rss-block">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-rss"></i> IxTheo Feed Aggregator <div class="new">Novità</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <p>
+                  <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
+                </p>
+                <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
+                    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
+                        <a href="<?=$this->url('content-page', ['page' => 'subscribe_rssfeed'])?>" class="read-more-trigger" role="button" data-lightbox><i class="fa fa-rss"></i> <?=$this->transEsc('Get Newsfeed')?></a>
+                    <?php else: ?>
+                        <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+                    <?php endif;?>
+                    <a href="<?=$this->url('rssfeed-full')?>" class="read-more-trigger" role="button">
+                       Read more
+                    </a>
+                <?php endif;?>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -55,7 +83,7 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-desktop"></i> IxTheo Open Journals <div class="new">Novità</div>
+                <i class="fa fa-desktop"></i> IxTheo Open Journals
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
@@ -103,7 +131,7 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-puzzle-piece"></i> Cooperazione IxTheo-<a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a> <div class="new">Novità</div>
+                <i class="fa fa-puzzle-piece"></i> Cooperazione IxTheo-<a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a>
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
