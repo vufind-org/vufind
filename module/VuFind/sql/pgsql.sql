@@ -346,6 +346,26 @@ UNIQUE (hash, type)
 );
 CREATE INDEX auth_hash_created_idx on auth_hash(created);
 
+--
+-- Table structure for table `feedback`
+--
+
+DROP TABLE IF EXISTS "feedback";
+
+CREATE TABLE feedback (
+id SERIAL,
+user_id int DEFAULT NULL,
+message text,
+form_data json DEFAULT '{}'::jsonb,
+form_name varchar(255) NOT NULL,
+created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_by int DEFAULT NULL,
+status varchar(255) NOT NULL DEFAULT 'open',
+site_url varchar(255) NOT NULL,
+PRIMARY KEY (id)
+);
+
 -- --------------------------------------------------------
 
 --
@@ -392,3 +412,17 @@ ALTER TABLE user_resource
 ADD CONSTRAINT user_resource_ibfk_3 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
 ADD CONSTRAINT user_resource_ibfk_4 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE,
 ADD CONSTRAINT user_resource_ibfk_5 FOREIGN KEY (list_id) REFERENCES user_list (id) ON DELETE CASCADE;
+
+
+--
+-- Constraints for table `feedback`
+--
+ALTER TABLE feedback
+ADD CONSTRAINT feedback_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL,
+ADD CONSTRAINT feedback_ibfk_2 FOREIGN KEY (updated_by) REFERENCES "user" (id) ON DELETE SET NULL;
+
+CREATE INDEX feedback_created_idx ON feedback (created);
+CREATE INDEX feedback_status_idx ON feedback (status);
+CREATE INDEX feedback_form_name_idx ON feedback (form_name);
+
+-- --------------------------------------------------------

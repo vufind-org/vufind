@@ -72,6 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ChangeTracker::class => RowGatewayFactory::class,
         Comments::class => RowGatewayFactory::class,
         ExternalSession::class => RowGatewayFactory::class,
+        Feedback::class => RowGatewayFactory::class,
         OaiResumption::class => RowGatewayFactory::class,
         Ratings::class => RowGatewayFactory::class,
         Record::class => RowGatewayFactory::class,

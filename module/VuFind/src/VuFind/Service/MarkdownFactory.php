@@ -59,6 +59,7 @@ class MarkdownFactory implements FactoryInterface
     protected static $configKeys = [
         'CommonMarkCore' => 'commonmark',
         'DefaultAttributes' => 'default_attributes',
+        'DisallowedRawHtml' => 'disallowed_raw_html',
         'ExternalLink' => 'external_link',
         'Footnote' => 'footnote',
         'HeadingPermalink' => 'heading_permalink',
