@@ -50,7 +50,7 @@ class Alma extends AbstractBase
      *
      * @var array
      */
-    protected $ignoredFilterReasons = ['Date Filter'];
+    protected $ignoredFilterReasons;
 
     /**
      * Constructor
@@ -58,10 +58,11 @@ class Alma extends AbstractBase
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
+    public function __construct($baseUrl, \Laminas\Http\Client $httpClient, \Laminas\Config\Config $config)
     {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
+        $this->ignoredFilterReasons = explode(',',$config->OpenURL->ignoredFilterReasons??'');
     }
 
     /**
