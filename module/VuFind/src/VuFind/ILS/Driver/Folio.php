@@ -608,8 +608,10 @@ class Folio extends AbstractAPI implements
                 $callNumberData = $this->chooseCallNumber(
                     $holdingCallNumberPrefix,
                     $holdingCallNumber,
-                    $item->effectiveCallNumberComponents->prefix ?? $item->itemLevelCallNumberPrefix ?? '',
-                    $item->effectiveCallNumberComponents->callNumber ?? $item->itemLevelCallNumber ?? ''
+                    $item->effectiveCallNumberComponents->prefix
+                        ?? $item->itemLevelCallNumberPrefix ?? '',
+                    $item->effectiveCallNumberComponents->callNumber
+                        ?? $item->itemLevelCallNumber ?? ''
                 );
 
                 $dueDateValue = '';
