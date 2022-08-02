@@ -55,19 +55,21 @@ class Alma extends AbstractBase
     /**
      * Constructor
      *
-     * @param string               $baseUrl    Base URL for link resolver
-     * @param \Laminas\Http\Client $httpClient HTTP client
-     * @param \Laminas\Config\Config $config VuFind Configuration (optional)
+     * @param string                 $baseUrl    Base URL for link resolver
+     * @param \Laminas\Http\Client   $httpClient HTTP client
+     * @param \Laminas\Config\Config $config     VuFind Configuration (optional)
      */
     public function __construct(
         $baseUrl,
         \Laminas\Http\Client $httpClient,
-        \Laminas\Config\Config $config = null)
-    {
+        \Laminas\Config\Config $config = null
+    ) {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
-        $this->ignoredFilterReasons = explode(',',
-            $config->OpenURL->ignoredFilterReasons ?? 'Date Filter');
+        $this->ignoredFilterReasons = explode(
+            ',',
+            $config->OpenURL->ignoredFilterReasons ?? 'Date Filter'
+        );
     }
 
     /**
