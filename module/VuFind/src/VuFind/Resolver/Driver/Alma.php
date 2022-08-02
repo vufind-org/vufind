@@ -58,7 +58,7 @@ class Alma extends AbstractBase
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient, \Laminas\Config\Config $config)
+    public function __construct($baseUrl, \Laminas\Http\Client $httpClient, \Laminas\Config\Config $config = null)
     {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
