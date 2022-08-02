@@ -29,6 +29,11 @@
     vertical-align: top;
 }
 
+.icon--link {
+    display: inline-flex;
+    gap: 0.125rem;
+}
+
 .show--closed,
 .collapsed .show--open {
     display: none;
