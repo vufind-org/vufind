@@ -62,7 +62,7 @@ class Alma extends AbstractBase
     {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
-        $this->ignoredFilterReasons = explode(',',$config->OpenURL->ignoredFilterReasons??'');
+        $this->ignoredFilterReasons = explode(',',$config->OpenURL->ignoredFilterReasons??'Date Filter');
     }
 
     /**
