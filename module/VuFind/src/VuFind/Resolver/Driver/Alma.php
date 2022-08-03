@@ -50,26 +50,27 @@ class Alma extends AbstractBase
      *
      * @var array
      */
-    protected $ignoredFilterReasons;
+    protected $ignoredFilterReasons = ['Date Filter'];
 
     /**
      * Constructor
      *
-     * @param string                 $baseUrl    Base URL for link resolver
-     * @param \Laminas\Http\Client   $httpClient HTTP client
-     * @param \Laminas\Config\Config $config     VuFind Configuration (optional)
+     * @param string               $baseUrl    Base URL for link resolver
+     * @param \Laminas\Http\Client $httpClient HTTP client
+     * @param array                $options    OpenURL Configuration (optional)
      */
     public function __construct(
         $baseUrl,
         \Laminas\Http\Client $httpClient,
-        \Laminas\Config\Config $config = null
+        array $options = []
     ) {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
-        $this->ignoredFilterReasons = explode(
-            ',',
-            $config->OpenURL->ignoredFilterReasons ?? ''
-        );
+        if (isset($options['ignoredFilterReasons'])) {
+            $this->ignoredFilterReasons
+                = empty($options['ignoredFilterReasons'])
+                    ? [] : (array)$options['ignoredFilterReasons'];
+        }
     }
 
     /**
