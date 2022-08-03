@@ -560,10 +560,10 @@ public class FormatCalculator
             Iterator carrierFieldsIter = carrierFields.iterator();
             while (carrierFieldsIter.hasNext()) {
                 DataField carrierField = (DataField) carrierFieldsIter.next();
-                if ((carrierField.getSubfield('a').getData().equals("online resource")
-                    || carrierField.getSubfield('b').getData().equals("cr"))
-                    && carrierField.getSubfield('2').getData().equals("rdacarrier")
-                ) {
+                String desc = carrierField.getSubfield('a') == null ? "" : carrierField.getSubfield('a').getData();
+                String code = carrierField.getSubfield('b') == null ? "" : carrierField.getSubfield('b').getData();
+                String source = carrierField.getSubfield('2') == null ? "" : carrierField.getSubfield('2').getData();
+                if ((desc.equals("online resource") || code.equals("cr")) && source.equals("rdacarrier")) {
                     return true;
                 }
             }
@@ -588,12 +588,10 @@ public class FormatCalculator
             Iterator typeFieldsIter = typeFields.iterator();
             while (typeFieldsIter.hasNext()) {
                 DataField typeField = (DataField) typeFieldsIter.next();
-                String desc = typeField.getSubfield('a').getData();
-                String code = typeField.getSubfield('b').getData();
-                String source = typeField.getSubfield('2').getData();
-                if ((desc.equals("two-dimensional moving image") || code.equals("tdi"))
-                    && source.equals("rdacontent")
-                ) {
+                String desc = typeField.getSubfield('a') == null ? "" : typeField.getSubfield('a').getData();
+                String code = typeField.getSubfield('b') == null ? "" : typeField.getSubfield('b').getData();
+                String source = typeField.getSubfield('2') == null ? "" : typeField.getSubfield('2').getData();
+                if ((desc.equals("two-dimensional moving image") || code.equals("tdi")) && source.equals("rdacontent")) {
                     formats.add("Video");
                     if (isOnline) {
                         formats.add("VideoOnline");
