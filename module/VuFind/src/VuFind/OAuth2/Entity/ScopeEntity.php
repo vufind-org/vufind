@@ -79,7 +79,7 @@ class ScopeEntity implements ScopeEntityInterface
         }
         $this->setIdentifier($config['identifier']);
         $this->setDescription($config['description'] ?? '');
-        $this->setILSNeeded(boolval($config['ils'] ?? false));
+        $this->setILSNeeded((bool)($config['ils'] ?? false));
         $this->setHidden($config['hidden'] ?? false);
     }
 

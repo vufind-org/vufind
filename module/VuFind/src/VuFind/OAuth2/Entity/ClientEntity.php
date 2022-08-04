@@ -59,7 +59,7 @@ class ClientEntity implements ClientEntityInterface
         $this->setIdentifier($config['identifier']);
         $this->setName($config['name']);
         $this->redirectUri = $config['redirectUri'];
-        $this->isConfidential = boolval($config['isConfidential'] ?? true);
+        $this->isConfidential = (bool)($config['isConfidential'] ?? true);
     }
 
     /**

@@ -204,8 +204,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             return $this->handleException('Authorization request', $e);
         }
 
-        if ($this->formWasSubmitted('allow') || $this->formWasSubmitted('deny')
-        ) {
+        if ($this->formWasSubmitted('allow') || $this->formWasSubmitted('deny')) {
             // Check CSRF and session:
             if (!$this->csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
@@ -213,8 +212,9 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                 );
             }
 
-            // Store OpenID nonce in the access token table so that it can be
-            // retrieved for token or user info action:
+            // Store OpenID nonce (or null if not present to clear any existing one)
+            // in the access token table so that it can be retrieved for token or
+            // user info action:
             $this->accessTokenTable
                 ->storeNonce($user->id, $laminasRequest->getQuery('nonce'));
 
