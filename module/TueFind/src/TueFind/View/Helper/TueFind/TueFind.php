@@ -466,4 +466,10 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
          }
          return false;
     }
+
+    public function showRSSBlock(): bool {
+        $instance = $this->getTueFindInstance();
+        $map = ['ixtheo'];
+        return in_array($instance, $map) ? true : false;
+    }
 }
