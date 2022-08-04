@@ -27,8 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use League\OAuth2\Server\AuthorizationServer;
@@ -40,6 +38,8 @@ use League\OAuth2\Server\ResponseTypes\ResponseTypeInterface;
 use OpenIDConnectServer\ClaimExtractor;
 use OpenIDConnectServer\Entities\ClaimSetEntity;
 use OpenIDConnectServer\IdTokenResponse;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 use VuFind\Config\Locator;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
@@ -115,31 +115,28 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $oauth2Config = $yamlReader->get('OAuth2Server.yaml');
-
         $this->container = $container;
-        $this->oauth2Config = $oauth2Config;
-        $tablePluginManager = $this->container
-            ->get(\VuFind\Db\Table\PluginManager::class);
-        $this->accessTokenTable = $tablePluginManager->get('AccessToken');
 
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        $this->oauth2Config = $yamlReader->get('OAuth2Server.yaml');
         $session = new \Laminas\Session\Container(
             OAuth2Controller::SESSION_NAME,
             $container->get(\Laminas\Session\SessionManager::class)
         );
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+
         return $this->applyPermissions(
             $container,
             new $requestedName(
                 $container,
-                $oauth2Config,
+                $this->oauth2Config,
                 $this->getAuthorizationServerFactory(),
                 $this->getResourceServerFactory(),
                 $container->get(\LmcRbacMvc\Service\AuthorizationService::class),
                 $container->get(\VuFind\Validator\CsrfInterface::class),
                 $session,
-                $this->getIdentityRepository(),
-                $this->accessTokenTable
+                $container->get(IdentityRepository::class),
+                $tablePluginManager->get('AccessToken')
             )
         );
     }
@@ -152,35 +149,17 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected function getAuthorizationServerFactory(): callable
     {
         return function (?string $clientId): AuthorizationServer {
-            if (!($keyPath = $this->oauth2Config['Server']['privateKeyPath'] ?? '')
-            ) {
-                throw new \Exception(
-                    'Server/privateKeyPath missing from OAuth2Server.yaml'
-                );
-            }
-            if (strncmp($keyPath, '/', 1) !== 0) {
-                // Convert relative path:
-                $keyPath = Locator::getConfigPath($keyPath);
-            }
-            $encryptionKey
-                = trim($this->oauth2Config['Server']['encryptionKey'] ?? '');
-            if (!$encryptionKey) {
-                throw new \Exception(
-                    'Server/encryptionKey missing from OAuth2Server.yaml'
-                );
-            }
-
             $server = new AuthorizationServer(
-                new ClientRepository($this->oauth2Config),
-                new AccessTokenRepository($this->accessTokenTable),
-                new ScopeRepository($this->oauth2Config),
-                $keyPath,
-                $encryptionKey,
+                $this->container->get(ClientRepository::class),
+                $this->container->get(AccessTokenRepository::class),
+                $this->container->get(ScopeRepository::class),
+                $this->getKeyPath('privateKeyPath'),
+                $this->getOAuth2ServerSetting('encryptionKey'),
                 $this->getResponseType()
             );
             $clientConfig = $clientId
                 ? ($this->oauth2Config[$clientId] ?? null) : null;
-            $this->addGrantTypes($server, $clientConfig, $this->accessTokenTable);
+            $this->addGrantTypes($server, $clientConfig);
             return $server;
         };
     }
@@ -193,19 +172,9 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected function getResourceServerFactory(): callable
     {
         return function (): ResourceServer {
-            if (!($keyPath = $this->oauth2Config['Server']['publicKeyPath'] ?? '')) {
-                throw new \Exception(
-                    'Server/publicKeyPath missing from OAuth2Server.yaml'
-                );
-            }
-            if (strncmp($keyPath, '/', 1) !== 0) {
-                // Convert relative path:
-                $keyPath = Locator::getConfigPath($keyPath);
-            }
-
             return new ResourceServer(
-                new AccessTokenRepository($this->accessTokenTable),
-                $keyPath
+                $this->container->get(AccessTokenRepository::class),
+                $this->getKeyPath('publicKeyPath')
             );
         };
     }
@@ -215,24 +184,45 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
      *
      * @param AuthorizationServer $server       Authorization server
      * @param ?array              $clientConfig Client configuration
-     * @param AccessToken         $accessToken  Access token table
      *
      * @return void
      */
     protected function addGrantTypes(
         AuthorizationServer $server,
-        ?array $clientConfig,
-        AccessToken $accessToken
+        ?array $clientConfig
     ): void {
-        $config = $this->oauth2Config['Grants'] ?? [];
-        $accessTokenLifeTime = $config['accessTokenLifeTime'] ?? 'PT1H';
-        $authCodeLifeTime = $config['authCodeLifeTime'] ?? 'PT1M';
-        $refreshLifeTime = $config['refreshTokenLifeTime'] ?? 'PT1M';
+        $accessTokenLifeTime = new \DateInterval(
+            $this->oauth2Config['Grants']['accessTokenLifeTime'] ?? 'PT1H'
+        );
 
-        $refreshTokenRepository = new RefreshTokenRepository($accessToken);
+        // Enable the auth code grant on the server
+        $server->enableGrantType(
+            $this->createAuthCodeGrant($clientConfig),
+            $accessTokenLifeTime
+        );
+
+        // Enable the refresh token grant on the server
+        $server->enableGrantType(
+            $this->createRefreshTokenGrant(),
+            $accessTokenLifeTime
+        );
+    }
+
+    /**
+     * Create an auth code grant
+     *
+     * @param ?array $clientConfig Client configuration
+     *
+     * @return AuthCodeGrant
+     */
+    protected function createAuthCodeGrant(?array $clientConfig): AuthCodeGrant
+    {
+        $config = $this->oauth2Config['Grants'] ?? [];
+        $authCodeLifeTime = $config['authCodeLifeTime'] ?? 'PT1M';
+
         $grant = new AuthCodeGrant(
-            new AuthCodeRepository($accessToken),
-            $refreshTokenRepository,
+            $this->container->get(AuthCodeRepository::class),
+            $this->container->get(RefreshTokenRepository::class),
             new \DateInterval($authCodeLifeTime)
         );
 
@@ -241,13 +231,24 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
             $grant->disableRequireCodeChallengeForPublicClients();
         }
 
-        // Enable the password grant on the server
-        $server->enableGrantType($grant, new \DateInterval($accessTokenLifeTime));
+        return $grant;
+    }
 
-        // Enable the refresh token grant on the server
-        $rtGrant = new RefreshTokenGrant($refreshTokenRepository);
+    /**
+     * Create a refresh token grant
+     *
+     * @return RefreshTokenGrant
+     */
+    protected function createRefreshTokenGrant(): RefreshTokenGrant
+    {
+        $config = $this->oauth2Config['Grants'] ?? [];
+        $refreshLifeTime = $config['refreshTokenLifeTime'] ?? 'PT1M';
+
+        $rtGrant = new RefreshTokenGrant(
+            $this->container->get(RefreshTokenRepository::class)
+        );
         $rtGrant->setRefreshTokenTTL(new \DateInterval($refreshLifeTime));
-        $server->enableGrantType($rtGrant, new \DateInterval($accessTokenLifeTime));
+        return $rtGrant;
     }
 
     /**
@@ -267,23 +268,49 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
             }
             $claimExtractor->addClaimSet(new ClaimSetEntity($scope, $claimSetConf));
         }
-        return new IdTokenResponse($this->getIdentityRepository(), $claimExtractor);
+        return new IdTokenResponse(
+            $this->container->get(IdentityRepository::class),
+            $claimExtractor
+        );
     }
 
     /**
-     * Return an identity repository.
+     * Return a server setting from the OAuth2 configuration.
      *
-     * @return IdentityRepository
+     * @param string $setting Setting name
+     *
+     * @return string
+     *
+     * @throws \Exception if the setting doesn't exist or is empty.
      */
-    protected function getIdentityRepository(): IdentityRepository
+    protected function getOAuth2ServerSetting(string $setting): string
     {
-        $tablePluginManager = $this->container
-            ->get(\VuFind\Db\Table\PluginManager::class);
-        return new IdentityRepository(
-            $tablePluginManager->get('User'),
-            $this->accessTokenTable,
-            $this->container->get(\VuFind\ILS\Connection::class),
-            $this->oauth2Config
-        );
+        if (!($result = $this->oauth2Config['Server'][$setting] ?? '')) {
+            throw new \Exception(
+                "Server/$setting missing from OAuth2Server.yaml"
+            );
+        }
+        return $result;
+    }
+
+    /**
+     * Return a key path from the OAuth2 configuration.
+     *
+     * Converts the path to absolute as necessary.
+     *
+     * @param string $key Key path to return
+     *
+     * @return string
+     *
+     * @throws \Exception if the setting doesn't exist or is empty.
+     */
+    protected function getKeyPath(string $key): string
+    {
+        $keyPath = $this->getOAuth2ServerSetting($key);
+        if (strncmp($keyPath, '/', 1) !== 0) {
+            // Convert relative path:
+            $keyPath = Locator::getConfigPath($keyPath);
+        }
+        return $keyPath;
     }
 }
