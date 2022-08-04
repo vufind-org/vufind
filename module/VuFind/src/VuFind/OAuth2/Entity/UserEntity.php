@@ -103,19 +103,25 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
      */
     public function getClaims()
     {
-        // Get catalog profile if the user has credentials:
-        try {
-            if (empty($this->user->cat_username)) {
-                $profile = [];
-            } else {
+        // Get catalog information if the user has credentials:
+        $profile = [];
+        $blocked = null;
+        if (!empty($this->user->cat_username)) {
+            try {
                 $patron = $this->ils->patronLogin(
                     $this->user->cat_username,
                     $this->user->getCatPassword()
                 );
                 $profile = $this->ils->getMyProfile($patron);
+                $blocksSupported = $this->ils
+                    ->checkCapability('getAccountBlocks', compact('patron'));
+                if ($blocksSupported) {
+                    $blocks = $this->ils->getAccountBlocks($patron);
+                    $blocked = !empty($blocks);
+                }
+            } catch (\Exception $e) {
+                // fall through
             }
-        } catch (\Exception $e) {
-            $profile = [];
         }
 
         $result = [
@@ -132,6 +138,11 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                 $result[$claim] = trim(
                     $this->user['firstname'] . ' ' . $this->user['lastname']
                 );
+                break;
+            case 'block_status':
+                // account_blocked is a flag indicating whether the patron has
+                // blocks:
+                $result[$claim] = $blocked;
                 break;
             case 'address_json':
                 // address_json is a specially formatted field for address

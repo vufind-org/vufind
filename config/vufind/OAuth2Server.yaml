@@ -60,6 +60,9 @@ Scopes:
   address:
     description: external_auth_scope_address
     ils: true
+  block_status:
+    description: external_auth_scope_block_status
+    ils: true
 # Claim set configuration. Claim sets map scopes to sets of user attributes.
 # Note that the OpenID Connect specification defines several standard claims
 # (see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims).
@@ -89,6 +92,8 @@ ClaimSets:
     - phone
   address:
     - address
+  block_status:
+    - block_status
 # Mappings from claim id to VuFind user or patron profile fields
 ClaimMappings:
   id: id
@@ -100,6 +105,7 @@ ClaimMappings:
   locale: last_language
   phone: phone
   address: address_json # special field including all address fields
+  block_status: block_status # special field indicating whether the patron has blocks
 # Grants configuration. Life times are indicated as ISO 8601 periods. See
 # https://en.wikipedia.org/wiki/ISO_8601#Durations for more information.
 Grants:
