@@ -893,6 +893,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getMyProfile($patron)
     {
         $this->checkIntermittentFailure();
+        $age = rand(13, 113);
+        $birthDate = new \DateTime();
+        $birthDate->sub(new \DateInterval("P{$age}Y"));
         $patron = [
             'firstname'       => 'Lib-' . $patron['cat_username'],
             'lastname'        => 'Rarian',
@@ -904,7 +907,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'phone'           => '1900 CALL ME',
             'mobile_phone'    => '1234567890',
             'group'           => 'Library Staff',
-            'expiration_date' => 'Someday'
+            'expiration_date' => 'Someday',
+            'birthdate'       => $birthDate->format('Y-m-d')
         ];
         return $patron;
     }
