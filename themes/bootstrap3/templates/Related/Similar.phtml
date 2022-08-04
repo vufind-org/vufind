@@ -5,13 +5,13 @@
     <?php foreach ($similarRecords as $data): ?>
       <li class="list-group-item">
         <?php
-          $icon = $format
-            ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
-            : 'default';
           $attrs = ['class' => 'related__icon'];
 
           $formats = $data->getFormats();
           $format = $formats[0] ?? null;
+          $icon = $format
+            ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
+            : 'default';
 
           if ($format) {
             $attrs['title'] = $format;
