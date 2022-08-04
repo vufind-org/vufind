@@ -158,7 +158,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $this->getResponseType()
             );
             $clientConfig = $clientId
-                ? ($this->oauth2Config[$clientId] ?? null) : null;
+                ? ($this->oauth2Config['Clients'][$clientId] ?? null) : null;
             $this->addGrantTypes($server, $clientConfig);
             return $server;
         };
