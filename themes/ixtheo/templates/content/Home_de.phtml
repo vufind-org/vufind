@@ -15,32 +15,7 @@
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
 
-<div class="col-md-12 ix-panel-news tf-rss-block">
-    <div class="panel <?= $panelClass; ?>">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <i class="fa fa-rss"></i> IxTheo Feed Aggregator <div class="new">neu</div>
-            </h4>
-        </div>
-        <div id="<?= $panelId++; ?>" class="panel-collapse">
-            <div class="panel-body">
-                <p>
-                    <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
-                </p>
-                <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
-                    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
-                        <a href="<?=$this->url('content-page', ['page' => 'subscribe_rssfeed'])?>" class="read-more-trigger" role="button" data-lightbox><i class="fa fa-rss"></i> <?=$this->transEsc('Get Newsfeed')?></a>
-                    <?php else: ?>
-                        <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
-                    <?php endif;?>
-                    <a href="<?=$this->url('rssfeed-full')?>" class="read-more-trigger" role="button">
-                        Weiterlesen
-                    </a>
-                <?php endif;?>
-            </div>
-        </div>
-    </div>
-</div>
+<?=$this->content()->renderTranslated('snippets/RSSFeedAggregator'); ?>
 
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
