@@ -1,0 +1,437 @@
+<style>
+    .read-more-state ~ .read-more-trigger:before {
+        content: 'Mehr';
+    }
+
+    .read-more-state:checked ~ .read-more-trigger:before {
+        content: 'Weniger';
+    }
+</style>
+<?=$this->content()->renderTranslated('snippets/BreakingNews'); ?>
+<?php
+    $panelId = 0;
+    $panelClass = "panel-default";
+    $panelWidth = "col-md-6";
+?>
+<div class="col-md-12" style="margin-top: 30px;"></div>
+
+<?=$this->content()->renderTranslated('snippets/RSSFeedAggregator'); ?>
+
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-bell-o"></i> Willkommen!
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Der neue IxTheo ist eine umfassende Bibliographie für Theologie und Religionswissenschaft. Es können nun
+                            neben Aufsätzen auch Monographien, Datenbanken und relevante Internetlinks recherchiert werden.</p>
+                    <div class="read-more-target">
+                        <p>Neu ist auch, dass die Daten ausgewählter Rezensionsorgane in den IxTheo einbezogen werden. Wenn es lizenzrechtlich
+                            möglich ist, kann direkt auf die Volltexte der Aufsätze, Rezensionen und Bücher zugegriffen werden.</p>
+                        <p>Der neue IxTheo bleibt weiterhin ein kostenloses open access Angebot an die weltweite Fachcommunity.
+                            Herausgeber des IxTheo sind die Universitätsbibliothek Tübingen sowie die Evangelisch-Theologische Fakultät
+                            Tübingen und die Katholisch-Theologische Fakultät Tübingen.</p>
+                        <p>Wir wünschen
+                            Ihnen viel Freude beim Entdecken des neuen IxTheo und sind dankbar über Ihr Feedback!</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-users"></i> Personenseiten <div class="new">neu</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Mit der Einführung der Personenseiten auf IxTheo und RelBib wird ein neuer Meilenstein erreicht. Als dritten Reiter neben der IxTheo-Titel-Suche und der Volltextsuche steht nun der Reiter <b>Personen / Körperschaften</b> zur Verfügung.</p>
+                    <div class="read-more-target">
+                        <p>Auf der Personen / Körperschaftsseite kann man gezielt nach <b>Autorinnen und Autoren</b>, nach <b>Körperschaften</b> und <b>Tagungs-(bänden)</b> suchen.</p>
+
+                        <p>Rufen Sie alle Personen, Körperschaften und Tagungsbeiträge durch einen Klick auf SUCHEN auf. Sie können die Gesamttreffermenge mittels der Facetten selektieren:</p>
+                        <ul>
+                            <li>Datenart: Person / Körperschaft / Tagungsbeitrag</li>
+                            <li>Externe Referenzen: Normdaten / Links auf Wikipedia, Links auf Archivmaterial etc.</li>
+                            <li>Beruf: Theologin-Theologe / Historikerin-Historiker / Pfarrerin-Pfarrer etc.</li>
+                            <li>Sprache: Deutsch / Englisch / Französisch etc. </li>
+                            <li>Standort: Berlin / London / New York etc.</li>
+                        </ul>
+
+                        <p>Die Personenseiten bieten erste biographische Informationen und weiterführende Links, z.B. auf Wikipedia, Archivmaterial und externe Ressourcen.</p>
+
+                        <p>Die im IxTheo enthalten Informationen werden aufbereitet und übersichtlich dargestellt:</p>
+                        <ul>
+                            <li>Literatur <b>von</b> der Autorin / vom Autor</li>
+                            <li>Literatur <b>über</b> die Autorin / den Autor</li>
+                            <li>Verbindung zu <b>anderen</b> Personen</li>
+                            <li><b>Themen</b> (Schlagwörter) zu denen die Autorin / der Autor publiziert hat</li>
+                            <li>Eine <b>Chronologie</b> der Publikationen</li>
+                        </ul>
+
+                        <p>Ein paar prominente Beispiele:</p>
+                        <ul>
+                            <li><a href="<?=$this->url('solrauthrecord')?>080038956">Judith Butler</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>079908942">Luise Abramowski</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>079319769">Rudolf Bultmann</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>035286210">Martin Luther King</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>133801128">Paul Claudel</a></li>
+                            <li><a href="<?=$this->url('solrauthrecord')?>198371527">Pierre Bourdieu</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-search-plus"></i> Volltextsuche
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body flex-col">
+                    Mit der <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1">Volltextsuche</a> besteht nun eine Möglichkeit, kommerzielle und freie Volltexte, Inhaltsverzeichnisse und Abstracts direkt zu durchsuchen.<br/> Ausführliche Informationen finden sich in der <a href="/docs/Volltextsuche_Beschreibung.pdf" target="_blank">Beschreibung</a>.
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-desktop"></i> IxTheo Open Journals
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Der Fachinformationsdienst (FID) Theologie unterstützt und fördert Open-Access-Zeitschriften: <a href="/Content/OpenJournals" data-lightbox>Liste der IxTheo Open Journals</a></p>
+                    <div class="read-more-target">
+                        <p><b><?=$this->transEsc('IxTheo Open Journals')?></b></p>
+                        <ul>
+                            <li><a target="_blank" href="https://aabner.org">Advances in Ancient Biblical and Near Eastern Research [2021-]</a></li>
+                            <li><a target="_blank" href="https://jebs.eu">Journal of European Baptist Studies [2019-]</a></li>
+                            <li><a target="_blank" href="https://imdialog.akademie-rs.de">Im Dialog. Beiträge aus der Akademie der Diözese Rottenburg-Stuttgart [2019-]</a></li>
+                            <li><a target="_blank" href="https://jeac.de">Journal of Ethics in Antiquity and Christianity (JEAC) [2019-]</a></li>
+                            <li><a target="_blank" href="https://iapt-cs.org">International Academy of Practical Theology. Conference Series (IAPT.CS) [2019-]</a></li>
+                            <li><a target="_blank" href="https://vulgata-dialog.ch">Vulgata in Dialogue. A biblical online review [2017-]</a></li>
+                            <li><a target="_blank" href="http://www.ethik-und-gesellschaft.de">Ethik und Gesellschaft (EuG) [2007-]</a></li>
+                        </ul>
+                        <p><b><?=$this->transEsc('IxTheo Open Journals (with moving wall)')?></b></p>
+                        <ul>
+                            <li><a target="_blank" href="https://zfbeg.org/">Zeitschrift für christlich-jüdische Begegnung im Kontext [2017-]</a></li>
+                        </ul>
+                        <p>
+                            Wir bieten Herausgeber*innen mit der Plattform „IxTheo Open Journals“ die Möglichkeit ihre theologisch-wissenschaftlichen Zeitschriften oder Reihen dauerhaft Open Access zu hosten.<br/>
+                            Neben der Gründung neuer OA-Zeitschriften begleiten wir auch die Transformation bisher gedruckter Zeitschriften zu Open Access. Wir stellen dafür das Publikationsmanagementsystem Open Journal Systems (OJS) zur Verfügung, mit dem die Verwaltung des gesamten redaktionellen Prozesses bis hin zur Publikation bewerkstelligt werden kann.
+                        </p>
+                        <p>
+                            Folgende Vorteile bietet die Zusammenarbeit mit „IxTheo Open Journals“:
+                            <ul>
+                                <li>der FID Theologie / Universitätsbibliothek Tübingen stellt die Software OJS kostenlos zur Verfügung, richtet Ihre Zeitschrift bzw. Reihe ein, bietet Schulung und fortlaufenden Support an</li>
+                                <li>mit OJS können alle Arbeitsschritte von der Einreichung der Aufsätze, über Peer-Review bis hin zur Publikation mit einem System umgesetzt werden</li>
+                                <li>Layout und Design einer OJS-Zeitschrift sind individuell anpassbar</li>
+                                <li>alle Zeitschriftenaufsätze erhalten einen persistent identifier (DOI), der eine dauerhafte Auffindbarkeit garantiert</li>
+                                <li>alle Zeitschriftenaufsätze werden in IxTheo nachgewiesen</li>
+                            </ul>
+                        </p>
+                        <p>
+                            Dieses Angebot steht allen Herausgeber*innen von Zeitschriften und Reihen zur Verfügung. Bei Interesse wenden Sie sich bitte an das <a href="mailto:ixtheo@ub.uni-tuebingen.de">IxTheo-Team</a>.
+                        </p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-puzzle-piece"></i> IxTheo - <a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a> Kooperation
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Der Fachinformationsdienst (FID) Theologie kooperiert mit der Katholisch-Theologischen Fakultät in Innsbruck (Österreich) bei der Erstellung einer Fachbibliographie <div class="read-more-target">  für Bibelwissenschaften und für das Kirchenrecht.</p>
+                                            <p>Die Metadaten von <a target="_blank" href="https://www.uibk.ac.at/bildi/">BILDI</a> wurden vollständig in den IxTheo migriert. Mehr als 200.000 sehr gut erschlossene Daten bereichern nun den Nachweis bibelwissenschaftlicher Literatur in IxTheo/BILDI. Ein eigenständiger Zugang für die bibelwissenschaftliche Literatur steht Ende 2019 zur Verfügung und wird zukünftig gemeinsam von BILDI und IxTheo verantwortet.</p>
+                        <p>Ebenso wurden die Metadaten von <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/">KALDI</a> vollständig in den IxTheo migriert. Mehr als 34.000 sehr gut erschlossene Daten bereichern nun den Nachweis kirchenrechtlicher Literatur in IxTheo/KALDI. Ein eigenständiger Zugang für die kirchenrechtliche Literatur steht Ende 2019 zur Verfügung und wird zukünftig gemeinsam von KALDI, DaKaR (Münster) und IxTheo verantwortet.</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-book"></i> Patron-Driven-Acquisition (PDA)
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Zur überregionalen Versorgung des Spitzenbedarfs an theologischer Literatur in Deutschland wird ein benutzergesteuertes Erwerbungsprogramm (PDA) angeboten.</p>
+                    <div class="read-more-target">
+                        <p>Benötigte Bücher werden bei Bedarf von der UB Tübingen gekauft.</p>
+                        <p>Nutzerinnen / Nutzer können den Kauf von Einzelmonographien, die an ihren Standorten nicht vorhanden bzw. nicht über Fernleihe beschaffbar sind, direkt im IxTheo veranlassen.</p>
+                        <p><a href="docs/ixtheo-pda.pdf" target="_blank">Ausführliche Erklärung zu PDA</a></p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="col-md-12 panel-group">IxTheo entdecken</h2>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-search"></i> Suchen
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Starten Sie eine Suche über alle im IxTheo enthaltenen Titel, indem Sie auf den Button „Suchen“
+                        klicken. Sie erhalten die volle Trefferzahl mit mehr als 2 Mio. Titeln.</p>
+                    <div class="read-more-target">
+
+                        <p>Grenzen Sie die Suche nun nach gewissen Kriterien ein, indem Sie entsprechende Facetten
+                            auswählen.
+                            Sie können z.B. gezielt den Medientyp „Elektronisch“, die Medienart „Aufsatz“ und die Sprache
+                            „Deutsch“ auswählen. Nun ist die Menge der Titel auf etwa 3000 Titel eingeschränkt</p>
+
+                        <h3>Inhaltliche Suche</h3>
+                        <h4>IxTheo-Klassifikation</h4>
+                        <p>
+                            Nutzen Sie dazu die erweiterte Suche, indem Sie unter dem Suchschlitz auf „Erweiterte Suche“
+                            klicken. Dort finden Sie u.a. die IxTheo-Klassifikationen. Wählen Sie entsprechende Klassen
+                            durch Anklicken aus. Mehrere Klassen können als Block durch das Halten der Umstell-Taste
+                            beim Anklicken markiert werden. Mehrere einzelne Klassen werden durch das Halten der
+                            „Kommando"-Taste (auf Apple Computer) oder der „Strg-Taste" (auf Windows Computer) beim
+                            Anklicken markiert.
+                        </p>
+                        <p>Starten Sie durch Klick auf „Suche“ nun eine gezielte Suche nach den ausgewählten IxTheo
+                            Klassen.</p>
+
+                        <h4>Verbale Suchbegriffe</h4>
+                        <p>Tippen Sie den Suchbegriff in den Suchschlitz und belassen Sie den Suchaspekt auf „Alle Felder“.
+                            Der
+                            eingegebene Begriff wird dann in allen Suchfeldern gesucht.</p>
+                        <p>Für eine inhaltliche Suche ist die Auswahl des Suchaspektes „Schlagwort“ von großem Nutzen. Hier
+                            werden intellektuell vergebene Schlagwörter und Schlagwortfolgen durchsucht.</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-list"></i> Browsen
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse ">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Der neue IxTheo stellt drei verschiedene Arten des Browsens zur Verfügung. Sie finden den
+                        Browsing
+                        Modus durch Klick auf „Browsen“ unterhalb des Suchschlitzes.</p>
+                    <div class="read-more-target">
+                        <!-- Needed since otherwise the More-Button gets confused immediately before a heading -->
+                        <div style="height: 0px;">&emsp;</div>
+                        <h3>IxTheo-Themen Browsing</h3>
+                        <p>Es öffnet sich ein weiterer Suchschlitz, in den Sie Ihren Suchbegriff eingeben. Er dient als
+                            Startpunkt des Browsens.</p>
+                        <p>Beispiel 1: geben Sie den Begriff „Gott“ ein. Sie sehen dann eine spezielle Liste mit
+                            Schlagwortfolgen, in denen der Begriff Gott vorkommt.</p>
+                        <p>Beispiel 2: geben den Begriff „Gott“ und „Bibel“ ein. Sie sehen dann eine spezielle Liste mit
+                            Schlagwortfolgen, in denen der Begriff „Gott“ und „Bibel“ vorkommt.</p>
+                        <p>Wenn Sie rechts oben auf der Website die Sprache auf Englisch ändern, werden die Begriffe im
+                            Englischen angezeigt, wenn sie in der Sprachkonkordanz vorhanden sind.</p>
+
+                        <h3>Katalogbrowsen</h3>
+                        <p>Die Standard-Browsing Funktion der Software des IxTheo (VuFind) ermöglicht das Browsen in
+                            verschiedenen Feldern: DDC-Klassifikation, IxTheo-Klassifikation, Thema (Schlagwort), Verfasser
+                            und
+                            Verlag. In einem weiteren Schritt kann hier das Browsing durch andere Felder eingeschränkt werden.</p>
+                        <p>Beispiel: Wählen Sie „Verfasser“, dann „Nach IxTheo-Klassifikation“, dann „HB Altes Testament“
+                            aus.
+                            Sie sehen dann eine Liste von Autoren, die im Bereich des Alten Testaments publiziert haben,
+                            sortiert nach Häufigkeit der Titel im IxTheo.</p>
+
+                        <h3>Alphabetisch browsen</h3>
+                        <p>Hier können Sie bestimmen, an welcher Stelle des Alphabets Sie in das Browsing einsteigen wollen.
+                            Nach der Auswahl des Browsingaspektes (möglich sind „Thema“, Verfasser, Titel und
+                            DDC-Klassifikation) geben Sie den Buchstaben ein, ab dem das Browsing starten soll.</p>
+                        <p>Beispiel 1: Wählen Sie „Nach Verfasser“ und geben Sie ein: ab „Z“. Es werden dann alle Verfasser
+                            aufgelistet, die mit dem Buchstaben Z beginnen.</p>
+                        <p>Beispiel 2: Wählen Sie „Nach Titel“ und geben Sie ein: ab „Tr“. Es werden dann alle Titel
+                            aufgelistet, die mit der Buchstabenfolge Tr beginnen.</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-child"></i> Personalisierung
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Viele nützliche Funktionen stehen Ihnen zur Verfügung, wenn Sie einen persönlichen Account
+                        anlegen.
+                        Nach einer einmaligen Registrierung können Sie sich in Ihren Account einloggen. Um sich zu
+                        registrieren oder einzuloggen klicken Sie auf den Link „Login“ rechts oben.</p>
+                    <div class="read-more-target">
+                        <p>Durch Klick auf „Ihr Konto“ kommen Sie in Ihren personalisierten Bereich. Dort stehen Ihnen u.a.
+                            folgende Funktionen zur Verfügung:</p>
+
+                        <h3>Alerting-Funktion</h3>
+                        <p>Die Alerting Funktion unterrichtet Sie über neu erschienene Aufsätze aus Zeitschriften und neu
+                            erschienene Bände in Reihen. Sie können frei entscheiden, in welchen Fällen
+                            Sie
+                            eine Benachrichtigung wünschen.</p>
+                        <p>Um eine Zeitschrift oder eine Reihe für das Alerting auszuwählen, müssen Sie die Gesamtaufnahme
+                            der
+                            Zeitschrift oder Reihe subskribieren. Klicken Sie dazu auf das Symbol "Glocke", die Sie rechts
+                            im
+                            entsprechenden Datensatz sehen. In Ihrem Konto können Sie die Subskriptionen verwalten.</p>
+
+                        <p>Beispiel 1: Um die Theologische Quartalschrift zu subskribieren, recherchieren Sie nach dem Titel
+                            der
+                            Reihe oder geben Sie in den Suchschlitz die Abkürzung „ThQ“ ein. Wählen Sie im Anschluss unter
+                            Medienart die Facette Zeitschrift aus. Sie haben 2 Treffer: zum einen die Gesamtaufnahme der
+                            gedruckten, zum anderen die Gesamtaufnahme der elektronischen Zeitschrift der ThQ. In diesem
+                            Fall
+                            ist es sinnvoll, beide Medienarten zu subskribieren.</p>
+
+                        <p>Beispiel 2: Um die Reihe „Wissenschaftliche Untersuchungen zum Neuen Testament“ zu subskribieren,
+                            recherchieren Sie nach dem Titel der Reihe oder geben Sie in den Suchschlitz die Abkürzung
+                            „WUNT“
+                            ein. Sie haben mehrere Treffer. Subskribieren Sie die gewünschte Reihe durch Klick auf das
+                            Symbol
+                            „Glocke“.</p>
+
+                        <p>Wir werden uns bemühen, die Auswahl der Zeitschriften und Reihen für das Alerting zukünftig
+                            bequemer
+                            für Sie zu gestalten. Angedacht ist, dass Sie Zeitschriften, die im IxTheo ausgewertet werden,
+                            geordnet nach Disziplinen im Block subskribieren können.</p>
+
+                        <h3>Suchanfragen speichern</h3>
+                        <p>Ihre aktuellen Suchanfragen werden in der Suchhistorie temporär gespeichert. Wenn Sie die
+                            Suchanfragen dauerhaft verwenden wollen, können Sie sie in Ihrem Konto abspeichern. Sie stehen
+                            dann
+                            in Ihrem Konto dauerhaft zur Verfügung und können durch Anklicken erneut ausgeführt werden. Das
+                            lohnt sich für komplexe Abfragen oder für Themen, an denen Sie kontinuierlich interessiert sind.
+                            Auf
+                            diese Weise entdecken Sie leicht die neu erschienene Literatur zu einem bestimmten Thema oder
+                            Themengebiet.</p>
+
+                        <h3>Favoriten speichern</h3>
+                        <p>Speichern Sie interessante Titel direkt in Ihrem Konto ab. Damit stehen Sie Ihnen dauerhaft zur
+                            Verfügung und Sie müssen nicht viel Zeit mit dem Wiederfinden verwenden. Damit die Favoriten
+                            geordnet werden können, werden Sie in Listen gespeichert, die Sie definieren können. So können
+                            interessante Titel gewissen Forschungsprojekten oder Themen zugeordnet werden.</p>
+                        <p>Aus Ihrem Konto heraus können Sie Favoriten exportieren, per Mail verschicken oder
+                            Ausdrucken.</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-binoculars"></i> Bibelstellensuche
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Die Bibelstellensuche wurde völlig neu konzipiert und orientiert sich an den Bedürfnissen eines wissenschaftlichen Nutzers.
+                        Um die Bibelstellensuche zu aktivieren muss rechts neben dem Suchschlitz der Suchaspekt „Bibelstellen“ ausgewählt werden.
+                        In der Treffermenge muss nach Relevanz sortiert werden.</p>
+                    <div class="read-more-target">
+                        <p>Die Bibelstellen können in der international üblichen Form und mit den bekannten Abkürzungen eingegeben werden.
+                            Es sind auch Abkürzungen, wie sie in den Sprachen englisch, französisch, italienisch und spanisch verwendet werden
+                            sowie die von Nestle-Aland und der Vulgata genutzten Formen möglich. In wenigen Fällen gab es durch die Benennungen der
+                            Bibelbücher in den verschiedenen Sprachen Ambiguitäten bei den Abkürzungen. So wird z.B. die Abkürzung „es“ im
+                            Französischen für das Jesajabuch, im Italienischen aber für das Buch Exodus verwendet. In diesen Fällen musste
+                            eine Entscheidung getroffen werden, welche Abkürzungen zugelassen werden, damit keine uneindeutigen Treffer
+                            erzeugt werden. Die Liste der gültigen Abkürzungen für die Bibelstellensuche finden Sie
+                            <a href="<?='https://'.$_SERVER['SERVER_NAME'] . '/docs/Bible_abbreviation.pdf'?>" target="_blank"><b>hier</b></a>.</p>
+                        <p>Geben Sie die gesuchte Stelle in folgender Form ein:
+                            Abkürzung_des_Bibelbuches Kapitel, Versangaben</p>
+                        <b>Beispiele:</b>
+                        <ul>
+                            <li>Joh 5,1-20 oder Jn 5,1-20</li>
+                            <li>1Kor 10 oder 1 Kor 10 oder 1 K 10</li>
+                            <li>Röm 14,1-15,13 oder Rm 14,1-15,13</li>
+                        </ul>
+                        <p>Die Sortierung der Treffer erfolgt nach der Nähe zur gesuchten Stelle:</p>
+                        <ol>
+                            <li><p>Exakter Treffer: die eingegebene Stelle hat eine genaue Übereinstimmung mit der gefundenen Stelle:</p>
+                                <p>Beispiel: Suche nach Mk 5,25-34 findet Mk 5,25-34</p></li>
+                            <li><p>Enthaltene Treffer: die eingegebene Stelle hat eine Überschneidung mit der gefundenen Stelle</p>
+                                <p>Beispiel: Suche nach Mk 5,25-34 findet Mk 5,24-34</p></li>
+                            <li><p>Indirekter Treffer: die eingegebene Stelle ist Teil des zugehörigen Kapitels der Bibelstelle</p>
+                                <p>Beispiel: Suche nach Mk 5,25-34 findet Mk 5</p></li>
+                        </ol>
+                        <p>Es werden aber auch alle Titel gefunden, die verbal mit dem Normsatz „Blutflüssige Frau“ verbunden sind. Diesem Normsatz
+                            sind die synoptischen Stellen Mk 5,25-34 sowie Mt 9,20-22 und Lk 8,43-48 zugeordnet.</p>
+                        <p>Achtung: da noch nicht alle Titel mit den Normsätzen der Bibelstellen verknüpft sind, lohnt sich auch immer noch eine Suche
+                            nach der Bibelstelle mit dem Suchaspekt „Alle Felder“. Die Vorteile der IxTheo-Bibelstellensuche sind dann aber nicht gegeben.</p>
+                        <p>Bei der technischen Umsetzung des neuen IxTheo-Bibelstellen Suchkonzeptes wird die als verbaler String eingegebene Stelle in eine
+                            achtstellige numerische Zahlenfolge übersetzt, mit der im Anschluss gerechnet werden kann. Dabei entsprechen die beiden ersten
+                            Zahlen dem Bibelbuch, die folgenden drei Stellen dem Kapitel und die letzten drei Zahlen dem Vers. Mk 5,25-34 wird folgendermaßen
+                            umgesetzt: 02005025_02005034. Um die Nähe der gefundenen Stellen zur gesuchten Stelle zu berechnen, wird ein Scoring-Wert gebildet.
+                            Weiterführende Informationen finden sich <a href=https://github.com/ubtue/ixTheo/wiki/Bibelstellensuche---Technischer-%C3%9Cberblick target="_blank"><b>hier</b></a><p/>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
