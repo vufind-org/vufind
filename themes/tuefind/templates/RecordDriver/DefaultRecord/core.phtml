@@ -1,5 +1,8 @@
 <?php $this->metadata()->generateMetatags($this->driver);?>
-<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+<?php /* TueFind: Intentionally omit schema.org type "Product".
+       * For testing: https://search.google.com/test/rich-results
+       */ ?>
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?>">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
@@ -25,7 +28,7 @@
       <p><?=$this->truncate($summary, 300)?></p>
 
       <?php if(strlen($summary) > 300): ?>
-        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
+        <p><a href='<?=$this->recordLinker()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
       <?php endif; ?>
     <?php endif; ?>
 
@@ -33,6 +36,7 @@
       <?php /* Display the lists that this record is saved to */ ?>
       <div class="savedLists">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
+        <a href="<?=$this->url('myresearch-favorites')?>" data-lightbox class="tf-favoritesListModal tf-d-none">&nbsp;</a>
       </div>
     <?php endif; ?>
 

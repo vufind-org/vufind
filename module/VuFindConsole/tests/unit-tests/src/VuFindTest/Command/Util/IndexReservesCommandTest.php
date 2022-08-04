@@ -43,6 +43,8 @@ use VuFindConsole\Command\Util\IndexReservesCommand;
  */
 class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Get mock ILS connection.
      *
@@ -162,7 +164,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')
@@ -176,8 +178,8 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('SolrReserves'));
         $command = $this->getCommand($writer);
         $commandTester = new CommandTester($command);
-        $fixture1 = __DIR__ . '/../../../../../fixtures/reserves/fixture1';
-        $fixture2 = __DIR__ . '/../../../../../fixtures/reserves/fixture2';
+        $fixture1 = $this->getFixtureDir('VuFindConsole') . 'reserves/fixture1';
+        $fixture2 = $this->getFixtureDir('VuFindConsole') . 'reserves/fixture2';
         $commandTester->execute(
             [
                 '--filename' => [$fixture1, $fixture2],
@@ -201,19 +203,10 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1', 'inst2' => 'inst2', 'inst3' => 'inst3'];
-        $ils->expects($this->at(0))->method('__call')
-            ->with($this->equalTo('getInstructors'))
-            ->will($this->returnValue($instructors));
         $courses = [
             'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3'
         ];
-        $ils->expects($this->at(1))->method('__call')
-            ->with($this->equalTo('getCourses'))
-            ->will($this->returnValue($courses));
         $departments = ['dept1' => 'dept1', 'dept2' => 'dept2', 'dept3' => 'dept3'];
-        $ils->expects($this->at(2))->method('__call')
-            ->with($this->equalTo('getDepartments'))
-            ->will($this->returnValue($departments));
         $reserves = [
             [
                 'BIB_ID' => 1,
@@ -234,9 +227,18 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 'INSTRUCTOR_ID' => 'inst3',
             ],
         ];
-        $ils->expects($this->at(3))->method('__call')
-            ->with($this->equalTo('findReserves'), $this->equalTo(['', '', '']))
-            ->will($this->returnValue($reserves));
+        $ils->expects($this->exactly(4))->method('__call')
+            ->withConsecutive(
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves']
+            )->willReturnOnConsecutiveCalls(
+                $instructors,
+                $courses,
+                $departments,
+                $reserves
+            );
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')
             ->with($this->equalTo('SolrReserves'));
@@ -275,7 +277,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')

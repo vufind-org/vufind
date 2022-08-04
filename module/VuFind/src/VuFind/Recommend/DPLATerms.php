@@ -51,7 +51,7 @@ class DPLATerms implements RecommendInterface
     protected $apiKey;
 
     /**
-     * Vufind HTTP Client
+     * VuFind HTTP Client
      *
      * @var HttpClient
      */
@@ -123,7 +123,11 @@ class DPLATerms implements RecommendInterface
     }
 
     /**
-     * Abstract-required method
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
+     * This method is responsible for setting search parameters needed by the
+     * recommendation module and for reading any existing search parameters that may
+     * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user

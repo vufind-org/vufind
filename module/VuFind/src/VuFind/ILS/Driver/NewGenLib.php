@@ -86,7 +86,7 @@ class NewGenLib extends AbstractBase
      * @param array  $patron   Patron data
      * @param array  $options  Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array           On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -104,10 +104,10 @@ class NewGenLib extends AbstractBase
                 "' and document_library_id='" . $holding[$i]['library_id'] .
                 "' and status='A'";
             try {
-                $sqlStmt2 = $this->_db->prepare($duedateql);
+                $sqlStmt2 = $this->db->prepare($duedateql);
                 $sqlStmt2->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $duedate = "";
             while ($rowDD = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
@@ -132,7 +132,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -158,7 +158,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($mainsql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $id = "";
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -173,7 +173,7 @@ class NewGenLib extends AbstractBase
                 $sqlStmt1 = $this->db->prepare($paidamtsql);
                 $sqlStmt1->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $paidamt = "";
             $balance = "";
@@ -200,7 +200,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -223,7 +223,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($mainsql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $type = "RECALLED ITEM - Return the item to the library";
@@ -233,7 +233,7 @@ class NewGenLib extends AbstractBase
                 $sqlStmt2 = $this->db->prepare($rIdql);
                 $sqlStmt2->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $RecordId = $row['cataloguerecordid'] . "_" . $row['owner_library_id'];
             $duedate = "";
@@ -261,7 +261,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt2 = $this->db->prepare($mainsql2);
             $sqlStmt2->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row2 = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
             $location = "";
@@ -300,6 +300,7 @@ class NewGenLib extends AbstractBase
      */
     public function getMyProfile($patron)
     {
+        $profile = null;
         $catusr = $patron['cat_username'];
         $catpswd = $patron['cat_password'];
         $sql = "select p.patron_id as patron_id,p.user_password as " .
@@ -311,7 +312,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             if ($catusr != $row['patron_id'] || $catpswd != $row['user_password']) {
@@ -337,7 +338,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -358,7 +359,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($mainsql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $countql = "select count(*) as total from cir_transaction c, " .
@@ -369,7 +370,7 @@ class NewGenLib extends AbstractBase
                 $sql = $this->db->prepare($countql);
                 $sql->execute();
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
             $RecordId = $row['cataloguerecordid'] . "_" . $row['owner_library_id'];
             $count = "";
@@ -459,7 +460,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':patronId' => $username, ':password' => $password]);
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) {
@@ -500,6 +501,7 @@ class NewGenLib extends AbstractBase
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         // Do some initial work in solr so we aren't repeating it inside this loop.
+        $retVal = [];
         $retVal[][] = [];
 
         $offset = ($page - 1) * $limit;
@@ -510,7 +512,7 @@ class NewGenLib extends AbstractBase
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $results = [];
@@ -568,7 +570,7 @@ class NewGenLib extends AbstractBase
             $sqlSmt = $this->db->prepare($mainsql);
             $sqlSmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $reserve = 'N';
         while ($row = $sqlSmt->fetch(PDO::FETCH_ASSOC)) {
@@ -600,7 +602,7 @@ class NewGenLib extends AbstractBase
                 $sqlSmt1 = $this->db->prepare($locationsql);
                 $sqlSmt1->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                $this->throwAsIlsException($e1);
             }
             $location = "";
             while ($rowLoc = $sqlSmt1->fetch(PDO::FETCH_ASSOC)) {

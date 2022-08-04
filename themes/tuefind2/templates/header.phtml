@@ -76,12 +76,20 @@
                               <li class="language dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                  <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-                                    <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
-                                      <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode])) ?>" rel="nofollow">
-                                        <?=$this->displayLanguageOption($langName) ?>
-                                      </a>
-                                    </li>
+                                  <?php
+                                    //TueFind: Basic VuFind functionality changed, removed author ID from URL
+                                    $routeParams = $this->tuefind()->getRouteParams();
+                                    foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                                      <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
+                                        <?php $langURL = $this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode]));
+                                            if($routeParams['controller'] == "Authority" && $routeParams['action'] == "Home") {
+                                                $langURL = $this->escapeHtmlAttr($this->url()->addQueryParametersToAuthority(['lng' => $langCode]));
+                                            }
+                                        ?>
+                                        <a href="<?=$langURL?>" rel="nofollow">
+                                          <?=$this->displayLanguageOption($langName) ?>
+                                        </a>
+                                      </li>
                                   <?php endforeach; ?>
                                 </ul>
                               </li>

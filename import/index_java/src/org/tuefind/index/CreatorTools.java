@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.vufind.index.FieldSpecTools;
 
 public class CreatorTools extends org.vufind.index.CreatorTools
 {
-    static protected Logger logger = Logger.getLogger(CreatorTools.class.getName());
+    protected static Logger logger = Logger.getLogger(CreatorTools.class.getName());
 
     /**
      * Added cache to certain "getAuthorsFilteredByRelator" queries, because they are very slow
@@ -27,11 +28,13 @@ public class CreatorTools extends org.vufind.index.CreatorTools
      * see also: https://dzone.com/articles/concurrenthashmap-isnt-always-enough
      *
      */
-    static protected Map<String, String[]> relatorConfigCache = new ConcurrentHashMap();
+    protected static Map<String, String[]> relatorConfigCache = new ConcurrentHashMap<>();
 
     protected String[] loadRelatorConfig(String setting){
         return relatorConfigCache.computeIfAbsent(setting, s -> super.loadRelatorConfig(setting));
     }
+
+    protected static Map<String, List<String>> normalizedRelatorMap = new ConcurrentHashMap<>();
 
     /**
      * TueFind: Special treatment for iteration logic + 'g' subfield
@@ -47,7 +50,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
         List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
         List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){
@@ -98,6 +101,10 @@ public class CreatorTools extends org.vufind.index.CreatorTools
         List<Subfield> subfieldE = authorField.getSubfields('e');
         List<Subfield> subfield4 = authorField.getSubfields('4');
 
+        //remove values for author roles other than sized 3, because others are not translated
+        subfieldE.removeIf(u -> u.getData().length() != 3);
+        subfield4.removeIf(u -> u.getData().length() != 3);
+
         Set<String> relators = new LinkedHashSet<String>();
 
         // if no relator is found, check to see if the current tag is in the "no
@@ -112,7 +119,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
             }
         } else {
             // If we got this far, we need to figure out what type of relation they have
-            List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
+            List<String> permittedRoles = normalizedRelatorMap.computeIfAbsent(relatorConfig, relCfg -> normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relCfg))));
             relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             if (Arrays.asList(unknownRelatorAllowed).contains(tag)) {
@@ -135,7 +142,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
      * maxSize should not be too small (to avoid concurrency between the threads),
      * but not be too high either so lookups stay efficient.
      */
-    static protected ConcurrentLimitedHashMap<String, ConcurrentHashMap<String, List<String>>> authorIdsCache = new ConcurrentLimitedHashMap(/* maxSize */100);
+    static protected ConcurrentLimitedHashMap<String, ConcurrentHashMap<String, List<String>>> authorIdsCache = new ConcurrentLimitedHashMap<>(/* maxSize */100);
 
     /**
      * This function is similar to VuFind's own ...byRelator functions.

@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<schema name="VuFind Authority Index" version="1.2" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <types>
+    <!-- Define fieldType long as it is needed by the _version_ field required by Solr 4.x -->
+    <fieldType name="long" class="solr.LongPointField" positionIncrementGap="0"/>
+    <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="date" class="solr.DatePointField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.ICUTokenizerFactory"/>
+        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.ICUTokenizerFactory"/>
+        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <!-- TueFind custom field types -->
+    <xi:include href="schema_local_types.xml" xpointer="xpointer(descendant::fieldType)"/>
+  </types>
+  <fields>
+    <!-- Required by Solr 4.x -->
+    <field name="_version_" type="long" indexed="true" stored="true"/>
+    <!-- Core Fields  -->
+    <field name="id" type="string" indexed="true" stored="true"/>
+    <field name="fullrecord" type="string" indexed="false" stored="true"/>
+    <field name="marc_error" type="string" indexed="false" stored="true" multiValued="true"/>
+    <field name="allfields" type="text" indexed="true" stored="false" multiValued="true"/>
+    <field name="record_format" type="string" indexed="true" stored="true"/>
+
+    <!-- Extra identifiers - where did authority record originate? -->
+    <field name="source" type="string" indexed="true" stored="true"/>
+    <field name="record_type" type="string" indexed="true" stored="true"/>
+    <field name="lccn" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
+
+    <!-- String Fields for Exact Match / Faceting -->
+    <field name="heading" type="string" indexed="true" stored="true"/>
+    <field name="use_for" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="see_also" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="scope_note" type="string" indexed="false" stored="true" multiValued="true"/>
+
+    <!-- Keyword Fields for Searching -->
+    <field name="heading_keywords" type="text" indexed="true" stored="false"/>
+    <field name="use_for_keywords" type="text" indexed="true" stored="false" multiValued="true"/>
+    <field name="see_also_keywords" type="text" indexed="true" stored="false" multiValued="true"/>
+
+    <!-- RDA fields -->
+    <field name="birth_date" type="string" indexed="true" stored="false"/>
+    <field name="death_date" type="string" indexed="true" stored="false"/>
+    <field name="birth_place" type="string" indexed="true" stored="true"/>
+    <field name="death_place" type="string" indexed="true" stored="true"/>
+    <field name="country" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="related_place" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="field_of_activity" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="gender" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
+
+    <!-- Tracking fields to keep track of oldest and most recent index times -->
+    <field name="first_indexed" type="date" indexed="true" stored="true" docValues="true"/>
+    <field name="last_indexed" type="date" indexed="true" stored="true" docValues="true"/>
+
+    <!-- Dynamic fields for customization without schema modification -->
+    <dynamicField name="*_date" type="date" indexed="true" stored="true" docValues="true"/>
+    <dynamicField name="*_date_mv" type="date" indexed="true" stored="true" multiValued="true" docValues="true"/>
+    <dynamicField name="*_str" type="string" indexed="true" stored="true"/>
+    <dynamicField name="*_str_mv" type="string" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="*_txt" type="text" indexed="true" stored="true"/>
+    <dynamicField name="*_txt_mv" type="text" indexed="true" stored="true" multiValued="true"/>
+
+    <!-- TueFind custom fields -->
+   <xi:include href="schema_local_fields.xml" xpointer="xpointer(descendant::field)"/>
+  </fields>
+
+  <uniqueKey>id</uniqueKey>
+
+  <!-- CopyFields for Keyword Searching -->
+  <copyField source="heading" dest="heading_keywords" />
+  <copyField source="use_for" dest="use_for_keywords" />
+  <copyField source="see_also" dest="see_also_keywords" />
+
+  <!-- TueFind custom copyField instructions -->
+  <xi:include href="schema_local_fields.xml" xpointer="xpointer(descendant::copyField)"/>
+</schema>

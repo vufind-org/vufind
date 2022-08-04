@@ -26,6 +26,7 @@ class PluginManager extends \VuFind\RecordDriver\PluginManager {
         $this->addOverride('aliases', 'solrauthmarc', SolrAuthMarc::class);
         $this->addOverride('aliases', 'solrdefault', SolrDefault::class);
         $this->addOverride('aliases', 'solrmarc', SolrMarc::class);
+        $this->addOverride('aliases', 'search3default', Search3Default::class);
 
         $this->addOverride('delegators', SolrMarc::class, IlsAwareDelegatorFactory::class);
 
@@ -38,4 +39,11 @@ class PluginManager extends \VuFind\RecordDriver\PluginManager {
 
         parent::__construct($configOrContainerInstance, $v3config);
     }
+
+    public function getSearch3Record($data, $defaultKeySuffix = 'Default')
+    {
+        return $this->getSolrRecord($data, 'Search3', $defaultKeySuffix);
+    }
+
+
 }

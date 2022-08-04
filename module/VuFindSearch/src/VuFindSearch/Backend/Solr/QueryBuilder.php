@@ -71,6 +71,13 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
+     * Global extra Solr query parameters
+     *
+     * @var array
+     */
+    protected $globalExtraParams = [];
+
+    /**
      * Solr fields to highlight. Also serves as a flag for whether to perform
      * highlight-specific behavior; if the field list is empty, highlighting is
      * skipped.
@@ -102,7 +109,8 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return void
      */
-    public function __construct(array $specs = [],
+    public function __construct(
+        array $specs = [],
         $defaultDismaxHandler = 'dismax'
     ) {
         $this->defaultDismaxHandler = $defaultDismaxHandler;
@@ -179,7 +187,113 @@ class QueryBuilder implements QueryBuilderInterface
         }
         $params->set('q', $string);
 
+        // Handle any extra parameters:
+        foreach ($this->globalExtraParams as $extraParam) {
+            if (empty($extraParam['param']) || empty($extraParam['value'])) {
+                continue;
+            }
+            if (!$this->checkParamConditions($query, $extraParam['conditions'] ?? [])
+            ) {
+                continue;
+            }
+            foreach ((array)$extraParam['value'] as $value) {
+                $params->add($extraParam['param'], $value);
+            }
+        }
+
         return $params;
+    }
+
+    /**
+     * Check if the conditions match for an extra parameter
+     *
+     * @param AbstractQuery $query      Search query
+     * @param array         $conditions Required conditions
+     *
+     * @return bool
+     */
+    protected function checkParamConditions(
+        AbstractQuery $query,
+        array $conditions
+    ): bool {
+        if (empty($conditions)) {
+            return true;
+        }
+        $searchTypes = $this->getSearchTypes($query);
+        foreach ($conditions as $condition) {
+            if (!is_array($condition)) {
+                continue;
+            }
+            $values = reset($condition);
+            $condition = key($condition);
+            switch ($condition) {
+            case 'SearchTypeIn':
+                if (empty(array_intersect((array)$values, $searchTypes))) {
+                    return false;
+                }
+                break;
+            case 'AllSearchTypesIn':
+                if (array_diff($searchTypes, (array)$values)) {
+                    return false;
+                }
+                break;
+            case 'SearchTypeNotIn':
+                if (!empty(array_intersect((array)$values, $searchTypes))) {
+                    return false;
+                }
+                break;
+            case 'NoDismaxParams':
+                foreach ((array)$values as $value) {
+                    if ($this->hasDismaxParamsField($searchTypes, $value)) {
+                        return false;
+                    }
+                }
+                break;
+            default:
+                throw new \Exception("Unknown parameter condition: $condition");
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if any of the given search types has the field in DismaxParams
+     *
+     * @param array  $searchTypes Search types to check
+     * @param string $field       Field to check for
+     *
+     * @return bool
+     */
+    protected function hasDismaxParamsField(array $searchTypes, string $field): bool
+    {
+        foreach ($searchTypes as $searchType) {
+            if ($handler = $this->getSearchHandler($searchType, '')) {
+                foreach ($handler->getDismaxParams() as $param) {
+                    if (reset($param) === $field) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get an array of search types used in the given search
+     *
+     * @param AbstractQuery $query Query
+     *
+     * @return array
+     */
+    protected function getSearchTypes(AbstractQuery $query): array
+    {
+        if ($query instanceof QueryGroup) {
+            $callback = function ($carry, $item) {
+                return array_merge($carry, $this->getSearchTypes($item));
+            };
+            return array_unique(array_reduce($query->getQueries(), $callback, []));
+        }
+        return [$query->getHandler()];
     }
 
     /**
@@ -240,9 +354,14 @@ class QueryBuilder implements QueryBuilderInterface
     public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
+            if ('GlobalExtraParams' === $handler) {
+                $this->globalExtraParams = $spec;
+                continue;
+            }
             if (isset($spec['ExactSettings'])) {
                 $this->exactSpecs[strtolower($handler)] = new SearchHandler(
-                    $spec['ExactSettings'], $this->defaultDismaxHandler
+                    $spec['ExactSettings'],
+                    $this->defaultDismaxHandler
                 );
                 unset($spec['ExactSettings']);
             }
@@ -338,7 +457,8 @@ class QueryBuilder implements QueryBuilderInterface
     {
         if ($component instanceof QueryGroup) {
             $reduced = array_map(
-                [$this, 'reduceQueryGroupComponents'], $component->getQueries()
+                [$this, 'reduceQueryGroupComponents'],
+                $component->getQueries()
             );
             $searchString = $component->isNegated() ? 'NOT ' : '';
             $reduced = array_filter(
@@ -349,7 +469,8 @@ class QueryBuilder implements QueryBuilderInterface
             );
             if ($reduced) {
                 $searchString .= sprintf(
-                    '(%s)', implode(" {$component->getOperator()} ", $reduced)
+                    '(%s)',
+                    implode(" {$component->getOperator()} ", $reduced)
                 );
             }
         } else {
@@ -419,7 +540,9 @@ class QueryBuilder implements QueryBuilderInterface
         // Use a lookahead to skip matches found within quoted phrases.
         $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
         $string = preg_replace_callback(
-            '/([^\s:()]+\?)(\s|$)' . $lookahead . '/', $callback, $string
+            '/([^\s:()]+\?)(\s|$)' . $lookahead . '/',
+            $callback,
+            $string
         );
         return rtrim($string);
     }
@@ -448,7 +571,8 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function createAdvancedInnerSearchString($string,
+    protected function createAdvancedInnerSearchString(
+        $string,
         SearchHandler $handler
     ) {
         // Special case -- if the user wants all records but the current handler

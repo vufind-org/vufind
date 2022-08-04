@@ -116,7 +116,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $params->set('numrec', $limit);
         $params->set('prof', $this->prof);
         $params->set('pwd', $this->pwd);
-        $response = $this->call('GET', $params->getArrayCopy(), false);
+        $response = $this->call('GET', $params->getArrayCopy());
         $xml = simplexml_load_string($response);
         $finalDocs = [];
         foreach ($xml->SearchResults->records->rec as $doc) {
@@ -154,6 +154,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function call($method = 'GET', $params = null)
     {
+        $queryString = null;
         if ($params) {
             $query = [];
             foreach ($params as $function => $value) {
@@ -207,7 +208,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $params->set('pwd', $this->pwd);
         $params->set('query', $query);
         $this->client->resetParameters();
-        $response = $this->call('GET', $params->getArrayCopy(), false);
+        $response = $this->call('GET', $params->getArrayCopy());
         $xml = simplexml_load_string($response);
         $finalDocs = [];
         foreach ($xml->SearchResults->records->rec as $doc) {

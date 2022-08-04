@@ -66,9 +66,9 @@ public class IxTheoKeywordChains extends TueFind {
     private boolean isSubfieldFollowedBySubfield(final List<Subfield> subfields, char subfieldCode, char subsequentSubfieldCode) {
         final Iterator<Subfield> subfields_iterator = subfields.iterator();
             while(subfields_iterator.hasNext()) {
-                 if (subfields_iterator.next().getCode() == subfieldCode &&
-                     subfields_iterator.hasNext() && subfields_iterator.next().getCode() == subsequentSubfieldCode)
-                     return true;
+                if (subfields_iterator.next().getCode() == subfieldCode &&
+                    subfields_iterator.hasNext() && subfields_iterator.next().getCode() == subsequentSubfieldCode)
+                    return true;
             }
          return false;
     }

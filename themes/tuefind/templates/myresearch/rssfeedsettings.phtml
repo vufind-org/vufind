@@ -6,56 +6,47 @@
 ?>
 
 <div class="mainbody left">
-  <h2>RSS Feeds</h2>
+  <h1><?=$this->transEsc('My newsfeeds')?></h1>
+
+  <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>"><?=$this->transEsc('Show personal RSS feed')?></a></p>
+  <table style="width: 100%">
+    <tr>
+      <td><?=$this->transEsc('rss_subscribe_email')?></td>
+      <td class="tf-rss-feeds-switcher">
+        <label class="switch">
+          <input type="checkbox" <?=($this->user->tuefind_rss_feed_send_emails)?"checked":"";?>  class="rssLabel" name="action" value="<?=(!$this->user->tuefind_rss_feed_send_emails)?"unsubscribe_email":"subscribe_email";?>">
+          <span class="slider round"></span>
+        </label>
+      </td>
+    </tr>
+  </table>
+  <p>
+    <div class="rssEmailTimestampBlock <?=(!$this->user->tuefind_rss_feed_send_emails)?"tf-d-none":"";?>">
+      <?=$this->transEsc('rss_email_min_timestamp')?> <span><?=$this->user->tuefind_rss_feed_last_notification?></span>.
+    </div>
+  </p>
+
   <table class="search-history-table">
     <tr>
-      <th>Feed</th>
-      <th>Subscribed?</th>
+      <th><?=$this->transEsc('RSS feed')?></th>
+      <th><?=$this->transEsc('Subscribe')?></th>
     </tr>
     <?php foreach($rssFeeds as $rssFeed): ?>
       <tr>
         <td><a href="<?=$rssFeed['website_url']?>" target="_blank"><?=$rssFeed['feed_name']?></a></td>
-        <td>
-          <form method="post">
-            <input type="hidden" name="id" value="<?=$rssFeed['id']?>">
-            <label class="switch" onclick="this.form.submit()">
-              <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
-                <input type="hidden" name="action" value="remove">
-                <input type="checkbox" checked>
-              <?php else: ?>
-                <input type="hidden" name="action" value="add">
-                <input type="checkbox">
-              <?php endif; ?>
-              <span class="slider round"></span>
-            </label>
-          </form>
+        <td class="tf-rss-feeds-switcher">
+          <label class="switch">
+            <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
+              <input type="checkbox" checked class="rssLabel" data-id="<?=$rssFeed['id']?>">
+            <?php else: ?>
+              <input type="checkbox" class="rssLabel" data-id="<?=$rssFeed['id']?>">
+            <?php endif; ?>
+            <span class="slider round"></span>
+          </label>
         </td>
       </tr>
     <?php endforeach; ?>
   </table>
-
-  <?php if (count($subscribedFeedIds) > 0): ?>
-    <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>">Show personal RSS feed</a></p>
-    <p>
-      <form method="post">
-        Would you like to receive new entries via e-mail?
-        <label class="switch" onclick="this.form.submit()">
-          <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
-            <input type="hidden" name="action" value="unsubscribe_email">
-            <input type="checkbox" checked>
-          <?php else: ?>
-            <input type="hidden" name="action" value="subscribe_email">
-            <input type="checkbox">
-          <?php endif; ?>
-          <span class="slider round"></span>
-        </label>
-
-        <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
-            <br>You will receive all entries newer than <?=$this->user->tuefind_rss_feed_last_notification?>.
-        <?php endif; ?>
-      </form>
-    </p>
-  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">

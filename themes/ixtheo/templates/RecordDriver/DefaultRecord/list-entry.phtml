@@ -10,7 +10,7 @@
     $user_id = $this->user ? $this->user->id : null;
   }
   // Thumbnail
-  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLink()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLinker()->getUrl($this->driver));
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
@@ -24,7 +24,7 @@
     <?php $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
     <?php if (!$missing):?>
       <div class="resultItemLine1">
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+        <a href="<?=$this->recordLinker()->getUrl($this->driver)?>">
          <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
       </div>
@@ -152,7 +152,7 @@
         <?php if (!is_array($urls)) { $urls = []; }
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
             <?php endforeach; ?>
           <?php endif; ?>
         <?php endif; ?>
@@ -185,7 +185,7 @@
            <?=$this->transEsc('Delete') ?>
          </a>
          <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-           <li><a id="confirm_delete_item_<?=$this->escapeHtmlAttr($id);?>" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+           <li><a id="confirm_delete_item_<?=$this->escapeHtmlAttr($id);?>" title="<?=$this->transEscAttr('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
            <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
          </ul>
       </div>

@@ -18,21 +18,21 @@
       <a href="<?=$this->url('solrauthrecord', ['id' => $this->driver->getUniqueId()])?>" class="title"><?=$this->escapeHtml($heading)?></a>
     </div>
 
-    <?php if ($occupations != ''): ?>
-      <div class="resultItemLine<?=++$resultItemLine?>">
-        <?=$this->transEsc('Occupation')?>: <?=$occupations?>
-      </div>
-    <?php endif; ?>
-
     <?php if ($birth != ''): ?>
       <div class="resultItemLine<?=++$resultItemLine?>">
-        Born: <?=$birth?>
+        <?=$this->transEsc('Born')?>: <?=$birth?>
       </div>
     <?php endif; ?>
 
     <?php if ($death != ''): ?>
       <div class="resultItemLine<?=++$resultItemLine?>">
-        Died: <?=$death?>
+        <?=$this->transEsc('Died')?>: <?=$death?>
+      </div>
+    <?php endif; ?>
+
+    <?php if ($occupations != ''): ?>
+      <div class="resultItemLine<?=++$resultItemLine?>">
+        <?=$this->transEsc('Occupation')?>: <?=$occupations?>
       </div>
     <?php endif; ?>
 

@@ -1,11 +1,8 @@
 <?php
+
 namespace TueFindSearch\Backend\Solr;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\Query;
-use VuFindSearch\Query\QueryGroup;
-
 
 class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
@@ -24,9 +21,13 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     const FULLTEXT_TYPE_ABSTRACT = "Abstract";
     const FULLTEXT_TYPE_TOC = "Table of Contents";
     const FULLTEXT_TYPE_SUMMARY = "Summary";
+
+    const TIME_RANGE_HANDLER = 'TimeRangeSearch';
+    const TIME_RANGE_BBOX_HANDLER = 'TimeRangeBBox';
+    const YEAR_RANGE_BBOX_HANDLER = 'YearRangeBBox';
+
     protected $includeFulltextSnippets = false;
     protected $selectedFulltextTypes = [];
-
 
     public function setIncludeFulltextSnippets($enable)
     {
@@ -34,7 +35,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    public function setSelectedFulltextTypes($selected_fulltext_types) {
+    public function setSelectedFulltextTypes($selected_fulltext_types)
+    {
         $this->selectedFulltextTypes = $selected_fulltext_types;
     }
 
@@ -85,7 +87,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getSynonymsPartialExpressionOrEmpty($search_handler, $query_terms, $previous_expression_empty) {
+    protected function getSynonymsPartialExpressionOrEmpty($search_handler, $query_terms, $previous_expression_empty)
+    {
        $synonyms_expression = "";
        if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes)) {
            $synonyms_expression .=  $this->useSynonyms($search_handler)
@@ -119,7 +122,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getHandler($query) {
+    protected function getHandler($query)
+    {
         if ($query instanceof \VuFindSearch\Query\Query)
             return $query->getHandler();
         if ($query instanceof \VuFindSearch\Query\QueryGroup)
@@ -128,7 +132,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function assembleFulltextTypesQuery($handler, $query_terms) {
+    protected function assembleFulltextTypesQuery($handler, $query_terms)
+    {
          $query_string = "";
          if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes))
              $query_string =  (empty($query_string) ? '' : ' OR ') .
@@ -150,13 +155,12 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
          return $query_string;
     }
 
-
     public function build(AbstractQuery $query)
     {
         $params = parent::build($query);
         if ($this->includeFulltextSnippets) {
             if (!empty($this->selectedFulltextTypes)) {
-                $query_terms = !empty($query->getNormalizedString()) ? $query->getNormalizedString() :  '[* TO *]';
+                $query_terms = !empty($query->getString()) ? $query->getString() :  '[* TO *]';
                 $fulltext_type_query_filter = $this->assembleFulltextTypesQuery($this->getHandler($query),
                                                                                 $query_terms);
                 if (!empty($fulltext_type_query_filter))
@@ -164,5 +168,13 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
             }
         }
         return $params;
+    }
+
+    public function setSpecs(array $specs)
+    {
+        parent::setSpecs($specs);
+        $this->specs[strtolower(self::TIME_RANGE_HANDLER)] = new SearchHandler(['RangeType' => self::TIME_RANGE_HANDLER]);
+        $this->specs[strtolower(self::TIME_RANGE_BBOX_HANDLER)] = new SearchHandler(['RangeType' => self::TIME_RANGE_BBOX_HANDLER]);
+        $this->specs[strtolower(self::YEAR_RANGE_BBOX_HANDLER)] = new SearchHandler(['RangeType' => self::YEAR_RANGE_BBOX_HANDLER]);
     }
 }

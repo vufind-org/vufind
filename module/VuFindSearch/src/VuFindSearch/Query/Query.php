@@ -75,43 +75,16 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Return search string.
+     * Return search string (optionally applying a normalization callback)
+     *
+     * @param callable $normalizer Function to normalize text strings (null for
+     * no normalization)
      *
      * @return string
      */
-    public function getString()
+    public function getString($normalizer = null)
     {
-        return $this->queryString;
-    }
-
-    /**
-     * Apply normalization to a string.
-     *
-     * @param string $text String to normalize.
-     *
-     * @return string
-     */
-    protected function normalizeText($text)
-    {
-        // The input to normalizeText may be a Solr query with Boolean operators
-        // in it; we want to be careful not to turn this into something invalid.
-        $stripped = $this->stripDiacritics($text);
-        $booleans = ['AND', 'OR', 'NOT'];
-        $words = [];
-        foreach (preg_split('/\s+/', $stripped) as $word) {
-            $words[] = in_array($word, $booleans) ? $word : strtolower($word);
-        }
-        return implode(' ', $words);
-    }
-
-    /**
-     * Return search string in a normalized format.
-     *
-     * @return string
-     */
-    public function getNormalizedString()
-    {
-        return $this->normalizeText($this->queryString);
+        return $normalizer ? $normalizer($this->queryString) : $this->queryString;
     }
 
     /**
@@ -141,7 +114,7 @@ class Query extends AbstractQuery
      *
      * @param string $handler Name of handler
      *
-     * @return string
+     * @return void
      */
     public function setHandler($handler)
     {
@@ -163,7 +136,7 @@ class Query extends AbstractQuery
      *
      * @param string $operator Operator
      *
-     * @return string
+     * @return void
      */
     public function setOperator($operator)
     {
@@ -171,37 +144,22 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Does the query contain the specified term?
+     * Does the query contain the specified term? An optional normalizer can be
+     * provided to allow for fuzzier matching.
      *
-     * @param string $needle Term to check
-     *
-     * @return bool
-     */
-    public function containsTerm($needle)
-    {
-        // Escape characters with special meaning in regular expressions to avoid
-        // errors:
-        $needle = preg_quote($needle, '/');
-
-        return (bool)preg_match("/\b$needle\b/u", $this->getString());
-    }
-
-    /**
-     * Does the query contain the specified term when comparing normalized strings?
-     *
-     * @param string $needle Term to check
+     * @param string   $needle     Term to check
+     * @param callable $normalizer Function to normalize text strings (null for
+     * no normalization)
      *
      * @return bool
      */
-    public function containsNormalizedTerm($needle)
+    public function containsTerm($needle, $normalizer = null)
     {
         // Escape characters with special meaning in regular expressions to avoid
         // errors:
-        $needle = preg_quote($this->normalizeText($needle), '/');
+        $needle = preg_quote($normalizer ? $normalizer($needle) : $needle, '/');
 
-        return (bool)preg_match(
-            "/\b$needle\b/u", $this->getNormalizedString()
-        );
+        return (bool)preg_match("/\b$needle\b/u", $this->getString($normalizer));
     }
 
     /**
@@ -217,19 +175,19 @@ class Query extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string  $from      Search term to find
-     * @param string  $to        Search term to insert
-     * @param boolean $normalize If we should apply text normalization when replacing
+     * @param string   $from       Search term to find
+     * @param string   $to         Search term to insert
+     * @param callable $normalizer Function to normalize text strings (null for
+     * no normalization)
      *
      * @return void
      */
-    public function replaceTerm($from, $to, $normalize = false)
+    public function replaceTerm($from, $to, $normalizer = null)
     {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):
-        $from = preg_quote($normalize ? $this->normalizeText($from) : $from, '/');
-        $queryString = $normalize
-            ? $this->getNormalizedString() : $this->queryString;
+        $from = preg_quote($normalizer ? $normalizer($from) : $from, '/');
+        $queryString = $this->getString($normalizer);
 
         // Try to match within word boundaries to prevent the replacement from
         // affecting unexpected parts of the search query; if that fails to change
@@ -239,23 +197,5 @@ class Query extends AbstractQuery
         if ($queryString === $this->queryString) {
             $this->queryString = preg_replace("/$from/i", $to, $queryString);
         }
-    }
-
-    /**
-     * Remove diacritics (accents, umlauts, etc.) from a string
-     *
-     * @param string $string The text where we would like to remove diacritics
-     *
-     * @return string The input text with diacritics removed
-     */
-    protected function stripDiacritics($string)
-    {
-        // See http://userguide.icu-project.org/transforms/general for
-        // an explanation of this.
-        $transliterator = \Transliterator::createFromRules(
-            ':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;',
-            \Transliterator::FORWARD
-        );
-        return $transliterator->transliterate($string);
     }
 }

@@ -33,7 +33,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>7.3.1</luceneMatchVersion>
+  <luceneMatchVersion>8.11.1</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -109,7 +109,7 @@
 
 
   <updateRequestProcessorChain name="conditional_insert_field">
-    <processor class="de.uni_tuebingen.ub.ixTheo.conditionalInsertField.ConditionalInsertFieldProcessorFactory" />
+    <processor class="de.uni_tuebingen.ub.tuefind.conditionalInsertField.ConditionalInsertFieldProcessorFactory" />
     <processor class="solr.LogUpdateProcessorFactory" />
     <processor class="solr.RunUpdateProcessorFactory" />
   </updateRequestProcessorChain>
@@ -337,7 +337,7 @@
 
             etagSeed="..." is an option you can change to force the ETag
             header (and validation against If-None-Match requests) to be
-            differnet even if the index has not changed (ie: when making
+            different even if the index has not changed (ie: when making
             significant changes to your config file)
 
             lastModifiedFrom and etagSeed are both ignored if you use the
@@ -388,6 +388,16 @@
       <str name="spellcheck.count">20</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <lst name="appends">
       <str name="fl">[multiLanguageDocTransformer]</str>
@@ -415,6 +425,16 @@
       <str name="spellcheck.count">20</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <lst name="appends">
       <str name="fl">[multiLanguageDocTransformer]</str>
@@ -435,6 +455,16 @@
       <str name="lowercaseOperators">false</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <lst name="appends">
       <str name="fl">[multiLanguageDocTransformer]</str>

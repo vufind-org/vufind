@@ -3,6 +3,14 @@
 namespace TueFind\Db\Table;
 
 class User extends \VuFind\Db\Table\User {
+    public function getByRight($right)
+    {
+        $select = $this->getSql()->select();
+        $select->where('FIND_IN_SET("' . $right . '", tuefind_rights) > 0');
+        $select->order('username ASC');
+        return $this->selectWith($select);
+    }
+
     /**
      * Retrieve a user object from the database based on ID.
      *
@@ -18,7 +26,7 @@ class User extends \VuFind\Db\Table\User {
     public function getAdmins()
     {
         $select = $this->getSql()->select();
-        $select->where(['tuefind_is_admin' => true]);
+        $select->where('tuefind_rights IS NOT NULL');
         $select->order('username ASC');
         return $this->selectWith($select);
     }

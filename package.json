@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "7.0.2",
+  "version": "8.0.4",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
     "grunt-contrib-less": "^2.0.0",
     "grunt-less-to-sass": "duvillierA/grunt-less-to-sass#0.0.11",
     "grunt-sass": "^2.0.0",
-    "jit-grunt": "^0.9.1",
+    "jit-grunt": "^0.10.0",
     "node-sass": "^4.11.0"
   },
   "devDependencies": {

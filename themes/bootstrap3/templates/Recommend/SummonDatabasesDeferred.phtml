@@ -4,6 +4,6 @@
     . "\$('#SummonDeferredDatabases').load(url);";
 ?>
 <div id="SummonDeferredDatabases">
-  <p><?=$this->transEsc("Loading")?>... <i class="fa fa-spinner" aria-hidden="true"></i></p>
+  <p><?=$this->icon('spinner') ?> <?=$this->transEsc("Loading")?>...</p>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>

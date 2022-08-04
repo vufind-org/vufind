@@ -89,7 +89,9 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      * @param Url              $url     URL helper
      * @param SearchTabsHelper $helper  Search tabs helper
      */
-    public function __construct(PluginManager $results, Url $url,
+    public function __construct(
+        PluginManager $results,
+        Url $url,
         SearchTabsHelper $helper
     ) {
         $this->results = $results;
@@ -108,8 +110,12 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getTabConfig($activeSearchClass, $query, $handler,
-        $type = 'basic', $hiddenFilters = []
+    public function getTabConfig(
+        $activeSearchClass,
+        $query,
+        $handler,
+        $type = 'basic',
+        $hiddenFilters = []
     ) {
         $retVal = ['tabs' => []];
         $allFilters = $this->helper->getTabFilterConfig();
@@ -133,18 +139,34 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                         = $this->results->get($activeSearchClass)->getOptions();
                 }
                 $newUrl = $this->remapBasicSearch(
-                    $activeOptions, $class, $query, $handler, $filters
+                    $activeOptions,
+                    $class,
+                    $query,
+                    $handler,
+                    $filters
                 );
                 $retVal['tabs'][] = $this->createBasicTab(
-                    $key, $class, $label, $newUrl, $permissionName
+                    $key,
+                    $class,
+                    $label,
+                    $newUrl,
+                    $permissionName
                 );
             } elseif ($type == 'advanced') {
                 $retVal['tabs'][] = $this->createAdvancedTab(
-                    $key, $class, $label, $filters, $permissionName
+                    $key,
+                    $class,
+                    $label,
+                    $filters,
+                    $permissionName
                 );
             } else {
                 $retVal['tabs'][] = $this->createHomeTab(
-                    $key, $class, $label, $filters, $permissionName
+                    $key,
+                    $class,
+                    $label,
+                    $filters,
+                    $permissionName
                 );
             }
         }
@@ -172,8 +194,10 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
     public function getTabConfigForParams($params)
     {
         $tabConfig = $this->getTabConfig(
-            $params->getSearchClassId(), $params->getDisplayQuery(),
-            $params->getSearchHandler(), $params->getSearchType(),
+            $params->getSearchClassId(),
+            $params->getDisplayQuery(),
+            $params->getSearchHandler(),
+            $params->getSearchType(),
             $params->getHiddenFilters()
         );
         return $tabConfig['tabs'];
@@ -190,11 +214,15 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getHiddenFilters($searchClassId, $returnDefaultsIfEmpty = true,
+    public function getHiddenFilters(
+        $searchClassId,
+        $returnDefaultsIfEmpty = true,
         $ignoreCurrentRequest = false
     ) {
         return $this->helper->getHiddenFilters(
-            $searchClassId, $returnDefaultsIfEmpty, $ignoreCurrentRequest
+            $searchClassId,
+            $returnDefaultsIfEmpty,
+            $ignoreCurrentRequest
         );
     }
 
@@ -209,14 +237,17 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getCurrentHiddenFilterParams($searchClassId,
-        $ignoreHiddenFilterMemory = false, $prepend = '&amp;'
+    public function getCurrentHiddenFilterParams(
+        $searchClassId,
+        $ignoreHiddenFilterMemory = false,
+        $prepend = '&amp;'
     ) {
         if (!isset($this->cachedHiddenFilterParams[$searchClassId])) {
             $view = $this->getView();
             $searchTabs = $view->plugin('searchTabs');
             $hiddenFilters = $searchTabs->getHiddenFilters(
-                $searchClassId, $ignoreHiddenFilterMemory
+                $searchClassId,
+                $ignoreHiddenFilterMemory
             );
             if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
                 $hiddenFilters = $view->plugin('searchMemory')
@@ -271,8 +302,12 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    protected function remapBasicSearch($activeOptions, $targetClass, $query,
-        $handler, $filters
+    protected function remapBasicSearch(
+        $activeOptions,
+        $targetClass,
+        $query,
+        $handler,
+        $filters
     ) {
         // Set up results object for URL building:
         $results = $this->results->get($targetClass);
@@ -289,7 +324,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
 
         // Build new URL:
         $results->getParams()->setBasicSearch($query, $targetHandler);
-        return $this->url->__invoke($options->getSearchAction())
+        return ($this->url)($options->getSearchAction())
             . $results->getUrlQuery()->getParams(false);
     }
 
@@ -332,7 +367,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
         $results = $this->results->get($class);
-        $url = $this->url->__invoke($results->getOptions()->getSearchHomeAction())
+        $url = ($this->url)($results->getOptions()->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
         return [
             'id' => $id,
@@ -355,7 +390,11 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    protected function createAdvancedTab($id, $class, $label, $filters,
+    protected function createAdvancedTab(
+        $id,
+        $class,
+        $label,
+        $filters,
         $permissionName
     ) {
         // If an advanced search is available, link there; otherwise, just go
@@ -363,8 +402,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         $results = $this->results->get($class);
         $options = $results->getOptions();
         $advSearch = $options->getAdvancedSearchAction();
-        $url = $this->url
-            ->__invoke($advSearch ? $advSearch : $options->getSearchHomeAction())
+        $url = ($this->url)($advSearch ?: $options->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
         return [
             'id' => $id,

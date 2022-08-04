@@ -148,8 +148,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         85 => "",
     );
 
-    private static $CodesToCodexTitles = [  1 => 'CIC1917',
-                                            2 => 'CIC1983',
+    private static $CodesToCodexTitles = [  1 => 'CIC17',
+                                            2 => 'CIC83',
                                             3 => 'CCEO',
     ];
 
@@ -238,17 +238,33 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 
         if ($canonLawRangeStart['canon'] == 0 && $canonLawRangeEnd['canon'] == 9999)
             return $displayString;
-        $displayString .= ' ' . $canonLawRangeStart['canon'];
+        $displayString .= ' can. ' . $canonLawRangeStart['canon'];
 
-        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0)
-            $displayString .= $canonLawRangeStart['pars1'] . ',' . $canonLawRangeStart['pars2'];
+        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0) {
+            if ($canonLawRangeStart['pars1'] != $canonLawRangeEnd['pars1']) {
+                $displayString .= ', §§' . $canonLawRangeStart['pars1'] . '-' . $canonLawRangeEnd['pars1'];
+            }  else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'] . ' n. ' . $canonLawRangeStart['pars2'] . '-' . $canonLawRangeEnd['pars2'];
+            } else {
+                $displayString .= ', §' . $canonLawRangeStart['pars1'];
+                if ($canonLawRangeStart['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2']) {
+                    $displayString .= ' n. ' . $canonLawRangeStart['pars2'];
+                }
+                else if ($canonLawRangeStart['pars2'] != $canonLawRangeEnd['pars2']) {
+                    $displayString .= '-' . $canonLawRangeStart['pars2'];
+                }
+            }
+        }
 
-        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'] || $canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
-            $displayString .= '-';
-            if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'])
-                $displayString .= $canonLawRangeEnd['canon'];
-            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999)
-                $displayString .= $canonLawRangeEnd['pars1'] . ',' . $canonLawRangeEnd['pars2'];
+        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon']) {
+            $displayString .= '-' . $canonLawRangeEnd['canon'];
+            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
+                $displayString .= ', §' . $canonLawRangeEnd['pars1'];
+                if ($canonLawRangeEnd['pars2'] != 99 && $canonLawRangeStart['pars2'] == $canonLawRangeEnd['pars2'])
+                    $displayString .= ' n. ' . $canonLawRangeEnd['pars2'];
+                else if ($canonLawRangeEnd['pars1'] != $canonLawRangeEnd['pars2'])
+                    $displayString .= '-' . $canonLawRangeEnd['pars2'];
+            }
         }
 
         return $displayString;
@@ -288,10 +304,13 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $canonLawRangesStrings;
     }
 
-    public function getKeyWordChainBag()
+    public function getKeyWordChainBag($languageSuffix=null)
     {
-        return isset($this->fields['key_word_chain_bag']) ?
-            $this->fields['key_word_chain_bag'] : '';
+        $key = 'key_word_chain_bag';
+        if (isset($languageSuffix))
+            $key .= '_' . $languageSuffix;
+        return isset($this->fields[$key]) ?
+            $this->fields[$key] : [];
     }
 
     public function getPrefix4KeyWordChainBag()
@@ -300,17 +319,30 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             $this->fields['prefix4_key_word_chain_bag'] : '';
     }
 
-    /**
-     * Check whether there are fulltexts associated with this record
-     * @return bool
-     */
-    public function hasFulltext()
+    public function getTopicsForCloud($language=null): array
     {
-        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
+        $key = 'topic_cloud';
+        if (isset($language))
+            $key .= '_' . $language;
+        return array_unique($this->fields[$key] ?? []);
     }
+
 
     public function isAvailableForPDA()
     {
         return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
+    }
+
+
+    public function getIxTheoClassifications()
+    {
+        $result = array();
+        if(isset($this->fields['ixtheo_notation']) && is_array($this->fields['ixtheo_notation'])) {
+            $ixtheo_notation = $this->fields['ixtheo_notation'];
+            foreach($ixtheo_notation as $notation) {
+                $result[] = $notation;
+            }
+        }
+        return $result;
     }
 }

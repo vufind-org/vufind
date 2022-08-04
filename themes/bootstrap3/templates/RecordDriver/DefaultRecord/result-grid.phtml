@@ -19,7 +19,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     </label>
   <?php endif; ?>
   <div class="grid-body">
-    <?=$this->record($this->driver)->getCover('result-grid', 'small', $this->recordLink()->getUrl($this->driver)); ?>
+    <?=$this->record($this->driver)->getCover('result-grid', 'small', $this->recordLinker()->getUrl($this->driver)); ?>
     <?php if (!$openUrlActive && empty($urls)): ?>
       <?php if ($this->driver->supportsAjaxStatus()): ?>
         <div class="result-formats status ajax-availability hidden">
@@ -28,7 +28,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       <?php endif; ?>
     <?php endif; ?>
     <div>
-      <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>">
+      <a class="title" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>">
         <?=$this->record($this->driver)->getTitleHtml(80)?>
       </a>
       <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
@@ -46,7 +46,5 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       <?php endif; ?>
     </div>
   </div>
-
   <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
 </div>
-

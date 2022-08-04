@@ -1,0 +1,162 @@
+<?php
+    $responseChartData = $this->authority()->getChartData($this->driver); if(!empty($responseChartData)) :
+    $chartJSDates = '';
+    $chartJSby = '';
+    $chartJSabout = '';
+    foreach($responseChartData as $chartData) {
+        if(is_int($chartData[0])) {
+            $chartJSDates .= $chartData[0].',';
+        }
+        $chartJSby .= $chartData[1].',';
+        $chartJSabout .= $chartData[2].',';
+    }
+?>
+<div class="col-md-12" style="padding:20px; margin-bottom: 20px;  border: 1px solid #ddd; border-radius: 4px;">
+  <h4><?=$this->transEsc('Publication Timeline')?></h4>
+  <div class="chart-wrapper">
+    <canvas id="myChart"></canvas>
+  </div>
+</div>
+<?php
+$this->headScript()->appendFile("vendor/chart-JS.js");
+
+$currentSystem = $this->tuefind()->getTueFindSubsystem();
+
+$chartByBackgroundColor = '#265680';
+$chartAboutBackgroundColor = '#089de3';
+
+switch($currentSystem){
+  case'ixtheo':
+    $chartByBackgroundColor = '#265680';
+    $chartAboutBackgroundColor = '#089de3';
+  break;
+  case'relbib':
+    $chartByBackgroundColor = '#a51e37';
+    $chartAboutBackgroundColor = '#FF849D';
+  break;
+  case'krimdok':
+    $chartByBackgroundColor = '#a51e37';
+    $chartAboutBackgroundColor = '#FF849D';
+  break;
+  case'biblestudies':
+    $chartByBackgroundColor = '#360';
+    $chartAboutBackgroundColor = '#00cc00';
+  break;
+  case'canonlaw':
+    $chartByBackgroundColor = '#ffb30f';
+    $chartAboutBackgroundColor = '#ffef0f';
+  break;
+}
+
+
+$jsSnippet2 = <<<EOD
+$(function () {
+  var ctx = document.getElementById('myChart').getContext('2d');
+
+  const labels = [{$chartJSDates}];
+
+  const byData = [{$chartJSby}];
+
+  const aboutData = [{$chartJSabout}];
+
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: '{$this->transEsc('publication_timeline_by')}',
+        data: byData,
+        backgroundColor: '{$chartByBackgroundColor}',
+      },
+      {
+        label: '{$this->transEsc('publication_timeline_about')}',
+        data: aboutData,
+        backgroundColor: '{$chartAboutBackgroundColor}',
+      }
+    ]
+  };
+
+  const config = {
+    type: 'bar',
+    data: data,
+    options: {
+      onHover: function (e) {
+        const points = this.getElementsAtEventForMode(e,'index', { axis: 'x', intersect: true },false);
+        if (points.length) {
+          e.native.target.style.cursor = 'pointer';
+        }else{
+          e.native.target.style.cursor = 'default';
+        }
+      },
+      plugins: {
+        title: {
+          display: false,
+          text: 'Publication Timeline'
+       }
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      scaleShowValues: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+          }
+        },
+        y: {
+          title: {
+            display: true,
+          },
+          min: 0,
+          ticks: {
+            // forces step size to be 1 units
+            stepSize: 1
+          }
+        }
+      },
+      onClick(e) {
+        const activePoints = myChart.getElementsAtEventForMode(e, 'nearest', {
+          intersect: true
+        }, false)
+        if(activePoints.length != 0) {
+          console.log(activePoints);
+          const [{index}] = activePoints;
+          let year = data.labels[index];
+          const [{datasetIndex}] = activePoints;
+          let URL = '';
+          if(datasetIndex == 0){
+            //by
+            URL = "{$this->url('search-results')}?lookfor=author_id:{$this->driver->getUniqueId()} OR author2_id:{$this->driver->getUniqueId()} OR author_corporate_id:{$this->driver->getUniqueId()}&type=AllFields&daterange[]=publishDate&publishDatefrom="+year+"&publishDateto="+year;
+          }else{
+            //about
+            URL = "{$this->url('search-results')}?lookfor=topic_id:{$this->driver->getUniqueId()}&type=AllFields&daterange[]=publishDate&publishDatefrom="+year+"&publishDateto="+year;
+          }
+          if(URL.length > 0){
+            location.href = URL;
+          }
+        }
+      }
+    }
+  };
+
+  var myChart = new Chart(ctx, config);
+
+  myChart.canvas.parentNode.style.height = '500px';
+  switch (labels.length) {
+    case 1:
+      myChart.canvas.parentNode.style.width = '25%';
+    break;
+    case 2:
+      myChart.canvas.parentNode.style.width = '50%';
+    break;
+    case 3:
+      myChart.canvas.parentNode.style.width = '75%';
+    break;
+    default:
+      myChart.canvas.parentNode.style.width = '100%';
+    break;
+  }
+});
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet2, 'SET')?>
+<?php endif;?>

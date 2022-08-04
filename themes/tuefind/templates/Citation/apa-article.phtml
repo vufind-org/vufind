@@ -1,8 +1,8 @@
 <?php if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?> <?php endif; ?>
 <?php if (!empty($this->date)): ?>(<?=$this->escapeHtml($this->date)?>). <?php endif; ?>
 <?=$this->escapeHtml($this->title)?><?php if ($this->periodAfterTitle): ?>.<?php endif ?>
-<span style="font-style:italic;"><?=$this->escapeHtml($this->journal)?><?php if (!empty($this->volume) || !empty($this->issue) || !empty($this->pageRange)): ?>, <?php endif; ?>
-<?php if (!empty($this->volume)): ?><?=$this->escapeHtml($this->volume)?><?php endif; ?></span><?php if (!empty($this->issue)): ?>(<?=$this->escapeHtml($this->issue)?>)<?php endif; ?>
+ <i><?=$this->escapeHtml($this->journal)?><?php if (!empty($this->volume) || !empty($this->issue) || !empty($this->pageRange)): ?>, <?php endif; ?>
+<?php if (!empty($this->volume)): ?><?=$this->escapeHtml($this->volume)?><?php endif; ?></i><?php if (!empty($this->issue)): ?>(<?=$this->escapeHtml($this->issue)?>)<?php endif; ?>
 <?php if (!empty($this->volume) || !empty($this->issue)): ?>, <?php endif; ?>
 <?php if (!empty($this->pageRange) && empty($this->journal)) echo strstr($this->pageRange, '-') ? 'pp. ' : 'p. '; ?>
 <?=$this->escapeHtml($this->pageRange)?>.

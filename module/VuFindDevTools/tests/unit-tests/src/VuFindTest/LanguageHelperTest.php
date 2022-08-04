@@ -28,7 +28,6 @@
  */
 namespace VuFindTest\Controller;
 
-use Laminas\Config\Config;
 use VuFindDevTools\LanguageHelper;
 
 /**
@@ -40,7 +39,7 @@ use VuFindDevTools\LanguageHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class LanguageHelperTest extends \VuFindTest\Unit\TestCase
+class LanguageHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test language mappings.
@@ -88,10 +87,9 @@ class LanguageHelperTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockHelper()
     {
-        $config = new Config(['Languages' => ['en' => 'English']]);
         return new LanguageHelper(
             $this->createMock(\VuFind\I18n\Translator\Loader\ExtendedIni::class),
-            $config
+            ['en' => 'English']
         );
     }
 }

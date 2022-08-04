@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -33,49 +33,20 @@ namespace VuFindSearch\Backend\Solr\Document;
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawXMLDocument extends AbstractDocument
+class RawXMLDocument extends RawDocument
 {
-    /**
-     * Raw XML
-     *
-     * @var string
-     */
-    protected $xml;
-
     /**
      * Constructor.
      *
-     * @param string $xml XML document to pass to Solr
-     *
-     * @return void
+     * @param string  $content  Raw document text
+     * @param ?string $encoding Text encoding (null for unspecified)
      */
-    public function __construct($xml)
+    public function __construct(string $content, ?string $encoding = 'UTF-8')
     {
-        $this->xml = $xml;
-    }
-
-    /**
-     * Return serialized JSON representation.
-     *
-     * @return string
-     */
-    public function asJSON()
-    {
-        // @todo Implement XML to JSON conversion
-        throw new \Exception('JSON not supported here.');
-    }
-
-    /**
-     * Return serialized XML representation.
-     *
-     * @return string
-     */
-    public function asXML()
-    {
-        return $this->xml;
+        parent::__construct($content, 'text/xml', $encoding);
     }
 }

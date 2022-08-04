@@ -54,11 +54,6 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc {
             ? $this->fields['page_count'] : '';
     }
 
-    public function getTopics()
-    {
-        return isset($this->fields['topic']) ? $this->fields['topic'] : array();
-    }
-
     public function isAvailableForPDA()
     {
         return isset($this->fields['available_for_pda']) ? $this->fields['available_for_pda'] : false;

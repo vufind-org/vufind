@@ -52,9 +52,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(3600))
             ->will($this->returnValue('bar'));
-        $this->getTables()->expects($this->once())->method('get')
-            ->with($this->equalTo('Session'))
-            ->will($this->returnValue($session));
+        $this->getTables()->set('Session', $session);
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
@@ -72,9 +70,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(1000))
             ->will($this->returnValue('bar'));
-        $this->getTables()->expects($this->once())->method('get')
-            ->with($this->equalTo('Session'))
-            ->will($this->returnValue($session));
+        $this->getTables()->set('Session', $session);
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
@@ -89,9 +85,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session = $this->getMockSessionTable();
         $session->expects($this->once())->method('garbageCollect')
             ->with($this->equalTo(3600));
-        $this->getTables()->expects($this->once())->method('get')
-            ->with($this->equalTo('Session'))
-            ->will($this->returnValue($session));
+        $this->getTables()->set('Session', $session);
         $this->assertTrue($handler->gc(3600));
     }
 
@@ -106,9 +100,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session = $this->getMockSessionTable();
         $session->expects($this->once())->method('writeSession')
             ->with($this->equalTo('foo'), $this->equalTo('stuff'));
-        $this->getTables()->expects($this->once())->method('get')
-            ->with($this->equalTo('Session'))
-            ->will($this->returnValue($session));
+        $this->getTables()->set('Session', $session);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
 
@@ -124,9 +116,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session = $this->getMockSessionTable();
         $session->expects($this->once())->method('destroySession')
             ->with($this->equalTo('foo'));
-        $this->getTables()->expects($this->at(2))->method('get')
-            ->with($this->equalTo('Session'))
-            ->will($this->returnValue($session));
+        $this->tables->set('Session', $session);
         $this->assertTrue($handler->destroy('foo'));
     }
 

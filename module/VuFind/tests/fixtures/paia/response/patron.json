@@ -11,7 +11,7 @@ X-Accepted-OAuth-Scopes: read_patron
 Content-Type: application/json; charset=UTF-8
 
 {
-  "name": " Nobody Nothing",
+  "name": " Susan Q. Nothing",
   "expires": "9999-12-31",
   "email": "nobody@vufind.org",
   "status": 0,

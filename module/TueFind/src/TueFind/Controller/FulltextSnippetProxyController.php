@@ -44,7 +44,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     const esHighlightTag = 'em';
     // must match definitions in TuelibMixin.java
     const description_to_text_type_map = [ 'Fulltext' => '1', 'Table of Contents' => '2',
-                                           'Abstract' => '4', 'Summary' => '8',
+                                           'Abstract' => '4', 'Summary' => '8', 'List of References' => '16',
                                            'Unknown' => '0' ];
     const CONTENT_LENGTH_TARGET_UPPER_LIMIT = 100;
     const CONTENT_LENGTH_TARGET_LOWER_LIMIT = 20;
@@ -405,15 +405,23 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                         implode(',', array_keys(self::description_to_text_type_map)); // Iterate over all possible types
         $snippets['snippets'] = [];
         foreach (explode(',', $types_filter) as $type_filter) {
-            $html_snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms, $type_filter);
-            if (!empty($html_snippets)) {
-                $snippets['snippets'] = array_merge($snippets['snippets'], $html_snippets['snippets']);
-                continue;
+            try {
+                $html_snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms, $type_filter);
+                if (!empty($html_snippets)) {
+                    $snippets['snippets'] = array_merge($snippets['snippets'], $html_snippets['snippets']);
+                    continue;
+                }
+                // Use non-paged text as fallback
+                $text_snippets = $this->getFulltext($doc_id, $search_query, $verbose, $synonyms, $type_filter);
+                if (!empty($text_snippets))
+                    $snippets['snippets'] = array_merge($snippets['snippets'], $text_snippets['snippets']);
             }
-            // Use non-paged text as fallback
-            $text_snippets = $this->getFulltext($doc_id, $search_query, $verbose, $synonyms, $type_filter);
-            if (!empty($text_snippets))
-                $snippets['snippets'] = array_merge($snippets['snippets'], $text_snippets['snippets']);
+            catch (\Exception $e) {
+                error_log($e);
+                return new JsonModel([
+                    'status' => 'PROXY_ERROR'
+                ]);
+            }
         }
         if (empty($snippets['snippets'])) {
             return new JsonModel([

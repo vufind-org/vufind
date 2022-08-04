@@ -1,5 +1,5 @@
 <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
-<a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
+<a href="<?=$this->recordLinker()->getUrl($this->driver)?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
 
 <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
   <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>

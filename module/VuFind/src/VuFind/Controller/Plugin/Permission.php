@@ -77,12 +77,27 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
      * @param PermissionDeniedManager $pdm  Permission Denied Manager
      * @param \VuFind\Auth\Manager    $auth Auth manager
      */
-    public function __construct(PermissionManager $pm, PermissionDeniedManager $pdm,
+    public function __construct(
+        PermissionManager $pm,
+        PermissionDeniedManager $pdm,
         \VuFind\Auth\Manager $auth
     ) {
         $this->permissionManager = $pm;
         $this->permissionDeniedManager = $pdm;
         $this->authManager = $auth;
+    }
+
+    /**
+     * Check if a permission is authorized, returning a boolean value without
+     * applying any additional behavior.
+     *
+     * @param string $permission Permission to check
+     *
+     * @return bool
+     */
+    public function isAuthorized($permission)
+    {
+        return $this->permissionManager->isAuthorized($permission);
     }
 
     /**
@@ -97,7 +112,9 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
      *
      * @return mixed
      */
-    public function check($permission, $defaultBehavior = null,
+    public function check(
+        $permission,
+        $defaultBehavior = null,
         $passIfUndefined = false
     ) {
         // If no permission rule is defined and we're only checking defined
@@ -111,7 +128,8 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
         // Make sure the current user has permission to access the module:
         if ($this->permissionManager->isAuthorized($permission) !== true) {
             $dl = $this->permissionDeniedManager->getDeniedControllerBehavior(
-                $permission, $defaultBehavior
+                $permission,
+                $defaultBehavior
             );
             if ($dl === false) {
                 return null;
@@ -134,7 +152,8 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
                 return $this->getController()->forceLogin($msg, [], false);
             case 'showmessage':
                 return $this->getController()->redirect()->toRoute(
-                    'error-permissiondenied', [],
+                    'error-permissiondenied',
+                    [],
                     ['query' => ['msg' => $dl['value']]]
                 );
             case 'exception':

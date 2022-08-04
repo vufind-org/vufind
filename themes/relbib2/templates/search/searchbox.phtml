@@ -1,1 +1,233 @@
-../../../tuefind2/templates/search/searchbox.phtml
+<?php
+    // Set default value if necessary:
+    if (!isset($this->searchClassId)) {
+        $config = $this->config()->get('config');
+        $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
+    }
+
+    // Load search actions and settings (if any):
+    $options = $this->searchOptions($this->searchClassId);
+    $handlers = $this->searchbox()->getHandlers(
+        $this->searchClassId, $this->searchIndex ?? null
+    );
+    $handlerCount = count($handlers);
+    $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+    $searchHome = $options->getSearchHomeAction();
+    $advSearch = $options->getAdvancedSearchAction();
+    $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+    $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
+    $ignoreHiddenFilterMemory = true;
+    $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
+    $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
+    if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
+        $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
+        if (empty($hiddenFilters)) {
+            $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId);
+        }
+    }
+    $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
+
+    if (!isset($this->filterList) || !isset($this->checkboxFilters)) {
+        $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+        $filterList = $params->getFilterList(true);
+        $checkboxFilters = $params->getCheckboxFacets();
+    } else {
+        $filterList = is_array($this->filterList) ? $this->filterList : [];
+        $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
+    }
+    $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
+    $showFilters = $filterDetails && (isset($results) || $options->getRetainFilterSetting());
+?>
+<?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
+
+<div class="row tf-row-home">
+    <!--  Begin section searchbar -->
+    <section class="section-home">
+        <div class="panel-home">
+
+            <?php $routeParams = $this->tuefind()->getRouteParams(); if($routeParams['controller'] == "Search" && $routeParams['action'] == "Home") { ?>
+                <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeightRelbib();', 'SET')?>
+            <?php } else { ?>
+                <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
+            <?php } ?>
+
+            <div class="searchbox col-12 mx-auto">
+
+                <?=$this->render('search/searchbox/title');?>
+
+                <!-- Begin warnings -->
+                <?php if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+                    <div class="alert alert-warning">
+                        <h2><?= $this->transEsc('ils_offline_title') ?></h2>
+
+                        <p><strong><?= $this->transEsc('ils_offline_status') ?></strong></p>
+
+                        <p><?= $this->transEsc('ils_offline_home_message') ?></p>
+                        <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+                        <p><a href="mailto:<?= $supportEmail ?>"><?= $supportEmail ?></a></p>
+                    </div>
+                <?php endif; ?>
+                <!-- End warnings -->
+
+                <div class="clearfix searchbox_home" role="search">
+                    <?php if ($this->searchType == 'advanced'): ?>
+                        <div class="searchForm navbar-form navbar-left flip">
+                            <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
+                            <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
+                              <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
+                                <p class="adv_search_links">
+                                    <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a> |
+                                    <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
+                                    <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+                                </p>
+                                <?=$this->context($this)->renderInContext(
+                                  'search/filters.phtml',
+                                  [
+                                    'params' => $params ?? null,
+                                    'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+                                    'filterList' => $showFilters ? $filterList : [],
+                                    'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+                                    'searchClassId' => $this->searchClassId,
+                                    'searchType' => $this->searchType,
+                                  ]
+                                );?>
+                            <?php if (!empty($tabs)): ?></div><?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <form id="searchForm" class="searchForm tuefind-event-searchForm-on-submit" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
+                            <?=$this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
+                            <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
+
+                            <div class="form-group row">
+                                <!-- Begin search input field -->
+                                <div class="col-xs-12 col-sm-7 col-lg-8">
+                                    <div class="input-group searchbar">
+                                        <input id="searchForm_lookfor"
+                                               class="form-control form-control-lg searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>"
+                                               type="text" name="lookfor"
+                                               value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"
+                                               <?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?>/>
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- End search input field -->
+
+                                <!-- Begin search select -->
+                                <div class="col-xs-12 col-sm-3 col-lg-2 searchForm_select">
+                                    <?php if ($handlerCount > 1): ?>
+                                        <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEsc("Search type")?>">
+                                            <?php $currentGroup = $insideGroup = false; ?>
+                                            <?php foreach ($handlers as $handler): ?>
+                                                <?php
+                                                    if ($currentGroup !== ($handler['group'] ?? false)) {
+                                                        $currentGroup = $handler['group'];
+                                                        if ($insideGroup) {
+                                                            echo '</optgroup>';
+                                                        }
+                                                        if ($currentGroup) {
+                                                            echo '<optgroup label="' . $this->escapeHtmlAttr($currentGroup) . '">';
+                                                            $insideGroup = true;
+                                                        } else {
+                                                            $insideGroup = false;
+                                                        }
+                                                    }
+                                                ?>
+                                                <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
+                                            <?php endforeach; ?>
+                                            <?php if ($insideGroup): ?>
+                                              </optgroup>
+                                            <?php endif; ?>
+                                        </select>
+                                    <?php elseif ($handlerCount == 1): ?>
+                                        <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
+                                    <?php endif; ?>
+                                </div>
+
+                                <!-- Begin search button -->
+                                <div class="col-xs-12 col-sm-2">
+                                    <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search" aria-hidden="true"></i> <?= $this->transEsc("Find") ?></button>
+                                </div>
+                            </div>
+
+                            <?php if ($advSearch): ?>
+                                <?=$this->context($this)->renderInContext('search/searchbox/pills.phtml', ['searchId' => $this->searchId,
+                                                                                                           'hiddenFilterParams' => $hiddenFilterParams,
+                                                                                                           'advSearchUrl' => $this->url($advSearch)])?>
+                            <?php endif; ?>
+                            <?php if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
+                                <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
+                            <?php endif; ?>
+
+                            <?php $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
+                                <?php
+                                $selectedShards = isset($this->selectedShards)
+                                    ? $this->selectedShards : $options->getDefaultSelectedShards();
+                                ?>
+                                <br />
+                                <?php foreach ($shards as $shard => $val): ?>
+                                    <?php $isSelected = empty($selectedShards) || in_array($shard, $selectedShards); ?>
+                                    <input type="checkbox" <?=$isSelected ? 'checked="checked" ' : ''?>name="shard[]" value='<?=$this->escapeHtmlAttr($shard)?>' /> <?=$this->transEsc($shard)?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            <?php if (($hasDefaultsApplied ?? false) || !empty($filterDetails)): ?>
+                              <?php if ($options->getRetainFilterSetting()): ?>
+                                <?php foreach ($filterDetails as $current): ?>
+                                  <input class="applied-filter" id="<?=$this->escapeHtmlAttr($current['id'])?>" type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($current['value'])?>" />
+                                <?php endforeach; ?>
+                                <?php if ($hasDefaultsApplied ?? false): ?>
+                                  <input class="applied-filter" id="dfApplied" type="hidden" name="dfApplied" value="1" />
+                                <?php endif; ?>
+                              <?php endif; ?>
+                            <?php endif; ?>
+                            <?php foreach ($hiddenFilters as $key => $filter): ?>
+                                <?php foreach ($filter as $value): ?>
+                                    <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                            <?php
+                            /* Show hidden field for active search class when in combined handler mode. */
+                            if ($this->searchbox()->combinedHandlersActive()) {
+                                echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($this->searchClassId) . '" />';
+                            }
+                            /* Load hidden limit preference from Session */
+                            if (!empty($lastLimit)) {
+                                echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
+                            }
+                            if (!empty($lastSort)) {
+                                echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
+                            }
+                            ?>
+                            <?=$this->context($this)->renderInContext(
+                              'search/filters.phtml',
+                              [
+                                'params' => $params ?? null,
+                                'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+                                'filterList' => $showFilters ? $filterList : [],
+                                'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+                                'searchClassId' => $this->searchClassId,
+                                'searchType' => $this->searchType,
+                              ]
+                            );?>
+                        </form>
+                        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(".searchForm_lookfor:visible").focus();', 'SET')?>
+
+                        <?php //optional extension template, e.g. for RelBib ?>
+                        <?=$this->render('search/searchbox/extensions');?>
+
+                    <?php endif; ?>
+
+                </div>
+            </div><!-- close container -->
+            <!--
+            <div class="scroll-down" id="scroll-down">
+                <a href="" id="scroll-down-button"><span></span><?php $this->transEsc("Scroll"); ?></a>
+            </div>
+            -->
+        </div><!-- close panel-home -->
+        <?php //optional extension template, e.g. for IxTheo2-carousel ?>
+        <?=$this->render('search/searchbox/section-home-extensions');?>
+    </section>
+</div>
+<!-- End section searchbar -->

@@ -29,7 +29,7 @@
           $style .= 'height:' . $this->escapeHtmlAttr($this->openUrlGraphicHeight) . 'px;';
         }
       ?>
-      <img src="<?=$this->escapeHtmlAttr($this->openUrlGraphic)?>" alt="<?=$this->transEsc('Get full text')?>" style="<?=$style?>" />
+      <img src="<?=$this->escapeHtmlAttr($this->openUrlGraphic)?>" alt="<?=$this->transEscAttr('Get full text')?>" style="<?=$style?>" />
     <?php else: ?>
       <?=$this->transEsc('Get full text')?>
     <?php endif; ?>
@@ -40,7 +40,7 @@
     <?php $ibOpenUrl = $this->openUrlImageBasedOverride ? $this->openUrlImageBasedOverride : $this->openUrl; ?>
     <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $ibOpenUrl)?>"<?=$class_ib?>>
       <span title="<?=$this->escapeHtmlAttr($ibOpenUrl)?>" class="openUrl"></span>
-      <img data-recordid="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedSrc)?>" alt="<?=$this->transEsc('Get full text')?>" />
+      <img data-recordid="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedSrc)?>" alt="<?=$this->transEscAttr('Get full text')?>" />
     </a>
   <?php endif; ?>
 </span>

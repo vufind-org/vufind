@@ -1,0 +1,146 @@
+<?=$this->doctype('HTML5')?>
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+  <head>
+    <?php $this->setupThemeResources(); ?>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <?=$this->headMeta()?>
+    <?=$this->headTitle()?>
+    <?php
+      // Set up OpenSearch link:
+      $this->headLink(
+        [
+          'href' => $this->url('search-opensearch') . '?method=describe',
+          'type' => 'application/opensearchdescription+xml',
+          'title' => $this->transEsc('Library Catalog Search'),
+          'rel' => 'search'
+        ]
+      );
+      // We need to generate the icons early, because they may add some stylesheets;
+      // if we render them after the headLink / headStyle calls, some dependencies
+      // may not load correctly. Thus, we render early, but use this later.
+      $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
+    ?>
+    <!-- RTL styling -->
+    <?php if ($this->layout()->rtl) {
+      $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
+    } ?>
+    <?=$this->headLink()?>
+    <?=$this->headStyle()?>
+    <?php
+      // Collect small scripts together and append as one block:
+      $appendScripts = [];
+
+      if (!isset($this->renderingError)) {
+        // Deal with cart stuff:
+        $cart = $this->cart();
+        if ($cart->isActive()) {
+          $this->headScript()->appendFile("vendor/js.cookie.js");
+          $this->headScript()->appendFile("cart.js");
+          $domain = $cart->getCookieDomain();
+          if (!empty($domain)) {
+            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
+          }
+          $cookiePath = $cart->getCookiePath();
+          if (!empty($cookiePath)) {
+            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
+          }
+          $cookieSameSite = $cart->getCookieSameSite();
+          if (null !== $cookieSameSite) {
+            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
+          }
+        }
+        $this->headScript()->prependScript(
+          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+        );
+      }
+
+      // Session keep-alive
+      if ($this->keepAlive()) {
+          $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
+          $this->headScript()->appendFile("keep_alive.js");
+      }
+
+      // If account ajax is active, load script and add language strings
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->headScript()->appendFile("account_ajax.js");
+      }
+
+      $root = rtrim($this->url('home'), '/');
+      $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
+      $dsb = DEFAULT_SEARCH_BACKEND;
+      $appendScripts[] = <<<JS
+VuFind.path = '{$root}';
+VuFind.defaultSearchBackend = '{$dsb}';
+VuFind.addTranslations({$translations});
+VuFind.addIcons({$icons});
+JS;
+      $this->headScript()->appendScript(implode("\n", $appendScripts));
+
+      if ($this->config()->ajaxCoversEnabled()) {
+          $this->headScript()->appendFile("covers.js");
+      }
+    ?>
+    <?=$this->headScript() ?>
+  </head>
+  <body class="not-anchor template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+    <?php // Set up the search box -- there are three possible cases:
+      // 1. No search box was set; we should default to the normal box
+      // 2. It was set to false; we should display nothing
+      // 3. It is set to a custom string; we should display the provided version
+      // Set up default search box if no data was provided from the template;
+      // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+      if (!isset($this->layout()->searchbox)) {
+        $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+      }
+    ?>
+
+    <?=$this->render('header.phtml');?>
+    <?php $routeParams = $this->tuefind()->getRouteParams(); $searchResults = "";
+    if($routeParams['controller'] == "Search" && $routeParams['action'] == "Results") {
+      $searchResults = "searchResults";
+    }?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 px-0 pt-5 pb-5 justify-content-center">
+                <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$searchResults;?>">
+                  <?php $showContainerBlock = true;
+                  if($routeParams['controller'] == 'index') {
+                      $showContainerBlock = false;
+                  }?>
+                  <?php  if($showContainerBlock === true) { ?>
+                    <div id="content" class="container">
+                      <?=$this->layout()->content ?>
+                    </div>
+                  <?php } else { ?>
+                    <?=$this->layout()->content ?>
+                  <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?=$this->render('footer.phtml')?>
+    <!-- MODAL IN CASE WE NEED ONE -->
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <button type="button" class="close" data-dismiss="modal">
+            <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+          <div class="modal-body"><?=$this->icon('spinner') . $this->transEsc('Loading') ?>...</div>
+        </div>
+      </div>
+    </div>
+    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
+    <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
+    <?=$this->matomo()?>
+    <?php foreach ($this->captcha()->js() as $jsInclude):?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
+    <?php endforeach; ?>
+
+    <?=$this->footScript() ?>
+  </body>
+</html>

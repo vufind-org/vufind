@@ -43,12 +43,24 @@ use VuFindConsole\Command\Language\NormalizeCommand;
  */
 class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Language fixture directory
      *
      * @var string
      */
-    protected $languageFixtureDir = __DIR__ . '/../../../../../fixtures/language';
+    protected $languageFixtureDir = null;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->languageFixtureDir = $this->getFixtureDir('VuFindConsole') . 'language';
+    }
 
     /**
      * Test that missing parameters yield an error message.
@@ -116,34 +128,10 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
         $this->assertEquals(
-            "{$target} does not exist.\n", $commandTester->getDisplay()
+            "{$target} does not exist.\n",
+            $commandTester->getDisplay()
         );
         $this->assertEquals(1, $commandTester->getStatusCode());
-    }
-
-    /**
-     * Get a mock command object
-     *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param array                 $methods     Methods to mock
-     *
-     * @return AddUsingTemplateCommand
-     */
-    protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null,
-        array $methods = ['writeFileToDisk']
-    ) {
-        return $this->getMockBuilder(DeleteCommand::class)
-            ->setConstructorArgs(
-                [
-                    $normalizer ?? $this->getMockNormalizer(),
-                    $reader ?? $this->getMockReader(),
-                    $languageDir ?? $this->languageFixtureDir,
-                ]
-            )->setMethods($methods)
-            ->getMock();
     }
 
     /**
@@ -155,10 +143,12 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
@@ -170,9 +160,11 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockReader($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniReader::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniReader::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

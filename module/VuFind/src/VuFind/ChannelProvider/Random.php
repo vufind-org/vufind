@@ -81,8 +81,10 @@ class Random extends AbstractChannelProvider
      * @param \VuFind\Search\Params\PluginManager $paramManager Params manager
      * @param array                               $options      Settings (optional)
      */
-    public function __construct(\VuFindSearch\Service $search,
-        \VuFind\Search\Params\PluginManager $paramManager, array $options = []
+    public function __construct(
+        \VuFindSearch\Service $search,
+        \VuFind\Search\Params\PluginManager $paramManager,
+        array $options = []
     ) {
         $this->searchService = $search;
         $this->paramManager = $paramManager;
@@ -160,7 +162,10 @@ class Random extends AbstractChannelProvider
         $query = $params->getQuery();
         $paramBag = $params->getBackendParameters();
         $random = $this->searchService->random(
-            $params->getSearchClassId(), $query, $this->channelSize, $paramBag
+            $params->getSearchClassId(),
+            $query,
+            $this->channelSize,
+            $paramBag
         )->getRecords();
         $retVal['contents'] = $this->summarizeRecordDrivers($random);
         return $retVal;

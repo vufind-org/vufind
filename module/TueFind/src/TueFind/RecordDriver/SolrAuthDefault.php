@@ -9,8 +9,21 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['gnd'] ?? null;
     }
 
-    public function getISNI() {
-        return $this->fields['isni'] ?? null;
+    public function getHeadingShort()
+    {
+        return $this->fields['heading_short'] ?? null;
+    }
+
+    public function getHeadingTimespan()
+    {
+        return $this->fields['heading_timespan'] ?? null;
+    }
+
+    public function getISNIs(): array {
+        $isnis = $this->fields['isni'] ?? [];
+        if (!is_array($isnis))
+            $isnis = [$isnis];
+        return $isnis;
     }
 
     /**
@@ -23,12 +36,19 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['lccn'][0] ?? null;
     }
 
-    public function getORCID() {
-        return $this->fields['orcid'] ?? null;
+    public function getORCIDs(): array {
+        $orcids = $this->fields['orcid'] ?? [];
+        if (!is_array($orcids))
+            $orcids = [$orcids];
+        return $orcids;
     }
 
-    public function getOccupations() {
-        return $this->fields['occupation'] ?? [];
+    public function getOccupations($language='en') {
+        return $this->fields['occupation_' . $language] ?? [];
+    }
+
+    public function getSubsystems(): array {
+        return $this->fields['subsystem'] ?? [];
     }
 
     public function getVIAFs(): array {
@@ -38,8 +58,11 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $viafs;
     }
 
-    public function getWikidataId() {
-        return $this->fields['wikidata'] ?? null;
+    public function getWikidataIds(): array {
+        $wikidata = $this->fields['wikidata'] ?? [];
+        if (!is_array($wikidata))
+            $wikidata = [$wikidata];
+        return $wikidata;
     }
 
     public function getType() {

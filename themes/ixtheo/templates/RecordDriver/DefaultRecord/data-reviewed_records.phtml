@@ -3,7 +3,7 @@
   <?php $label = $this->escapeHtml($reviewed['title']); ?>
   <?php if (!empty($reviewed['author'])): $label .= ' (' . $this->escapeHtml($reviewed['author']) . ')'; endif; ?>
   <?php if ($linked_ppn != ''): ?>
-    <a href="<?=$this->recordLink()->getUrl($linked_ppn)?>"><?=$label?></a>
+    <a href="<?=$this->recordLinker()->getUrl($linked_ppn)?>"><?=$label?></a>
   <?php else: ?>
     <?=$label?>
   <?php endif; ?>

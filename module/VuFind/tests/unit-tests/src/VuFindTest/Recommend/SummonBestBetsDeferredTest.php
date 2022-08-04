@@ -47,7 +47,8 @@ class SummonBestBetsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
     {
         $this->assertEquals(
             'mod=SummonBestBets&params=lookfor&lookfor=foo',
-            $this->getRecommend('VuFind\Recommend\SummonBestBetsDeferred')->getUrlParams()
+            $this->getRecommend(\VuFind\Recommend\SummonBestBetsDeferred::class)
+                ->getUrlParams()
         );
     }
 }

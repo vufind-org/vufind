@@ -28,7 +28,8 @@
 namespace VuFind\DoiLinker;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFindSearch\Backend\BrowZine\Connector;
+use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
+use VuFindSearch\Service;
 
 /**
  * BrowZine DOI linker
@@ -44,11 +45,11 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * BrowZine connector
+     * Search service
      *
-     * @var Connector
+     * @var Service
      */
-    protected $connector;
+    protected $searchService;
 
     /**
      * Configuration options
@@ -60,12 +61,12 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Connector $connector Connector
-     * @param array     $config    Configuration settings
+     * @param Service $searchService Search service
+     * @param array   $config        Configuration settings
      */
-    public function __construct(Connector $connector, array $config = [])
+    public function __construct(Service $searchService, array $config = [])
     {
-        $this->connector = $connector;
+        $this->searchService = $searchService;
         $this->config = $config;
     }
 
@@ -108,7 +109,9 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
         $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
         $response = [];
         foreach ($doiArray as $doi) {
-            $data = $this->connector->lookupDoi($doi)['data'] ?? null;
+            $command = new LookupDoiCommand('BrowZine', $doi);
+            $result = $this->searchService->invoke($command)->getResult();
+            $data = $result['data'] ?? null;
             if ($this->arrayKeyAvailable('browzineWebLink', $data)) {
                 $response[$doi][] = [
                     'link' => $data['browzineWebLink'],

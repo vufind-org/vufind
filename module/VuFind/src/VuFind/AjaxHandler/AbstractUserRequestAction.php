@@ -59,10 +59,10 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH, 401);
+            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
         }
         if (!$this->ils->checkCapability($this->lookupMethod)) {
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $requests = $this->ils->{$this->lookupMethod}($patron);
         $status = [

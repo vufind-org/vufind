@@ -42,6 +42,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $this->container;
     }
 
+    public function getAllAuthorsGnds(): array
+    {
+        return array_merge($this->getPrimaryAuthorsGnds(), $this->getSecondaryAuthorsGnds(), $this->getCorporateAuthorsGnds());
+    }
+
+    public function getAllAuthorsIds(): array
+    {
+        return array_merge($this->getPrimaryAuthorsIds(), $this->getSecondaryAuthorsIds(), $this->getCorporateAuthorsIds());
+    }
+
     /**
      * Get all non-standardized topics
      */
@@ -506,6 +516,15 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $material_type;
     }
 
+    /**
+     * Return a list of translated topics. Can be used e.g. for chart generation.
+     * (translation handling only possible in IxTheo right now.)
+     */
+    public function getTopicsForCloud($language=null): array
+    {
+        return array_unique($this->fields['topic_cloud'] ?? []);
+    }
+
 
     /**
      * Return an associative array of URL's mapped to their material types.
@@ -684,6 +703,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     }
 
 
+    /**
+     * Check whether there are fulltexts associated with this record
+     * @return bool
+     */
+    public function hasFulltext()
+    {
+        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
+    }
+
+
     public function setHasFulltextMatch()
     {
         $this->hasFulltextMatch = true;
@@ -698,7 +727,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getFulltextTypes() : array
     {
-        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : '';
+        return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : [];
     }
 
 

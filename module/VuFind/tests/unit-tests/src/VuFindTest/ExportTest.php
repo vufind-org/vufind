@@ -82,7 +82,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $export = $this->getExport($config);
         $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulk'));
         $this->assertEquals(
-            ['foo', 'bar', 'xyzzy'], $export->getActiveFormats('record')
+            ['foo', 'bar', 'xyzzy'],
+            $export->getActiveFormats('record')
         );
     }
 
@@ -204,7 +205,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         ];
         $exportConfig = [
             'anything' => ['requiredMethods' => ['getTitle']],
-            'marc' => ['requiredMethods' => ['getMarcRecord']]
+            'marc' => ['requiredMethods' => ['getMarcReader']]
         ];
         $export = $this->getExport($mainConfig, $exportConfig);
         $solrDefault = new \VuFind\RecordDriver\SolrDefault();
@@ -248,9 +249,9 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getLabelForFormat
      *
-     * @ return void
+     * @return void
      */
-    public function testGetLabel()
+    public function testGetLabel(): void
     {
         $config = [
             'foo' => [],
@@ -261,6 +262,89 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo', $export->getLabelForFormat('foo'));
         // test "override with label setting"
         $this->assertEquals('baz', $export->getLabelForFormat('bar'));
+    }
+
+    /**
+     * Test getBulkExportType()
+     *
+     * @return void
+     */
+    public function testGetBulkExportType(): void
+    {
+        // We should get 'link' as the default if nothing is configured:
+        $this->assertEquals(
+            'link',
+            $this->getExport()->getBulkExportType('foo')
+        );
+
+        // We should get export-specific values from export.ini if set;
+        // otherwise, we should get the default setting from config.ini.
+        $mainConfig = ['BulkExport' => ['defaultType' => 'download']];
+        $exportConfig = ['foo' => ['bulkExportType' => 'post']];
+        $export = $this->getExport($mainConfig, $exportConfig);
+        $this->assertEquals('post', $export->getBulkExportType('foo'));
+        $this->assertEquals('download', $export->getBulkExportType('bar'));
+    }
+
+    /**
+     * Test getBulkUrl() method
+     *
+     * @return void
+     */
+    public function testGetBulkUrl(): void
+    {
+        $url = $this->getMockBuilder(\Laminas\View\Helper\Url::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $url->expects($this->once())->method('__invoke')
+            ->with($this->equalTo('cart-doexport'))
+            ->will($this->returnValue('/cart/doExport'));
+        $serverUrl = $this->getMockBuilder(\Laminas\View\Helper\ServerUrl::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $serverUrl->expects($this->once())->method('__invoke')
+            ->with($this->equalTo('/cart/doExport'))
+            ->will($this->returnValue('http://localhost/cart/doExport'));
+        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $view->expects($this->exactly(2))->method('plugin')
+            ->withConsecutive(['serverurl'], ['url'])
+            ->willReturnOnConsecutiveCalls($serverUrl, $url);
+        $this->assertEquals(
+            'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',
+            $this->getExport()->getBulkUrl($view, 'foo', [1, 2, 3])
+        );
+    }
+
+    /**
+     * Test getPostField()
+     *
+     * @return void
+     */
+    public function testGetPostField(): void
+    {
+        $exportConfig = ['foo' => ['postField' => 'postField']];
+        $export = $this->getExport([], $exportConfig);
+        // Test configured method:
+        $this->assertEquals('postField', $export->getPostField('foo'));
+        // Test default:
+        $this->assertEquals('ImportData', $export->getPostField('bar'));
+    }
+
+    /**
+     * Test getTargetWindow()
+     *
+     * @return void
+     */
+    public function testGetTargetWindow(): void
+    {
+        $exportConfig = ['foo' => ['targetWindow' => 'window']];
+        $export = $this->getExport([], $exportConfig);
+        // Test configured method:
+        $this->assertEquals('window', $export->getTargetWindow('foo'));
+        // Test default:
+        $this->assertEquals('barMain', $export->getTargetWindow('bar'));
     }
 
     /**

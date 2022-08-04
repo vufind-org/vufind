@@ -49,10 +49,10 @@ class RecordController extends \TueFind\Controller\RecordController
         $recordId = $driver->getUniqueId();
         $userId = $user->id;
 
-        $infoText = $this->forward()->dispatch('StaticPage', array(
-            'action' => 'staticPage',
+        $infoText = $this->forward()->dispatch('Content', [
+            'action' => 'content',
             'page' => 'SubscriptionInfoText'
-        ));
+        ]);
 
         $subscribed = boolval($table->findExisting($userId, $recordId));
         $bundles = [];
@@ -65,31 +65,6 @@ class RecordController extends \TueFind\Controller\RecordController
         return $this->createViewModel(["subscribed" => $subscribed,
                                        "bundles" => $bundles,
                                        "infoText" => $infoText]);
-    }
-
-    function getUserData($userId) {
-       $userTable = $this->loadRecord()->getDbTable('User');
-       $select = $userTable->getSql()->select()->where(['id' => $userId]);
-
-       $userRow = $userTable->selectWith($select)->current();
-       $ixtheoUserTable = $this->loadRecord()->getDbTable('IxTheoUser');
-       $ixtheoSelect = $ixtheoUserTable->getSql()->select()->where(['id' => $userId]);
-       $ixtheoUserRow = $ixtheoUserTable->selectWith($ixtheoSelect)->current();
-       $userData = [ 'title' => $ixtheoUserRow->title != "Other" ? $ixtheoUserRow->title . " " : "",
-                     'firstname' => $userRow->firstname,
-                     'lastname' =>  $userRow->lastname,
-                     'email' => $userRow->email,
-                     'country' => $ixtheoUserRow->country,
-                     'user_type' => $ixtheoUserRow->user_type ];
-       return $userData;
-    }
-
-
-    function formatUserData($userData) {
-       return [ ($userData['title'] != "" ? $userData['title'] . " " : "") . $userData['firstname'] . " " . $userData['lastname'],
-                $userData['email'],
-                $userData['country']
-              ];
     }
 
     function processPDASubscribe()
@@ -144,10 +119,10 @@ class RecordController extends \TueFind\Controller\RecordController
         $recordId = $driver->getUniqueId();
         $userId = $user->id;
 
-        $infoText = $this->forward()->dispatch('StaticPage', array(
-            'action' => 'staticPage',
+        $infoText = $this->forward()->dispatch('Content', [
+            'action' => 'content',
             'page' => 'PDASubscriptionInfoText'
-        ));
+        ]);
         $bookDescription = $driver->getAuthorsAsString() . ": " .
                            $driver->getTitle() .  ($driver->getYear() != "" ? "(" . $driver->getYear() . ")" : "") .
                            ", ISBN: " . $driver->getISBNs()[0];

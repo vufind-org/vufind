@@ -1,15 +1,15 @@
 <?php $titlePreviewOffset = 0; $titlePreviewLimit = 5; ?>
 <?php $response = $this->authority()->getNewestTitlesAbout($this->driver, $titlePreviewOffset, $titlePreviewLimit); ?>
 <?php if ($response->getTotal() > 0): ?>
-  <h4>Newest titles (about)</h4>
+  <h4><?=$this->transEsc('Newest Titles (about)')?></h4>
   <ul class="list-group">
     <?php foreach ($response as $record): ?>
-      <li class="list-group-item"><a href="<?=$this->recordLink()->getUrl($record)?>"><?=$record->getTitle()?></a></li>
+      <li class="list-group-item"><a href="<?=$this->recordLinker()->getUrl($record)?>"><?=$record->getTitle()?></a></li>
     <?php endforeach; ?>
   </ul>
   <?php if ($response->getTotal() > $titlePreviewLimit): ?>
     <p>
-      <a href="<?=$this->record($this->driver)->getLink('titles-about', $this->driver)?>">Show all titles (<?=$response->getTotal()?>)</a>
+      <a href="<?=$this->record($this->driver)->getLink('titles-about', $this->driver)?>"><?=$this->transEsc('see all')?> (<?=$response->getTotal()?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>

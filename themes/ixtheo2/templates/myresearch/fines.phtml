@@ -32,7 +32,7 @@
           <?php elseif (!isset($record['driver']) || !is_object($record['driver'])): ?>
             <?=$this->escapeHtml(trim($record['title'], '/:'))?>
           <?php else: ?>
-            <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
+            <a href="<?=$this->recordLinker()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
           <?php endif; ?>
         </td>
         <td><?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></td>
@@ -43,7 +43,7 @@
       </tr>
       <?php $totalDue += $record['balance']; ?>
     <?php endforeach; ?>
-      <tr style="font-weight:bold"><td colspan="5"><?=$this->transEsc('Total Balance Due')?></td><td><?=$this->safeMoneyFormat($totalDue/100.00) ?></td></tr>
+      <tr class="ix-font-bold"><td colspan="5"><?=$this->transEsc('Total Balance Due')?></td><td><?=$this->safeMoneyFormat($totalDue/100.00) ?></td></tr>
     </table>
   <?php endif; ?>
 </div>

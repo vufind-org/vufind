@@ -1,0 +1,28 @@
+<?php function renderRow($label, $value) {?>
+  <?php if ($value != ''): ?>
+    <tr>
+      <th><?=$label?>:</th>
+      <td><?=$value?></td>
+    </tr>
+  <?php endif; ?>
+<?php } ?>
+
+
+<table class="table table-striped">
+  <tbody>
+    <?php renderRow($this->transEsc('Born'), $this->authority()->getBirth($this->driver)); ?>
+    <?php renderRow($this->transEsc('Died'), $this->authority()->getDeath($this->driver)); ?>
+    <?php renderRow($this->transEsc('Occupation'), $this->authority()->getOccupations($this->driver)); ?>
+    <?php renderRow($this->transEsc('Personal Relations'), $this->authority()->getPersonalRelations($this->driver)); ?>
+    <?php renderRow($this->transEsc('Corporate Relations'), $this->authority()->getCorporateRelations($this->driver)); ?>
+    <?php renderRow($this->transEsc('Geographical Relations'), $this->authority()->getGeographicalRelations($this->driver)); ?>
+
+    <?php if ($driver->getType() == 'meeting'): ?>
+      <?php renderRow($this->transEsc('Time'), $this->authority()->getTimespans($this->driver)); ?>
+    <?php endif; ?>
+
+    <?php renderRow($this->transEsc('Biographical References'), $this->authority()->getBiographicalReferences($this->driver)); ?>
+    <?php renderRow($this->transEsc('Archived Material'), $this->authority()->getArchivedMaterial($this->driver)); ?>
+    <?php renderRow($this->transEsc('Subsystems'), $this->authority()->getExternalSubsystems($this->driver, $this->tuefind()->getTueFindSubtype())); ?>
+  </tbody>
+</table>

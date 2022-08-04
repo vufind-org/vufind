@@ -1,0 +1,94 @@
+<?php
+  // Grab list object from search results (if applicable):
+  $list = $this->results->getListObject();
+
+  // Set up page title:
+  $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+
+  // Set up breadcrumbs:
+  $currPage = isset($list) ? 'List' : 'Favorites';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_item_statuses.js");
+
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() != "full") {
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("embedded_record.js");
+  }
+
+  $recordTotal = $this->results->getResultTotal();
+
+  // Convenience variable:
+  $account = $this->auth()->getManager();
+  $user = $this->auth()->isLoggedIn();
+?>
+
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
+
+  <?=$this->flashmessages()?>
+
+  <nav class="search-header hidden-print">
+    <div class="search-stats">
+      <?php if ($recordTotal > 0): ?>
+        <?php
+          $transParams = [
+            '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
+            '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
+            '%%total%%' => $this->localizedNumber($recordTotal)
+          ];
+        ?>
+        <?=$this->translate('showing_items_of_html', $transParams); ?>
+      <?php endif; ?>
+    </div>
+    <div class="search-controls">
+      <?php if (isset($list)): ?>
+        <?php if ($list->editAllowed($account->isLoggedIn())): ?>
+          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i>&nbsp;<?=$this->transEsc("edit_list")?></a>
+          <div class="btn-group">
+            <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;<?=$this->transEsc("delete_list")?>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+              <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            </ul>
+          </div>
+        <?php endif; ?>
+      <?php endif; ?>
+      <?php if ($recordTotal > 0): ?>
+        <?=$this->render('search/controls/limit.phtml')?>
+        <?=$this->render('search/controls/sort.phtml')?>
+      <?php endif; ?>
+    </div>
+  </nav>
+  <?php if ($list && !empty($list->description)): ?>
+    <p><?=$this->escapeHtml($list->description)?></p>
+  <?php endif; ?>
+  <?php if ($recordTotal > 0): ?>
+    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
+      <?php $evenOrOdd = ['panel-gray','panel-body']; $icolor = 0; foreach ($this->results->getResults() as $i => $current): ?>
+        <div class="<?=$evenOrOdd[$icolor];?> tf-nopadding"><?=$this->record($current)->getListEntry($list, $user)?></div>
+      <?php $icolor++; if($icolor==2){ $icolor = 0; } endforeach; ?>
+    </form>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
+  <?php else: ?>
+    <p><?=$this->transEsc('You do not have any saved resources')?></p>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?> tf-modal-favorite-sidebar" id="myresearch-sidebar">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => isset($list) ? 'list' . $list['id'] : 'favorites'])?>
+  <?php foreach ($this->results->getRecommendations('side') as $current): ?>
+    <?=$this->recommend($current)?>
+  <?php endforeach; ?>
+</div>
+
+<div style="clear: both;">&nbsp;</div>

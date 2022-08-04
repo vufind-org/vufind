@@ -1,7 +1,7 @@
 <?php
     $this->headTitle($this->translate('Item Fulltext Search') . ': ' . $this->driver->getBreadcrumb())
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(TueFind.HandlePassedFulltextQuery);', 'SET')?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.ItemFullTextSearch("'.$this->url('home').'", "'.$this->driver->getUniqueID().'", "' . implode(",", $this->driver->getFulltextTypes()) . '");')?>
 <span>
   <select id="itemFTTextTypeScope" class="selectpicker">
 <?php $fulltext_types = $this->driver->getFulltextTypes();
@@ -21,6 +21,9 @@
             case 'Summary':
                 echo '<option value="Summary">' . $this->translate('Summary') . '</option>';
                 break;
+            case 'List of References':
+                echo '<option value="Summary">' . $this->translate('List of References') . '</option>';
+                break;
             case 'Unknown':
                 echo '<option value="Unknown">' . $this->translate('Unknown') . '</option>';
           }
@@ -34,17 +37,7 @@
   </select>
 </span>
 
-<form class="searchForm form-horizontal" name="ItemFulltextSearchForm" id="ItemFulltextSearchForm" autocomplete="off"
-  onSubmit="javascript:TueFind.GetFulltextSnippets(&quot;<?=$this->url('home')?>&quot;,
-                                                   &quot;<?=$this->driver->getUniqueID()?>&quot;,
-                                                   this.searchForm_fulltext.value,
-                                                   true /* be verbose, i.e. return all results*/,
-                                                   document.getElementById('itemFTSearchScope').value,
-                                                   (document.getElementById('itemFTTextTypeScope').value == 'All Types'
-                                                   ? <?="'" . implode(',', $this->driver->getFulltextTypes()) ."'"?>
-                                                   : document.getElementById('itemFTTextTypeScope').value));
-                                                   TueFind.CheckWildcards(event);
-  return false; /*Prevent refresh of entire page even on first load*/">
+<form class="searchForm form-horizontal" name="ItemFulltextSearchForm" id="ItemFulltextSearchForm" autocomplete="off">
   <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
     <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
      <div class="input-group-btn">

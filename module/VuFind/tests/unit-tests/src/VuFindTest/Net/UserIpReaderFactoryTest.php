@@ -40,7 +40,7 @@ use VuFind\Net\UserIpReaderFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserIpReaderFactoryTest extends \VuFindTest\Unit\MockContainerTest
+class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a container set up for the factory.
@@ -48,23 +48,24 @@ class UserIpReaderFactoryTest extends \VuFindTest\Unit\MockContainerTest
      * @param array $config Configuration (simulated config.ini)
      * @param array $server Simulated $_SERVER superglobal data
      *
-     * @return \Interop\Container\ContainerInterface
+     * @return \VuFindTest\Container\MockContainer
      */
-    protected function getContainer($config = [], $server = ['server' => true])
+    protected function getContainer($config = [], $server = ['server' => true]): \VuFindTest\Container\MockContainer
     {
         $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $configManager->expects($this->once())->method('get')
             ->with($this->equalTo('config'))
             ->will($this->returnValue(new Config($config)));
-        $this->container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $mockRequest = $this
             ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()->getMock();
         $mockRequest->expects($this->once())->method('getServer')
             ->will($this->returnValue(new Parameters($server)));
-        $this->container->set('Request', $mockRequest);
-        return $this->container;
+        $container->set('Request', $mockRequest);
+        return $container;
     }
 
     /**
@@ -77,7 +78,7 @@ class UserIpReaderFactoryTest extends \VuFindTest\Unit\MockContainerTest
         $factory = new UserIpReaderFactory();
         $container = $this->getContainer();
         $reader = $factory($container, UserIpReader::class);
-        list($server, $allowForwardedIps, $ipFilter) = $reader->args;
+        [$server, $allowForwardedIps, $ipFilter] = $reader->args;
         $this->assertEquals(['server' => true], $server->toArray());
         $this->assertFalse($allowForwardedIps);
         $this->assertEquals([], $ipFilter);
@@ -100,7 +101,7 @@ class UserIpReaderFactoryTest extends \VuFindTest\Unit\MockContainerTest
             ]
         );
         $reader = $factory($container, UserIpReader::class);
-        list($server, $allowForwardedIps, $ipFilter) = $reader->args;
+        [$server, $allowForwardedIps, $ipFilter] = $reader->args;
         $this->assertEquals(['server' => true], $server->toArray());
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4'], $ipFilter);
@@ -123,7 +124,7 @@ class UserIpReaderFactoryTest extends \VuFindTest\Unit\MockContainerTest
             ]
         );
         $reader = $factory($container, UserIpReader::class);
-        list($server, $allowForwardedIps, $ipFilter) = $reader->args;
+        [$server, $allowForwardedIps, $ipFilter] = $reader->args;
         $this->assertEquals(['server' => true], $server->toArray());
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4', '5.6.7.8'], $ipFilter);

@@ -1,12 +1,15 @@
 <footer class="hidden-print ix-footer">
-  <section class="ix-footer-section" style="background-color: #e8e6e1;">
+  <?php $routeParams = $this->tuefind()->getRouteParams(); ?>
+  <?php if($routeParams['controller'] == "index" && $routeParams['action'] == "Home"): ?>
+    <section class="ix-footer-section">
+      <div class="container">
+        <?=$this->content()->renderTranslated('snippets/supporters'); ?>
+      </div>
+    </section>
+  <?php endif;?>
+  <section class="ix-footer-section ix-footer-background-block">
     <div class="container">
-      <?=$this->HelpText()->render('supporters', null, 'static')?>
-    </div>
-  </section>
-  <section class="ix-footer-section" style="background-color: #9d9d9d;">
-    <div class="container">
-      <?=$this->HelpText()->render('footer', null, 'static')?>
+      <?=$this->content()->renderTranslated('snippets/footer'); ?>
     </div>
   </section>
   <a href="<?=$this->url('feedback-home')?>" data-lightbox="">

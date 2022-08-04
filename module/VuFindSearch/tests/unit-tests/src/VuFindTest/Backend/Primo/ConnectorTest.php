@@ -47,6 +47,8 @@ use VuFindSearch\Backend\Primo\Connector;
  */
 class ConnectorTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test default timeout value
      *
@@ -150,11 +152,7 @@ class ConnectorTest extends TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(sprintf('%s/primo/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-            }
-            $response = file_get_contents($file);
+            $response = $this->getFixture("primo/response/$fixture", 'VuFindSearch');
             $adapter->setResponse($response);
         }
         $client = new HttpClient();

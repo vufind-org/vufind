@@ -38,7 +38,7 @@ use VuFind\ILS\PaginationHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class PaginationHelperTest extends \VuFindTest\Unit\TestCase
+class PaginationHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test options supporting pagination

@@ -1,5 +1,7 @@
 <?php
 namespace IxTheo\Controller;
+
+use Laminas\View\Model\ViewModel;
 use VuFindSearch\ParamBag;
 
 class AlphabrowseController extends \VuFind\Controller\AlphabrowseController
@@ -9,7 +11,7 @@ class AlphabrowseController extends \VuFind\Controller\AlphabrowseController
      *
      * @return \Laminas\View\Model\ViewModel
      */
-    public function homeAction()
+    public function homeAction(): ViewModel
     {
         $config = $this->getConfig();
 

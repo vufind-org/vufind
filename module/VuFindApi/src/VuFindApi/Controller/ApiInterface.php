@@ -39,8 +39,8 @@ namespace VuFindApi\Controller;
 interface ApiInterface
 {
     // define some status constants
-    const STATUS_OK = 'OK';                  // good
-    const STATUS_ERROR = 'ERROR';            // bad
+    public const STATUS_OK = 'OK';                  // good
+    public const STATUS_ERROR = 'ERROR';            // bad
 
     /**
      * Get Swagger specification JSON fragment for services provided by the

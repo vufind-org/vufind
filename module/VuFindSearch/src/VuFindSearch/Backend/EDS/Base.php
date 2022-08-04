@@ -51,7 +51,7 @@ abstract class Base
      *
      * @var string
      */
-    protected $edsApiHost = 'http://eds-api.ebscohost.com/edsapi/rest';
+    protected $edsApiHost = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * Auth host
@@ -106,6 +106,12 @@ abstract class Base
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
                 switch ($key) {
+                case 'api_url':
+                    $this->edsApiHost = $value;
+                    break;
+                case 'auth_url':
+                    $this->authHost = $value;
+                    break;
                 case 'debug':
                     $this->debug = $value;
                     break;
@@ -158,7 +164,9 @@ abstract class Base
      *
      * @return array
      */
-    public function createSession($profile = null, $isGuest = null,
+    public function createSession(
+        $profile = null,
+        $isGuest = null,
         $authToken = null
     ) {
         $this->debugPrint(
@@ -186,8 +194,13 @@ abstract class Base
      *
      * @return array    The requested record
      */
-    public function retrieve($an, $dbId, $authenticationToken, $sessionToken,
-        $highlightTerms = null, $extraQueryParams = []
+    public function retrieve(
+        $an,
+        $dbId,
+        $authenticationToken,
+        $sessionToken,
+        $highlightTerms = null,
+        $extraQueryParams = []
     ) {
         $this->debugPrint(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
@@ -256,11 +269,19 @@ abstract class Base
      */
     public function autocomplete($query, $type, $data, $raw = false)
     {
-        // build request
-        $url = $data['url'] . '?idx=' . urlencode($type) .
-            '&token=' . urlencode($data['token']) .
-            '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
-            urlencode($data['custid']) . '"]}]&term=' . urlencode($query);
+        // $filters is an array of filter objects
+        // filter objects consist of name and an array of values (customer ids)
+        $filters = [['name' => 'custid', 'values' => [$data['custid']]]];
+
+        $params = [
+            'idx' => $type,
+            'token' => $data['token'],
+            'filters' => json_encode($filters),
+            'term' => $query,
+        ];
+
+        $url = $data['url'] . '?' . http_build_query($params);
+
         $this->debugPrint("Autocomplete URL: " . $url);
         $response = $this->call($url, null, null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
@@ -276,8 +297,11 @@ abstract class Base
      *
      * @return array
      */
-    public function authenticate($username = null, $password = null,
-        $orgid = null, $params = null
+    public function authenticate(
+        $username = null,
+        $password = null,
+        $orgid = null,
+        $params = null
     ) {
         $this->debugPrint(
             "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
@@ -351,8 +375,13 @@ abstract class Base
      * @throws ApiException
      * @return object         EDS API response (or an Error object).
      */
-    protected function call($baseUrl, $headerParams, $params = [],
-        $method = 'GET', $message = null, $messageFormat = ""
+    protected function call(
+        $baseUrl,
+        $headerParams,
+        $params = [],
+        $method = 'GET',
+        $message = null,
+        $messageFormat = ""
     ) {
         // Build Query String Parameters
         $queryParameters = $this->createQSFromArray($params);
@@ -373,7 +402,12 @@ abstract class Base
             }
         }
         $response = $this->httpRequest(
-            $baseUrl, $method, $queryString, $headers, $message, $messageFormat
+            $baseUrl,
+            $method,
+            $queryString,
+            $headers,
+            $message,
+            $messageFormat
         );
         return $this->process($response);
     }
@@ -437,6 +471,11 @@ abstract class Base
      * @return string             HTTP response body
      */
     abstract protected function httpRequest(
-        $baseUrl, $method, $queryString, $headers, $messageBody, $messageFormat
+        $baseUrl,
+        $method,
+        $queryString,
+        $headers,
+        $messageBody,
+        $messageFormat
     );
 }

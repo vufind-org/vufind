@@ -1,13 +1,16 @@
 <?php
-  // TODO: This file needs love
   $this->headScript()->appendFile('facets.js');
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
   $results = $this->recommend->getResults();
+  $truncateSettings = [
+    'rows' => $topFacetSettings['rows'],
+    'more-label' => $this->transEsc('more') . ' ...',
+    'less-label' => $this->transEsc('less') . ' ...',
+  ];
 ?>
 <?php if (isset($topFacetSet)): ?>
   <?php foreach($topFacetSet as $title => $cluster): ?>
-    <?php $moreClass = ' narrowGroupHidden-' . $this->escapeHtml($title) . ' hidden'; ?>
     <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
       <!--Toggle for mobile collapse -->
@@ -16,52 +19,42 @@
       <!--Regular title for non-mobile -->
       <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
       <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
-        <?php $limit = $topFacetSettings['rows'] * $topFacetSettings['cols']; ?>
-        <?php foreach($cluster['list'] as $index => $thisFacet): ?>
-          <span class="facet top-facet <?=$index > $limit ? $moreClass : '' ?>">
-            <?php if ($thisFacet['isApplied']):
-              if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
-                $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
-              } else {
-                $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
-              } ?>
-              <a href="<?=$removeLink ?>" class="applied">
-                <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i><!--
-           --></a>
-            <?php else: ?>
-              <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
-                <?=$this->escapeHtml($thisFacet['displayText'])?><!--
-           --></a>
-              <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
-              <?php if ($allowExclude): ?>
-                <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
-                  <i class="fa fa-times" aria-hidden="true"></i>
-                  <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
-                </a>
-              <?php endif; ?>
-            <?php endif; ?>
-          </span>
-          <?php /* More link */ ?>
-          <?php if ($index == $limit): ?>
-            <span id="more-narrowGroupHidden-<?=$this->escapeHtml($title)?>" class="narrow-toggle">
-              <a href="#" class="more-facets" data-title="<?=$this->escapeHtmlAttr($title)?>">
-                <?=$this->transEsc('more') ?> ...
-              </a>
+        <div class="top-facets-contents" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
+          <?php foreach($cluster['list'] as $index => $thisFacet): ?>
+            <span class="facet top-facet">
+              <span class="top-facet-inner">
+                <?php if ($thisFacet['isApplied']):
+                  if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
+                    $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
+                  } else {
+                    $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
+                  } ?>
+                  <a href="<?=$removeLink ?>" class="applied">
+                    <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i><!--
+               --></a>
+                <?php else: ?>
+                  <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
+                    <?=$this->escapeHtml($thisFacet['displayText'])?><!--
+               --></a>
+                  <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
+                  <?php if ($allowExclude): ?>
+                    <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
+                      <i class="fa fa-times" aria-hidden="true"></i>
+                      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+                    </a>
+                  <?php endif; ?>
+                <?php endif; ?>
+              </span>
             </span>
-          <?php endif; ?>
-        <?php endforeach; ?>
-        <?php if (count($cluster['list']) > $limit): ?>
-          <a class="narrow-toggle <?=$moreClass ?> less-facets" href="#" data-title="<?=$this->escapeHtmlAttr($title) ?>">
-            <?=$this->transEsc('less') ?> ...
-          </a>
-        <?php endif; ?>
+          <?php endforeach; ?>
+        </div>
       </div>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
 <?php
 $script = <<<JS
-registerMoreLessFacetsEventHandlers();
+VuFind.truncate.initTruncate('.top-facets-contents');
 collapseTopFacets();
 JS;
 ?>

@@ -21,12 +21,27 @@
   }
 }
 
+.panel-home h1 a {
+    color: #3586b2;
+    text-shadow: none;
+    font-family: 'Open Sans',Arial,Helvetica,sans-serif;
+}
+.panel-home small {
+    display: block;
+    text-align: center;
+    margin: 5px 0 auto;
+    padding-bottom: 12px;
+    color: #495057;
+    text-shadow: none;
+}
+
 .ix2-searchForm {
   input {
     border: none;
     box-shadow: none;
     -webkit-box-shadow: none;
     height: 48px;
+    border-radius: 0 0 0 7px;
   }
 
   .form-control:focus {
@@ -66,6 +81,7 @@
     flex-direction: column;
     align-items: flex-end;
     justify-content: center;
+    background-color: #fff;
   }
 }
 
@@ -75,6 +91,164 @@
 
 .navbar {
   margin-bottom: initial;
+}
+
+#breadcrumb {
+  outline: currentcolor none medium;
+}
+
+#tooltips {
+  outline: currentcolor none medium;
+}
+
+.leaflet-tile-loaded {
+  width: 256px;
+  height: 256px;
+  transform: translate3d(80px, -79px, 0px);
+  opacity: 1;
+}
+
+.leaflet-zoom-animated {
+  transform: translate3d(-73px, -30px, 0px);
+}
+
+.leaflet-marker-icon {
+  margin-left: -12.5px;
+  margin-top: -18.75px;
+  width: 25px;
+  height: 37.5px;
+  transform: translate3d(861495px, -181769px, 0px);
+  z-index: -181769;
+}
+
+.map {
+  height: 400px;
+  width: 100%;
+}
+
+.ol-popup {
+  background-color: white;
+  padding: 10px;
+}
+
+.map-navigation {
+  display: flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  justify-content: space-between;
+}
+
+.map-cooperation {
+  color: green;
+}
+
+.map-catholic {
+  color: black;
+}
+
+.map-protestant {
+  color: purple;
+}
+
+.map-tuebingen {
+  color: #a51e37;
+}
+
+.networking-image-1 {
+  background-image: url(/themes/ixtheo2/images/cw/restaurant-1430931071372-38127bd472b8.jpg);
+  min-height: 200px;
+}
+
+.networking-image-2 {
+  background-image: url(/themes/ixtheo2/images/cw/restaurant-1436018626274-89acd1d6ec9d.jpg);
+  min-height: 200px;
+}
+
+.networking-image-3 {
+  background-image: url(/themes/ixtheo2/images/cw/restaurant-1466978913421-dad2ebd01d17.jpg);
+  min-height: 200px;
+}
+
+.networking-image-4 {
+  background-image: url(/themes/ixtheo2/images/cw/restaurant-1477763858572-cda7deaa9bc5.jpg);
+  min-height: 200px;
+}
+
+.journals-title {
+  color: black;
+  font-weight: bold;
+}
+
+.logo-font {
+  font-size: 34px;
+}
+
+.subscriber-textarea {
+  resize: none;
+}
+
+.kwc_single_term {
+  padding:5px;
+}
+
+.cw-card.three-links {
+    background-color: #e0e0e0;
+}
+
+.cw-card.three-links img {
+    border-radius: 0.4rem;
+}
+
+.cw-card.three-links a {
+    display: block !important;
+    width: 100% !important;
+    position: relative;
+    z-index: 20;
+    opacity: 0.7;
+    margin: 22px 0;
+    background-color: #000;
+    text-decoration: none;
+}
+
+.cw-card.three-links a h6 {
+    color:#fff;
+    margin-bottom: 42px;
+}
+
+.three-links .cw-overlay-content {
+    opacity: 1;
+}
+
+.slick-prev:before, .slick-next:before {
+  color:grey !important;
+}
+
+.slick-arrow {
+  display: none !important;
+}
+
+.home-navbar {
+  background-color: #3586b2;
+  border-radius: 0px;
+  border: 0;
+  margin-bottom: 0px;
+}
+
+#pda_place_holder {
+  color:grey;
+}
+
+#collapseOne {
+  height: 0px;
+}
+
+.swiper-wrapper {
+  transition-duration: 0ms;
+  transform: translate3d(-1269.33px, 0px, 0px);
+}
+
+#collapseTwo {
+  height: 0px;
 }
 
 .ix-news-right {
@@ -105,16 +279,35 @@
     justify-content: center;
 }
 
-.ix-news-panel-1 { background-color: #EEEEEE; }
-.ix-news-panel-2 { background-color: #CCCCCC; }
-.ix-news-panel-3 { background-color: #CCCCCC; }
-.ix-news-panel-4 { background-color: #EEEEEE; }
+.ix-news-panel-1 {
+  background-color: #EEEEEE;
+  border-radius: 12px 0 0 0;
+}
+.ix-news-panel-2 {
+  background-color: #CCCCCC;
+  border-radius: 0 12px 0 0;
+}
+.ix-news-panel-3 {
+  background-color: #CCCCCC;
+}
+.ix-news-panel-4 {
+  background-color: #EEEEEE;
+}
 
 @media (max-width: 479px) {
     .ix-news-panel-1 { background-color: #EEEEEE; }
     .ix-news-panel-2 { background-color: #CCCCCC; }
     .ix-news-panel-3 { background-color: #EEEEEE; }
     .ix-news-panel-4 { background-color: #CCCCCC; }
+}
+
+.ix-result-links-items {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ix-result-list-actions {
+  vertical-align: top;
 }
 
 .ix-footer {
@@ -127,6 +320,216 @@
     padding-bottom: 2rem;
 
     h5 {
-        color: #a39b94;
+        color: #32414B;
     }
+}
+
+.ix-journals-table {
+  width: 100%;
+}
+
+.ix-journals-table h3 {
+  color: black;
+  font-weight: bold;
+}
+
+.ix-journals-table .img-td {
+  width: 25%;
+  vertical-align: top;
+  padding: 10px;
+  text-align: center;
+}
+
+.ix-journals-table .text-td {
+  padding-left: 10px;
+}
+
+.ix-networking-block {
+  padding-bottom: 300px;
+}
+
+.ix-recommend-link {
+  white-space: nowrap;
+}
+
+.ix-fixed-width {
+  width: 634.667px;
+}
+
+.ix-left-32 {
+  left: 32px;
+}
+
+.ix-width-80 {
+  width: 80px;
+}
+
+.ix-top-100 {
+  top: 100px;
+}
+
+.ix-slick-slider-item {
+    border-radius: 12px;
+}
+
+.ix-news-container-footer {
+    margin-top: -24px;
+    border-radius: 0 0 12px 12px;
+}
+
+.ix-slick-slider-item-title {
+    border-radius:0 0 12px 12px;
+}
+
+.ix-paddind-left-0 {
+  padding-left: 0px;
+}
+
+.ix-position-relative {
+  position: relative;
+}
+
+.ix-font-bold {
+  font-weight:bold;
+}
+
+.ix-display-flex {
+  display: flex;
+}
+
+.ix-slick-slider-item {
+  height:400px;
+  color: white;
+  vertical-align: bottom;
+  background-size: cover;
+}
+
+.ix-slick-slider-item-title {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #707070;
+}
+
+.ix-clear-both {
+  clear:both;
+}
+
+.ix-display-none {
+  display: none;
+}
+
+.ix-footer-block {
+  display: flex;
+  align-items: center;
+}
+
+.ix-footer-background-block {
+  background-color: #9d9d9d;
+}
+
+/* new design ixtheo2 */
+/* Only enabled when no touch events are detected */
+.bg-attachment-fixed {
+	background-attachment: fixed;
+}
+
+@supports ( -webkit-overflow-scrolling: touch ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+.bg-image {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+@supports ( -webkit-overflow-scrolling: touch ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+    .bg-attachment-fixed {
+        background-attachment: scroll;
+    }
+}
+
+.ix-navbar a{
+    color:white;
+}
+
+.ix-navbar a.navbar-brand, .ix-navbar nav>.nav>li>a {
+    color: #495057;
+}
+
+.bg-attachment-fixed {
+  background-image: url(/themes/ixtheo2/images/searchbar.jpg);
+  min-height: 650px;
+}
+
+
+@media (max-width: 767px) {
+  .bg-attachment-fixed {
+    min-height: 250px
+  }
+  .panel-home {
+    min-height: 100px !important;
+  }
+  .panel-home h1 {
+    font-size:40px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .bg-attachment-fixed {
+    min-height: 450px
+  }
+  .panel-home {
+    min-height: 200px;
+  }
+}
+
+@media (min-width: 767px) {
+    .panel-home h1 {
+    font-size:40px;
+  }
+}
+
+@media (min-width: 992px) {
+  .panel-home h1 {
+    font-size:60px;
+  }
+}
+
+
+@media (min-width: 1200px) {
+  .panel-home h1 {
+    font-size:70px;
+  }
+}
+
+.nav-tabs>li>a {
+  background: rgba(235, 230, 227, 0.4) 10%;
+}
+
+.bg-attachment-fixed.advancedSearch {
+  min-height: 50px !important;
+}
+
+.breadcrumb-wrapper.advancedSearch {
+  display:none;
+}
+
+.main.searchResults .mainbody {
+  margin-top:20px;
 }

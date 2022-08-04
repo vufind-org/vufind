@@ -1,0 +1,19 @@
+<div class="panel panel-top panel-inverse tf-panel-home-3">
+    <div class="panel-image" style="background-image: url(<?=$this->imageLink('frontpage/news.jpg') ?>);"></div>
+    <div class="panel-content">
+        <h4>Newsfeeds aus der<br/>Religionswissenschaft</h4>
+        <p>
+            <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
+        </p>
+        <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
+            <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
+                <a href="<?=$this->url('content-page', ['page' => 'subscribe_rssfeed'])?>" class="btn btn-inverse btn-inverse-left" role="button" data-lightbox><i class="fa fa-rss"></i> <?=$this->transEsc('Get Newsfeed')?></a>
+            <?php else: ?>
+                <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="btn btn-inverse btn-inverse-left" role="button"><i class="fa fa-rss"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+            <?php endif; ?>
+            <a href="<?=$this->url('rssfeed-full')?>" class="btn btn-inverse" role="button">
+                Weiterlesen
+            </a>
+        <?php endif;?>
+    </div>
+</div>

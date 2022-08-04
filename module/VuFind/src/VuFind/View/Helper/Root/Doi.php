@@ -109,9 +109,8 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
         $params = compact('doi');
 
         // Render the subtemplate:
-        return $this->context->__invoke($this->getView())->renderInContext(
-            'Helpers/doi.phtml', $params
-        );
+        return ($this->context)($this->getView())
+            ->renderInContext('Helpers/doi.phtml', $params);
     }
 
     /**

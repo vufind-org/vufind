@@ -3,8 +3,8 @@ return [
     'extends' => 'bootstrap3',
     'helpers' => [
         'factories' => [
-            'TueFind\View\Helper\Root\Piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
-            'TueFind\View\Helper\Root\HelpText' => 'VuFind\View\Helper\Root\HelpTextFactory',
+            'TueFind\View\Helper\Root\Matomo' => 'TueFind\View\Helper\Root\MatomoFactory',
+            'TueFind\View\Helper\Root\Url' => 'VuFind\View\Helper\Root\UrlFactory',
             'TueFind\View\Helper\Root\RecordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatterFactory',
             'TueFind\View\Helper\Root\SearchTabs' => 'VuFind\View\Helper\Root\SearchTabsFactory',
             'TueFind\View\Helper\TueFind\Authority' => 'TueFind\View\Helper\TueFind\AuthorityFactory',
@@ -12,10 +12,9 @@ return [
         ],
         'aliases' => [
             'authority' => 'TueFind\View\Helper\TueFind\Authority',
-            'helptext' => 'TueFind\View\Helper\Root\HelpText',
-            'helpText' => 'TueFind\View\Helper\Root\HelpText',
-            'HelpText' => 'TueFind\View\Helper\Root\HelpText',
-            'piwik' => 'TueFind\View\Helper\Root\Piwik',
+            'url' => 'TueFind\View\Helper\Root\Url',
+            'Url' => 'TueFind\View\Helper\Root\Url',
+            'matomo' => 'TueFind\View\Helper\Root\Matomo',
             'recordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatter',
             'searchTabs' => 'TueFind\View\Helper\Root\SearchTabs',
             'tuefind' => 'TueFind\View\Helper\TueFind\TueFind',

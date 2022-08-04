@@ -5,6 +5,9 @@
         $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
     }
 
+    if (preg_match('"/Authority"i', $this->serverUrl(true)))
+        $this->searchClassId = 'SolrAuth';
+
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
@@ -41,10 +44,10 @@
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
-  <div class="searchForm navbar-form navbar-left flip">
+  <div class="navbar-form navbar-left flip">
     <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
     <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
-      <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
+      <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
         <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a> |
         <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
@@ -64,8 +67,8 @@
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
   </div>
 <?php else: ?>
-  <form class="searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-    <?= $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
+  <form id="searchForm" class="searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
+    <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'hiddenFilters' => $hiddenFilters]); ?>
     <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
     <div class="input-group">
       <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?> />
@@ -137,7 +140,7 @@
     );?>
   </form>
   <?php if ($advSearch): ?>
-    <div class="container">
+    <div>
       <ul class="nav nav-pills">
           <li>
             <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced Search")?></a>
@@ -179,6 +182,17 @@
                  </div>
               </div>
             </form>
+          </li>
+          <li class="dropdown pull-right">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                  <?=$this->transEsc('Virtual Keyboard')?> <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li role="button" class="text-center virtual-keyboard-greek"><?=$this->transEsc('Greek')?></li>
+                <li role="button" class="text-center virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></li>
+                <?php $virtualKeyboardSnippet = '$(triggerVirtualKeyboard(\'' . $this->transEsc("Accept") . ':' . $this->transEsc("Accept") . '\', \'' . $this->transEsc("Enter") . ':' . $this->transEsc("Enter") . '\'));'; ?>
+                <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $virtualKeyboardSnippet, 'SET')?>
+            </ul>
           </li>
       </ul>
     <?php endif; ?>

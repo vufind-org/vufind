@@ -5,13 +5,13 @@
       <div class="tag<?=$is_me ? ' selected' : ''?>">
         <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
         <?php if($loggedin): ?>
-          <form method="POST" action="<?=$this->recordLink()->getActionUrl($this->driver, $is_me ? 'DeleteTag' : 'AddTag') ?>" class="tag-form">
+          <form method="POST" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, $is_me ? 'DeleteTag' : 'AddTag')) ?>" class="tag-form">
             <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>"/>
             <button type="submit" class="badge tag-submit" data-tag="<?=$this->escapeHtmlAttr($tag['tag'])?>" data-selected="<?=$is_me ? 'true' : 'false' ?>"><?=$this->escapeHtml($tag['cnt']) ?>
             <?php if($is_me): ?>
-              <i class="fa fa-close" title="<?=$this->transEsc('delete_tag') ?>"></i>
+              <i class="fa fa-close" title="<?=$this->transEscAttr('delete_tag') ?>"></i>
             <?php else: ?>
-              <i class="fa fa-plus" title="<?=$this->transEsc('Add Tag') ?>"></i>
+              <i class="fa fa-plus" title="<?=$this->transEscAttr('Add Tag') ?>"></i>
             <?php endif; ?>
             </button>
           </form>

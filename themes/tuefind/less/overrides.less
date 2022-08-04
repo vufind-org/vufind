@@ -29,21 +29,21 @@ a {
 }
 
 #tf-imprint .changed {
-    /*
-    * color should be set to "inherit" for the end user.
-    * use e.g. "blue" to see what has changed, and compare against the original.
-    */
-    color: inherit;
+  /*
+  * color should be set to "inherit" for the end user.
+  * use e.g. "blue" to see what has changed, and compare against the original.
+  */
+  color: inherit;
 }
 
 .tf-schema-org-only {
-    display: none;
+  display: none;
 }
 
 @media (min-width: @screen-sm-min) {
-    table.alphabrowse .title {
-        width: 40%;
-    }
+  table.alphabrowse .title {
+      width: 40%;
+  }
 }
 
 /* not possible to set "tf-"-prefix, else bootstrap3's "btn-type-*" directive won't work */
@@ -52,21 +52,46 @@ a {
 .btn-type-publish::before { content: "\f093"; } // .fa-upload
 
 .snippet-separator {
-    border-top: 1px solid darkgrey;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
+  border-top: 1px solid darkgrey;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 p + br { display : none; }
 
+.savedLists ul {
+  list-style: none;
+  padding: 0;
+  padding-left: 10px;
+  text-align: left;
+}
+
+.savedLists .tf-favoritesListMoreButton {
+  cursor: pointer;
+  float: right;
+  text-decoration: underline;
+}
+
+.tf-result-link-block {
+  text-align: right;
+}
+
+.modal-body .tf-modal-favorite-sidebar h3:first-of-type {
+  display: none;
+}
+
+.modal-body .tf-modal-favorite-sidebar .account-menu {
+  display: none;
+}
+
 .snippet-div {
-    border-top: 1px;
-    border-bottom: 1px;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    overflow: scroll;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  border-top: 1px;
+  border-bottom: 1px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  overflow: scroll;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -75,6 +100,106 @@ p + br { display : none; }
 }
 
 .snippet-text-type {
-    z-index : 1;
-    position: relative;
+  z-index : 1;
+  position: relative;
+}
+
+.tf-cursor-pointer {
+  cursor: pointer;
+}
+
+.tf-p-0 {
+  padding: 0 !important;
+}
+
+.tf-cloud-block {
+  padding:20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tf-cloud-block-background {
+  width: 100%;
+  height: 350px;
+  border: 1px solid #ccc;
+  background-color:#fafafa;
+  font-family:'Roboto';
+}
+
+.tf-list-topics-block {
+  overflow: auto;
+}
+
+div#topic_cloud span {
+  padding: 2px;
+}
+
+#searchForm .nav-tabs {
+  border-bottom: none;
+}
+
+.tf-d-none {
+  display: none !important;
+}
+
+
+.tf-favorite-list .dropdown {
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  list-style: none;
+}
+
+.tf-favorite-list  .dropdown .dropdown-toggle {
+  color: #214c62;
+  font-weight: bold;
+}
+
+.tf-nopadding {
+  padding: 0px;
+}
+
+.tf-one-JOP-block {
+  padding-bottom: 10px;
+}
+
+.tf-one-JOP-block:last-child {
+   padding: 0;
+}
+
+.tf-one-JOP-block div span {
+  font-weight: bold;
+}
+
+.tf-rss-block li {
+  list-style:none;
+}
+
+.tf-rss-block ul {
+  padding-left:0;
+  padding-bottom:10px;
+}
+
+.tf-rss-block .read-more-trigger:last-child {
+  float:right;
+}
+
+.tf-rss-feeds-switcher {
+  padding-right: 8px;
+  padding-left: 8px;
+  width:100px;
+}
+
+.detailsIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 3px;
+}
+
+.tf-m-0 {
+  margin:0 !important;
 }

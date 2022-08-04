@@ -1,0 +1,14 @@
+<h1><?=$this->transEsc('Get Newsfeed')?></h1>
+<p>Zum Abonnieren des Feeds haben Sie mehrere Möglichkeiten:</p>
+<ul>
+  <li>Sie können den gesamten Feed mit einem <b><a href="https://www.rss-readers.org/" target="_blank" data-lightbox-ignore>RSS-Reader</a></b> abonnieren. Dazu benötigen Sie auf Ihrem System einen RSS-Reader.</li>
+  <li>Alternativ verwenden Sie Ihr Benutzerkonto, um sich einen persönlichen Feed zu erstellen</li>
+  <ul>
+    <li>Der persönliche Feed kann entweder mit einem <b>RSS-Reader</b> gelesen werden,</li>
+    <li>oder Sie können sich per <b>E-Mail</b> über neue Artikel benachrichtigen lassen.</li>
+  </ul>
+</ul>
+<p>
+  <a href="<?=$this->tuefind()->getRssNewsUrl()?>" class="read-more-trigger" role="button" data-lightbox-ignore><i class="fa fa-rss"></i> Gesamten Feed mit RSS-Reader abonnieren</a>
+  <a href="<?=$this->url('myresearch-rssfeedsettings')?>" class="read-more-trigger" role="button" data-lightbox-ignore><i class="fa fa-rss"></i> Persönlichen Feed konfigurieren</a>
+</p>

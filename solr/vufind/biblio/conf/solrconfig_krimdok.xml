@@ -33,7 +33,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>7.3.1</luceneMatchVersion>
+  <luceneMatchVersion>8.11.1</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -106,6 +106,14 @@
         For more details see http://wiki.apache.org/solr/SolrJmx
   -->
   <jmx />
+
+
+  <updateRequestProcessorChain name="conditional_insert_field">
+    <processor class="de.uni_tuebingen.ub.tuefind.conditionalInsertField.ConditionalInsertFieldProcessorFactory" />
+    <processor class="solr.LogUpdateProcessorFactory" />
+    <processor class="solr.RunUpdateProcessorFactory" />
+  </updateRequestProcessorChain>
+
 
   <!-- the default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
@@ -186,8 +194,8 @@
          -->
 
     <!-- VuFind uses the default Solr settings for filterCache, which should produce a high
-         hit rate. You can carefully adjust the filterCache and check the hit ratio in 
-         admin>plugins>stats -->  
+         hit rate. You can carefully adjust the filterCache and check the hit ratio in
+         admin>plugins>stats -->
     <filterCache
       class="solr.FastLRUCache"
       size="512"
@@ -357,6 +365,15 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
+
+  <requestHandler name="/update" class="solr.UpdateRequestHandler">
+     <lst name="defaults">
+        <str name="update.chain">conditional_insert_field</str>
+     </lst>
+  </requestHandler>
+
+
+
   <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters -->
      <lst name="defaults">
@@ -371,6 +388,16 @@
       <str name="spellcheck.count">20</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -395,6 +422,16 @@
       <str name="spellcheck.count">20</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -412,6 +449,16 @@
       <str name="lowercaseOperators">false</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <!-- TueFind: Revert VuFind 8 Workaround and set this to false to prevent problems, see issue #2171 for details -->
+      <str name="sow">false</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -708,6 +755,9 @@
   <queryResponseWriter name="xslt" class="org.apache.solr.response.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter>
+
+  <!-- CUSTOM queryParsers -->
+  <queryParser class="de.uni_tuebingen.ub.ixTheo.multiLanguageQuery.MultiLanguageQueryParserPlugin" name="multiLanguageQueryParser" />
 
   <!-- Mitigate CVE-2017-12629 -->
   <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin"/>

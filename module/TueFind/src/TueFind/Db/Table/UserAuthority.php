@@ -25,6 +25,19 @@ class UserAuthority extends \VuFind\Db\Table\Gateway {
         return $this->selectWith($select);
     }
 
+    public function hasGrantedAuthorityRight($userId, $authorityIds): bool
+    {
+        $select = $this->getSql()->select();
+        $where = new \Laminas\Db\Sql\Where();
+        $where->in("authority_id", $authorityIds);
+        $where->equalTo('user_id', $userId);
+        $where->equalTo('access_state', 'granted');
+        $select->where($where);
+
+        $rows = $this->selectWith($select);
+        return count($rows) > 0;
+    }
+
     public function getByUserId($userId, $accessState=null): ResultSet
     {
         $whereParams = ['user_id' => $userId];

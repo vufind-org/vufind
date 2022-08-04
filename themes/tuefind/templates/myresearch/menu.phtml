@@ -11,22 +11,28 @@
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Favorites')?>
     </a>
+    <?php /* TueFind: Moved this section from bottom next to favorites section. */?>
+    <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
+    <a href="<?=$this->url('search-history')?>?require_login"<?=$this->active == 'history' ? ' class="active"' : ''?>>
+      <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>
+    </a>
+    <?php endif; ?>
     <?php /* TueFind: Subscription functionality */ ?>
     <?php if ($this->accountCapabilities()->getSubscriptionSetting() === 'enabled'): ?>
       <a href="<?=$this->url('myresearch-subscriptions')?>"<?=$this->active == 'subscriptions' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-bell"></i> <?=$this->transEsc('Subscriptions')?>
       </a>
     <?php endif; ?>
+    <?php /* TueFind: RSS subscription functionality */ ?>
+    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
+      <a href="<?=$this->url('myresearch-rssfeedsettings')?>"<?=$this->active == 'rssFeedSettings' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("My newsfeeds")?>
+      </a>
+    <?php endif; ?>
     <?php /* TueFind: PDA functionality */ ?>
     <?php if ($this->accountCapabilities()->getPdaSetting() === 'enabled'): ?>
       <a href="<?=$this->url('myresearch-pdasubscriptions')?>"<?=$this->active == 'pdasubscriptions' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('PDA')?>
-      </a>
-    <?php endif; ?>
-    <?php /* TueFind: RSS subscription functionality */ ?>
-    <?php if ($this->accountCapabilities()->getRssSubscriptionSetting() === 'enabled'): ?>
-      <a href="<?=$this->url('myresearch-rssfeedsettings')?>"<?=$this->active == 'rssFeedSettings' ? ' class="active"' : ''?>>
-        <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("RSS")?>
       </a>
     <?php endif; ?>
     <?php /* TueFind: Publication functionality */ ?>
@@ -67,7 +73,11 @@
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-fines')?>" class="flex<?=$this->active == 'fines' ? ' active' : ''?>">
-      <span class="flex-col"><i class="fa fa-fw fa-usd" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Fines')?></span>
+        <?php
+            // Use a "fines" icon based on the configured default currency symbol:
+            $currency = strtolower($this->config()->get('config')->Site->defaultCurrency ?? 'usd');
+          ?>
+      <span class="flex-col"><i class="fa fa-fw fa-<?=$this->escapeHtmlAttr($currency)?>" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Fines')?></span>
       <span class="fines-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
     </a>
   <?php endif; ?>
@@ -82,11 +92,6 @@
   <?php if ($this->overdrive()->showMyContentLink()):?>
      <a href="<?=$this->url('overdrive-mycontent')?>"<?=$this->active == 'dgcontent' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-download" aria-hidden="true"></i> <?=$this->transEsc('Overdrive Content')?>
-    </a>
-  <?php endif; ?>
-  <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
-    <a href="<?=$this->url('search-history')?>?require_login"<?=$this->active == 'history' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>
     </a>
   <?php endif; ?>
   <?php if ($user): ?>
@@ -120,7 +125,7 @@
 
 <?php /* TueFind: Admin Menu */ ?>
 <?php $user = $this->auth()->isLoggedIn(); ?>
-<?php if ($user && $user->tuefind_is_admin): ?>
+<?php if ($user && $user->tuefind_rights != null): ?>
   <h3>Admin</h3>
   <div class="myresearch-menu">
     <a href="<?=$this->url('adminfrontend-showadmins') ?>"<?=$this->active == 'showadmins' ? ' class="active"' : ''?>>

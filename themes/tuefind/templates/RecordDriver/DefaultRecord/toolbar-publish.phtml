@@ -1,0 +1,26 @@
+<?php if ($this->auth()->isLoggedIn() && ($this->accountCapabilities()->getPublicationSetting() === 'enabled')):
+  $routeParams = $this->tuefind()->getRouteParams();
+  $recordId = $routeParams['id'];
+  $config = $this->tuefind()->getConfig('tuefind');
+  $publication = $this->tuefind()->getPublicationByControlNumber($recordId);
+  $authors = $this->driver->getDeduplicatedAuthors();
+  $accessPublishRecord = false;
+  if(isset($user->id)) {
+      $accessPublishRecord = $this->tuefind()->getUserAccessPublishRecord($user->id, $authors);
+  }
+  $showDspaceLink = false;
+  if (isset($publication)) {
+      $showDspaceLink = true;
+      $dspaceServer = $config->Publication->dspace_url_base;
+      $dspaceLink = $dspaceServer."/items/".$publication->external_document_guid;
+  }
+  ?>
+  <li>
+    <?php if($showDspaceLink) {?>
+      <a class="toolbar-btn btn-type-publish" href="<?=$dspaceLink;?>">go to file</a>
+    <?php }else{
+      if($accessPublishRecord) { ?>
+        <a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Publish')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a>
+    <?php } } ?>
+  </li>
+<?php endif; ?>

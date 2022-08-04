@@ -41,8 +41,10 @@ use VuFind\RecordDriver\SolrDefault;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SolrDefaultTest extends \VuFindTest\Unit\TestCase
+class SolrDefaultTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test an OpenURL for a book.
      *
@@ -176,7 +178,7 @@ XML;
      */
     public function testHighlightDetails()
     {
-        $details['author'] = 'test';
+        $details = ['author' => 'test'];
         $driver = $this->getDriver();
         $driver->setHighlightDetails($details);
         $this->assertEquals($details, $driver->getHighlightDetails());
@@ -202,15 +204,7 @@ XML;
      */
     protected function getDriver($overrides = [], $searchConfig = [])
     {
-        $fixture = json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/testbug2.json'
-                )
-            ),
-            true
-        );
-
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new SolrDefault(null, null, new \Laminas\Config\Config($searchConfig));
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;

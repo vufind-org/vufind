@@ -1,3 +1,15 @@
+<?php
+$jsSnippet = <<<EOD
+$(function () {
+  $('.modal-dismiss-link').click(function(e){
+    let url = $(this).data('href');
+    location=url;
+  })
+});
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
+
 <?php if (!$this->authority()->userHasRightsOnRecord($this->user, $this->driver)): ?>
   <p>You do not have access rights on this record!</p>
 <?php else: ?>
@@ -5,5 +17,5 @@
     You are registered as one of the authors of this record.<br>
     Would you like to upload a publication?
   </p>
-  <p><a href="<?=$this->url('myresearch-publish', ['record_id' => $this->driver->getUniqueId()])?>">click here</a></p>
+  <p><span data-dismiss="modal" class="modal-dismiss-link btn btn-link" data-href="<?=$this->url('myresearch-publish', ['record_id' => $this->driver->getUniqueId()])?>">click here</span></p>
 <?php endif; ?>

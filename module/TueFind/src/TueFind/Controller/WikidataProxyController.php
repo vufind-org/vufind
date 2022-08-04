@@ -2,14 +2,43 @@
 
 namespace TueFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use TueFind\Http\CachedDownloader;
+
 /**
  * Use Wikidata API to search for specific information (e.g. a picture)
- * Example call: https://ptah.ub.uni-tuebingen.de/wikidataproxy/load?search=Martin%20Luther
+ * - Example call: https://ptah.ub.uni-tuebingen.de/wikidataproxy/load?search=Martin%20Luther
+ * - For documentation, see: https://www.wikidata.org/w/api.php
  */
-class WikidataProxyController extends \VuFind\Controller\AbstractBase
+class WikidataProxyController extends AbstractProxyController
                               implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    const API_URL = 'https://www.wikidata.org/w/api.php?format=json';
+    protected $downloaderCacheId = 'wikidata';
+
+    /**
+     * Wikidata URLs must be resolved with a special content, else you might get the following error:
+     * - HTTP/1.0 429 Too many requests. Please comply with the User-Agent policy: https://meta.wikimedia.org/wiki/User-Agent_policy
+     *
+     * Since this might be useful for other URLs as well, we generate the user agent for all proxy requests.
+     *
+     * (override parent function)
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        parent::__construct($sm);
+
+        $config = $this->getConfig();
+
+        $siteTitle = $config->Site->title;
+        $siteUrl = $config->Site->url;
+        $siteEmail = $config->Site->email;
+
+        $userAgent = $siteTitle . '/1.0 (' . $siteUrl . '; ' . $siteEmail . ')';
+        $this->downloaderClientOptions['User-Agent'] = $userAgent;
+    }
 
     public function loadAction()
     {
@@ -18,10 +47,14 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         parse_str($query, $parameters);
 
         if (isset($parameters['id'])) {
-            $entities = $this->wikidata()->getEntities([$parameters['id']]);
-            $entity = $this->getFirstMatchingEntity($entities);
-            $image = $this->getBestImageFromEntity($entity);
-            return $this->generateResponse($image);
+            try {
+                $entities = $this->getEntities([$parameters['id']]);
+                $entity = $this->getFirstMatchingEntity($entities);
+                $image = $this->getBestImageFromEntity($entity);
+                return $this->generateResponse($image);
+            } catch (\Exception $e) {
+                // return proper status code, see end of this function
+            }
         } else {
             if (!isset($parameters['search']))
                 throw new \VuFind\Exception\BadRequest('Invalid request parameters.');
@@ -41,9 +74,12 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
             if (isset($parameters['deathYear']))
                 $filters['P570'] = ['value' => $parameters['deathYear'], 'type' => 'year'];
 
+            if (count($filters) == 0)
+                throw new \Exception('No suitable image found (at least one additional filter must be given!)');
+
             foreach ($searches as $search) {
                 try {
-                    $entities = $this->wikidata()->searchAndGetEntities($search, $language);
+                    $entities = $this->searchAndGetEntities($search, $language);
                     $entity = $this->getFirstMatchingEntity($entities, $filters, ['P18']);
                     $image = $this->getBestImageFromEntity($entity);
                     return $this->generateResponse($image);
@@ -53,7 +89,8 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
                 }
             }
         }
-        throw new \Exception('No suitable image found');
+
+        $this->getResponse()->setStatusCode(404);
     }
 
     protected function normalizeHeaderContent($artist) {
@@ -87,7 +124,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
             if (preg_match('"\.tiff?$"i', $imageFilename))
                 continue;
 
-            return $this->wikidata()->getImage($imageFilename);
+            return $this->getImage($imageFilename);
         }
 
         throw new \Exception('No suitable image found');
@@ -102,7 +139,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
      * @return \DOMElement or null if not found
      */
     protected function getFirstMatchingEntity(&$entities, $filters=[], $mandatoryFields=[]) {
-        foreach ($entities->entities as $entity) {
+        foreach ($entities->entities ?? [] as $entity) {
             $skip = false;
 
             // must have values
@@ -141,5 +178,102 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         }
 
         throw new \Exception('No valid entity found');
+    }
+
+    /**
+     * Search for entities and get metadata of all found entities
+     * (needs multiple API calls)
+     *
+     * @param type $search
+     * @param type $language
+     * @return object
+     */
+    public function searchAndGetEntities($search, $language) {
+        $entities = $this->searchEntities($search, $language);
+        $ids = [];
+        foreach($entities->search as $entity) {
+            $ids[] = $entity->id;
+        }
+        return $this->getEntities($ids);
+    }
+
+    /**
+     * Search for entities and return a short metadata array
+     * (wrapper for "wbsearchentities")
+     *
+     * @param string $search
+     * @param string $language
+     * @return object
+     */
+    public function searchEntities($search, $language) {
+        $url = self::API_URL . '&action=wbsearchentities&search=' . urlencode($search) . '&language=' . $language;
+        return $this->cachedDownloader->download($url, CachedDownloader::RESULT_MODE_JSON);
+    }
+
+    /**
+     * Get detailed metadata for objects with given IDs
+     * (wrapper for "wbgetentities")
+     *
+     * @param array $ids
+     * @return object
+     */
+    public function getEntities($ids) {
+        $url = self::API_URL . '&action=wbgetentities&ids=' . urlencode(implode('|', $ids));
+        return $this->cachedDownloader->download($url, CachedDownloader::RESULT_MODE_JSON);
+    }
+
+    /**
+     * Get image (binary contents + metadata) by a given unique filename
+     *
+     * @param string $filename
+     * @return array
+     */
+    public function getImage($filename) {
+        $metadata = $this->getImageMetadata($filename);
+        $metadata['image'] = $this->cachedDownloader->download($metadata['url']);
+        return $metadata;
+    }
+
+    /**
+     * Get image metadata by a given unique filename
+     *
+     * @param string $filename
+     * @return array
+     */
+    public function getImageMetadata($filename) {
+        $lookupUrl = self::API_URL . '&action=query&prop=imageinfo&iiprop=url|mime|extmetadata&titles=File:' . urlencode($filename);
+        $lookupResult = $this->cachedDownloader->download($lookupUrl, CachedDownloader::RESULT_MODE_JSON);
+        $subindex = '-1';
+
+        $imageInfo = $lookupResult->query->pages->$subindex->imageinfo[0] ?? null;
+
+        $imageUrl = $imageInfo->url ?? null;
+        if ($imageUrl === null)
+            throw new \Exception('Image URL could not be found for: ' . $filename);
+
+        $mime = $imageInfo->mime;
+        if ($mime === null)
+            throw new \Exception('Mime type could not be found for: ' . $filename);
+
+        $license = $imageInfo->extmetadata->LicenseShortName->value ?? null;
+        if ($license === null)
+            throw new \Exception('License could not be found for: ' . $filename);
+
+        if (!preg_match('"^Public domain|CC "i', $license))
+            throw new \Exception('Image not usable due to license restrictions (' . $license . '): ' . $filename);
+
+        $licenseUrl = $imageInfo->extmetadata->LicenseUrl->value ?? null;
+        if (!preg_match('"^Public domain$"i', $license) && $licenseUrl === null)
+            throw new \Exception('License URL could not be found for: ' . $filename);
+
+        $artist = $imageInfo->extmetadata->Artist->value ?? null;
+        if ($artist === null)
+            throw new \Exception('Artist could not be found for: ' . $filename);
+
+        return ['url' => $imageUrl,
+                'mime' => $mime,
+                'license' => $license,
+                'licenseUrl' => $licenseUrl,
+                'artist' => $artist];
     }
 }

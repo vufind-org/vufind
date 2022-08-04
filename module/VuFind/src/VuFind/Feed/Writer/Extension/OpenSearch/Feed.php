@@ -28,6 +28,7 @@
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
 
 use Laminas\Feed\Uri;
+use Laminas\Feed\Writer\Exception;
 use Laminas\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
 use Laminas\Stdlib\StringUtils;
 

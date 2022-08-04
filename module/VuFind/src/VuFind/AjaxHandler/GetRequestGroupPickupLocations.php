@@ -90,7 +90,8 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
         }
 
         return $this->formatResponse(
-            $this->translate('An error has occurred'), self::STATUS_HTTP_ERROR
+            $this->translate('An error has occurred'),
+            self::STATUS_HTTP_ERROR
         );
     }
 }

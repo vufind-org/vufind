@@ -53,7 +53,9 @@ class BooksiteTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'http://base/poca/content_img?apikey=mykey&ean=9780739313121',
             $loader->getUrl(
-                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
+                'mykey',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }

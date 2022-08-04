@@ -1,15 +1,9 @@
-<section>
+<section class="cw-p-2">
     <?php $this->headScript()->appendFile('vendor/ol/ol.js');?>
     <?php $this->headScript()->appendFile('vendor/ol/wrapper.js');?>
     <?php $this->headLink()->appendStylesheet('vendor/ol/ol.css');?>
-    <style>
-        .map {
-            height: 400px;
-            width: 100%;
-        }
-    </style>
     <div id="map" class="map"></div>
-    <div id="popup" class="ol-popup" style="background-color: white; padding: 10px;">
+    <div id="popup" class="ol-popup">
         <a href="#" id="popup-closer" class="ol-popup-closer">x</a>
         <div id="popup-content"></div>
     </div>
@@ -138,7 +132,7 @@
                 'highlight': '<?=$this->imageLink('ol/marker-tuebingen.png')?>',
                 'tuebingen': '<?=$this->imageLink('ol/marker-tuebingen.png')?>',
                 'cooperation': '<?=$this->imageLink('ol/marker-green.png')?>',
-                'protestant': '<?=$this->imageLink('ol/marker-blue.png')?>',
+                'protestant': '<?=$this->imageLink('ol/marker-purple.png')?>',
                 'catholic': '<?=$this->imageLink('ol/marker-black.png')?>',
             };
 
@@ -169,12 +163,11 @@
             DrawMap();
         });
     </script>
-    <div class="cw-py-2" style="display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between;">
-        <span class="badge badge-pill badge-primary">Primary</span>
-        <div style="color: green;" onclick="HighlightMarkerGroup('cooperation')" ><button>Kooperationen</button></div>
-        <div style="color: black;" onclick="HighlightMarkerGroup('catholic')"><button>Katholische Fachcommunity</button></div>
-        <div style="color: blue;" onclick="HighlightMarkerGroup('protestant')"><button>Evangelische Fachcommunity</button></div>
-        <div style="color: #a51e37;" onclick="HighlightMarkerGroup('tuebingen')"><button>Tübingen</button></div>
+    <div class="cw-py-2 map-navigation">
+        <div class="map-cooperation" onclick="HighlightMarkerGroup('cooperation')" ><button>Kooperationen</button></div>
+        <div class="map-catholic" onclick="HighlightMarkerGroup('catholic')"><button>Katholische Fachcommunity</button></div>
+        <div class="map-protestant" onclick="HighlightMarkerGroup('protestant')"><button>Evangelische Fachcommunity</button></div>
+        <div class="map-tuebingen" onclick="HighlightMarkerGroup('tuebingen')"><button>Tübingen</button></div>
     </div>
 </section>
 
@@ -193,7 +186,7 @@
             <!-- venue item-->
             <div data-marker-id="59c0c8e33b1527bfe2abaf92" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1430931071372-38127bd472b8.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                    <div class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover networking-image-1">
                         <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'advisors'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
                             <h4 class="cw-h4 cw-text-white cw-text-shadow">Beirat</h4>
@@ -219,7 +212,7 @@
             <!-- venue item-->
             <div data-marker-id="59c0c8e322f3375db4d89128" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1436018626274-89acd1d6ec9d.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                    <div class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover networking-image-2">
                         <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'cooperations'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
                             <h4 class="cw-h4 cw-text-white cw-text-shadow">Kooperationen</h4>
@@ -245,7 +238,7 @@
             <!-- venue item-->
             <div data-marker-id="59c0c8e3a31e62979bf147c9" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1466978913421-dad2ebd01d17.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                    <div class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover networking-image-3">
                         <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'experts'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
                             <h4 class="cw-h4 cw-text-white cw-text-shadow">Fachreferenten</h4>
@@ -271,7 +264,7 @@
             <!-- venue item-->
             <div data-marker-id="59c0c8e3503eb77d487e8082" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1477763858572-cda7deaa9bc5.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                    <div class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover networking-image-4">
                         <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'fids'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
                             <h4 class="cw-h4 cw-text-white cw-text-shadow">Andere FIDs</h4>

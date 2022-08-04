@@ -10,7 +10,7 @@
   $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
   $options = $this->searchOptions($this->searchClassId);
   $hasDefaultsApplied = $params->hasDefaultsApplied();
-  $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
+  $filterCount = $this->searchbox()->getFilterCount($this->checkboxFilters, $this->filterList);
 
   // Determine whether the only filters applied are the default ones; this controls
   // when we display or hide the reset button:
@@ -26,14 +26,16 @@
   $advancedSearch = $this->searchType === 'advanced';
 ?>
 <?php ob_start(); ?>
-  <?php foreach ($checkboxFilters as $filter): ?>
+  <?php foreach ($this->checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
       <span class="filter-value">
         <?php
           $removeLink = isset($urlQuery)
             ? $urlQuery->removeFilter($filter['filter'])
             : $this->searchMemory()->getEditLink(
-              $this->searchClassId, 'removeFilter', $filter['filter']
+                $this->searchClassId,
+                'removeFilter',
+                $filter['filter']
             );
           $desc = $this->translate($filter['desc']);
           $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);

@@ -1,2 +1,7 @@
 # ignore generated beacon file
+bibstudies-beacon.txt
+canonlaw-beacon.txt
 ixtheo-beacon.txt
+
+# ignore genereted news file (from aggregated rss feeds)
+news.rss

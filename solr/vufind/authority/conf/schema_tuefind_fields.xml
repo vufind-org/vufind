@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
     <!-- COMMON fields -->
+    <field name="date_sort" type="date" indexed="true" stored="true" docValues="true"/>
     <field name="external_references" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="gnd" type="string" indexed="true" stored="true"/>
+    <field name="heading_search" type="text" indexed="true" stored="true"/>
+    <field name="heading_short" type="string" indexed="true" stored="true"/>
     <field name="heading_sort" type="string" indexed="true" stored="true"/>
-    <field name="isni" type="string" indexed="true" stored="true"/>
-    <field name="orcid" type="string" indexed="true" stored="true"/>
+    <field name="heading_timespan" type="string" indexed="true" stored="true"/>
+    <field name="isni" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="orcid" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="place" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="subsystem" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="type" type="string" indexed="true" stored="true"/>
     <field name="viaf" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="wikidata" type="string" indexed="true" stored="true"/>
+    <field name="wikidata" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="year" type="date_range" indexed="true" stored="true" multiValued="true"/>
+    <field name="year_range_bbox" type="year_range_bbox" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_de" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_el" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_en" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_es" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_fr" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_hans" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_hant" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_it" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_pt" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation_ru" type="string" indexed="true" stored="true" multiValued="true"/>
+
+    <copyField source="heading" dest="heading_search" />
 </fields>

@@ -7,16 +7,19 @@
   ];
 
   $showingResults = $this->translate(
-    isset($this->skipTotalCount) ? 'showing_results_html' : 'showing_results_of_html',
-    $transParams
+      isset($this->skipTotalCount) ? 'showing_results_html' : 'showing_results_of_html',
+      $transParams
   );
 ?>
+<?php // Use search-heading if it's set, but append only if it's not empty to avoid extra whitespace: ?>
 <?php if ($this->slot('search-heading')->isset()): ?>
-  <?php $showingResults .= ' ' . $this->slot('search-heading')->get(); ?>
+  <?php if ($heading = $this->slot('search-heading')->get()): ?>
+    <?php $showingResults .= " $heading"; ?>
+  <?php endif; ?>
 <?php elseif ($this->params->getSearchType() == 'basic'):
   $showingResults = $this->translate(
-    isset($this->skipTotalCount) ? 'showing_results_for_html' : 'showing_results_of_for_html',
-    $transParams
+      isset($this->skipTotalCount) ? 'showing_results_for_html' : 'showing_results_of_for_html',
+      $transParams
   );
 endif; ?>
 

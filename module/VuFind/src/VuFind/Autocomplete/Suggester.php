@@ -70,7 +70,9 @@ class Suggester
      * @param ConfigManager  $cm Config manager
      * @param OptionsManager $om Options manager
      */
-    public function __construct(PluginManager $pm, ConfigManager $cm,
+    public function __construct(
+        PluginManager $pm,
+        ConfigManager $cm,
         OptionsManager $om
     ) {
         $this->pluginManager = $pm;
@@ -100,8 +102,8 @@ class Suggester
         // If we're using a combined search box, we need to override the searcher
         // and type settings.
         if (substr($type, 0, 7) == 'VuFind:') {
-            list(, $tmp) = explode(':', $type, 2);
-            list($searcher, $type) = explode('|', $tmp, 2);
+            [, $tmp] = explode(':', $type, 2);
+            [$searcher, $type] = explode('|', $tmp, 2);
         }
 
         // get Autocomplete_Type config
@@ -124,7 +126,7 @@ class Suggester
             if (strpos($module, ':') === false) {
                 $module .= ':'; // force colon to avoid warning in explode below
             }
-            list($name, $params) = explode(':', $module, 2);
+            [$name, $params] = explode(':', $module, 2);
             $handler = $this->pluginManager->get($name);
             $handler->setConfig($params);
         } else {

@@ -145,7 +145,7 @@ module.exports = function(grunt) {
               order: 4
             },
             { // Inline &:extends converted
-              pattern: /&:extend\(([^\)]+)\)/gi,
+              pattern: /&:extend\(([^\)]+?)( all)?\)/gi,
               replacement: '@extend $1',
               order: 4
             },

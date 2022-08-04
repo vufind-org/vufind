@@ -2,7 +2,7 @@
 
 namespace IxTheo\Search;
 
-class BackendRegistry extends \VuFind\Search\BackendRegistry {
+class BackendRegistry extends \TueFind\Search\BackendRegistry {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {

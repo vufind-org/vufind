@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+    <xi:include href="schema_tuefind_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="xpointer(//fieldType)">
+        <xi:fallback>
+            <!-- no error if no shared fieldType exists -->
+        </xi:fallback>
+    </xi:include>
+    <!--<fieldType name="date_range" class="solr.DateRangeField"/>-->
+</types>

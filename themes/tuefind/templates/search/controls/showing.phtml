@@ -1,0 +1,37 @@
+<?php
+
+  $lookfor = $this->escapeHtml($this->lookfor[0]);
+  $shortLookfor = $this->lookfor[1];
+
+  $transParams = [
+    '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
+    '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
+    '%%total%%' => $this->localizedNumber($this->recordTotal),
+    '%%lookfor%%' => $this->escapeHtml($shortLookfor)
+  ];
+
+  $showingResults = $this->translate(
+    isset($this->skipTotalCount) ? 'showing_results_html' : 'showing_results_of_html',
+    $transParams
+  );
+?>
+
+<?php // Use search-heading if it's set, but append only if it's not empty to avoid extra whitespace: ?>
+<?php if ($this->slot('search-heading')->isset()): ?>
+  <?php if ($heading = $this->slot('search-heading')->get()): ?>
+    <?php $showingResults .= " $heading"; ?>
+  <?php endif; ?>
+<?php elseif ($this->params->getSearchType() == 'basic'):
+  $showingResults = $this->translate(
+    isset($this->skipTotalCount) ? 'showing_results_for_html' : 'showing_results_of_for_html',
+    $transParams
+  );
+endif; ?>
+
+<?php $this->layout()->srmessage = $showingResults; ?>
+<?php if ($qtime = $this->results->getQuerySpeed()): ?>
+  <span title="<?=$lookfor; ?>" class="tf-cursor-pointer"><?=$showingResults; ?></span>
+  <span class="search-query-time">, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?></span>
+<?php else: ?>
+  <span title="<?=$lookfor; ?>" class="tf-cursor-pointer"><?=$showingResults; ?></span>
+<?php endif; ?>

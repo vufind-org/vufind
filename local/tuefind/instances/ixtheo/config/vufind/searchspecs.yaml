@@ -185,6 +185,7 @@ Author:
     - author_fuller^50
     - author2
     - author_additional
+    - author_corporate
     - corporation
   QueryFields:
     author:
@@ -204,6 +205,10 @@ Author:
       - [and, 50]
       - [or, ~]
     author_additional:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author_corporate:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
@@ -406,6 +411,8 @@ FulltextOnly:
     - fulltext_abstract_unstemmed^750
     - fulltext_summary^750
     - fulltext_summary_unstemmed^750
+    - fulltext_references^750
+    - fulltext_references_unstemmed^750
   QueryFields:
     fulltext_unstemmed:
       - [onephrase, 500]
@@ -439,6 +446,15 @@ FulltextOnly:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
+    fulltext_references:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_references_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
 
 
 
@@ -456,6 +472,9 @@ FulltextWithSynonyms:
     - fulltext_summary^750
     - fulltext_summary_unstemmed^750
     - fulltext_summary_synonyms^750
+    - fulltext_references^750
+    - fulltext_references_unstemmed^750
+    - fulltext_references_synonyms^750
 
   QueryFields:
     fulltext:
@@ -506,6 +525,18 @@ FulltextWithSynonyms:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
+    fulltext_references:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_references_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_references_synonyms:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
 
 
 FulltextAllSynonyms:
@@ -522,6 +553,10 @@ FulltextAllSynonyms:
     - fulltext_summary^750
     - fulltext_summary_unstemmed^750
     - fulltext_summary_synonyms_all^750
+    - fulltext_references^750
+    - fulltext_references_unstemmed^750
+    - fulltext_references_synonyms_all^750
+
   QueryFields:
     fulltext:
       - [onephrase, 500]
@@ -568,6 +603,18 @@ FulltextAllSynonyms:
       - [and, 50]
       - [or, ~]
     fulltext_summary_synonyms_all:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_references:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_references_unstemmed:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_references_synonyms_all:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
@@ -806,12 +853,18 @@ oclc_num:
       - [oclc_num, ~]
 
 Keywordchains:
-   DismaxFields:
-      - key_word_chains_sorted
-   QueryFields:
-     key_word_chain_sorted:
-      - [and, ~]
-   DismaxParams:
-       - ["defType", "multiLanguageQueryParser"]
-       - ["mm", "100%"]
+  DismaxFields:
+    - key_word_chains_sorted
+  QueryFields:
+    key_word_chain_sorted:
+    - [and, ~]
+  DismaxParams:
+    - ["defType", "multiLanguageQueryParser"]
+    - ["mm", "100%"]
 
+GND:
+  DismaxFields:
+    - author_gnd^200
+    - author2_gnd^100
+    - author_corporate_gnd
+    - topic_gnd

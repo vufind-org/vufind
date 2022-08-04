@@ -61,7 +61,7 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
@@ -75,7 +75,7 @@
       <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <span class="facet-load-indicator hidden">
           <span class="text">
-            <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
+            <?=$this->icon('spinner') ?> <?=$this->transEsc('Loading')?>...
           </span>
         </span>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
@@ -85,7 +85,7 @@
               data-path=""
               data-exclude="<?=$allowExclude?>"
               data-operator="<?=$this->recommend->getFacetOperator($field)?>"
-              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+              data-exclude-title="<?=$this->transEscAttr('exclude_facet')?>"
               data-sort="<?=$hierarchicalFacetSortOptions[$field] ?? ''?>">
           </div>
         <?php endif; ?>

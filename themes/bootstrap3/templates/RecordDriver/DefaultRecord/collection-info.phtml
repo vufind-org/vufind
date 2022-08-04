@@ -16,7 +16,7 @@
       <?php /* Display qrcode if appropriate: */ ?>
       <?php if($QRCode): ?>
         <span class="hidden-xs">
-          <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+          <br/><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
       <?php endif; ?>
 

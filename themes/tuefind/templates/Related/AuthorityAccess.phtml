@@ -1,0 +1,21 @@
+<?php $userAccess = $this->tuefind()->getUserAccessState($this->driver->getUniqueId(), $this->user->id ?? null);?>
+<div>
+  <?php if ($this->user != false): ?>
+      <?php if ($userAccess['availability'] == 'free'): ?>
+          <a class="save-record toolbar-btn btn-type-save" rel="nofollow" href="<?=$this->url('authority-request-access', ['authority_id' => $this->driver->getUniqueId()])?>" data-lightbox="">Request access rights (This is me!)</a>
+      <?php elseif ($userAccess['availability'] == 'mine'): ?>
+          <?php if ($userAccess['access_state'] == 'requested'): ?>
+               You have requested permission on this authority record. Our team has been informed, please wait for the approval.
+          <?php elseif ($userAccess['access_state'] == 'granted'): ?>
+              This authority record is linked to your user account.
+              <?php if($this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
+                  <br><a href="<?=$this->url('myresearch-publications')?>">Would you like to publish something?</a>
+              <?php endif;?>
+          <?php endif;?>
+      <?php elseif ($userAccess['availability'] == 'other'): ?>
+          <?php if($this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
+              <span class="save-record toolbar-btn btn-type-save">Another user already has rights to this authority record</span>
+          <?php endif;?>
+      <?php endif;?>
+  <?php endif;?>
+</div>

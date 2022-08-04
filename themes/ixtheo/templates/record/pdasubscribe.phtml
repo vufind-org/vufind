@@ -2,18 +2,18 @@
 <?php if (!empty($this->pdasubscription)) { ?>
     <?=$this->render($this->infoText);?>
     <h4><?=$this->bookDescription;?></h4>
-    <textarea style="resize: none" name="addressfield" autofocus="true"  form="edit-save-form" rows="5" cols="30" 
+    <textarea class="subscriber-textarea" name="addressfield" autofocus="true"  form="edit-save-form" rows="5" cols="30"
               placeholder="<?=$this->transEsc('Please enter your address here');?>"></textarea>
     <p/>
     <form id="edit-save-form" class="form-horizontal" method="post"
-          action="<?= $this->recordLink()->getActionUrl($this->driver, 'PDASubscribe') ?>" name="pdasubscribeRecord">
+          action="<?= $this->recordLinker()->getActionUrl($this->driver, 'PDASubscribe') ?>" name="pdasubscribeRecord">
         <input type="hidden" name="action" value="pdasubscribe"/>
         <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('PDASubscribe') ?>"/>
     </form>
 <?php } else { ?>
     <p><?=$this->transEsc("Subscription exists for this document");?>.</p>
     <form id="edit-save-form" class="form-horizontal" method="post"
-          action="<?= $this->recordLink()->getActionUrl($this->driver, 'PDASubscribe') ?>" name="pdaunsubscribeRecord">
+          action="<?= $this->recordLinker()->getActionUrl($this->driver, 'PDASubscribe') ?>" name="pdaunsubscribeRecord">
         <input type="hidden" name="action" value="pdaunsubscribe"/>
         <input class="btn btn-danger" type="submit" value="<?= $this->transEsc("PDAUnsubscribe");?>"/>
     </form>

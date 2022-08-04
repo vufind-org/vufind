@@ -37,7 +37,7 @@
   <?php endif ?>
 
   <?php $currentGroup = null; ?>
-  <?php foreach($form->getElements() as $el): ?>
+  <?php foreach($form->getFormElementConfig() as $el): ?>
     <?php
     $formElement = $form->get($el['name']);
 
@@ -76,7 +76,7 @@
       <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
         <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($el['name']) . '"' : ''?>>
       <?php else: ?>
-        <div class="field-set">
+        <div class="field-set"<?= !empty($elementHelpPre) ? ' role="contentinfo" aria-label="' . $this->escapeHtmlAttr($elementHelpPre) . '"' : ''?>>
       <?php endif ?>
     <?php endif ?>
 
@@ -86,10 +86,14 @@
     <?php endif ?>
     <?php if ($el['type'] !== 'submit'): ?>
       <?php if ($el['label']): ?>
+        <?php
+          $required = $el['required'] ?? false;
+          $requireOne = $el['requireOne'] ?? false;
+        ?>
         <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-          <p id="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label radio-label<?=!empty($el['required']) ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
+          <p id="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label radio-label<?=$required && !$requireOne? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
         <?php else: ?>
-      <label for="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label<?=!empty($el['required']) ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
+        <label for="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
         <?php endif ?>
       <?php endif ?>
     <?php else: ?>

@@ -23,7 +23,7 @@
         <div id="account-actions">
 
           <!-- IxTheo: This submit button belongs to the accountForm template -->
-          <input class="btn btn-primary" name="submit" value="Abschicken" type="submit">
+          <input class="btn btn-primary" name="submit" value="<?=$this->transEscAttr('Save')?>" type="submit">
 
           <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
             <a class="btn btn-default" href="<?=$this->url('myresearch-changeemail') ?>">

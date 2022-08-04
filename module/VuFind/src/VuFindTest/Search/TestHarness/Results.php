@@ -76,9 +76,12 @@ class Results extends \VuFind\Search\Base\Results
      * simulate
      * @param array                      $facets        Facet response (optional)
      */
-    public function __construct(\VuFind\Search\Base\Params $params,
-        SearchService $searchService, Loader $recordLoader,
-        $total = 100, $facets = []
+    public function __construct(
+        \VuFind\Search\Base\Params $params,
+        SearchService $searchService,
+        Loader $recordLoader,
+        $total = 100,
+        $facets = []
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->fakeExpectedTotal = $total;

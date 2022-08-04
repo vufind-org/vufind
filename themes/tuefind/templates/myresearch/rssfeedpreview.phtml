@@ -1,3 +1,3 @@
-<h2>RSS Feed Preview</h2>
-<p><a href="<?=$this->url('myresearch-rssfeedraw', ['user_uuid' => $this->user->tuefind_uuid])?>">Get your raw feed here</a></p>
+<h2><?=$this->transEsc('rss_feed_preview')?></h2>
+<p><a href="<?=$this->url('myresearch-rssfeedraw', ['user_uuid' => $this->user->tuefind_uuid])?>"><?=$this->transEsc('rss_personal_link')?></a></p>
 <?=$this->context($this)->renderInContext('rssfeed/full-items', ['rssItems' => $rssItems]);?>

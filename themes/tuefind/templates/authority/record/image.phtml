@@ -1,0 +1,27 @@
+<?php
+  // Image (partially rendered by JS)
+  $imgUrl = $this->url('wikidataproxy-load');
+  $wikidataIds = $this->driver->getWikidataIds();
+
+  if (empty($wikidataIds)) {
+    $imgUrl .= '?search[]=';
+    $names = $this->driver->getNameAliases();
+    $encodedNames = [];
+    foreach ($names as $name) {
+      $encodedNames[] = urlencode($name);
+    }
+    $imgUrl .= implode('&search[]=', $encodedNames);
+    $params = ['birthYear' => $this->driver->getBirthYear(),
+               'deathYear' => $this->driver->getDeathYear()];
+    foreach ($params as $key => $value) {
+      if ($value)
+	$imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+    }
+  } else {
+    // wikidata ids for single object always redirect to the master obj.: https://www.wikidata.org/wiki/Help:Redirects
+    $imgUrl .= '?id=' . $wikidataIds[0];
+  }
+?>
+<!-- onload didn't work, so we use a separate script snippet -->
+<div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>" align="center"></div>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetImagesFromWikidata();', 'SET')?>

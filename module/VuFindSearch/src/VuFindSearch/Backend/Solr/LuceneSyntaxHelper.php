@@ -51,7 +51,7 @@ class LuceneSyntaxHelper
      *
      * @var string
      */
-    const SOLR_RANGE_RE = '/(\[.+\s+TO\s+.+\])|(\{.+\s+TO\s+.+\})/';
+    public const SOLR_RANGE_RE = '/(\[.+\s+TO\s+.+\])|(\{.+\s+TO\s+.+\})/';
 
     /**
      * Lookahead that detects whether or not we are inside quotes.
@@ -451,27 +451,28 @@ class LuceneSyntaxHelper
         // Remove unwanted brackets/braces that are not part of range queries.
         // This is a bit of a shell game -- first we replace valid brackets and
         // braces with tokens that cannot possibly already be in the query (due
-        // to the work of normalizeBoosts()).  Next, we remove all remaining
+        // to the work of normalizeBoosts()).  Next, we escape all remaining
         // invalid brackets/braces, and transform our tokens back into valid ones.
         // Obviously, the order of the patterns/merges array is critically
         // important to get this right!!
         $patterns = [
-            // STEP 1 -- escape valid brackets/braces
+            // STEP 1 -- rename valid brackets/braces
             '/\[([^\[\]\s]+\s+TO\s+[^\[\]\s]+)\]/' .
             ($this->caseSensitiveRanges ? '' : 'i'),
             '/\{([^\{\}\s]+\s+TO\s+[^\{\}\s]+)\}/' .
             ($this->caseSensitiveRanges ? '' : 'i'),
-            // STEP 2 -- destroy remaining brackets/braces
-            '/[\[\]\{\}]/',
-            // STEP 3 -- unescape valid brackets/braces
+            // STEP 2 -- escape remaining unescaped brackets/braces
+            // (use a negative lookbehind (?<!\\) to skip escaped characters)
+            '/(?<!\\\\)([\[\]\{\}])/',
+            // STEP 3 -- restore valid brackets/braces
             '/\^\^lbrack\^\^/', '/\^\^rbrack\^\^/',
             '/\^\^lbrace\^\^/', '/\^\^rbrace\^\^/'];
         $matches = [
-            // STEP 1 -- escape valid brackets/braces
+            // STEP 1 -- rename valid brackets/braces
             '^^lbrack^^$1^^rbrack^^', '^^lbrace^^$1^^rbrace^^',
-            // STEP 2 -- destroy remaining brackets/braces
-            '',
-            // STEP 3 -- unescape valid brackets/braces
+            // STEP 2 -- escape remaining brackets/braces
+            '\\\\$1',
+            // STEP 3 -- restore valid brackets/braces
             '[', ']', '{', '}'];
         return preg_replace($patterns, $matches, $input);
     }
@@ -490,17 +491,20 @@ class LuceneSyntaxHelper
         // remove freestanding hyphens and pluses
         $input = preg_replace(
             '/(\s+[+-]+$|\s+[+-]+\s+|^[+-]+\s+)' . $lookahead . '/',
-            ' ', $input
+            ' ',
+            $input
         );
         // wrap quotes on standalone slashes
         $input = preg_replace(
             '/(\s+[\/]+\s+)' . $lookahead . '/',
-            ' "/" ', $input
+            ' "/" ',
+            $input
         );
         // remove trailing and leading slashes
         $input = preg_replace(
             '/(\s+[\/]+$|^[\/]+\s+)' . $lookahead . '/',
-            ' ', $input
+            ' ',
+            $input
         );
         // A proximity of 1 is illegal and meaningless -- remove it:
         $input = preg_replace('/~1(\.0*)?$/', '', $input);

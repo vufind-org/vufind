@@ -27,7 +27,7 @@
   <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
     <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>"/>
-    <input type="submit" value="<?=$this->escapeHtmlAttr($this->translate('Submit'))?>" class="btn btn-default" />
+    <input type="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-default" />
   </form>
 <?php endif; ?>
 
@@ -43,7 +43,7 @@
     </div>
 
     <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
-      <div class="channel-add-menu hidden" data-group="<?=$groupId ?>">
+      <div class="channel-add-menu hidden" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
         <button type="button" class="add-btn btn btn-link"><?=$this->transEsc('channel_add_more') ?></button><!--
      --><button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="caret"></span>
@@ -60,7 +60,8 @@
     <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : json_encode($channel['links']) ?>'>
       <!-- Wrapper for slides -->
       <?php foreach ($channel['contents'] as $index => $item): ?>
-        <a href="<?=empty($item['routeDetails']) ? $this->recordLink()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params'])?>" class="channel-record slide hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
+        <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
+        <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
           <div class="thumb">
             <img <?=$index < 6 ? "src" : "data-lazy" ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/>
           </div>

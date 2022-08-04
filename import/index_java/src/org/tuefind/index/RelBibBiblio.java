@@ -33,7 +33,6 @@ public class RelBibBiblio extends IxTheoBiblio {
      * Like the IxTheo analog but filter out all notations not relevant for
      * RelBib
      */
-
     public Set<String> getRelBibNotationFacets(final Record record) {
         // Due to problems with facet filter excludes (OR-facets disable the filter
         // facet query and display results based on the whole collection) we have to make sure
@@ -49,20 +48,6 @@ public class RelBibBiblio extends IxTheoBiblio {
         }
         return relBibNotations;
     }
-
-
-    public String getIsProbablyReligiousStudies(final Record record) {
-        final List<VariableField> _191Fields = record.getVariableFields("191");
-        for (final VariableField _191Field : _191Fields) {
-            final DataField dataField = (DataField) _191Field;
-            final Subfield subfieldA = dataField.getSubfield('a');
-            if (subfieldA != null && subfieldA.getData().equals("1"))
-                return TRUE;
-        }
-        return FALSE;
-
-    }
-
 
 
     public String getIsReligiousStudies(final Record record) {

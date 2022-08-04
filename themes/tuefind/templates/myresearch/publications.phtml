@@ -7,26 +7,43 @@ $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') 
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2>Publications</h2>
+  <h2>Authorities</h2>
   <?php if (count($this->authorityRecords) == 0): ?>
     <p>You do not have access to any authority records yet. Please search for an authority record first and request access there.</p>
   <?php else: ?>
-    <p><a href="<?=$this->url('myresearch-publish')?>">Would you like to publish something?</a></p>
+    <table class="table">
+      <tr>
+        <th><?=$this->transEsc('Author')?></th>
+        <th><?=$this->transEsc('Status')?></th>
+      </tr>
+      <?php foreach ($this->authorityUsers as $user): ?>
+        <tr>
+          <td><a href="/Authority/<?=urlencode($user['id'])?>"><?=$user['title']." (".$user['id'].")";?></a></td>
+          <td><?=$user['access_state']?></td>
+        </tr>
+      <?php endforeach; ?>
+    </table>
+    <p>If you like to publish something, please search for the matching record which is linked to your authority entry and use the "publish" button in the full view.</p>
+
+    <h2>Publications</h2>
     <?php if (count($this->publications) == 0): ?>
       <p>You did not upload any publications so far.</p>
     <?php else: ?>
-      <p>Details are queried live from our external publication repository:</p>
       <table class="table">
         <tr>
           <th>ID in external repository</th>
           <th>Title</th>
-          <th>Status</th>
+          <th>Dspace file</th>
+          <th>Created</th>
+          <th>Terms Date</th>
         </tr>
         <?php foreach ($this->publications as $publication): ?>
           <tr>
             <td><?=$publication['external_document_id']?></td>
-            <td>???</td>
-            <td>???</td>
+            <td><a href="<?=$this->recordLink()->getUrl($publication['control_number'])?>"><?=$publication['title'];?></a></td>
+            <td><a href="<?=$this->dspaceServer;?>/items/<?=$publication['external_document_guid']?>" target="_blank"><i class="fa fa-external-link"></i> Go to file</a></td>
+            <td><?=date("d.m.Y H:i:s",strtotime($publication['publication_datetime']));?></td>
+            <td><a href="/publication_terms/terms_<?=date("Ymd",strtotime($publication['terms_date']));?>.pdf" target="_blank"><?=date("d.m.Y",strtotime($publication['terms_date']));?></a></td>
           </tr>
         <?php endforeach; ?>
       </table>

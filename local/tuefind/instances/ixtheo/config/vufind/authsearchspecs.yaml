@@ -1,0 +1,14 @@
+---
+# This file contains search specifications used by the authority module; for details
+# on the workings of this file, see the comments in searchspecs.yaml.
+#-----------------------------------------------------------------------------------
+
+AllFields:
+  DismaxFields:
+    - heading_search^500
+    - allfields
+  DismaxHandler: edismax
+
+MainHeading:
+  DismaxFields:
+    - heading_search^500

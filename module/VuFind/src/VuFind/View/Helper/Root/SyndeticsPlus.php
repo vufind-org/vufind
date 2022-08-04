@@ -65,8 +65,7 @@ class SyndeticsPlus extends \Laminas\View\Helper\AbstractHelper
      */
     public function isActive()
     {
-        return isset($this->config->plus)
-            ? $this->config->plus : false;
+        return $this->config->plus ?? false;
     }
 
     /**

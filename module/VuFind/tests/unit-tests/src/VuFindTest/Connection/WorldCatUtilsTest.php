@@ -44,6 +44,8 @@ use VuFind\Connection\WorldCatUtils;
  */
 class WorldCatUtilsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test related identities
      *
@@ -82,8 +84,7 @@ class WorldCatUtilsTest extends \PHPUnit\Framework\TestCase
         $client = new HttpClient();
         if (null !== $fixture) {
             $adapter = new TestAdapter();
-            $file = realpath(__DIR__ . '/../../../../fixtures/worldcat/' . $fixture);
-            $adapter->setResponse(file_get_contents($file));
+            $adapter->setResponse($this->getFixture("worldcat/$fixture"));
             $client->setAdapter($adapter);
         }
         return new WorldCatUtils('dummy', $client, $silent);

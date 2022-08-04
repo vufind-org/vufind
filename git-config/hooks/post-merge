@@ -18,6 +18,6 @@ run_if_file_changed() {
 }
 
 echo "Updating TueFind configuration (git hook post-merge)"
-run_if_file_changed "php $DIR/../../util/cssBuilder.php tuefind tuefind2 ixtheo ixtheo2 relbib2 krimdok2 bibstudies churchlaw" "\.less" "LESS files changed, starting cssBuilder..."
-run_if_file_changed "$DIR/../../update_tuefind_config.sh" "/(schema[^/]*\.xml|solrconfig[^/]*\.xml|marc[^/]*\.properties)" "Solr configuration changed, rebuilding config & restarting solr..."
+run_if_file_changed "grunt less" "\.less" "LESS files changed, rebuilding CSS files..."
+run_if_file_changed "$DIR/../../update_tuefind_config.sh" "/(schema[^/]*\.xml|solrconfig[^/]*\.xml|marc[^/]*\.properties|[^/]*\.jar)" "Solr configuration changed, rebuilding config & restarting solr..."
 $DIR/../../clean_vufind_cache.sh

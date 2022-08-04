@@ -258,7 +258,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             $field = $marcStatus['marcField'];
             unset($marcStatus['marcField']);
             $result = $recordDriver->tryMethod(
-                'getFormattedMarcDetails', [$field, $marcStatus]
+                'getFormattedMarcDetails',
+                [$field, $marcStatus]
             );
             // If the details coming back from the record driver include the
             // ID prefix, strip it off!

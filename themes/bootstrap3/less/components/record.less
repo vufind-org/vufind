@@ -13,6 +13,10 @@
   height: auto;
 }
 
+.cover-source {
+  font-size: 14px;
+}
+
 .media-body h1 { margin-top: 0; }
 @media (max-width: 767px) {
   .record .media-left,
@@ -24,9 +28,10 @@
   }
 }
 // Comma-separate formatting
-.result .record .format::after,
-.record .format:last-child::after { content: ""; }
 .record .format::after { content: ", "; }
+.record .format.badge::after,
+.record .result-formats .format::after,
+.record .format:last-child::after { content: ""; }
 .record-previews { margin-top: .5rem; }
 
 /* ------ Nav ------ */

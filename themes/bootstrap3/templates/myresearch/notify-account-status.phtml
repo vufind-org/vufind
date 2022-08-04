@@ -1,0 +1,5 @@
+<?php
+if (null !== $this->accountStatus) {
+  $notifyScript = 'VuFind.account.notify("' . $this->method . '", ' . json_encode($this->accountStatus) . ');';
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $notifyScript, 'SET');
+}

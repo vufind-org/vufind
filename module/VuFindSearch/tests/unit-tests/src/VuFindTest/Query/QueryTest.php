@@ -109,10 +109,19 @@ class QueryTest extends TestCase
      */
     public function testMultipleReplacements()
     {
+        $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         $q = new Query("color code");
-        $q->replaceTerm('color code', '((color code) OR (color codes))', true);
+        $q->replaceTerm(
+            'color code',
+            '((color code) OR (color codes))',
+            $normalizer
+        );
         $this->assertEquals('((color code) OR (color codes))', $q->getString());
-        $q->replaceTerm('color code', '((color code) OR (color coded))', true);
+        $q->replaceTerm(
+            'color code',
+            '((color code) OR (color coded))',
+            $normalizer
+        );
         $this->assertEquals(
             '((((color code) OR (color coded))) OR (color codes))',
             $q->getString()
@@ -127,10 +136,14 @@ class QueryTest extends TestCase
     public function testNormalization()
     {
         $q = new Query('this is a tést OF THINGS');
+        $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         $this->assertFalse($q->containsTerm('test'));
-        $this->assertTrue($q->containsNormalizedTerm('test'));
-        $this->assertEquals('this is a test of things', $q->getNormalizedString());
-        $q->replaceTerm('test', 'mess', true);
+        $this->assertTrue($q->containsTerm('test', $normalizer));
+        $this->assertEquals(
+            'this is a test of things',
+            $q->getString($normalizer)
+        );
+        $q->replaceTerm('test', 'mess', $normalizer);
         $this->assertEquals('this is a mess of things', $q->getString());
     }
 

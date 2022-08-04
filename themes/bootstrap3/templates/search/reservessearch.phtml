@@ -16,7 +16,7 @@
   <form class="form-inline" method="get" name="reservesSearchForm">
     <label for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
     <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr("Find")?>"/>
   </form>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
 
@@ -60,11 +60,11 @@
     </tr>
     <?php foreach ($this->results->getResults() as $record): ?>
       <?php
-          $url = $this->currentPath() . $this->escapeHtmlAttr(
-              '?inst=' . urlencode($record->getInstructorId())
-              . '&course=' . urlencode($record->getCourseId())
-              . '&dept=' . urlencode($record->getDepartmentId())
-          );
+        $url = $this->currentPath() . $this->escapeHtmlAttr(
+            '?inst=' . urlencode($record->getInstructorId())
+            . '&course=' . urlencode($record->getCourseId())
+            . '&dept=' . urlencode($record->getDepartmentId())
+        );
       ?>
       <tr>
         <td class="department"><a href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?></a></td>

@@ -82,7 +82,9 @@ class Map extends AbstractBase
      * @param array $basemapOptions basemap settings
      * @param array $mapTabOptions  MapTab settings
      */
-    public function __construct($mapTabDisplay = false, $basemapOptions = [],
+    public function __construct(
+        $mapTabDisplay = false,
+        $basemapOptions = [],
         $mapTabOptions = []
     ) {
         if ($mapTabDisplay) {
@@ -215,12 +217,11 @@ class Map extends AbstractBase
      */
     public function getMapLabels()
     {
-        $labels = [];
         $mapLabelData = explode(':', $this->mapLabels);
         if ($mapLabelData[0] == 'driver') {
-            $labels = $this->getRecordDriver()->tryMethod('getCoordinateLabels');
-            return $labels;
+            return $this->getRecordDriver()->tryMethod('getCoordinateLabels') ?? [];
         }
+        $labels = [];
         if ($mapLabelData[0] == 'file') {
             $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
             /* read lookup file into array */
@@ -247,8 +248,8 @@ class Map extends AbstractBase
                     array_push($labels, $labelname);
                 }
             }
-            return $labels;
         }
+        return $labels;
     }
 
     /**
@@ -282,11 +283,12 @@ class Map extends AbstractBase
                 $mapLabel = $mapDisplayLabels[$key];
             }
             array_push(
-                $mapTabData, [
+                $mapTabData,
+                [
                     $geoCoords[$key][0], $geoCoords[$key][1],
                     $geoCoords[$key][2], $geoCoords[$key][3],
                     $mapLabel, $mapCoords
-                    ]
+                ]
             );
         }
         return $mapTabData;

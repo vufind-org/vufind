@@ -127,9 +127,7 @@ class Pazpar2 extends DefaultRecord
      */
     public function getUniqueId()
     {
-        return isset($this->pz2fields['location']['md-id'])
-            ? $this->pz2fields['location']['md-id']
-            : $this->pz2fields['recid'];
+        return $this->pz2fields['location']['md-id'] ?? $this->pz2fields['recid'];
     }
 
     /**
@@ -139,8 +137,7 @@ class Pazpar2 extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        $authors = isset($this->pz2fields['md-author'])
-            ? $this->pz2fields['md-author'] : [];
+        $authors = $this->pz2fields['md-author'] ?? [];
 
         return empty($authors) ? [] : (array)$authors;
     }
@@ -197,8 +194,7 @@ class Pazpar2 extends DefaultRecord
      */
     public function getShortTitle()
     {
-        return isset($this->pz2fields['md-title']) ?
-            $this->pz2fields['md-title'] : '';
+        return $this->pz2fields['md-title'] ?? '';
     }
 
     /**

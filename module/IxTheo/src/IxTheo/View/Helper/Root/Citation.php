@@ -44,65 +44,6 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
-    /**
-     * Store a record driver object and return this object so that the appropriate
-     * template can be rendered.
-     *
-     * @param \VuFind\RecordDriver\Base $driver Record driver object.
-     *
-     * @return Citation
-     */
-    public function __invoke($driver)
-    {
-        // Build author list:
-        $authors = [];
-        $primary = $driver->tryMethod('getPrimaryAuthor');
-        if (empty($primary)) {
-            $primary = $driver->tryMethod('getCorporateAuthor');
-        }
-        if (!empty($primary)) {
-            $authors[] = $primary;
-        }
-        $secondary = $driver->tryMethod('getSecondaryAuthors');
-        if (is_array($secondary) && !empty($secondary)) {
-            $authors = array_unique(array_merge($authors, $secondary));
-        }
-
-        // Get best available title details:
-        $title = $driver->tryMethod('getShortTitle');
-        $subtitle = $driver->tryMethod('getSubtitle');
-        if (empty($title)) {
-            $title = $driver->tryMethod('getTitle');
-        }
-        if (empty($title)) {
-            $title = $driver->getBreadcrumb();
-        }
-        // Find subtitle in title if they're not separated:
-        if (empty($subtitle) && strstr($title, ':')) {
-            list($title, $subtitle) = explode(':', $title, 2);
-        }
-
-        // Extract the additional details from the record driver:
-        $publishers = $driver->tryMethod('getPublishers');
-        $pubDates = $driver->tryMethod('getPublicationDates');
-        $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
-        $edition = $driver->tryMethod('getEdition');
-
-        // Store everything:
-        $this->driver = $driver;
-        $this->details = [
-            'authors' => $this->prepareAuthors($authors),
-            'title' => trim($title), 'subtitle' => trim($subtitle),
-            'pubPlace' => $pubPlaces[0] ?? null,
-            'pubName' => $publishers[0] ?? null,
-            'pubDate' => $pubDates[0] ?? null,
-            'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $this->getContainerTitle()
-        ];
-
-        return $this;
-    }
-
 
     public function getContainerTitle() {
 
@@ -121,57 +62,6 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
     }
 
     /**
-     * Get APA citation.
-     *
-     * This function assigns all the necessary variables and then returns an APA
-     * citation.
-     *
-     * @return string
-     */
-    public function getCitationAPA()
-    {
-        $apa = [
-            'title' => $this->getAPATitle(),
-            'authors' => $this->getAPAAuthors(),
-            'edition' => $this->getEdition()
-        ];
-        // Show a period after the title if it does not already have punctuation
-        // and is not followed by an edition statement:
-        $apa['periodAfterTitle']
-            = (!$this->isPunctuated($apa['title']) && empty($apa['edition']));
-
-        // Behave differently for books vs. journals:
-        $partial = $this->getView()->plugin('partial');
-        if (empty($this->details['journal'])) {
-            $apa['publisher'] = $this->getPublisher();
-            $apa['year'] = $this->getYear();
-            return $partial('Citation/apa.phtml', $apa);
-        } else {
-            list($apa['volume'], $apa['issue'], $apa['date'])
-                = $this->getAPANumbersAndDate();
-            $apa['journal'] = $this->details['journal'];
-            $apa['pageRange'] = $this->getPageRange();
-            if ($doi = $this->driver->tryMethod('getCleanDOI')) {
-                $apa['doi'] = $doi;
-            }
-            return $partial('Citation/apa-article.phtml', $apa);
-        }
-    }
-
-    /**
-     * Get Chicago Style citation.
-     *
-     * This function returns a Chicago Style citation using a modified version
-     * of the MLA logic.
-     *
-     * @return string
-     */
-    public function getCitationChicago()
-    {
-        return $this->getCitationMLA(9, ', no. ', true, ': ', ' ', false);
-    }
-
-    /**
      * Get MLA citation.
      *
      * This function assigns all the necessary variables and then returns an MLA
@@ -182,54 +72,73 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
      * al.'
      * @param string $volNumSeparator String to separate volume and issue number
      * in citation.
+     * @param string $numPrefix       String to display in front of numbering
+     * @param string $volPrefix       String to display in front of volume
+     * @param string $yearFormat      Format string for year display
+     * @param string $pageNoSeparator Separator between date / page no.
+     * @param bool   $includePubPlace Should we include the place of publication?
+     * @param string $doiPrefix       Prefix to display in front of DOI; set to
+     * false to omit DOIs.
+     * @param bool   $labelPageRange  Should we include p./pp. before page ranges?
      *
      * @return string
      */
-    public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.', $useYearBrackets = false,
-                                   $yearPageSeparator = ', ', $volPrefix = ', vol. ', $usePagePrefix = true)
-    {
+    public function getCitationMLA(
+        $etAlThreshold = 2,
+        $volNumSeparator = ', no. ',
+        $numPrefix = ', ',
+        $volPrefix = 'vol. ',
+        $yearFormat = ', %s',
+        $pageNoSeparator = ',',
+        $includePubPlace = false,
+        $doiPrefix = false,
+        $labelPageRange = true
+    ) {
+        // IxTheo: Always show DOI
+        if ($doiPrefix == false)
+            $doiPrefix = 'doi: ';
+
         $mla = [
             'title' => $this->getMLATitle(),
-            'authors' => $this->getMLAAuthors($etAlThreshold)
+            'authors' => $this->getMLAAuthors($etAlThreshold),
+            'labelPageRange' => $labelPageRange,
+            'pageNumberSeparator' => $pageNoSeparator,
         ];
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
+        if ($doiPrefix && $doi = $this->driver->tryMethod('getCleanDOI')) {
+            $mla['doi'] = $doi;
+            $mla['doiPrefix'] = $doiPrefix;
+        }
 
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
-            $mla['publisher'] = $this->getPublisher();
+            $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
             return $partial('Citation/mla.phtml', $mla);
-        } else {
-            // Add other journal-specific details:
-            $mla['pageRange'] = $this->getPageRange();
-            $mla['journal'] =  $this->capitalizeTitle($this->details['journal']);
-            $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator, $useYearBrackets, $volPrefix);
-            if ($doi = $this->driver->tryMethod('getCleanDOI'))
-               $mla['doi'] = $doi;
+        }
+        // If we got this far, we should add other journal-specific details:
+        $mla['pageRange'] = $this->getPageRange();
+        $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
+        $mla['numberAndDate'] = $numPrefix . $this->getMLANumberAndDate(
+            $volNumSeparator,
+            $volPrefix,
+            $yearFormat
+        );
 
-            $urls_and_types =  $this->driver->tryMethod('getURLsAndMaterialTypes');
-            if (!empty($urls_and_types)) {
-                // Choose first available Fulltext URL
-                foreach ($urls_and_types as $url => $type) {
-                    if ($type == "Free Access" && !empty($url)) {
-                        $mla['url'] = $url;
-                        break;
-                    }
+        $urls_and_types =  $this->driver->tryMethod('getURLsAndMaterialTypes');
+        if (!empty($urls_and_types)) {
+            // Choose first available Fulltext URL
+            foreach ($urls_and_types as $url => $type) {
+                if ($type == "Free Access" && !empty($url)) {
+                    $mla['url'] = $url;
+                    break;
                 }
             }
-
-            $formatter = new \IntlDateFormatter($this->getTranslatorLocale(),
-                             \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
-            if ($formatter === null)
-                 throw new \Exception(intl_get_error_message());
-            $mla['localizedDate'] = $formatter->format(new \DateTime());
-            $mla['yearPageSeparator'] = $yearPageSeparator;
-            $mla['usePagePrefix'] = $usePagePrefix;
-
-            return $partial('Citation/mla-article.phtml', $mla);
         }
+
+        return $partial('Citation/mla-article.phtml', $mla);
     }
 
     /**
@@ -242,52 +151,7 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
          return $this->driver->getPages();
     }
 
-    /**
-     * Construct volume/issue/date portion of MLA or Chicago Style citation.
-     *
-     * @param string $volNumSeparator String to separate volume and issue number
-     * in citation (only difference between MLA/Chicago Style).
-     *
-     * @return string
-     */
-    protected function getMLANumberAndDate($volNumSeparator = '.', $useYearBrackets = false, $volPrefix = ', vol.')
-    {
-        $vol = $this->driver->tryMethod('getVolume');
-        $num = $this->driver->tryMethod('getIssue');
-        $date = $this->details['pubDate'];
-        if (strlen($date) > 4) {
-            try {
-                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
-                $month = $this->dateConverter->convertFromDisplayDate('M', $date)
-                    . '.';
-                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
-            } catch (DateException $e) {
-                // If conversion fails, use raw date as year -- not ideal,
-                // but probably better than nothing:
-                $year = $date;
-                $month = $day = '';
-            }
-        } else {
-            $year = $date;
-            $month = $day = '';
-        }
 
-        // We need to supply additional date information if no vol/num:
-        if (!empty($vol) || !empty($num)) {
-            // If volume and number are both non-empty, separate them with a
-            // period; otherwise just use the one that is set.
-            $volNum = (!empty($vol) && !empty($num))
-                ? $vol . $volNumSeparator . $num : $vol . $num;
-            return $volPrefix . $volNum . ($useYearBrackets ?  ' (' . $year . ')' : ', ' . $year);
-        } else {
-            // Right now, we'll assume if day == 1, this is a monthly publication;
-            // that's probably going to result in some bad citations, but it's the
-            // best we can do without writing extra record driver methods.
-            return (($day > 1) ? $day . ' ' : '')
-                . (empty($month) ? '' : $month . ' ')
-                . $year;
-        }
-    }
 
     /**
      * Construct volume/issue/date portion of APA citation.  Returns an array with

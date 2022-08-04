@@ -46,7 +46,7 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
@@ -57,16 +57,18 @@
         <?=$this->transEsc($cluster['label'])?>
       </button>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if (!in_array($title, $collapsedFacets)): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
-        <?=$this->context($this)->renderInContext(
-          'Recommend/SideFacets/facet.phtml',
-          [
-            'facet' => $title,
-            'cluster' => $cluster,
-            'collapsedFacets' => $collapsedFacets
-          ]
-        ); ?>
+        <?=
+          $this->context($this)->renderInContext(
+              'Recommend/SideFacets/facet.phtml',
+              [
+                  'facet' => $title,
+                  'cluster' => $cluster,
+                  'collapsedFacets' => $collapsedFacets
+              ]
+          );
+        ?>
       </div>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerMoreLessFacetsEventHandlers();", 'SET');?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerSideFacetTruncation();", 'SET');?>

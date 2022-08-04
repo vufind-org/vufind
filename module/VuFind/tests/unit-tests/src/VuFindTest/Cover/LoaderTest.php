@@ -40,7 +40,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoaderTest extends \VuFindTest\Unit\TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Theme to use for testing purposes.
@@ -136,7 +136,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * @param \VuFindHttp\HttpService              $httpService HTTP client factory
      * @param array|bool                           $mock        Array of functions to mock, or false for real object
      *
-     * @return Loader
+     * @return Loader|\PHPUnit\Framework\MockObject\MockObject
      */
     protected function getLoader($config = [], $manager = null, $theme = null, $httpService = null, $mock = false)
     {
@@ -152,7 +152,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
         }

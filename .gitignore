@@ -4,6 +4,7 @@
 *~
 
 .php_cs_cache
+.phpstan_cache
 .vagrant
 .vscode/*
 /downloads
@@ -21,6 +22,7 @@ public/swagger-ui
 
 # CUSTOM TUEFIND IGNORES START HERE
 /import/marc_local.properties
+/import/marc_auth_local.properties
 nbproject
 /newsletter
 

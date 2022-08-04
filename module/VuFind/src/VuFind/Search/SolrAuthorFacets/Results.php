@@ -51,9 +51,7 @@ class Results extends \VuFind\Search\Solr\Results
         // Perform the search:
         $collection = $this->getSearchService()
             ->search($this->backendId, $query, 0, 0, $params);
-
         $this->responseFacets = $collection->getFacets();
-
         // Get the facets from which we will build our results:
         $facets = $this->getFacetList(['author_facet' => null]);
         if (isset($facets['author_facet'])) {
@@ -62,7 +60,9 @@ class Results extends \VuFind\Search\Solr\Results
                 = (($params->getPage() - 1) * $params->getLimit())
                 + count($facets['author_facet']['list']);
             $this->results = array_slice(
-                $facets['author_facet']['list'], 0, $params->getLimit()
+                $facets['author_facet']['list'],
+                0,
+                $params->getLimit()
             );
         }
     }

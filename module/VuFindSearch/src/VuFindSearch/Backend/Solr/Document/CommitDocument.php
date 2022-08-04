@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -36,10 +37,11 @@ use XMLWriter;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class CommitDocument extends AbstractDocument
+class CommitDocument implements DocumentInterface
 {
     /**
      * Value for commitWithin attribute
@@ -51,31 +53,29 @@ class CommitDocument extends AbstractDocument
     /**
      * Constructor.
      *
-     * @param int $commitWithin commitWithin attribute value
-     *
-     * @return void
+     * @param int $commitWithin commitWithin attribute value (-1 to omit)
      */
-    public function __construct($commitWithin = null)
+    public function __construct(int $commitWithin = -1)
     {
         $this->commitWithin = $commitWithin;
     }
 
     /**
-     * Return serialized JSON representation.
+     * Return content MIME type.
      *
      * @return string
      */
-    public function asJSON()
+    public function getContentType(): string
     {
-        // @todo Implement
+        return 'text/xml; charset=UTF-8';
     }
 
     /**
-     * Return serialized XML representation.
+     * Return serialized representation.
      *
      * @return string
      */
-    public function asXML()
+    public function getContent(): string
     {
         $writer = new XMLWriter();
         $writer->openMemory();

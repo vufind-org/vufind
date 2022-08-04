@@ -60,7 +60,7 @@ class OaiController extends AbstractBase
      */
     public function authserverAction()
     {
-        return $this->handleOAI('VuFind\OAI\Server\Auth');
+        return $this->handleOAI(\VuFind\OAI\Server\Auth::class);
     }
 
     /**
@@ -70,7 +70,7 @@ class OaiController extends AbstractBase
      */
     public function serverAction()
     {
-        return $this->handleOAI('VuFind\OAI\Server');
+        return $this->handleOAI(\VuFind\OAI\Server::class);
     }
 
     /**
@@ -103,8 +103,8 @@ class OaiController extends AbstractBase
             );
             $server = $this->serviceLocator->get($serverClass);
             $server->init($config, $baseURL, $params);
-            $server->setRecordLinkHelper(
-                $this->getViewRenderer()->plugin('recordLink')
+            $server->setRecordLinkerHelper(
+                $this->getViewRenderer()->plugin('recordLinker')
             );
             $server->setRecordFormatter(
                 $this->serviceLocator->get(RecordFormatter::class)

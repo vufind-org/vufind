@@ -1,8 +1,12 @@
 package org.tuefind.index;
 
+import java.io.FileNotFoundException;
+import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -21,7 +25,7 @@ import org.marc4j.marc.VariableField;
 public class TueFindAuth extends TueFind {
 
     protected final static Pattern SORTABLE_STRING_REMOVE_PATTERN = Pattern.compile("[^\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{N}]+");
-    protected final static Pattern YEAR_RANGE_PATTERN = Pattern.compile("^([v]?)(\\d+)-([v]?)(\\d+)$");
+    protected final static Pattern YEAR_RANGE_PATTERN = Pattern.compile("^([v]?)(\\d+)-([v]?)(\\d*)$");
 
     /**
      * normalize string due to specification for isni or orcid
@@ -54,7 +58,7 @@ public class TueFindAuth extends TueFind {
      * @param number2Category isni | orcid
      * @return
      */
-    public String getNormalizedValueByTag2(final Record record, final String tagNumber, final String number2Category) {
+    public Set<String> getNormalizedValuesByTag2(final Record record, final String tagNumber, final String number2Category) {
 
         @SuppressWarnings("unchecked")
         List<DataField> mainFields = (List<DataField>) (List<?>) record.getVariableFields(tagNumber);
@@ -64,22 +68,14 @@ public class TueFindAuth extends TueFind {
 
         if (mainFields.size() == 0) {
             return null;
-        } else if (mainFields.size() == 1) {
-            return normalizeByCategory(mainFields.get(0).getSubfield('a').getData(), number2Category);
         } else {
-            Set<String> differentNormalizedValues = new HashSet<String>();
+            Set<String> normalizedValues = new HashSet<String>();
             for (DataField mainField : mainFields) {
                 final String numberA = mainField.getSubfield('a').getData();
                 String normalizedValue = normalizeByCategory(numberA, number2Category);
-                differentNormalizedValues.add(normalizedValue);
+                normalizedValues.add(normalizedValue);
             }
-            if (differentNormalizedValues.size() == 1) {
-                return differentNormalizedValues.iterator().next();
-            } else {
-                logger.warning("record id " + record.getControlNumber() + " - multiple field with different content " + number2Category);
-                return null;
-            }
-
+            return normalizedValues;
         }
     }
 
@@ -102,50 +98,192 @@ public class TueFindAuth extends TueFind {
         return results;
     }
 
-    public String getYearRange(final Record record) {
-        final List<VariableField> yearFields = record.getVariableFields("400");
-        for (final VariableField yearField : yearFields) {
-            final DataField field = (DataField) yearField;
-            for (final Subfield subfield_d : field.getSubfields('d')) {
-                final Matcher matcher = YEAR_RANGE_PATTERN.matcher(subfield_d.getData());
-                if (matcher.matches()) {
-                    String year1 = matcher.group(2);
-                    String year2 = matcher.group(4);
-                    Integer year1Int = Integer.parseInt(year1);
-                    Integer year2Int = Integer.parseInt(year2);
+    public enum YearRangeType {
+        RANGE, BBOX
+    }
 
-                    boolean year1IsBC = matcher.group(1).equals("v");
-                    boolean year2IsBC = matcher.group(3).equals("v");
-                    if (!year1IsBC && !year2IsBC && year2Int < year1Int) {
-                        year1IsBC = true;
-                        year2IsBC = true;
-                    }
+    protected String getYearRangeOfSubfieldValue(String subfieldData, YearRangeType rangeType) {
+        final Matcher matcher = YEAR_RANGE_PATTERN.matcher(subfieldData);
+        if (matcher.matches()) {
+            String year1 = matcher.group(2);
+            String year2 = matcher.group(4);
 
-                    if (year1IsBC)
-                        year1 = "-" + year1;
-                    if (year2IsBC)
-                        year2 = "-" + year2;
+            boolean year1IsBC = matcher.group(1).equals("v");
+            boolean year2IsBC = matcher.group(3).equals("v");
 
+            if (year1.isEmpty()) {
+                year1 = "9999";
+                year1IsBC = true;
+            }
+            if (year2.isEmpty()) {
+                year2 = "9999";
+                year2IsBC = false;
+            }
+
+            Integer year1Int = Integer.parseInt(year1);
+            Integer year2Int = Integer.parseInt(year2);
+            if (!year1IsBC && !year2IsBC && year2Int < year1Int) {
+                year1IsBC = true;
+                year2IsBC = true;
+            }
+
+            if (year1Int != 9999 && year2Int != 9999) {
+                if (year1IsBC == year2IsBC && (Math.abs(year1Int - year2Int) > 110))
+                    return null;
+                if (year1IsBC != year2IsBC && (year1Int > 110 || year2Int > 110))
+                    return null;
+            }
+
+            // convert int back to string (e.g. -00 => 0)
+            year1 = String.valueOf(year1Int);
+            year2 = String.valueOf(year2Int);
+
+            if (year1IsBC && year1Int != 0)
+                year1 = "-" + year1;
+            if (year2IsBC && year2Int != 0)
+                year2 = "-" + year2;
+
+            switch (rangeType) {
+                case RANGE:
                     return "[" + year1 + " TO " + year2 + "]";
-                }
+                case BBOX:
+                    return getBBoxRangeValue(year1, year2);
             }
         }
         return null;
     }
 
+    public String getYearRangeHelper(final Record record, YearRangeType rangeType) {
+        List<String> values = getSubfieldValuesMatchingList(record, "400d:548a");
+        for (final String value : values) {
+            final String yearRange = getYearRangeOfSubfieldValue(value, rangeType);
+            if (yearRange != null)
+                return yearRange;
+        }
+
+        return null;
+    }
+
+    public String getYearRange(final Record record) {
+        return getYearRangeHelper(record, YearRangeType.RANGE);
+    }
+
+    public String getYearRangeBBox(final Record record) {
+        return getYearRangeHelper(record, YearRangeType.BBOX);
+    }
+
+    private boolean isInvalidYearNumber(String year, boolean isBc) {
+        if (year.length() > 4) {
+            return true;
+        }
+        try
+        {
+            int iYear = Integer.parseInt(year);
+            if (isBc && iYear > 8000) {
+                return true;
+            }
+            else if (!isBc && iYear > 2099) {
+                return true;
+            }
+        } catch (NumberFormatException e) {
+        }
+        return false;
+    }
+
+    private String extractDate(String dateStr) {
+        String retVal = dateStr.replaceAll("XX\\.", "01.").replaceAll("xx\\.", "01.");
+        boolean bc = false;
+        if (retVal.contains("v")) {
+            bc = true;
+            retVal = retVal.replaceAll("v", "");
+        }
+
+        retVal = retVal.replaceAll("ca.", "").trim();
+
+        if (retVal.matches("[0-9\\.]+") == false) {
+            return null;
+        }
+        else if (retVal.contains(".") && retVal.length() != retVal.replaceAll("\\.", "").length() + 2) {
+            return null;
+        }
+        else if (retVal.length() == retVal.replaceAll("\\.", "").length() + 2) { //exact date
+            String[] dateElems = retVal.split("\\.");
+            String year = dateElems[2];
+            String month = dateElems[1];
+            String day = dateElems[0];
+            if (month.equalsIgnoreCase("00")) {
+                month = "01";
+            }
+            if (day.equalsIgnoreCase("00")) {
+                day = "01";
+            }
+            if (day.length() > 2 && year.length() < 3) {
+                day = dateElems[2];
+                year = dateElems[0];
+            }
+            if (isInvalidYearNumber(year, bc)) {
+                return null;
+            } else {
+                return (bc==true?"-":"") + year + "-" + month + "-" + day + "T00:00:00Z";
+            }
+        }
+        else {
+            if (isInvalidYearNumber(retVal, bc)) {
+                return null;
+            } else {
+                return (bc==true?"-":"") + retVal + "-01-01T00:00:00Z"; //Format YYYY-MM-DDThh:mm:ssZ
+            }
+        }
+    }
+
+    public String getInitDate(final Record record) {
+        String retVal = null;
+        List<String> values = getSubfieldValuesMatchingList(record, "548a:400d:111d");
+        for (String value : values) {
+            if (value.contains("-")) {
+                value = value.split("-")[0].trim();
+            }
+            String extractedDate = extractDate(value);
+            if (value.length() == value.replaceAll("\\.", "").length() + 2) { //exact date
+                if (extractedDate != null) {
+                    return extractedDate;
+                }
+            }
+            if (extractedDate != null) {
+                retVal = extractedDate;
+            }
+        }
+        return retVal;
+    }
+
     public String getAuthorityType(final Record record) {
-        if (record.getVariableFields("100").size() > 0) {
-            for (VariableField field100 : record.getVariableFields("100")) {
+        final List<VariableField> fields100 = record.getVariableFields("100");
+        if (fields100.size() > 0) {
+            for (VariableField field100 : fields100) {
                 if (((DataField)field100).getSubfield('t') != null) {
                     return "work";
                 }
             }
             return "person";
         }
-        if (record.getVariableFields("110").size() > 0)
+        final List<VariableField> fields110 = record.getVariableFields("110");
+        if (fields110.size() > 0) {
+            for (VariableField field110 : fields110) {
+                if (((DataField)field110).getSubfield('t') != null) {
+                    return "work";
+                }
+            }
             return "corporate";
-        if (record.getVariableFields("111").size() > 0)
+        }
+        final List<VariableField> fields111 = record.getVariableFields("111");
+        if (fields111.size() > 0) {
+            for (VariableField field111 : fields111) {
+                if (((DataField)field111).getSubfield('t') != null) {
+                    return "work";
+                }
+            }
             return "meeting";
+        }
         if (record.getVariableFields("150").size() > 0)
             return "keyword";
         if (record.getVariableFields("151").size() > 0)
@@ -187,14 +325,45 @@ public class TueFindAuth extends TueFind {
         if (gndNumber != null)
             externalReferences.add("GND");
 
-        for (final String beaconId : getSubfieldValuesMatchlingList(record, "BEAa")) {
+        for (final String beaconId : getSubfieldValuesMatchingList(record, "BEAa")) {
             externalReferences.add(beaconId);
         }
-        
+
         String wikipediaUrl = getFirstSubfieldValueWithPrefix(record, "670a","Wikipedia");
         if (wikipediaUrl != null)
             externalReferences.add("Wikipedia");
 
         return externalReferences;
+    }
+
+    public Set<String> getOccupations(final Record record, String langAbbrev) {
+        Set<String> occupations = new LinkedHashSet<>();
+        Set<String> retOccupations = new LinkedHashSet<>();
+
+        for (final VariableField variableField : record.getVariableFields("374")) {
+            final DataField field = (DataField) variableField;
+            final Subfield subfield_a = field.getSubfield('a');
+            if (subfield_a == null)
+                continue;
+            String occ = subfield_a.getData();
+            occupations.add(occ);
+        }
+
+        for (final VariableField variableField : record.getVariableFields("550")) {
+            final DataField field = (DataField) variableField;
+            final Subfield subfield_a = field.getSubfield('a');
+            final Subfield subfield_4 = field.getSubfield('4');
+            if (subfield_a == null || subfield_4 == null)
+                continue;
+            String sub_4 = subfield_4.getData();
+            if (sub_4 == null || !(sub_4.equalsIgnoreCase("berc") || sub_4.equalsIgnoreCase("beru")))
+                continue;
+            String occ = subfield_a.getData();
+            occupations.add(occ);
+        }
+        for (String elem : occupations)
+            retOccupations.add(getTranslation(elem, langAbbrev));
+
+        return retOccupations;
     }
 }

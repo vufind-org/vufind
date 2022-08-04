@@ -36,6 +36,7 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -158,7 +159,11 @@ class HierarchicalFacetListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
+        );
     }
 
     /**
@@ -170,12 +175,12 @@ class HierarchicalFacetListener
      */
     public function onSearchPost(EventInterface $event)
     {
-        $backend = $event->getParam('backend');
+        $command = $event->getParam('command');
 
-        if ($backend != $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
-        $context = $event->getParam('context');
+        $context = $command->getContext();
         if ($context == 'search' || $context == 'retrieve'
             || $context == 'retrieveBatch' || $context == 'similar'
         ) {
@@ -196,7 +201,7 @@ class HierarchicalFacetListener
         if (empty($this->facetConfig->SpecialFacets->hierarchical)) {
             return;
         }
-        $result = $event->getTarget();
+        $result = $event->getParam('command')->getResult();
         foreach ($result->getRecords() as $record) {
             $fields = $record->getRawData();
             foreach ($this->facetConfig->SpecialFacets->hierarchical as $facetName) {
@@ -211,7 +216,8 @@ class HierarchicalFacetListener
                         // level available
                         if (!$allLevels
                             || $this->facetHelper->isDeepestFacetLevel(
-                                $fields[$facetName], $value
+                                $fields[$facetName],
+                                $value
                             )
                         ) {
                             $value = $this->formatFacetField($facetName, $value);
@@ -246,9 +252,7 @@ class HierarchicalFacetListener
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'
             : false;
-        $separator = isset($this->separators[$facet])
-            ? $this->separators[$facet]
-            : '/';
+        $separator = $this->separators[$facet] ?? '/';
         $domain = in_array($facet, $this->translatedFacets)
             ? ($this->translatedFacetsTextDomains[$facet] ?? 'default')
             : false;

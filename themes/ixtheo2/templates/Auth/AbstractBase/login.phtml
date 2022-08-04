@@ -4,7 +4,7 @@
   <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm">
     <?=$this->auth()->getLoginFields()?>
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
-    <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
+    <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash())?>" />
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
           <input class="btn btn-primary btn-lg btn-block" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
@@ -17,7 +17,7 @@
               </div>
               <div class="col-6">
               <?php if ($account->supportsRecovery()): ?>
-                <a class="btn btn-outline-secondary btn-sm" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>" data-lightbox-ignore><?=$this->transEsc('Forgot Password')?></a>
+                <a class="btn btn-outline-secondary btn-sm" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>" data-lightbox><?=$this->transEsc('Forgot Password')?></a>
              <?php endif; ?>
               </div>
           </div>
