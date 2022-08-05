@@ -346,6 +346,22 @@ site_url varchar(255) NOT NULL,
 PRIMARY KEY (id)
 );
 
+--
+-- Table structure for table `access_token`
+--
+
+DROP TABLE IF EXISTS "access_token";
+
+CREATE TABLE access_token (
+id varchar(255) NOT NULL,
+type varchar(128) NOT NULL,
+user_id int DEFAULT NULL,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+data text,
+revoked boolean NOT NULL DEFAULT '0',
+PRIMARY KEY (id, type)
+);
+
 -- --------------------------------------------------------
 
 --
@@ -396,5 +412,10 @@ ADD CONSTRAINT feedback_ibfk_2 FOREIGN KEY (updated_by) REFERENCES "user" (id) O
 CREATE INDEX feedback_created_idx ON feedback (created);
 CREATE INDEX feedback_status_idx ON feedback (status);
 CREATE INDEX feedback_form_name_idx ON feedback (form_name);
+
+-- Constraints for table access_token
+--
+ALTER TABLE access_token
+ADD CONSTRAINT access_token_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
 
 -- --------------------------------------------------------
