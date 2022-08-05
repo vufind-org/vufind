@@ -557,4 +557,10 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         $table = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('user_authority');
         return $table->hasGrantedAuthorityRight($userId, $authorsIds);
     }
+
+    public function showRSSBlock(): bool {
+        $instance = $this->getTueFindInstance();
+        $map = ['ixtheo'];
+        return in_array($instance, $map);
+    }
 }
