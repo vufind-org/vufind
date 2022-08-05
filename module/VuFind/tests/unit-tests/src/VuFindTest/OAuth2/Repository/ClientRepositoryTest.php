@@ -52,18 +52,24 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
             'Clients' => [
                 'openid_test' => [
                     'name' => 'OpenID Tester',
-                    'secret' => password_hash('supersecret', PASSWORD_DEFAULT),
                     'redirectUri' => 'http://localhost/callback',
-                    'isConfidential' => false,
                 ],
                 'confidential' => [
                     'name' => 'Confidential Client',
-                    'secret' => password_hash('badpassword', PASSWORD_DEFAULT),
+                    'secret' => password_hash('password', PASSWORD_DEFAULT),
                     'redirectUri' => 'http://localhost/secure',
+                    'isConfidential' => true,
                 ],
             ]
         ];
         $repo = new ClientRepository($config);
+        $this->assertFalse(
+            $repo->validateClient(
+                'foo',
+                'bar',
+                null
+            )
+        );
         $this->assertTrue(
             $repo->validateClient(
                 'openid_test',
@@ -75,6 +81,20 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
             $repo->validateClient(
                 'openid_test',
                 password_hash('supersecret', PASSWORD_DEFAULT),
+                null
+            )
+        );
+        $this->assertFalse(
+            $repo->validateClient(
+                'confidential',
+                password_hash('invalid', PASSWORD_DEFAULT),
+                null
+            )
+        );
+        $this->assertTrue(
+            $repo->validateClient(
+                'confidential',
+                'password',
                 null
             )
         );
