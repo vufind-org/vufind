@@ -374,7 +374,7 @@ CREATE TABLE `feedback` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `access_tokens`
+-- Table structure for table `access_token`
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
