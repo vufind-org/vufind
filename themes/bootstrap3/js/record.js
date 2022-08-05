@@ -312,20 +312,12 @@ function removeCheckRouteParam() {
 
 function recordDocReady() {
   removeCheckRouteParam();
-  // set aria selected to tabs based on url hash or initiallyActive class
-  var currentTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase() : '';
-  var tabs = $('.record-tab');
-  for (var i = 0; i < tabs.length; i++) {
-    var tab = tabs[i];
-    var dataTab = '#' + tab.getAttribute('data-tab');
-    if (tab.classList.contains('initiallyActive') && currentTab === '') {
-      tab.setAttribute('aria-selected', true);
-    } else if (dataTab === currentTab) {
-      tab.setAttribute('aria-selected', true);
-    } else {
-      tab.setAttribute('aria-selected', false);
-    }
-  }
+  $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
+  $('.record-tabs .nav-tabs .initiallyActive').attr('aria-selected', 'true');
+  $('.record-tabs .nav-tabs a').on('shown.bs.tab', function (e) {
+    $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
+    $(e.target).parent().attr('aria-selected', 'true');
+  });
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
@@ -333,17 +325,6 @@ function recordDocReady() {
       return true;
     }
     var tabid = $li.attr('data-tab');
-    // set aria selected to tabs on click
-    var recordTabs = $('.record-tab');
-    for (var j = 0; j < recordTabs.length; j++) {
-      var recordTab = recordTabs[j];
-      var recordTabid = recordTab.getAttribute('data-tab');
-      if (recordTabid === tabid) {
-        recordTab.setAttribute('aria-selected', true);
-      } else {
-        recordTab.setAttribute('aria-selected', false);
-      }
-    }
     var $top = $(this).closest('.record-tabs');
     // if we're flagged to skip AJAX for this tab, we need special behavior:
     if ($li.hasClass('noajax')) {
