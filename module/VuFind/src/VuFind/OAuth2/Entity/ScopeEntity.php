@@ -68,7 +68,7 @@ class ScopeEntity implements ScopeEntityInterface
     /**
      * Constructor
      *
-     * @param array $config Client configuration
+     * @param array $config Scope configuration
      */
     public function __construct(array $config)
     {
