@@ -893,7 +893,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getMyProfile($patron)
     {
         $this->checkIntermittentFailure();
-        $age = 13 + rand(0, 100);
+        $age = rand(13, 113);
         $birthDate = new \DateTime();
         $birthDate->sub(new \DateInterval("P{$age}Y"));
         $patron = [
