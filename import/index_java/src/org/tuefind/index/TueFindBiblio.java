@@ -285,7 +285,7 @@ public class TueFindBiblio extends TueFind {
      * @return Set topics
      */
 
-     public Set<String> getLocal689Topics(final Record record) {
+    public Set<String> getLocal689Topics(final Record record) {
         final Set<String> topics = new TreeSet<>();
         for (final VariableField variableField : record.getVariableFields("LOK")) {
             final DataField lokfield = (DataField) variableField;
