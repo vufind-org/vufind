@@ -55,7 +55,7 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
 
         $accessToken = $accessTokenRepo->getNewToken(
             $this->createClientEntity(),
-            [new ScopeEntity(['identifier' => 'openid'])],
+            [new ScopeEntity(['identifier' => 'openid', 'description' => 'OpenID'])],
             2
         );
         $accessToken->setIdentifier($this->createTokenId());

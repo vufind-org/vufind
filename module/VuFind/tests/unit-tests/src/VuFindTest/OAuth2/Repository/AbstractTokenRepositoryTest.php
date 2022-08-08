@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\OAuth2\Repository;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Row\AccessToken as AccessTokenRow;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Entity\ClientEntity;
@@ -47,7 +48,7 @@ abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Create AccessToken table
      *
-     * @return AccessToken
+     * @return MockObject&AccessToken
      */
     protected function getMockAccessTokenTable(): AccessToken
     {
@@ -72,7 +73,9 @@ abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
         };
 
         $accessTokenTable = $this->getMockBuilder(AccessToken::class)
-            ->disableOriginalConstructor()->getMock();
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getByIdAndType'])
+            ->getMock();
         $accessTokenTable->expects($this->any())
             ->method('getByIdAndType')
             ->willReturnCallback($getByIdAndTypeCallback);
@@ -85,7 +88,7 @@ abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $data Row data
      *
-     * @return AccessTokenRow
+     * @return MockObject&AccessTokenRow
      */
     protected function createAccessTokenRow(array $data): AccessTokenRow
     {

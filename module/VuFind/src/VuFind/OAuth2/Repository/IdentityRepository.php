@@ -73,13 +73,6 @@ class IdentityRepository implements IdentityProviderInterface
     protected $oauth2Config;
 
     /**
-     * Nonce to be returned with user claims
-     *
-     * @var string
-     */
-    protected $nonce = '';
-
-    /**
      * Constructor
      *
      * @param User        $userTable  User table
@@ -97,18 +90,6 @@ class IdentityRepository implements IdentityProviderInterface
         $this->accessTokenTable = $tokenTable;
         $this->ils = $ils;
         $this->oauth2Config = $config;
-    }
-
-    /**
-     * Set nonce to be returned with user claims
-     *
-     * @param string $nonce Nonce
-     *
-     * @return void
-     */
-    public function setNonce(string $nonce): void
-    {
-        $this->nonce = $nonce;
     }
 
     /**

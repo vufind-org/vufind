@@ -72,13 +72,13 @@ class ScopeEntity implements ScopeEntityInterface
      */
     public function __construct(array $config)
     {
-        foreach (['identifier'] as $required) {
+        foreach (['identifier', 'description'] as $required) {
             if (!isset($config[$required])) {
                 throw new \Exception("OAuth2 scope config missing '$required'");
             }
         }
         $this->setIdentifier($config['identifier']);
-        $this->setDescription($config['description'] ?? '');
+        $this->setDescription($config['description']);
         $this->setILSNeeded((bool)($config['ils'] ?? false));
         $this->setHidden($config['hidden'] ?? false);
     }

@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\OAuth2\Repository;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\ILS\Connection;
@@ -44,6 +45,32 @@ use VuFind\OAuth2\Repository\IdentityRepository;
  */
 class IdentityRepositoryTest extends AbstractTokenRepositoryTest
 {
+    /**
+     * OAuth2 configuration
+     *
+     * @var array
+     */
+    protected $oauth2Config = [
+        'Server' => [
+            'encryptionKey' => 'testkey',
+        ],
+        'ClaimMappings' => [
+            'id' => 'id',
+            'sub' => 'id',
+            'nonce' => 'nonce',
+            'name' => 'full_name',
+            'given_name' => 'firstname',
+            'family_name' => 'lastname',
+            'email' => 'email',
+            'birthdate' => 'birthdate',
+            'locale' => 'last_language',
+            'phone' => 'phone',
+            'address' => 'address_json',
+            'block_status' => 'block_status',
+            'library_user_id' => 'cat_username_hash',
+        ],
+    ];
+
     /**
      * Data provider for testIdentityRepository
      *
@@ -69,27 +96,15 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
      */
     public function testIdentityRepository(?bool $blocks): void
     {
-        $config = [
-            'ClaimMappings' => [
-                'id' => 'id',
-                'name' => 'full_name',
-                'given_name' => 'firstname',
-                'family_name' => 'lastname',
-                'email' => 'email',
-                'birthdate' => 'birthdate',
-                'locale' => 'last_language',
-                'phone' => 'phone',
-                'address' => 'address_json',
-                'block_status' => 'block_status',
-            ],
-        ];
+        $accessTokenTable = $this->getMockAccessTokenTable();
+        $nonce = bin2hex(random_bytes(5));
+        $accessTokenTable->storeNonce(2, $nonce);
         $repo = new IdentityRepository(
             $this->getMockUserTable(),
-            $this->getMockAccessTokenTable(),
+            $accessTokenTable,
             $this->getMockILSConnection($blocks),
-            $config
+            $this->oauth2Config
         );
-        $repo->setNonce('N-O-N-C-E');
 
         $this->assertNull($repo->getUserEntityByIdentifier(1));
         $user = $repo->getUserEntityByIdentifier(2);
@@ -97,16 +112,54 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
 
         $this->assertEquals(
             [
-                'sub' => 2,
                 'id' => 2,
+                'sub' => 2,
                 'name' => 'Lib Rarian',
                 'given_name' => 'Lib',
                 'family_name' => 'Rarian',
                 'birthdate' => '2022-08-05',
-                'locale' => 'en',
+                'locale' => 'en-GB',
                 'phone' => '1900 CALL ME',
                 'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City","postal_code":"12345","country":"Country"}',
                 'block_status' => $blocks,
+                'nonce' => $nonce,
+                'library_user_id' => $this->getCatUsernameHash('user'),
+            ],
+            $user->getClaims()
+        );
+    }
+
+    /**
+     * Test identity repository with a failing ILS connection
+     *
+     * @return void
+     */
+    public function testIdentityRepositoryWithFailingILS(): void
+    {
+        $accessTokenTable = $this->getMockAccessTokenTable();
+        $nonce = bin2hex(random_bytes(5));
+        $accessTokenTable->storeNonce(2, $nonce);
+        $repo = new IdentityRepository(
+            $this->getMockUserTable(),
+            $accessTokenTable,
+            $this->getMockFailingIlsConnection(),
+            $this->oauth2Config
+        );
+
+        $user = $repo->getUserEntityByIdentifier(2);
+        $this->assertInstanceOf(UserEntity::class, $user);
+
+        $this->assertEquals(
+            [
+                'id' => 2,
+                'sub' => 2,
+                'name' => 'Lib Rarian',
+                'given_name' => 'Lib',
+                'family_name' => 'Rarian',
+                'locale' => 'en-GB',
+                'nonce' => $nonce,
+                'block_status' => null,
+                'library_user_id' => $this->getCatUsernameHash('user'),
             ],
             $user->getClaims()
         );
@@ -115,7 +168,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     /**
      * Get a mock user object
      *
-     * @return UserRow
+     * @return MockObject&UserRow
      */
     protected function getMockUser(): UserRow
     {
@@ -125,7 +178,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             ->getMock();
 
         $user->id = 2;
-        $user->last_language = 'en';
+        $user->last_language = 'en-gb';
         $user->firstname = 'Lib';
         $user->lastname = 'Rarian';
         $user->cat_username = 'user';
@@ -136,7 +189,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     /**
      * Create a mock user table that returns a fake user object.
      *
-     * @return \VuFind\Db\Table\User
+     * @return MockObject&\VuFind\Db\Table\User
      */
     protected function getMockUserTable(): UserTable
     {
@@ -159,7 +212,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
      *
      * @param ?bool $blocks Whether to support blocks and what to return
      *
-     * @return Connection
+     * @return MockObject&Connection
      */
     protected function getMockIlsConnection(?bool $blocks): Connection
     {
@@ -223,5 +276,42 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
         }
 
         return $ils;
+    }
+
+    /**
+     * Get mock ILS connection that throws an exception for any actual ILS request.
+     *
+     * @return MockObject&Connection
+     */
+    protected function getMockFailingIlsConnection(): Connection
+    {
+        $ils = $this->getMockBuilder(Connection::class)
+            ->disableOriginalConstructor()
+            ->addMethods(['getAccountBlocks', 'getMyProfile', 'patronLogin'])
+            ->onlyMethods(['checkCapability'])
+            ->getMock();
+
+        $exception = new \VuFind\Exception\ILS('Simulated failure');
+
+        $ils->expects($this->once())
+            ->method('patronLogin')
+            ->will($this->throwException($exception));
+
+        return $ils;
+    }
+
+    /**
+     * Create a hash from a user name
+     *
+     * @param string $username User name
+     *
+     * @return string
+     */
+    protected function getCatUsernameHash(string $username): string
+    {
+        return hash(
+            'sha256',
+            'user' . $this->oauth2Config['Server']['encryptionKey']
+        );
     }
 }

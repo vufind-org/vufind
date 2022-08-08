@@ -38,7 +38,7 @@ use VuFind\OAuth2\Repository\ScopeRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ScopeRepositoryTest extends \PHPUnit\Framework\TestCase
+class ScopeRepositoryTest extends AbstractTokenRepositoryTest
 {
     /**
      * Data provider for testScopeRepository
@@ -48,7 +48,6 @@ class ScopeRepositoryTest extends \PHPUnit\Framework\TestCase
     public function getTestScopeRepositoryData(): array
     {
         return [
-            ['foo', '', true, false],
             ['openid', 'OpenID', false, false],
             ['id', 'Unique ID', false, false],
             ['phone', 'Phone', false, true],
@@ -88,5 +87,48 @@ class ScopeRepositoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($desc, $scope->getDescription());
         $this->assertEquals($hidden, $scope->gethidden());
         $this->assertEquals($ils, $scope->getILSNeeded());
+
+        $scopes = ['openid', 'id', 'phone'];
+        $this->assertEquals(
+            $scopes,
+            $repo->finalizeScopes($scopes, 'AuthCode', $this->createClientEntity())
+        );
+    }
+
+    /**
+     * Test scope repository with invalid id
+     *
+     * @return void
+     */
+    public function testScopeRepositoryWithInvalidId(): void
+    {
+        $config = [
+            'Scopes' => [
+                'openid' => [
+                    'description' => 'OpenID',
+                ],
+            ]
+        ];
+        $repo = new ScopeRepository($config);
+
+        $this->assertNull($repo->getScopeEntityByIdentifier('foo'));
+    }
+
+    /**
+     * Test scope repository with invalid configuration
+     *
+     * @return void
+     */
+    public function testInvalidConfig(): void
+    {
+        $config = [
+            'Scopes' => [
+                'openid' => [],
+            ]
+        ];
+        $repo = new ScopeRepository($config);
+
+        $this->expectExceptionMessage("OAuth2 scope config missing 'description'");
+        $repo->getScopeEntityByIdentifier('openid');
     }
 }

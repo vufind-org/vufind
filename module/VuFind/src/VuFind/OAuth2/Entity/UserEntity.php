@@ -120,13 +120,12 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                     $blocked = !empty($blocks);
                 }
             } catch (\Exception $e) {
-                // fall through
+                // fall through since we don't know if any of the information is
+                // actually required
             }
         }
 
-        $result = [
-            'sub' => $this->getIdentifier()
-        ];
+        $result = [];
         if ($nonce = $this->accessTokenTable->getNonce($this->user->id)) {
             $result['nonce'] = $nonce;
         }
@@ -145,21 +144,23 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                 $result[$claim] = $blocked;
                 break;
             case 'address_json':
-                // address_json is a specially formatted field for address
-                // information:
-                $street = array_filter(
-                    [
-                        $profile['address1'] ?? '',
-                        $profile['address2'] ?? '',
-                    ]
-                );
-                $address = [
-                    'street_address' => implode("\n", $street),
-                    'locality' => $profile['city'] ?? '',
-                    'postal_code' => $profile['zip'] ?? '',
-                    'country' => $profile['country'] ?? '',
-                ];
-                $result[$claim] = json_encode($address);
+                if ($profile) {
+                    // address_json is a specially formatted field for address
+                    // information:
+                    $street = array_filter(
+                        [
+                            $profile['address1'] ?? '',
+                            $profile['address2'] ?? '',
+                        ]
+                    );
+                    $address = [
+                        'street_address' => implode("\n", $street),
+                        'locality' => $profile['city'] ?? '',
+                        'postal_code' => $profile['zip'] ?? '',
+                        'country' => $profile['country'] ?? '',
+                    ];
+                    $result[$claim] = json_encode($address);
+                }
                 break;
             case 'last_language':
                 // Make sure any country code is in uppercase:
@@ -170,6 +171,14 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                 }
                 $result[$claim] = $value;
                 break;
+            case 'cat_username_hash':
+                if ($this->user->cat_username) {
+                    $result[$claim] = hash(
+                        'sha256',
+                        $this->user->cat_username
+                        . $this->oauth2Config['Server']['encryptionKey']
+                    );
+                }
             default:
                 if (($value = $this->user->{$field} ?? null)
                     || ($value = $profile[$field] ?? null)

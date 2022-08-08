@@ -82,18 +82,6 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected $accessTokenTable;
 
     /**
-     * Protected scopes in OpenID Connect
-     *
-     * @var array
-     */
-    protected $openIdConnectProtectedScopes = [
-        'profile',
-        'email',
-        'address',
-        'phone'
-    ];
-
-    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -258,20 +246,23 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
      */
     protected function getResponseType(): ResponseTypeInterface
     {
-        if (empty($this->oauth2Config['ClaimSets'])) {
-            return new BearerTokenResponse();
-        }
+        $hasClaims = false;
         $claimExtractor = new ClaimExtractor();
-        foreach ($this->oauth2Config['ClaimSets'] as $scope => $claimSetConf) {
-            if (in_array($scope, $this->openIdConnectProtectedScopes)) {
+        foreach ($this->oauth2Config['Scopes'] as $scopeId => $scopeConfig) {
+            if (empty($scopeConfig['claims'])) {
                 continue;
             }
-            $claimExtractor->addClaimSet(new ClaimSetEntity($scope, $claimSetConf));
+            $claimExtractor->addClaimSet(
+                new ClaimSetEntity($scopeId, $scopeConfig['claims'])
+            );
+            $hasClaims = true;
         }
-        return new IdTokenResponse(
-            $this->container->get(IdentityRepository::class),
-            $claimExtractor
-        );
+
+        return $hasClaims
+            ? new IdTokenResponse(
+                $this->container->get(IdentityRepository::class),
+                $claimExtractor
+            ) : new BearerTokenResponse();
     }
 
     /**

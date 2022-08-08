@@ -15,6 +15,7 @@ Server:
   # Encryption key used to encrypt payloads. Make sure it is random and long enough
   # (at least 32 characters)
   encryptionKey: ""
+
 # Known clients configuration
 Clients:
   example:
@@ -35,70 +36,89 @@ Clients:
     # Note that a secret can only be used with confidential clients since public
     # ones have no way of using it securely.
     secret: ""
+
 # Scope configuration. Keys are scope identifiers. Each identifier should include a
 # description (translation key) to be displayed to the user. The ils field should be
 # set to true if the information comes from a user profile in the library system.
 # This allows VuFind to display the library login or card selection form when
 # appropriate.
-Scopes:
-  openid: # openid is a built-in set required for OpenID
-    description: external_auth_scope_openid
-  id:
-    description: external_auth_scope_unique_id
-  name:
-    description: external_auth_scope_full_name
-  given_name:
-    description: external_auth_scope_given_name
-  family_name:
-    description: external_auth_scope_family_name
-  email:
-    description: external_auth_scope_email
-  birthdate:
-    description: external_auth_scope_birthdate
-    ils: true
-  locale:
-    description: external_auth_scope_locale
-  phone:
-    description: external_auth_scope_phone
-    ils: true
-  address:
-    description: external_auth_scope_address
-    ils: true
-  block_status:
-    description: external_auth_scope_block_status
-    ils: true
-# Claim set configuration. Claim sets map scopes to sets of user attributes.
+# The claims configuration key maps a scope to a set of user claims (attributes).
+# See ClaimMappings below for mappings from VuFind fields to OAuth2 claims.
 # Note that the OpenID Connect specification defines several standard claims
 # (see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims).
 # Note also that some or most of the information may only be available when the user
 # has an active library card.
-ClaimSets:
+Scopes:
+  openid: # A built-in set required for OpenID
+    description: external_auth_scope_openid
+    claims:
+      - sub   # A built-in claim
+      - nonce # A built-in claim
   id:
-    - id
-  openid: # openid is a built-in set required for OpenID
-    - name
-    - email
-    - locale
-    - nonce # This is required for OpenID nonce check
+    description: external_auth_scope_unique_id
+    claims:
+      - id
   name:
-    - name
+    description: external_auth_scope_full_name
+    claims:
+      - name
   given_name:
-    - given_name
+    description: external_auth_scope_given_name
+    claims:
+      - given_name
   family_name:
-    - family_name
-  email:
-    - email
+    description: external_auth_scope_family_name
+    claims:
+      - family_name
+  email: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_email
+    #claims:
+    #  - email
   birthdate:
-    - birthdate
+    description: external_auth_scope_birthdate
+    ils: true
+    claims:
+      - birthdate
   locale:
-    - locale
-  phone:
-    - phone
-  address:
-    - address
+    description: external_auth_scope_locale
+    claims:
+      - locale
+  phone: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_phone
+    ils: true
+    #claims:
+    #  - phone
+  address: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_address
+    ils: true
+    #claims:
+    #  - address
   block_status:
-    - block_status
-# Mappings from claim id to VuFind user or patron profile fields
+    description: external_auth_scope_block_status
+    ils: true
+    claims:
+      - block_status
+  profile: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_profile
+    #claims:
+    #  - name
+    #  - locale
+  library_user_id:
+    description: external_auth_scope_library_user_id
+    claims:
+      - library_user_id
+
+# Mappings from claim id to VuFind user or patron profile fields.
+# Claims can be any of the user (database row) or ILS profile fields or one of the
+# following:
+# - full_name     User's full name
+# - block_status  Whether the user has blocks in ILS (true/false or null if unknown)
+# - address_json  Address fields in JSON (see
+#                 https://openid.net/specs/openid-connect-core-1_0.html#AddressClaim)
+# - cat_username_hash  A unique hash of user's cat_username (typically library card
+#                      number but can be e.g. an email as well). The field is padded
+#                      with encyptionKey before hashing.
+#
 ClaimMappings:
   id: id
   name: full_name # special field created from firstname + ' ' + lastname
@@ -110,6 +130,8 @@ ClaimMappings:
   phone: phone
   address: address_json # special field including all address fields
   block_status: block_status # special field indicating whether the patron has blocks
+  library_user_id: cat_username_hash # special field with a hash of cat_username
+
 # Grants configuration. Life times are indicated as ISO 8601 periods. See
 # https://en.wikipedia.org/wiki/ISO_8601#Durations for more information.
 Grants:

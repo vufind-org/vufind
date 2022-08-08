@@ -29,6 +29,7 @@ namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Entity\ScopeEntity;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
+use VuFind\OAuth2\Repository\AuthCodeRepository;
 
 /**
  * OAuth2 AccessTokenRepository tests.
@@ -52,7 +53,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTest
 
         $token = $repo->getNewToken(
             $this->createClientEntity(),
-            [new ScopeEntity(['identifier' => 'openid'])],
+            [new ScopeEntity(['identifier' => 'openid', 'description' => 'OpenID'])],
             1
         );
         $tokenId = $this->createTokenId();
@@ -87,5 +88,24 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTest
             ],
             $this->accessTokenTable
         );
+    }
+
+    /**
+     * Test persisting wrong type of token
+     *
+     * @return void
+     */
+    public function testPersistInvalidTokenClass(): void
+    {
+        $accessTokenRepo
+            = new AccessTokenRepository($this->getMockAccessTokenTable());
+        $authCodeRepo = new AuthCodeRepository($this->getMockAccessTokenTable());
+
+        $token = $authCodeRepo->getNewAuthCode();
+        $this->expectExceptionMessage(
+            'VuFind\OAuth2\Entity\AuthCodeEntity is not'
+            . ' VuFind\OAuth2\Entity\AccessTokenEntity'
+        );
+        $accessTokenRepo->persistNew($token);
     }
 }

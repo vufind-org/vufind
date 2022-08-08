@@ -124,11 +124,30 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test invalid configuration
+     * Test configuration missing attributes
      *
      * @return void
      */
     public function testInvalidConfig(): void
+    {
+        $config = [
+            'Clients' => [
+                'openid_test' => [
+                    'name' => 'OpenID Tester',
+                ],
+            ]
+        ];
+        $repo = new ClientRepository($config);
+        $this->expectExceptionMessage("OAuth2 client config missing 'redirectUri'");
+        $repo->getClientEntity('openid_test');
+    }
+
+    /**
+     * Test invalid client secret configuration
+     *
+     * @return void
+     */
+    public function testInvalidClientSecretConfig(): void
     {
         $config = [
             'Clients' => [

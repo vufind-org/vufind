@@ -306,10 +306,9 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                 'sub' => $userId
             ];
             foreach ($scopes as $scope) {
-                if (!($claims = $this->oauth2Config['ClaimSets'][$scope] ?? [])) {
-                    continue;
-                }
-                foreach ($claims as $claim) {
+                foreach ($this->oauth2Config['Scopes'][$scope]['claims'] ?? []
+                    as $claim
+                ) {
                     if (isset($userClaims[$claim])) {
                         $result[$claim] = $userClaims[$claim];
                     }
