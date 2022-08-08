@@ -70,24 +70,33 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
                 null
             )
         );
+        // Secret is not verified with non-confidential clients:
         $this->assertTrue(
             $repo->validateClient(
                 'openid_test',
-                password_hash('invalid', PASSWORD_DEFAULT),
+                null,
                 null
             )
         );
         $this->assertTrue(
             $repo->validateClient(
                 'openid_test',
-                password_hash('supersecret', PASSWORD_DEFAULT),
+                'invalid',
+                null
+            )
+        );
+        // Secret is verified with a confidential client:
+        $this->assertFalse(
+            $repo->validateClient(
+                'confidential',
+                null,
                 null
             )
         );
         $this->assertFalse(
             $repo->validateClient(
                 'confidential',
-                password_hash('invalid', PASSWORD_DEFAULT),
+                'invalid',
                 null
             )
         );
@@ -112,5 +121,29 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Confidential Client', $client->getName());
         $this->assertEquals('http://localhost/secure', $client->getRedirectUri());
         $this->assertTrue($client->isConfidential());
+    }
+
+    /**
+     * Test invalid configuration
+     *
+     * @return void
+     */
+    public function testInvalidConfig(): void
+    {
+        $config = [
+            'Clients' => [
+                'openid_test' => [
+                    'name' => 'OpenID Tester',
+                    'redirectUri' => 'http://localhost/callback',
+                    'secret' => 'this should not be specified'
+                ],
+            ]
+        ];
+        $repo = new ClientRepository($config);
+        $this->expectExceptionMessage(
+            'OAuth2 client config must not specify a secret for a'
+            . ' non-confidential client'
+        );
+        $repo->getClientEntity('openid_test');
     }
 }

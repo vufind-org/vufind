@@ -26,10 +26,14 @@ Clients:
     # be enabled for non-confidential clients.
     pkce: true
     # Whether the client is confidential (as opposed to a public one such as an
-    # in-browser app)
+    # in-browser app). Only condidential clients can be verified by the client
+    # secret.
     isConfidential: false
     # Hash of a client secret. You can use the following command to get a hash for a
-    # password: php -r 'echo password_hash("secret",  PASSWORD_DEFAULT) . PHP_EOL;'
+    # password:
+    # php -r 'echo password_hash("secret",  PASSWORD_DEFAULT) . PHP_EOL;'
+    # Note that a secret can only be used with confidential clients since public
+    # ones have no way of using it securely.
     secret: ""
 # Scope configuration. Keys are scope identifiers. Each identifier should include a
 # description (translation key) to be displayed to the user. The ils field should be

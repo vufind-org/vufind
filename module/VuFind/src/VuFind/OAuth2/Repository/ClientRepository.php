@@ -92,7 +92,7 @@ class ClientRepository implements ClientRepositoryInterface
 
         if (($config['isConfidential'] ?? false)
             && (empty($config['secret'])
-            || !password_verify($clientSecret, $config['secret']))
+            || !password_verify($clientSecret ?? '', $config['secret']))
         ) {
             return false;
         }

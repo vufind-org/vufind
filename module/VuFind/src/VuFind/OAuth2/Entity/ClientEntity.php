@@ -30,6 +30,7 @@ namespace VuFind\OAuth2\Entity;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\Traits\ClientTrait;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
+use VuFind\Exception\BadConfig as BadConfigException;
 
 /**
  * OAuth2 client entity implementation.
@@ -53,13 +54,21 @@ class ClientEntity implements ClientEntityInterface
     {
         foreach (['identifier', 'name', 'redirectUri'] as $required) {
             if (!isset($config[$required])) {
-                throw new \Exception("OAuth2 client config missing '$required'");
+                throw new BadConfigException(
+                    "OAuth2 client config missing '$required'"
+                );
             }
         }
         $this->setIdentifier($config['identifier']);
         $this->setName($config['name']);
         $this->redirectUri = $config['redirectUri'];
         $this->isConfidential = (bool)($config['isConfidential'] ?? false);
+        if (!$this->isConfidential && !empty($config['secret'])) {
+            throw new BadConfigException(
+                'OAuth2 client config must not specify a secret for a'
+                . ' non-confidential client'
+            );
+        }
     }
 
     /**
