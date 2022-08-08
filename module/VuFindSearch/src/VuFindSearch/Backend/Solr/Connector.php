@@ -340,7 +340,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         ) {
             return $ex;
         }
-        return new BackendException('Problem connecting to Solr.', null, $ex);
+        return
+            new BackendException('Problem connecting to Solr.', $ex->getCode(), $ex);
     }
 
     /**
