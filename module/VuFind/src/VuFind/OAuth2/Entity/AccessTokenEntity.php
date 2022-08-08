@@ -46,35 +46,6 @@ class AccessTokenEntity implements AccessTokenEntityInterface, \JsonSerializable
     use AccessTokenTrait, TokenEntityTrait, EntityTrait;
 
     /**
-     * OpenID nonce
-     *
-     * @var string
-     */
-    protected $nonce;
-
-    /**
-     * Get nonce
-     *
-     * @return string
-     */
-    public function getNonce(): string
-    {
-        return $this->nonce;
-    }
-
-    /**
-     * Set nonce
-     *
-     * @param string $nonce Nonce
-     *
-     * @return void
-     */
-    public function setNonce(string $nonce): void
-    {
-        $this->nonce = $nonce;
-    }
-
-    /**
      * Serialize to a JSON string
      *
      * @return string
