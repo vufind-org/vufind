@@ -69,6 +69,7 @@ var IxTheo = {
 
 
 $(document).ready(function() {
+
   var previous_handler;
   $("#searchForm_type").on('focus', function() {
     previous_handler = this.value;
@@ -83,4 +84,5 @@ $(document).ready(function() {
       return false;
     }
   });
+
 });

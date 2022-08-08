@@ -520,6 +520,38 @@ var TueFind = {
             data: {action:actionType,id:rssID},
             dataType: "json"
         });
+    },
+
+    SetPositionClearButton: function () {
+        let clearSpan = $('.tf-clear-search-input-span');
+        let bodyWidth = $('body').width();
+        let searchFormObj = $('#searchForm_lookfor');
+        let searchInputWidth = searchFormObj.width();
+        let fixWidthClosed = clearSpan.data('x-position');
+        let fixWidthClosedLg = clearSpan.data('x-position-lg');
+        let fixWidthClosedMd = clearSpan.data('x-position-md');
+        let fixWidthClosedSm = clearSpan.data('x-position-sm');
+
+        if(fixWidthClosedLg !== undefined && bodyWidth < 1180 &&  bodyWidth > 975) {
+            fixWidthClosed = fixWidthClosedLg;
+        }
+        if(fixWidthClosedMd !== undefined && bodyWidth < 975 && bodyWidth > 500) {
+            fixWidthClosed = fixWidthClosedMd;
+        }
+        if(fixWidthClosedSm !== undefined && bodyWidth < 520) {
+            fixWidthClosed = fixWidthClosedSm;
+        }
+
+        let x = Math.round(searchInputWidth) + fixWidthClosed;
+        let visible = "none";
+        if(searchFormObj.val().length > 0) {
+            visible = "block";
+        }
+        if(clearSpan.hasClass("ixtheo2-form")) {
+            x = 0;
+        }
+        clearSpan.css({"left":x+"px","display":visible});
+
     }
 };
 
@@ -555,6 +587,21 @@ $(document).ready(function () {
 
     $('.rssLabel').change(function(){
         TueFind.SwitchRSSFeedData($(this));
-    })
+    });
+
+    $('#searchForm_lookfor').change(function() {
+        TueFind.SetPositionClearButton();
+    });
+
+    TueFind.SetPositionClearButton();
+
+    $( window ).resize(function() {
+      TueFind.SetPositionClearButton();
+    });
+
+    $('.tf-clear-search-input-span').click(function(){
+        $('#searchForm_lookfor').val("");
+        $("#searchForm").submit();
+    });
 
 });

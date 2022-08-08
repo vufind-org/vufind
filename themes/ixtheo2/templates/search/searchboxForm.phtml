@@ -1,4 +1,5 @@
 <?php
+    $tuefind = $this->tuefind();
     // Set default value if necessary:
     if (!isset($this->searchClassId)) {
         $config = $this->config()->get('config');
@@ -70,7 +71,6 @@
         <form id="searchForm" class="searchForm ix2-searchForm tuefind-event-searchForm-on-submit ix-display-flex" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off" >
             <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
-
             <!-- Begin search input field -->
             <input id="searchForm_lookfor"
                    class="searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>"
@@ -81,6 +81,10 @@
             <!-- Begin search select -->
             <?php if ($handlerCount > 1): ?>
                 <div class="dropdown form-control type-dropdown">
+
+                  <?php $subSystem = $tuefind->getTueFindSubsystem();?>
+                  <span class="tf-clear-search-input-span <?=$subSystem;?>-form" data-x-position="10"><svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg></span>
+
                     <input id="searchForm_type" class="searchForm_type" type="hidden" name="type" value="AllFields">
                     <a class="dropdown-toggle" href="#" aria-haspopup="true" aria-expaned="false" aria-label="<?=$this->transEsc("Search type")?>" data-toggle="dropdown">
                         <span id="searchForm_typeCaption"><?=$this->transEsc('All fields')?></span>
