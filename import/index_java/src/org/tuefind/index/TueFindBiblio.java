@@ -285,22 +285,22 @@ public class TueFindBiblio extends TueFind {
      * @return Set topics
      */
 
-     public Set<String> getLocal689Topics(final Record record) {
-         final Set<String> topics = new TreeSet<>();
-         for (final VariableField variableField : record.getVariableFields("LOK")) {
-             final DataField lokfield = (DataField) variableField;
-             final Subfield subfield0 = lokfield.getSubfield('0');
-             if (subfield0 == null || !subfield0.getData().equals("689  ")) {
-                 continue;
-             }
-             for (final Subfield subfieldA : lokfield.getSubfields('a')) {
-                 if (subfieldA != null && subfieldA.getData() != null && subfieldA.getData().length() > 2) {
-                     topics.add(subfieldA.getData());
-                 }
-             }
-         }
-         return topics;
-     }
+    public Set<String> getLocal689Topics(final Record record) {
+        final Set<String> topics = new TreeSet<>();
+        for (final VariableField variableField : record.getVariableFields("LOK")) {
+            final DataField lokfield = (DataField) variableField;
+            final Subfield subfield0 = lokfield.getSubfield('0');
+            if (subfield0 == null || !subfield0.getData().equals("689  ")) {
+                continue;
+            }
+            for (final Subfield subfieldA : lokfield.getSubfields('a')) {
+                if (subfieldA != null && subfieldA.getData() != null && subfieldA.getData().length() > 2) {
+                    topics.add(subfieldA.getData());
+                }
+            }
+        }
+        return topics;
+    }
 
 
     /**
