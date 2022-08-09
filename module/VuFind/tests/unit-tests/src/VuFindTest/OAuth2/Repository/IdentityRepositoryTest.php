@@ -53,6 +53,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     protected $oauth2Config = [
         'Server' => [
             'encryptionKey' => 'testkey',
+            'hashSalt' => 'superSalty',
         ],
         'ClaimMappings' => [
             'id' => 'id',
@@ -67,7 +68,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             'phone' => 'phone',
             'address' => 'address_json',
             'block_status' => 'block_status',
-            'library_user_id' => 'cat_username_hash',
+            'library_user_id' => 'library_user_id_hash',
         ],
     ];
 
@@ -311,7 +312,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     {
         return hash(
             'sha256',
-            'user' . $this->oauth2Config['Server']['encryptionKey']
+            'user' . $this->oauth2Config['Server']['hashSalt']
         );
     }
 }
