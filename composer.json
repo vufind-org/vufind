@@ -99,6 +99,7 @@
         "behat/mink": "1.10.0",
         "behat/mink-selenium2-driver": "1.6.0",
         "dmore/chrome-mink-driver": "2.8.1",
+        "firebase/php-jwt": "6.3.0",
         "friendsofphp/php-cs-fixer": "3.8.0",
         "opis/json-schema": "2.3.0",
         "phploc/phploc": "7.0.2",

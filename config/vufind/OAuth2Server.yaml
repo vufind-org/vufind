@@ -3,7 +3,12 @@
 # An example for generating the private/public key pair:
 #
 # openssl genrsa -out local/config/vufind/oauth2_private.key 2048
+# chown apache local/config/vufind/oauth2_private.key
+# chmod 600 local/config/vufind/oauth2_private.key
 # openssl rsa -in local/config/vufind/oauth2_private.key -pubout > local/config/vufind/oauth2_public.key
+# chown apache local/config/vufind/oauth2_public.key
+# chmod 600 local/config/vufind/oauth2_public.key
+#
 #
 
 # Authorization server configuration
@@ -13,8 +18,11 @@ Server:
   privateKeyPath: "oauth2_private.key"
   publicKeyPath: "oauth2_public.key"
   # Encryption key used to encrypt payloads. Make sure it is random and long enough
-  # (at least 32 characters)
+  # (at least 32 characters).
   encryptionKey: ""
+  # Salt for hashes (e.g. library_user_id claim). Make sure it is random and long
+  # enough (at least 32 characters).
+  hashSalt: ""
 
 # Known clients configuration
 Clients:
@@ -52,28 +60,51 @@ Scopes:
   openid: # A built-in set required for OpenID
     description: external_auth_scope_openid
     claims:
-      - sub   # A built-in claim
-      - nonce # A built-in claim
+      - sub   # A built-in claim, required for proper functionality
+      - nonce # A built-in claim, required for proper functionality
+  address: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_address
+    ils: true
+    #claims:
+    #  - address
+  email: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_email
+    #claims:
+    #  - email
+    #  - email_verified
+  phone: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_phone
+    ils: true
+    #claims:
+    #  - phone
+  profile: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_profile
+    ils: true
+    #claims:
+    #  - name
+    #  - family_name
+    #  - given_name
+    #  - middle_name
+    #  - nickname
+    #  - preferred_username
+    #  - profile
+    #  - picture
+    #  - website
+    #  - gender
+    #  - birthdate
+    #  - zoneinfo
+    #  - locale
+    #  - updated_at
   id:
     description: external_auth_scope_unique_id
     claims:
       - id
   name:
-    description: external_auth_scope_full_name
+    description: external_auth_scope_name
     claims:
       - name
-  given_name:
-    description: external_auth_scope_given_name
-    claims:
       - given_name
-  family_name:
-    description: external_auth_scope_family_name
-    claims:
       - family_name
-  email: # A predefined set required for OpenID; do not specify claims here
-    description: external_auth_scope_email
-    #claims:
-    #  - email
   birthdate:
     description: external_auth_scope_birthdate
     ils: true
@@ -83,26 +114,11 @@ Scopes:
     description: external_auth_scope_locale
     claims:
       - locale
-  phone: # A predefined set required for OpenID; do not specify claims here
-    description: external_auth_scope_phone
-    ils: true
-    #claims:
-    #  - phone
-  address: # A predefined set required for OpenID; do not specify claims here
-    description: external_auth_scope_address
-    ils: true
-    #claims:
-    #  - address
   block_status:
     description: external_auth_scope_block_status
     ils: true
     claims:
       - block_status
-  profile: # A predefined set required for OpenID; do not specify claims here
-    description: external_auth_scope_profile
-    #claims:
-    #  - name
-    #  - locale
   library_user_id:
     description: external_auth_scope_library_user_id
     claims:
@@ -130,7 +146,7 @@ ClaimMappings:
   phone: phone
   address: address_json # special field including all address fields
   block_status: block_status # special field indicating whether the patron has blocks
-  library_user_id: cat_username_hash # special field with a hash of cat_username
+  library_user_id: library_user_id_hash # special field with a hash of cat_username
 
 # Grants configuration. Life times are indicated as ISO 8601 periods. See
 # https://en.wikipedia.org/wiki/ISO_8601#Durations for more information.

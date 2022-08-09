@@ -35,7 +35,9 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use LmcRbacMvc\Service\AuthorizationService as LmAuthorizationService;
+use OpenIDConnectServer\ClaimExtractor;
 use VuFind\Db\Table\AccessToken;
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\OAuth2\Entity\UserEntity;
 use VuFind\OAuth2\Repository\IdentityRepository;
 use VuFind\Validator\CsrfInterface;
@@ -115,6 +117,13 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     protected $accessTokenTable;
 
     /**
+     * Claim extractor
+     *
+     * @var ClaimExtractor
+     */
+    protected $claimExtractor;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm      Service locator
@@ -126,6 +135,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      * @param SessionContainer        $session Session container
      * @param IdentityRepository      $ir      Identity repository
      * @param AccessToken             $at      Access token table
+     * @param ClaimExtractor          $ce      Claim extractor
      */
     public function __construct(
         ServiceLocatorInterface $sm,
@@ -136,7 +146,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         CsrfInterface $csrf,
         \Laminas\Session\Container $session,
         IdentityRepository $ir,
-        AccessToken $at
+        AccessToken $at,
+        ClaimExtractor $ce,
     ) {
         parent::__construct($sm);
         $this->oauth2Config = $config;
@@ -147,6 +158,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         $this->session = $session;
         $this->identityRepository = $ir;
         $this->accessTokenTable = $at;
+        $this->claimExtractor = $ce;
     }
 
     /**
@@ -181,18 +193,19 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      */
     public function authorizeAction()
     {
-        if (!($user = $this->getUser())) {
-            return $this->forceLogin('external_auth_access_login_message');
-        }
-
         // Validate the authorization request:
         $laminasRequest = $this->getRequest();
         $clientId = $laminasRequest->getQuery('client_id');
         if (empty($clientId)
             || !($clientConfig = $this->oauth2Config['Clients'][$clientId] ?? [])
         ) {
-            throw new \Exception("Invalid OAuth2 client $clientId");
+            throw new BadRequestException("Invalid OAuth2 client $clientId");
         }
+
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin('external_auth_access_login_message');
+        }
+
         $server = ($this->oauth2ServerFactory)($clientId);
         try {
             $authRequest = $server->validateAuthorizationRequest(
@@ -301,19 +314,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     OAuthServerException::accessDenied('User does not exist anymore')
                 );
             }
-            $userClaims = $userEntity->getClaims();
-            $result = [
-                'sub' => $userId
-            ];
-            foreach ($scopes as $scope) {
-                foreach ($this->oauth2Config['Scopes'][$scope]['claims'] ?? []
-                    as $claim
-                ) {
-                    if (isset($userClaims[$claim])) {
-                        $result[$claim] = $userClaims[$claim];
-                    }
-                }
-            }
+            $result = $this->claimExtractor
+                ->extract($scopes, $userEntity->getClaims());
             return $this->getJsonResponse($result);
         } catch (OAuthServerException $exception) {
             return $this->convertOAuthServerExceptionToResponse($exception);

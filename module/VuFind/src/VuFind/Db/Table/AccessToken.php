@@ -80,7 +80,7 @@ class AccessToken extends Gateway
         string $id,
         string $type,
         bool $create = true
-    ): AccessTokenRow {
+    ): ?AccessTokenRow {
         $row = $this->select(['id' => $id, 'type' => $type])->current();
         if ($create && empty($row)) {
             $row = $this->createRow();

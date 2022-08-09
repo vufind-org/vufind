@@ -171,12 +171,13 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                 }
                 $result[$claim] = $value;
                 break;
-            case 'cat_username_hash':
-                if ($this->user->cat_username) {
+            case 'library_user_id_hash':
+                $id = $profile['cat_id'] ?? $this->user->cat_username ?? null;
+                if ($id) {
                     $result[$claim] = hash(
                         'sha256',
-                        $this->user->cat_username
-                        . $this->oauth2Config['Server']['encryptionKey']
+                        $id
+                        . $this->oauth2Config['Server']['hashSalt']
                     );
                 }
             default:

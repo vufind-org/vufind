@@ -33,7 +33,6 @@ use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
-use League\OAuth2\Server\ResponseTypes\BearerTokenResponse;
 use League\OAuth2\Server\ResponseTypes\ResponseTypeInterface;
 use OpenIDConnectServer\ClaimExtractor;
 use OpenIDConnectServer\Entities\ClaimSetEntity;
@@ -82,6 +81,13 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected $accessTokenTable;
 
     /**
+     * Claim extractor
+     *
+     * @var ClaimExtractor
+     */
+    protected $claimExtractor = null;
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -105,8 +111,13 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         }
         $this->container = $container;
 
+        // Load configuration:
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $this->oauth2Config = $yamlReader->get('OAuth2Server.yaml');
+
+        // Check that hashSalt is defined:
+        $this->getOAuth2ServerSetting('hashSalt');
+
         $session = new \Laminas\Session\Container(
             OAuth2Controller::SESSION_NAME,
             $container->get(\Laminas\Session\SessionManager::class)
@@ -124,7 +135,8 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $container->get(\VuFind\Validator\CsrfInterface::class),
                 $session,
                 $container->get(IdentityRepository::class),
-                $tablePluginManager->get('AccessToken')
+                $tablePluginManager->get('AccessToken'),
+                $this->getClaimExtractor()
             )
         );
     }
@@ -246,23 +258,31 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
      */
     protected function getResponseType(): ResponseTypeInterface
     {
-        $hasClaims = false;
-        $claimExtractor = new ClaimExtractor();
-        foreach ($this->oauth2Config['Scopes'] as $scopeId => $scopeConfig) {
-            if (empty($scopeConfig['claims'])) {
-                continue;
-            }
-            $claimExtractor->addClaimSet(
-                new ClaimSetEntity($scopeId, $scopeConfig['claims'])
-            );
-            $hasClaims = true;
-        }
+        return new IdTokenResponse(
+            $this->container->get(IdentityRepository::class),
+            $this->getClaimExtractor()
+        );
+    }
 
-        return $hasClaims
-            ? new IdTokenResponse(
-                $this->container->get(IdentityRepository::class),
-                $claimExtractor
-            ) : new BearerTokenResponse();
+    /**
+     * Get the claim extractor.
+     *
+     * @return ClaimExtractor
+     */
+    protected function getClaimExtractor(): ClaimExtractor
+    {
+        if (null === $this->claimExtractor) {
+            $this->claimExtractor = new ClaimExtractor();
+            foreach ($this->oauth2Config['Scopes'] as $scopeId => $scopeConfig) {
+                if (empty($scopeConfig['claims'])) {
+                    continue;
+                }
+                $this->claimExtractor->addClaimSet(
+                    new ClaimSetEntity($scopeId, $scopeConfig['claims'])
+                );
+            }
+        }
+        return $this->claimExtractor;
     }
 
     /**
