@@ -51,6 +51,13 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
+     * Whether a key pair has been created
+     *
+     * @var bool
+     */
+    protected $opensslKeyPairCreated = false;
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -459,6 +466,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         file_put_contents($publicKeyPath, $details['key']);
         chmod($publicKeyPath, 0660);
 
+        $this->opensslKeyPairCreated = true;
+
         // Pre-PHP 8.0: Free the key:
         if (PHP_MAJOR_VERSION < 8) {
             openssl_pkey_free($privateKey);
@@ -470,7 +479,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected static function restoreOpenSSLKeyPair(): void
+    protected function restoreOpenSSLKeyPair(): void
     {
         $paths[] = Locator::getLocalConfigPath('oauth2_private.key', null, true);
         $paths[] = Locator::getLocalConfigPath('oauth2_public.key', null, true);
@@ -482,6 +491,21 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                 unlink($path);
             }
         }
+        $this->opensslKeyPairCreated = false;
+    }
+
+    /**
+     * Restore configurations to the state they were in prior to a call to
+     * changeConfig().
+     *
+     * @return void
+     */
+    protected function restoreConfigs()
+    {
+        parent::restoreConfigs();
+        if ($this->opensslKeyPairCreated) {
+            $this->restoreOpenSSLKeyPair();
+        }
     }
 
     /**
@@ -492,6 +516,5 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1']);
-        static::restoreOpenSSLKeyPair();
     }
 }
