@@ -287,6 +287,18 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             '/^\d{4}-\d{2}-\d{2}$/',
             $userInfo['birthdate']
         );
+
+        // Test token request with bad credentials:
+        $tokenParams['client_secret'] = 'badsecret';
+        $response = $http->post(
+            $this->getVuFindUrl() . '/OAuth2/token',
+            http_build_query($tokenParams),
+            'application/x-www-form-urlencoded'
+        );
+        $this->assertEquals(401, $response->getStatusCode());
+        $tokenResult = json_decode($response->getBody(), true);
+        $this->assertArrayHasKey('error', $tokenResult);
+        $this->assertEquals('invalid_client', $tokenResult['error']);
     }
 
     /**
