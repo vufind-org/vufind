@@ -147,7 +147,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         \Laminas\Session\Container $session,
         IdentityRepository $ir,
         AccessToken $at,
-        ClaimExtractor $ce,
+        ClaimExtractor $ce
     ) {
         parent::__construct($sm);
         $this->oauth2Config = $config;
