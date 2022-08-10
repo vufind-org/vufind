@@ -2,7 +2,7 @@
 
 namespace TueFind\MetadataVocabulary;
 
-class DSpace extends \VuFind\MetadataVocabulary\AbstractBase
+class DSpace7 extends \VuFind\MetadataVocabulary\AbstractBase
 {
     protected $vocabFieldToGenericFieldsMap = [ '/sections/traditionalpageone/dc.contributor.author' => 'author',
                                                 '/sections/traditionalpageone/dc.date.issued' => 'date',

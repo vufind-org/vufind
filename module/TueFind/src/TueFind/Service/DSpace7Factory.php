@@ -5,7 +5,7 @@ namespace TueFind\Service;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class DSpaceFactory implements FactoryInterface {
+class DSpace7Factory implements FactoryInterface {
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {

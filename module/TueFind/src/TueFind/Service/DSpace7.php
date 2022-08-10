@@ -19,7 +19,7 @@
 
 namespace TueFind\Service;
 
-class DSpace {
+class DSpace7 {
 
     const ENDPOINT_AUTH_LOGIN = '/api/authn/login';
     const ENDPOINT_AUTH_STATUS = '/api/authn/status';
