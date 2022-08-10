@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DSpace REST API implementation
+ * DSpace 7 REST API implementation
  *
  * Protocol Documentation
  * - https://github.com/DSpace/RestContract/blob/main/README.md
@@ -13,7 +13,7 @@
  * - https://github.com/DSpace/DSpace/tree/main/dspace-server-webapp/src/main/java/org/dspace/app/rest
  *
  * Demo instance (official)
- * - https://demo.dspace.org/
+ * - https://demo7.dspace.org/
  * - https://api7.dspace.org/server/#/server/api
  */
 
@@ -31,6 +31,9 @@ class DSpace7 {
     const ENDPOINT_WORKFLOW_ITEM = '/api/workflow/workflowitems';
 
     const HEADER_AUTHORIZATION = 'Authorization';
+    const HEADER_CONTENT_DISPOSITION = 'Content-Disposition';
+    const HEADER_CONTENT_LENGTH = 'Content-Length';
+    const HEADER_CONTENT_TRANSFER_ENCODING = 'Content-Transfer-encoding';
     const HEADER_CONTENT_TYPE = 'Content-Type';
     const HEADER_COOKIE_REQUEST = 'Cookie';
     const HEADER_COOKIE_RESPONSE = 'Set-Cookie';
@@ -142,18 +145,18 @@ class DSpace7 {
         $boundary = '---------------------------6549703717952841723022740979';
 
         $requestData = '--' . $boundary . "\r\n";
-        $requestData .= 'Content-Disposition: form-data; name="owningCollection"' . "\r\n\r\n";
+        $requestData .= self::HEADER_CONTENT_DISPOSITION . ': form-data; name="owningCollection"' . "\r\n\r\n";
         $requestData .= $collectionId . "\r\n";
 
         $requestData .= '--' . $boundary . "\r\n";
-        $requestData .= 'Content-Disposition: form-data; name="file"; filename="' . basename($documentUrl) . '"' . "\r\n";
-        $requestData .= 'Content-Type: application/pdf' . "\r\n\r\n";
-        $requestData .= 'Content-Transfer-encoding: binary' . "\r\n\r\n";
+        $requestData .= self::HEADER_CONTENT_DISPOSITION . ': form-data; name="file"; filename="' . basename($documentUrl) . '"' . "\r\n";
+        $requestData .= self::HEADER_CONTENT_TYPE . ': application/pdf' . "\r\n\r\n";
+        $requestData .= self::HEADER_CONTENT_TRANSFER_ENCODING . ': binary' . "\r\n\r\n";
         $requestData .= $fileContents . "\r\n\r\n";
         $requestData .= '--' . $boundary . '--' . "\r\n";
 
         $headers = [self::HEADER_CONTENT_TYPE => 'multipart/form-data; boundary=' . $boundary,
-                    'Content-Length' => strlen($requestData),
+                    self::HEADER_CONTENT_LENGTH => strlen($requestData),
                     self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer,
         ];
 
@@ -215,7 +218,7 @@ class DSpace7 {
         $requestDataJson = json_encode($requestData);
 
         $headers = [
-            'Content-Type' => 'application/json',
+            self::HEADER_CONTENT_TYPE => 'application/json',
             self::HEADER_AUTHORIZATION => 'Bearer ' . $this->bearer
             ];
 
@@ -302,7 +305,7 @@ class DSpace7 {
 
         $params = ['user' => $this->username, 'password' => $this->password];
         $postData = http_build_query($params);
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded',
+        $headers = [self::HEADER_CONTENT_TYPE => 'application/x-www-form-urlencoded',
                     'Content-Length' => strlen($postData)];
 
         $this->call(self::ENDPOINT_AUTH_LOGIN, self::METHOD_POST, $headers, $postData);
