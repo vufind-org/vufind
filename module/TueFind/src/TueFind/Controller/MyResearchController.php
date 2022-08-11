@@ -86,7 +86,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $uploadFileSize = 500000;
         $showForm = true;
 
-        $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace::class);
+        $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace7::class);
         $dspace->login();
         $config = $this->getConfig('tuefind');
 
@@ -99,7 +99,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $uploadError = 1;
         } else {
             $existingRecord = $this->getRecordLoader()->load($existingRecordId);
-            $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace')->getMappedData($existingRecord);
+            $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace7')->getMappedData($existingRecord);
             $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
 
             $termFileData = $this->getLatestTermFile();
