@@ -32,6 +32,9 @@ class DSpace6 {
     const ENDPOINT_REPORTS = '/reports';
 
     const HEADER_ACCEPT = 'Accept';
+    const HEADER_CONTENT_DISPOSITION = 'Content-Disposition';
+    const HEADER_CONTENT_LENGTH = 'Content-Length';
+    const HEADER_CONTENT_TRANSFER_ENCODING = 'Content-Transfer-encoding';
     const HEADER_CONTENT_TYPE = 'Content-Type';
     const HEADER_COOKIE_REQUEST = 'Cookie';
     const HEADER_COOKIE_RESPONSE = 'Set-Cookie';
@@ -118,6 +121,31 @@ class DSpace6 {
         }
 
         return json_decode($json);
+    }
+
+    public function addBitstream(string $itemId, string $name, string $path)
+    {
+        // POST the whole file
+        $fileHandle = fopen($path, "rb");
+        $fileContents = stream_get_contents($fileHandle);
+        fclose($fileHandle);
+
+        $requestData = '';
+        $boundary = '---------------------------6549703717952841723022740979';
+
+        $requestData .= '--' . $boundary . "\r\n";
+        $requestData .= self::HEADER_CONTENT_DISPOSITION . ': form-data; name="file"; filename="' . $name . '"' . "\r\n";
+        $requestData .= self::HEADER_CONTENT_TYPE . ': application/pdf' . "\r\n\r\n";
+        $requestData .= self::HEADER_CONTENT_TRANSFER_ENCODING . ': binary' . "\r\n\r\n";
+        $requestData .= $fileContents . "\r\n\r\n";
+        $requestData .= '--' . $boundary . '--' . "\r\n";
+
+        $headers = [self::HEADER_CONTENT_TYPE => 'multipart/form-data; boundary=' . $boundary,
+                    self::HEADER_CONTENT_LENGTH => strlen($requestData),
+        ];
+
+        $url = self::ENDPOINT_ITEMS . '/' . urlencode($itemId) . '/bitstreams?name=' . $name;
+        return $this->call($url, self::METHOD_POST, $headers, $requestData);
     }
 
     public function addItem(string $collectionId, array $item)
