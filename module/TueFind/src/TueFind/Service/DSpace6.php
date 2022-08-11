@@ -32,6 +32,7 @@ class DSpace6 {
     const ENDPOINT_REPORTS = '/reports';
 
     const HEADER_ACCEPT = 'Accept';
+    const HEADER_CONTENT_TYPE = 'Content-Type';
     const HEADER_COOKIE_REQUEST = 'Cookie';
     const HEADER_COOKIE_RESPONSE = 'Set-Cookie';
 
@@ -111,11 +112,22 @@ class DSpace6 {
 
         if (isset($responseHeaders[self::HEADER_COOKIE_RESPONSE])) {
             $this->cookie = $responseHeaders[self::HEADER_COOKIE_RESPONSE];
-            if (preg_match('"^([^=]+)=([^=;]+)"', $this->cookie, $hits))
-                $this->cookie = $hits[2];
+            if (preg_match('"^([^=]+=[^=;]+)"', $this->cookie, $hits)) {
+                $this->cookie = $hits[1];
+            }
         }
 
         return json_decode($json);
+    }
+
+    public function addItem(string $collectionId, array $item)
+    {
+        // Example Item: https://wiki.lyrasis.org/display/DSDOC6x/REST+API#RESTAPI-ItemObject
+        $postData = json_encode($item);
+        $headers = [self::HEADER_CONTENT_TYPE => 'application/json',
+                    'Content-Length' => strlen($postData)];
+
+        return $this->call(self::ENDPOINT_COLLECTIONS . '/' . urlencode($collectionId) . '/items', self::METHOD_POST, $headers, $postData);
     }
 
     public function getCollections(string $communityId=null, $limit=self::PAGINATION_LIMIT)
@@ -146,6 +158,23 @@ class DSpace6 {
             throw new \Exception('Collection not found: ' . $name);
 
         return $result;
+    }
+
+    /**
+     * Get an item and its properties.
+     *
+     * @param string $id     The item ID
+     * @param string $expand Per default, only a few attributes will be returned.
+     *                       Use e.g. "metadata" or "all" to return more information at the cost of performance.
+     * @return stdClass
+     */
+    public function getItem(string $id, string $expand=null)
+    {
+        $url = self::ENDPOINT_ITEMS . '/' . urlencode($id);
+        if ($expand != null) {
+            $url .= '?expand=' . urlencode($expand);
+        }
+        return $this->call($url, self::METHOD_GET);
     }
 
     public function getStatus()
