@@ -232,80 +232,64 @@ footer {
 
 /* ------ MyResearch ------ */
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
-.myresearch-menu a {
-  display: block;
-  padding: 10px 15px;
-  &:hover,
-  &:focus { background-color: $nav-link-hover-bg; }
-  &.user-list-link i {
-    margin-left: 0.5rem;
+.myresearch-menu {
+  a {
+    display: block;
+    padding: 10px 15px;
+    &.flex {
+      display: flex;
+    }
+    &:hover {
+      background-color: $gray-lighter;
+      outline: dotted 1px #000;
+    }
+    &:focus {
+      background-color: $nav-link-hover-bg;
+    }
+    &.user-list-link i {
+      margin-left: 0.5rem;
+    }
+    &.active {
+      background-color: $brand-primary;
+      color: #fff;
+    }
+    & > .badge {
+      float: right;
+    }
+  }
+
+  .status {
+    float: right;
+    display: flex;
+    flex: none;
+    .badge {
+
+      border-radius: 2px;
+      margin: 0 2px;
+      border: 1px solid; /* color inherited from bootstrap */
+      height: 20px;
+
+      &.account-info {
+        color: $state-success-text;
+        background-color: $state-success-bg;
+      }
+      &.account-warning {
+        color: $state-warning-text;
+        background-color: $state-warning-bg;
+      }
+      &.account-alert {
+        color: $state-danger-text;
+        background-color: $state-danger-bg;
+      }
+    }
+  }
+
+  .active .status .badge {
+    color: #fff;
+    background-color: transparent;
+    border: 1px solid #fff;
   }
 }
-.myresearch-menu .flex { display: flex; }
-.myresearch-menu a:hover {
-  background-color: $gray-lighter;
-  outline: dotted 1px #000;
-}
-.myresearch-menu a.active {
-  background-color: $brand-primary;
-  color: #fff;
-}
-.myresearch-menu .active .badge {
-  background-color: #fff;
-  color: $gray-darker;
-}
-.myresearch-menu a > .badge { float: right; }
-.myresearch-menu .status {
-  float: right;
-  display: flex;
-  flex: none;
-}
-.myresearch-menu .status .account-info,
-.myresearch-menu .status.account-info { color: $state-success-text; }
-.myresearch-menu .status .account-warning,
-.myresearch-menu .status.account-warning { color: $state-warning-text; }
-.myresearch-menu .status .account-alert,
-.myresearch-menu .status.account-alert { color: $state-danger-text; }
-.myresearch-menu .badge.account-info { background-color: $state-success-bg; }
-.myresearch-menu .badge.account-warning { background-color: $state-warning-bg; }
-.myresearch-menu .badge.account-alert { background-color: $state-danger-bg; }
-.myresearch-menu .status .fa {
-  height: 1rem;
-  margin-top: 3px;
-}
-
-.checkedout-status .badge,
-.holds-status .badge,
-.storageretrievalrequests-status .badge,
-.illrequests-status .badge {
-  border-radius: 2px;
-  margin: 0 2px;
-  border: 1px solid; /* color inherited from bootstrap */
-  height: 20px;
-}
-.myresearch-menu .active .status .badge {
-  border-radius: 2px;
-  color: #fff;
-  background-color: transparent;
-  border: 1px solid #fff;
-}
-.myresearch-menu .active .account-info {
-  background-color: $state-success-text;
-  border-color: $state-success-bg;
-}
-.myresearch-menu .active .account-warning {
-  background-color: $state-warning-text;
-  border-color: $state-warning-bg;
-}
-.myresearch-menu .active .account-alert {
-  background-color: $state-danger-text;
-  border-color: $state-danger-bg;
-}
-.myresearch-menu .active .account-warning { background-color: $state-warning-text; }
-.myresearch-menu .active .account-alert { background-color: $state-danger-text; }
-.myresearch-menu .active .text-success { color: $state-success-bg; }
-.myresearch-menu .active .text-warning { color: $state-warning-bg; }
-.myresearch-menu .active .text-danger { color: $state-danger-bg; }
 
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
 #login-dropdown a {
