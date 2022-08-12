@@ -123,6 +123,9 @@ class KfL
         if (!$user)
             throw new \Exception('Could not generate KfL Frontend User Token, user is not logged in!');
 
+        if ($user->isLicenseAccessLocked())
+            throw new \Exception('Could not generate KfL Frontend User Token, user\'s access to resources has been locked!');
+
         // We pass an anonymized version of the user id (tuefind_uuid) together with host+tuefind instance.
         // This value will be saved by the proxy and reported back to us in case of abuse.
         return implode('#', [gethostname(), $this->tuefindInstance, $user->tuefind_uuid]);

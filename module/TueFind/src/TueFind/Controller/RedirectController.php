@@ -63,8 +63,11 @@ class RedirectController extends \VuFind\Controller\AbstractBase implements \VuF
         }
 
         $id = $this->params()->fromRoute('id');
-        $driver = $this->getRecordLoader()->load($id);
-        $licenseUrl = $this->kfl->getUrl($driver);
-        return $this->createViewModel(['driver' => $driver, 'licenseUrl' => $licenseUrl]);
+
+        $viewParams = [];
+        $viewParams['driver'] = $this->getRecordLoader()->load($id);
+        $viewParams['locked'] = $user->isLicenseAccessLocked();
+        $viewParams['licenseUrl'] = !$viewParams['locked'] ? $this->kfl->getUrl($viewParams['driver']) : null;
+        return $this->createViewModel($viewParams);
     }
 }

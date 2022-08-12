@@ -79,12 +79,14 @@ CREATE TABLE tuefind_user_authorities (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
-ALTER TABLE user ADD tuefind_subscribed_to_newsletter BOOL NOT NULL DEFAULT FALSE;
+ALTER TABLE user ADD tuefind_subscribed_to_newsletter BOOLEAN NOT NULL DEFAULT FALSE;
 CREATE INDEX tuefind_subscribed_to_newsletter_index ON user (tuefind_subscribed_to_newsletter);
 
 ALTER TABLE user ADD tuefind_uuid CHAR(36) NOT NULL;
 ALTER TABLE user ADD CONSTRAINT tuefind_user_uuid UNIQUE (tuefind_uuid);
 CREATE TRIGGER before_user_insert BEFORE INSERT ON user FOR EACH ROW SET NEW.tuefind_uuid = UUID();
+
+ALTER TABLE user ADD tuefind_license_access_locked BOOLEAN DEFAULT FALSE AFTER tuefind_uuid;
 
 ALTER TABLE user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE;
 CREATE INDEX tuefind_rss_feed_send_emails_index ON user (tuefind_rss_feed_send_emails);
