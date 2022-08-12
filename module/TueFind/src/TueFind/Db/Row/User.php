@@ -8,6 +8,10 @@ class User extends \VuFind\Db\Row\User
         return boolval($this->data['tuefind_subscribed_to_newsletter']);
     }
 
+    public function isLicenseAccessLocked(): bool {
+        return boolval($this->data['tuefind_license_access_locked']);
+    }
+
     public function setSubscribedToNewsletter(bool $value) {
         $this->tuefind_subscribed_to_newsletter = intval($value);
         $this->save();
