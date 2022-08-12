@@ -95,7 +95,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
         if (!empty($dbPublications->external_document_id)) {
-            $this->flashMessenger()->addMessage("Publication File already exists! <br /> <a href='".$dspaceServer."/handle/".$dbPublications->external_document_id."' target='_blank'>go to file</a>", 'error');
+            $this->flashMessenger()->addMessage(['msg' => "Publication already exists: <a href='".$dspaceServer."/handle/".$dbPublications->external_document_id."' target='_blank'>click here to go to file</a>", 'html' => true], 'error');
             $uploadError = true;
             $showForm = false;
         }
@@ -150,7 +150,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $item->handle, $item->uuid, $termFileData['termDate']);
 
                 // Store information in database
-                $this->flashMessenger()->addMessage("Publication File success! <br /> <a href='".$dspaceServer."/handle/".$item->handle."' target='_blank'>go to file</a>", 'success');
+                $this->flashMessenger()->addMessage(['msg' => "Publication successfully created: <a href='".$dspaceServer."/handle/".$item->handle."' target='_blank'>click here go to file</a>", 'html' => true], 'success');
                 $showForm = false;
             }
         }
