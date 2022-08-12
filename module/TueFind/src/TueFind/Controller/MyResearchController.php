@@ -81,131 +81,108 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $this->forceLogin();
         }
 
-        $uploadInfos = [];
-        $uploadError = 0;
-        $uploadFileSize = 500000;
         $showForm = true;
-
-        $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace7::class);
-        $dspace->login();
+        $uploadMaxFileSize = 500000;
         $config = $this->getConfig('tuefind');
+        $dspaceServer = $config->Publication->dspace_url_base;
 
-        $existingRecord = null;
-        $dublinCore = null;
+        // 1) Get metadata to show form
         $existingRecordId = $this->params()->fromRoute('record_id', null);
-
         if (empty($existingRecordId)) {
-            $uploadInfos[] = ["Control Number empty!","text-danger"];
-            $uploadError = 1;
-        } else {
-            $existingRecord = $this->getRecordLoader()->load($existingRecordId);
-            $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace7')->getMappedData($existingRecord);
-            $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
+            throw new \Exception('record_id is empty!');
+        }
+        $existingRecord = $this->getRecordLoader()->load($existingRecordId);
 
-            $termFileData = $this->getLatestTermFile();
-            $action = $this->params()->fromPost('action');
+        $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
+        if (!empty($dbPublications->external_document_id)) {
+            $this->flashMessenger()->addMessage("Publication File already exists! <br /> <a href='".$dspaceServer."/handle/".$dbPublications->external_document_id."' target='_blank'>go to file</a>", 'error');
+            $uploadError = true;
+            $showForm = false;
+        }
 
-            $dspaceServer = $config->Publication->dspace_url_base;
+        $termFileData = $this->getLatestTermFile();
+        $action = $this->params()->fromPost('action');
 
-            $dbPublications = $this->getTable('publication')->getByControlNumber($existingRecordId);
-            if (!empty($dbPublications->external_document_id)) {
-                $guid = $dbPublications->external_document_guid;
-                $uploadInfos[] = ["Publication File exist! <br /> <a href='".$dspaceServer."/items/".$guid."' target='_blank'>go to file</a>","text-danger"];
-                $uploadError = 1;
-                $showForm = false;
-            } else if ($action == 'publish' && $uploadError == 0) {
+        // 2) Process upload action (if form was submitted)
+        if ($action == 'publish') {
+            // Check uploaded file (+ do some preparations)
+            $uploadError = false;
+            $uploadedFile = $this->params()->fromFiles('file');
+            $PDFMediaTypesArray = ['application/pdf', 'application/x-pdf', 'application/x-bzpdf', 'application-gzpdf'];
+            if (!in_array($uploadedFile['type'], $PDFMediaTypesArray)) {
+                $this->flashMessenger()->addMessage('Only PDF files allowed.', 'error');
+                $uploadError = true;
+            }
+            if ($uploadedFile['size'] > $uploadMaxFileSize) {
+                $this->flashMessenger()->addMessage('File is too big!', 'error');
+                $uploadError = true;
+            }
 
-                $allLanguages = $config->Publication_Languages->toArray();
-                $recordLanguages = $existingRecord->getLanguages();
-                $dsApiLanguages = "";
-                foreach($recordLanguages as $rl) {
-                    foreach($allLanguages as $alKay=>$alName) {
-                        if($rl == $alName) {
-                            $dsApiLanguages .= $alKay.",";
-                        }
-                    }
+            if (!$uploadError) {
+                $tmpdir = sys_get_temp_dir();
+                $tmpfile = $tmpdir . '/' . $uploadedFile['name'];
+
+                if (is_file($tmpfile)) {
+                    unlink($tmpfile);
+                }
+                if (!move_uploaded_file($uploadedFile['tmp_name'], $tmpfile)) {
+                    throw new \Exception('Uploaded file could not be moved to tmp directory!');
                 }
 
-                $dspaceMetadata['/sections/traditionalpageone/dc.language.iso'] = $dsApiLanguages;
-                $uploadedFile = $this->params()->fromFiles('file');
-
+                // For DSpace 6:
+                // - add Item (including metadata)
+                // - add Bitstream (=file)
+                // For DSpace 7:
+                // - add Workspace Item (including file)
+                // - update Workspace Item (= update metadata)
+                // - add Workflow Item (= start workflow for the generated item)
+                //
+                // Also, be aware that ID + URL schemas might be different when switching between the versions.
+                //
+                // The following implementation is based on DSpace 6:
+                $dspace = $this->serviceLocator->get(\TueFind\Service\DSpace6::class);
+                $dspace->login();
                 $collectionName = $config->Publication->collection_name;
-
                 $collection = $dspace->getCollectionByName($collectionName);
-                if (isset($collection->id)) {
-                    $collectionID = $collection->id;
-                }
+                $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace6')->getMappedData($existingRecord);
+                $item = $dspace->addItem($collection->uuid, $dspaceMetadata);
+                $bitstream = $dspace->addBitstream($item->uuid, basename($tmpfile), $tmpfile);
+                $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $item->handle, $item->uuid, $termFileData['termDate']);
 
-                $PDFMediaTypesArray = array('application/pdf', 'application/x-pdf', 'application/x-bzpdf', 'application-gzpdf');
-
-                if (!in_array($uploadedFile['type'], $PDFMediaTypesArray)) {
-                    $uploadInfos[] = ["You can upload only PDF file!","text-danger"];
-                    $uploadError = 1;
-                }
-
-                if ($uploadedFile['size'] > $uploadFileSize) {
-                    $uploadInfos[] = ["File is too big!","text-danger"];
-                    $uploadError = 1;
-                }
-
-                if ($uploadError == 0) {
-                    $tmpdir = sys_get_temp_dir();
-                    $tmpfile = $tmpdir . '/' . $uploadedFile['name'];
-
-                    if (is_file($tmpfile)) {
-                        unlink($tmpfile);
-                    }
-                    if (!move_uploaded_file($uploadedFile['tmp_name'], $tmpfile)) {
-                        throw new \Exception('Uploaded file could not be moved to tmp directory!');
-                    }
-
-                    $workspaceItem = $dspace->addWorkspaceItem($tmpfile, $collectionID);
-
-                    $externalDocumentGuid = $workspaceItem->_embedded->item->uuid;
-                    $itemID = $workspaceItem->id;
-
-                    $item = $dspace->updateWorkspaceItem($itemID, $dspaceMetadata);
-
-                    $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $itemID, $externalDocumentGuid, $termFileData['termDate']);
-
-                    $uploadInfos[] = ["Publication File success! <br /> <a href='".$dspaceServer."/items/".$externalDocumentGuid."' target='_blank'>go to file</a>","text-success"];
-
-                    // Start publication process in DSpace after metadata is correct
-                    // (Note: If you test many times in a row, please disable this, so
-                    // we don't generate that many Test Handles on the DSpace server)
-                    $dspace->addWorkflowItem($itemID);
-                    $showForm = false;
-                }
+                // Store information in database
+                $this->flashMessenger()->addMessage("Publication File success! <br /> <a href='".$dspaceServer."/handle/".$item->handle."' target='_blank'>go to file</a>", 'success');
+                $showForm = false;
             }
         }
 
+        // 3) Generate view
         $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
-
+        $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
         $userAuthorities = [];
-        foreach($view->userAuthorities as $userAuthority) {
+        foreach ($view->userAuthorities as $userAuthority) {
             $selected = false;
             $authorityRecord = $view->authorityRecords[$userAuthority['authority_id']];
             $GNDNumber = $authorityRecord->getGNDNumber();
             $authorityTitle = htmlspecialchars($authorityRecord->getTitle());
-            foreach($dublinCore['DC.creator'] as $creator) {
-                if($authorityTitle == $creator) {
+            foreach ($dublinCore['DC.creator'] as $creator) {
+                if ($authorityTitle == $creator) {
                     $selected = true;
                 }
             }
             $userAuthorities[] = [
-                'authority_id'=>$userAuthority['authority_id'],
-                'authority_title'=>$authorityTitle,
-                'authority_GNDNumber'=>$GNDNumber,
-                'select_title'=> $authorityTitle . ' (GND: ' .  $GNDNumber . ')',
-                'selected'=>$selected
+                'authority_id' => $userAuthority['authority_id'],
+                'authority_title' => $authorityTitle,
+                'authority_GNDNumber' => $GNDNumber,
+                'select_title' => $authorityTitle . ' (GND: ' .  $GNDNumber . ')',
+                'selected' => $selected
             ];
         }
+
+        $view->showForm = $showForm;
         $view->userAuthorities = $userAuthorities;
         $view->existingRecord = $existingRecord;
         $view->dublinCore = $dublinCore;
-        $view->uploadInfos = $uploadInfos;
         $view->termFile = $termFileData;
-        $view->showForm = $showForm;
         $view->recordLanguages = $existingRecord->getLanguages();
         return $view;
     }
