@@ -42,7 +42,7 @@ use VuFind\Config\Locator;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    0
+ * @retry    4
  */
 final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 {
