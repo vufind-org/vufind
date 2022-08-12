@@ -98,7 +98,7 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   });
 }
 
-function initFacetTree(treeNode, inSidebar)
+function loadFacetTree(treeNode, inSidebar)
 {
   var loaded = treeNode.data('loaded');
   if (loaded) {
@@ -127,6 +127,20 @@ function initFacetTree(treeNode, inSidebar)
       buildFacetTree(treeNode, response.data.facets, inSidebar);
     }
   );
+}
+
+function initFacetTree(treeNode, inSidebar)
+{
+  // Defer init if the facet is collapsed:
+  let $collapse = treeNode.parents('.facet-group').find('.collapse');
+  if (!$collapse.hasClass('in')) {
+    $collapse.on('show.bs.collapse', function onExpand() {
+      loadFacetTree(treeNode, inSidebar);
+    });
+    return;
+  } else {
+    loadFacetTree(treeNode, inSidebar);
+  }
 }
 
 /* --- Side Facets --- */
