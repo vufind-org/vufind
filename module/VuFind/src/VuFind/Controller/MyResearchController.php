@@ -1946,7 +1946,7 @@ class MyResearchController extends AbstractBase
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
-                return $this->forwardTo('MyResearch', 'Login');
+                return $this->forwardTo('MyResearch', 'Profile');
             } else {
                 $table = $this->getTable('User');
                 $user = $table->getByVerifyHash($hash);
@@ -1960,12 +1960,12 @@ class MyResearchController extends AbstractBase
                     $user->saveEmailVerified();
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
-                    return $this->redirect()->toRoute('myresearch-userlogin');
+                    return $this->redirect()->toRoute('myresearch-profile');
                 }
             }
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
-        return $this->redirect()->toRoute('myresearch-userlogin');
+        return $this->redirect()->toRoute('myresearch-profile');
     }
 
     /**
