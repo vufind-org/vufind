@@ -27,11 +27,15 @@
 
 .facet,
 .facet-group .title,
-.facet-load-indicator {
-  display: flex;
+.facet-load-indicator,
+.facet-load-failed {
   padding: .5rem;
   line-height: 1.5rem;
   background-color: transparent;
+}
+.facet,
+.facet-group .title {
+  display: flex;
 
   .text {
     flex-grow: 1;
@@ -54,7 +58,8 @@
   }
 }
 .facet-group .facet,
-.facet-load-indicator {
+.facet-load-indicator,
+.facet-load-failed {
   border-bottom: 1px solid @list-group-border;
 }
 .facet-group .title {

@@ -89,6 +89,10 @@
                 ]
             );
           ?>
+        <?php else: ?>
+          <div class="facet-load-indicator hidden">
+            <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
+          </div>
         <?php endif; ?>
       </div>
     </div>
