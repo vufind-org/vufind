@@ -108,7 +108,9 @@ if (
 
 (strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') === false) &&
 (strpos($_SERVER['REDIRECT_URL'], 'search/reserves') === false) &&
-($this->layout()->searchbox !== false)):
+($this->layout()->searchbox !== false)
+
+):
 
 ?>
   <div class="search container navbar">
@@ -116,4 +118,7 @@ if (
       <?=$this->layout()->searchbox ?>
     </div>
   </div>
+
+<?php else: ?>
+  <br />
 <?php endif; ?>
