@@ -137,6 +137,12 @@ class Mailer extends \VuFind\Mailer\Mailer {
         return $message;
     }
 
+    public function getDefaultLinkSubject()
+    {
+        $config = $this->container->get('VuFind\Config')->get('config');
+        return $this->translate('bulk_email_title', ['%%siteTitle%%' => $config->Site->title]);
+    }
+
     public function getDefaultRecordSubject($record)
     {
         $config = $this->container->get('VuFind\Config')->get('config');
