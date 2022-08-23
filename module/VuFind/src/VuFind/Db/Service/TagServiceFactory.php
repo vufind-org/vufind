@@ -1,12 +1,10 @@
 <?php
-declare(strict_types=1);
-
 /**
- * Class SortFacetListFactory
+ * Database tag service factory
  *
  * PHP version 7
  *
- * Copyright (C) Moravian Library 2022.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,12 +20,12 @@ declare(strict_types=1);
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Db\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,16 +33,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class SortFacetListFactory
+ * Database tag service factory
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SortFacetListFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class TagServiceFactory extends AbstractServiceFactory
 {
     /**
      * Create an object
@@ -59,16 +56,18 @@ class SortFacetListFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         array $options = null
     ) {
-        $helper = new $requestedName();
-        $helper->setSorter($container->get(\VuFind\I18n\Sorter::class));
-        return $helper;
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory!');
+        }
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $caseSensitive = (bool)($config->Social->case_sensitive_tags ?? false);
+        return parent::__invoke($container, $requestedName, [$caseSensitive]);
     }
 }
