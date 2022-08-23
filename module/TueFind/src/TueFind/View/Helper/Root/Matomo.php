@@ -32,7 +32,7 @@ class Matomo extends \VuFind\View\Helper\Root\Matomo {
                 $array[$values[0]] = $values[1];
                 return $array;
             }, []);
-            $http_host_without_port = preg_replace('":[^:]+$"', '', $_SERVER['HTTP_HOST']);
+            $http_host_without_port = preg_replace('":[^:]+$"', '', $request->getServer('HTTP_HOST'));
             if (isset($siteIds[$http_host_without_port])) {
                 $this->siteId = $siteIds[$http_host_without_port];
             } else {
