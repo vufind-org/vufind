@@ -28,6 +28,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
+use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 
 /**
@@ -80,5 +81,18 @@ abstract class AbstractService
     {
         $entity = $this->entityPluginManager->get($entity);
         return get_class($entity);
+    }
+
+    /**
+     * Persist an entity.
+     *
+     * @param EntityInterface $entity Entity to persist.
+     *
+     * @return void
+     */
+    public function persistEntity(EntityInterface $entity): void
+    {
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
     }
 }

@@ -1,10 +1,10 @@
 <?php
 /**
- * Database service plugin manager
+ * Database service for feedback.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,8 +27,10 @@
  */
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\Feedback;
+
 /**
- * Database service plugin manager
+ * Database service for feedback.
  *
  * @category VuFind
  * @package  Database
@@ -36,36 +38,16 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class FeedbackService extends AbstractService
 {
     /**
-     * Default plugin aliases.
+     * Create a feedback entity object.
      *
-     * @var array
+     * @return Feedback
      */
-    protected $aliases = [
-        'feedback' => FeedbackService::class,
-        'tag' => TagService::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        FeedbackService::class => AbstractServiceFactory::class,
-        TagService::class => TagServiceFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
+    public function createEntity(): Feedback
     {
-        return AbstractService::class;
+        $class = $this->getEntityClass(Feedback::class);
+        return new $class;
     }
 }

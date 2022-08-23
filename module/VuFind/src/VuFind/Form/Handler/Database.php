@@ -46,11 +46,11 @@ class Database implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Feedback table
+     * Feedback database service
      *
-     * @var \VuFind\Db\Table\Feedback
+     * @var \VuFind\Db\Service\FeedbackService
      */
-    protected $table;
+    protected $db;
 
     /**
      * Site base url
@@ -62,14 +62,14 @@ class Database implements HandlerInterface, LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Db\Table\Feedback $feedbackTable Feedback db table
-     * @param string                    $baseUrl       Site base url
+     * @param \VuFind\Db\Service\FeedbackService $db      Feedback database service
+     * @param string                             $baseUrl Site base url
      */
     public function __construct(
-        \VuFind\Db\Table\Feedback $feedbackTable,
+        \VuFind\Db\Service\FeedbackService $db,
         string $baseUrl
     ) {
-        $this->table = $feedbackTable;
+        $this->db = $db;
         $this->baseUrl = $baseUrl;
     }
 
@@ -92,21 +92,24 @@ class Database implements HandlerInterface, LoggerAwareInterface
 
         $formData = $fields;
         unset($formData['message']);
-        $data = [
-            'user_id' => ($user) ? $user->id : null,
-            'message' => $fields['message'] ?? '',
-            'form_data' => json_encode($formData),
-            'form_name' => $form->getFormId(),
-            'site_url' => $this->baseUrl,
-            'created' => date('Y-m-d H:i:s'),
-            'updated' => date('Y-m-d H:i:s'),
-        ];
+        $now = new \DateTime();
+        $data = $this->db->createEntity()
+            ->setUser($user)
+            ->setMessage($fields['message'] ?? '')
+            ->setFormData(json_encode($formData))
+            ->setFormName($form->getFormId())
+            ->setSiteUrl($this->baseUrl)
+            ->setCreated($now)
+            ->setUpdated($now);
         try {
-            $success = (bool)$this->table->insert($data);
+            $this->db->persistEntity($data);
         } catch (\Exception $e) {
+            throw $e;
             $this->logError('Could not save feedback data: ' . $e->getMessage());
             return false;
         }
-        return $success;
+        // If we got this far, we succeeded; otherwise, persistEntity would have
+        // thrown an exception above.
+        return true;
     }
 }
