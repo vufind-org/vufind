@@ -17,16 +17,12 @@ class RecordController extends \VuFind\Controller\RecordController {
         if (isset($this->driver->isFallback) && $this->driver->isFallback) {
             $params = [ 'driver' => $this->driver,
                         'originalId' => $this->params()->fromRoute('id', $this->params()->fromQuery('id'))];
-            $helper = $this->serviceLocator->get('ViewHelperManager')->get('HelpText');
-            $template = $helper->getTemplate('record_id_changed', 'static');
 
-            if ($template) {
-                $view = $this->createViewModel($params);
-                $view->setTemplate($template[1]);
-                $this->getResponse()->setStatusCode(301);
-                $view->user = $user;
-                return $view;
-            }
+            $view = $this->createViewModel($params);
+            $view->setTemplate('content/snippets/record_id_changed');
+            $this->getResponse()->setStatusCode(301);
+            $view->user = $user;
+            return $view;
         } else {
             $view = parent::homeAction();
             $view->user = $user;
