@@ -608,8 +608,10 @@ class Folio extends AbstractAPI implements
                 $callNumberData = $this->chooseCallNumber(
                     $holdingCallNumberPrefix,
                     $holdingCallNumber,
-                    $item->itemLevelCallNumberPrefix ?? '',
-                    $item->itemLevelCallNumber ?? ''
+                    $item->effectiveCallNumberComponents->prefix
+                        ?? $item->itemLevelCallNumberPrefix ?? '',
+                    $item->effectiveCallNumberComponents->callNumber
+                        ?? $item->itemLevelCallNumber ?? ''
                 );
 
                 $dueDateValue = '';
@@ -647,6 +649,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Convert a FOLIO date string to a DateTime object.
+     *
+     * @param string $str FOLIO date string
+     *
+     * @return DateTime
+     */
+    protected function getDateTimeFromString(string $str): DateTime
+    {
+        $dateTime = new DateTime($str, new DateTimeZone('UTC'));
+        $localTimezone = (new DateTime)->getTimezone();
+        $dateTime->setTimezone($localTimezone);
+        return $dateTime;
+    }
+
+    /**
      * Support method for getHolding(): obtaining the Due Date from OKAPI
      * by calling /circulation/loans with the item->id, adjusting the
      * timezone and formatting in universal time with or without due time
@@ -658,39 +675,22 @@ class Folio extends AbstractAPI implements
      */
     protected function getDueDate($itemId, $showTime)
     {
-        $dueDateValue = '';
-        $query = [
-            'query' => 'itemId==' . $itemId
-        ];
+        $query = 'itemId==' . $itemId;
         foreach ($this->getPagedResults(
             'loans',
             '/circulation/loans',
-            $query
+            compact('query')
         ) as $loan) {
             // many loans are returned for an item, the one we want
             // is the one without a returnDate
-            if (!isset($loan->returnDate)) {
-                $dueDate = new DateTime(
-                    $loan->dueDate,
-                    new DateTimeZone('UTC')
-                );
-                $localTimezone = (new DateTime)->getTimezone();
-                $dueDate->setTimezone($localTimezone);
-                $dueDateValue = $this->dateConverter
-                    ->convertToDisplayDate(
-                        'U',
-                        $dueDate->format('U')
-                    );
-                if ($showTime) {
-                    $dueDateValue = $this->dateConverter
-                        ->convertToDisplayDateAndTime(
-                            'U',
-                            $dueDate->format('U')
-                        );
-                }
+            if (!isset($loan->returnDate) && isset($loan->dueDate)) {
+                $dueDate = $this->getDateTimeFromString($loan->dueDate);
+                $method = $showTime
+                    ? 'convertToDisplayDateAndTime' : 'convertToDisplayDate';
+                return $this->dateConverter->$method('U', $dueDate->format('U'));
             }
         }
-        return $dueDateValue;
+        return '';
     }
 
     /**
@@ -962,11 +962,8 @@ class Folio extends AbstractAPI implements
             '/circulation/loans',
             $query
         ) as $trans) {
-            $date = new DateTime($trans->dueDate, new DateTimeZone('UTC'));
-            $localTimezone = (new DateTime)->getTimezone();
-            $date->setTimezone($localTimezone);
-
             $dueStatus = false;
+            $date = $this->getDateTimeFromString($trans->dueDate);
             $dueDateTimestamp = $date->getTimestamp();
 
             $now = time();
