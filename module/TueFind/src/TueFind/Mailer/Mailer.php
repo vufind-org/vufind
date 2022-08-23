@@ -56,6 +56,8 @@ class Mailer extends \VuFind\Mailer\Mailer {
         }
 
         if ($email_from != null) {
+            // We need to use an Address object here to be able to
+            // include naming information if necessary.
             $from = Address::fromString($email_from);
         }
 
@@ -135,14 +137,6 @@ class Mailer extends \VuFind\Mailer\Mailer {
         } catch (\Exception $e) {
             throw new MailException($e->getMessage());
         }
-    }
-
-    /**
-     * Translate a string for use in Mail client
-     * @see VuFind\Controller\AbstractBase->translate
-     */
-    public function translate($msg, $tokens = [], $default = null) {
-        return $this->container->get('ViewRenderer')->plugin('translate')->__invoke($msg, $tokens, $default);
     }
 
     public function getDefaultLinkSubject()
