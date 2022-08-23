@@ -56,7 +56,7 @@ class Mailer extends \VuFind\Mailer\Mailer {
         }
 
         if ($email_from != null) {
-            $from = $email_from;
+            $from = Address::fromString($email_from);
         }
 
         // Original VuFind-Code starts here
