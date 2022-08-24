@@ -131,7 +131,16 @@ class ConnectorTest extends TestCase
             ->with($this->equalTo($csvData));
         $conn = $this->getMockBuilder(Connector::class)
             ->onlyMethods(['send'])
-            ->setConstructorArgs(['http://foo', $map, $client, 'id'])
+            ->setConstructorArgs(
+                [
+                    'http://localhost',
+                    $map,
+                    function () use ($client) {
+                        return $client;
+                    },
+                    'id'
+                ]
+            )
             ->getMock();
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
@@ -161,7 +170,16 @@ class ConnectorTest extends TestCase
             ->with($this->equalTo($jsonData));
         $conn = $this->getMockBuilder(Connector::class)
             ->onlyMethods(['send'])
-            ->setConstructorArgs(['http://foo', $map, $client, 'id'])
+            ->setConstructorArgs(
+                [
+                    'http://localhost',
+                    $map,
+                    function () use ($client) {
+                        return $client;
+                    },
+                    'id'
+                ]
+            )
             ->getMock();
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
@@ -219,7 +237,14 @@ class ConnectorTest extends TestCase
         $url = 'http://example.tld/';
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
         $key = 'foo';
-        $conn = new Connector($url, $map, new \Laminas\Http\Client(), $key);
+        $conn = new Connector(
+            $url,
+            $map,
+            function () {
+                return new \Laminas\Http\Client();
+            },
+            $key
+        );
         $this->assertEquals($url, $conn->getUrl());
         $this->assertEquals($map, $conn->getMap());
         $this->assertEquals($key, $conn->getUniqueKey());
@@ -285,7 +310,9 @@ class ConnectorTest extends TestCase
         return new Connector(
             'http://example.tld/',
             $map,
-            $client ?: $this->createClient(),
+            function () use ($client) {
+                return $client ?: $this->createClient();
+            },
             'id'
         );
     }

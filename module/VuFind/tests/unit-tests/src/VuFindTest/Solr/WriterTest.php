@@ -48,6 +48,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
 class WriterTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\SearchServiceTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test commit
@@ -61,7 +62,17 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         );
         $connector = $bm->get('Solr')->getConnector();
         $connector->expects($this->once())->method('write')
-            ->with($this->isInstanceOf(CommitDocument::class));
+            ->with($this->isInstanceOf(CommitDocument::class))
+            ->will(
+                $this->returnCallback(
+                    function () use ($connector) {
+                        // Call client factory for expectations to be met:
+                        $factory = $this->getProperty($connector, 'clientFactory');
+                        $factory('');
+                        return true;
+                    }
+                )
+            );
         $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->commit('Solr');
     }
@@ -121,7 +132,17 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         );
         $connector = $bm->get('Solr')->getConnector();
         $connector->expects($this->once())->method('write')
-            ->with($this->isInstanceOf(OptimizeDocument::class));
+            ->with($this->isInstanceOf(OptimizeDocument::class))
+            ->will(
+                $this->returnCallback(
+                    function () use ($connector) {
+                        // Call client factory for expectations to be met:
+                        $factory = $this->getProperty($connector, 'clientFactory');
+                        $factory('');
+                        return true;
+                    }
+                )
+            );
         $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->optimize('Solr');
     }
@@ -179,11 +200,21 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getConnector', 'getIdentifier'])
             ->getMock();
         $handlerMap = new HandlerMap();
-        $client = $client ?? $this->getMockBuilder(\Laminas\Http\Client::class)
-            ->onlyMethods([])
-            ->getMock();
         $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->setConstructorArgs(['http://localhost:8983/solr/biblio', $handlerMap, $client])
+            ->setConstructorArgs(
+                [
+                    'http://localhost:8983/solr/biblio',
+                    $handlerMap,
+                    function () use ($client) {
+                        // If client is provided, return it since it may have test
+                        // expectations:
+                        return $client
+                            ?? $this->getMockBuilder(\Laminas\Http\Client::class)
+                                ->onlyMethods([])
+                                ->getMock();
+                    }
+                ]
+            )
             ->onlyMethods(['write'])
             ->getMock();
         $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));

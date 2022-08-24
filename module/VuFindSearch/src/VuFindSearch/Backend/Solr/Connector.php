@@ -70,11 +70,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * HTTP client
+     * HTTP client factory
      *
-     * @var HttpClient
+     * @var callable
      */
-    protected $client;
+    protected $clientFactory;
 
     /**
      * URL or an array of alternative URLs of the SOLR core.
@@ -102,19 +102,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param string|array $url       SOLR core URL or an array of alternative URLs
      * @param HandlerMap   $map       Handler map
-     * @param HttpClient   $client    HTTP client
+     * @param callable     $cf        HTTP client factory
      * @param string       $uniqueKey Solr field used to store unique identifier
      */
     public function __construct(
         $url,
         HandlerMap $map,
-        HttpClient $client,
+        callable $cf,
         $uniqueKey = 'id'
     ) {
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        $this->client = $client;
+        $this->clientFactory = $cf;
     }
 
     /// Public API
@@ -300,13 +300,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if (empty($options)) {
             return call_user_func_array([$this, $method], $args);
         }
-        $saveClient = $this->client;
+        $originalFactory = $this->clientFactory;
         try {
-            $this->client = clone $this->client;
-            $this->client->setOptions($options);
+            $this->clientFactory = function (string $url) use (
+                $originalFactory,
+                $options
+            ) {
+                $client = $originalFactory($url);
+                $client->setOptions($options);
+                return $client;
+            };
             return call_user_func_array([$this, $method], $args);
         } finally {
-            $this->client = $saveClient;
+            $this->clientFactory = $originalFactory;
         }
     }
 
@@ -370,22 +376,21 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         // Loop through all base URLs and try them in turn until one works.
         $cacheKey = null;
         foreach ((array)$this->url as $base) {
-            $this->client->resetParameters();
-            $this->client->setMethod($method);
-            $this->client->setUri($base . $urlSuffix);
+            $client = ($this->clientFactory)($base . $urlSuffix);
+            $client->setMethod($method);
             if (is_callable($callback)) {
-                $callback($this->client);
+                $callback($client);
             }
             // Always create the cache key from the first server, and only after any
             // callback has been called above.
             if ($cacheable && $this->cache && null === $cacheKey) {
-                $cacheKey = $this->getCacheKey($this->client);
+                $cacheKey = $this->getCacheKey($client);
                 if ($result = $this->getCachedData($cacheKey)) {
                     return $result;
                 }
             }
             try {
-                $result = $this->send($this->client);
+                $result = $this->send($client);
                 if ($cacheKey) {
                     $this->putCachedData($cacheKey, $result);
                 }
