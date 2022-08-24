@@ -52,14 +52,6 @@ class DSpace6 {
     protected $username;
     protected $password;
 
-    /**
-     * The cookie will be returned via the API after logging in
-     * and needs to be sent back to the API on all consecutive requests.
-     *
-     * @var array
-     */
-    protected $cookie = null;
-
     public function __construct(string $baseUrl, string $username, string $password)
     {
         $this->baseUrl = $baseUrl;
