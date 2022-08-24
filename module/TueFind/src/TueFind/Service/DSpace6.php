@@ -82,44 +82,36 @@ class DSpace6 {
     {
         $fullUrl = $this->baseUrl . $endpoint;
 
-        $opts = ['http' => ['method' => $method, 'header' => '']];
-        if (isset($data)) {
-            $opts['http']['content'] = $data;
-        }
+        $curlHandle = curl_init($fullUrl);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
 
         if (!isset($headers[self::HEADER_ACCEPT])) {
             $headers[self::HEADER_ACCEPT] = 'application/json';
         }
-        if (isset($this->cookie)) {
-            $headers[self::HEADER_COOKIE_REQUEST] = $this->cookie;
-        }
         if ($headers != []) {
-            $headerString = '';
+            $curlHeaders = [];
             foreach ($headers as $headerName => $headerValue) {
-                $headerString .= $headerName . ': ' . $headerValue . "\r\n";
+                $curlHeaders[] = $headerName . ': ' . $headerValue;
             }
-            $opts['http']['header'] .= $headerString;
-            $this->requestHeaders = $headers;
-            $this->requestBody = $data;
+            curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $curlHeaders);
         }
 
-        $context = stream_context_create($opts);
-        $json = file_get_contents($fullUrl, false, $context);
-
-        // The server will send a token either on the first response
-        // or on any other response, but will not send it in all requests.
-        // But whenever he sends one back, we need to use the new one from now on.
-        $responseHeaders = get_headers($fullUrl, true, $context);
-        $this->responseHeaders = $responseHeaders;
-        $this->responseBody = $json;
-
-        if (isset($responseHeaders[self::HEADER_COOKIE_RESPONSE])) {
-            $this->cookie = $responseHeaders[self::HEADER_COOKIE_RESPONSE];
-            if (preg_match('"^([^=]+=[^=;]+)"', $this->cookie, $hits)) {
-                $this->cookie = $hits[1];
-            }
+        if ($method == self::METHOD_POST) {
+            curl_setopt($curlHandle, CURLOPT_POST, true);
         }
 
+        if (!empty($data)) {
+            curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $data);
+        }
+
+
+        $cookiePath = sys_get_temp_dir() . '/DSpaceCookies';
+        curl_setopt($curlHandle, CURLOPT_COOKIEJAR, $cookiePath);
+        curl_setopt($curlHandle, CURLOPT_COOKIEFILE, $cookiePath);
+
+        $json = curl_exec($curlHandle);
+
+        curl_close($curlHandle);
         return json_decode($json);
     }
 
