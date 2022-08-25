@@ -100,21 +100,29 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string|array $url       SOLR core URL or an array of alternative URLs
-     * @param HandlerMap   $map       Handler map
-     * @param callable     $cf        HTTP client factory
-     * @param string       $uniqueKey Solr field used to store unique identifier
+     * @param string|array        $url       SOLR core URL or an array of alternative
+     * URLs
+     * @param HandlerMap          $map       Handler map
+     * @param callable|HttpClient $cf        HTTP client factory or a client to clone
+     * @param string              $uniqueKey Solr field used to store unique
+     * identifier
      */
     public function __construct(
         $url,
         HandlerMap $map,
-        callable $cf,
+        $cf,
         $uniqueKey = 'id'
     ) {
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        $this->clientFactory = $cf;
+        if ($cf instanceof HttpClient) {
+            $this->clientFactory = function () use ($cf) {
+                return clone $cf;
+            };
+        } else {
+            $this->clientFactory = $cf;
+        }
     }
 
     /// Public API
