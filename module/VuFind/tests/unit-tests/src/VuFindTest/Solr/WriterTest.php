@@ -27,8 +27,6 @@
  */
 namespace VuFindTest\Solr;
 
-use Laminas\Http\Client as HttpClient;
-use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Table\ChangeTracker;
 use VuFind\Search\BackendManager;
 use VuFind\Solr\Writer;
@@ -57,22 +55,10 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     public function testCommit()
     {
-        $bm = $this->getBackendManagerWithMockSolr(
-            $this->getMockHttpClientExpectingOnlySetTimeout(60 * 60)
-        );
+        $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
         $connector->expects($this->once())->method('write')
-            ->with($this->isInstanceOf(CommitDocument::class))
-            ->will(
-                $this->returnCallback(
-                    function () use ($connector) {
-                        // Call client factory for expectations to be met:
-                        $factory = $this->getProperty($connector, 'clientFactory');
-                        $factory('');
-                        return true;
-                    }
-                )
-            );
+            ->with($this->isInstanceOf(CommitDocument::class));
         $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->commit('Solr');
     }
@@ -127,22 +113,10 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     public function testOptimize()
     {
-        $bm = $this->getBackendManagerWithMockSolr(
-            $this-> getMockHttpClientExpectingOnlySetTimeout(60 * 60 * 24)
-        );
+        $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
         $connector->expects($this->once())->method('write')
-            ->with($this->isInstanceOf(OptimizeDocument::class))
-            ->will(
-                $this->returnCallback(
-                    function () use ($connector) {
-                        // Call client factory for expectations to be met:
-                        $factory = $this->getProperty($connector, 'clientFactory');
-                        $factory('');
-                        return true;
-                    }
-                )
-            );
+            ->with($this->isInstanceOf(OptimizeDocument::class));
         $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
         $writer->optimize('Solr');
     }
@@ -187,58 +161,35 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock backend manager
      *
-     * @param HttpClient $client HTTP Client (optional)
-     *
      * @return BackendManager
      */
-    protected function getBackendManagerWithMockSolr($client = null)
+    protected function getBackendManagerWithMockSolr()
     {
         $sm = new \Laminas\ServiceManager\ServiceManager();
         $pm = new BackendManager($sm);
-        $mockBackend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getConnector', 'getIdentifier'])
-            ->getMock();
+        $mockBackend
+            = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
+                ->disableOriginalConstructor()
+                ->onlyMethods(['getConnector', 'getIdentifier'])
+                ->getMock();
         $handlerMap = new HandlerMap();
-        $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->setConstructorArgs(
-                [
-                    'http://localhost:8983/solr/biblio',
-                    $handlerMap,
-                    function () use ($client) {
-                        // If client is provided, return it since it may have test
-                        // expectations:
-                        return $client
-                            ?? $this->getMockBuilder(\Laminas\Http\Client::class)
-                                ->onlyMethods([])
-                                ->getMock();
-                    }
-                ]
-            )
-            ->onlyMethods(['write'])
-            ->getMock();
-        $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));
-        $mockBackend->expects($this->any())->method('getIdentifier')->will($this->returnValue('Solr'));
+        $mockConnector
+            = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
+                ->setConstructorArgs(
+                    [
+                        'http://localhost:8983/solr/biblio',
+                        $handlerMap,
+                        null
+                    ]
+                )
+                ->onlyMethods(['write'])
+                ->getMock();
+        $mockBackend->expects($this->any())->method('getConnector')
+            ->will($this->returnValue($mockConnector));
+        $mockBackend->expects($this->any())->method('getIdentifier')
+            ->will($this->returnValue('Solr'));
         $sm->setService('Solr', $mockBackend);
         return $pm;
-    }
-
-    /**
-     * Get a mock HTTP Client that only expects its setTimeout() to be called once.
-     *
-     * @param int $timeout Expected timeout
-     *
-     * @return MockObject
-     */
-    protected function getMockHttpClientExpectingOnlySetTimeout(
-        int $timeout
-    ): MockObject {
-        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
-            ->onlyMethods(['setOptions'])
-            ->getMock();
-        $client->expects($this->exactly(1))->method('setOptions')
-            ->with(['timeout' => $timeout]);
-        return $client;
     }
 
     /**
