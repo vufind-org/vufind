@@ -608,35 +608,6 @@ class BackendTest extends TestCase
         );
     }
 
-    /**
-     * Test writeDocument
-     *
-     * @return void
-     */
-    public function testDelayedClientCreation()
-    {
-        $doc = new CommitDocument();
-        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
-            ->onlyMethods(['setOptions'])
-            ->getMock();
-        $client->expects($this->exactly(0))->method('setOptions')
-            ->with(['timeout' => 60]);
-        $connector = $this->getConnectorMock(['getUrl', 'write'], $client);
-        $connector->expects($this->once())->method('write')
-            ->with(
-                $this->equalTo($doc),
-                $this->equalTo('update'),
-                $this->isNull()
-            );
-        $connector->expects($this->once())->method('getUrl')
-            ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
-        $backend = new Backend($connector);
-        $this->assertEquals(
-            ['core' => 'biblio'],
-            $backend->writeDocument($doc, 60)
-        );
-    }
-
     /// Internal API
 
     /**
@@ -690,7 +661,7 @@ class BackendTest extends TestCase
                 [
                     'http://localhost/',
                     $map,
-                    function () use (&$client) {
+                    function () use ($client) {
                         // If client is provided, return it since it may have test
                         // expectations:
                         return $client ?? new \Laminas\Http\Client();
