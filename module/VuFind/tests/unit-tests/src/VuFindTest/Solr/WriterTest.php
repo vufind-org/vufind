@@ -52,8 +52,9 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     public function testCommit()
     {
-        $command = new WriteDocumentCommand('Solr', new CommitDocument(), 60 * 60);
-        $this->getWriter($command)->commit('Solr');
+        $expectedCommand
+            = new WriteDocumentCommand('Solr', new CommitDocument(), 60 * 60);
+        $this->getWriter($expectedCommand)->commit('Solr');
     }
 
     /**
@@ -64,8 +65,8 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     public function testSave()
     {
         $commit = new CommitDocument();
-        $command = new WriteDocumentCommand('Solr', $commit);
-        $this->getWriter($command)->save('Solr', $commit);
+        $expectedCommand = new WriteDocumentCommand('Solr', $commit);
+        $this->getWriter($expectedCommand)->save('Solr', $commit);
     }
 
     /**
@@ -77,14 +78,14 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument('a,b,c');
         $params = new \VuFindSearch\ParamBag(['foo' => 'bar']);
-        $command = new WriteDocumentCommand(
+        $expectedCommand = new WriteDocumentCommand(
             'Solr',
             $csv,
             null,
             'customUpdateHandler',
             $params
         );
-        $this->getWriter($command)
+        $this->getWriter($expectedCommand)
             ->save('Solr', $csv, 'customUpdateHandler', $params);
     }
 
@@ -95,9 +96,9 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     public function testOptimize()
     {
-        $command
+        $expectedCommand
             = new WriteDocumentCommand('Solr', new OptimizeDocument(), 60 * 60 * 24);
-        $this->getWriter($command)->optimize('Solr');
+        $this->getWriter($expectedCommand)->optimize('Solr');
     }
 
     /**
@@ -109,8 +110,8 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addQuery('*:*');
-        $command = new WriteDocumentCommand('Solr', $deleteDoc);
-        $this->getWriter($command)->deleteAll('Solr');
+        $expectedCommand = new WriteDocumentCommand('Solr', $deleteDoc);
+        $this->getWriter($expectedCommand)->deleteAll('Solr');
     }
 
     /**
@@ -122,8 +123,8 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addKeys(['foo', 'bar']);
-        $command = new WriteDocumentCommand('Solr', $deleteDoc);
-        $this->getWriter($command, ['core' => 'biblio'])
+        $expectedCommand = new WriteDocumentCommand('Solr', $deleteDoc);
+        $this->getWriter($expectedCommand, ['core' => 'biblio'])
             ->deleteRecords('Solr', ['foo', 'bar']);
     }
 
@@ -136,7 +137,6 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['markDeleted'])
             ->getMock();
     }
 
@@ -150,7 +150,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSearchService($expectedCommand, $result)
     {
-        $resultCommand = $this->getMockBuilder(WriteDocumentCommand::class)
+        $resultCommand = $this->getMockBuilder(get_class($expectedCommand))
             ->disableOriginalConstructor()
             ->getMock();
         $resultCommand->expects($this->once())->method('getResult')
