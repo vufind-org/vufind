@@ -42,8 +42,6 @@
       // RTL styling
       $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
     } ?>
-    <?=$this->headLink()?>
-    <?=$this->headStyle()?>
     <?php
       // Collect small scripts together and append as one block:
       $appendScripts = [];
@@ -98,6 +96,9 @@ JS;
           $this->headScript()->appendFile("covers.js");
       }
     ?>
+    <?=$this->cookieConsent()?>
+    <?=$this->headLink()?>
+    <?=$this->headStyle()?>
     <?=$this->headScript() ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">

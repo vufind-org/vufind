@@ -15,9 +15,11 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
+@import "components/cookie-consent";
 @import "components/devtools";
 @import "components/form";
 @import "components/icons";
+@import "components/iframemanager";
 @import "components/js-tree";
 @import "components/lightbox";
 @import "components/offcanvas";
@@ -407,4 +409,3 @@ div.holding-notes {
 .odbrand {
   padding: 7px;
 }
-

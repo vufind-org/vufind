@@ -12,3 +12,12 @@
   Q: Why does the service use cookies?<br/>
   A: Cookies are used to manage sessions, which include selected language, last search, book bag contents, any login information, etc.
 </p>
+<p>
+  Q: What kinds of services have been built on top of VuFind?<br>
+  A: See the following video for a quick look:
+  <?php if ($this->plugin('cookieConsent')->isEnabled()): ?>
+    <div style="width: 560px; height: 315px" class="iframemanager" data-service="youtube" data-id="5q70TokaSrw"></div>
+  <?php else: ?>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/5q70TokaSrw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <?php endif; ?>
+</p>

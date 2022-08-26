@@ -1,0 +1,43 @@
+$cc-modal-margin: 1em;
+$cc-translate-y: 1.6em;
+
+#cc-main {
+    color: $text-color;
+    position: relative;
+    line-height: 1.15;
+
+    b,
+    em,
+    strong,
+    .cm__title {
+        font-weight: $headings-font-weight;
+    }
+
+    .cc__link {
+        color: $link-color;
+        position: relative;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        text-decoration: underline;
+
+        &:hover {
+            color: $link-hover-color;
+            text-decoration: $link-hover-decoration;
+            background-size: 100% 1px;
+        }
+    }
+}
+
+/** Disable page scroll **/
+html.disable--interaction {
+
+    &.show--consent,
+    &.show--consent body {
+        height: auto!important;
+        overflow: hidden!important;
+    }
+}
+
+@import "./cookie-consent-modal";
+@import "./cookie-preferences-modal";
