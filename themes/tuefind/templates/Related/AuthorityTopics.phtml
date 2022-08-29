@@ -3,7 +3,7 @@
   <?php
 
     $this->headLink()->appendStylesheet('vendor/jqcloud.css');
-    $this->headScript()->appendFile("vendor/jqcloud-1.0.4.min.js");
+    $this->headScript()->appendFile("vendor/jqcloud-2.0.3.min.js");
 
     $responseTopicsData = $responseTopicsDataAndSettings[0];
     $responseTopicsSettings = $responseTopicsDataAndSettings[1];
@@ -28,10 +28,8 @@
       let word_list = [
           $jsData
       ];
-      $("#topic_cloud").jQCloud(word_list);
-      $(window).on('resize',function(){
-        $('#topic_cloud').css("width", "100%");
-        $('#topic_cloud').empty().jQCloud(word_list);
+      $("#topic_cloud").jQCloud(word_list,{
+        autoResize: true
       });
     });
 EOD;
