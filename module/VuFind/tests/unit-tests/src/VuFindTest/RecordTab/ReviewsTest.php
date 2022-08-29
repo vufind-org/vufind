@@ -52,6 +52,5 @@ class ReviewsTest extends \PHPUnit\Framework\TestCase
         $expected = 'Reviews';
 
         $this->assertSame($expected, $obj->getDescription());
-
     }
 }
