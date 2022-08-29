@@ -39,7 +39,7 @@ EOD;
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippetTags, 'SET')?>
 
   <div class="col-md-12 tf-cloud-block">
-    <h4><?=$this->transEsc('Suggested Topics')?></h4>
+    <h4><?=$this->transEsc('Suggested Topics')?> <span>(<?=count($ascSortingTopicsData)?>)</span></h4>
     <div>
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
