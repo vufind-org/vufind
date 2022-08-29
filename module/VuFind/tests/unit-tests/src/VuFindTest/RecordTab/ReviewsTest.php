@@ -1,10 +1,10 @@
 <?php
 /**
- * HoldingsILS Test Class
+ * Reviews Test Class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\Reviews;
 
 /**
- * HoldingsILS Test Class
+ * Reviews Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,12 @@ use VuFind\RecordTab\Reviews;
 
 class ReviewsTest extends \PHPUnit\Framework\TestCase
 {
-    Public function testGetDescription()
+    /**
+     * Test getting Description.
+     *
+     * @return void
+     */
+    public function testGetDescription(): void
     {
         $obj = new Reviews();
         $expected = 'Reviews';
