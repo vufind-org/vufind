@@ -398,7 +398,13 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $connector = new $this->connectorClass(
             $this->getSolrUrl(),
             new HandlerMap($handlers),
-            $this->createHttpClient($config->Index->timeout ?? 30),
+            function (string $url) use ($config) {
+                return $this->createHttpClient(
+                    $config->Index->timeout ?? 30,
+                    [],
+                    $url
+                );
+            },
             $this->uniqueKey
         );
 
