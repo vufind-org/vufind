@@ -21,6 +21,8 @@ package org.vufind.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -553,19 +555,21 @@ public class FormatCalculator
         return false;
     }
 
+    protected String getSubfieldOrDefault(DataField field, char subfieldCode, String defaultValue) {
+        Subfield subfield = field.getSubfield(subfieldCode);
+        String data = subfield.getData();
+        return data == null ? defaultValue : data;
+    }
+
     protected boolean isOnlineAccordingTo338(Record record) {
         // Does the RDA carrier indicate that this is online?
-        List carrierFields = record.getVariableFields("338");
-        if (carrierFields != null) {
-            Iterator carrierFieldsIter = carrierFields.iterator();
-            while (carrierFieldsIter.hasNext()) {
-                DataField carrierField = (DataField) carrierFieldsIter.next();
-                String desc = carrierField.getSubfield('a') == null ? "" : carrierField.getSubfield('a').getData();
-                String code = carrierField.getSubfield('b') == null ? "" : carrierField.getSubfield('b').getData();
-                String source = carrierField.getSubfield('2') == null ? "" : carrierField.getSubfield('2').getData();
-                if ((desc.equals("online resource") || code.equals("cr")) && source.equals("rdacarrier")) {
-                    return true;
-                }
+        for (VariableField variableField : record.getVariableFields("338")) {
+            DataField carrierField = (DataField) variableField;
+            String desc = getSubfieldOrDefault(carrierField, 'a', "");
+            String code = getSubfieldOrDefault(carrierField, 'b', "");
+            String source = getSubfieldOrDefault(carrierField, '2', "");
+            if ((desc.equals("online resource") || code.equals("cr")) && source.equals("rdacarrier")) {
+                return true;
             }
         }
         return false;
@@ -583,19 +587,15 @@ public class FormatCalculator
     protected List<String> getFormatsFrom33xFields(Record record) {
         boolean isOnline = isOnlineAccordingTo338(record);
         List<String> formats = new ArrayList<String>();
-        List typeFields = record.getVariableFields("336");
-        if (typeFields != null) {
-            Iterator typeFieldsIter = typeFields.iterator();
-            while (typeFieldsIter.hasNext()) {
-                DataField typeField = (DataField) typeFieldsIter.next();
-                String desc = typeField.getSubfield('a') == null ? "" : typeField.getSubfield('a').getData();
-                String code = typeField.getSubfield('b') == null ? "" : typeField.getSubfield('b').getData();
-                String source = typeField.getSubfield('2') == null ? "" : typeField.getSubfield('2').getData();
-                if ((desc.equals("two-dimensional moving image") || code.equals("tdi")) && source.equals("rdacontent")) {
-                    formats.add("Video");
-                    if (isOnline) {
-                        formats.add("VideoOnline");
-                    }
+        for (VariableField variableField : record.getVariableFields("336")) {
+            DataField typeField = (DataField) variableField;
+            String desc = getSubfieldOrDefault(typeField, 'a', "");
+            String code = getSubfieldOrDefault(typeField, 'b', "");
+            String source = getSubfieldOrDefault(typeField, '2', "");
+            if ((desc.equals("two-dimensional moving image") || code.equals("tdi")) && source.equals("rdacontent")) {
+                formats.add("Video");
+                if (isOnline) {
+                    formats.add("VideoOnline");
                 }
             }
         }
