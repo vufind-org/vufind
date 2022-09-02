@@ -634,8 +634,9 @@ public class FormatCalculator
             result.add("ConferenceProceeding");
         }
 
-        // check the 33x fields; these may give us clear information in newer records
-        // and if we find something here, it currently indicates non-book content.
+        // check the 33x fields; these may give us clear information in newer records;
+        // in current partial implementation of getFormatsFrom33xFields(), if we find
+        // something here, it indicates non-book content.
         List formatsFrom33x = getFormatsFrom33xFields(record);
         if (formatsFrom33x.size() > 0) {
             couldBeBook = false;
