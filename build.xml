@@ -332,7 +332,6 @@
   <target name="copynodemodules">
     <!-- vanilla-cookieconsent -->
     <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
-    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.css" todir="${srcdir}/themes/bootstrap3/css/vendor" />
   </target>
 
   <!-- Install and Activate VuFind -->
