@@ -625,10 +625,11 @@ $cc-pm-toggle-disabled-icon-color: $gray-lighter;  // no (x tick)
 
     .pm__btn{
         @extend .btn;
-        @extend .btn-primary;
-
-        &:hover{
-            @extend .btn-primary:hover;
+        &:not(&--secondary) {
+            @extend .btn-primary;
+            &:hover{
+                @extend .btn-primary:hover;
+            }
         }
 
         /* Secondary btn colors */
