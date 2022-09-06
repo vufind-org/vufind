@@ -90,34 +90,34 @@ CookieConsent:
         - Name: yt-player-bandwidth
           Domain: youtube.com
           ThirdParty: true
-          Description: CookieConsent::cookie_description_youtube_bandwidth_html
+          Description: CookieConsent::cookie_description_third_party_bandwidth_html
           Expiration: session
         - Name: yt-player-headers-readable
           Domain: youtube.com
           ThirdParty: true
-          Description: CookieConsent::cookie_description_youtube_preferences_html
+          Description: CookieConsent::cookie_description_third_party_preferences_html
           Expiration: session
         - Name: GPS
           Domain: youtube.com
           ThirdParty: true
-          Description: CookieConsent::cookie_description_youtube_gps_html
+          Description: CookieConsent::cookie_description_third_party_gps_html
           Expiration: session
         - Name: VISITOR_INFO1_LIVE
           Domain: youtube.com
           ThirdParty: true
-          Description: CookieConsent::cookie_description_youtube_bandwidth_html
+          Description: CookieConsent::cookie_description_third_party_bandwidth_html
           Expiration: 6
           ExpirationUnit: months
         - Name: PREF, __Secure-YEC
           Domain: youtube.com
           ThirdParty: true
-          Description: CookieConsent::cookie_description_youtube_preferences_html
+          Description: CookieConsent::cookie_description_third_party_preferences_html
           Expiration: 8
           ExpirationUnit: months
         - Name: YSC, CONSENT, SOCS
           Domain: youtube.com
           ThirdParty: true
-          Description: CookieConsent::cookie_description_youtube_marketing_html
+          Description: CookieConsent::cookie_description_third_party_marketing_html
           Expiration: 8
           ExpirationUnit: months
       AutoClearCookies:
