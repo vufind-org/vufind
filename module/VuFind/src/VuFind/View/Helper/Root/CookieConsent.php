@@ -148,6 +148,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getConsentDialogConfig(): array
     {
+        $descriptionPlaceholders = $this->getDescriptionPlaceholders();
         $categories = $this->config['Cookies']['consentCategories'] ?? '';
         $enabledCategories = $categories ? explode(',', $categories) : ['essential'];
         $lang = $this->getTranslatorLocale();
@@ -184,7 +185,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
                                 'CookieConsent::popup_title_html'
                             ),
                             'description' => $this->translate(
-                                'CookieConsent::popup_description_html'
+                                'CookieConsent::popup_description_html',
+                                $descriptionPlaceholders
                             ),
                             'revisionMessage' => $this->translate(
                                 'CookieConsent::popup_revision_message_html'
@@ -215,7 +217,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
                             'sections' => [
                                 [
                                     'description' => $this->translate(
-                                        'CookieConsent::category_description_html'
+                                        'CookieConsent::category_description_html',
+                                        $descriptionPlaceholders
                                     )
                                 ],
                             ],
@@ -409,6 +412,21 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get placeholders for description translations
+     *
+     * @return array
+     */
+    protected function getDescriptionPlaceholders(): array
+    {
+        $root = rtrim(($this->getView()->plugin('url'))('home'), '/');
+        $escapeHtmlAttr = $this->getView()->plugin('escapeHtmlAttr');
+        return [
+            '%%siteRoot%%' => $root,
+            '%%siteRootAttr%%' => $escapeHtmlAttr($root),
+        ];
+    }
+
+    /**
      * Get current host name
      *
      * @return string
@@ -416,7 +434,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     protected function getHostName(): string
     {
         if (null === $this->hostName) {
-            $this->hostName = $this->view->plugin('serverUrl')->getHost();
+            $this->hostName = $this->getView()->plugin('serverUrl')->getHost();
         }
         return $this->hostName;
     }
