@@ -13,6 +13,7 @@ $cc-pm-secondary-color: lighten($text-color, 10%);
 $cc-pm-btn-border-radius: $btn-border-radius-base;
 $cc-pm-separator-border-color: $well-border;
 $cc-pm-cookie-category-block-bg: $gray-lighter;
+$cc-pm-cookie-category-block-contents-bg: $body-bg;
 $cc-pm-cookie-category-block-border: darken($gray-lighter, 10%);
 $cc-pm-cookie-category-block-hover-bg: darken($gray-lighter, 10%);
 $cc-pm-cookie-category-block-hover-border: $cc-pm-cookie-category-block-border;
@@ -140,7 +141,7 @@ $cc-pm-toggle-disabled-icon-color: $gray-lighter;  // no (x tick)
         .pm__section-desc-wrapper{
             overflow: hidden;
             margin-top: 0!important;
-            background: $cc-pm-cookie-category-block-bg;
+            background: $cc-pm-cookie-category-block-contents-bg;
         }
     }
 
