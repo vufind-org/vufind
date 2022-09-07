@@ -27,7 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Http\Request as HttpRequest;
 use VuFind\Cookie\CookieManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
