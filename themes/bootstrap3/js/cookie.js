@@ -45,6 +45,11 @@ VuFind.register('cookie', function cookie() {
     VuFind.emit('cookie-consent-initialized');
   }
 
+  function isCategoryAccepted(category)
+  {
+    return CookieConsent.acceptedCategory(category);
+  }
+
   function isServiceAllowed(serviceName)
   {
     for (const [category, services] of Object.entries(consentConfig.controlledVuFindServices)) {
@@ -64,6 +69,7 @@ VuFind.register('cookie', function cookie() {
 
   return {
     setupConsent: setupConsent,
+    isCategoryAccepted: isCategoryAccepted,
     isServiceAllowed: isServiceAllowed,
     getConsentConfig: getConsentConfig
   };
