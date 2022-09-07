@@ -577,7 +577,7 @@ $cc-cm-sections-padding: 1em 1.3em;
 
 
 @media screen and (max-width: 640px) {
-	#cc-main   {
+    #cc-main {
 
         $cc-modal-margin: .5em;
 
@@ -642,5 +642,5 @@ $cc-cm-sections-padding: 1em 1.3em;
                 margin: 0 0 $cc-cm-btn-margin 0!important;
             }
         }
-	}
+    }
 }
