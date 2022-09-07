@@ -42,11 +42,13 @@ VuFind.register('cookie', function cookie() {
 
   function isServiceAllowed(serviceName)
   {
-    Object.entries(config.controlledVuFindServices).forEach(([category, services]) => {
-      if (services.indexOf(serviceName) !== -1 && CookieConsent.acceptedCategory(category)) {
+    for (const [category, services] of Object.entries(config.controlledVuFindServices)) {
+      if (services.indexOf(serviceName) !== -1
+        && CookieConsent.acceptedCategory(category)
+      ) {
         return true;
       }
-    });
+    }
     return false;
   }
 
