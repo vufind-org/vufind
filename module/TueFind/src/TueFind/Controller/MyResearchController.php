@@ -146,11 +146,18 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $collection = $dspace->getCollectionByName($collectionName);
                 $dspaceMetadata = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DSpace6')->getMappedData($existingRecord);
                 $item = $dspace->addItem($collection->uuid, $dspaceMetadata);
+                
                 $bitstream = $dspace->addBitstream($item->uuid, basename($tmpfile), $tmpfile);
                 $dbPublications = $this->getTable('publication')->addPublication($user->id, $existingRecordId, $item->handle, $item->uuid, $termFileData['termDate']);
 
+                if(!strpos($item->handle, '/')) {
+                  $publicationURL = $dspaceServer."/handle/".$item->handle;
+                }else{
+                  $publicationURL = $dspaceServer."/xmlui/handle/".$item->handle;
+                }
+
                 // Store information in database
-                $this->flashMessenger()->addMessage(['msg' => "Publication successfully created: <a href='".$dspaceServer."/handle/".$item->handle."' target='_blank'>click here go to file</a>", 'html' => true], 'success');
+                $this->flashMessenger()->addMessage(['msg' => "Publication successfully created: <a href='".$publicationURL."' target='_blank'>click here go to file</a>", 'html' => true], 'success');
                 $showForm = false;
             }
         }
