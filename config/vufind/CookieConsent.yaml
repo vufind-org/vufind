@@ -23,6 +23,12 @@
 #                     is false)
 #   Essential         Whether the category contains only cookies essential for the
 #                     service and cannot be disabled (true/false, default is false)
+#   ControlIframeServices Links a category consent with iframe services so that a
+#                     consent allows the iframe to be loaded without a prompt.
+#   ControlVuFindServices Links a category consent with VuFind services so that a
+#                     consent allows the service to be controlled. The following
+#                     services are currently supported:
+#                       matomo
 #   Cookies           List of cookies and their descriptions:
 #
 #     Name              Cookie name
@@ -56,13 +62,6 @@
 #
 # You can use e.g. https://cookiedatabase.org/ to find out the cookies used by most
 # popular services.
-#
-# ControlIframeServices links a category consent with iframe services so that a
-# consent allows the iframe to be loaded without a prompt.
-#
-# ControlVuFindServices links a category consent with VuFind services so that a
-# consent allows the service to be controlled. The following services are currently
-# supported: matomo
 #
 # All textual strings are translatable. The following placeholders can be used in
 # settings and translated texts:
