@@ -31,6 +31,11 @@ CookieConsent:
           Description: CookieConsent::cookie_description_consent_html
           Expiration: '{{consent_cookie_expiration}}'
           ExpirationUnit: days
+        - Name: 'cc_*'
+          Domain: '{{vufind_cookie_domain}}'
+          Description: CookieConsent::cookie_description_consent_html
+          Expiration: '{{consent_cookie_expiration}}'
+          ExpirationUnit: days
         - Name: language
           Domain: '{{vufind_cookie_domain}}'
           Description: CookieConsent::cookie_description_language_html
@@ -79,54 +84,3 @@ CookieConsent:
           Expiration: session
       AutoClearCookies:
         - Name: '/^_pk_/'
-    video_social_media:
-      Title: CookieConsent::video_social_media_cookies_title_html
-      Description: CookieConsent::video_social_media_cookies_description_html
-      DefaultEnabled: false
-      Essential: false
-      ControlIframeServices:
-        - youtube
-      Cookies:
-        - Name: yt-player-bandwidth
-          Domain: youtube.com
-          ThirdParty: true
-          Description: CookieConsent::cookie_description_third_party_bandwidth_html
-          Expiration: session
-        - Name: yt-player-headers-readable
-          Domain: youtube.com
-          ThirdParty: true
-          Description: CookieConsent::cookie_description_third_party_preferences_html
-          Expiration: session
-        - Name: GPS
-          Domain: youtube.com
-          ThirdParty: true
-          Description: CookieConsent::cookie_description_third_party_gps_html
-          Expiration: session
-        - Name: VISITOR_INFO1_LIVE
-          Domain: youtube.com
-          ThirdParty: true
-          Description: CookieConsent::cookie_description_third_party_bandwidth_html
-          Expiration: 6
-          ExpirationUnit: months
-        - Name: PREF, __Secure-YEC
-          Domain: youtube.com
-          ThirdParty: true
-          Description: CookieConsent::cookie_description_third_party_preferences_html
-          Expiration: 8
-          ExpirationUnit: months
-        - Name: YSC, CONSENT, SOCS
-          Domain: youtube.com
-          ThirdParty: true
-          Description: CookieConsent::cookie_description_third_party_marketing_html
-          Expiration: 8
-          ExpirationUnit: months
-      AutoClearCookies:
-        - Name: '/^(yt-player-.*|GPS|VISITOR_INFO1_LIVE|PREF|__Secure-YEC|YSC|CONSENT|SOCS)$/'
-  IframeServices:
-    youtube:
-      EmbedUrl: 'https://www.youtube.com/embed/{data-id}'
-      #ThumbnailUrl: 'https://i3.ytimg.com/vi/{data-id}/hqdefault.jpg'
-      IframeAllow: accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen
-      Description: CookieConsent::youtube_iframe_description_html
-      AllowOnceText: CookieConsent::youtube_load_video
-      AllowAlwaysText: CookieConsent::youtube_load_all_videos
