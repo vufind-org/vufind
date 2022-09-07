@@ -1,13 +1,13 @@
 /*global VuFind, iframemanager, CookieConsent */
 
 VuFind.register('cookie', function cookie() {
-  let config;
+  let consentConfig = null;
   let iframeManager = null;
 
   function updateServiceStatus() {
     // Update iframemanager:
     if (null !== iframeManager) {
-      Object.entries(config.controlledIframeServices).forEach(([category, services]) => {
+      Object.entries(consentConfig.controlledIframeServices).forEach(([category, services]) => {
         if (CookieConsent.acceptedCategory(category)) {
           services.forEach(service => iframeManager.acceptService(service));
         } else {
@@ -17,7 +17,7 @@ VuFind.register('cookie', function cookie() {
     }
 
     // Update other services:
-    Object.entries(config.controlledVuFindServices).forEach(([category, services]) => {
+    Object.entries(consentConfig.controlledVuFindServices).forEach(([category, services]) => {
       // Matomo:
       if (window._paq && services.indexOf('matomo') !== -1) {
         if (CookieConsent.acceptedCategory(category)) {
@@ -28,26 +28,26 @@ VuFind.register('cookie', function cookie() {
   }
 
   function setupConsent(_config) {
-    config = _config;
-    if (null !== config.iframemanager) {
+    consentConfig = _config;
+    if (null !== consentConfig.iframemanager) {
       iframeManager = iframemanager();
-      iframeManager.run(config.iframemanager);
+      iframeManager.run(consentConfig.iframemanager);
     }
-    config.consentDialog.onConsent = function onConsent() {
+    consentConfig.consentDialog.onConsent = function onConsent() {
       updateServiceStatus();
       VuFind.emit('cookie-consent-done');
     };
-    config.consentDialog.onChange = function onChange() {
+    consentConfig.consentDialog.onChange = function onChange() {
       updateServiceStatus();
       VuFind.emit('cookie-consent-change');
     };
-    CookieConsent.run(config.consentDialog);
+    CookieConsent.run(consentConfig.consentDialog);
     VuFind.emit('cookie-consent-initialized');
   }
 
   function isServiceAllowed(serviceName)
   {
-    for (const [category, services] of Object.entries(config.controlledVuFindServices)) {
+    for (const [category, services] of Object.entries(consentConfig.controlledVuFindServices)) {
       if (services.indexOf(serviceName) !== -1
         && CookieConsent.acceptedCategory(category)
       ) {
@@ -57,8 +57,14 @@ VuFind.register('cookie', function cookie() {
     return false;
   }
 
+  function getConsentConfig()
+  {
+    return consentConfig;
+  }
+
   return {
     setupConsent: setupConsent,
-    isServiceAllowed: isServiceAllowed
+    isServiceAllowed: isServiceAllowed,
+    getConsentConfig: getConsentConfig
   };
 });
