@@ -455,9 +455,7 @@ _paq.push(['setCustomUrl', '$pageUrl']);
 EOT;
         if ($this->disableCookies) {
             $code .= "_paq.push(['disableCookies']);\n";
-        } elseif ($cookieConsent->isEnabled()
-            && !$cookieConsent->isServiceAllowed('matomo')
-        ) {
+        } elseif ($cookieConsent->isEnabled()) {
             $code .= "_paq.push(['requireCookieConsent']);\n";
         }
 
