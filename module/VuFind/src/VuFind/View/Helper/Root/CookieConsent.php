@@ -27,6 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Http\Request as HttpRequest;
 use VuFind\Cookie\CookieManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -159,6 +160,81 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     public function isIframeManagerActive(): bool
     {
         return $this->isEnabled() && null !== $this->getIframemanagerConfig();
+    }
+
+    /**
+     * Get controlled iframe services
+     *
+     * @return array
+     */
+    public function getControlledIframeServices(): array
+    {
+        $controlledIFrameServices = [];
+        foreach ($this->consentConfig['Categories'] ?? [] as $name => $category) {
+            if ($serviceNames = $category['ControlIframeServices'] ?? []) {
+                $controlledIFrameServices[$name] = $serviceNames;
+            }
+        }
+        return $controlledIFrameServices;
+    }
+
+    /**
+     * Get controlled VuFind services (services integrated into VuFind)
+     *
+     * @return array
+     */
+    public function getControlledVuFindServices(): array
+    {
+        $controlledVuFindServices = [];
+        foreach ($this->consentConfig['Categories'] ?? [] as $name => $category) {
+            if ($serviceNames = $category['ControlVuFindServices'] ?? []) {
+                $controlledVuFindServices[$name] = [
+                    ...$controlledVuFindServices[$name] ?? [], ...$serviceNames
+                ];
+            }
+        }
+        return $controlledVuFindServices;
+    }
+
+    /**
+     * Check if a cookie category is accepted
+     *
+     * Checks the consent cookie for accepted category information
+     *
+     * @param string $category Category
+     *
+     * @return bool
+     */
+    public function isCategoryAccepted(string $category): bool
+    {
+        if (!isset($this->consentConfig['Categories'][$category])) {
+            return false;
+        }
+        if ($consentJson = $this->cookieManager->get($this->consentCookieName)) {
+            if ($consent = json_decode($consentJson, true)) {
+                return in_array($category, (array)($consent['categories'] ?? []));
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if a VuFind service is allowed
+     *
+     * @param string $service Service
+     *
+     * @return bool
+     */
+    public function isServiceAllowed(string $service): bool
+    {
+        foreach ($this->getControlledVuFindServices() as $category => $services) {
+            if (in_array($service, $services)
+                && $this->isCategoryAccepted($category)
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -381,38 +457,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
                 'currLang' => $lang,
                 'services' => $services,
             ] : null;
-    }
-
-    /**
-     * Get controlled iframe services
-     *
-     * @return array
-     */
-    public function getControlledIframeServices(): array
-    {
-        $controlledIFrameServices = [];
-        foreach ($this->consentConfig['Categories'] ?? [] as $name => $category) {
-            if ($serviceNames = $category['ControlIframeServices'] ?? []) {
-                $controlledIFrameServices[$name] = $serviceNames;
-            }
-        }
-        return $controlledIFrameServices;
-    }
-
-    /**
-     * Get controlled VuFind services (services integrated into VuFind)
-     *
-     * @return array
-     */
-    public function getControlledVuFindServices(): array
-    {
-        $controlledVuFindServices = [];
-        foreach ($this->consentConfig['Categories'] ?? [] as $name => $category) {
-            if ($serviceNames = $category['ControlVuFindServices'] ?? []) {
-                $controlledVuFindServices[$name] = $serviceNames;
-            }
-        }
-        return $controlledVuFindServices;
     }
 
     /**

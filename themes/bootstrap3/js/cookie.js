@@ -45,13 +45,11 @@ VuFind.register('cookie', function cookie() {
     VuFind.emit('cookie-consent-initialized');
   }
 
-  function isCategoryAccepted(category)
-  {
+  function isCategoryAccepted(category) {
     return CookieConsent.acceptedCategory(category);
   }
 
-  function isServiceAllowed(serviceName)
-  {
+  function isServiceAllowed(serviceName) {
     for (const [category, services] of Object.entries(consentConfig.controlledVuFindServices)) {
       if (services.indexOf(serviceName) !== -1
         && CookieConsent.acceptedCategory(category)
@@ -62,8 +60,7 @@ VuFind.register('cookie', function cookie() {
     return false;
   }
 
-  function getConsentConfig()
-  {
+  function getConsentConfig() {
     return consentConfig;
   }
 
