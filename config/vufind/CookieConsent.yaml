@@ -1,6 +1,59 @@
 ---
 # Cookie consent and IFrame manager configuration.
 #
+# Note that there are a couple of settings in the Cookies section of config.ini that
+# can be used to enable the functionality and select categories to display.
+#
+# Settings:
+#
+#   CookieExpiration  Days before the consent cookie expires. Default is 182 days
+#                     (half a year). One year is another typical value.
+#   Categories        Cookie categories (groups) that bring together a set of
+#                     cookies. The user can choose their consent for each group
+#                     apart from essential cookies. See below for documentation.
+#   IframeServices    Configuration for iframe services that depend on cookie
+#                     consent. See below for documenation.
+#
+# Cookie category configuration (see the VuFind wiki for additional examples:
+# https://vufind.org/wiki/configuration:cookie_consent)
+#
+#   Title             Category title displayed in the category heading
+#   Description       A longer description text
+#   DefaultEnabled    Whether the category defaults to enabled (true/false, default
+#                     is false)
+#   Essential         Whether the category contains only cookies essential for the
+#                     service and cannot be disabled (true/false, default is false)
+#   Cookies           List of cookies and their descriptions:
+#
+#     Name              Cookie name
+#     Domain            Cookie domain
+#     Description       Description for the cookie
+#     Expiration        Expiration time for the cookie (number or "session")
+#     ExpirationUnit    Unit of expiration for translation when Expiration is a
+#                       numeric value. Out of the box supported values are "days" and
+#                       "months".
+#     ThirdParty        Whether the cookie comes from a third party (true/false,
+#                       default is false)
+#
+#   AutoClearCookies  A list of cookies that should be automatically removed if
+#                     consent for a category is withdrawn:
+#
+#     Name              A regular expression to match cookie names that should be
+#                       cleared
+#
+# Iframe service configuration (see the VuFind wiki for an example:
+# https://vufind.org/wiki/configuration:cookie_consent)
+#
+#   EmbedUrl          Template for embedded content url. {data-id} can be used as a
+#                     placeholder for the data-id attribute of the tag.
+#   ThumbnailUrl      Template for thumbnail image url. {data-id} can be used as a
+#                     placeholder for the data-id attribute of the tag.
+#   IframeAllow       allow attribute for the iframe
+#   Description       Description text displayed alongside buttons to display the
+#                     content
+#   AllowOnceText     Text for the "Allow once" button
+#   AllowAlwaysText   Text for the "Allow always" button (remembers the choice)
+#
 # You can use e.g. https://cookiedatabase.org/ to find out the cookies used by most
 # popular services.
 #
@@ -11,12 +64,15 @@
 # consent allows the service to be controlled. The following services are currently
 # supported: matomo
 #
-# The following placeholders can be used in settings and translated texts:
-# {{consent_cookie_name}}         - Name of the consent cookie (default cc_cookie)
-# {{consent_cookie_expiration}}   - Consent cookie expiration time
-# {{current_host_name}}           - Server name of the VuFind server
-# {{vufind_cookie_domain}}        - Domain for VuFind's cookies
-# {{vufind_session_cookie}}       - VuFind session cookie name
+# All textual strings are translatable. The following placeholders can be used in
+# settings and translated texts:
+#
+# {{consent_cookie_name}}         Name of the consent cookie (default cc_cookie)
+# {{consent_cookie_expiration}}   Consent cookie expiration time
+# {{current_host_name}}           Server name of the VuFind server
+# {{vufind_cookie_domain}}        Domain for VuFind's cookies
+# {{vufind_session_cookie}}       VuFind session cookie name
+#
 CookieConsent:
   #CookieExpiration: 365
   Categories:
