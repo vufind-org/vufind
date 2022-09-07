@@ -104,7 +104,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
         $this->cookieManager = $cookieManager;
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
         $this->consentCookieExpiration
-            = $this->consentConfig['CookieExpiration'] ?? 182;
+            = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
     }
 
     /**
