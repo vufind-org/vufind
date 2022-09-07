@@ -108,11 +108,21 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Render cookie consent script
+     * Return this object
+     *
+     * @return \VuFind\View\Helper\Root\CookieConsent
+     */
+    public function __invoke(): \VuFind\View\Helper\Root\CookieConsent
+    {
+        return $this;
+    }
+
+    /**
+     * Render cookie consent initialization script
      *
      * @return string
      */
-    public function __invoke(): string
+    public function render(): string
     {
         if (!$this->isEnabled()) {
             return '';
@@ -132,13 +142,23 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check the cookie consent mechanism is enabled
+     * Check if the cookie consent mechanism is enabled
      *
      * @return bool
      */
     public function isEnabled(): bool
     {
         return !empty($this->config['Cookies']['consent']);
+    }
+
+    /**
+     * Check if iframemanager is active
+     *
+     * @return bool
+     */
+    public function isIframeManagerActive(): bool
+    {
+        return $this->isEnabled() && null !== $this->getIframemanagerConfig();
     }
 
     /**
@@ -318,9 +338,9 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get configuration for iframemanager
      *
-     * @return array
+     * @return ?array
      */
-    protected function getIframemanagerConfig(): array
+    protected function getIframemanagerConfig(): ?array
     {
         $lang = $this->getTranslatorLocale();
         $services = [];
@@ -356,10 +376,11 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
             }
             $services[$serviceName] = $service;
         }
-        return [
-            'currLang' => $lang,
-            'services' => $services,
-        ];
+        return $services
+            ? [
+                'currLang' => $lang,
+                'services' => $services,
+            ] : null;
     }
 
     /**
