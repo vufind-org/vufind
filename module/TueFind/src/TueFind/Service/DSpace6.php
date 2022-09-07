@@ -76,6 +76,7 @@ class DSpace6 {
 
         $curlHandle = curl_init($fullUrl);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
 
         if (!isset($headers[self::HEADER_ACCEPT])) {
             $headers[self::HEADER_ACCEPT] = 'application/json';
@@ -102,6 +103,9 @@ class DSpace6 {
         curl_setopt($curlHandle, CURLOPT_COOKIEFILE, $cookiePath);
 
         $json = curl_exec($curlHandle);
+        if ($json === false) {
+            throw new \Exception('Error when calling ' . $endpoint . '/' . $method);
+        }
 
         curl_close($curlHandle);
         return json_decode($json);

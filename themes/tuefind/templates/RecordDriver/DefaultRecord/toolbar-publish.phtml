@@ -12,7 +12,11 @@
   if (isset($publication)) {
       $showDspaceLink = true;
       $dspaceServer = $config->Publication->dspace_url_base;
-      $dspaceLink = $dspaceServer."/items/".$publication->external_document_guid;
+      if(!strpos($publication->external_document_id, '/')) {
+        $dspaceLink = $dspaceServer."/items/".$publication->external_document_guid;
+      }else{
+        $dspaceLink = $dspaceServer."/xmlui/handle/".$publication->external_document_id;
+      }
   }
   ?>
   <li>
