@@ -1,5 +1,7 @@
 <?php
-$this->headScript()->appendFile('vendor/iframemanager.js');
+if (null !== $this->iframemanagerConfig) {
+    $this->headScript()->appendFile('vendor/iframemanager.js');
+}
 $this->headScript()->appendFile('vendor/cookieconsent.umd.js');
 $this->headScript()->appendFile('cookie.js');
 
