@@ -161,7 +161,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $url->expects($this->any())
             ->method('__invoke')
             ->will($this->returnValue('http://localhost/first/vufind'));
-        $serverUrl = new ServerUrl('http://localhost/first/vufind/Search/Results');
+        $serverUrl = new ServerUrl();
         $serverUrl->setHost('localhost');
         $layout = $this->getMockBuilder(Layout::class)->getMock();
         $layout->expects($this->any())
