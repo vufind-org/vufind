@@ -36,6 +36,8 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -66,7 +68,10 @@ use VuFind\Http\PhpEnvironment\Request as HttpRequest;
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
+    implements TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
+
     /**
      * Permission that must be granted to access this module (false for no
      * restriction, null to use configured default (which is usually the same
@@ -514,22 +519,6 @@ class AbstractBase extends AbstractActionController
         return $serverHelper(
             $route === true ? true : $this->url()->fromRoute($route)
         );
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg     Message to translate
-     * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found (null
-     * for no default).
-     *
-     * @return string
-     */
-    public function translate($msg, $tokens = [], $default = null)
-    {
-        $translate = $this->getViewRenderer()->plugin('translate');
-        return $translate($msg, $tokens, $default);
     }
 
     /**

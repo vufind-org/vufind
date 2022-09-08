@@ -65,10 +65,18 @@ VuFind.register('itemStatuses', function ItemStatuses() {
                           + '</span> ';
           }
         } else {
+<<<<<<< HEAD
           locationListHTML += '<span class="text-danger">'
                       + VuFind.icon("status-unavailable")
                       + result.locationList[x].location
                       + '</span> ';
+=======
+          locationListHTML +=
+            '<span class="text-danger">' +
+              VuFind.icon('status-unavailable') + " " +
+              result.locationList[x].location +
+            '</span> ';
+>>>>>>> origin/dev
         }
         locationListHTML += '</div>';
         locationListHTML += '<div class="groupCallnumber">';

@@ -304,11 +304,10 @@
     </copy>
     <reflexive>
       <fileset dir="${srcdir}/public/swagger-ui">
-        <include pattern="index.html" />
+        <include pattern="swagger-initializer.js" />
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="defaultModelRendering: 'schema'" replace="defaultModelRendering: 'model'" />
           <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
         </replaceregexp>
       </filterchain>
