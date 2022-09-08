@@ -65,39 +65,39 @@
           <?php endif; ?>
 
           <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-            <?=$this->component('menu-button', [
-              'toggleLabel' => 'Theme',
-              'wrapperTag' => 'li',
-              'menuItems' => array_map(
-                function ($current) {
-                  $item = $current;
-                  $item['label'] = $current['desc'];
-                  $item['url'] = $this->url()->addQueryParameters(['ui' => $current['name']]);
+              <?=$this->component('menu-button', [
+                  'toggleLabel' => 'Theme',
+                  'wrapperTag' => 'li',
+                  'menuItems' => array_map(
+                      function ($current) {
+                          $item = $current;
+                          $item['label'] = $current['desc'];
+                          $item['url'] = $this->url()->addQueryParameters(['ui' => $current['name']]);
 
-                  return $item;
-                },
-                $this->layout()->themeOptions
-              )
-            ]) ?>
+                          return $item;
+                      },
+                      $this->layout()->themeOptions
+                  )
+              ]) ?>
           <?php endif; ?>
 
           <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-            <?=$this->component('menu-button', [
-              'toggleLabel' => 'Language',
-              'wrapperClass' => 'language',
-              'wrapperTag' => 'li',
-              'menuItems' => array_map(
-                function ($langCode, $langName) {
-                  return [
-                    'label' => $this->displayLanguageOption($langName),
-                    'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
-                    'selected' => $this->layout()->userLang == $langCode,
-                  ];
-                },
-                array_keys($this->layout()->allLangs),
-                array_values($this->layout()->allLangs),
-              ),
-            ]) ?>
+              <?=$this->component('menu-button', [
+                  'toggleLabel' => 'Language',
+                  'wrapperClass' => 'language',
+                  'wrapperTag' => 'li',
+                  'menuItems' => array_map(
+                      function ($langCode, $langName) {
+                          return [
+                            'label' => $this->displayLanguageOption($langName),
+                            'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
+                            'selected' => $this->layout()->userLang == $langCode,
+                          ];
+                      },
+                      array_keys($this->layout()->allLangs),
+                      array_values($this->layout()->allLangs),
+                  ),
+              ]) ?>
           <?php endif; ?>
         </ul>
       </nav>
