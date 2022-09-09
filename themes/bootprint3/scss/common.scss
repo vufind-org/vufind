@@ -3,6 +3,15 @@ a,
   color: #06C;
   &:hover { color: #09F; }
 }
+.btn-link {
+  @extend .icon--link;
+
+  &.pull-left,
+  &.pull-right {
+    display: flex;
+  }
+}
+
 .alert { padding: 8px; }
 .breadcrumbs .container {
   border-top: 1px solid #ddd;
