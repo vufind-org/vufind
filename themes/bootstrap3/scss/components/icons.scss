@@ -1,8 +1,14 @@
-
 /**
- * Basic alignment styling for icons
+ * Basic alignment and styling for icons
  * generated through the Icon view helper.
  */
+
+.icon--link {
+    display: inline-flex;
+    gap: 0.125rem;
+    align-items: center;
+    vertical-align: inherit;
+}
 
 .icon--font {
     display: inline-block;
@@ -17,7 +23,6 @@
     max-width: 1.25em;
     height: min-content; /* FF */
     height: fit-content;
-    margin-top: 0.125em;
     text-align: center;
     vertical-align: top;
 }
@@ -30,18 +35,29 @@
     vertical-align: top;
 }
 
-.icon--link {
-    display: inline-flex;
-    gap: 0.125rem;
-    vertical-align: inherit;
-}
-
 .show--closed,
 .collapsed .show--open {
     display: none;
 }
 .collapsed .show--closed {
     display: inline;
+}
+
+/**
+ * Alignment for side menu
+ */
+.myresearch-menu .icon--font {
+  display: inline-block;
+  margin-right: 0.375rem;
+}
+
+/**
+ * Assign catalog formats to Font Awesome icons
+ */
+.doi-icon {
+  height: 1em;
+  width: 14px;
+  filter: brightness(50%);
 }
 
 /**
@@ -91,19 +107,3 @@
   }
 }
 
-/**
- * Alignment for side menu
- */
-.myresearch-menu .icon--font {
-  display: inline-block;
-  margin-right: 0.375rem;
-}
-
-/**
- * Assign catalog formats to Font Awesome icons
- */
-.doi-icon {
-  height: 1em;
-  width: 14px;
-  filter: brightness(50%);
-}
