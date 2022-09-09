@@ -72,7 +72,7 @@
       <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
         <?=$this->transEsc($facetName)?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>"<?php if (!in_array($field, $hierarchicalFacets)):?> data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php endif ?><?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
         <?php if (in_array($field, $hierarchicalFacets)): ?>
           <?=
@@ -89,6 +89,10 @@
                 ]
             );
           ?>
+        <?php else: ?>
+          <div class="facet-load-indicator hidden">
+            <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
+          </div>
         <?php endif; ?>
       </div>
     </div>
