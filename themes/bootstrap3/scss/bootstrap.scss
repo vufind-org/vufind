@@ -265,6 +265,10 @@ footer {
       border: 1px solid; /* color inherited from bootstrap */
       height: 20px;
 
+      &.account-none {
+        color: $gray-dark;
+        background-color: $gray-lighter;
+      }
       &.account-info {
         color: $state-success-text;
         background-color: $state-success-bg;
