@@ -275,7 +275,7 @@ return [
             'user-storage-retrievals' => 'FontAwesome:archive',
             'view-grid' => 'FontAwesome:th',
             'view-list' => 'FontAwesome:list',
-            'view-visual' => 'FontAwesome:visual',
+            'view-visual' => 'FontAwesome:th-large',
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
     ],
