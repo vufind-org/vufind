@@ -32,6 +32,7 @@ use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
 
@@ -59,6 +60,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $modifiedConfigs = [];
 
     /**
+     * Modified yaml configurations
+     *
+     * @var array
+     */
+    protected $modifiedYamlConfigs = [];
+
+    /**
      * Mink session
      *
      * @var Session
@@ -83,6 +91,26 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         foreach ($configs as $file => $settings) {
             $this->changeConfigFile($file, $settings, in_array($file, $replace));
+        }
+    }
+
+    /**
+     * Reconfigure VuFind for the current test.
+     *
+     * @param array $configs Array of settings to change. Top-level keys correspond
+     * with yaml config filenames (i.e. use 'searchspecs' for searchspecs.yaml,
+     * etc.);
+     * @param array $replace Array of config files to completely override (as
+     * opposed to modifying); if a config file from $configs is included in this
+     * array, the $configs setting will be used as the entire configuration, and
+     * the defaults from the config/vufind directory will be ignored.
+     *
+     * @return void
+     */
+    protected function changeYamlConfigs($configs, $replace = [])
+    {
+        foreach ($configs as $file => $settings) {
+            $this->changeYamlConfigFile($file, $settings, in_array($file, $replace));
         }
     }
 
@@ -123,6 +151,38 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             }
         }
         $writer->save();
+    }
+
+    /**
+     * Support method for changeYamlConfig; act on a single file.
+     *
+     * @param string $configName Configuration to modify.
+     * @param array  $settings   Settings to change.
+     * @param bool   $replace    Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
+     *
+     * @return void
+     */
+    protected function changeYamlConfigFile($configName, $settings, $replace = false)
+    {
+        $file = $configName . '.yaml';
+        $local = ConfigLocator::getLocalConfigPath($file, null, true);
+        if (!in_array($configName, $this->modifiedYamlConfigs)) {
+            if (file_exists($local)) {
+                // File exists? Make a backup!
+                copy($local, $local . '.bak');
+            } else {
+                // File doesn't exist? Make a baseline version.
+                copy(ConfigLocator::getBaseConfigPath($file), $local);
+            }
+
+            $this->modifiedYamlConfigs[] = $configName;
+        }
+
+        // Read the original file, modify and write it out:
+        $config = $replace ? [] : Yaml::parseFile($local);
+        $config = array_replace_recursive($config, $settings);
+        file_put_contents($local, Yaml::dump($config));
     }
 
     /**
@@ -245,19 +305,26 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function restoreConfigs()
     {
-        foreach ($this->modifiedConfigs as $current) {
-            $file = $current . '.ini';
-            $local = ConfigLocator::getLocalConfigPath($file, null, true);
-            $backup = $local . '.bak';
+        $configs = [
+            '.ini' => $this->modifiedConfigs,
+            '.yaml' => $this->modifiedYamlConfigs
+        ];
+        foreach ($configs as $extension => $files) {
+            foreach ($files as $current) {
+                $file = $current . $extension;
+                $local = ConfigLocator::getLocalConfigPath($file, null, true);
+                $backup = $local . '.bak';
 
-            // Do we have a backup? If so, restore from it; otherwise, just
-            // delete the local file, as it did not previously exist:
-            unlink($local);
-            if (file_exists($backup)) {
-                rename($backup, $local);
+                // Do we have a backup? If so, restore from it; otherwise, just
+                // delete the local file, as it did not previously exist:
+                unlink($local);
+                if (file_exists($backup)) {
+                    rename($backup, $local);
+                }
             }
         }
         $this->modifiedConfigs = [];
+        $this->modifiedYamlConfigs = [];
     }
 
     /**
