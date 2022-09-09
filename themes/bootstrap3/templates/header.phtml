@@ -69,10 +69,9 @@
                   'toggleLabel' => 'Theme',
                   'wrapperTag' => 'li',
                   'menuItems' => array_map(
-                      function ($current) {
-                          $item = $current;
-                          $item['label'] = $current['desc'];
-                          $item['url'] = $this->url()->addQueryParameters(['ui' => $current['name']]);
+                      function ($item) {
+                          $item['label'] = $item['desc'];
+                          $item['url'] = $this->url()->addQueryParameters(['ui' => $item['name']]);
 
                           return $item;
                       },
