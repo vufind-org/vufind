@@ -101,10 +101,10 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param array            $config   Icon configuration
-     * @param StorageInterface $cache    Cache instance
-     * @param EscapeHtmlAttr   $escAttr  EscapeHtmlAttr view helper
-     * @param bool             $rtl      Are we in right to left text mode?
+     * @param array            $config  Icon configuration
+     * @param StorageInterface $cache   Cache instance
+     * @param EscapeHtmlAttr   $escAttr EscapeHtmlAttr view helper
+     * @param bool             $rtl     Are we in right to left text mode?
      */
     public function __construct(
         array $config,
