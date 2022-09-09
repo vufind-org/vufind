@@ -51,6 +51,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test retrieving a record.
@@ -587,6 +588,16 @@ class BackendTest extends TestCase
                 $this->equalTo($doc),
                 $this->equalTo('update'),
                 $this->isNull()
+            )
+            ->will(
+                $this->returnCallback(
+                    function () use ($connector) {
+                        // Call client factory for expectations to be met:
+                        $factory = $this->getProperty($connector, 'clientFactory');
+                        $factory('');
+                        return true;
+                    }
+                )
             );
         $connector->expects($this->once())->method('getUrl')
             ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
@@ -644,10 +655,19 @@ class BackendTest extends TestCase
     protected function getConnectorMock(array $mock = [], $client = null)
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
-        $client = $client ?? new \Laminas\Http\Client();
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->onlyMethods($mock)
-            ->setConstructorArgs(['http://example.org/', $map, $client])
+            ->setConstructorArgs(
+                [
+                    'http://localhost/',
+                    $map,
+                    function () use ($client) {
+                        // If client is provided, return it since it may have test
+                        // expectations:
+                        return $client ?? new \Laminas\Http\Client();
+                    }
+                ]
+            )
             ->getMock();
     }
 }

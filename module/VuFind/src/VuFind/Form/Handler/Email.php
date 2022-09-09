@@ -151,9 +151,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
     {
         $config = $this->mainConfig;
         $email = $form->getEmailFromAddress()
-            ?: $config->sender_email ?? 'noreply@vufind.org';
+            ?: $config->Feedback->sender_email ?? 'noreply@vufind.org';
         $name = $form->getEmailFromName()
-            ?: $config->sender_name ?? 'VuFind Feedback';
+            ?: $config->Feedback->sender_name ?? 'VuFind Feedback';
 
         return [$name, $email];
     }
