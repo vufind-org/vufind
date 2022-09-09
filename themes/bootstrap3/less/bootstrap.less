@@ -56,6 +56,28 @@ label { cursor: pointer; }
 .list-unstyled { margin: 0; }
 .icon-bar { background-color: #888; }
 
+// Icons vs. Underline fix
+.btn-link {
+  &:extend(.icon--link);
+
+  &.pull-left,
+  &.pull-right {
+    display: flex;
+  }
+}
+.nav > li > a {
+  &:extend(.icon--link);
+  text-decoration: none;
+}
+.nav .dropdown-toggle {
+  padding-right: 8px;
+
+  body.rtl & {
+    padding-left: 8px;
+    padding-right: 10px;
+  }
+}
+
 // Normalize highlighting
 .highlight,
 mark {
