@@ -231,6 +231,7 @@ return [
             'qrcode' => 'FontAwesome:qrcode',
             'search' => 'FontAwesome:search',
             'search-delete' => 'Alias:ui-delete',
+            'search-filter-remove' => 'FontAwesome:times',
             'search-rss' => 'FontAwesome:rss',
             'search-save' => 'Alias:ui-save',
             'search-schedule-alert' => 'FontAwesome:exclamation-circle',
