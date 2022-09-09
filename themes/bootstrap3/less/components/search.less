@@ -464,13 +464,10 @@ body.rtl {
   color: #555;
   text-decoration: none;
 }
-.search-filter-remove {
-  margin: 4px 1px 4px 4px;
-  font-weight: normal;
+.active-filters .filters a.filter-value:hover {
   color: #fff;
-}
-.active-filters .search-filter-remove:hover {
-  color: red;
+  text-decoration: line-through;
+  background-color: @state-danger-text;
 }
 .search-filter-dropdown {
   display: inline-block;

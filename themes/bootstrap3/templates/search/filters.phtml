@@ -90,19 +90,19 @@
         <span class="filters-term filters-<?=$operatorClass?>">
           <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
         </span>
-        <span class="filter-value filters-<?=$operatorClass?>">
-          <span class="text">
-            <?=$this->escapeHtml($value['displayText'])?>
-          </span>
           <?php
             $removeLink = isset($this->urlQuery)
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
-          <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>">
-            <?=$this->icon('ui-remove') ?>
-          </a>
-        </span>
+        <a class="filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
+          <span class="sr-only">
+            <?=$this->translate('Remove filter') ?>
+          </span>
+          <span class="text">
+            <?=$this->escapeHtml($value['displayText'])?>
+          </span>
+        </a>
         <?php if ($dropdown): ?>
           </li>
         <?php endif; ?>
