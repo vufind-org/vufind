@@ -218,7 +218,7 @@ return [
             'place-hold' => 'FontAwesome:flag',
             'place-ill-request' => 'FontAwesome:exchange',
             'place-recall' => 'FontAwesome:flag',
-            'place-storage-retrieval' => 'FontAwesome:flag',
+            'place-storage-retrieval' => 'FontAwesome:truck',
             'print' => 'FontAwesome:print',
             'profile' => 'FontAwesome:user',
             'profile-card-delete' => 'Alias:ui-delete',
