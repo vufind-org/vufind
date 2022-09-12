@@ -117,7 +117,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             )
         ];
         $expectedParams = $this->getExpectedRenderParams(
-            'CookieConsentWithIFrame.yaml',
+            'CookieConsentWithIframe.yaml',
             $config,
             $cookies
         );
