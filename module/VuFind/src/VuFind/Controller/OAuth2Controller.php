@@ -56,6 +56,7 @@ use VuFind\Validator\CsrfInterface;
 class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use Feature\ResponseFormatterTrait;
 
     // Session container name
     public const SESSION_NAME = 'OAuth2Server';
@@ -401,39 +402,5 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         return $this->convertOAuthServerExceptionToResponse(
             OAuthServerException::serverError('Server side issue')
         );
-    }
-
-    /**
-     * Get a JSON response from an array of data
-     *
-     * @param array $data Data to encode
-     *
-     * @return Response
-     */
-    protected function getJsonResponse(array $data): Response
-    {
-        $response = new Response();
-        $response->setStatusCode(200);
-        $response->getHeaders()->addHeaderLine('Content-type', 'application/json');
-        $response->setContent(json_encode($data));
-        return $response;
-    }
-
-    /**
-     * Add CORS headers to a response.
-     *
-     * @param \Laminas\Http\Response $response Response
-     *
-     * @return void
-     */
-    protected function addCorsHeaders(\Laminas\Http\Response $response): void
-    {
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine(
-            'Access-Control-Allow-Methods',
-            'GET, POST, OPTIONS'
-        );
-        $headers->addHeaderLine('Access-Control-Max-Age', '86400');
-        $headers->addHeaderLine('Access-Control-Allow-Origin: *');
     }
 }
