@@ -15,6 +15,7 @@ class RouteGenerator extends \VuFind\Route\RouteGenerator
         parent::__construct($nonTabRecordActions);
         if (null === $nonTabRecordActions) {
             $this->nonTabRecordActions[] = 'Publish';
+            $this->nonTabRecordActions[] = 'Info';
         }
     }
 }

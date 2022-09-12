@@ -17,14 +17,16 @@
       }else{
         $dspaceLink = $dspaceServer."/xmlui/handle/".$publication->external_document_id;
       }
-  }
-  ?>
+  } ?>
   <li>
     <?php if($showDspaceLink) {?>
       <a class="toolbar-btn btn-type-publish" href="<?=$dspaceLink;?>">go to file</a>
     <?php }else{
-      if($accessPublishRecord) { ?>
-        <a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Publish')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a>
-    <?php } } ?>
+      if($accessPublishRecord) {
+        if($this->supportPublicationLanguages == 1) { ?>
+          <a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Publish')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a>
+        <?php }else{ ?>
+          <a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Info')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a>
+    <?php } } } ?>
   </li>
 <?php endif; ?>
