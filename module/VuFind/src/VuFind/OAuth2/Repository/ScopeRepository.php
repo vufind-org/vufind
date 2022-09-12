@@ -87,6 +87,8 @@ class ScopeRepository implements ScopeRepositoryInterface
      * @param null|string            $userIdentifier User ID
      *
      * @return ScopeEntityInterface[]
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function finalizeScopes(
         array $scopes,
