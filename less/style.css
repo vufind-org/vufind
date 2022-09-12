@@ -6233,11 +6233,8 @@ h2 {
   font-weight: normal;
 }
 h3 {
-  border: 2px solid #FFF;
-  border-radius: 2px;
-  display: table;
-  margin: auto;
-  padding: 4px 10px;
+  font-size: 24px;
+  font-weight: normal;
 }
 h4 {
   font-weight: bold;
