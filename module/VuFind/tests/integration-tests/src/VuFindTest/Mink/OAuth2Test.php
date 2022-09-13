@@ -109,6 +109,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'Server' => [
                 'encryptionKey' => 'encryption!',
                 'hashSalt' => 'Need more salt!',
+                'keyPermissionChecks' => false,
             ],
             'Clients' => [
                 'test' => [
@@ -498,11 +499,6 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                 . openssl_error_string()
             );
         }
-        if (!chmod($privateKeyPath, 0640)) {
-            throw new \Exception(
-                "Could not change permissions of private key $privateKeyPath"
-            );
-        }
 
         // Generate the public key:
         $details = openssl_pkey_get_details($privateKey);
@@ -513,11 +509,6 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         }
         if (!file_put_contents($publicKeyPath, $details['key'])) {
             throw new \Exception("Could not write public key $publicKeyPath");
-        }
-        if (!chmod($publicKeyPath, 0660)) {
-            throw new \Exception(
-                "Could not change permissions of private key $publicKeyPath"
-            );
         }
 
         $this->opensslKeyPairCreated = true;
