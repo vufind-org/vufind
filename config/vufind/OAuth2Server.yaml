@@ -25,6 +25,9 @@ Server:
   # Salt for hashes (e.g. library_user_id claim). Make sure it is random and long
   # enough (at least 32 characters).
   hashSalt: ""
+  # Uncomment to disable key permission checks. Only meant for testing, so avoid in
+  # any production-like environment if possible.
+  #keyPermissionChecks: false
 
 # Known clients configuration
 Clients:
