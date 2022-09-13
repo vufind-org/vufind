@@ -164,6 +164,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test OAuth2 authorization.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testOAuth2Authorization(): void
