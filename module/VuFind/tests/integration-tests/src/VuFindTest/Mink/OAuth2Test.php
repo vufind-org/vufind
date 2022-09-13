@@ -447,24 +447,57 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         // Creates backups if the files exists:
         if (file_exists($privateKeyPath)) {
-            copy($privateKeyPath, "$privateKeyPath.bak");
+            if (!copy($privateKeyPath, "$privateKeyPath.bak")) {
+                throw new \Exception(
+                    "Could not copy $privateKeyPath to $privateKeyPath.bak"
+                );
+            }
         }
         if (file_exists($publicKeyPath)) {
-            copy($publicKeyPath, "$publicKeyPath.bak");
+            if (!copy($publicKeyPath, "$publicKeyPath.bak")) {
+                throw new \Exception(
+                    "Could not copy $publicKeyPath to $publicKeyPath.bak"
+                );
+            }
         }
 
         $privateKey = openssl_pkey_new([
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA
         ]);
+        if (!$privateKey) {
+            throw new \Exception(
+                'Could not create private key: ' . openssl_error_string()
+            );
+        }
 
-        openssl_pkey_export_to_file($privateKey, $privateKeyPath);
-        chmod($privateKeyPath, 0640);
+        if (!openssl_pkey_export_to_file($privateKey, $privateKeyPath)) {
+            throw new \Exception(
+                "Could not write private key $privateKeyPath: "
+                . openssl_error_string()
+            );
+        }
+        if (!chmod($privateKeyPath, 0640)) {
+            throw new \Exception(
+                "Could not change permissions of private key $privateKeyPath"
+            );
+        }
 
         // Generate the public key:
         $details = openssl_pkey_get_details($privateKey);
-        file_put_contents($publicKeyPath, $details['key']);
-        chmod($publicKeyPath, 0660);
+        if (!$details) {
+            throw new \Exception(
+                'Could not get private key details: ' . openssl_error_string()
+            );
+        }
+        if (!file_put_contents($publicKeyPath, $details['key'])) {
+            throw new \Exception("Could not write public key $publicKeyPath");
+        }
+        if (!chmod($publicKeyPath, 0660)) {
+            throw new \Exception(
+                "Could not change permissions of private key $publicKeyPath"
+            );
+        }
 
         $this->opensslKeyPairCreated = true;
 
