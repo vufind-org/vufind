@@ -179,7 +179,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Go to OAuth2 authorization screen:
         $params = [
             'client_id' => 'test',
-            'scope' => 'openid profile library_user_id',
+            'scope' => 'openid profile library_user_id age',
             'response_type' => 'code',
             'redirect_uri' => $redirectUri,
             'nonce' => $nonce,
@@ -209,6 +209,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'Read your user identifier',
             'Read your basic profile information (name, language, birthdate)',
             'Read a unique hash based on your library user identifier',
+            'Read your age',
         ];
         foreach ($expectedPermissions as $index => $permission) {
             $this->assertEquals(
@@ -270,6 +271,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertMatchesRegularExpression(
             '/^\d{4}-\d{2}-\d{2}$/',
             $idToken->birthdate
+        );
+        $this->assertEquals(
+            \DateTime::createFromFormat('Y-m-d', $idToken->birthdate)
+                ->diff(new \DateTimeImmutable())->format('%y'),
+            $idToken->age
         );
 
         // Test the userinfo endpoint:
