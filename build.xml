@@ -47,7 +47,7 @@
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
   <property name="solr_version" value="8.11.1" />
   <property name="skip_phpdoc" value="false" />
-  <property name="phpdoc_version" value="3.0.0" />
+  <property name="phpdoc_version" value="3.3.1" />
 
   <property name="version" value="8.1" />
 
@@ -568,6 +568,14 @@ ${git_status}
     <if>
       <available file="${srcdir}/vufind-exception.log" />
       <then>
+        <filesize file="${srcdir}/vufind-exception.log" propertyname="exception.log.size" />
+        <if>
+          <not><equals arg1="${exception.log.size}" arg2="0" /></not>
+          <then>
+            <loadfile property="exception.log.contents" file="${srcdir}/vufind-exception.log" />
+            <echo message="Exception log not empty; contents: ${exception.log.contents}" />
+          </then>
+        </if>
         <delete file="${srcdir}/vufind-exception.log" failonerror="true" />
       </then>
     </if>
