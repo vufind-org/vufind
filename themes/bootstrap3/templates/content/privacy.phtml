@@ -5,3 +5,16 @@
 <p>
   This is the English "Privacy Policy" page.
 </p>
+<?php if ($this->cookieConsent()->isEnabled()): ?>
+  <h2>Cookie Consent</h2>
+  <?php if ($consent = $this->cookieConsent()->getConsentInformation()): ?>
+    <p>Your cookie consent:</p>
+    <ul>
+      <li>State: Allow (<?=implode(', ', array_map([$this, 'escapeHtml'], $consent['categoriesTranslated']))?>)</li>
+      <li>Consent ID: <?=$this->escapeHtml($consent['consentId'])?>
+      <li>Consent date: <?=$this->escapeHtml($consent['lastConsentDateTime'])?>
+    </ul>
+  <?php else: ?>
+    <p>You have not yet given consent.</p>
+  <?php endif; ?>
+<?php endif; ?>

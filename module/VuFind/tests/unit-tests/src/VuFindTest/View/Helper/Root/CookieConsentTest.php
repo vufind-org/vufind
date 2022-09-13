@@ -112,7 +112,10 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $cookies = [
             'cc_cookie' => json_encode(
                 [
-                    'categories' => ['essential', 'matomo']
+                    'categories' => ['essential', 'matomo'],
+                    'consentId' => 'foo123',
+                    'consentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z')
                 ]
             )
         ];
@@ -186,7 +189,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $helper = new CookieConsent(
             $config,
             $this->getConsentConfig($consentConfigName),
-            $this->getCookieManager($config, $cookies)
+            $this->getCookieManager($config, $cookies),
+            new \VuFind\Date\Converter()
         );
         $helper->setView($view);
         return $helper;

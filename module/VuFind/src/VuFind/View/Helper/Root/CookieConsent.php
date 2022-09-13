@@ -28,6 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cookie\CookieManager;
+use VuFind\Date\Converter as DateConverter;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -67,6 +68,13 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     protected $cookieManager;
 
     /**
+     * Date converter
+     *
+     * @var DateConverter
+     */
+    protected $dateConverter;
+
+    /**
      * Consent cookie name
      *
      * @var string
@@ -93,15 +101,18 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
      * @param array         $config        Main configuration
      * @param array         $consentConfig Cookie consent configuration
      * @param CookieManager $cookieManager Cookie manager
+     * @param DateConverter $converter     Date converter
      */
     public function __construct(
         array $config,
         array $consentConfig,
-        CookieManager $cookieManager
+        CookieManager $cookieManager,
+        DateConverter $converter
     ) {
         $this->config = $config;
         $this->consentConfig = $consentConfig;
         $this->cookieManager = $cookieManager;
+        $this->dateConverter = $converter;
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
         $this->consentCookieExpiration
             = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
@@ -234,6 +245,48 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
             }
         }
         return false;
+    }
+
+    /**
+     * Get information about user's given consent
+     *
+     * The following fields are guaranteed to be returned if consent has been given:
+     *
+     * - consentId            Consent ID
+     * - lastConsentTimestamp Timestamp the consent was given or updated
+     * - lastConsentDateTime  Formatted date and time the consent was given or
+     *                        updated
+     * - categories           Categories allowed in the consent
+     * - categoriesTranslated Translated names of categories allowed in the consent
+     *
+     * @return ?array Associative array or null if no consent has been given or it
+     * cannot be decoded
+     */
+    public function getConsentInformation(): ?array
+    {
+        if ($consentJson = $this->cookieManager->get($this->consentCookieName)) {
+            $consent = json_decode($consentJson, true);
+            if (!empty($consent['consentId'])
+                && !empty($consent['lastConsentTimestamp'])
+                && !empty($consent['categories'])
+            ) {
+                $consent['categories'] = (array)$consent['categories'];
+                foreach ($consent['categories'] as $category) {
+                    $consent['categoriesTranslated'][]
+                        = $this->translate(
+                            $this->consentConfig['Categories'][$category]['Title']
+                            ?? 'Unknown'
+                        );
+                }
+                $consent['lastConsentDateTime']
+                    = $this->dateConverter->convertToDisplayDateAndTime(
+                        'Y-m-d\TH:i:s.vP',
+                        str_replace('Z', '+00:00', $consent['lastConsentTimestamp'])
+                    );
+                return $consent;
+            }
+        }
+        return null;
     }
 
     /**
