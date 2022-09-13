@@ -107,6 +107,11 @@ Scopes:
       - name
       - given_name
       - family_name
+  age:
+    description: external_auth_scope_age
+    ils: true
+    claims:
+      - age
   birthdate:
     description: external_auth_scope_birthdate
     ils: true
@@ -143,6 +148,7 @@ ClaimMappings:
   given_name: firstname
   family_name: lastname
   email: email
+  age: age
   birthdate: birthdate
   locale: last_language
   phone: phone

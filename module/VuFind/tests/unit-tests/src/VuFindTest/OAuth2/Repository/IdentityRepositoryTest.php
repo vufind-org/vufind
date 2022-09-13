@@ -63,6 +63,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             'given_name' => 'firstname',
             'family_name' => 'lastname',
             'email' => 'email',
+            'age' => 'age',
             'birthdate' => 'birthdate',
             'locale' => 'last_language',
             'phone' => 'phone',
@@ -71,6 +72,24 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             'library_user_id' => 'library_user_id_hash',
         ],
     ];
+
+    /**
+     * User's birth date
+     *
+     * @var string
+     */
+    protected $userBirthDate;
+
+    /**
+     * Setup tests
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->userBirthDate = (new \DateTimeImmutable('18 years 6 months ago'))
+            ->format('Y-m-d');
+    }
 
     /**
      * Data provider for testIdentityRepository
@@ -118,7 +137,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
                 'name' => 'Lib Rarian',
                 'given_name' => 'Lib',
                 'family_name' => 'Rarian',
-                'birthdate' => '2022-08-05',
+                'age' => 18,
+                'birthdate' => $this->userBirthDate,
                 'locale' => 'en-GB',
                 'phone' => '1900 CALL ME',
                 'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City","postal_code":"12345","country":"Country"}',
@@ -240,7 +260,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             'mobile_phone'    => '1234567890',
             'group'           => 'Library Staff',
             'expiration_date' => 'Someday',
-            'birthdate'       => '2022-08-05',
+            'birthdate'       => $this->userBirthDate,
         ];
 
         $ils = $this->getMockBuilder(Connection::class)

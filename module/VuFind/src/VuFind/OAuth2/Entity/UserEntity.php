@@ -132,16 +132,13 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
 
         foreach ($this->oauth2Config['ClaimMappings'] as $claim => $field) {
             switch ($field) {
-            case 'full_name':
-                // full_name is a special field for firstname + lastname:
-                $result[$claim] = trim(
-                    $this->user['firstname'] . ' ' . $this->user['lastname']
-                );
-                break;
-            case 'block_status':
-                // account_blocked is a flag indicating whether the patron has
-                // blocks:
-                $result[$claim] = $blocked;
+            case 'age':
+                if ($birthDate = $profile['birthdate'] ?? '') {
+                    if ($date = \DateTime::createFromFormat('Y-m-d', $birthDate)) {
+                        $diff = $date->diff(new \DateTimeImmutable(), true);
+                        $result[$claim] = (int)$diff->format('%y');
+                    }
+                }
                 break;
             case 'address_json':
                 if ($profile) {
@@ -161,6 +158,17 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                     ];
                     $result[$claim] = json_encode($address);
                 }
+                break;
+            case 'block_status':
+                // account_blocked is a flag indicating whether the patron has
+                // blocks:
+                $result[$claim] = $blocked;
+                break;
+            case 'full_name':
+                // full_name is a special field for firstname + lastname:
+                $result[$claim] = trim(
+                    $this->user['firstname'] . ' ' . $this->user['lastname']
+                );
                 break;
             case 'last_language':
                 // Make sure any country code is in uppercase:
