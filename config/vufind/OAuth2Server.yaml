@@ -1,4 +1,6 @@
-# OAuth2 Server Configuration
+# OAuth2 Server Configuration.
+#
+# See https://vufind.org/wiki/configuration:oauth2_oidc for more information.
 #
 # An example for generating the private/public key pair:
 #
