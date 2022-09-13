@@ -20,7 +20,8 @@
     },
     "provide": {
         "ext-memcached": "*",
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "ext-sodium": "*"
     },
     "require": {
         "php": ">=7.4.1",
