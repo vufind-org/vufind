@@ -254,7 +254,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         // Fetch public key to verify idToken:
         $response = $http->get($this->getVuFindUrl() . '/OAuth2/jwks');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(
+            200,
+            $response->getStatusCode(),
+            "Response: " . $response->getContent()
+        );
         $jwks = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('n', $jwks['keys'][0] ?? []);
 
@@ -290,7 +294,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                 . $tokenResult['access_token']
             ]
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(
+            200,
+            $response->getStatusCode(),
+            "Response: " . $response->getContent()
+        );
 
         $userInfo = json_decode($response->getBody(), true);
         $this->assertEquals($nonce, $userInfo['nonce']);
@@ -311,6 +319,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'application/x-www-form-urlencoded'
         );
         $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals(
+            401,
+            $response->getStatusCode(),
+            "Response: " . $response->getContent()
+        );
         $tokenResult = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('error', $tokenResult);
         $this->assertEquals('invalid_client', $tokenResult['error']);
