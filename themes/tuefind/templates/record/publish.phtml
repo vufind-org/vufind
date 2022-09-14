@@ -12,10 +12,16 @@ EOD;
 
 <?php if (!$this->authority()->userHasRightsOnRecord($this->user, $this->driver)): ?>
   <p>You do not have access rights on this record!</p>
-<?php else: ?>
+<?php elseif($this->supportPublicationLanguages):?>
   <p>
     You are registered as one of the authors of this record.<br>
     Would you like to upload a publication?
   </p>
   <p><span data-dismiss="modal" class="modal-dismiss-link btn btn-link" data-href="<?=$this->url('myresearch-publish', ['record_id' => $this->driver->getUniqueId()])?>">click here</span></p>
-<?php endif; ?>
+<?php else: ?>
+  <p>&nbsp;</p>
+    <p>
+      Publication is not possible, the record must be in English or German language!
+    </p>
+  <p>&nbsp;</p>
+<?php endif;?>

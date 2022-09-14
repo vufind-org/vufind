@@ -39,8 +39,15 @@ class RecordController extends \VuFind\Controller\RecordController {
         $user = $this->getUser();
         if (!$user)
             return $this->forceLogin();
-
         $this->loadRecord();
-        return $this->createViewModel(['driver' => $this->driver, 'user' => $user]);
+
+        $recordLanguages = $this->driver->tryMethod('getLanguages');
+        $supportPublicationLanguages = false;
+        if (in_array("German", $recordLanguages) || in_array("English", $recordLanguages)) {
+            $supportPublicationLanguages = true;
+        }
+        
+        return $this->createViewModel(['driver' => $this->driver, 'user' => $user, 'supportPublicationLanguages' => $supportPublicationLanguages]);
     }
+
 }
