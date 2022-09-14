@@ -21,10 +21,8 @@
   <li>
     <?php if($showDspaceLink):?>
       <a class="toolbar-btn btn-type-publish" href="<?=$dspaceLink;?>">go to file</a>
-    <?php else: ?>
-      <?php if($accessPublishRecord): ?>
+    <?php elseif($accessPublishRecord): ?>
         <a class="toolbar-btn btn-type-publish" data-lightbox href="<?=$this->recordLinker()->getActionUrl($this->driver, 'Publish')?>" rel="nofollow"><?=$this->transEsc('Publish')?></a>
       <?php endif; ?>
-    <?php endif; ?>
   </li>
 <?php endif; ?>
