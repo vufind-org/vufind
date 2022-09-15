@@ -109,6 +109,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'Server' => [
                 'encryptionKey' => 'encryption!',
                 'hashSalt' => 'Need more salt!',
+                'keyPermissionChecks' => false,
             ],
             'Clients' => [
                 'test' => [
@@ -164,6 +165,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test OAuth2 authorization.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testOAuth2Authorization(): void
@@ -179,7 +182,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Go to OAuth2 authorization screen:
         $params = [
             'client_id' => 'test',
-            'scope' => 'openid profile library_user_id',
+            'scope' => 'openid profile library_user_id age',
             'response_type' => 'code',
             'redirect_uri' => $redirectUri,
             'nonce' => $nonce,
@@ -209,6 +212,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'Read your user identifier',
             'Read your basic profile information (name, language, birthdate)',
             'Read a unique hash based on your library user identifier',
+            'Read your age',
         ];
         foreach ($expectedPermissions as $index => $permission) {
             $this->assertEquals(
@@ -251,7 +255,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         // Fetch public key to verify idToken:
         $response = $http->get($this->getVuFindUrl() . '/OAuth2/jwks');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(
+            200,
+            $response->getStatusCode(),
+            "Response: " . $response->getContent()
+        );
         $jwks = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('n', $jwks['keys'][0] ?? []);
 
@@ -271,6 +279,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             '/^\d{4}-\d{2}-\d{2}$/',
             $idToken->birthdate
         );
+        $this->assertEquals(
+            \DateTime::createFromFormat('Y-m-d', $idToken->birthdate)
+                ->diff(new \DateTimeImmutable())->format('%y'),
+            $idToken->age
+        );
 
         // Test the userinfo endpoint:
         $response = $http->get(
@@ -282,7 +295,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                 . $tokenResult['access_token']
             ]
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(
+            200,
+            $response->getStatusCode(),
+            "Response: " . $response->getContent()
+        );
 
         $userInfo = json_decode($response->getBody(), true);
         $this->assertEquals($nonce, $userInfo['nonce']);
@@ -303,6 +320,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'application/x-www-form-urlencoded'
         );
         $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals(
+            401,
+            $response->getStatusCode(),
+            "Response: " . $response->getContent()
+        );
         $tokenResult = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('error', $tokenResult);
         $this->assertEquals('invalid_client', $tokenResult['error']);
@@ -447,24 +469,47 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         // Creates backups if the files exists:
         if (file_exists($privateKeyPath)) {
-            copy($privateKeyPath, "$privateKeyPath.bak");
+            if (!copy($privateKeyPath, "$privateKeyPath.bak")) {
+                throw new \Exception(
+                    "Could not copy $privateKeyPath to $privateKeyPath.bak"
+                );
+            }
         }
         if (file_exists($publicKeyPath)) {
-            copy($publicKeyPath, "$publicKeyPath.bak");
+            if (!copy($publicKeyPath, "$publicKeyPath.bak")) {
+                throw new \Exception(
+                    "Could not copy $publicKeyPath to $publicKeyPath.bak"
+                );
+            }
         }
 
         $privateKey = openssl_pkey_new([
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA
         ]);
+        if (!$privateKey) {
+            throw new \Exception(
+                'Could not create private key: ' . openssl_error_string()
+            );
+        }
 
-        openssl_pkey_export_to_file($privateKey, $privateKeyPath);
-        chmod($privateKeyPath, 0640);
+        if (!openssl_pkey_export_to_file($privateKey, $privateKeyPath)) {
+            throw new \Exception(
+                "Could not write private key $privateKeyPath: "
+                . openssl_error_string()
+            );
+        }
 
         // Generate the public key:
         $details = openssl_pkey_get_details($privateKey);
-        file_put_contents($publicKeyPath, $details['key']);
-        chmod($publicKeyPath, 0660);
+        if (!$details) {
+            throw new \Exception(
+                'Could not get private key details: ' . openssl_error_string()
+            );
+        }
+        if (!file_put_contents($publicKeyPath, $details['key'])) {
+            throw new \Exception("Could not write public key $publicKeyPath");
+        }
 
         $this->opensslKeyPairCreated = true;
 
