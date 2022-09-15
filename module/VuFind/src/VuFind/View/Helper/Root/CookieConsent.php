@@ -253,6 +253,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
      * The following fields are guaranteed to be returned if consent has been given:
      *
      * - consentId            Consent ID
+     * - domain               Cookie domain
+     * - path                 Cookie path
      * - lastConsentTimestamp Timestamp the consent was given or updated
      * - lastConsentDateTime  Formatted date and time the consent was given or
      *                        updated
@@ -265,25 +267,28 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     public function getConsentInformation(): ?array
     {
         if ($consentJson = $this->cookieManager->get($this->consentCookieName)) {
-            $consent = json_decode($consentJson, true);
-            if (!empty($consent['consentId'])
-                && !empty($consent['lastConsentTimestamp'])
-                && !empty($consent['categories'])
+            $result = json_decode($consentJson, true);
+            if (!empty($result['consentId'])
+                && !empty($result['lastConsentTimestamp'])
+                && !empty($result['categories'])
             ) {
-                $consent['categories'] = (array)$consent['categories'];
-                foreach ($consent['categories'] as $category) {
-                    $consent['categoriesTranslated'][]
+                $result['categories'] = (array)$result['categories'];
+                foreach ($result['categories'] as $category) {
+                    $result['categoriesTranslated'][]
                         = $this->translate(
                             $this->consentConfig['Categories'][$category]['Title']
                             ?? 'Unknown'
                         );
                 }
-                $consent['lastConsentDateTime']
+                $result['lastConsentDateTime']
                     = $this->dateConverter->convertToDisplayDateAndTime(
                         'Y-m-d\TH:i:s.vP',
-                        str_replace('Z', '+00:00', $consent['lastConsentTimestamp'])
+                        str_replace('Z', '+00:00', $result['lastConsentTimestamp'])
                     );
-                return $consent;
+                $result['domain'] = $this->cookieManager->getDomain()
+                    ?: $this->getView()->plugin('serverUrl')->getHost();
+                $result['path'] = $this->cookieManager->getPath();
+                return $result;
             }
         }
         return null;

@@ -10,6 +10,7 @@
   <?php if ($consent = $this->cookieConsent()->getConsentInformation()): ?>
     <p>Your cookie consent:</p>
     <ul>
+      <li>Domain: <?=$this->escapeHtml($consent['domain'] . ('/' !== $consent['path'] ? $consent['path'] : ''))?></li>
       <li>State: Allow (<?=implode(', ', array_map([$this, 'escapeHtml'], $consent['categoriesTranslated']))?>)</li>
       <li>Consent ID: <?=$this->escapeHtml($consent['consentId'])?>
       <li>Consent date: <?=$this->escapeHtml($consent['lastConsentDateTime'])?>
