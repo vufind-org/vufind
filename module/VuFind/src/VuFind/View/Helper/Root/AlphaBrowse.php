@@ -74,6 +74,7 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
         $query = [
             'type' => ucwords($source) . 'Browse',
             'lookfor' => $this->escapeForSolr($item['heading']),
+            'dfApplied' => 1,
         ];
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
