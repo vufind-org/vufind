@@ -22,7 +22,6 @@
     <field name="license" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="local_notes_1" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="mediatype" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="oldid" type="string" indexed="true" stored="true"/>
     <field name="pages" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="preceding_ppn_and_title" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="record_selector" type="string" indexed="true" stored="true" multiValued="true"/>
