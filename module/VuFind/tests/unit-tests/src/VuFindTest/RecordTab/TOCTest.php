@@ -1,6 +1,6 @@
 <?php
 /**
- * Excerpt Test Class
+ * TOC Test Class
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordTab\Excerpt;
+use VuFind\RecordTab\TOC;
 
 /**
- * Excerpt Test Class
+ * TOC Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -38,7 +38,7 @@ use VuFind\RecordTab\Excerpt;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExcerptTest extends \PHPUnit\Framework\TestCase
+class TOCTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting Description.
@@ -47,9 +47,29 @@ class ExcerptTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $obj = new Excerpt();
-        $expected = 'Excerpt';
+        $obj = new TOC();
+        $expected = 'Table of Contents';
 
         $this->assertSame($expected, $obj->getDescription());
+    }
+
+    /**
+     * Test if the tab is active.
+     *
+     * @return void
+     */
+    public function testIsActive(): void
+    {
+        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $recordDriver->expects($this->any())->method('tryMethod')
+            ->with($this->equalTo('getTOC'))
+            ->will($this->returnValue(true));
+        // considering the complexity to create mock objects
+        // for parent class, only one test case was tested
+        $obj=new TOC();
+        $obj->setRecordDriver($recordDriver);
+        $this->assertTrue($obj->isActive());
     }
 }

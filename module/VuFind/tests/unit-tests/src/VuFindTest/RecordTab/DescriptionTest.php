@@ -1,6 +1,6 @@
 <?php
 /**
- * Excerpt Test Class
+ * Description Test Class
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordTab\Excerpt;
+use VuFind\RecordTab\Description;
 
 /**
- * Excerpt Test Class
+ * Description Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -38,7 +38,7 @@ use VuFind\RecordTab\Excerpt;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExcerptTest extends \PHPUnit\Framework\TestCase
+class DescriptionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting Description.
@@ -47,8 +47,8 @@ class ExcerptTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $obj = new Excerpt();
-        $expected = 'Excerpt';
+        $obj = new Description();
+        $expected = 'Description';
 
         $this->assertSame($expected, $obj->getDescription());
     }
