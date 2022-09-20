@@ -9,46 +9,6 @@
 <?php $this->headScript()->appendFile('vendor/cw/theme.js');?>
 
 
-<section class="cw-py-5 cw-bg-gray-100">
-    <div class="container">
-        <div class="row">
-
-            <?=$this->render('search/searchboxForm');?>
-
-            <div class="navbar navbar-default home-navbar">
-              <div class="container">
-                  <!--<div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>-->
-                  <div class="navbar-collapse collapse ix-paddind-left-0">
-                      <ul class="nav navbar-nav">
-                          <li class="dropdown">
-                              <a class="dropdown-toggle"><?=$this->transEsc('Browse')?>&nbsp;<span class="caret"></span></a>
-                              <ul class="dropdown-menu">
-                                  <li><a class="dropdown-item" href="<?=$this->url('keywordchainsearch-home')?>"><?=$this->transEsc('Browse Keywordchains')?></a></li>
-                                  <li><a class="dropdown-item" href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
-                                  <li><a class="dropdown-item" href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
-                              </ul>
-                          </li>
-                          <li><a href="<?=$this->url('search-results')?>?lookfor=4+esra+1-2&type=BibleRangeSearch" role="button" rel="nofollow">Bibelstellensuche</a></li>
-                          <li><a href="<?=$this->url('search-newitem')?>" role="button" rel="nofollow"><?=$this->transEsc('New Items')?></a></li>
-                          <li><a href="<?=$this->url('search-history')?>" role="button" rel="nofollow"><?=$this->transEsc('Search History')?></a></li>
-                          <li class="dropdown">
-                              <a class="dropdown-toggle"><?=$this->transEsc('Virtual Keyboard')?>&nbsp;<span class="caret"></span></a>
-                              <ul class="dropdown-menu">
-                                  <li><a class="dropdown-item virtual-keyboard-greek"><?=$this->transEsc('Greek')?></a></li>
-                                  <li><a class="dropdown-item virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></a></li>
-                                  <?php $virtualKeyboardSnippet = '$(triggerVirtualKeyboard(\'' . $this->transEsc("Accept") . ':' . $this->transEsc("Accept") . '\', \'' . $this->transEsc("Enter") . ':' . $this->transEsc("Enter") . '\'));'; ?>
-                                  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $virtualKeyboardSnippet, 'SET')?>
-                              </ul>
-                          </li>
-                      </ul>
-                  </div>
-              </div>
-          </div>
-          <br />
-        </div>
-    </div>
-</section>
-
 <section class="cw-py-5">
     <div class="container">
         <div class="row">

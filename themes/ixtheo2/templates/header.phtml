@@ -89,6 +89,7 @@
                                 <ul class="dropdown-menu">
                                   <?php
                                     //TueFind: Basic VuFind functionality changed, removed author ID from URL
+                                    $routeParams = $this->tuefind()->getRouteParams();
                                     foreach ($this->layout()->allLangs as $langCode => $langName): ?>
                                       <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
                                         <?php $langURL = $this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode]));
@@ -119,7 +120,17 @@
 <!--</div>--><!-- close container -->
 
 <!--  Begin seachbox -->
-<?=$this->layout()->searchbox ?>
+<!-- IxTheo2: Disable searchbox here, move to separate section. Instead we only have the title here. -->
+<?=''/*$this->layout()->searchbox*/ ?>
+<section class="section-home">
+    <div class="panel-home">
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
+        <div>
+            <h1><a href="<?=$this->url('home')?>" title="Index Theologicus">Index Theologicus</a></h1>
+            <small><?=$this->transEsc("ixtheo_subtitle")?></small>
+        </div>
+    </div>
+</section>
 <!--  End seachbox -->
 
 <!-- Begin header image -->
@@ -134,33 +145,34 @@ if(isset($this->layout()->headerImage)) {
 <!-- End header image -->
 
           </div>
-
-            <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
-              && !empty($this->layout()->breadcrumbs)
-              && $this->layout()->breadcrumbs !== false
-            ): ?>
-              <div class="container breadcrumb-wrapper hidden-print <?=$advancedSearch;?>">
-                <?php if(is_array($this->layout()->breadcrumbs)): ?>
-                  <?php if(count($this->layout()->breadcrumbs) > 1): ?>
-                    <?=$this->render('breadcrumbs/multi.phtml', [
-                        'parents' => $this->layout()->breadcrumbs,
-                        'title' => $this->layout()->title,
-                        'from' => $this->layout()->from
-                      ]) ?>
-                  <?php else: ?>
-                    <?=$this->render('breadcrumbs/default.phtml', [
-                        'parents' => $this->layout()->breadcrumbs,
-                        'title' => $this->layout()->title
-                      ]) ?>
-                  <?php endif; ?>
-                <?php else: ?>
-                  <?=$this->render('breadcrumbs/simple.phtml'); ?>
-                  <?=$this->render('search/searchboxForm');?>
-                <?php endif; ?>
-              </div>
-            <?php endif; ?>
         </header>
       </div><!-- .section-inner -->
     </div><!-- .cover-header-inner -->
   </div><!-- .cover-header-inner-wrapper -->
 </div>
+
+<!-- Breadcrumbs -->
+<?php if(!empty($this->layout()->breadcrumbs)): ?>
+  <div class="container breadcrumb-wrapper hidden-print <?=$advancedSearch;?>">
+    <?php if(is_array($this->layout()->breadcrumbs)): ?>
+      <?php if(count($this->layout()->breadcrumbs) > 1): ?>
+        <?=$this->render('breadcrumbs/multi.phtml', [
+          'parents' => $this->layout()->breadcrumbs,
+          'title' => $this->layout()->title,
+          'from' => $this->layout()->from
+        ]) ?>
+      <?php else: ?>
+        <?=$this->render('breadcrumbs/default.phtml', [
+          'parents' => $this->layout()->breadcrumbs,
+          'title' => $this->layout()->title
+        ]) ?>
+      <?php endif; ?>
+    <?php elseif ($this->layout()->breadcrumbs !== false): ?>
+      <?=$this->render('breadcrumbs/simple.phtml'); ?>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+
+
+<!-- IxTheo2: Display searchbox as separate section -->
+<?=$this->layout()->searchbox ?>
