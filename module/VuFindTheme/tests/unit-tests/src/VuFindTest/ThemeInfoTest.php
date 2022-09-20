@@ -223,10 +223,10 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     {
         // Parent
         $ti = $this->getThemeInfo();
-        $parentJS = $ti->getMergedConfig('js');
+        $parentJS = $ti->getMergedConfig('js', false);
         $this->assertEquals(['hello.js'], $parentJS);
         // recursive
-        $parentHelpers = $ti->getMergedConfig('helpers');
+        $parentHelpers = $ti->getMergedConfig('helpers', false);
         $this->assertEquals(
             'fooFactory',
             $parentHelpers['factories']['foo']
@@ -244,29 +244,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
         $childJS = $ti->getMergedConfig('js');
-        $this->assertEquals(['hello.js', 'extra.js'], $childJS);
+        $this->assertEquals(['extra.js', 'hello.js'], $childJS);
         // recursive
         $childHelpers = $ti->getMergedConfig('helpers');
-        $this->assertEquals(
-            ['fooFactory', 'fooOverrideFactory'],
-            $childHelpers['factories']['foo']
-        );
-    }
-
-    /**
-     * Test getMergedConfig() using a child theme and flattening
-     *
-     * @return void
-     */
-    public function testGetMergedConfigChildFlattened()
-    {
-        // Use array_replace_recursive
-        $ti = $this->getThemeInfo();
-        $ti->setTheme('child');
-        $childJS = $ti->getMergedConfig('js', true);
-        $this->assertEquals(['extra.js'], $childJS);
-        // recursive
-        $childHelpers = $ti->getMergedConfig('helpers', true);
         $this->assertEquals(
             'fooOverrideFactory',
             $childHelpers['factories']['foo']
@@ -284,27 +264,8 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('mixin_user');
         $mixinJS = $ti->getMergedConfig('js');
-        $this->assertEquals(['hello.js', 'extra.js', 'mixin.js'], $mixinJS);
+        $this->assertEquals(['mixin.js', 'extra.js', 'hello.js'], $mixinJS);
         $mixinHelpers = $ti->getMergedConfig('helpers');
-        $this->assertEquals(
-            ['fooFactory', 'fooOverrideFactory', 'fooMixinFactory'],
-            $mixinHelpers['factories']['foo']
-        );
-    }
-
-    /**
-     * Test getMergedConfig() using a mixin and flattening
-     *
-     * @return void
-     */
-    public function testGetMergedConfigMixinWithFlattening()
-    {
-        // Theme using a mixin
-        $ti = $this->getThemeInfo();
-        $ti->setTheme('mixin_user');
-        $mixinJS = $ti->getMergedConfig('js', true);
-        $this->assertEquals(['mixin.js'], $mixinJS);
-        $mixinHelpers = $ti->getMergedConfig('helpers', true);
         $this->assertEquals(
             'fooMixinFactory',
             $mixinHelpers['factories']['foo']
@@ -320,7 +281,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     {
         $ti = $this->getThemeInfo();
         $doctype = $ti->getMergedConfig('doctype');
-        $this->assertEquals(['HTML5'], $doctype);
+        $this->assertEquals('HTML5', $doctype);
     }
 
     /**
@@ -346,8 +307,8 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      */
     public function testCaching(): void
     {
-        $key = '0_parent_doctype';
-        $expected = ['HTML5'];
+        $key = 'parent_doctype';
+        $expected = 'HTML5';
 
         // Create a mock cache that simulates normal cache functionality;
         // the first call to getItem returns null, then it expects a call
