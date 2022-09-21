@@ -12,7 +12,7 @@
 #                     cookies. The user can choose their consent for each group
 #                     apart from essential cookies. See below for documentation.
 #   IframeServices    Configuration for iframe services that depend on cookie
-#                     consent. See below for documenation.
+#                     consent. See below for documentation.
 #
 # Cookie category configuration (see the VuFind wiki for additional examples:
 # https://vufind.org/wiki/configuration:cookie_consent)
@@ -31,9 +31,10 @@
 #                       matomo
 #   Cookies           List of cookies and their descriptions:
 #
-#     Name              Cookie name
-#     Domain            Cookie domain
-#     Description       Description for the cookie
+#     Name              Cookie name (text to display, no functionality)
+#     Domain            Cookie domain (text to display, no functionality)
+#     Description       Description for the cookie (text to display, no
+#                       functionality)
 #     Expiration        Expiration time for the cookie (number or "session")
 #     ExpirationUnit    Unit of expiration for translation when Expiration is a
 #                       numeric value. Out of the box supported values are "days" and
