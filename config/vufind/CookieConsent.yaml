@@ -31,9 +31,9 @@
 #                       matomo
 #   Cookies           List of cookies and their descriptions:
 #
-#     Name              Cookie name (text to display, no functionality)
-#     Domain            Cookie domain (text to display, no functionality)
-#     Description       Description for the cookie (text to display, no
+#     Name              Cookie name (translatable text, no functionality)
+#     Domain            Cookie domain (translatable text, no functionality)
+#     Description       Description for the cookie (translatable text, no
 #                       functionality)
 #     Expiration        Expiration time for the cookie (number or "session")
 #     ExpirationUnit    Unit of expiration for translation when Expiration is a
@@ -116,6 +116,14 @@ CookieConsent:
           Domain: '{{vufind_cookie_domain}}'
           Description: CookieConsent::cookie_description_search_open_html
           Expiration: session
+#        - Name: '*_KEY'
+#          Domain: '{{vufind_cookie_domain}}'
+#          Description: CookieConsent::cookie_description_secure_key_html
+#          Expiration: session
+#        - Name: 'vfup*'
+#          Domain: '{{vufind_cookie_domain}}'
+#          Description: VuFind upgrade management (administrator-only)
+#          Expiration: session
     matomo:
       Title: CookieConsent::analytics_cookies_title_html
       Description: CookieConsent::analytics_cookies_description_html
@@ -124,17 +132,17 @@ CookieConsent:
       ControlVuFindServices:
         - matomo
       Cookies:
-        - Name: _pk_id.*
+        - Name: '_pk_id.*'
           Domain: '{{current_host_name}}'
           Description: CookieConsent::cookie_description_matomo_id_html
           Expiration: 13
           ExpirationUnit: months
-        - Name: _pk_ref.*
+        - Name: '_pk_ref.*'
           Domain: '{{current_host_name}}'
           Description: CookieConsent::cookie_description_matomo_ref_html
           Expiration: 6
           ExpirationUnit: months
-        - Name: _pk_ses.*, _pk_cvar.*, _pk_hsr.*
+        - Name: '_pk_ses.*, _pk_cvar.*, _pk_hsr.*'
           Domain: '{{current_host_name}}'
           Description: CookieConsent::cookie_description_matomo_ses_html
           Expiration: session
