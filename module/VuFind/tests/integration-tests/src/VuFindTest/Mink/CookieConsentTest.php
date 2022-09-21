@@ -101,7 +101,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Open settings:
-        $this->clickCss($page, '#cc-main .cc__link');
+        $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->waitStatement('$(".pm__section-title").length === 2');
         $this->waitStatement(
@@ -122,7 +122,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('VuFind.cookie.isCategoryAccepted("essential")');
 
         // Open settings again and accept only essential cookies:
-        $this->clickCss($page, '#cc-main .cc__link');
+        $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->clickCss($page, '.pm__btn', null, 1);
         // Verify that there's no Matomo consent:
@@ -132,7 +132,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
 
         // Open settings again and toggle analytics:
-        $this->clickCss($page, '#cc-main .cc__link');
+        $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->clickCss($page, '.section__toggle', null, 1);
         $this->clickCss($page, '.pm__btn');
@@ -144,7 +144,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement("window._paq.pop()");
 
         // Open settings again and accept only essential cookies:
-        $this->clickCss($page, '#cc-main .cc__link');
+        $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->clickCss($page, '.pm__btn', null, 1);
         $this->waitStatement(
@@ -154,7 +154,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement("window._paq.pop()");
 
         // Open settings again and accept all cookies:
-        $this->clickCss($page, '#cc-main .cc__link');
+        $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->clickCss($page, '.pm__btn', null, 2);
         $this->waitStatement(
