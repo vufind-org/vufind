@@ -217,15 +217,14 @@ class ThemeInfo
      *
      * @return boolean
      */
-    protected function is_string_keyed_array($op) {
+    protected function isStringKeyedArray($op) {
         if (!is_array($op)) {
             return false;
         }
 
-        foreach ($op as $key => $val) {
-            if (is_string($key)) {
-                return true;
-            }
+        reset($op);
+        if (is_string(key($op))) {
+            return true;
         }
 
         return false;
@@ -246,12 +245,12 @@ class ThemeInfo
             return $current;
         }
 
-        if ($this->is_string_keyed_array($merged)) {
+        if ($this->isStringKeyedArray($merged)) {
             foreach ($current as $key => $val) {
                 if (!array_key_exists($key, $merged)) {
                     // capture missing string keys
                     $merged[$key] = $val;
-                } elseif ($this->is_string_keyed_array($val)) {
+                } elseif ($this->isStringKeyedArray($val)) {
                     // recurse
                     $merged[$key] = $this->mergeWithoutOverride($merged[$key], $val);
                 } elseif (is_array($val)) {
