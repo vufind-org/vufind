@@ -44,6 +44,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * List of all valid body tags
      *
      * Source: https://html.spec.whatwg.org/multipage/dom.html#flow-content-2
+     * - missing `li`
      *
      * @var string[]
      */
@@ -94,6 +95,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'ins',
         'kbd',
         'label',
+        'li',
         'main',
         'map',
         'mark',
