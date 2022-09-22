@@ -244,7 +244,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
         $childJS = $ti->getMergedConfig('js');
-        $this->assertEquals(['extra.js', 'hello.js'], $childJS);
+        $this->assertEquals(['hello.js', 'extra.js'], $childJS);
         // recursive
         $childHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
@@ -264,7 +264,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('mixin_user');
         $mixinJS = $ti->getMergedConfig('js');
-        $this->assertEquals(['mixin.js', 'extra.js', 'hello.js'], $mixinJS);
+        $this->assertEquals(['hello.js', 'extra.js', 'mixin.js'], $mixinJS);
         $mixinHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
             'fooMixinFactory',

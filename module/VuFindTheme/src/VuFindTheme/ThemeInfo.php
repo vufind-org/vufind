@@ -255,7 +255,7 @@ class ThemeInfo
                     $merged[$key] = $this->mergeWithoutOverride($merged[$key], $val);
                 } elseif (is_array($val)) {
                     // capture unique or missing array items
-                    $merged[$key] = array_merge($merged[$key], $val);
+                    $merged[$key] = array_merge($val, $merged[$key]);
                 }
             }
 
@@ -264,7 +264,7 @@ class ThemeInfo
 
         if (is_array($merged)) {
             // capture unique or missing array items
-            return array_merge($merged, $current);
+            return array_merge($current, $merged);
         }
 
         return $merged;
