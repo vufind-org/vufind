@@ -223,10 +223,10 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     {
         // Parent
         $ti = $this->getThemeInfo();
-        $parentJS = $ti->getMergedConfig('js', false);
+        $parentJS = $ti->getMergedConfig('js');
         $this->assertEquals(['hello.js'], $parentJS);
         // recursive
-        $parentHelpers = $ti->getMergedConfig('helpers', false);
+        $parentHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
             'fooFactory',
             $parentHelpers['factories']['foo']

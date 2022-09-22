@@ -278,7 +278,7 @@ class ThemeInfo
      *
      * @return array|string
      */
-    public function getMergedConfig(string $key = ''): array|string
+    public function getMergedConfig(string $key = '')
     {
         $currentTheme = $this->getTheme();
         $allThemeInfo = $this->getThemeInfo();
