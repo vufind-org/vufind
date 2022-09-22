@@ -1,25 +1,16 @@
 <?php
   $wrapperTag = $this->wrapperTag ?? 'div';
-  $wrapperClass = $this->wrapperClass ?? false;
+  $wrapperClass = ($this->wrapperClass ? $this->wrapperClass . ' ' : '') . 'dropdown'; // Bootstrap class
 
   $toggleTag = $this->toggleTag ?? 'button';
   $toggleAttrs = $this->toggleAttrs ?? [];
 
-  $href = $this->href ?? $toggleTag == 'button' ? null : '#';
+  $toggleAttrs['class'] = 'dropdown-toggle'; // Bootstrap class
+  $toggleAttrs['data-toggle'] = 'dropdown'; // Bootstrap data-attr
+  $toggleAttrs['href'] = $this->href ?? $toggleTag == 'button' ? null : '#';
 ?>
 
-<<?=$wrapperTag ?>
-  class="<?=$wrapperClass ? $this->escapeHtmlAttr($wrapperClass) . ' ' : '' ?>dropdown"
->
-  <<?=$toggleTag ?>
-    class="dropdown-toggle"
-    data-toggle="dropdown"
-    <?php if ($href): ?>href="<?=$this->escapeHtmlAttr($href) ?>"<?php endif ?>
-  >
-    <?=$this->transEsc($this->toggleLabel) ?>
-    <?=$this->icon('dropdown-caret') ?>
-  </<?=$toggleTag ?>>
-
+<?php ob_start(); ?>
   <ul class="dropdown-menu">
     <?php foreach ($this->menuItems as $current): ?>
       <li class="dropdown__item <?php if ($current['selected']): ?> active<?php endif ?>">
@@ -29,4 +20,14 @@
       </li>
     <?php endforeach; ?>
   </ul>
-</<?=$wrapperTag ?>>
+
+  <?=$this->makeTag(
+    $toggleTag,
+    $this->transEsc($this->toggleLabel) . $this->icon('dropdown-caret'),
+    $toggleAttrs,
+    ['escapeContent' => false]
+  ); ?>
+<?php $menuContents = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+
+<?=$this->makeTag($wrapperTag, $menuContents, $wrapperClass, ['escapeContent' => false]); ?>
