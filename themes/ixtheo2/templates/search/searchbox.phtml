@@ -40,54 +40,42 @@
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 
-<div class="row tf-row-home_">
-    <!--  Begin section searchbar -->
-    <section class="section-home">
-        <div class="panel-home">
-            <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
-
-            <div>
-                <h1>
-                    <a href="<?=$this->url('home')?>" title="Index Theologicus">Index Theologicus</a>
-                </h1>
-                <small><?=$this->transEsc("ixtheo_subtitle")?></small>
-                <br />
-
-                <?php $routeParams = $this->tuefind()->getRouteParams();
-                    if($routeParams['controller'] != "index" && $routeParams['action'] != "Home") {
-                      if($routeParams['controller'] != "Search") {
-                        echo $this->render('search/searchboxForm');
-                      }
-
-                    }?>
-
-            </div>
-
-            <div class="searchbox col-12 mx-auto">
-
-                <?=$this->render('search/searchbox/title');?>
-                <!-- Begin warnings -->
-                <?php if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
-                    <div class="alert alert-warning">
-                        <h2><?= $this->transEsc('ils_offline_title') ?></h2>
-
-                        <p><strong><?= $this->transEsc('ils_offline_status') ?></strong></p>
-
-                        <p><?= $this->transEsc('ils_offline_home_message') ?></p>
-                        <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-                        <p><a href="mailto:<?= $supportEmail ?>"><?= $supportEmail ?></a></p>
-                    </div>
-                <?php endif; ?>
-                <!-- End warnings -->
-            </div><!-- close container -->
-            <!--
-            <div class="scroll-down" id="scroll-down">
-                <a href="" id="scroll-down-button"><span></span><?php $this->transEsc("Scroll"); ?></a>
-            </div>
-            -->
-        </div><!-- close panel-home -->
-        <?php //optional extension template, e.g. for IxTheo2-carousel ?>
-        <?=$this->render('search/searchbox/section-home-extensions');?>
-    </section>
-</div>
+<section class="cw-py-5 cw-bg-gray-100">
+    <div class="container">
+        <div class="row">
+            <?=$this->render('search/searchboxForm');?>
+        </div>
+        <div class="row">
+            <div class="navbar navbar-default home-navbar">
+              <div class="container">
+                  <div class="navbar-collapse collapse ix-paddind-left-0">
+                      <ul class="nav navbar-nav">
+                          <li class="dropdown">
+                              <a class="dropdown-toggle"><?=$this->transEsc('Browse')?>&nbsp;<span class="caret"></span></a>
+                              <ul class="dropdown-menu">
+                                  <li><a class="dropdown-item" href="<?=$this->url('keywordchainsearch-home')?>"><?=$this->transEsc('Browse Keywordchains')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+                                  <li><a class="dropdown-item" href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+                              </ul>
+                          </li>
+                          <li><a href="<?=$this->url('search-results')?>?lookfor=4+esra+1-2&type=BibleRangeSearch" role="button" rel="nofollow">Bibelstellensuche</a></li>
+                          <li><a href="<?=$this->url('search-newitem')?>" role="button" rel="nofollow"><?=$this->transEsc('New Items')?></a></li>
+                          <li><a href="<?=$this->url('search-history')?>" role="button" rel="nofollow"><?=$this->transEsc('Search History')?></a></li>
+                          <li class="dropdown">
+                              <a class="dropdown-toggle"><?=$this->transEsc('Virtual Keyboard')?>&nbsp;<span class="caret"></span></a>
+                              <ul class="dropdown-menu">
+                                  <li><a class="dropdown-item virtual-keyboard-greek"><?=$this->transEsc('Greek')?></a></li>
+                                  <li><a class="dropdown-item virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></a></li>
+                                  <?php $virtualKeyboardSnippet = '$(triggerVirtualKeyboard(\'' . $this->transEsc("Accept") . ':' . $this->transEsc("Accept") . '\', \'' . $this->transEsc("Enter") . ':' . $this->transEsc("Enter") . '\'));'; ?>
+                                  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $virtualKeyboardSnippet, 'SET')?>
+                              </ul>
+                          </li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+          <br />
+        </div>
+    </div>
+</section>
 <!-- End section searchbar -->
