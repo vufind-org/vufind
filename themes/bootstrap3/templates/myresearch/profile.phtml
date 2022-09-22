@@ -41,6 +41,7 @@
             ?>
             <form id="profile_form" class="form-inline" method="post">
               <select id="home_library" name="home_library" class="form-control">
+                <option value=""<?=false === $selected || '' === $selected ? ' selected="selected"' : ''?>><?=$this->transEsc('No Selection')?></option>
                 <?php foreach ($this->pickup as $lib): ?>
                   <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
