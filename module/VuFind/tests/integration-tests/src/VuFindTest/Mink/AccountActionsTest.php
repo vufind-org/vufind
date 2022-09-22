@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -35,6 +37,7 @@ namespace VuFindTest\Mink;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
@@ -43,6 +46,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
+    use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
      * Standard setup method.
@@ -215,12 +219,126 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testDefaultPickUpLocation
+     *
+     * @return array
+     */
+    public function getTestDefaultPickUpLocationData(): array
+    {
+        return [
+            [
+                [
+                    'Users' => ['catuser' => 'catpass'],
+                ],
+                'A',
+                ['A', 'B', 'C'],
+                'username2'
+            ],
+            [
+                [
+                    'Users' => ['catuser' => 'catpass'],
+                    'Holds' => [
+                        'defaultPickUpLocation' => 'user-selected'
+                    ]
+                ],
+                '',
+                ['', 'A', 'B', 'C'],
+                'username3'
+            ],
+        ];
+    }
+
+    /**
+     * Test default pick up location
+     *
+     * @dataProvider getTestDefaultPickUpLocationData
+     *
+     * @return void
+     */
+    public function testDefaultPickUpLocation(
+        array $demoOverrides,
+        string $expectedDefaultPickUp,
+        array $expectedPickUpChoices,
+        string $username
+    ) {
+        // Setup config
+        $this->changeConfigs(
+            [
+                'Demo' => $demoOverrides,
+                'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
+                ]
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
+        // Create account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm(
+            $page,
+            [
+                'username' => $username,
+                'email' => "$username@ignore.com"
+            ]
+        );
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+
+        // Go to profile page:
+        $this->waitForPageLoad($page);
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+
+        // Do patron login:
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
+
+        // Check the default library and possible values:
+        $this->assertEquals(
+            $expectedDefaultPickUp,
+            $this->findCss($page, '#home_library')->getValue()
+        );
+        foreach ($expectedPickUpChoices as $i => $expected) {
+            $this->assertEquals(
+                $expected,
+                $this->findCss($page, '#home_library option', null, $i)->getValue()
+            );
+        }
+        // Make sure there are no more pick up locations:
+        $this->unFindCss(
+            $page,
+            '#home_library option',
+            null,
+            count($expectedPickUpChoices)
+        );
+
+        // Change the default and verify:
+        $this->findCss($page, '#home_library')->setValue('B');
+        $this->clickCss($page, '#profile_form .btn');
+        $this->waitForPageLoad($page);
+        $this->assertEquals('B', $this->findCss($page, '#home_library')->getValue());
+
+        // If emptying the selection is available, test it:
+        if (in_array('', $expectedPickUpChoices)) {
+            $this->findCss($page, '#home_library')->setValue('');
+            $this->clickCss($page, '#profile_form .btn');
+            $this->waitForPageLoad($page);
+            $this->assertEquals(
+                '',
+                $this->findCss($page, '#home_library')->getValue()
+            );
+            echo "CHECKED!\n";
+        }
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['username1', 'username2', 'username3']);
     }
 }
