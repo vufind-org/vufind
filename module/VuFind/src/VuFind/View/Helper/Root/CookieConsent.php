@@ -145,8 +145,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
             'placeholders' => $this->getPlaceholders(),
             'cookieManager' => $this->cookieManager,
             'consentDialogConfig' => $this->getConsentDialogConfig(),
-            'iframemanagerConfig' => $this->getIframemanagerConfig(),
-            'controlledIframeServices' => $this->getControlledIframeServices(),
             'controlledVuFindServices' => $this->getControlledVuFindServices(),
         ];
         return $this->getView()->render('Helpers/cookie-consent.phtml', $params);
@@ -160,32 +158,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
     public function isEnabled(): bool
     {
         return !empty($this->config['Cookies']['consent']);
-    }
-
-    /**
-     * Check if iframemanager is active
-     *
-     * @return bool
-     */
-    public function isIframeManagerActive(): bool
-    {
-        return $this->isEnabled() && null !== $this->getIframemanagerConfig();
-    }
-
-    /**
-     * Get controlled iframe services
-     *
-     * @return array
-     */
-    public function getControlledIframeServices(): array
-    {
-        $controlledIFrameServices = [];
-        foreach ($this->consentConfig['Categories'] ?? [] as $name => $category) {
-            if ($serviceNames = $category['ControlIframeServices'] ?? []) {
-                $controlledIFrameServices[$name] = $serviceNames;
-            }
-        }
-        return $controlledIFrameServices;
     }
 
     /**
@@ -466,54 +438,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
         );
 
         return $consentDialogConfig;
-    }
-
-    /**
-     * Get configuration for iframemanager
-     *
-     * @return ?array
-     */
-    protected function getIframemanagerConfig(): ?array
-    {
-        $lang = $this->getTranslatorLocale();
-        $services = [];
-        foreach ($this->consentConfig['IframeServices'] ?? []
-            as $serviceName => $serviceConfig
-        ) {
-            $service = [
-                'languages' => [
-                    $lang => [
-                        'notice'
-                            => $this->translate($serviceConfig['Description'] ?? ''),
-                        'loadBtn' => $this->translate(
-                            $serviceConfig['AllowOnceText']
-                            ?? 'CookieConsent::allow_video_once'
-                        ),
-                        'loadAllBtn' => $this->translate(
-                            $serviceConfig['AllowAlwaysText']
-                            ?? 'CookieConsent::allow_video_always'
-                        ),
-                    ],
-                ],
-            ];
-            $service['embedUrl'] = $serviceConfig['EmbedUrl'] ?? '';
-            $service['thumbnailUrl'] = $serviceConfig['ThumbnailUrl'] ?? '';
-            $service['cookie'] = [
-                'name' => $serviceConfig['CookieName'] ?? "cc_$serviceName",
-                'path' => $this->cookieManager->getPath(),
-                'samesite' => $this->cookieManager->getSameSite(),
-                'domain' => $this->cookieManager->getDomain(),
-            ];
-            if (isset($serviceConfig['IframeAllow'])) {
-                $service['iframe']['allow'] = $serviceConfig['IframeAllow'];
-            }
-            $services[$serviceName] = $service;
-        }
-        return $services
-            ? [
-                'currLang' => $lang,
-                'services' => $services,
-            ] : null;
     }
 
     /**

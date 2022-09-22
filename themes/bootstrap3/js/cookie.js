@@ -1,22 +1,9 @@
-/*global VuFind, iframemanager, CookieConsent */
+/*global VuFind, CookieConsent */
 
 VuFind.register('cookie', function cookie() {
   let consentConfig = null;
-  let iframeManager = null;
 
   function updateServiceStatus() {
-    // Update iframemanager:
-    if (null !== iframeManager) {
-      Object.entries(consentConfig.controlledIframeServices).forEach(([category, services]) => {
-        if (CookieConsent.acceptedCategory(category)) {
-          services.forEach(service => iframeManager.acceptService(service));
-        } else {
-          services.forEach(service => iframeManager.rejectService(service));
-        }
-      });
-    }
-
-    // Update other services:
     Object.entries(consentConfig.controlledVuFindServices).forEach(([category, services]) => {
       // Matomo:
       if (window._paq && services.indexOf('matomo') !== -1) {
@@ -29,10 +16,6 @@ VuFind.register('cookie', function cookie() {
 
   function setupConsent(_config) {
     consentConfig = _config;
-    if (null !== consentConfig.iframemanager) {
-      iframeManager = iframemanager();
-      iframeManager.run(consentConfig.iframemanager);
-    }
     consentConfig.consentDialog.onConsent = function onConsent() {
       updateServiceStatus();
       VuFind.emit('cookie-consent-done');

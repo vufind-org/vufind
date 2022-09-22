@@ -1,5 +1,5 @@
 ---
-# Cookie consent and IFrame manager configuration.
+# Cookie consent configuration.
 #
 # Note that there are a couple of settings in the Cookies section of config.ini that
 # can be used to enable the functionality and select categories to display.
@@ -11,8 +11,6 @@
 #   Categories        Cookie categories (groups) that bring together a set of
 #                     cookies. The user can choose their consent for each group
 #                     apart from essential cookies. See below for documentation.
-#   IframeServices    Configuration for iframe services that depend on cookie
-#                     consent. See below for documentation.
 #
 # Cookie category configuration (see the VuFind wiki for additional examples:
 # https://vufind.org/wiki/configuration:cookie_consent)
@@ -23,8 +21,6 @@
 #                     is false)
 #   Essential         Whether the category contains only cookies essential for the
 #                     service and cannot be disabled (true/false, default is false)
-#   ControlIframeServices Links a category consent with iframe services so that a
-#                     consent allows the iframe to be loaded without a prompt.
 #   ControlVuFindServices Links a category consent with VuFind services so that a
 #                     consent allows the service to be controlled. The following
 #                     services are currently supported:
@@ -48,18 +44,6 @@
 #     Name              A regular expression to match cookie names that should be
 #                       cleared
 #
-# Iframe service configuration (see the VuFind wiki for an example:
-# https://vufind.org/wiki/configuration:cookie_consent)
-#
-#   EmbedUrl          Template for embedded content url. {data-id} can be used as a
-#                     placeholder for the data-id attribute of the tag.
-#   ThumbnailUrl      Template for thumbnail image url. {data-id} can be used as a
-#                     placeholder for the data-id attribute of the tag.
-#   IframeAllow       allow attribute for the iframe
-#   Description       Description text displayed alongside buttons to display the
-#                     content
-#   AllowOnceText     Text for the "Allow once" button
-#   AllowAlwaysText   Text for the "Allow always" button (remembers the choice)
 #
 # You can use e.g. https://cookiedatabase.org/ to find out the cookies used by most
 # popular services.

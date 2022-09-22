@@ -84,8 +84,6 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($helper->isEnabled());
         $this->assertEquals('rendered_template', $helper->render());
-        $this->assertFalse($helper->isIframeManagerActive());
-        $this->assertEquals([], $helper->getControlledIframeServices());
         $this->assertEquals(
             ['matomo' => ['matomo']],
             $helper->getControlledVuFindServices()
@@ -120,14 +118,13 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             )
         ];
         $expectedParams = $this->getExpectedRenderParams(
-            'CookieConsentWithIframe.yaml',
+            'CookieConsent.yaml',
             $config,
             $cookies
         );
         $helper = $this->getCookieConsent(
             $config,
-            $cookies,
-            'CookieConsentWithIframe.yaml'
+            $cookies
         );
 
         $helper->getView()->expects($this->once())
@@ -137,12 +134,6 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
-        $this->assertEquals(
-            [
-                'essential' => ['videoservice'],
-            ],
-            $helper->getControlledIframeServices()
-        );
         $this->assertEquals('rendered_template', $helper->render());
     }
 
@@ -357,34 +348,6 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                         'readOnly' => false,
                     ],
                 ],
-            ],
-            'iframemanagerConfig' => [
-                'currLang' => 'en',
-                'services' => [
-                    'videoservice' => [
-                        'languages' => [
-                            'en' => [
-                                'notice' => 'Content description',
-                                'loadBtn' => 'Show video',
-                                'loadAllBtn' => 'Always show videos',
-                            ],
-                        ],
-                        'embedUrl' => 'https://localhost/video/{data-id}',
-                        'thumbnailUrl' => '',
-                        'cookie' => [
-                            'name' => 'cc_videoservice',
-                            'path' => '/first',
-                            'samesite' => 'Lax',
-                            'domain' => 'localhost',
-                        ],
-                        'iframe' => [
-                            'allow' => 'accelerometer',
-                        ],
-                    ],
-                ],
-            ],
-            'controlledIframeServices' => [
-                'essential' => ['videoservice']
             ],
             'controlledVuFindServices' => [
                 'matomo' => [

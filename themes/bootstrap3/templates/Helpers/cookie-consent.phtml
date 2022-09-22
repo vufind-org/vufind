@@ -1,16 +1,11 @@
 <?php
-if (null !== $this->iframemanagerConfig) {
-    $this->headScript()->appendFile('vendor/iframemanager.js');
-}
 $this->headScript()->appendFile('vendor/cookieconsent.umd.js');
 $this->headScript()->appendFile('cookie.js');
 
 $configJson = json_encode(
     [
         'consentDialog' => $this->consentDialogConfig,
-        'controlledIframeServices' => $this->controlledIframeServices,
         'controlledVuFindServices' => $this->controlledVuFindServices,
-        'iframemanager' => $this->iframemanagerConfig,
     ]
 );
 $this->headScript()->appendScript("window.addEventListener('load', function() { VuFind.cookie.setupConsent($configJson); });");
