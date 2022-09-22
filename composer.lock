@@ -1371,21 +1371,21 @@
         },
         {
             "name": "laminas/laminas-cache-storage-adapter-filesystem",
-            "version": "2.0.1",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cache-storage-adapter-filesystem.git",
-                "reference": "7603eec055525176649aa62d62db2db915ce8ea8"
+                "reference": "abf1e748eb23f08a6e1f5345eadaf0b8fee2ad56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-filesystem/zipball/7603eec055525176649aa62d62db2db915ce8ea8",
-                "reference": "7603eec055525176649aa62d62db2db915ce8ea8",
+                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-filesystem/zipball/abf1e748eb23f08a6e1f5345eadaf0b8fee2ad56",
+                "reference": "abf1e748eb23f08a6e1f5345eadaf0b8fee2ad56",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-cache": "^3.0",
-                "php": "^7.3 || ~8.0.0 || ~8.1.0"
+                "php": "^7.4 || ~8.0.0 || ~8.1.0"
             },
             "provide": {
                 "laminas/laminas-cache-storage-implementation": "1.0"
@@ -1395,11 +1395,11 @@
                 "ext-posix": "*",
                 "laminas/laminas-cache-storage-adapter-benchmark": "^1.0",
                 "laminas/laminas-cache-storage-adapter-test": "^2.0 || 2.0.x-dev",
-                "laminas/laminas-coding-standard": "^2.3",
-                "laminas/laminas-serializer": "^2.10",
-                "phpunit/phpunit": "^9.5",
-                "psalm/plugin-phpunit": "^0.16.1",
-                "vimeo/psalm": "^4.10"
+                "laminas/laminas-coding-standard": "~2.4",
+                "laminas/laminas-serializer": "^2.13.0",
+                "phpunit/phpunit": "^9.5.24",
+                "psalm/plugin-phpunit": "^0.17.0",
+                "vimeo/psalm": "^4.27.0"
             },
             "type": "library",
             "extra": {
@@ -1435,20 +1435,20 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-12-01T10:01:46+00:00"
+            "time": "2022-09-16T13:01:43+00:00"
         },
         {
             "name": "laminas/laminas-cache-storage-adapter-memcached",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cache-storage-adapter-memcached.git",
-                "reference": "5d6795281f388842ed96acbfc3f8659d0742282f"
+                "reference": "2bcb163b3781c0391b59926214239bb5a24d7620"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-memcached/zipball/5d6795281f388842ed96acbfc3f8659d0742282f",
-                "reference": "5d6795281f388842ed96acbfc3f8659d0742282f",
+                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-memcached/zipball/2bcb163b3781c0391b59926214239bb5a24d7620",
+                "reference": "2bcb163b3781c0391b59926214239bb5a24d7620",
                 "shasum": ""
             },
             "require": {
@@ -1466,7 +1466,7 @@
                 "boesing/psalm-plugin-stringf": "^1.2",
                 "laminas/laminas-cache-storage-adapter-benchmark": "^1.0",
                 "laminas/laminas-cache-storage-adapter-test": "^2.0",
-                "laminas/laminas-coding-standard": "~2.3.0",
+                "laminas/laminas-coding-standard": "~2.4.0",
                 "phpunit/phpunit": "^9.5.8",
                 "psalm/plugin-phpunit": "^0.17.0",
                 "vimeo/psalm": "^4.10"
@@ -1506,35 +1506,37 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-08-11T18:08:33+00:00"
+            "time": "2022-09-20T15:54:05+00:00"
         },
         {
             "name": "laminas/laminas-cache-storage-adapter-memory",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cache-storage-adapter-memory.git",
-                "reference": "f47aed9d5f6f3eac5970693ea5898d67d3f33dcf"
+                "reference": "92890fa5a8977418604b7a7b024503faad2c6e55"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-memory/zipball/f47aed9d5f6f3eac5970693ea5898d67d3f33dcf",
-                "reference": "f47aed9d5f6f3eac5970693ea5898d67d3f33dcf",
+                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-memory/zipball/92890fa5a8977418604b7a7b024503faad2c6e55",
+                "reference": "92890fa5a8977418604b7a7b024503faad2c6e55",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-cache": "^3.0",
-                "php": "^7.3 || ~8.0.0 || ~8.1.0"
+                "php": "~7.4.0 || ~8.0.0 || ~8.1.0"
+            },
+            "conflict": {
+                "laminas/laminas-servicemanager": "<3.11"
             },
             "provide": {
                 "laminas/laminas-cache-storage-implementation": "1.0"
             },
             "require-dev": {
-                "laminas/laminas-cache": "3.0.x-dev",
                 "laminas/laminas-cache-storage-adapter-benchmark": "^1.0",
-                "laminas/laminas-cache-storage-adapter-test": "2.0.x-dev",
-                "laminas/laminas-coding-standard": "~2.3.0",
-                "psalm/plugin-phpunit": "^0.16.1",
+                "laminas/laminas-cache-storage-adapter-test": "^2.0",
+                "laminas/laminas-coding-standard": "~2.4.0",
+                "psalm/plugin-phpunit": "^0.17.0",
                 "vimeo/psalm": "^4.9"
             },
             "type": "library",
@@ -1571,7 +1573,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-11-08T22:17:24+00:00"
+            "time": "2022-09-20T10:00:52+00:00"
         },
         {
             "name": "laminas/laminas-captcha",
