@@ -90,6 +90,16 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
                 ]
             ]
         );
+        // Make sure the cookie dialog is not hidden from a headless client:
+        $this->changeYamlConfigs(
+            [
+                'CookieConsent' => [
+                    'CookieConsent' => [
+                        'HideFromBots' => false
+                    ]
+                ]
+            ]
+        );
 
         $page = $this->getStartPage();
         $html = $page->getHtml();
