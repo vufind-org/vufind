@@ -277,17 +277,22 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
         $categories = $this->config['Cookies']['consentCategories'] ?? '';
         $enabledCategories = $categories ? explode(',', $categories) : ['essential'];
         $lang = $this->getTranslatorLocale();
+        $cookieSettings = [
+            'name' => $this->consentCookieName,
+            'path' => $this->cookieManager->getPath(),
+            'expiresAfterDays' => $this->consentCookieExpiration,
+            'sameSite' => $this->cookieManager->getSameSite()
+        ];
+        // Set domain only if we have a value for it to avoid overriding the default
+        // (i.e. window.location.hostname):
+        if ($domain = $this->cookieManager->getDomain()) {
+            $cookieSettings['domain'] = $domain;
+        }
         $consentDialogConfig = [
             'autoClearCookies' => $this->consentConfig['AutoClear'] ?? true,
             'manageScriptTags' => $this->consentConfig['ManageScripts'] ?? true,
             'hideFromBots' => $this->consentConfig['HideFromBots'] ?? true,
-            'cookie' => [
-                'name' => $this->consentCookieName,
-                'domain' => $this->cookieManager->getDomain(),
-                'path' => $this->cookieManager->getPath(),
-                'expiresAfterDays' => $this->consentCookieExpiration,
-                'sameSite' => $this->cookieManager->getSameSite()
-            ],
+            'cookie' => $cookieSettings,
             'revision' => (int)($this->config['Cookies']['consentRevision'] ?? 0),
             'guiOptions' => [
                 'consentModal' => [
