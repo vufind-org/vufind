@@ -29,10 +29,7 @@ namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
-use VuFind\Exception\BadRequest;
-use VuFind\Exception\Forbidden;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
 
 /**
@@ -159,7 +156,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError("Unexpected " . get_class($e) . ": " .$e->getMessage());
+            $this->logError("Unexpected " . get_class($e) . ": " . $e->getMessage());
             throw new ILSException("Error during send operation.");
         }
         $code = $response->getStatusCode();
