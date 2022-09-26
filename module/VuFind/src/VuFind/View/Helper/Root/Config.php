@@ -110,4 +110,16 @@ class Config extends \Laminas\View\Helper\AbstractHelper
         $limit = $this->get('config')->Record->subjectLimit;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
+
+    /**
+     * Check if index record should always be displayed (i.e. also when a
+     * format-specific template is available)
+     *
+     * @return bool
+     */
+    public function alwaysDisplayIndexRecordInStaffView(): bool
+    {
+        return (bool)($this->get('config')->Record
+            ->alwaysDisplayIndexRecordInStaffView ?? false);
+    }
 }
