@@ -223,11 +223,7 @@ class ThemeInfo
         }
 
         reset($op);
-        if (is_string(key($op))) {
-            return true;
-        }
-
-        return false;
+        return is_string(key($op));
     }
 
     /**
