@@ -64,13 +64,12 @@ label { cursor: pointer; }
   flex: none;
   padding: 0;
   line-height: inherit;
-  color: $link-color;
+  color: inherit;
 }
 .icon-link__label {
   text-decoration: $link-hover-decoration;
 }
 .icon-link:hover .icon-link__label {
-  color: $link-hover-color;
   text-decoration: none;
 }
 .icon-link.active .icon-link__icon,
