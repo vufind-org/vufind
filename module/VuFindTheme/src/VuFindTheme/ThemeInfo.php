@@ -231,10 +231,10 @@ class ThemeInfo
      * Using the string-keyed array format of theme config info,
      * recursively walk the array, capturing unique or missing values.
      *
-     * @param array $merged Merged theme info, overrides parent theme
-     * @param array $current Theme info to be merged
+     * @param array|string $merged Merged theme info, overrides parent theme
+     * @param array|string $current Theme info to be merged
      *
-     * @return array merged theme info, favoring child themes (merged)
+     * @return array|string merged theme info, favoring child themes (merged)
      */
     protected function mergeWithoutOverride($merged, $current) {
         if (empty($merged)) {
