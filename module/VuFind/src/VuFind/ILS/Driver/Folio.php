@@ -1287,7 +1287,7 @@ class Folio extends AbstractAPI implements
                     '/circulation/requests/' . $requestId,
                     json_encode($request_json)
                 );
-                if ($cancel_response->getStatusCode() == 204) {
+                if ($cancel_response->getStatusCode() !== 204) {
                     throw new \Exception("Unexpected status code.");
                 }
                 $count++;
