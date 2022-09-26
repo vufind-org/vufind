@@ -240,7 +240,7 @@ class ParamBag implements \Countable
                             return sprintf(
                                 '%s=%s',
                                 urlencode($name),
-                                urlencode($value)
+                                urlencode($value ?? '')
                             );
                         },
                         $values
