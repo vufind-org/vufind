@@ -99,6 +99,8 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      * @param int[]|string $allowedFailureCodes HTTP failure codes that should NOT
      * cause an ILSException to be thrown. May be an array of integers or a regular
      * expression.
+     *
+     * @return bool
      */
     protected function failureCodeIsAllowed(int $code, $allowedFailureCodes): bool
     {
