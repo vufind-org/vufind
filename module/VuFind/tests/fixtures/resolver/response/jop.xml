@@ -1,0 +1,110 @@
+HTTP/1.1 200 OK
+Date: Thu, 21 Apr 2016 13:25:49 GMT
+Server: Apache
+Content-Length: 5592
+Vary: Accept-Encoding
+Content-Type: text/xml;charset=UTF-8
+
+
+<OpenURLResponseXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" xsi:noNamespaceSchemaLocation="http://ezb.uni-regensburg.de/ezeit/vascoda/vifa/vifaxml/response_vr_v1_0_1.xsd">
+    <Full>
+        <ElectronicData>
+            <Library>Universitätsbibliothek Leipzig</Library>
+            <References>
+                <Reference>
+                    <URL>http://www.bibliothek.uni-regensburg.de/ezeit/?1482826</URL>
+                    <Label>EZB-Opac</Label>
+                </Reference>
+                <Reference>
+                    <URL>http://www.bibliothek.uni-regensburg.de/ezeit/?2010839</URL>
+                    <Label>EZB-Opac</Label>
+                </Reference>
+                <Reference>
+                    <URL>http://www.bibliothek.uni-regensburg.de/ezeit/search.phtml?bibid=UBL&amp;lang=de&amp;jq_type1=KT&amp;jq_term1=Noûs : a Quarterly Journal of Philosophy (1997-)</URL>
+                    <Label>EZB-Suche</Label>
+                </Reference>
+            </References>
+            <ResultList>
+                <Result state="3">
+                    <Title>Noûs : a Quarterly Journal of Philosophy (1997-)</Title>
+                    <JournalURL>http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1468-0068</JournalURL>
+                    <AccessURL>http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1468-0068</AccessURL>
+                    <AccessLevel>homepage</AccessLevel>
+                    <Additionals>
+                        <Additional type="intervall">ab Vol. 31, Iss. 1 (1997)</Additional>
+                    </Additionals>
+                    <ReadmeURL lang="de">https://www.ub.uni-leipzig.de/index.php?id=163#Wiley Core 2015</ReadmeURL>
+                    <ReadmeURL lang="en">http://www.ub.uni-leipzig.de/kata_db/Readme.htm#Wiley Core 2015</ReadmeURL>
+                </Result>
+                <Result state="3">
+                    <Title>Noûs (ältere Jahrgänge via JSTOR)</Title>
+                    <JournalURL>http://www.jstor.org/action/showPublication?journalCode=nous</JournalURL>
+                    <AccessURL>http://www.jstor.org/action/showPublication?journalCode=nous</AccessURL>
+                    <AccessLevel>homepage</AccessLevel>
+                    <Additionals>
+                        <Additional type="intervall">ab Vol. 1, Iss. 1 (1967)</Additional>
+                        <Additional type="moving_wall">für die Ausgaben der aktuellen 11 Jahrgänge nicht verfügbar</Additional>
+                    </Additionals>
+                    <ReadmeURL lang="de">https://www.ub.uni-leipzig.de/index.php?id=163#jstor_arts1</ReadmeURL>
+                    <ReadmeURL lang="en">http://www.ub.uni-leipzig.de/kata_db/Readme.htm#jstor_arts1</ReadmeURL>
+                </Result>
+                <Result state="3">
+                    <Title>Nous (via EBSCO Host)</Title>
+                    <JournalURL>http://search.ebscohost.com/direct.asp?db=aph&amp;jid=D97&amp;scope=site</JournalURL>
+                    <AccessURL>http://search.ebscohost.com/direct.asp?db=aph&amp;jid=D97&amp;scope=site</AccessURL>
+                    <AccessLevel>homepage</AccessLevel>
+                    <Additionals>
+                        <Additional type="moving_wall">für die Ausgaben der vergangenen 12 Monate nicht verfügbar</Additional>
+                    </Additionals>
+                    <ReadmeURL lang="de">https://www.ub.uni-leipzig.de/index.php?id=163#ebsco_aph</ReadmeURL>
+                    <ReadmeURL lang="en">http://www.ub.uni-leipzig.de/kata_db/Readme.htm#ebsco_aph</ReadmeURL>
+                </Result>
+                <Result state="3">
+                    <Title>Nous (via EBSCO Host)</Title>
+                    <JournalURL>http://search.ebscohost.com/direct.asp?db=lfh&amp;jid=D97&amp;scope=site</JournalURL>
+                    <AccessURL>http://search.ebscohost.com/direct.asp?db=lfh&amp;jid=D97&amp;scope=site</AccessURL>
+                    <AccessLevel>homepage</AccessLevel>
+                    <Additionals>
+                        <Additional type="moving_wall">für die Ausgaben der vergangenen 12 Monate nicht verfügbar</Additional>
+                    </Additionals>
+                    <ReadmeURL lang="de">https://www.ub.uni-leipzig.de/index.php?id=163#ebsco_lfh</ReadmeURL>
+                    <ReadmeURL lang="en">http://www.ub.uni-leipzig.de/kata_db/Readme.htm#ebsco_lfh</ReadmeURL>
+                </Result>
+                <Result state="3">
+                    <Title>Philosophical Perspectives (aktuelle Jahrgänge)</Title>
+                    <JournalURL>http://onlinelibrary.wiley.com/journal/10.1111/%28ISSN%291520-8583</JournalURL>
+                    <AccessURL>http://onlinelibrary.wiley.com/journal/10.1111/%28ISSN%291520-8583</AccessURL>
+                    <AccessLevel>homepage</AccessLevel>
+                    <Additionals>
+                        <Additional type="intervall">ab Vol. 17 (2003)</Additional>
+                    </Additionals>
+                    <ReadmeURL lang="de">https://www.ub.uni-leipzig.de/index.php?id=163#Wiley Core 2015</ReadmeURL>
+                    <ReadmeURL lang="en">http://www.ub.uni-leipzig.de/kata_db/Readme.htm#Wiley Core 2015</ReadmeURL>
+                </Result>
+            </ResultList>
+        </ElectronicData>
+        <PrintData>
+            <Library>Universitätsbibliothek Leipzig</Library>
+            <References>
+                <Reference>
+                    <URL>http://dispatch.opac.dnb.de/CHARSET=ISO-8859-1/DB=1.1/CMD?ACT=SRCHA&amp;IKT=8509&amp;SRT=LST_ty&amp;TRM=IDN+011960027+or+IDN+01545794X&amp;HLIB=009030085#009030085</URL>
+                    <Label>ZDB-OPAC</Label>
+                </Reference>
+            </References>
+            <ResultList>
+                <Result state="2">
+                    <Title>Philosophical perspectives</Title>
+                    <Location>Leipzig UB</Location>
+                    <Holding_comment>Nachweis als Serie</Holding_comment>
+                </Result>
+                <Result state="2">
+                    <Title>Noûs</Title>
+                    <Location>Leipzig UB // HB/FH/ Standortsignatur: 96-7-558</Location>
+                    <Signature>CA 5470 Magazin: 96-7-558</Signature>
+                    <Period>1.1967 - 27.1993; 30.1996 - 43.2009</Period>
+                    <Holding_comment>Letzten 15 Jg. Freihand</Holding_comment>
+                </Result>
+            </ResultList>
+        </PrintData>
+    </Full>
+</OpenURLResponseXML>

@@ -608,8 +608,10 @@ class Folio extends AbstractAPI implements
                 $callNumberData = $this->chooseCallNumber(
                     $holdingCallNumberPrefix,
                     $holdingCallNumber,
-                    $item->itemLevelCallNumberPrefix ?? '',
-                    $item->itemLevelCallNumber ?? ''
+                    $item->effectiveCallNumberComponents->prefix
+                        ?? $item->itemLevelCallNumberPrefix ?? '',
+                    $item->effectiveCallNumberComponents->callNumber
+                        ?? $item->itemLevelCallNumber ?? ''
                 );
 
                 $dueDateValue = '';
@@ -711,6 +713,9 @@ class Folio extends AbstractAPI implements
             '/authn/login',
             json_encode($credentials)
         );
+        if ($response->getStatusCode() >= 400) {
+            throw new ILSException($response->getBody());
+        }
         $debugMsg = 'User logged in. User: ' . $username . '.';
         // We've authenticated the user with Okapi, but we only have their
         // username; set up a query to retrieve full info below.

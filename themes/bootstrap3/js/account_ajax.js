@@ -189,7 +189,7 @@ $(document).ready(function registerAccountAjax() {
         $element.addClass("hidden");
         return ICON_LEVELS.NONE;
       }
-      $element.html('<span class="badge overdue">' + status.display + '</span>');
+      $element.html('<span class="badge account-alert">' + status.display + '</span>');
       return ICON_LEVELS.DANGER;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
@@ -204,14 +204,14 @@ $(document).ready(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.ok > 0) {
-        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
       }
       if (status.warn > 0) {
-        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
         level = ICON_LEVELS.WARNING;
       }
       if (status.overdue > 0) {
-        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_overdue') + '">' + status.overdue + '</span>';
+        html += '<span class="badge account-alert" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_overdue') + '">' + status.overdue + '</span>';
         level = ICON_LEVELS.DANGER;
       }
       $element.html(html);
@@ -223,28 +223,24 @@ $(document).ready(function registerAccountAjax() {
     }
   });
 
-  function statusIcon(icon, className, title) {
-    return VuFind.icon(icon, {
-      class: className,
-      "data-toggle": "tooltip",
-      "title": VuFind.translate(title),
-    });
-  }
-
   VuFind.account.register("holds", {
     selector: ".holds-status",
     ajaxMethod: "getUserHolds",
     render: function render($element, status, ICON_LEVELS) {
+      var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.html(
-          statusIcon("my-account-notification", "text-success", "account_requests_available")
-        );
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
-      } else if (status.in_transit > 0) {
-        $element.html(
-          statusIcon("my-account-warning", "text-warning", "account_requests_in_transit")
-        );
+      }
+      if (status.in_transit > 0) {
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+      }
+      if (status.other > 0) {
+        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+      }
+      if (html !== '') {
+        $element.html(html);
       } else {
         $element.addClass("holds-status hidden");
       }
@@ -252,7 +248,7 @@ $(document).ready(function registerAccountAjax() {
       return level;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
   });
 
@@ -260,16 +256,20 @@ $(document).ready(function registerAccountAjax() {
     selector: ".illrequests-status",
     ajaxMethod: "getUserILLRequests",
     render: function render($element, status, ICON_LEVELS) {
+      var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.html(
-          statusIcon("my-account-notification", "text-success", "account_requests_available")
-        );
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
-      } else if (status.in_transit > 0) {
-        $element.html(
-          statusIcon("my-account-warning", "text-warning", "account_requests_in_transit")
-        );
+      }
+      if (status.in_transit > 0) {
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+      }
+      if (status.other > 0) {
+        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+      }
+      if (html !== '') {
+        $element.html(html);
       } else {
         $element.addClass("holds-status hidden");
       }
@@ -277,7 +277,7 @@ $(document).ready(function registerAccountAjax() {
       return level;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
   });
 
@@ -285,16 +285,20 @@ $(document).ready(function registerAccountAjax() {
     selector: ".storageretrievalrequests-status",
     ajaxMethod: "getUserStorageRetrievalRequests",
     render: function render($element, status, ICON_LEVELS) {
+      var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.html(
-          statusIcon("my-account-notification", "text-success", "account_requests_available")
-        );
+        html += '<span class="badge account-info" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '">' + status.available + '</span>';
         level = ICON_LEVELS.GOOD;
-      } else if (status.in_transit > 0) {
-        $element.html(
-          statusIcon("my-account-warning", "text-warning", "account_requests_in_transit")
-        );
+      }
+      if (status.in_transit > 0) {
+        html += '<span class="badge account-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '">' + status.in_transit + '</span>';
+      }
+      if (status.other > 0) {
+        html += '<span class="badge account-none" data-toggle="tooltip" title="' + VuFind.translate('account_requests_other') + '">' + status.other + '</span>';
+      }
+      if (html !== '') {
+        $element.html(html);
       } else {
         $element.addClass("holds-status hidden");
       }
@@ -302,7 +306,7 @@ $(document).ready(function registerAccountAjax() {
       return level;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
     }
   });
 });

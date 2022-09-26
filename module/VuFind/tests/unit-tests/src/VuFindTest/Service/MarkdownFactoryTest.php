@@ -324,7 +324,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      * @param array $config
      *
      * @return ConverterInterface
-     * @throws \Interop\Container\Exception\ContainerException
+     * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Throwable
      */
     protected function getMarkdownConverter(array $config): ConverterInterface
