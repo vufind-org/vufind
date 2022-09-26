@@ -1,10 +1,10 @@
 <?php
 /**
- * AlphaBrowse helper factory.
+ * CookieConsent helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -34,15 +34,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * AlphaBrowse helper factory.
+ * CookieConsent helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowseFactory implements FactoryInterface
+class CookieConsentFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -66,11 +66,15 @@ class AlphaBrowseFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $helpers = $container->get('ViewHelperManager');
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $options = isset($config->AlphaBrowse)
-            ? $config->AlphaBrowse->toArray() : [];
-        return new $requestedName($helpers->get('url'), $options);
+        $consentConfig = $container->get(\VuFind\Config\YamlReader::class)
+            ->get('CookieConsent.yaml');
+        return new $requestedName(
+            $config->toArray(),
+            $consentConfig['CookieConsent'] ?? [],
+            $container->get(\VuFind\Cookie\CookieManager::class),
+            $container->get(\VuFind\Date\Converter::class)
+        );
     }
 }

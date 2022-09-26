@@ -15,6 +15,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
+@import "components/cookie-consent";
 @import "components/devtools";
 @import "components/form";
 @import "components/icons";
@@ -425,5 +426,41 @@ div.holding-notes {
     form {
       margin-top: 1rem;
     }
+  }
+}
+
+/* --- Cookie Consent --- */
+.disable--interaction #cc-main .cm-wrapper::before,
+.show--preferences #cc-main .c--anim.pm-wrapper::before {
+  opacity: $modal-backdrop-opacity;
+}
+
+#cc-main {
+  a {
+    &:hover {
+      color: $link-hover-color;
+      text-decoration: $link-hover-decoration;
+      background-size: 0%;
+    }
+  }
+
+  .c--anim .cm__close,
+  .c--anim .cm__btn,
+  .pm__btn {
+    transition: none;
+  }
+  .cm--bar .cm__btn, .pm__btn {
+    font-size: 14px;
+  }
+  .cm--bar .cm__btn {
+    flex: none;
+  }
+
+  .pm__section--expandable .pm__section-arrow {
+    background: none;
+  }
+
+  .pm__section--toggle {
+    background: transparent;
   }
 }

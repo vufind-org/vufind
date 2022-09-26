@@ -136,7 +136,7 @@ trait MarcReaderTrait
     protected function getFirstFieldValue($field, $subfields = null)
     {
         $matches = $this->getFieldArray($field, $subfields);
-        return $matches[0] ?? null;
+        return $matches[0] ?? '';
     }
 
     /**
