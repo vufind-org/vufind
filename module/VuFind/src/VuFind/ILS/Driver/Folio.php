@@ -227,9 +227,6 @@ class Folio extends AbstractAPI implements
             'password' => $this->config['API']['password'],
         ];
         $response = $this->makeRequest('POST', '/authn/login', json_encode($auth));
-        if ($response->getStatusCode() >= 400) {
-            throw new ILSException($response->getBody());
-        }
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
         $this->sessionCache->folio_token = $this->token;
@@ -248,7 +245,7 @@ class Folio extends AbstractAPI implements
      */
     protected function checkTenantToken()
     {
-        $response = $this->makeRequest('GET', '/users');
+        $response = $this->makeRequest('GET', '/users', [], [], [401, 403]);
         if ($response->getStatusCode() >= 400) {
             $this->token = null;
             $this->renewTenantToken();
@@ -713,9 +710,6 @@ class Folio extends AbstractAPI implements
             '/authn/login',
             json_encode($credentials)
         );
-        if ($response->getStatusCode() >= 400) {
-            throw new ILSException($response->getBody());
-        }
         $debugMsg = 'User logged in. User: ' . $username . '.';
         // We've authenticated the user with Okapi, but we only have their
         // username; set up a query to retrieve full info below.
@@ -1031,7 +1025,9 @@ class Folio extends AbstractAPI implements
                 $response = $this->makeRequest(
                     'POST',
                     '/circulation/renew-by-id',
-                    json_encode($requestbody)
+                    json_encode($requestbody),
+                    [],
+                    '/.*/'
                 );
                 if ($response->isSuccess()) {
                     $json = json_decode($response->getBody());
@@ -1213,7 +1209,9 @@ class Folio extends AbstractAPI implements
         $response = $this->makeRequest(
             'POST',
             '/circulation/requests',
-            json_encode($requestBody)
+            json_encode($requestBody),
+            [],
+            '/.*/'
         );
         if ($response->isSuccess()) {
             $json = json_decode($response->getBody());
@@ -1283,18 +1281,21 @@ class Folio extends AbstractAPI implements
             $request_json->status = 'Closed - Cancelled';
             $request_json->cancellationReasonId
                 = $this->config['Holds']['cancellation_reason'];
-            $cancel_response = $this->makeRequest(
-                'PUT',
-                '/circulation/requests/' . $requestId,
-                json_encode($request_json)
-            );
-            if ($cancel_response->getStatusCode() == 204) {
+            try {
+                $cancel_response = $this->makeRequest(
+                    'PUT',
+                    '/circulation/requests/' . $requestId,
+                    json_encode($request_json)
+                );
+                if ($cancel_response->getStatusCode() == 204) {
+                    throw new \Exception("Unexpected status code.");
+                }
                 $count++;
                 $cancelResult['items'][$request_json->itemId] = [
                     'success' => true,
                     'status' => 'hold_cancel_success'
                 ];
-            } else {
+            } catch (\Exception $e) {
                 $cancelResult['items'][$request_json->itemId] = [
                     'success' => false,
                     'status' => 'hold_cancel_fail'
