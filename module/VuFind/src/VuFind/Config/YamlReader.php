@@ -180,10 +180,33 @@ class YamlReader
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
         }
+        // Check for sections to merge instead of overriding:
+        $mergedSections = [];
+        if (isset($results['@merge_sections'])) {
+            $mergedSections = $results['@merge_sections'];
+            // Swallow the directive after processing it:
+            unset($results['@merge_sections']);
+        }
 
-        // Now load in missing sections from parent, if applicable:
+        // Now load in merged or missing sections from parent, if applicable:
         if (null !== $defaultParent) {
-            foreach ($this->parseYaml($defaultParent) as $section => $contents) {
+            $parentSections = $this->parseYaml($defaultParent);
+            // Process merged sections:
+            foreach ($mergedSections as $path) {
+                $resultElemRef = &$this->getArrayElemRefByPath($results, $path);
+                if (is_array($resultElemRef)) {
+                    $parentElem
+                        = $this->getArrayElemRefByPath($parentSections, $path);
+                    if (is_array($parentElem)) {
+                        $resultElemRef
+                            = array_merge_recursive($parentElem, $resultElemRef);
+                        unset($parentElem);
+                    }
+                    unset($resultElemRef);
+                }
+            }
+            // Add missing sections:
+            foreach ($parentSections as $section => $contents) {
                 if (!isset($results[$section])) {
                     $results[$section] = $contents;
                 }
@@ -191,5 +214,26 @@ class YamlReader
         }
 
         return $results;
+    }
+
+    /**
+     * Return array element reference by path
+     *
+     * @param array $arr  Array to access
+     * @param array $path Path to retrieve
+     *
+     * @return mixed
+     */
+    protected function &getArrayElemRefByPath(array &$arr, array $path)
+    {
+        $result = &$arr;
+        foreach ($path as $pathPart) {
+            if (array_key_exists($pathPart, $result)) {
+                $result = &$result[$pathPart];
+            } else {
+                return null;
+            }
+        }
+        return $result;
     }
 }

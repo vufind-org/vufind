@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2022.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -29,6 +31,7 @@ namespace VuFindTest\Config;
 
 use Laminas\Cache\Storage\Adapter\AbstractAdapter;
 use VuFind\Config\YamlReader;
+use VuFindTest\Feature\FixtureTrait;
 
 /**
  * Config YamlReader Test Class
@@ -36,11 +39,14 @@ use VuFind\Config\YamlReader;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class YamlReaderTest extends \PHPUnit\Framework\TestCase
 {
+    use FixtureTrait;
+
     /**
      * Test that the cache is updated as expected.
      *
@@ -132,5 +138,41 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         // get() parameter.
         $this->assertEquals($yamlData, $reader->get('searchspecs.yaml'));
         $this->assertEquals($yamlData, $reader->get('searchspecs.yaml', true, true));
+    }
+
+    /**
+     * Test @parent_yaml and @merged_sections directives
+     *
+     * @return void
+     */
+    public function testParentConfig(): void
+    {
+        // Same path passed as both base and local, no problem for the test:
+        $callback = function ($filename) {
+            return $this->getFixturePath("configs/yaml/$filename");
+        };
+        $reader = new YamlReader(null, $callback);
+        $config = $reader->get('yamlreader-child.yaml');
+        $this->assertEquals(
+            [
+                'Overridden' => [
+                    'Original' => 'Not so original'
+                ],
+                'Other' => [
+                    'Merged' => [
+                        'Foo' => ['Foo', 'Bar'],
+                        'Baz' => ['Bar', 'Bar', 'ChildBaz'],
+                        'Child' => ['Foo', 'Baz'],
+                    ],
+                    'NonMerged' => [
+                        'Original' => 'Not so original either'
+                    ],
+                ],
+                'ChildOnly' => [
+                    'Child' => 'true'
+                ],
+            ],
+            $config
+        );
     }
 }
