@@ -237,10 +237,11 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
     /**
      * Test depracted elements
-     *
-     * @expectedException PHPUnit_Framework_Error_Warning
      */
-    function testNegativeNumberTriggersWarning() {
+    public function testNegativeNumberTriggersWarning()
+    {
+        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
+
         $helper = $this->getHelper();
 
         // Fulfill plugin quota
