@@ -10,3 +10,5 @@ Other:
       - Bar
   NonMerged:
     Original: Will not exist
+  ParentOnly:
+    - true

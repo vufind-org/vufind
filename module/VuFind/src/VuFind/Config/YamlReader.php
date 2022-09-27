@@ -193,15 +193,14 @@ class YamlReader
             $parentSections = $this->parseYaml($defaultParent);
             // Process merged sections:
             foreach ($mergedSections as $path) {
-                $resultElemRef = &$this->getArrayElemRefByPath($results, $path);
-                if (is_array($resultElemRef)) {
-                    $parentElem
-                        = $this->getArrayElemRefByPath($parentSections, $path);
-                    if (is_array($parentElem)) {
-                        $resultElemRef
-                            = array_merge_recursive($parentElem, $resultElemRef);
-                        unset($parentElem);
-                    }
+                $parentElem
+                    = $this->getArrayElemRefByPath($parentSections, $path);
+                if (is_array($parentElem)) {
+                    $resultElemRef
+                        = &$this->getArrayElemRefByPath($results, $path, true);
+                    $resultElemRef
+                        = array_merge_recursive($parentElem, $resultElemRef);
+                    unset($parentElem);
                     unset($resultElemRef);
                 }
             }
@@ -219,20 +218,27 @@ class YamlReader
     /**
      * Return array element reference by path
      *
-     * @param array $arr  Array to access
-     * @param array $path Path to retrieve
+     * @param array $arr    Array to access
+     * @param array $path   Path to retrieve
+     * @param bool  $create Whether to create the path if it doesn't exist. Default
+     * is false.
      *
      * @return mixed
      */
-    protected function &getArrayElemRefByPath(array &$arr, array $path)
-    {
+    protected function &getArrayElemRefByPath(
+        array &$arr,
+        array $path,
+        bool $create = false
+    ) {
         $result = &$arr;
         foreach ($path as $pathPart) {
-            if (array_key_exists($pathPart, $result)) {
-                $result = &$result[$pathPart];
-            } else {
-                return null;
+            if (!array_key_exists($pathPart, $result)) {
+                if (!$create) {
+                    return null;
+                }
+                $result[$pathPart] = [];
             }
+            $result = &$result[$pathPart];
         }
         return $result;
     }

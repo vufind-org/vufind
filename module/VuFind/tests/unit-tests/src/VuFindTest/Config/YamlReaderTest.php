@@ -167,6 +167,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
                     'NonMerged' => [
                         'Original' => 'Not so original either'
                     ],
+                    'ParentOnly' => [true]
                 ],
                 'ChildOnly' => [
                     'Child' => 'true'

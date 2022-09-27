@@ -1,6 +1,7 @@
 "@parent_yaml": "yamlreader-parent.yaml"
 "@merge_sections":
   - [Other, Merged]
+  - [Other, ParentOnly]
 
 Overridden:
   Original: Not so original
