@@ -240,8 +240,6 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      */
     public function testNegativeNumberTriggersWarning()
     {
-        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
-
         $helper = $this->getHelper();
 
         // Fulfill plugin quota
