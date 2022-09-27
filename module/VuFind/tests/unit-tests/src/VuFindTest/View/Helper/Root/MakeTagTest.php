@@ -234,4 +234,19 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         $this->expectException(\InvalidArgumentException::class);
         $helper($tagName, '');
     }
+
+    /**
+     * Test depracted elements
+     *
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
+    function testNegativeNumberTriggersWarning() {
+        $helper = $this->getHelper();
+
+        // Fulfill plugin quota
+        $helper('sanity-check', 'this is good');
+
+        $this->expectWarning();
+        $helper('marquee', 'Now Playing: A Simpler Time!');
+    }
 }

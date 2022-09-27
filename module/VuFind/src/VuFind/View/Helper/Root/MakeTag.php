@@ -216,6 +216,43 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     ];
 
     /**
+     * List of deprecated elements that should be replaced.
+     *
+     * Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+     *
+     * @var string[]
+     */
+    protected $deprecatedElements = [
+        'acronym',
+        'applet',
+        'bgsound',
+        'big',
+        'blink',
+        'center',
+        'content',
+        'dir',
+        'font',
+        'frame',
+        'frameset',
+        'image',
+        'keygen',
+        'marquee',
+        'menuitem',
+        'nobr',
+        'noembed',
+        'noframes',
+        'param',
+        'plaintext',
+        'rb',
+        'rtc',
+        'shadow',
+        'spacer',
+        'strike',
+        'tt',
+        'xmp'
+    ];
+
+    /**
      * Render an HTML tag
      *
      * A string passed into $attrs will be treated like a class.
@@ -263,6 +300,14 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         // Existing tag?
         if (in_array($lowerTagName, $this->validBodyTags)) {
+            // Depracated tag? Throw warning.
+            if (in_array($lowerTagName, $this->deprecatedElements)) {
+                trigger_error(
+                    "'<$lowerTagName>' is deprecated and should be replaced.",
+                    E_USER_WARNING
+                );
+            }
+
             return;
         }
 
