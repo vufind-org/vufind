@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -35,6 +37,7 @@ use Symfony\Component\Yaml\Yaml;
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -55,6 +58,13 @@ class YamlReader
     protected $cacheManager;
 
     /**
+     * Callback for getting a configuration file path
+     *
+     * @var callable
+     */
+    protected $configPathCallback;
+
+    /**
      * Cache of loaded files.
      *
      * @var array
@@ -64,11 +74,17 @@ class YamlReader
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param \VuFind\Cache\Manager $cacheManager       Cache manager (optional)
+     * @param callable              $configPathCallback Callback for getting a config
+     * file path (optional)
      */
-    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
-    {
+    public function __construct(
+        \VuFind\Cache\Manager $cacheManager = null,
+        callable $configPathCallback = null
+    ) {
         $this->cacheManager = $cacheManager;
+        $this->configPathCallback = $configPathCallback
+            ?? [Locator::class, 'getConfigPath'];
     }
 
     /**
@@ -88,9 +104,12 @@ class YamlReader
         // to pass $forceReload down another level to load an updated file if
         // something has changed -- it's enough to force a cache recheck).
         if ($forceReload || !isset($this->files[$filename])) {
+            $localConfigPath = $useLocalConfig
+                ? ($this->configPathCallback)($filename, null, Locator::MODE_LOCAL)
+                : null;
             $this->files[$filename] = $this->getFromPaths(
-                Locator::getBaseConfigPath($filename),
-                ($useLocalConfig ? Locator::getLocalConfigPath($filename) : null)
+                ($this->configPathCallback)($filename, null, Locator::MODE_BASE),
+                $localConfigPath
             );
         }
 
