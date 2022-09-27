@@ -328,7 +328,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
                 '',
                 $this->findCss($page, '#home_library')->getValue()
             );
-            echo "CHECKED!\n";
         }
     }
 
