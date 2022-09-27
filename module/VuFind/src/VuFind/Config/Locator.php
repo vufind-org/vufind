@@ -42,23 +42,30 @@ class Locator
      * Mode for getConfigPath: try to find a local file but fall back to base file
      * if not available.
      *
-     * @const int
+     * @var int
      */
     public const MODE_AUTO = 0;
 
     /**
      * Mode for getConfigPath: try to find a local file.
      *
-     * @const int
+     * @var int
      */
     public const MODE_LOCAL = 1;
 
     /**
      * Mode for getConfigPath: get the base configuration file path.
      *
-     * @const int
+     * @var int
      */
     public const MODE_BASE = 2;
+
+    /**
+     * Default configuration path.
+     *
+     * @var string
+     */
+    public const DEFAULT_CONFIG_PATH = 'config/vufind';
 
     /**
      * Get the file path to the local configuration file (null if none found).
@@ -106,8 +113,8 @@ class Locator
      * Get the file path to a config file.
      *
      * @param string  $filename Config file name
-     * @param ?string $path     Path relative to VuFind base (optional; defaults
-     * to config/vufind
+     * @param ?string $path     Path relative to VuFind base (optional; use null for
+     * default)
      * @param int     $mode     Whether to check for local file, base file or both
      *
      * @return ?string
@@ -118,7 +125,7 @@ class Locator
         int $mode = self::MODE_AUTO
     ) {
         if (null === $path) {
-            $path = 'config/vufind';
+            $path = self::DEFAULT_CONFIG_PATH;
         }
         if (self::MODE_BASE !== $mode) {
             // Check if config exists in local dir:
