@@ -43,7 +43,7 @@
         <?=$desc?>
         <?php if($removeLink): ?>
           <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>">
-            <?=$this->icon('ui-remove') ?>
+            <?=$this->icon('search-filter-remove') ?>
           </a>
         <?php endif; ?>
       </span>
@@ -100,7 +100,7 @@
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
           <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>">
-            <?=$this->icon('ui-remove') ?>
+            <?=$this->icon('search-filter-remove') ?>
           </a>
         </span>
         <?php if ($dropdown): ?>
