@@ -236,9 +236,9 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     }
 
     /**
-     * Test depracted elements
+     * Test deprecated elements
      */
-    public function testNegativeNumberTriggersWarning()
+    public function testDeprecatedElementTriggersWarning()
     {
         $helper = $this->getHelper();
 
