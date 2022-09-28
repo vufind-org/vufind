@@ -328,6 +328,12 @@
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
+  <!-- Copy files from node modules to themes -->
+  <target name="copynodemodules">
+    <!-- vanilla-cookieconsent -->
+    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
+  </target>
+
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
     <property name="solr_pid_file" value="${localdir}/solr-8983.pid" />

@@ -128,6 +128,7 @@
         "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
-        "qa": "phing qa-console -Ddefaultconfigs=true"
+        "qa": "phing qa-console -Ddefaultconfigs=true",
+        "install-npm-dependencies": "npm install && phing copynodemodules"
     }
 }
