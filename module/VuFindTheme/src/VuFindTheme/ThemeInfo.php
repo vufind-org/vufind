@@ -241,6 +241,11 @@ class ThemeInfo
             return $current;
         }
 
+        // Early escape for string values
+        if (!is_array($merged) || !is_array($current)) {
+            return $merged;
+        }
+
         if ($this->isStringKeyedArray($merged)) {
             foreach ($current as $key => $val) {
                 if (!array_key_exists($key, $merged)) {
@@ -258,12 +263,8 @@ class ThemeInfo
             return $merged;
         }
 
-        if (is_array($merged)) {
-            // capture unique or missing array items
-            return array_merge($current, $merged);
-        }
-
-        return $merged;
+        // capture unique or missing array items
+        return array_merge((array)$current, (array)$merged);
     }
 
     /**
