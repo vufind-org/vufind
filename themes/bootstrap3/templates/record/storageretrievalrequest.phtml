@@ -56,7 +56,7 @@
         <?php
           // Empty string as home library means that default pick up location should be
           // used. null means that there should be no default
-          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+          if (($this->gatheredDetails['pickUpLocation'] ?? '') !== '') {
             $selected = $this->gatheredDetails['pickUpLocation'];
           } elseif ($this->homeLibrary === '') {
             // Empty string indicates that the default pick up location should be used:
