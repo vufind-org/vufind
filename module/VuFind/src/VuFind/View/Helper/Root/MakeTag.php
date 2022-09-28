@@ -300,7 +300,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         // Existing tag?
         if (in_array($lowerTagName, $this->validBodyTags)) {
-            // Depracated tag? Throw warning.
+            // Deprecated tag? Throw warning.
             if (in_array($lowerTagName, $this->deprecatedElements)) {
                 trigger_error(
                     "'<$lowerTagName>' is deprecated and should be replaced.",
