@@ -379,6 +379,10 @@ class DbUpgrade extends AbstractPlugin
             case 'UNIQUE':
                 $retVal['unique'][$current->getName()] = $fields;
                 break;
+            case 'CHECK':
+                // We don't get enough information from getConstraints() to handle
+                // CHECK constraints, so just ignore them for now:
+                break;
             default:
                 throw new \Exception(
                     'Unexpected constraint type: ' . $current->getType()
