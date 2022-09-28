@@ -247,5 +247,21 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/requests/request1',
+            $this->testRequestLog[2]['path']
+        );
+        $this->assertEquals(
+            '{"requesterId":"foo","itemId":"item1","status":"Closed - Cancelled","cancellationReasonId":"75187e8d-e25a-47a7-89ad-23ba612338de"}',
+            $this->testRequestLog[2]['params']
+        );
+        $this->assertEquals(
+            '/circulation/requests/request2',
+            $this->testRequestLog[4]['path']
+        );
+        $this->assertEquals(
+            '{"requesterId":"foo","itemId":"item2","status":"Closed - Cancelled","cancellationReasonId":"75187e8d-e25a-47a7-89ad-23ba612338de"}',
+            $this->testRequestLog[4]['params']
+        );
     }
 }
