@@ -156,7 +156,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError("Unexpected " . get_class($e) . ": " . $e->getMessage());
+            $this->logError("Unexpected " . get_class($e) . ": " . (string)$e);
             throw new ILSException("Error during send operation.");
         }
         $code = $response->getStatusCode();
