@@ -1,4 +1,4 @@
 <!-- Logo -->
 <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">
-    <font class="logo-font">&nbsp;</font>
+    <font class="logo-font"><?=$this->translate($this->tuefind()->getConfig('config')->Site->title)?></font>
 </a>
