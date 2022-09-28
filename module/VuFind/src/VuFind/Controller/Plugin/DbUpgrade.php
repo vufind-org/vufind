@@ -775,6 +775,22 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Given a current row default, return true if the current nullability matches
+     * the one found in the SQL provided as the $sql parameter. Return false if there
+     * is a mismatch that will require table structure updates.
+     *
+     * @param bool   $currentNullable Current nullability
+     * @param string $sql             SQL to compare against
+     *
+     * @return bool
+     */
+    protected function nullableMatches(bool $currentNullable, string $sql): bool
+    {
+        $expectedNullable = stripos($sql, 'NOT NULL') ? false : true;
+        return $expectedNullable === $currentNullable;
+    }
+
+    /**
      * Given a table column object, return true if the object's type matches the
      * specified $type parameter.  Return false if there is a mismatch that will
      * require table structure updates.
@@ -919,6 +935,10 @@ class DbUpgrade extends AbstractPlugin
                 if (!$this->typeMatches($currentColumn, $expectedTypes[$i])
                     || !$this->defaultMatches(
                         $currentColumn->getColumnDefault(),
+                        $columnDefinitions[$column]
+                    )
+                    || !$this->nullableMatches(
+                        $currentColumn->getIsNullable(),
                         $columnDefinitions[$column]
                     )
                 ) {
