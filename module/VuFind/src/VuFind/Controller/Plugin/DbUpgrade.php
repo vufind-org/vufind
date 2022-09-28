@@ -185,17 +185,33 @@ class DbUpgrade extends AbstractPlugin
         $table,
         $collation
     ) {
+        $collation = strtolower($collation);
+
         // Get column summary:
         $sql = "SHOW FULL COLUMNS FROM `{$table}`";
         $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
 
+        // Get expected column types:
+        // Parse column names out of the CREATE TABLE SQL, which will always be
+        // the first entry in the array; we assume the standard mysqldump
+        // formatting is used here.
+        preg_match_all(
+            '/^  `([^`]*)`\s+([^\s,]+)[\t ,]+.*$/m',
+            $this->dbCommands[$table][0],
+            $matches
+        );
+        $expectedTypes = $matches[2];
+
         // Load details:
         $retVal = [];
-        foreach ($results as $current) {
-            if (!empty($current->Collation)
-                && strtolower($current->Collation) !== strtolower($collation)
-            ) {
-                $retVal[$current->Field] = (array)$current;
+        foreach ($results as $i => $current) {
+            if (!empty($current->Collation)) {
+                $normalizedCollation = strtolower($current->Collation);
+                if ($normalizedCollation !== $collation
+                    && $expectedTypes[$i] !== 'json'
+                ) {
+                    $retVal[$current->Field] = (array)$current;
+                }
             }
         }
         return $retVal;
@@ -806,13 +822,18 @@ class DbUpgrade extends AbstractPlugin
      */
     protected function typeMatches($column, $expectedType)
     {
+        // Normalize json type that is stored as longtext:
+        if ('json' === $expectedType) {
+            $expectedType = 'longtext';
+        }
+
         // Get base type:
         $type = $column->getDataType();
 
         // If it's not a blob or a text (which don't have explicit sizes in our SQL),
         // we should see what the character length is, if any:
         if ($type != 'blob' && $type != 'text' && $type !== 'mediumtext'
-            && $type != 'longtext'
+            && $type != 'longtext' && $type != 'json'
         ) {
             $charLen = $column->getCharacterMaximumLength();
             if ($charLen) {
