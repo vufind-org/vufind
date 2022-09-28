@@ -211,7 +211,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'input',
         'link',
         'meta',
-        'param',
+        'param', // deprecated, but included for back-compatibility
         'source',
         'track',
         'wbr'
