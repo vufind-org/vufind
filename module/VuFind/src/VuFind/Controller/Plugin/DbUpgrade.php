@@ -200,16 +200,18 @@ class DbUpgrade extends AbstractPlugin
             $this->dbCommands[$table][0],
             $matches
         );
-        $expectedTypes = $matches[2];
+        $expectedTypes = array_combine($matches[1], $matches[2]);
 
         // Load details:
         $retVal = [];
-        foreach ($results as $i => $current) {
+        foreach ($results as $current) {
+            // json fields default to utf8mb4_bin, and we only support that:
+            if (($expectedTypes[$current->Field] ?? '') === 'json') {
+                continue;
+            }
             if (!empty($current->Collation)) {
                 $normalizedCollation = strtolower($current->Collation);
-                if ($normalizedCollation !== $collation
-                    && $expectedTypes[$i] !== 'json'
-                ) {
+                if ($normalizedCollation !== $collation) {
                     $retVal[$current->Field] = (array)$current;
                 }
             }
