@@ -92,31 +92,33 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     /**
      * Does $code match the setting for allowed failure codes?
      *
-     * @param int          $code                Code to check.
-     * @param int[]|string $allowedFailureCodes HTTP failure codes that should NOT
-     * cause an ILSException to be thrown. May be an array of integers or a regular
-     * expression.
+     * @param int               $code                Code to check.
+     * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
+     * NOT cause an ILSException to be thrown. May be an array of integers, a regular
+     * expression, or boolean true to allow all codes.
      *
      * @return bool
      */
     protected function failureCodeIsAllowed(int $code, $allowedFailureCodes): bool
     {
-        if (is_string($allowedFailureCodes)) {
-            return preg_match($allowedFailureCodes, (string)$code);
+        if ($allowedFailureCodes === true) {    // "allow everything" case
+            return true;
         }
-        return in_array($code, (array)$allowedFailureCodes);
+        return is_string($allowedFailureCodes)
+            ? preg_match($allowedFailureCodes, (string)$code)
+            : in_array($code, (array)$allowedFailureCodes);
     }
 
     /**
      * Make requests
      *
-     * @param string       $method              GET/POST/PUT/DELETE/etc
-     * @param string       $path                API path (with a leading /)
-     * @param array        $params              Parameters object to be sent as data
-     * @param array        $headers             Additional headers
-     * @param int[]|string $allowedFailureCodes HTTP failure codes that should NOT
-     * cause an ILSException to be thrown. May be an array of integers or a regular
-     * expression.
+     * @param string            $method              GET/POST/PUT/DELETE/etc
+     * @param string            $path                API path (with a leading /)
+     * @param string|array      $params              Query parameters
+     * @param array             $headers             Additional headers
+     * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
+     * NOT cause an ILSException to be thrown. May be an array of integers, a regular
+     * expression, or boolean true to allow all codes.
      *
      * @return \Laminas\Http\Response
      * @throws ILSException

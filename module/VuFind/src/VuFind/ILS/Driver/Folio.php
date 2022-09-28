@@ -1027,7 +1027,7 @@ class Folio extends AbstractAPI implements
                     '/circulation/renew-by-id',
                     json_encode($requestbody),
                     [],
-                    '/.*/'
+                    true
                 );
                 if ($response->isSuccess()) {
                     $json = json_decode($response->getBody());
@@ -1211,7 +1211,7 @@ class Folio extends AbstractAPI implements
             '/circulation/requests',
             json_encode($requestBody),
             [],
-            '/.*/'
+            true
         );
         if ($response->isSuccess()) {
             $json = json_decode($response->getBody());
