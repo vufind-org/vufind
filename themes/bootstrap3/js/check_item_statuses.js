@@ -60,7 +60,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         ) {
           if (result.locationList[x].location) {
             locationListHTML += '<span class="text-warning">'
-                          + VuFind.icon("status-indicator")
+                          + VuFind.icon("status-unknown")
                           + result.locationList[x].location
                           + '</span> ';
           }
