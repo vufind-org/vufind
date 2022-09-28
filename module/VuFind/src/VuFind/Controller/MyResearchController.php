@@ -636,7 +636,7 @@ class MyResearchController extends AbstractBase
             // Process home library parameter (if present and allowed):
             $homeLibrary = $this->params()->fromPost('home_library');
             if ($allowHomeLibrary && null !== $homeLibrary) {
-                $user->changeHomeLibrary($homeLibrary);
+                $user->changeHomeLibrary('' === $homeLibrary ? null : $homeLibrary);
                 $this->getAuthManager()->updateSession($user);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
             }

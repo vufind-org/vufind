@@ -68,8 +68,8 @@
     <?php
       if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
         $selected = $this->gatheredDetails['pickUpLocation'];
-      } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
-        $selected = $this->homeLibrary;
+      } elseif ($this->homeLibrary !== '') {
+        $selected = $this->homeLibrary ?? false;
       } else {
         $selected = $this->defaultPickup;
       }

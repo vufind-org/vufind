@@ -36,14 +36,14 @@
         <td>
           <?php if (count($this->pickup ?? []) > 1): // case 1: set home library allowed ?>
             <?php
-              $selected = (strlen($this->profile['home_library'] ?? '') > 0)
+              $selected = (null === $this->profile['home_library'] || strlen($this->profile['home_library']) > 0)
                 ? $this->profile['home_library'] : $this->defaultPickupLocation
             ?>
             <form id="profile_form" class="form-inline" method="post">
               <select id="home_library" name="home_library" class="form-control">
-                <?php if (false === $this->defaultPickupLocation): ?>
-                  <option value=""<?=false === $selected || '' === $selected ? ' selected="selected"' : ''?>><?=$this->transEsc('No Selection')?></option>
-                <?php endif; ?>
+                <option value=""<?=null === $selected || false === $selected || '' === $selected ? ' selected="selected"' : ''?>>
+                  <?=$this->transEsc('No Selection')?>
+                </option>
                 <?php foreach ($this->pickup as $lib): ?>
                   <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>

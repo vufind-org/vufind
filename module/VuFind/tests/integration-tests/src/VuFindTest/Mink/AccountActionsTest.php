@@ -219,52 +219,20 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testDefaultPickUpLocation
-     *
-     * @return array
-     */
-    public function getTestDefaultPickUpLocationData(): array
-    {
-        return [
-            [
-                [
-                    'Users' => ['catuser' => 'catpass'],
-                ],
-                'A',
-                ['A', 'B', 'C'],
-                'username2'
-            ],
-            [
-                [
-                    'Users' => ['catuser' => 'catpass'],
-                    'Holds' => [
-                        'defaultPickUpLocation' => 'user-selected'
-                    ]
-                ],
-                '',
-                ['', 'A', 'B', 'C'],
-                'username3'
-            ],
-        ];
-    }
-
-    /**
      * Test default pick up location
      *
-     * @dataProvider getTestDefaultPickUpLocationData
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
-    public function testDefaultPickUpLocation(
-        array $demoOverrides,
-        string $expectedDefaultPickUp,
-        array $expectedPickUpChoices,
-        string $username
-    ) {
+    public function testDefaultPickUpLocation(): void
+    {
         // Setup config
         $this->changeConfigs(
             [
-                'Demo' => $demoOverrides,
+                'Demo' => [
+                    'Users' => ['catuser' => 'catpass'],
+                ],
                 'config' => [
                     'Catalog' => ['driver' => 'Demo'],
                 ]
@@ -281,8 +249,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInAccountForm(
             $page,
             [
-                'username' => $username,
-                'email' => "$username@ignore.com"
+                'username' => 'username2',
+                'email' => "username2@ignore.com"
             ]
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -296,22 +264,17 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check the default library and possible values:
         $this->assertEquals(
-            $expectedDefaultPickUp,
+            '',
             $this->findCss($page, '#home_library')->getValue()
         );
-        foreach ($expectedPickUpChoices as $i => $expected) {
+        foreach (['', 'A', 'B', 'C'] as $i => $expected) {
             $this->assertEquals(
                 $expected,
                 $this->findCss($page, '#home_library option', null, $i)->getValue()
             );
         }
         // Make sure there are no more pick up locations:
-        $this->unFindCss(
-            $page,
-            '#home_library option',
-            null,
-            count($expectedPickUpChoices)
-        );
+        $this->unFindCss($page, '#home_library option', null, 4);
 
         // Change the default and verify:
         $this->findCss($page, '#home_library')->setValue('B');
@@ -319,16 +282,14 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCss($page, '#home_library')->getValue());
 
-        // If emptying the selection is available, test it:
-        if (in_array('', $expectedPickUpChoices)) {
-            $this->findCss($page, '#home_library')->setValue('');
-            $this->clickCss($page, '#profile_form .btn');
-            $this->waitForPageLoad($page);
-            $this->assertEquals(
-                '',
-                $this->findCss($page, '#home_library')->getValue()
-            );
-        }
+        // Back to none:
+        $this->findCss($page, '#home_library')->setValue('');
+        $this->clickCss($page, '#profile_form .btn');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            '',
+            $this->findCss($page, '#home_library')->getValue()
+        );
     }
 
     /**
@@ -338,6 +299,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2', 'username3']);
+        static::removeUsers(['username1', 'username2']);
     }
 }
