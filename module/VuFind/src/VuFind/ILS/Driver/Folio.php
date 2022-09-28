@@ -1281,26 +1281,24 @@ class Folio extends AbstractAPI implements
             $request_json->status = 'Closed - Cancelled';
             $request_json->cancellationReasonId
                 = $this->config['Holds']['cancellation_reason'];
+            $success = false;
             try {
                 $cancel_response = $this->makeRequest(
                     'PUT',
                     '/circulation/requests/' . $requestId,
-                    json_encode($request_json)
+                    json_encode($request_json),
+                    [],
+                    true
                 );
-                if ($cancel_response->getStatusCode() !== 204) {
-                    throw new \Exception("Unexpected status code.");
-                }
-                $count++;
-                $cancelResult['items'][$request_json->itemId] = [
-                    'success' => true,
-                    'status' => 'hold_cancel_success'
-                ];
+                $success = $cancel_response->getStatusCode() === 204;
             } catch (\Exception $e) {
-                $cancelResult['items'][$request_json->itemId] = [
-                    'success' => false,
-                    'status' => 'hold_cancel_fail'
-                ];
+                // Do nothing; the $success flag is already false by default.
             }
+            $count += $success ? 1 : 0;
+            $cancelResult['items'][$request_json->itemId] = [
+                'success' => $success,
+                'status' => $success ? 'hold_cancel_success' : 'hold_cancel_fail',
+            ];
         }
         $cancelResult['count'] = $count;
         return $cancelResult;
