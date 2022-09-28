@@ -66,7 +66,7 @@ class Holdings extends \Laminas\View\Helper\AbstractHelper
     public function holdingIsVisible(array $holding): bool
     {
         $showEmptyBarcodes
-            = (bool)($this->config['display_items_without_barcodes'] ?? false);
+            = (bool)($this->config['display_items_without_barcodes'] ?? true);
         return $showEmptyBarcodes || strlen($holding['barcode'] ?? '') > 0;
     }
 }
