@@ -44,6 +44,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * List of all valid body tags
      *
      * Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+     * Last checked: September 27, 2022
      *
      * @var string[]
      */
@@ -195,6 +196,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * List of all void tags (tags that access no innerHTML)
      *
      * Source: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+     * Last checked: September 27, 2022
      *
      * @var string[]
      */
@@ -219,6 +221,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
      * List of deprecated elements that should be replaced.
      *
      * Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+     * Last checked: September 27, 2022
      *
      * @var string[]
      */
