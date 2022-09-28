@@ -28,6 +28,7 @@
  */
 namespace VuFindTest\ILS\Driver;
 
+use Laminas\Http\Response;
 use VuFind\ILS\Driver\Folio;
 
 /**
@@ -43,6 +44,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 
+    /**
+     * Default test configuration
+     *
+     * @var array
+     */
     protected $testConfig = [
         'API' => [
             'base_url' => 'localhost',
@@ -52,33 +58,49 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ]
     ];
 
-    protected $testResponses = null;
+    /**
+     * Test data for simulated HTTP responses (reset by each test)
+     *
+     * @var array
+     */
+    protected $testResponses = [];
 
+    /**
+     * Log of requests made during test (reset by each test)
+     *
+     * @var array
+     */
     protected $testRequestLog = [];
 
+    /**
+     * Driver under test
+     *
+     * @var Folio
+     */
     protected $driver = null;
 
     /**
      * Replace makeRequest to inject test returns
      *
-     * @param string $method  GET/POST/PUT/DELETE/etc
-     * @param string $path    API path (with a leading /)
-     * @param array  $params  Parameters object to be sent as data
-     * @param array  $headers Additional headers
+     * @param string       $method  GET/POST/PUT/DELETE/etc
+     * @param string       $path    API path (with a leading /)
+     * @param string|array $params  Parameters object to be sent as data
+     * @param array        $headers Additional headers
      *
-     * @return \Laminas\Http\Response
+     * @return Response
      */
-    public function mockMakeRequest($method = "GET", $path = "/", $params = [], $headers = [])
-    {
+    public function mockMakeRequest(
+        string $method = "GET",
+        string $path = "/",
+        $params = [],
+        array $headers = []
+    ): Response {
         // Run preRequest
         $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
         [$httpHeaders, $params] = $this->driver->preRequest($httpHeaders, $params);
         // Log request
-        $this->testRequestLog[] = [
-            'method' => $method,
-            'path' => $path,
-            'params' => $params,
+        $this->testRequestLog[] = compact('method', 'path', 'params') + [
             'headers' => $httpHeaders->toArray()
         ];
         // Create response
@@ -95,8 +117,12 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * Overwrites $this->driver
      * Uses session cache
+     *
+     * @param string $test Name of test fixture to load
+     *
+     * @return void
      */
-    protected function createConnector($test)
+    protected function createConnector(string $test): void
     {
         // Setup test responses
         $this->testResponses = $this->getJsonFixture("folio/responses/$test.json");
@@ -108,7 +134,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
         // Create a stub for the SomeClass class
-        $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
+        $this->driver = $this->getMockBuilder(Folio::class)
             ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
             ->onlyMethods(['makeRequest'])
             ->getMock();
@@ -122,8 +148,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Request a token where one does not exist
+     *
+     * @return void
      */
-    public function testTokens()
+    public function testTokens(): void
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
         $profile = $this->driver->getMyProfile(['id' => 'whatever']);
@@ -145,8 +173,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Check a valid token retrieved from session cache
+     *
+     * @return void
      */
-    public function testCheckValidToken()
+    public function testCheckValidToken(): void
     {
         $this->createConnector('check-valid-token');
         $profile = $this->driver->getMyTransactions(['id' => 'whatever']);
@@ -163,8 +193,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Check and renew an invalid token retrieved from session cache
+     *
+     * @return void
      */
-    public function testCheckInvalidToken()
+    public function testCheckInvalidToken(): void
     {
         $this->createConnector('check-invalid-token');
         $profile = $this->driver->getPickupLocations(['username' => 'whatever']);
@@ -179,5 +211,41 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'x-okapi-token-after-invalid', // from fixtures: check-invalid-token.json
             $this->testRequestLog[2]['headers']['X-Okapi-Token']
         );
+    }
+
+    /**
+     * Confirm that cancel holds validates the current patron.
+     *
+     * @return void
+     */
+    public function testCancelHoldsPatronValidation(): void
+    {
+        $this->createConnector('cancel-holds-bad-patron');
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage('Invalid Request');
+        $this->driver->cancelHolds(
+            ['details' => ['request1'], 'patron' => ['id' => 'bar']]
+        );
+    }
+
+    /**
+     * Confirm that cancel holds processes various statuses appropriately.
+     *
+     * @return void
+     */
+    public function testCancelHoldsMixedStatuses(): void
+    {
+        $this->createConnector('cancel-holds-mixed-statuses');
+        $result = $this->driver->cancelHolds(
+            ['details' => ['request1', 'request2'], 'patron' => ['id' => 'foo']]
+        );
+        $expected = [
+            'count' => 1,
+            'items' => [
+                'item1' => ['success' => true, 'status' => 'hold_cancel_success'],
+                'item2' => ['success' => false, 'status' => 'hold_cancel_fail'],
+            ],
+        ];
+        $this->assertEquals($expected, $result);
     }
 }
