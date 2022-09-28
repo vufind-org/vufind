@@ -255,7 +255,9 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * Change home library.
      *
      * @param ?string $homeLibrary New home library to store, or null to indicate
-     * that the user does not want a default.
+     * that the user does not want a default. An empty string is the default for
+     * backward compatibility and indicates that system's default pick up location is
+     * to be used
      *
      * @return mixed               The output of the save method.
      */

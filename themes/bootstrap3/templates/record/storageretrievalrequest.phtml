@@ -54,12 +54,18 @@
     <?php if ($this->pickup): ?>
       <div class="form-group">
         <?php
+          // Empty string as home library means that default pick up location should be
+          // used. null means that there should be no default
           if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
             $selected = $this->gatheredDetails['pickUpLocation'];
-          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
-            $selected = $this->homeLibrary;
-          } else {
+          } elseif ($this->homeLibrary === '') {
+            // Empty string indicates that the default pick up location should be used:
             $selected = $this->defaultPickup;
+          } else {
+            // Either a string for a location or null for no default. Change null to
+            // false for compatibility with defaultPickup where false indicated no
+            // default:
+            $selected = $this->homeLibrary ?? false;
           }
         ?>
         <label class="control-label"><?=$this->transEsc("pick_up_location")?>:</label>
