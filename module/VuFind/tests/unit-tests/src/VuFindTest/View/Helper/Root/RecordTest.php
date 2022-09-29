@@ -520,7 +520,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 ]
             ]
         );
-        $record = $this->getRecord($driver, [], null, 'fake-route', true);
+        $record = $this->getRecord($driver);
         $this->assertEquals(
             [
                 ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
