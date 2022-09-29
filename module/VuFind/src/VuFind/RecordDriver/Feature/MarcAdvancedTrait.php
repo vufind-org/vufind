@@ -633,7 +633,7 @@ trait MarcAdvancedTrait
             }
         }
 
-        return array_unique($retVal, SORT_REGULAR);
+        return $retVal;
     }
 
     /**
