@@ -18,6 +18,32 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/locales",
+                "version":"1.0.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/locales.git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/styles-distribution",
+                "version":"1.0.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/styles-distribution.git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
     "provide": {
         "ext-memcached": "*",
         "ext-soap": "*",
@@ -28,6 +54,8 @@
         "ahand/mobileesp": "dev-master",
         "pcrov/jsonreader": "1.0.2",
         "cap60552/php-sip2": "1.0.0",
+        "citation-style-language/locales":"1.0.0",
+        "citation-style-language/styles-distribution":"1.0.0",
         "colinmollenhour/credis": "1.13.0",
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.3.2",
@@ -79,6 +107,7 @@
         "pear/http_request2": "2.5.1",
         "phing/phing": "2.17.3",
         "ppito/laminas-whoops": "2.2.0",
+        "seboettg/citeproc-php": "2.1.6",
         "scssphp/scssphp": "1.10.3",
         "serialssolutions/summon": "1.3.1",
         "slm/locale": "0.5.0",

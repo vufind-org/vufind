@@ -1512,16 +1512,13 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
-     * see /application/themes/root/helpers/Citation.php, getCitation()
-     * method.
+     * @see AbstractBase::getSupportedCitationFormats() for more details
      *
-     * @return array Strings representing citation formats.
+     * @return array|boolean Strings representing citation formats.
      */
     protected function getSupportedCitationFormats()
     {
-        return ['APA', 'Chicago', 'MLA'];
+        return true;
     }
 
     /**
