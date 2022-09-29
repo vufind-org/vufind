@@ -688,7 +688,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      * Remove duplicates from the array. All keys and values are being used
      * recursively to compare, so if there are 2 links with the same url
      * but different desc, they will both be preserved.
-     * 
+     *
      * @param array $links array of associative arrays,
      * each containing 'desc' and 'url' keys
      *
