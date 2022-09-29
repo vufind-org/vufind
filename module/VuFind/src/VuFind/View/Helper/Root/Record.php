@@ -668,8 +668,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return $link;
         };
 
-        $arr = array_map($formatLink, $urls);
-        return array_values(array_unique($arr, SORT_REGULAR));
+        return $this->deduplicateLinks(array_map($formatLink, $urls));
     }
 
     /**
@@ -683,5 +682,20 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     {
         return isset($this->config->OpenURL->replace_other_urls)
             && $this->config->OpenURL->replace_other_urls;
+    }
+
+    /**
+     * Remove duplicates from the array. All keys and values are being used
+     * recursively to compare, so if there are 2 links with the same url
+     * but different desc, they will both be preserved.
+     * 
+     * @param array $links array of associative arrays,
+     * each containing 'desc' and 'url' keys
+     *
+     * @return array
+     */
+    protected function deduplicateLinks($links)
+    {
+        return array_values(array_unique($links, SORT_REGULAR));
     }
 }

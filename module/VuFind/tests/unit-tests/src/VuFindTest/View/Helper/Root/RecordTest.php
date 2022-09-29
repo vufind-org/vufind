@@ -516,7 +516,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                     ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
                     ['desc' => 'link 2', 'url' => 'http://foo/baz2'],
                     ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
-                    ['desc' => 'link 3', 'url' => 'http://foo/baz1']
+                    ['desc' => 'link 1 (alternate description)',
+                        'url' => 'http://foo/baz1'],
+                    ['url' => 'http://foo/baz3'],
+                    ['url' => 'http://foo/baz3']
                 ]
             ]
         );
@@ -525,7 +528,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             [
                 ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
                 ['desc' => 'link 2', 'url' => 'http://foo/baz2'],
-                ['desc' => 'link 3', 'url' => 'http://foo/baz1']
+                ['desc' => 'link 1 (alternate description)',
+                    'url' => 'http://foo/baz1'],
+                ['desc' => 'http://foo/baz3', 'url' => 'http://foo/baz3']
             ],
             $record->getLinkDetails()
         );
