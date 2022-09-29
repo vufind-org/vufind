@@ -668,7 +668,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return $link;
         };
 
-        return array_unique(array_map($formatLink, $urls), SORT_REGULAR);
+        return array_values(array_unique(array_map($formatLink, $urls), SORT_REGULAR));
     }
 
     /**
