@@ -2115,6 +2115,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 "sysMessage" => 'Storage Retrieval Requests are disabled.'
             ];
         }
+
+        // Make sure pickup location is valid
+        $pickUpLocation = $details['pickUpLocation'] ?? null;
+        if (null !== $pickUpLocation
+            && !in_array($pickUpLocation, $this->getPickUpLocations())
+        ) {
+            return [
+                'success' => false,
+                'sysMessage' => 'storage_retrieval_request_invalid_pickup'
+            ];
+        }
+
         // Simulate failure:
         if ($this->isFailing(__METHOD__, 50)) {
             return [
