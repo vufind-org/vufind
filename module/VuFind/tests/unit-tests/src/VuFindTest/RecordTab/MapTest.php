@@ -100,7 +100,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getting basemap COnfiguration.
+     * Test getting basemap Configuration.
      *
      * @return void
      */
