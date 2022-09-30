@@ -824,11 +824,6 @@ class DbUpgrade extends AbstractPlugin
      */
     protected function typeMatches($column, $expectedType)
     {
-        // Normalize json type that is stored as longtext:
-        if ('json' === $expectedType) {
-            $expectedType = 'longtext';
-        }
-
         // Get base type:
         $type = $column->getDataType();
 
@@ -853,7 +848,11 @@ class DbUpgrade extends AbstractPlugin
             [$expectedType] = explode('(', $expectedType);
         }
 
-        return $type == $expectedType;
+        // Some versions of MariaDB store json fields as longtext, while MySQL
+        // actually has an explicit json type. We need a special case to handle
+        // this inconsistency. See: https://mariadb.com/kb/en/json-data-type/
+        return $type == $expectedType
+            || ($type === 'longtext' && $expectedType === 'json');
     }
 
     /**
