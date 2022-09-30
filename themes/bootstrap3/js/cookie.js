@@ -25,7 +25,7 @@ VuFind.register('cookie', function cookie() {
     };
     consentConfig.consentDialog.onChange = function onChange() {
       updateServiceStatus();
-      VuFind.emit('vf-cookie-consent-change');
+      VuFind.emit('vf-cookie-consent-changed');
     };
     CookieConsent.run(consentConfig.consentDialog);
     VuFind.emit('vf-cookie-consent-initialized');
