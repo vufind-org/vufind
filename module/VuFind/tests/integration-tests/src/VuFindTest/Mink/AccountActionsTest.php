@@ -29,6 +29,8 @@
  */
 namespace VuFindTest\Mink;
 
+use VuFind\Db\Table\User;
+
 /**
  * Mink account actions test class.
  *
@@ -263,26 +265,48 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Check the default library and possible values:
+        $userTable = $this->getTable(User::class);
+        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
         $this->assertEquals(
             '',
             $this->findCss($page, '#home_library')->getValue()
         );
-        foreach (['', 'A', 'B', 'C'] as $i => $expected) {
+        $expectedChoices = ['', ' ** ', 'A', 'B', 'C'];
+        foreach ($expectedChoices as $i => $expected) {
             $this->assertEquals(
                 $expected,
                 $this->findCss($page, '#home_library option', null, $i)->getValue()
             );
         }
         // Make sure there are no more pick up locations:
-        $this->unFindCss($page, '#home_library option', null, 4);
+        $this->unFindCss(
+            $page,
+            '#home_library option',
+            null,
+            count($expectedChoices)
+        );
 
         // Change the default and verify:
         $this->findCss($page, '#home_library')->setValue('B');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCss($page, '#home_library')->getValue());
+        $this->assertEquals(
+            'B',
+            $userTable->getByUsername('username2')->home_library
+        );
 
-        // Back to none:
+        // Change to "Always ask me":
+        $this->findCss($page, '#home_library')->setValue(' ** ');
+        $this->clickCss($page, '#profile_form .btn');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            ' ** ',
+            $this->findCss($page, '#home_library')->getValue()
+        );
+        $this->assertNull($userTable->getByUsername('username2')->home_library);
+
+        // Back to default:
         $this->findCss($page, '#home_library')->setValue('');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
@@ -290,6 +314,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             '',
             $this->findCss($page, '#home_library')->getValue()
         );
+        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
     }
 
     /**
