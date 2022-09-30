@@ -2118,8 +2118,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         // Make sure pickup location is valid
         $pickUpLocation = $details['pickUpLocation'] ?? null;
+        $validLocations = array_column($this->getPickUpLocations(), 'locationID');
         if (null !== $pickUpLocation
-            && !in_array($pickUpLocation, $this->getPickUpLocations())
+            && !in_array($pickUpLocation, $validLocations)
         ) {
             return [
                 'success' => false,
