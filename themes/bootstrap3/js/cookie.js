@@ -16,16 +16,19 @@ VuFind.register('cookie', function cookie() {
 
   function setupConsent(_config) {
     consentConfig = _config;
+    consentConfig.consentDialog.onFirstConsent = function onFirstConsent() {
+      VuFind.emit('vf-cookie-consent-first-done');
+    };
     consentConfig.consentDialog.onConsent = function onConsent() {
       updateServiceStatus();
-      VuFind.emit('cookie-consent-done');
+      VuFind.emit('vf-cookie-consent-done');
     };
     consentConfig.consentDialog.onChange = function onChange() {
       updateServiceStatus();
-      VuFind.emit('cookie-consent-change');
+      VuFind.emit('vf-cookie-consent-change');
     };
     CookieConsent.run(consentConfig.consentDialog);
-    VuFind.emit('cookie-consent-initialized');
+    VuFind.emit('vf-cookie-consent-initialized');
   }
 
   function isCategoryAccepted(category) {
