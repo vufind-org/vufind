@@ -101,7 +101,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $searchObj->expects($this->any())->method('search')
-            ->with($this->equalTo("bar", $this->any(), 0, 101, $this->any()))
+            ->with($this->equalTo("bar", $this->any(), 0, $this->any(), $this->any()))
             ->will($this->returnValue($rci));
         $obj = new ComponentParts($searchObj);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
