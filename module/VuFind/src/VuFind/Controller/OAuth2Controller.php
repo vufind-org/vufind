@@ -125,6 +125,13 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     protected $claimExtractor;
 
     /**
+     * Callback for getting a configuration file path
+     *
+     * @var callable
+     */
+    protected $configPathCallback;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm      Service locator
@@ -137,6 +144,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      * @param IdentityRepository      $ir      Identity repository
      * @param AccessToken             $at      Access token table
      * @param ClaimExtractor          $ce      Claim extractor
+     * @param callable                $confCb  Callback for getting a config file
+     * path
      */
     public function __construct(
         ServiceLocatorInterface $sm,
@@ -148,7 +157,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         \Laminas\Session\Container $session,
         IdentityRepository $ir,
         AccessToken $at,
-        ClaimExtractor $ce
+        ClaimExtractor $ce,
+        callable $confCb
     ) {
         parent::__construct($sm);
         $this->oauth2Config = $config;
@@ -160,6 +170,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         $this->identityRepository = $ir;
         $this->accessTokenTable = $at;
         $this->claimExtractor = $ce;
+        $this->configPathCallback = $confCb;
     }
 
     /**
@@ -337,7 +348,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         $result = [];
         $keyPath = $this->oauth2Config['Server']['publicKeyPath'] ?? '';
         if (strncmp($keyPath, '/', 1) !== 0) {
-            $keyPath = \VuFind\Config\Locator::getConfigPath($keyPath);
+            $keyPath = ($this->configPathCallback)($keyPath);
         }
         if (file_exists($keyPath)) {
             $keyDetails = openssl_pkey_get_details(
