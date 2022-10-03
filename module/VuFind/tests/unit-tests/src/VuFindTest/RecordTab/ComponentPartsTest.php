@@ -74,8 +74,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     {
         $searchObj = $this->getService();
         $obj = new ComponentParts($searchObj);
-        $recordDriver = $this->getMockBuilder
-            (\VuFind\RecordDriver\DefaultRecord::class)
+        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->any())->method('tryMethod')
@@ -97,14 +96,18 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $rci = $this->getMockBuilder(
             \VuFindSearch\Response\RecordCollectionInterface::class
-            )->disableOriginalConstructor()->getMock();
+        )->disableOriginalConstructor()->getMock();
         $searchObj->expects($this->any())->method('search')
-            ->with($this->equalTo("bar"),$this->anything(),
-            $this->equalTo(0),$this->anything(),$this->anything())
+            ->with(
+                $this->equalTo("bar"),
+                $this->anything(),
+                $this->equalTo(0),
+                $this->anything(),
+                $this->anything()
+            )
             ->will($this->returnValue($rci));
         $obj = new ComponentParts($searchObj);
-        $recordDriver = $this->getMockBuilder
-            (\VuFind\RecordDriver\DefaultRecord::class)
+        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->any())->method('getUniqueID')

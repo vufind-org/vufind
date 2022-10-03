@@ -74,7 +74,6 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($obj->isActive());
     }
 
-    
     /**
      * Test getting holdings information.
      *
@@ -94,11 +93,11 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $commandObj->expects($this->any())->method('getResult')
             ->will($this->returnValue(true));
-        $checkCommand = function($command){
-                return get_class($command) === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
+        $checkCommand = function ($command) {
+            return get_class($command) === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
                     && $command->getArguments()[0] === "foo"
                     && $command->getTargetIdentifier() === "WorldCat";
-            };
+        };
         $searchObj->expects($this->any())->method('invoke')
             ->with($this->callback($checkCommand))
             ->will($this->returnValue($commandObj));

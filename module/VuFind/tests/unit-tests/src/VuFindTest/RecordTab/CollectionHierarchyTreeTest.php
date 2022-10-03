@@ -57,7 +57,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $request->expects($this->once())->method('getQuery')
-            ->with($this->equalTo('recordID'),$this->equalTo(false))
+            ->with($this->equalTo('recordID'), $this->equalTo(false))
             ->will($this->returnValue("foo"));
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
