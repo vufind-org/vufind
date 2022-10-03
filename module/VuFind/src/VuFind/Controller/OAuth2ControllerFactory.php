@@ -137,7 +137,8 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $session,
                 $container->get(IdentityRepository::class),
                 $tablePluginManager->get('AccessToken'),
-                $this->getClaimExtractor()
+                $this->getClaimExtractor(),
+                [$this, 'getConfigPath']
             )
         );
     }
@@ -321,12 +322,30 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         $keyPath = $this->getOAuth2ServerSetting($key);
         if (strncmp($keyPath, '/', 1) !== 0) {
             // Convert relative path:
-            $keyPath = Locator::getConfigPath($keyPath);
+            $keyPath = $this->getConfigPath($keyPath);
         }
         return new CryptKey(
             $keyPath,
             null,
             $this->oauth2Config['Server']['keyPermissionChecks'] ?? true
         );
+    }
+
+    /**
+     * Overridable wrapper for Locator::getConfigPath
+     *
+     * @param string  $filename Config file name
+     * @param ?string $path     Path relative to VuFind base (optional; use null for
+     * default)
+     * @param int     $mode     Whether to check for local file, base file or both
+     *
+     * @return ?string
+     */
+    public static function getConfigPath(
+        $filename,
+        $path = null,
+        int $mode = Locator::MODE_AUTO
+    ): ?string {
+        return Locator::getConfigPath($filename, $path, $mode);
     }
 }
