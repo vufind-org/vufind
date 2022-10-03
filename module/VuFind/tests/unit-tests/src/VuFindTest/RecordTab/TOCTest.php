@@ -49,7 +49,6 @@ class TOCTest extends \PHPUnit\Framework\TestCase
     {
         $obj = new TOC();
         $expected = 'Table of Contents';
-
         $this->assertSame($expected, $obj->getDescription());
     }
 

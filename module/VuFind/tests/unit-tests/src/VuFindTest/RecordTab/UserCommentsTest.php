@@ -49,7 +49,6 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     {
         $obj = new UserComments();
         $expected = 'Comments';
-
         $this->assertSame($expected, $obj->getDescription());
     }
 
@@ -61,7 +60,6 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     public function testIsActive(): void
     {
         $obj = new UserComments();
-
         $this->assertTrue($obj->isActive());
     }
 
@@ -73,7 +71,6 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     public function testIsCaptchaActive(): void
     {
         $obj = new UserComments();
-
         $this->assertFalse($obj->isCaptchaActive());
     }
 }

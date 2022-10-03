@@ -49,7 +49,6 @@ class StaffViewArrayTest extends \PHPUnit\Framework\TestCase
     {
         $obj = new StaffViewArray();
         $expected = 'Staff View';
-
         $this->assertSame($expected, $obj->getDescription());
     }
 }

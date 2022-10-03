@@ -49,7 +49,6 @@ class MapTest extends \PHPUnit\Framework\TestCase
     {
         $obj = new Map();
         $expected = 'Map View';
-
         $this->assertSame($expected, $obj->getDescription());
     }
 
@@ -61,7 +60,6 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testSupportsAjax(): void
     {
         $obj = new Map();
-
         $this->assertFalse($obj->supportsAjax());
     }
 
@@ -95,7 +93,6 @@ class MapTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMap();
         $expected = false;
-
         $this->assertSame($expected, $obj->getMapGraticule());
     }
 
@@ -108,7 +105,6 @@ class MapTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMap();
         $expected = ["www.foo.com","bar"];
-
         $this->assertSame($expected, $obj->getBasemap());
     }
 
@@ -189,9 +185,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->willReturnOnConsecutiveCalls($coordinates, $displayCoord);
 
         $obj->setRecordDriver($recordDriver);
-
         $expected=[[25.8,4.6,43.9,5.0,'',"89 87 45 56"]];
-
         $this->assertSame($expected, $obj->getMapTabData());
     }
 }

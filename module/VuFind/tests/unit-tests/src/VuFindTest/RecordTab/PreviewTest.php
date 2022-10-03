@@ -49,7 +49,6 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getPreview();
         $expected = 'Preview';
-
         $this->assertSame($expected, $obj->getDescription());
     }
 
@@ -77,7 +76,6 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
     {
         $expected = false;
         $obj=$this->getPreview();
-
         $this->assertSame($expected, $obj->isVisible());
     }
 
@@ -90,7 +88,6 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
     {
         $expected = false;
         $obj=$this->getPreview();
-
         $this->assertSame($expected, $obj->supportsAjax());
     }
 

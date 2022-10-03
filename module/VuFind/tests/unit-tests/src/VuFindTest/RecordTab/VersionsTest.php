@@ -60,11 +60,10 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $obj= new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
         $translator = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
-            ->disableOriginalConstructor()
             ->getMock();
         $translator->expects($this->any())->method('translate')
-            ->with($this->equalTo('other_versions_title', ['%%count%%' => $count]))
-            ->will($this->returnValue("Count:5"));
+            ->with($this->equalTo('other_versions_title'),$this->equalTo('default'))
+            ->will($this->returnValue("Count:%%count%%"));
         $obj->setTranslator($translator);
         $obj->getDescription();
         $this->assertEquals("Count:5", $obj->getDescription());
