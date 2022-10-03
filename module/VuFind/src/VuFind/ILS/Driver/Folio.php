@@ -713,6 +713,9 @@ class Folio extends AbstractAPI implements
             '/authn/login',
             json_encode($credentials)
         );
+        if ($response->getStatusCode() >= 400) {
+            throw new ILSException($response->getBody());
+        }
         $debugMsg = 'User logged in. User: ' . $username . '.';
         // We've authenticated the user with Okapi, but we only have their
         // username; set up a query to retrieve full info below.

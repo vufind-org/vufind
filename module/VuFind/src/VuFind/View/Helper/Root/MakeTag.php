@@ -43,101 +43,160 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
     /**
      * List of all valid body tags
      *
-     * Source: https://html.spec.whatwg.org/multipage/dom.html#flow-content-2
+     * Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+     * Last checked: September 27, 2022
      *
      * @var string[]
      */
     protected $validBodyTags = [
         'a',
         'abbr',
+        'acronym',
         'address',
+        'applet',
         'area',
         'article',
         'aside',
         'audio',
         'b',
+        'base',
         'bdi',
         'bdo',
+        'bgsound',
+        'big',
+        'blink',
         'blockquote',
+        'body',
         'br',
         'button',
         'canvas',
+        'caption',
+        'center',
         'cite',
         'code',
+        'col',
+        'colgroup',
+        'content',
         'data',
         'datalist',
+        'dd',
         'del',
         'details',
         'dfn',
         'dialog',
+        'dir',
         'div',
         'dl',
+        'dt',
         'em',
         'embed',
         'fieldset',
+        'figcaption',
         'figure',
+        'font',
         'footer',
         'form',
+        'frame',
+        'frameset',
         'h1',
         'h2',
         'h3',
         'h4',
         'h5',
         'h6',
+        'head',
         'header',
         'hgroup',
         'hr',
+        'html',
         'i',
         'iframe',
+        'image',
         'img',
         'input',
         'ins',
         'kbd',
+        'keygen',
         'label',
+        'legend',
+        'li',
+        'link',
         'main',
         'map',
         'mark',
+        'marquee',
         'math',
         'menu',
+        'menuitem',
         'meta',
         'meter',
         'nav',
+        'nobr',
+        'noembed',
+        'noframes',
         'noscript',
         'object',
         'ol',
+        'optgroup',
+        'option',
         'output',
         'p',
+        'param',
         'picture',
+        'plaintext',
+        'portal',
         'pre',
         'progress',
         'q',
+        'rb',
+        'rp',
+        'rt',
+        'rtc',
         'ruby',
         's',
         'samp',
         'script',
         'section',
         'select',
+        'shadow',
         'slot',
         'small',
+        'source',
+        'spacer',
         'span',
+        'strike',
         'strong',
+        'style',
         'sub',
+        'summary',
         'sup',
         'svg',
+        'table',
+        'tbody',
+        'td',
         'template',
         'textarea',
+        'tfoot',
+        'th',
+        'thead',
         'time',
+        'title',
+        'tr',
+        'track',
+        'tt',
         'u',
         'ul',
         'var',
         'video',
         'wbr',
+        'xmp'
     ];
 
     /**
      * List of all void tags (tags that access no innerHTML)
      *
      * Source: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+     * Last checked: September 27, 2022
      *
      * @var string[]
      */
@@ -152,10 +211,48 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'input',
         'link',
         'meta',
-        'param',
+        'param', // deprecated, but included for back-compatibility
         'source',
         'track',
         'wbr'
+    ];
+
+    /**
+     * List of deprecated elements that should be replaced.
+     *
+     * Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+     * Last checked: September 27, 2022
+     *
+     * @var string[]
+     */
+    protected $deprecatedElements = [
+        'acronym',
+        'applet',
+        'bgsound',
+        'big',
+        'blink',
+        'center',
+        'content',
+        'dir',
+        'font',
+        'frame',
+        'frameset',
+        'image',
+        'keygen',
+        'marquee',
+        'menuitem',
+        'nobr',
+        'noembed',
+        'noframes',
+        'param',
+        'plaintext',
+        'rb',
+        'rtc',
+        'shadow',
+        'spacer',
+        'strike',
+        'tt',
+        'xmp'
     ];
 
     /**
@@ -206,6 +303,14 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         // Existing tag?
         if (in_array($lowerTagName, $this->validBodyTags)) {
+            // Deprecated tag? Throw warning.
+            if (in_array($lowerTagName, $this->deprecatedElements)) {
+                trigger_error(
+                    "'<$lowerTagName>' is deprecated and should be replaced.",
+                    E_USER_WARNING
+                );
+            }
+
             return;
         }
 

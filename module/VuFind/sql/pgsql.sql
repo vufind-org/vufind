@@ -146,7 +146,7 @@ cat_password varchar(70) DEFAULT NULL,
 cat_pass_enc varchar(170) DEFAULT NULL,
 college varchar(100) NOT NULL DEFAULT '',
 major varchar(100) NOT NULL DEFAULT '',
-home_library varchar(100) NOT NULL DEFAULT '',
+home_library varchar(100) DEFAULT '',
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 verify_hash varchar(42) NOT NULL DEFAULT '',
 last_login timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -299,7 +299,7 @@ card_name varchar(255) NOT NULL DEFAULT '',
 cat_username varchar(50) NOT NULL DEFAULT '',
 cat_password varchar(50) DEFAULT NULL,
 cat_pass_enc varchar(110) DEFAULT NULL,
-home_library varchar(100) NOT NULL DEFAULT '',
+home_library varchar(100) DEFAULT '',
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 saved timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (id),
@@ -344,6 +344,22 @@ updated_by int DEFAULT NULL,
 status varchar(255) NOT NULL DEFAULT 'open',
 site_url varchar(255) NOT NULL,
 PRIMARY KEY (id)
+);
+
+--
+-- Table structure for table `access_token`
+--
+
+DROP TABLE IF EXISTS "access_token";
+
+CREATE TABLE access_token (
+id varchar(255) NOT NULL,
+type varchar(128) NOT NULL,
+user_id int DEFAULT NULL,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+data text,
+revoked boolean NOT NULL DEFAULT '0',
+PRIMARY KEY (id, type)
 );
 
 -- --------------------------------------------------------
@@ -396,5 +412,10 @@ ADD CONSTRAINT feedback_ibfk_2 FOREIGN KEY (updated_by) REFERENCES "user" (id) O
 CREATE INDEX feedback_created_idx ON feedback (created);
 CREATE INDEX feedback_status_idx ON feedback (status);
 CREATE INDEX feedback_form_name_idx ON feedback (form_name);
+
+-- Constraints for table access_token
+--
+ALTER TABLE access_token
+ADD CONSTRAINT access_token_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
 
 -- --------------------------------------------------------

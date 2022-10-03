@@ -241,7 +241,8 @@ class InstallController extends AbstractBase
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
               && function_exists('openssl_encrypt')
-              && class_exists('XSLTProcessor');
+              && class_exists('XSLTProcessor')
+              && defined('SODIUM_LIBRARY_VERSION');
 
         return [
             'title' => 'Dependencies',
@@ -308,6 +309,17 @@ class InstallController extends AbstractBase
         if (!class_exists('XSLTProcessor')) {
             $msg
                 = "Your PHP installation appears to be missing the XSL plug-in."
+                . " For details on how to do this, see "
+                . "https://vufind.org/wiki/installation "
+                . "and look at the PHP installation instructions for your platform.";
+            $this->flashMessenger()->addMessage($msg, 'error');
+            $problems++;
+        }
+
+        // Is the sodium extension missing?
+        if (!defined('SODIUM_LIBRARY_VERSION')) {
+            $msg
+                = "Your PHP installation appears to be missing the sodium plug-in."
                 . " For details on how to do this, see "
                 . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";

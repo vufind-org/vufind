@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,10 +23,13 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
+use VuFind\Db\Table\User;
 
 /**
  * Mink account actions test class.
@@ -35,6 +39,7 @@ namespace VuFindTest\Mink;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
@@ -43,6 +48,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
+    use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
      * Standard setup method.
@@ -215,12 +221,109 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test default pick up location
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
+     */
+    public function testDefaultPickUpLocation(): void
+    {
+        // Setup config
+        $this->changeConfigs(
+            [
+                'Demo' => [
+                    'Users' => ['catuser' => 'catpass'],
+                ],
+                'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
+                ]
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
+        // Create account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm(
+            $page,
+            [
+                'username' => 'username2',
+                'email' => "username2@ignore.com"
+            ]
+        );
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+
+        // Go to profile page:
+        $this->waitForPageLoad($page);
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+
+        // Do patron login:
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
+
+        // Check the default library and possible values:
+        $userTable = $this->getTable(User::class);
+        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+        $this->assertEquals(
+            '',
+            $this->findCss($page, '#home_library')->getValue()
+        );
+        $expectedChoices = ['', ' ** ', 'A', 'B', 'C'];
+        foreach ($expectedChoices as $i => $expected) {
+            $this->assertEquals(
+                $expected,
+                $this->findCss($page, '#home_library option', null, $i)->getValue()
+            );
+        }
+        // Make sure there are no more pick up locations:
+        $this->unFindCss(
+            $page,
+            '#home_library option',
+            null,
+            count($expectedChoices)
+        );
+
+        // Change the default and verify:
+        $this->findCss($page, '#home_library')->setValue('B');
+        $this->clickCss($page, '#profile_form .btn');
+        $this->waitForPageLoad($page);
+        $this->assertEquals('B', $this->findCss($page, '#home_library')->getValue());
+        $this->assertEquals(
+            'B',
+            $userTable->getByUsername('username2')->home_library
+        );
+
+        // Change to "Always ask me":
+        $this->findCss($page, '#home_library')->setValue(' ** ');
+        $this->clickCss($page, '#profile_form .btn');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            ' ** ',
+            $this->findCss($page, '#home_library')->getValue()
+        );
+        $this->assertNull($userTable->getByUsername('username2')->home_library);
+
+        // Back to default:
+        $this->findCss($page, '#home_library')->setValue('');
+        $this->clickCss($page, '#profile_form .btn');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            '',
+            $this->findCss($page, '#home_library')->getValue()
+        );
+        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['username1', 'username2']);
     }
 }
