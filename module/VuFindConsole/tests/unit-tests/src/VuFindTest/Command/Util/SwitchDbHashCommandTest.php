@@ -175,7 +175,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
+        $resolver = new \VuFind\Config\PathResolver();
+        $expectedConfig = $resolver->getConfigPath(
+            'config.ini',
+            null,
+            Locator::MODE_LOCAL_FORCE
+        );
         $this->assertEquals(
             "\tUpdating $expectedConfig...\n\tWrite failed!\n",
             $commandTester->getDisplay()
@@ -207,7 +212,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
+        $resolver = new \VuFind\Config\PathResolver();
+        $expectedConfig = $resolver->getConfigPath(
+            'config.ini',
+            null,
+            Locator::MODE_LOCAL_FORCE
+        );
         $this->assertEquals(
             "\tUpdating $expectedConfig...\n\tConverting hashes for 0 user(s).\n"
             . "\tFinished.\n",
@@ -276,7 +286,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
+        $resolver = new \VuFind\Config\PathResolver();
+        $expectedConfig = $resolver->getConfigPath(
+            'config.ini',
+            null,
+            Locator::MODE_LOCAL_FORCE
+        );
         $this->assertEquals(
             "\tUpdating $expectedConfig...\n\tConverting hashes for 1 user(s).\n"
             . "\tFinished.\n",

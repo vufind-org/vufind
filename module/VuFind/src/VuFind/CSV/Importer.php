@@ -206,7 +206,8 @@ class Importer
     protected function getConfiguration(string $iniFile, $in): ImporterConfig
     {
         // Load properties file:
-        $ini = ConfigLocator::getConfigPath($iniFile, $this->configBaseDir);
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $ini = $resolver->getConfigPath($iniFile, $this->configBaseDir);
         if (!file_exists($ini)) {
             throw new \Exception("Cannot load .ini file: {$ini}.");
         }

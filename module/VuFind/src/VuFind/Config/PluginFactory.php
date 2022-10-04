@@ -65,17 +65,23 @@ class PluginFactory implements AbstractFactoryInterface
     /**
      * Load the specified configuration file.
      *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind
+     * @param string  $filename      Config file name
+     * @param ?string $path          Path relative to VuFind base (optional; use null
+     * for default)
+     * @param callable $pathCallback Callback for getting an absolute config
+     * file path (optional; defaults to Locator::getConfigPath)
      *
      * @return Config
      */
-    protected function loadConfigFile($filename, $path = 'config/vufind')
-    {
+    protected function loadConfigFile(
+        $filename,
+        $path = null,
+        callable $pathCallback = null
+    ) {
         $configs = [];
 
-        $fullpath = Locator::getConfigPath($filename, $path);
+        $fullpath
+            = ($pathCallback ?? [Locator::class, 'getConfigPath'])($filename, $path);
 
         // Return empty configuration if file does not exist:
         if (!file_exists($fullpath)) {
@@ -192,6 +198,10 @@ class PluginFactory implements AbstractFactoryInterface
         $requestedName,
         array $options = null
     ) {
-        return $this->loadConfigFile($requestedName . '.ini');
+        return $this->loadConfigFile(
+            $requestedName . '.ini',
+            null,
+            [$container->get(PathResolver::class), 'getConfigPath']
+        );
     }
 }

@@ -27,6 +27,8 @@
  */
 namespace VuFindAdmin\Controller;
 
+use VuFind\Config\Locator;
+
 /**
  * Class controls VuFind administration.
  *
@@ -47,7 +49,9 @@ class ConfigController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/config/home');
-        $view->baseConfigPath = \VuFind\Config\Locator::getBaseConfigPath('');
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $view->baseConfigPath = $resolver
+            ->getConfigPath('', null, Locator::MODE_BASE);
         $conf = $this->getConfig();
         $view->showInstallLink
             = isset($conf->System->autoConfigure) && $conf->System->autoConfigure;
@@ -61,7 +65,8 @@ class ConfigController extends AbstractAdmin
      */
     public function enableautoconfigAction()
     {
-        $configFile = \VuFind\Config\Locator::getConfigPath('config.ini');
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $configFile = $resolver->getConfigPath('config.ini');
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if ($writer->save()) {

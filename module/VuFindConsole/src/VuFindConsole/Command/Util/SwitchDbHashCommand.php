@@ -35,6 +35,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Table\User as UserTable;
 
@@ -73,15 +74,21 @@ class SwitchDbHashCommand extends Command
     /**
      * Constructor
      *
-     * @param Config      $config    VuFind configuration
-     * @param UserTable   $userTable User table gateway
-     * @param string|null $name      The name of the command; passing null means it
+     * @param Config      $config        VuFind configuration
+     * @param UserTable   $userTable     User table gateway
+     * @param string|null $name          The name of the command; passing null means it
      * must be set in configure()
+     * @param PathResolver $pathResolver Config file path resolver
      */
-    public function __construct(Config $config, UserTable $userTable, $name = null)
-    {
+    public function __construct(
+        Config $config,
+        UserTable $userTable,
+        $name = null,
+        PathResolver $pathResolver = null
+    ) {
         $this->config = $config;
         $this->userTable = $userTable;
+        $this->pathResolver = $pathResolver;
         parent::__construct($name);
     }
 
@@ -179,7 +186,13 @@ class SwitchDbHashCommand extends Command
 
         // Next update the config file, so if we are unable to write the file,
         // we don't go ahead and make unwanted changes to the database:
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath =
+            $this->pathResolver
+            ? $this->pathResolver->getConfigPath(
+                'config.ini',
+                null,
+                ConfigLocator::MODE_LOCAL_FORCE
+            ) : ConfigLocator::getLocalConfigPath('config.ini', null, true);
         $output->writeln("\tUpdating $configPath...");
         $writer = $this->getConfigWriter($configPath);
         $writer->set('Authentication', 'encrypt_ils_password', true);

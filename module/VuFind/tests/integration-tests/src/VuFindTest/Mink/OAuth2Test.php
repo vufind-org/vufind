@@ -442,10 +442,17 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     protected function createOpenSSLKeyPair(): void
     {
-        $privateKeyPath
-            = Locator::getLocalConfigPath('oauth2_private.key', null, true);
-        $publicKeyPath
-            = Locator::getLocalConfigPath('oauth2_public.key', null, true);
+        $resolver = new \VuFind\Config\PathResolver();
+        $privateKeyPath = $resolver->getConfigPath(
+            'oauth2_private.key',
+            null,
+            Locator::MODE_LOCAL_FORCE
+        );
+        $publicKeyPath = $resolver->getConfigPath(
+            'oauth2_public.key',
+            null,
+            Locator::MODE_LOCAL_FORCE
+        );
 
         // Creates backups if the files exists:
         if (file_exists($privateKeyPath)) {
@@ -506,8 +513,12 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     protected function restoreOpenSSLKeyPair(): void
     {
-        $paths[] = Locator::getLocalConfigPath('oauth2_private.key', null, true);
-        $paths[] = Locator::getLocalConfigPath('oauth2_public.key', null, true);
+        $resolver = new \VuFind\Config\PathResolver();
+        $mode = Locator::MODE_LOCAL_FORCE;
+        $paths = [
+            $resolver->getConfigPath('oauth2_private.key', null, $mode),
+            $resolver->getConfigPath('oauth2_public.key', null, $mode),
+        ];
 
         foreach ($paths as $path) {
             if (file_exists("$path.bak")) {

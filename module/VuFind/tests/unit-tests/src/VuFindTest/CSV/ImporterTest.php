@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\CSV;
 
+use VuFind\Config\PathResolver;
 use VuFind\CSV\Importer;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
@@ -67,6 +68,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $this->csvFixtureDir = $this->getFixtureDir() . 'csv/';
         $this->container = new MockContainer($this);
+        $this->container->set(PathResolver::class, new PathResolver());
     }
 
     /**

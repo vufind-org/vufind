@@ -341,11 +341,12 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
      *
      * @return ?string
      */
-    public static function getConfigPath(
+    public function getConfigPath(
         $filename,
         $path = null,
         int $mode = Locator::MODE_AUTO
     ): ?string {
-        return Locator::getConfigPath($filename, $path, $mode);
+        $resolver = $this->container->get(\VuFind\Config\PathResolver::class);
+        return $resolver->getConfigPath($filename, $path, $mode);
     }
 }

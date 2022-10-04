@@ -126,15 +126,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function changeConfigFile($configName, $settings, $replace = false)
     {
+        $resolver = new \VuFind\Config\PathResolver();
         $file = $configName . '.ini';
-        $local = ConfigLocator::getLocalConfigPath($file, null, true);
+        $local
+            = $resolver->getConfigPath($file, null, ConfigLocator::MODE_LOCAL_FORCE);
         if (!in_array($configName, $this->modifiedConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy(ConfigLocator::getBaseConfigPath($file), $local);
+                copy(
+                    $resolver->getConfigPath($file, null, ConfigLocator::MODE_BASE),
+                    $local
+                );
             }
 
             $this->modifiedConfigs[] = $configName;
@@ -165,15 +170,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function changeYamlConfigFile($configName, $settings, $replace = false)
     {
+        $resolver = new \VuFind\Config\PathResolver();
         $file = $configName . '.yaml';
-        $local = ConfigLocator::getLocalConfigPath($file, null, true);
+        $local
+            = $resolver->getConfigPath($file, null, ConfigLocator::MODE_LOCAL_FORCE);
         if (!in_array($configName, $this->modifiedYamlConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy(ConfigLocator::getBaseConfigPath($file), $local);
+                copy(
+                    $resolver->getConfigPath($file, null, ConfigLocator::MODE_BASE),
+                    $local
+                );
             }
 
             $this->modifiedYamlConfigs[] = $configName;
@@ -309,10 +319,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             '.ini' => $this->modifiedConfigs,
             '.yaml' => $this->modifiedYamlConfigs
         ];
+        $resolver = new \VuFind\Config\PathResolver();
         foreach ($configs as $extension => $files) {
             foreach ($files as $current) {
                 $file = $current . $extension;
-                $local = ConfigLocator::getLocalConfigPath($file, null, true);
+                $local = $resolver
+                    ->getConfigPath($file, null, ConfigLocator::MODE_LOCAL_FORCE);
                 $backup = $local . '.bak';
 
                 // Do we have a backup? If so, restore from it; otherwise, just

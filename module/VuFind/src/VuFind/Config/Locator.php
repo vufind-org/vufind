@@ -61,6 +61,14 @@ class Locator
     public const MODE_BASE = 2;
 
     /**
+     * Mode for getConfigPath: get local config file path regardless of whether the
+     * file exists.
+     *
+     * @var int
+     */
+    public const MODE_LOCAL_FORCE = 3;
+
+    /**
      * Default configuration path.
      *
      * @var string
@@ -129,7 +137,11 @@ class Locator
         }
         if (self::MODE_BASE !== $mode) {
             // Check if config exists in local dir:
-            $local = static::getLocalConfigPath($filename, $path);
+            $local = static::getLocalConfigPath(
+                $filename,
+                $path,
+                self::MODE_LOCAL_FORCE === $mode
+            );
             // Return local config if found or $mode requires:
             if (!empty($local) || self::MODE_LOCAL === $mode) {
                 return $local;

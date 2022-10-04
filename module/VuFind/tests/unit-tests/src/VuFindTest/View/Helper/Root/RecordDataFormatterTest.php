@@ -151,6 +151,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             \VuFind\Config\PluginManager::class,
             new \VuFind\Config\PluginManager($container)
         );
+        $container->set(
+            \VuFind\Config\PathResolver::class,
+            new \VuFind\Config\PathResolver()
+        );
         $formatter = $factory($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:

@@ -82,7 +82,12 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     public function configure(Config $config, $name)
     {
         // Enable theme
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $resolver = new \VuFind\Config\PathResolver();
+        $configPath = $resolver->getConfigPath(
+            'config.ini',
+            null,
+            ConfigLocator::MODE_LOCAL_FORCE
+        );
         if (!file_exists($configPath)) {
             return $this
                 ->setLastError("Expected configuration file missing: $configPath");

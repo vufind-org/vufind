@@ -78,6 +78,10 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetConfig()
     {
         $container = $this->getMockContainer();
+        $container->set(
+            \VuFind\Config\PathResolver::class,
+            new \VuFind\Config\PathResolver()
+        );
         $config = new \Laminas\Config\Config([]);
         $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
             ->method('get')->with('config')->will($this->returnValue($config));

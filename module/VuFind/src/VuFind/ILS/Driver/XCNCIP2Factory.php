@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for OAI harvest command.
+ * Factory for XCNCIP2 ILS driver.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  ILS_Drivers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindConsole\Command\Harvest;
+namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -34,39 +34,16 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for OAI harvest command.
+ * Factory for XCNCIP2 ILS driver.
  *
  * @category VuFind
- * @package  Console
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  ILS_Drivers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HarvestOaiCommandFactory implements FactoryInterface
+class XCNCIP2Factory extends DriverWithDateConverterFactory
 {
-    /**
-     * Get the base directory for harvesting OAI-PMH data.
-     *
-     * @return string
-     */
-    protected function getHarvestRoot()
-    {
-        // Get the base VuFind path:
-        $home = strlen(LOCAL_OVERRIDE_DIR) > 0
-            ? LOCAL_OVERRIDE_DIR
-            : realpath(APPLICATION_PATH . '/..');
-
-        // Build the full harvest path:
-        $dir = $home . '/harvest/';
-
-        // Create the directory if it does not already exist:
-        if (!is_dir($dir) && !mkdir($dir)) {
-            throw new \Exception("Problem creating directory {$dir}.");
-        }
-
-        return $dir;
-    }
-
     /**
      * Create an object
      *
@@ -86,14 +63,27 @@ class HarvestOaiCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        return new $requestedName(
-            $container->get(\VuFindHttp\HttpService::class)->createClient(),
-            $this->getHarvestRoot(),
-            null,
-            false,
-            null,
-            $container->get(\VuFind\Config\PathResolver::class),
-            ...($options ?? [])
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                $container->get(\VuFind\Config\PathResolver::class)
+            ]
         );
+        // Set up the driver with the date converter (and any extra parameters
+        // passed in as options):
+        $driver = new $requestedName(
+            $container->get(\VuFind\Date\Converter::class),
+            ...($options ?: [])
+        );
+
+        // Populate cache storage if a setCacheStorage method is present:
+        if (method_exists($driver, 'setCacheStorage')) {
+            $driver->setCacheStorage(
+                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
+            );
+        }
+
+        return $driver;
     }
 }

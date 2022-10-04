@@ -76,7 +76,7 @@ class YamlReader
      *
      * @param \VuFind\Cache\Manager $cacheManager       Cache manager (optional)
      * @param callable              $configPathCallback Callback for getting a config
-     * file path (optional)
+     * file path (optional; defaults to Locator::getConfigPath)
      */
     public function __construct(
         \VuFind\Cache\Manager $cacheManager = null,

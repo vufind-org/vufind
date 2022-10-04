@@ -28,6 +28,7 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\PathResolver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
@@ -84,6 +85,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
+
+    /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
 
     /**
      * From agency id
@@ -284,10 +292,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
+     * @param PathResolver           $pathResolver  Config file path resolver
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter)
-    {
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
+        PathResolver $pathResolver = null
+    ) {
         $this->dateConverter = $dateConverter;
+        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -392,8 +404,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function loadPickUpLocationsFromFile($filename)
     {
         // Load pickup locations file:
-        $pickupLocationsFile
-            = ConfigLocator::getConfigPath($filename, 'config/vufind');
+        $pickupLocationsFile = $this->pathResolver
+            ? $this->pathResolver->getConfigPath($filename)
+            : \VuFind\Config\Locator::getConfigPath($filename);
         if (!file_exists($pickupLocationsFile)) {
             throw new ILSException(
                 "Cannot load pickup locations file: {$pickupLocationsFile}."

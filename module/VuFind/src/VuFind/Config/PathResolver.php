@@ -1,10 +1,10 @@
 <?php
 /**
- * VuFind SearchSpecs Configuration Reader
+ * Configuration File Path Resolver
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,35 +21,38 @@
  *
  * @category VuFind
  * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
 
 /**
- * VuFind SearchSpecs Configuration Reader
+ * Class (non-static) to find VuFind configuration files
  *
  * @category VuFind
  * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchSpecsReader extends YamlReader
+class PathResolver
 {
     /**
-     * Constructor
+     * Overridable wrapper for Locator::getConfigPath
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
-     * @param callable              $configPathCallback Callback for getting a config
-     * file path (optional; defaults to Locator::getConfigPath)
+     * @param string  $filename Config file name
+     * @param ?string $path     Path relative to VuFind base (optional; use null for
+     * default)
+     * @param int     $mode     Whether to check for local file, base file or both
+     *
+     * @return ?string
      */
-    public function __construct(
-        \VuFind\Cache\Manager $cacheManager = null,
-        callable $configPathCallback = null
-    ) {
-        parent::__construct($cacheManager, $configPathCallback);
-        $this->cacheName = 'searchspecs';
+    public function getConfigPath(
+        $filename,
+        $path = null,
+        int $mode = Locator::MODE_AUTO
+    ): ?string {
+        return Locator::getConfigPath($filename, $path, $mode);
     }
 }

@@ -51,7 +51,8 @@ class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
         $command = new HarvestOaiCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $expectedIni = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
+        $resolver = new \VuFind\Config\PathResolver();
+        $expectedIni = $resolver->getConfigPath('oai.ini', 'harvest');
         $this->assertEquals(
             "Please add OAI-PMH settings to $expectedIni.\n",
             $commandTester->getDisplay()
