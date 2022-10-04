@@ -65,8 +65,8 @@ class PluginFactory implements AbstractFactoryInterface
     /**
      * Load the specified configuration file.
      *
-     * @param string  $filename      Config file name
-     * @param ?string $path          Path relative to VuFind base (optional; use null
+     * @param string   $filename     Config file name
+     * @param ?string  $path         Path relative to VuFind base (optional; use null
      * for default)
      * @param callable $pathCallback Callback for getting an absolute config
      * file path (optional; defaults to Locator::getConfigPath)

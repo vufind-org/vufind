@@ -41,7 +41,7 @@ class SearchSpecsReader extends YamlReader
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param \VuFind\Cache\Manager $cacheManager       Cache manager (optional)
      * @param callable              $configPathCallback Callback for getting a config
      * file path (optional; defaults to Locator::getConfigPath)
      */

@@ -29,7 +29,6 @@ namespace VuFind\XSLT;
 
 use DOMDocument;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
 

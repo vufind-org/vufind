@@ -57,7 +57,8 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     /**
      * Constructor
      *
-     * @param ThemeInfo $info Theme info object
+     * @param ThemeInfo    $info         Theme info object
+     * @param PathResolver $pathResolver Config file path resolver
      */
     public function __construct(ThemeInfo $info, PathResolver $pathResolver = null)
     {

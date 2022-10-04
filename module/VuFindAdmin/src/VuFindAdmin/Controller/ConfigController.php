@@ -27,8 +27,6 @@
  */
 namespace VuFindAdmin\Controller;
 
-use VuFind\Config\Locator;
-
 /**
  * Class controls VuFind administration.
  *

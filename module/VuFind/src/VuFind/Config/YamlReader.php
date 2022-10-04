@@ -105,10 +105,17 @@ class YamlReader
         // something has changed -- it's enough to force a cache recheck).
         if ($forceReload || !isset($this->files[$filename])) {
             $localConfigPath = $useLocalConfig
-                ? ($this->configPathCallback)($filename, null, PathResolver::MODE_LOCAL)
-                : null;
+                ? ($this->configPathCallback)(
+                    $filename,
+                    null,
+                    PathResolver::MODE_LOCAL
+                ) : null;
             $this->files[$filename] = $this->getFromPaths(
-                ($this->configPathCallback)($filename, null, PathResolver::MODE_BASE),
+                ($this->configPathCallback)(
+                    $filename,
+                    null,
+                    PathResolver::MODE_BASE
+                ),
                 $localConfigPath
             );
         }

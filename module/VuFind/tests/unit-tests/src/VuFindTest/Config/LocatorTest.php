@@ -62,7 +62,7 @@ class LocatorTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             $localConfig,
-            Locator::getLocalConfigPath('config.ini', null, false)
+            Locator::getLocalConfigPath('config.ini', null, true)
         );
         $this->assertEquals(
             null,
@@ -74,7 +74,11 @@ class LocatorTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             $localConfig,
-            Locator::getConfigPath('config.ini', null, PathResolver::MODE_LOCAL)
+            Locator::getConfigPath(
+                'config.ini',
+                null,
+                PathResolver::MODE_LOCAL_FORCE
+            )
         );
         $this->assertEquals(
             null,

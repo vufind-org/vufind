@@ -40,7 +40,6 @@ use OpenIDConnectServer\Entities\ClaimSetEntity;
 use OpenIDConnectServer\IdTokenResponse;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Locator;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Repository\AccessTokenRepository;

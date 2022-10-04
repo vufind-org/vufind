@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Config;
 
-use VuFind\Config\Locator;
 use VuFind\Config\SearchSpecsReader;
 
 /**

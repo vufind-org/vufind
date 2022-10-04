@@ -29,7 +29,6 @@ namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -66,24 +65,7 @@ class XCNCIP2Factory extends DriverWithDateConverterFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [
-                $container->get(\VuFind\Config\PathResolver::class)
-            ]
+            [$container->get(\VuFind\Config\PathResolver::class)]
         );
-        // Set up the driver with the date converter (and any extra parameters
-        // passed in as options):
-        $driver = new $requestedName(
-            $container->get(\VuFind\Date\Converter::class),
-            ...($options ?: [])
-        );
-
-        // Populate cache storage if a setCacheStorage method is present:
-        if (method_exists($driver, 'setCacheStorage')) {
-            $driver->setCacheStorage(
-                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
-            );
-        }
-
-        return $driver;
     }
 }

@@ -33,7 +33,6 @@ use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
 use Symfony\Component\Yaml\Yaml;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
 
 /**

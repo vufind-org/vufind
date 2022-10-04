@@ -37,7 +37,6 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
 use VuFind\Config\Writer;

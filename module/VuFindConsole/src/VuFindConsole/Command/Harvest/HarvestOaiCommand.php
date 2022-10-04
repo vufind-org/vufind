@@ -69,8 +69,12 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      * means it must be set in configure()
      * @param PathResolver     $pathResolver Config file path resolver
      */
-    public function __construct($client = null, $harvestRoot = null,
-        HarvesterFactory $factory = null, $silent = false, $name = null,
+    public function __construct(
+        $client = null,
+        $harvestRoot = null,
+        HarvesterFactory $factory = null,
+        $silent = false,
+        $name = null,
         PathResolver $pathResolver = null
     ) {
         parent::__construct($client, $harvestRoot, $factory, $silent, $name);

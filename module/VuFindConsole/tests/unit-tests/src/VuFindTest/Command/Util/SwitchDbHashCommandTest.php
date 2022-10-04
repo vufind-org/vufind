@@ -31,7 +31,6 @@ use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Locator;
 use VuFind\Config\Writer;
 use VuFind\Db\Table\User;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;

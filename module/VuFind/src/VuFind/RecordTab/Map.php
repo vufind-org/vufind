@@ -87,9 +87,10 @@ class Map extends AbstractBase
     /**
      * Constructor
      *
-     * @param bool  $mapTabDisplay  Display Map
-     * @param array $basemapOptions basemap settings
-     * @param array $mapTabOptions  MapTab settings
+     * @param bool         $mapTabDisplay  Display Map
+     * @param array        $basemapOptions basemap settings
+     * @param array        $mapTabOptions  MapTab settings
+     * @param PathResolver $pathResolver   Config file path resolver
      */
     public function __construct(
         $mapTabDisplay = false,

@@ -27,7 +27,6 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;

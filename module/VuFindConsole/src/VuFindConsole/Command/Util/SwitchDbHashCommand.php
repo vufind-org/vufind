@@ -72,12 +72,19 @@ class SwitchDbHashCommand extends Command
     protected $userTable;
 
     /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
      * Constructor
      *
-     * @param Config      $config        VuFind configuration
-     * @param UserTable   $userTable     User table gateway
-     * @param string|null $name          The name of the command; passing null means it
-     * must be set in configure()
+     * @param Config       $config       VuFind configuration
+     * @param UserTable    $userTable    User table gateway
+     * @param string|null  $name         The name of the command; passing null means
+     * it must be set in configure()
      * @param PathResolver $pathResolver Config file path resolver
      */
     public function __construct(
@@ -186,8 +193,7 @@ class SwitchDbHashCommand extends Command
 
         // Next update the config file, so if we are unable to write the file,
         // we don't go ahead and make unwanted changes to the database:
-        $configPath =
-            $this->pathResolver
+        $configPath = $this->pathResolver
             ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
             : ConfigLocator::getLocalConfigPath('config.ini', null, true);
         $output->writeln("\tUpdating $configPath...");

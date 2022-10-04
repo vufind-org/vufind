@@ -28,7 +28,6 @@
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
-use VuFind\Config\Locator as ConfigLocator;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
