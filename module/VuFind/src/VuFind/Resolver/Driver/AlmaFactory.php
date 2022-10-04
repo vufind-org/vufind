@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2020.
+ * Copyright (C) Düsseldorf University and State Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Helge Ahrens <helge.ahrens@ulb.hhu.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -38,6 +40,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @category VuFind
  * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Helge Ahrens <helge.ahrens@ulb.hhu.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -62,8 +65,13 @@ class AlmaFactory extends DriverWithHttpClientFactory
         $requestedName,
         array $options = null
     ) {
-        $options = [$container->get(\VuFind\Config\PluginManager::class)
+        $configs = [$container->get(\VuFind\Config\PluginManager::class)
             ->get('config')->OpenURL->toArray()];
+        if ($options) {
+            array_unshift($options, $configs);
+        } else {
+            $options = [$configs];
+        }
         return parent::__invoke($container, $requestedName, $options);
     }
 }

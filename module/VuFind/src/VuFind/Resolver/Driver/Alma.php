@@ -69,7 +69,7 @@ class Alma extends AbstractBase
         if (isset($options['ignoredFilterReasons'])) {
             $this->ignoredFilterReasons
                 = empty($options['ignoredFilterReasons'])
-                    ? [] : (array)$options['ignoredFilterReasons'];
+                    ? [] : array_filter((array)$options['ignoredFilterReasons']);
         }
     }
 
