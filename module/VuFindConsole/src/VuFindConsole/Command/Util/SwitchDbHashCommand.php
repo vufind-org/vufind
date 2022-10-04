@@ -188,11 +188,8 @@ class SwitchDbHashCommand extends Command
         // we don't go ahead and make unwanted changes to the database:
         $configPath =
             $this->pathResolver
-            ? $this->pathResolver->getConfigPath(
-                'config.ini',
-                null,
-                ConfigLocator::MODE_LOCAL_FORCE
-            ) : ConfigLocator::getLocalConfigPath('config.ini', null, true);
+            ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
+            : ConfigLocator::getLocalConfigPath('config.ini', null, true);
         $output->writeln("\tUpdating $configPath...");
         $writer = $this->getConfigWriter($configPath);
         $writer->set('Authentication', 'encrypt_ils_password', true);

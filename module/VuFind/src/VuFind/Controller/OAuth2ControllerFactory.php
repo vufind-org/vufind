@@ -41,6 +41,7 @@ use OpenIDConnectServer\IdTokenResponse;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Locator;
+use VuFind\Config\PathResolver;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
 use VuFind\OAuth2\Repository\AuthCodeRepository;
@@ -332,7 +333,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     }
 
     /**
-     * Overridable wrapper for Locator::getConfigPath
+     * Overridable wrapper for config path resolution
      *
      * @param string  $filename Config file name
      * @param ?string $path     Path relative to VuFind base (optional; use null for
@@ -344,7 +345,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     public function getConfigPath(
         $filename,
         $path = null,
-        int $mode = Locator::MODE_AUTO
+        int $mode = PathResolver::MODE_AUTO
     ): ?string {
         $resolver = $this->container->get(\VuFind\Config\PathResolver::class);
         return $resolver->getConfigPath($filename, $path, $mode);

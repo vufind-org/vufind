@@ -4,6 +4,7 @@
  *
  * PHP version 7
  *
+ * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,6 +22,7 @@
  *
  * @category VuFind
  * @package  Config
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -28,10 +30,11 @@
 namespace VuFind\Config;
 
 /**
- * Class (non-static) to find VuFind configuration files
+ * Configuration File Path Resolver
  *
  * @category VuFind
  * @package  Config
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -39,7 +42,89 @@ namespace VuFind\Config;
 class PathResolver
 {
     /**
-     * Overridable wrapper for Locator::getConfigPath
+     * Mode for getConfigPath: try to find a local file but fall back to base file
+     * if not available.
+     *
+     * @var int
+     */
+    public const MODE_AUTO = 0;
+
+    /**
+     * Mode for getConfigPath: try to find a local file.
+     *
+     * @var int
+     */
+    public const MODE_LOCAL = 1;
+
+    /**
+     * Mode for getConfigPath: get local config file path regardless of whether the
+     * file exists.
+     *
+     * @var int
+     */
+    public const MODE_LOCAL_FORCE = 2;
+
+    /**
+     * Mode for getConfigPath: get the base configuration file path.
+     *
+     * @var int
+     */
+    public const MODE_BASE = 3;
+
+    /**
+     * Default configuration path.
+     *
+     * @var string
+     */
+    public const DEFAULT_CONFIG_PATH = 'config/vufind';
+
+    /**
+     * Get the file path to the local configuration file (null if none found).
+     *
+     * @param string  $filename config file name
+     * @param ?string $path     path relative to VuFind base (optional; use null for
+     * default)
+     * @param bool    $force    force method to return path even if file does not
+     * exist (default = false, do not force)
+     *
+     * @return ?string
+     */
+    public function getLocalConfigPath(
+        string $filename,
+        ?string $path = null,
+        bool $force = false
+    ): ?string {
+        if (null === $path) {
+            $path = self::DEFAULT_CONFIG_PATH;
+        }
+        if (defined('LOCAL_OVERRIDE_DIR') && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0) {
+            $path = LOCAL_OVERRIDE_DIR . '/' . $path . '/' . $filename;
+            if ($force || file_exists($path)) {
+                return $path;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the file path to the base configuration file.
+     *
+     * @param string  $filename config file name
+     * @param ?string $path     path relative to VuFind base (optional; use null for
+     * default)
+     *
+     * @return string
+     */
+    public function getBaseConfigPath(string $filename, ?string $path = null): string
+    {
+        if (null === $path) {
+            $path = self::DEFAULT_CONFIG_PATH;
+        }
+        return APPLICATION_PATH . '/' . $path . '/' . $filename;
+    }
+
+    /**
+     * Get the file path to a config file.
      *
      * @param string  $filename Config file name
      * @param ?string $path     Path relative to VuFind base (optional; use null for
@@ -49,10 +134,24 @@ class PathResolver
      * @return ?string
      */
     public function getConfigPath(
-        $filename,
-        $path = null,
-        int $mode = Locator::MODE_AUTO
-    ): ?string {
-        return Locator::getConfigPath($filename, $path, $mode);
+        string $filename,
+        ?string $path = null,
+        int $mode = self::MODE_AUTO
+    ) {
+        if (self::MODE_BASE !== $mode) {
+            // Check if config exists in local dir:
+            $local = static::getLocalConfigPath(
+                $filename,
+                $path,
+                self::MODE_LOCAL_FORCE === $mode
+            );
+            // Return local config if found or $mode requires:
+            if (!empty($local) || self::MODE_LOCAL === $mode) {
+                return $local;
+            }
+        }
+
+        // Return base version:
+        return static::getBaseConfigPath($filename, $path);
     }
 }

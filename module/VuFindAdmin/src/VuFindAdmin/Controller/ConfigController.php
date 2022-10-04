@@ -50,8 +50,7 @@ class ConfigController extends AbstractAdmin
         $view = $this->createViewModel();
         $view->setTemplate('admin/config/home');
         $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
-        $view->baseConfigPath = $resolver
-            ->getConfigPath('', null, Locator::MODE_BASE);
+        $view->baseConfigPath = $resolver->getBaseConfigPath('');
         $conf = $this->getConfig();
         $view->showInstallLink
             = isset($conf->System->autoConfigure) && $conf->System->autoConfigure;

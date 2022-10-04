@@ -32,8 +32,7 @@ if (file_exists('vendor/autoload.php')) {
 
 // Make sure local config dir exists:
 $resolver = new \VuFind\Config\PathResolver();
-$localDir
-    = $resolver->getConfigPath('', null, \VuFind\Config\Locator::MODE_LOCAL_FORCE);
+$localDir = $resolver->getLocalConfigPath('', null, true);
 if (!file_exists($localDir)) {
     mkdir($localDir, 0777, true);
 }

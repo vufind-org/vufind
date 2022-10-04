@@ -1,6 +1,6 @@
 <?php
 /**
- * VF Configuration Locator
+ * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Config;
 
 /**
- * Class to find VuFind configuration files
+ * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *
  * @category VuFind
  * @package  Config
@@ -39,48 +39,11 @@ namespace VuFind\Config;
 class Locator
 {
     /**
-     * Mode for getConfigPath: try to find a local file but fall back to base file
-     * if not available.
-     *
-     * @var int
-     */
-    public const MODE_AUTO = 0;
-
-    /**
-     * Mode for getConfigPath: try to find a local file.
-     *
-     * @var int
-     */
-    public const MODE_LOCAL = 1;
-
-    /**
-     * Mode for getConfigPath: get the base configuration file path.
-     *
-     * @var int
-     */
-    public const MODE_BASE = 2;
-
-    /**
-     * Mode for getConfigPath: get local config file path regardless of whether the
-     * file exists.
-     *
-     * @var int
-     */
-    public const MODE_LOCAL_FORCE = 3;
-
-    /**
-     * Default configuration path.
-     *
-     * @var string
-     */
-    public const DEFAULT_CONFIG_PATH = 'config/vufind';
-
-    /**
      * Get the file path to the local configuration file (null if none found).
      *
      * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind if set to null)
+     * @param string $path     path relative to VuFind base (optional; use null for
+     * default)
      * @param bool   $force    force method to return path even if file does not
      * exist (default = false, do not force)
      *
@@ -91,30 +54,23 @@ class Locator
         $path = null,
         $force = false
     ) {
-        if (null === $path) {
-            $path = 'config/vufind';
-        }
-        if (defined('LOCAL_OVERRIDE_DIR') && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0) {
-            $path = LOCAL_OVERRIDE_DIR . '/' . $path . '/' . $filename;
-            if ($force || file_exists($path)) {
-                return $path;
-            }
-        }
-        return null;
+        $resolver = new \VuFind\Config\PathResolver();
+        return $resolver->getLocalConfigPath($filename, $path, $force);
     }
 
     /**
      * Get the file path to the base configuration file.
      *
      * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind
+     * @param string $path     path relative to VuFind base (optional; use null for
+     * default)
      *
      * @return string
      */
-    public static function getBaseConfigPath($filename, $path = 'config/vufind')
+    public static function getBaseConfigPath($filename, $path = null)
     {
-        return APPLICATION_PATH . '/' . $path . '/' . $filename;
+        $resolver = new \VuFind\Config\PathResolver();
+        return $resolver->getBaseConfigPath($filename, $path);
     }
 
     /**
@@ -130,25 +86,9 @@ class Locator
     public static function getConfigPath(
         $filename,
         $path = null,
-        int $mode = self::MODE_AUTO
+        int $mode = PathResolver::MODE_AUTO
     ) {
-        if (null === $path) {
-            $path = self::DEFAULT_CONFIG_PATH;
-        }
-        if (self::MODE_BASE !== $mode) {
-            // Check if config exists in local dir:
-            $local = static::getLocalConfigPath(
-                $filename,
-                $path,
-                self::MODE_LOCAL_FORCE === $mode
-            );
-            // Return local config if found or $mode requires:
-            if (!empty($local) || self::MODE_LOCAL === $mode) {
-                return $local;
-            }
-        }
-
-        // Return base version:
-        return static::getBaseConfigPath($filename, $path);
+        $resolver = new \VuFind\Config\PathResolver();
+        return $resolver->getConfigPath($filename, $path, $mode);
     }
 }

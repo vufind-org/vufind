@@ -443,15 +443,15 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     protected function createOpenSSLKeyPair(): void
     {
         $resolver = new \VuFind\Config\PathResolver();
-        $privateKeyPath = $resolver->getConfigPath(
+        $privateKeyPath = $resolver->getLocalConfigPath(
             'oauth2_private.key',
             null,
-            Locator::MODE_LOCAL_FORCE
+            true
         );
-        $publicKeyPath = $resolver->getConfigPath(
+        $publicKeyPath = $resolver->getLocalConfigPath(
             'oauth2_public.key',
             null,
-            Locator::MODE_LOCAL_FORCE
+            true
         );
 
         // Creates backups if the files exists:
@@ -514,10 +514,9 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     protected function restoreOpenSSLKeyPair(): void
     {
         $resolver = new \VuFind\Config\PathResolver();
-        $mode = Locator::MODE_LOCAL_FORCE;
         $paths = [
-            $resolver->getConfigPath('oauth2_private.key', null, $mode),
-            $resolver->getConfigPath('oauth2_public.key', null, $mode),
+            $resolver->getLocalConfigPath('oauth2_private.key', null, true),
+            $resolver->getLocalConfigPath('oauth2_public.key', null, true),
         ];
 
         foreach ($paths as $path) {

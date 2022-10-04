@@ -128,18 +128,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $resolver = new \VuFind\Config\PathResolver();
         $file = $configName . '.ini';
-        $local
-            = $resolver->getConfigPath($file, null, ConfigLocator::MODE_LOCAL_FORCE);
+        $local = $resolver->getLocalConfigPath($file, null, true);
         if (!in_array($configName, $this->modifiedConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy(
-                    $resolver->getConfigPath($file, null, ConfigLocator::MODE_BASE),
-                    $local
-                );
+                copy($resolver->getBaseConfigPath($file), $local);
             }
 
             $this->modifiedConfigs[] = $configName;
@@ -172,18 +168,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $resolver = new \VuFind\Config\PathResolver();
         $file = $configName . '.yaml';
-        $local
-            = $resolver->getConfigPath($file, null, ConfigLocator::MODE_LOCAL_FORCE);
+        $local = $resolver->getLocalConfigPath($file, null, true);
         if (!in_array($configName, $this->modifiedYamlConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy(
-                    $resolver->getConfigPath($file, null, ConfigLocator::MODE_BASE),
-                    $local
-                );
+                copy($resolver->getBaseConfigPath($file), $local);
             }
 
             $this->modifiedYamlConfigs[] = $configName;
@@ -323,8 +315,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         foreach ($configs as $extension => $files) {
             foreach ($files as $current) {
                 $file = $current . $extension;
-                $local = $resolver
-                    ->getConfigPath($file, null, ConfigLocator::MODE_LOCAL_FORCE);
+                $local = $resolver->getLocalConfigPath($file, null, true);
                 $backup = $local . '.bak';
 
                 // Do we have a backup? If so, restore from it; otherwise, just
