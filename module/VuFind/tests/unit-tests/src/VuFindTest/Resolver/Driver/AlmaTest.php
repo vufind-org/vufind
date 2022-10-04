@@ -170,7 +170,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($result, $testResult);
+        $this->assertEquals($testResult, $result);
     }
 
     /**
@@ -260,7 +260,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($result, $testResult);
+        $this->assertEquals($testResult, $result);
     }
 
     /**
