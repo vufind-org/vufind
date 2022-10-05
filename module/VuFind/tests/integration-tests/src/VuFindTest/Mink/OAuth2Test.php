@@ -72,11 +72,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     public function setUp(): void
     {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
+        parent::setUp();
+
         $this->createOpenSSLKeyPair();
     }
 
