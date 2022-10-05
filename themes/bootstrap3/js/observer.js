@@ -40,7 +40,6 @@ VuFind.register('observer', () => {
     ) {
       observers[identifier] = onIntersect;
     } else {
-
       observers[identifier] = new IntersectionObserver((entries, obs) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
