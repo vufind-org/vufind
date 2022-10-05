@@ -40,6 +40,8 @@ use VuFind\XSLT\Import\VuFind;
  */
 class VuFindTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+
     /**
      * Support method -- set up a mock container for testing the class.
      *
@@ -78,10 +80,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetConfig()
     {
         $container = $this->getMockContainer();
-        $container->set(
-            \VuFind\Config\PathResolver::class,
-            new \VuFind\Config\PathResolver(APPLICATION_PATH, [])
-        );
+        $this->addPathResolverFactory($container);
         $config = new \Laminas\Config\Config([]);
         $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
             ->method('get')->with('config')->will($this->returnValue($config));

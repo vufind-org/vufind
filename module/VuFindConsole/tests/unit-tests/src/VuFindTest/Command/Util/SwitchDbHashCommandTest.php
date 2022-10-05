@@ -46,6 +46,15 @@ use VuFindConsole\Command\Util\SwitchDbHashCommand;
  */
 class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+
+    /**
+     * Expected path to config.ini
+     *
+     * @var string
+     */
+    protected $expectedConfigIniPath;
+
     /**
      * Prepare a mock object
      *
@@ -96,6 +105,17 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockConfigWriter()
     {
         return $this->prepareMock(Writer::class);
+    }
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->expectedConfigIniPath = $this->getPathResolver()
+            ->getLocalConfigPath('config.ini', null, true);
     }
 
     /**
@@ -174,9 +194,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $expectedConfig = $this->getLocalConfigIniPath();
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tWrite failed!\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tWrite failed!\n",
             $commandTester->getDisplay()
         );
     }
@@ -206,10 +225,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = $this->getLocalConfigIniPath();
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 0 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 0 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
     }
@@ -275,27 +293,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = $this->getLocalConfigIniPath();
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 1 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 1 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(null, $user['cat_password']);
         $this->assertEquals('mypassword', $this->decode($user['cat_pass_enc']));
-    }
-
-    /**
-     * Get path to local config.ini
-     *
-     * @return string
-     */
-    protected function getLocalConfigIniPath(): string
-    {
-        $localDirs = defined('LOCAL_OVERRIDE_DIR')
-            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-            ? [LOCAL_OVERRIDE_DIR] : [];
-        $resolver = new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs);
-        return $resolver->getLocalConfigPath('config.ini', null, true);
     }
 }
