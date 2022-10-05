@@ -441,13 +441,12 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     protected function createOpenSSLKeyPair(): void
     {
-        $resolver = new \VuFind\Config\PathResolver();
-        $privateKeyPath = $resolver->getLocalConfigPath(
+        $privateKeyPath = $this->pathResolver->getLocalConfigPath(
             'oauth2_private.key',
             null,
             true
         );
-        $publicKeyPath = $resolver->getLocalConfigPath(
+        $publicKeyPath = $this->pathResolver->getLocalConfigPath(
             'oauth2_public.key',
             null,
             true
