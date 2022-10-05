@@ -1,6 +1,25 @@
 #!/bin/bash
 set -o errexit
 
+# Setup ramdisk to speed up things
+
+TMP_RAMDISK_DIR="/tmp/ramdisk"
+
+
+trap ExitHandler EXIT
+trap ExitHandler SIGINT
+
+function ExitHandler {
+   ShutdownRamdisk
+}
+
+function ShutdownRamdisk() {
+    if mountpoint --quiet ${TMP_RAMDISK_DIR}; then
+        umount ${TMP_RAMDISK_DIR}
+    fi
+}
+
+
 #####################################################
 # Build java command
 #####################################################
@@ -23,6 +42,11 @@ fi
 
 cd "`dirname $0`/import"
 CLASSPATH="browse-indexing.jar:${SOLR_HOME}/jars/*:${SOLR_HOME}/../vendor/contrib/analysis-extras/lib/*:${SOLR_HOME}/../vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
+
+mkdir -p ${TMP_RAMDISK_DIR}
+if ! mountpoint --quiet ${TMP_RAMDISK_DIR}; then
+   mount -t tmpfs -o rw,size=10G tmpfs ${TMP_RAMDISK_DIR}
+fi
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties
@@ -61,10 +85,12 @@ function build_browse
     extra_jvm_opts=$4
     filter=$5
 
+    [[ ! -z $filter ]] && browse_unique=${TMP_RAMDISK_DIR}/${browse}-${filter} || browse_unique=${TMP_RAMDISK_DIR}/${browse}
+
     if [ "$skip_authority" = "1" ]; then
-        $JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH PrintBrowseHeadings "$bib_index" "$field" "" "${browse}.tmp" "$filter"
+        $JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH PrintBrowseHeadings "$bib_index" "$field" "" "${browse_unique}.tmp" "$filter"
     else
-        $JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH PrintBrowseHeadings "$bib_index" "$field" "$auth_index" "${browse}.tmp" "$filter"
+        $JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH PrintBrowseHeadings "$bib_index" "$field" "$auth_index" "${browse_unique}.tmp" "$filter"
     fi
 
     if [[ ! -z $filter ]]; then
@@ -75,40 +101,38 @@ function build_browse
         out_dir="$index_dir"
     fi
 
-    sort -T /var/tmp -u -t$'\1' -k1 "${browse}.tmp" -o "sorted-${browse}.tmp"
-    $JAVA -Dfile.encoding="UTF-8" -cp $CLASSPATH CreateBrowseSQLite "sorted-${browse}.tmp" "${browse}_browse.db"
+    sort -T ${TMP_RAMDISK_DIR} -u -t$'\1' -k1 "${browse_unique}.tmp" -o "${browse_unique}_sorted.tmp"
+    $JAVA -Dfile.encoding="UTF-8" -cp $CLASSPATH CreateBrowseSQLite "${browse_unique}_sorted.tmp" "${browse_unique}_browse.db"
 
-    rm -f *.tmp
 
-    mv "${browse}_browse.db" "$out_dir/${browse}_browse.db-updated"
+    mv "${browse_unique}_browse.db" "$out_dir/${browse}_browse.db-updated"
     touch "$out_dir/${browse}_browse.db-ready"
     chown -R solr:solr "$out_dir"
 }
 
-build_browse "hierarchy" "hierarchy_browse" 1
-build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_fullStr -Dvaluefield=title_fullStr"
-build_browse "topic" "topic_browse" 1
-build_browse "author" "author_browse" 1
-build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
-build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer"
 
-build_browse "hierarchy" "hierarchy_browse" 1 "" "is_religious_studies"
-build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_fullStr -Dvaluefield=title_fullStr" "is_religious_studies"
-build_browse "topic" "topic_browse" 1 "" "is_religious_studies"
-build_browse "author" "author_browse" 1 "" "is_religious_studies"
-build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer" "is_religious_studies"
-build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer" "is_religious_studies"
+function GenerateIndexForSystem {
+    system_flag="$1"
+    echo build_browse "hierarchy" "hierarchy_browse" 1 "" ${system_flag}
+    time build_browse "hierarchy" "hierarchy_browse" 1 "" ${system_flag}
+    echo build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_fullStr -Dvaluefield=title_fullStr" ${system_flag}
+    time build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_fullStr -Dvaluefield=title_fullStr" ${system_flag}
+    echo build_browse "topic" "topic_browse" 1 "" ${system_flag}
+    time build_browse "topic" "topic_browse" 1 "" ${system_flag}
+    echo build_browse "author" "author_browse" "" 1 ${system_flag}
+    time build_browse "author" "author_browse" 1 "" ${system_flag}
+    echo build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer" ${system_flag}
+    time build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer" ${system_flag}
+    echo build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer" ${system_flag}
+    time build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer" ${system_flag}
+}
 
-build_browse "hierarchy" "hierarchy_browse" 1 "" "is_biblical_studies"
-build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_fullStr -Dvaluefield=title_fullStr" "is_biblical_studies"
-build_browse "topic" "topic_browse" 1 "" "is_biblical_studies"
-build_browse "author" "author_browse" 1 "" "is_biblical_studies"
-build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer" "is_biblical_studies"
-build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer" "is_biblical_studies"
 
-build_browse "hierarchy" "hierarchy_browse" 1 "" "is_canon_law"
-build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_fullStr -Dvaluefield=title_fullStr" "is_canon_law"
-build_browse "topic" "topic_browse" 1 "" "is_canon_law"
-build_browse "author" "author_browse" 1 "" "is_canon_law"
-build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer" "is_canon_law"
-build_browse "dewey" "dewey-raw" 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer" "is_canon_law"
+GenerateIndexForSystem &
+GenerateIndexForSystem "is_religious_studies" &
+rm -f ${TMP_RAMDISK_DIR}/*.tmp
+wait
+GenerateIndexForSystem "is_biblical_studies" &
+GenerateIndexForSystem "is_canon_law" &
+wait
+echo "Finished generating alphabrowse indices..."
