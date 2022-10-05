@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\CSV;
 
-use VuFind\Config\PathResolver;
 use VuFind\CSV\Importer;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;

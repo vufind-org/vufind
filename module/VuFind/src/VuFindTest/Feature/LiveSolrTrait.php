@@ -45,6 +45,8 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  */
 trait LiveSolrTrait
 {
+    use PathResolverTrait;
+
     /**
      * Container for services related to live Solr connectivity.
      *
@@ -67,12 +69,7 @@ trait LiveSolrTrait
             $config['vufind']['config_reader']
         );
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
-        $localDirs = strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-            ? [LOCAL_OVERRIDE_DIR] : [];
-        $container->set(
-            \VuFind\Config\PathResolver::class,
-            new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs)
-        );
+        $this->addPathResolverFactory($container);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();
         $container->set(
             \VuFindHttp\HttpService::class,

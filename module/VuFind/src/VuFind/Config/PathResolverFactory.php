@@ -69,9 +69,6 @@ class PathResolverFactory implements FactoryInterface
         $localDirs = defined('LOCAL_OVERRIDE_DIR')
             && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
                 ? [LOCAL_OVERRIDE_DIR] : [];
-        return new $requestedName(
-            APPLICATION_PATH,
-            $localDirs
-        );
+        return new $requestedName(APPLICATION_PATH, $localDirs);
     }
 }

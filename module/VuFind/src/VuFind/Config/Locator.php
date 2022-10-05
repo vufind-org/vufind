@@ -41,13 +41,13 @@ class Locator
     /**
      * Get the file path to the local configuration file (null if none found).
      *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; use null for
+     * @param string  $filename config file name
+     * @param ?string $path     path relative to VuFind base (optional; use null for
      * default)
-     * @param bool   $force    force method to return path even if file does not
+     * @param bool    $force    force method to return path even if file does not
      * exist (default = false, do not force)
      *
-     * @return string
+     * @return ?string
      *
      * @deprecated Use PathResolver instead
      */
@@ -63,8 +63,8 @@ class Locator
     /**
      * Get the file path to the base configuration file.
      *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; use null for
+     * @param string  $filename config file name
+     * @param ?string $path     path relative to VuFind base (optional; use null for
      * default)
      *
      * @return string
@@ -83,7 +83,7 @@ class Locator
      * @param ?string $path     Path relative to VuFind base (optional; use null for
      * default)
      *
-     * @return ?string
+     * @return string
      *
      * @deprecated Use PathResolver instead
      */

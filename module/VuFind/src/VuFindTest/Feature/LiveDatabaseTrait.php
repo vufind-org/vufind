@@ -41,6 +41,8 @@ namespace VuFindTest\Feature;
  */
 trait LiveDatabaseTrait
 {
+    use PathResolverTrait;
+
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
      * dependencies).
@@ -73,12 +75,7 @@ trait LiveDatabaseTrait
                 $config['vufind']['config_reader']
             );
             $container->set(\VuFind\Config\PluginManager::class, $configManager);
-            $localDirs = strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-                ? [LOCAL_OVERRIDE_DIR] : [];
-            $container->set(
-                \VuFind\Config\PathResolver::class,
-                new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs)
-            );
+            $this->addPathResolverFactory($container);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );

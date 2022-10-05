@@ -131,7 +131,7 @@ class PathResolver
      * @param ?string $path     Path relative to VuFind base (optional; use null for
      * default)
      *
-     * @return ?string
+     * @return string
      */
     public function getConfigPath(string $filename, ?string $path = null): ?string
     {

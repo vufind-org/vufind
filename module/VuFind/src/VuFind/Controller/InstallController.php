@@ -98,7 +98,7 @@ class InstallController extends AbstractBase
      */
     protected function installBasicConfig()
     {
-        $config = $this->getLocalConfigFilePath('config.ini');
+        $config = $this->getForcedLocalConfigPath('config.ini');
         if (!file_exists($config)) {
             return copy($this->getBaseConfigFilePath('config.ini'), $config);
         }
@@ -138,7 +138,7 @@ class InstallController extends AbstractBase
     public function fixbasicconfigAction()
     {
         $view = $this->createViewModel();
-        $config = $this->getLocalConfigFilePath('config.ini');
+        $config = $this->getForcedLocalConfigPath('config.ini');
         try {
             if (!$this->installBasicConfig()) {
                 throw new \Exception('Cannot copy file into position.');
@@ -429,7 +429,7 @@ class InstallController extends AbstractBase
                         // forward back to the home action!
                         $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
-                        $config = $this->getLocalConfigFilePath('config.ini');
+                        $config = $this->getForcedLocalConfigPath('config.ini');
                         $writer = new ConfigWriter($config);
                         $writer->set('Database', 'database', $string);
                         if (!$writer->save()) {
@@ -544,7 +544,7 @@ class InstallController extends AbstractBase
         // Process incoming parameter -- user may have selected a new driver:
         $newDriver = $this->params()->fromPost('driver');
         if (!empty($newDriver)) {
-            $configPath = $this->getLocalConfigFilePath('config.ini');
+            $configPath = $this->getForcedLocalConfigPath('config.ini');
             $writer = new ConfigWriter($configPath);
             $writer->set('Catalog', 'driver', $newDriver);
             if (!$writer->save()) {
@@ -552,7 +552,7 @@ class InstallController extends AbstractBase
             }
             // Copy configuration, if applicable:
             $ilsIni = $this->getBaseConfigFilePath("{$newDriver}.ini");
-            $localIlsIni = $this->getLocalConfigFilePath("{$newDriver}.ini");
+            $localIlsIni = $this->getForcedLocalConfigPath("{$newDriver}.ini");
             if (file_exists($ilsIni) && !file_exists($localIlsIni)) {
                 if (!copy($ilsIni, $localIlsIni)) {
                     return $this->forwardTo('Install', 'fixbasicconfig');
@@ -587,7 +587,7 @@ class InstallController extends AbstractBase
             sort($drivers);
             $view->drivers = $drivers;
         } else {
-            $view->configPath = $this->getLocalConfigFilePath(
+            $view->configPath = $this->getForcedLocalConfigPath(
                 "{$config->Catalog->driver}.ini"
             );
         }
@@ -632,7 +632,7 @@ class InstallController extends AbstractBase
     {
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
         $config = $this->getConfig();
-        $configFile = $this->getLocalConfigFilePath('config.ini');
+        $configFile = $this->getForcedLocalConfigPath('config.ini');
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
             try {
@@ -772,7 +772,7 @@ class InstallController extends AbstractBase
 
         // First, set encryption/hashing to true, and set the key
         $config = $this->getConfig();
-        $configPath = $this->getLocalConfigFilePath('config.ini');
+        $configPath = $this->getForcedLocalConfigPath('config.ini');
         $writer = new ConfigWriter($configPath);
         if ($this->fixSecurityConfiguration($config, $writer)) {
             // Problem writing? Show the user an error:
@@ -873,7 +873,7 @@ class InstallController extends AbstractBase
      */
     protected function testSslCertConfig($config, $try)
     {
-        $file = $this->getLocalConfigFilePath('config.ini');
+        $file = $this->getForcedLocalConfigPath('config.ini');
         $writer = new ConfigWriter($file);
         // Reset old settings
         $writer->clear('Http', 'sslcapath');
@@ -902,7 +902,7 @@ class InstallController extends AbstractBase
      */
     public function doneAction()
     {
-        $config = $this->getLocalConfigFilePath('config.ini');
+        $config = $this->getForcedLocalConfigPath('config.ini');
         $writer = new ConfigWriter($config);
         $writer->set('System', 'autoConfigure', 0);
         if (!$writer->save()) {

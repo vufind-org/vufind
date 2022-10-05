@@ -219,7 +219,7 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
-        $localConfig = dirname($this->getLocalConfigFilePath('config.ini'));
+        $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
         $confDir = $this->cookie->oldVersion < 2
             ? $this->cookie->sourceDir . '/web/conf'
             : $localConfig;
@@ -287,7 +287,7 @@ class UpgradeController extends AbstractBase
      */
     protected function setDbEncodingConfiguration($charset)
     {
-        $config = $this->getLocalConfigFilePath('config.ini');
+        $config = $this->getForcedLocalConfigPath('config.ini');
         $writer = new Writer($config);
         $writer->set('Database', 'charset', $charset);
         if (!$writer->save()) {
@@ -878,7 +878,8 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'configDir' => dirname($this->getLocalConfigFilePath('config.ini')),
+                'configDir'
+                    => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
                 'oldVersion' => $this->cookie->oldVersion
             ]

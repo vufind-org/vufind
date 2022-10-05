@@ -58,7 +58,7 @@ trait ConfigPathTrait
      *
      * @return string
      */
-    protected function getLocalConfigFilePath(string $filename): string
+    protected function getForcedLocalConfigPath(string $filename): string
     {
         $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
         return $resolver->getLocalConfigPath($filename, null, true);
