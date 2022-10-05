@@ -42,36 +42,6 @@ namespace VuFind\Config;
 class PathResolver
 {
     /**
-     * Mode for getConfigPath: try to find a local file but fall back to base file
-     * if not available.
-     *
-     * @var int
-     */
-    public const MODE_AUTO = 0;
-
-    /**
-     * Mode for getConfigPath: try to find a local file.
-     *
-     * @var int
-     */
-    public const MODE_LOCAL = 1;
-
-    /**
-     * Mode for getConfigPath: get local config file path regardless of whether the
-     * file exists.
-     *
-     * @var int
-     */
-    public const MODE_LOCAL_FORCE = 2;
-
-    /**
-     * Mode for getConfigPath: get the base configuration file path.
-     *
-     * @var int
-     */
-    public const MODE_BASE = 3;
-
-    /**
      * Default configuration path.
      *
      * @var string
@@ -160,26 +130,15 @@ class PathResolver
      * @param string  $filename Config file name
      * @param ?string $path     Path relative to VuFind base (optional; use null for
      * default)
-     * @param int     $mode     Whether to check for local file, base file or both
      *
      * @return ?string
      */
-    public function getConfigPath(
-        string $filename,
-        ?string $path = null,
-        int $mode = self::MODE_AUTO
-    ) {
-        if (self::MODE_BASE !== $mode) {
-            // Check if config exists in local dir:
-            $local = $this->getLocalConfigPath(
-                $filename,
-                $path,
-                self::MODE_LOCAL_FORCE === $mode
-            );
-            // Return local config if found or $mode requires:
-            if (!empty($local) || self::MODE_LOCAL === $mode) {
-                return $local;
-            }
+    public function getConfigPath(string $filename, ?string $path = null): ?string
+    {
+        // Check if config exists in local dir:
+        $local = $this->getLocalConfigPath($filename, $path);
+        if (!empty($local)) {
+            return $local;
         }
 
         // Return base version:

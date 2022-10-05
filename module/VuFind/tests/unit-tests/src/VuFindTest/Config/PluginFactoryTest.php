@@ -85,9 +85,9 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
         $mockResolver->expects($this->any())
             ->method('getConfigPath')
             ->willReturnCallback(
-                function ($filename, $path, $mode) use ($fileMap, $realResolver) {
+                function ($filename, $path) use ($fileMap, $realResolver) {
                     return $fileMap[$filename]
-                        ?? $realResolver->getConfigPath($filename, $path, $mode);
+                        ?? $realResolver->getConfigPath($filename, $path);
                 }
             );
         $container = new \VuFindTest\Container\MockContainer($this);

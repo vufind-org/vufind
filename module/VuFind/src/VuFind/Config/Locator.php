@@ -82,18 +82,14 @@ class Locator
      * @param string  $filename Config file name
      * @param ?string $path     Path relative to VuFind base (optional; use null for
      * default)
-     * @param int     $mode     Whether to check for local file, base file or both
      *
      * @return ?string
      *
      * @deprecated Use PathResolver instead
      */
-    public static function getConfigPath(
-        $filename,
-        $path = null,
-        int $mode = PathResolver::MODE_AUTO
-    ) {
-        return static::getPathResolver()->getConfigPath($filename, $path, $mode);
+    public static function getConfigPath($filename, $path = null)
+    {
+        return static::getPathResolver()->getConfigPath($filename, $path);
     }
 
     /**

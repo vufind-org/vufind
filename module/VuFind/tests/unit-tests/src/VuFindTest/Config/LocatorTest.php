@@ -69,32 +69,8 @@ class LocatorTest extends \PHPUnit\Framework\TestCase
             Locator::getLocalConfigPath('non-existent-config.ini')
         );
         $this->assertEquals(
-            $baseConfig,
-            Locator::getConfigPath('config.ini', null, PathResolver::MODE_BASE)
-        );
-        $this->assertEquals(
             $localConfig,
-            Locator::getConfigPath(
-                'config.ini',
-                null,
-                PathResolver::MODE_LOCAL_FORCE
-            )
-        );
-        $this->assertEquals(
-            null,
-            Locator::getConfigPath(
-                'config.ini-missing-file',
-                null,
-                PathResolver::MODE_LOCAL
-            )
-        );
-        $this->assertEquals(
-            $localConfig . '-missing-file',
-            Locator::getConfigPath(
-                'config.ini-missing-file',
-                null,
-                PathResolver::MODE_LOCAL_FORCE
-            )
+            Locator::getConfigPath('config.ini')
         );
     }
 }
