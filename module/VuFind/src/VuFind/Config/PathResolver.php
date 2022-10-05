@@ -95,7 +95,7 @@ class PathResolver
             $path = self::DEFAULT_CONFIG_PATH;
         }
         $fallbackResult = null;
-        foreach ($this->localConfigDirStack as $localDir) {
+        foreach (array_reverse($this->localConfigDirStack) as $localDir) {
             $configPath = "$localDir/$path/$filename";
             if (file_exists($configPath)) {
                 return $configPath;
