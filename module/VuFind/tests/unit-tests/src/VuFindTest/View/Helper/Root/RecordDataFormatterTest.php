@@ -153,7 +153,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $container->set(
             \VuFind\Config\PathResolver::class,
-            new \VuFind\Config\PathResolver()
+            new \VuFind\Config\PathResolver(APPLICATION_PATH, [])
         );
         $formatter = $factory($container, RecordDataFormatter::class);
 

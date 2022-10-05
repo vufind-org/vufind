@@ -28,7 +28,6 @@
 namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 /**

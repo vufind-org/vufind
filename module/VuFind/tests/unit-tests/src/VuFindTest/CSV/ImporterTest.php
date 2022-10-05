@@ -68,7 +68,10 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $this->csvFixtureDir = $this->getFixtureDir() . 'csv/';
         $this->container = new MockContainer($this);
-        $this->container->set(PathResolver::class, new PathResolver());
+        $this->container->set(
+            PathResolver::class,
+            new PathResolver(APPLICATION_PATH, [])
+        );
     }
 
     /**

@@ -79,6 +79,33 @@ class PathResolver
     public const DEFAULT_CONFIG_PATH = 'config/vufind';
 
     /**
+     * Base configuration directory
+     *
+     * @var string
+     */
+    protected $baseConfigDir;
+
+    /**
+     * Local configuration directory stack. Local configuration files are searched
+     * for in all directories until found.
+     *
+     * @var string[]
+     */
+    protected $localConfigDirStack;
+
+    /**
+     * Constructor
+     *
+     * @param string   $baseConfigDir       Base configuration directory
+     * @param string[] $localConfigDirStack Local configuration directory stack
+     */
+    public function __construct(string $baseConfigDir, array $localConfigDirStack)
+    {
+        $this->baseConfigDir = $baseConfigDir;
+        $this->localConfigDirStack = $localConfigDirStack;
+    }
+
+    /**
      * Get the file path to the local configuration file (null if none found).
      *
      * @param string  $filename config file name
@@ -97,13 +124,17 @@ class PathResolver
         if (null === $path) {
             $path = self::DEFAULT_CONFIG_PATH;
         }
-        if (defined('LOCAL_OVERRIDE_DIR') && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0) {
-            $path = LOCAL_OVERRIDE_DIR . '/' . $path . '/' . $filename;
-            if ($force || file_exists($path)) {
-                return $path;
+        $fallbackResult = null;
+        foreach ($this->localConfigDirStack as $localDir) {
+            $configPath = "$localDir/$path/$filename";
+            if (file_exists($configPath)) {
+                return $configPath;
+            }
+            if ($force && null === $fallbackResult) {
+                $fallbackResult = $configPath;
             }
         }
-        return null;
+        return $fallbackResult;
     }
 
     /**
@@ -120,7 +151,7 @@ class PathResolver
         if (null === $path) {
             $path = self::DEFAULT_CONFIG_PATH;
         }
-        return APPLICATION_PATH . '/' . $path . '/' . $filename;
+        return "{$this->baseConfigDir}/$path/$filename";
     }
 
     /**
@@ -140,7 +171,7 @@ class PathResolver
     ) {
         if (self::MODE_BASE !== $mode) {
             // Check if config exists in local dir:
-            $local = static::getLocalConfigPath(
+            $local = $this->getLocalConfigPath(
                 $filename,
                 $path,
                 self::MODE_LOCAL_FORCE === $mode
@@ -152,6 +183,6 @@ class PathResolver
         }
 
         // Return base version:
-        return static::getBaseConfigPath($filename, $path);
+        return $this->getBaseConfigPath($filename, $path);
     }
 }

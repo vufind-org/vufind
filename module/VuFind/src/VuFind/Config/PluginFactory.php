@@ -65,26 +65,16 @@ class PluginFactory implements AbstractFactoryInterface
     /**
      * Load the specified configuration file.
      *
-     * @param string   $filename     Config file name
-     * @param ?string  $path         Path relative to VuFind base (optional; use null
-     * for default)
-     * @param callable $pathCallback Callback for getting an absolute config
-     * file path (optional; defaults to Locator::getConfigPath)
+     * @param string $filename Config file name
      *
      * @return Config
      */
-    protected function loadConfigFile(
-        $filename,
-        $path = null,
-        callable $pathCallback = null
-    ) {
+    protected function loadConfigFile(string $filename): Config
+    {
         $configs = [];
 
-        $fullpath
-            = ($pathCallback ?? [Locator::class, 'getConfigPath'])($filename, $path);
-
         // Return empty configuration if file does not exist:
-        if (!file_exists($fullpath)) {
+        if (!file_exists($filename)) {
             return new Config([]);
         }
 
@@ -92,19 +82,19 @@ class PluginFactory implements AbstractFactoryInterface
         // chain of them if the Parent_Config setting is used:
         do {
             $configs[]
-                = new Config($this->iniReader->fromFile($fullpath), true);
+                = new Config($this->iniReader->fromFile($filename), true);
 
             $i = count($configs) - 1;
             if (isset($configs[$i]->Parent_Config->path)) {
-                $fullpath = $configs[$i]->Parent_Config->path;
+                $filename = $configs[$i]->Parent_Config->path;
             } elseif (isset($configs[$i]->Parent_Config->relative_path)) {
-                $fullpath = pathinfo($fullpath, PATHINFO_DIRNAME)
+                $filename = pathinfo($filename, PATHINFO_DIRNAME)
                     . DIRECTORY_SEPARATOR
                     . $configs[$i]->Parent_Config->relative_path;
             } else {
-                $fullpath = false;
+                $filename = false;
             }
-        } while ($fullpath);
+        } while ($filename);
 
         // The last element in the array will be the top of the inheritance tree.
         // Let's establish a baseline:
@@ -198,10 +188,9 @@ class PluginFactory implements AbstractFactoryInterface
         $requestedName,
         array $options = null
     ) {
+        $pathResolver = $container->get(PathResolver::class);
         return $this->loadConfigFile(
-            $requestedName . '.ini',
-            null,
-            [$container->get(PathResolver::class), 'getConfigPath']
+            $pathResolver->getConfigPath($requestedName . '.ini')
         );
     }
 }

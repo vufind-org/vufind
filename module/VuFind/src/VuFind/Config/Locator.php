@@ -48,14 +48,16 @@ class Locator
      * exist (default = false, do not force)
      *
      * @return string
+     *
+     * @deprecated Use PathResolver instead
      */
     public static function getLocalConfigPath(
         $filename,
         $path = null,
         $force = false
     ) {
-        $resolver = new \VuFind\Config\PathResolver();
-        return $resolver->getLocalConfigPath($filename, $path, $force);
+        return static::getPathResolver()
+            ->getLocalConfigPath($filename, $path, $force);
     }
 
     /**
@@ -66,11 +68,12 @@ class Locator
      * default)
      *
      * @return string
+     *
+     * @deprecated Use PathResolver instead
      */
     public static function getBaseConfigPath($filename, $path = null)
     {
-        $resolver = new \VuFind\Config\PathResolver();
-        return $resolver->getBaseConfigPath($filename, $path);
+        return static::getPathResolver()->getBaseConfigPath($filename, $path);
     }
 
     /**
@@ -82,13 +85,27 @@ class Locator
      * @param int     $mode     Whether to check for local file, base file or both
      *
      * @return ?string
+     *
+     * @deprecated Use PathResolver instead
      */
     public static function getConfigPath(
         $filename,
         $path = null,
         int $mode = PathResolver::MODE_AUTO
     ) {
-        $resolver = new \VuFind\Config\PathResolver();
-        return $resolver->getConfigPath($filename, $path, $mode);
+        return static::getPathResolver()->getConfigPath($filename, $path, $mode);
+    }
+
+    /**
+     * Get a PathResolver with default configuration file paths
+     *
+     * @return PathResolver
+     */
+    protected static function getPathResolver(): PathResolver
+    {
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? [LOCAL_OVERRIDE_DIR] : [];
+        return new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs);
     }
 }

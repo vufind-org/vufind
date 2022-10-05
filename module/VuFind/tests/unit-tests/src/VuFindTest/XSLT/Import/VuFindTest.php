@@ -80,7 +80,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
         $container = $this->getMockContainer();
         $container->set(
             \VuFind\Config\PathResolver::class,
-            new \VuFind\Config\PathResolver()
+            new \VuFind\Config\PathResolver(APPLICATION_PATH, [])
         );
         $config = new \Laminas\Config\Config([]);
         $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())

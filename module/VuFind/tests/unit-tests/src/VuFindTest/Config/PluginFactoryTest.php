@@ -78,8 +78,9 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
             'unit-test-child2.ini'
                 => $this->getFixturePath('configs/inheritance/unit-test-child2.ini'),
         ];
-        $realResolver = new \VuFind\Config\PathResolver();
+        $realResolver = new \VuFind\Config\PathResolver(APPLICATION_PATH, []);
         $mockResolver = $this->getMockBuilder(PathResolver::class)
+            ->disableOriginalConstructor()
             ->getMock();
         $mockResolver->expects($this->any())
             ->method('getConfigPath')

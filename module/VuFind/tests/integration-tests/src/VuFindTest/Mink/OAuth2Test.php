@@ -512,10 +512,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     protected function restoreOpenSSLKeyPair(): void
     {
-        $resolver = new \VuFind\Config\PathResolver();
         $paths = [
-            $resolver->getLocalConfigPath('oauth2_private.key', null, true),
-            $resolver->getLocalConfigPath('oauth2_public.key', null, true),
+            $this->pathResolver
+                ->getLocalConfigPath('oauth2_private.key', null, true),
+            $this->pathResolver
+                ->getLocalConfigPath('oauth2_public.key', null, true),
         ];
 
         foreach ($paths as $path) {

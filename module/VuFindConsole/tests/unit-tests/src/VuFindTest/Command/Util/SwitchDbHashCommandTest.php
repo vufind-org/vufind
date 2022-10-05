@@ -174,8 +174,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $resolver = new \VuFind\Config\PathResolver();
-        $expectedConfig = $resolver->getLocalConfigPath('config.ini', null, true);
+        $expectedConfig = $this->getLocalConfigIniPath();
         $this->assertEquals(
             "\tUpdating $expectedConfig...\n\tWrite failed!\n",
             $commandTester->getDisplay()
@@ -207,8 +206,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $resolver = new \VuFind\Config\PathResolver();
-        $expectedConfig = $resolver->getLocalConfigPath('config.ini', null, true);
+        $expectedConfig = $this->getLocalConfigIniPath();
         $this->assertEquals(
             "\tUpdating $expectedConfig...\n\tConverting hashes for 0 user(s).\n"
             . "\tFinished.\n",
@@ -277,8 +275,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $resolver = new \VuFind\Config\PathResolver();
-        $expectedConfig = $resolver->getLocalConfigPath('config.ini', null, true);
+        $expectedConfig = $this->getLocalConfigIniPath();
         $this->assertEquals(
             "\tUpdating $expectedConfig...\n\tConverting hashes for 1 user(s).\n"
             . "\tFinished.\n",
@@ -286,5 +283,19 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(null, $user['cat_password']);
         $this->assertEquals('mypassword', $this->decode($user['cat_pass_enc']));
+    }
+
+    /**
+     * Get path to local config.ini
+     *
+     * @return string
+     */
+    protected function getLocalConfigIniPath(): string
+    {
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? [LOCAL_OVERRIDE_DIR] : [];
+        $resolver = new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs);
+        return $resolver->getLocalConfigPath('config.ini', null, true);
     }
 }

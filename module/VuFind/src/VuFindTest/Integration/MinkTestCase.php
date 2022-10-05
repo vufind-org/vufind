@@ -73,6 +73,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $session;
 
     /**
+     * Configuration file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
      * Reconfigure VuFind for the current test.
      *
      * @param array $configs Array of settings to change. Top-level keys correspond
@@ -125,16 +132,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function changeConfigFile($configName, $settings, $replace = false)
     {
-        $resolver = new \VuFind\Config\PathResolver();
         $file = $configName . '.ini';
-        $local = $resolver->getLocalConfigPath($file, null, true);
+        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
         if (!in_array($configName, $this->modifiedConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy($resolver->getBaseConfigPath($file), $local);
+                copy($this->pathResolver->getBaseConfigPath($file), $local);
             }
 
             $this->modifiedConfigs[] = $configName;
@@ -165,16 +171,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function changeYamlConfigFile($configName, $settings, $replace = false)
     {
-        $resolver = new \VuFind\Config\PathResolver();
         $file = $configName . '.yaml';
-        $local = $resolver->getLocalConfigPath($file, null, true);
+        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
         if (!in_array($configName, $this->modifiedYamlConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy($resolver->getBaseConfigPath($file), $local);
+                copy($this->pathResolver->getBaseConfigPath($file), $local);
             }
 
             $this->modifiedYamlConfigs[] = $configName;
@@ -310,11 +315,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             '.ini' => $this->modifiedConfigs,
             '.yaml' => $this->modifiedYamlConfigs
         ];
-        $resolver = new \VuFind\Config\PathResolver();
         foreach ($configs as $extension => $files) {
             foreach ($files as $current) {
                 $file = $current . $extension;
-                $local = $resolver->getLocalConfigPath($file, null, true);
+                $local = $this->pathResolver->getLocalConfigPath($file, null, true);
                 $backup = $local . '.bak';
 
                 // Do we have a backup? If so, restore from it; otherwise, just
@@ -741,6 +745,13 @@ EOS
 
         // Reset the modified configs list.
         $this->modifiedConfigs = [];
+
+        // Create a pathResolver:
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+                ? [LOCAL_OVERRIDE_DIR] : [];
+        $this->pathResolver
+            = new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs);
     }
 
     /**

@@ -27,8 +27,6 @@
  */
 namespace VuFind\Controller\Feature;
 
-use VuFindSearch\Command\AlphabeticBrowseCommand;
-
 /**
  * VuFind Action Feature Trait - Configuration file path methods
  *
@@ -54,7 +52,7 @@ trait ConfigPathTrait
     }
 
     /**
-     * Get path to local configuration file
+     * Get path to local configuration file (even if it does not yet exist)
      *
      * @param string $filename Configuration file name
      *
