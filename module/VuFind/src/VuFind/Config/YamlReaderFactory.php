@@ -68,7 +68,7 @@ class YamlReaderFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Cache\Manager::class),
-            [$container->get(PathResolver::class), 'getConfigPath']
+            $container->get(PathResolver::class)
         );
     }
 }
