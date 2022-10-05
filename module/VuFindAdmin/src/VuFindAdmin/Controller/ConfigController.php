@@ -63,7 +63,13 @@ class ConfigController extends AbstractAdmin
     public function enableautoconfigAction()
     {
         $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
-        $configFile = $resolver->getConfigPath('config.ini');
+        if (!($configFile = $resolver->getLocalConfigPath('config.ini'))) {
+            $this->flashMessenger()->addErrorMessage(
+                'Could not enable auto-configuration; local '
+                . $configFile . ' not found.'
+            );
+            return $this->forwardTo('AdminConfig', 'Home');
+        }
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if ($writer->save()) {
