@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\Config;
 
+use VuFind\Config\PathResolver;
 use VuFind\Config\SearchSpecsReader;
 
 /**
@@ -123,18 +124,10 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testParentYaml()
     {
-        $fileMap = [
-            'top.yaml' => $this->getFixturePath('configs/inheritance/top.yaml'),
-            'middle.yaml'
-                => $this->getFixturePath('configs/inheritance/middle.yaml'),
-            'bottom.yaml'
-                => $this->getFixturePath('configs/inheritance/bottom.yaml'),
-        ];
-
-        $getConfigPath = function ($filename) use ($fileMap) {
-            return $fileMap[$filename] ?? null;
-        };
-        $reader = new SearchSpecsReader(null, $getConfigPath);
+        $reader = new SearchSpecsReader(
+            null,
+            new PathResolver($this->getFixtureDir() . 'configs/inheritance', [])
+        );
 
         $this->assertEquals(
             [
@@ -162,7 +155,14 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
             $this->callMethod(
                 $reader,
                 'getFromPaths',
-                [$fileMap['middle.yaml'], $fileMap['bottom.yaml']]
+                [
+                    $this->getFixturePath(
+                        'configs/inheritance/config/vufind/middle.yaml'
+                    ),
+                    $this->getFixturePath(
+                        'configs/inheritance/config/vufind/bottom.yaml'
+                    ),
+                ]
             )
         );
     }

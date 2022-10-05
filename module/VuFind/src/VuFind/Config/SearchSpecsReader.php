@@ -41,15 +41,15 @@ class SearchSpecsReader extends YamlReader
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager       Cache manager (optional)
-     * @param callable              $configPathCallback Callback for getting a config
-     * file path (optional; defaults to Locator::getConfigPath)
+     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param PathResolver          $pathResolver Config file path resolver
+     * (optional; defaults to \VuFind\Config\Locator)
      */
     public function __construct(
         \VuFind\Cache\Manager $cacheManager = null,
-        callable $configPathCallback = null
+        PathResolver $pathResolver = null
     ) {
-        parent::__construct($cacheManager, $configPathCallback);
+        parent::__construct($cacheManager, $pathResolver);
         $this->cacheName = 'searchspecs';
     }
 }

@@ -82,6 +82,13 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected $accessTokenTable;
 
     /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
      * Claim extractor
      *
      * @var ClaimExtractor
@@ -111,6 +118,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         $this->container = $container;
+        $this->pathResolver = $container->get(PathResolver::class);
 
         // Load configuration:
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
@@ -138,7 +146,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $container->get(IdentityRepository::class),
                 $tablePluginManager->get('AccessToken'),
                 $this->getClaimExtractor(),
-                [$this, 'getConfigPath']
+                $this->pathResolver
             )
         );
     }
@@ -322,31 +330,12 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         $keyPath = $this->getOAuth2ServerSetting($key);
         if (strncmp($keyPath, '/', 1) !== 0) {
             // Convert relative path:
-            $keyPath = $this->getConfigPath($keyPath);
+            $keyPath = $this->pathResolver->getConfigPath($keyPath);
         }
         return new CryptKey(
             $keyPath,
             null,
             $this->oauth2Config['Server']['keyPermissionChecks'] ?? true
         );
-    }
-
-    /**
-     * Overridable wrapper for config path resolution
-     *
-     * @param string  $filename Config file name
-     * @param ?string $path     Path relative to VuFind base (optional; use null for
-     * default)
-     * @param int     $mode     Whether to check for local file, base file or both
-     *
-     * @return ?string
-     */
-    public function getConfigPath(
-        $filename,
-        $path = null,
-        int $mode = PathResolver::MODE_AUTO
-    ): ?string {
-        $resolver = $this->container->get(\VuFind\Config\PathResolver::class);
-        return $resolver->getConfigPath($filename, $path, $mode);
     }
 }

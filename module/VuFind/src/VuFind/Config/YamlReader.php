@@ -58,11 +58,11 @@ class YamlReader
     protected $cacheManager;
 
     /**
-     * Callback for getting a configuration file path
+     * Config file path resolver
      *
-     * @var callable
+     * @var PathResolver
      */
-    protected $configPathCallback;
+    protected $pathResolver;
 
     /**
      * Cache of loaded files.
@@ -74,17 +74,16 @@ class YamlReader
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager       Cache manager (optional)
-     * @param callable              $configPathCallback Callback for getting a config
-     * file path (optional; defaults to Locator::getConfigPath)
+     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param PathResolver          $pathResolver Config file path resolver
+     * (optional; defaults to \VuFind\Config\Locator)
      */
     public function __construct(
         \VuFind\Cache\Manager $cacheManager = null,
-        callable $configPathCallback = null
+        PathResolver $pathResolver = null
     ) {
         $this->cacheManager = $cacheManager;
-        $this->configPathCallback = $configPathCallback
-            ?? [Locator::class, 'getConfigPath'];
+        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -104,18 +103,20 @@ class YamlReader
         // to pass $forceReload down another level to load an updated file if
         // something has changed -- it's enough to force a cache recheck).
         if ($forceReload || !isset($this->files[$filename])) {
-            $localConfigPath = $useLocalConfig
-                ? ($this->configPathCallback)(
-                    $filename,
-                    null,
-                    PathResolver::MODE_LOCAL
-                ) : null;
+            if ($this->pathResolver) {
+                $localConfigPath = $useLocalConfig
+                    ? $this->pathResolver->getLocalConfigPath($filename)
+                    : null;
+            } else {
+                $localConfigPath = $useLocalConfig
+                    ? Locator::getLocalConfigPath($filename)
+                    : null;
+            }
+            $baseConfigPath = $this->pathResolver
+                ? $this->pathResolver->getBaseConfigPath($filename)
+                : Locator::getBaseConfigPath($filename);
             $this->files[$filename] = $this->getFromPaths(
-                ($this->configPathCallback)(
-                    $filename,
-                    null,
-                    PathResolver::MODE_BASE
-                ),
+                $baseConfigPath,
                 $localConfigPath
             );
         }
