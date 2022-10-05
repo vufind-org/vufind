@@ -737,7 +737,8 @@ EOS
      */
     public function setUp(): void
     {
-        // Give up if we're not running in CI:
+        // Give up if we're not running in CI (throws, so no problem with any
+        // further actions in any setUp methods of child classes):
         if (!$this->continuousIntegrationRunning()) {
             $this->markTestSkipped('Continuous integration not running.');
             return;
@@ -747,9 +748,8 @@ EOS
         $this->modifiedConfigs = [];
 
         // Create a pathResolver:
-        $localDirs = defined('LOCAL_OVERRIDE_DIR')
-            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-                ? [LOCAL_OVERRIDE_DIR] : [];
+        $localDirs = strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? [LOCAL_OVERRIDE_DIR] : [];
         $this->pathResolver
             = new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs);
     }
