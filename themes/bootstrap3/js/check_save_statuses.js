@@ -1,4 +1,4 @@
-/*global htmlEncode, userIsLoggedIn, Hunt, VuFind */
+/*global htmlEncode, userIsLoggedIn, VuFind */
 /*exported checkSaveStatuses, checkSaveStatusesCallback */
 
 function displaySaveStatus(itemLists, $item) {
@@ -109,12 +109,8 @@ function checkSaveStatus(el) {
   }, $item);
 }
 
-var saveStatusObserver = null;
 function checkSaveStatuses(_container) {
-  // Stop looking for a scroll loader
-  if (saveStatusObserver) {
-    saveStatusObserver.disconnect();
-  }
+  VuFind.observer.disconnect('saveStatuses');
 
   if (!userIsLoggedIn) {
     VuFind.emit("save-status-done");
@@ -149,12 +145,17 @@ function checkSaveStatusesCallback() {
 }
 
 $(document).ready(function checkSaveStatusFail() {
-  if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
+  if (VuFind.isPrinting()) {
     checkSaveStatuses();
-  } else {
-    saveStatusObserver = new Hunt(
-      $('.result,.record').toArray(),
-      { enter: checkSaveStatus }
-    );
+    return;
   }
+  VuFind.observer.create(
+    'IntersectionObserver',
+    'saveStatuses',
+    checkSaveStatus
+  );
+  VuFind.observer.observe(
+    'saveStatuses',
+    $('.result,.record').toArray()
+  );
 });
