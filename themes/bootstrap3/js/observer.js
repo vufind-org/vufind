@@ -4,25 +4,6 @@ VuFind.register('observer', () => {
   let observers = {};
 
   /**
-   * Creates an observer and saves it into internal object.
-   * 
-   * @param {String}   type        Type of the observer to create
-   * @param {String}   identifier  Id of the observer to create
-   * @param {Function} onIntersect Callback to use on elements
-   * @param {Object}   options     Options for the Intersection Observer
-   */
-  function create(type, identifier, onIntersect, options) {
-    if (typeof observers[identifier] !== 'undefined') {
-      return;
-    }
-    switch (type) {
-    case 'IntersectionObserver':
-      createIntersectionObserver(identifier, onIntersect, options);
-      break;
-    }
-  }
-
-  /**
    * Create an IntersectionObserver.
    * If the IntersectionObserver is not supported, onIntersect will be used.
    *
@@ -48,6 +29,25 @@ VuFind.register('observer', () => {
           }
         }); 
       }, options);
+    }
+  }
+
+  /**
+   * Creates an observer and saves it into internal object.
+   * 
+   * @param {String}   type        Type of the observer to create
+   * @param {String}   identifier  Id of the observer to create
+   * @param {Function} onIntersect Callback to use on elements
+   * @param {Object}   options     Options for the Intersection Observer
+   */
+  function create(type, identifier, onIntersect, options) {
+    if (typeof observers[identifier] !== 'undefined') {
+      return;
+    }
+    switch (type) {
+    case 'IntersectionObserver':
+      createIntersectionObserver(identifier, onIntersect, options);
+      break;
     }
   }
 
