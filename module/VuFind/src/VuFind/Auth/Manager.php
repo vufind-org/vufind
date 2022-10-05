@@ -791,4 +791,14 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
         $user->last_login = date('Y-m-d H:i:s');
         $user->save();
     }
+
+    /**
+     * Is the user allowed to log directly into the ILS?
+     *
+     * @return bool
+     */
+    public function allowsUserIlsLogin(): bool
+    {
+        return $this->config->Catalog->allowUserLogin ?? true;
+    }
 }
