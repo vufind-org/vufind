@@ -49,6 +49,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
 
@@ -749,21 +750,7 @@ EOS
         $this->modifiedConfigs = [];
 
         // Create a pathResolver:
-        $localDirs = defined('LOCAL_OVERRIDE_DIR')
-            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-            ? [
-                [
-                    'directory' => LOCAL_OVERRIDE_DIR,
-                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
-                ]
-            ] : [];
-        $this->pathResolver = new PathResolver(
-            [
-                'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
-            ],
-            $localDirs
-        );
+        $this->pathResolver = $this->getPathResolver();
     }
 
     /**
