@@ -63,8 +63,8 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
         $this->stackedResolver = new PathResolver(
             APPLICATION_PATH,
             [
-                $fixtureDir . 'middle',
-                $fixtureDir . 'bottom',
+                $fixtureDir . 'secondary',
+                $fixtureDir . 'primary',
             ]
         );
     }
@@ -111,18 +111,22 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
         $fixtureDir = $this->getStackedFixtureDir();
         return [
             [
-                'only-bottom.ini',
-                $fixtureDir . 'bottom/config/vufind/only-bottom.ini'
+                // A file that exists only in the primary path:
+                'only-primary.ini',
+                $fixtureDir . 'primary/config/vufind/only-primary.ini'
             ],
             [
+                // A file that exists both in the primary and secondary paths:
                 'both.ini',
-                $fixtureDir . 'bottom/config/vufind/both.ini'
+                $fixtureDir . 'primary/config/vufind/both.ini'
             ],
             [
+                // A file that exists in the secondary path as well as base path:
                 'facets.ini',
-                $fixtureDir . 'middle/config/vufind/facets.ini'
+                $fixtureDir . 'secondary/config/vufind/facets.ini'
             ],
             [
+                // A file that exists only in the base path:
                 'config.ini',
                 APPLICATION_PATH . '/config/vufind/config.ini'
             ],
