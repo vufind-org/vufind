@@ -223,12 +223,11 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       checkItemStatuses(container);
       return;
     }
-    VuFind.observer.create(
-      'IntersectionObserver',
+    VuFind.observerManager.createIntersectionObserver(
       'itemStatuses',
       checkItemStatus
     );
-    VuFind.observer.observe(
+    VuFind.observerManager.observe(
       'itemStatuses',
       $(container).find('.ajaxItem').toArray()
     );

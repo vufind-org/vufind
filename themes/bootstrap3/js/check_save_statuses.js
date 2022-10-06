@@ -149,12 +149,11 @@ $(document).ready(function checkSaveStatusFail() {
     checkSaveStatuses();
     return;
   }
-  VuFind.observer.create(
-    'IntersectionObserver',
+  VuFind.observerManager.createIntersectionObserver(
     'saveStatuses',
     checkSaveStatus
   );
-  VuFind.observer.observe(
+  VuFind.observerManager.observe(
     'saveStatuses',
     $('.result,.record').toArray()
   );

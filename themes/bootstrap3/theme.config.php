@@ -46,7 +46,7 @@ return [
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'truncate.js', 'priority' => 330],
         ['file' => 'trigger_print.js', 'priority' => 340],
-        ['file' => 'observer.js', 'priority' => 350],
+        ['file' => 'observer_manager.js', 'priority' => 350],
     ],
     'less' => [
         'active' => false,

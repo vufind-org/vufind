@@ -1,11 +1,15 @@
 /*global VuFind*/
 
-VuFind.register('observer', () => {
+/**
+ * Manager for creating observers.
+ */
+VuFind.register('observerManager', () => {
   let observers = {};
 
   /**
    * Create an IntersectionObserver.
-   * If the IntersectionObserver is not supported, onIntersect will be used.
+   * If the IntersectionObserver is not supported, onIntersect will be used as a
+   * standalone function.
    *
    * @link https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API 
    *
@@ -14,6 +18,9 @@ VuFind.register('observer', () => {
    * @param {Object}   options     Options for the Intersection Observer
    */
   function createIntersectionObserver(identifier, onIntersect, options) {
+    if (typeof observers[identifier] !== 'undefined') {
+      return;
+    }
     if (!('IntersectionObserver' in window) ||
       !('IntersectionObserverEntry' in window) ||
       !('isIntersecting' in window.IntersectionObserverEntry.prototype) ||
@@ -29,25 +36,6 @@ VuFind.register('observer', () => {
           }
         }); 
       }, options);
-    }
-  }
-
-  /**
-   * Creates an observer and saves it into internal object.
-   * 
-   * @param {String}   type        Type of the observer to create
-   * @param {String}   identifier  Id of the observer to create
-   * @param {Function} onIntersect Callback to use on elements
-   * @param {Object}   options     Options for the Intersection Observer
-   */
-  function create(type, identifier, onIntersect, options) {
-    if (typeof observers[identifier] !== 'undefined') {
-      return;
-    }
-    switch (type) {
-    case 'IntersectionObserver':
-      createIntersectionObserver(identifier, onIntersect, options);
-      break;
     }
   }
 
@@ -80,11 +68,16 @@ VuFind.register('observer', () => {
    * @param {String} identifier Identifier of observer to remove
    */
   function disconnect(identifier) {
-    if (typeof observers[identifier] === 'object') {
+    switch (typeof observers[identifier]) {
+    case 'object':
       observers[identifier].disconnect();
       delete observers[identifier];
+      break;
+    case 'function':
+      delete observers[identifier];
+      break;
     }
   }
 
-  return { create: create, observe: observe, disconnect: disconnect };
+  return { createIntersectionObserver, observe, disconnect };
 });
