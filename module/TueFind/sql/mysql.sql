@@ -31,6 +31,7 @@ CREATE TABLE tuefind_rss_feeds (
     descriptions_and_substitutions VARCHAR(1000) DEFAULT NULL,
     strptime_format VARCHAR(50) DEFAULT NULL,
     downloader_time_limit INT NOT NULL DEFAULT 30,
+    active tinyint(1) NOT NULL DEFAULT '1',
     CONSTRAINT id_constraint UNIQUE (id),
     CONSTRAINT feed_name_constraint UNIQUE (feed_name),
     CONSTRAINT feed_url_constraint UNIQUE (feed_url(768)),
