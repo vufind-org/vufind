@@ -33,6 +33,7 @@ use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
 /**
@@ -748,10 +749,21 @@ EOS
         $this->modifiedConfigs = [];
 
         // Create a pathResolver:
-        $localDirs = strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-            ? [LOCAL_OVERRIDE_DIR] : [];
-        $this->pathResolver
-            = new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs);
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? [
+                [
+                    'directory' => LOCAL_OVERRIDE_DIR,
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                ]
+            ] : [];
+        $this->pathResolver = new PathResolver(
+            [
+                'directory' => APPLICATION_PATH,
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+            ],
+            $localDirs
+        );
     }
 
     /**
