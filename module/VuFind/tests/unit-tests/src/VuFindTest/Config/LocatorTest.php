@@ -48,9 +48,9 @@ class LocatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testLocator()
     {
-        $baseConfig = APPLICATION_PATH . '/' . PathResolver::DEFAULT_CONFIG_PATH
+        $baseConfig = APPLICATION_PATH . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
             . '/config.ini';
-        $localConfig = LOCAL_OVERRIDE_DIR . '/' . PathResolver::DEFAULT_CONFIG_PATH
+        $localConfig = LOCAL_OVERRIDE_DIR . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
             . '/config.ini';
 
         $this->assertEquals(

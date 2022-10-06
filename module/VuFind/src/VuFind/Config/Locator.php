@@ -101,7 +101,18 @@ class Locator
     {
         $localDirs = defined('LOCAL_OVERRIDE_DIR')
             && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-            ? [LOCAL_OVERRIDE_DIR] : [];
-        return new \VuFind\Config\PathResolver(APPLICATION_PATH, $localDirs);
+            ? [
+                [
+                    'directory' => LOCAL_OVERRIDE_DIR,
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                ]
+            ] : [];
+        return new \VuFind\Config\PathResolver(
+            [
+                'directory' => APPLICATION_PATH,
+                'defaultConfigSubdir' => 'config/vufind'
+            ],
+            $localDirs
+        );
     }
 }

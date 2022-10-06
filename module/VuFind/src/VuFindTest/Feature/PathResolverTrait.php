@@ -44,13 +44,27 @@ trait PathResolverTrait
     /**
      * Get a config file path resolver
      *
+     * @param ?string $baseDirectory Optional directory to override APPLICATION_PATH
+     *
      * @return PathResolver
      */
-    protected function getPathResolver(): PathResolver
+    protected function getPathResolver(?string $baseDirectory = null): PathResolver
     {
-        $localDirs = strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-            ? [LOCAL_OVERRIDE_DIR] : [];
-        return new PathResolver(APPLICATION_PATH, $localDirs);
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? [
+                [
+                    'directory' => LOCAL_OVERRIDE_DIR,
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                ]
+            ] : [];
+        return new \VuFind\Config\PathResolver(
+            [
+                'directory' => $baseDirectory ?? APPLICATION_PATH,
+                'defaultConfigSubdir' => 'config/vufind'
+            ],
+            $localDirs
+        );
     }
 
     /**
@@ -60,7 +74,7 @@ trait PathResolverTrait
      *
      * @return void
      */
-    protected function addPathResolverFactory(
+    protected function addPathResolverToContainer(
         \VuFindTest\Container\MockContainer $container
     ): void {
         $prFactory = new \VuFind\Config\PathResolverFactory();

@@ -30,9 +30,9 @@
 namespace VuFindTest\Config;
 
 use Laminas\Cache\Storage\Adapter\AbstractAdapter;
-use VuFind\Config\PathResolver;
 use VuFind\Config\YamlReader;
 use VuFindTest\Feature\FixtureTrait;
+use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config YamlReader Test Class
@@ -47,6 +47,7 @@ use VuFindTest\Feature\FixtureTrait;
 class YamlReaderTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
+    use PathResolverTrait;
 
     /**
      * Test that the cache is updated as expected.
@@ -150,7 +151,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     {
         $reader = new YamlReader(
             null,
-            new PathResolver($this->getFixtureDir() . 'configs/yaml', [])
+            $this->getPathResolver($this->getFixtureDir() . 'configs/yaml')
         );
         $config = $reader->get('yamlreader-child.yaml');
         $this->assertEquals(

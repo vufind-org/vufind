@@ -29,6 +29,7 @@ namespace VuFindTest\Config;
 
 use VuFind\Config\PathResolver;
 use VuFindTest\Feature\FixtureTrait;
+use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config Factory Test Class
@@ -43,6 +44,7 @@ use VuFindTest\Feature\FixtureTrait;
 class PluginFactoryTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
+    use PathResolverTrait;
 
     /**
      * Plugin factory instance.
@@ -78,7 +80,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
             'unit-test-child2.ini'
                 => $this->getFixturePath('configs/inheritance/unit-test-child2.ini'),
         ];
-        $realResolver = new \VuFind\Config\PathResolver(APPLICATION_PATH, []);
+        $realResolver = $this->getPathResolver();
         $mockResolver = $this->getMockBuilder(PathResolver::class)
             ->disableOriginalConstructor()
             ->getMock();

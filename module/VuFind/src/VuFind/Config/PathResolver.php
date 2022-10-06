@@ -42,36 +42,51 @@ namespace VuFind\Config;
 class PathResolver
 {
     /**
-     * Default configuration path.
+     * Default configuration subdirectory.
      *
      * @var string
      */
-    public const DEFAULT_CONFIG_PATH = 'config/vufind';
+    public const DEFAULT_CONFIG_SUBDIR = 'config/vufind';
 
     /**
-     * Base configuration directory
+     * Base directory
      *
-     * @var string
+     * Must contain the following keys:
+     *
+     * directory           - The local configuration directory
+     * defaultConfigSubdir - Default subdirectory under directory for configuration
+     *                       files
+     *
+     * @var array
      */
-    protected $baseConfigDir;
+    protected $baseDirectorySpec;
 
     /**
      * Local configuration directory stack. Local configuration files are searched
-     * for in all directories until found.
+     * for in all directories until found, starting from the last entry.
      *
-     * @var string[]
+     * Each entry must contain the following keys:
+     *
+     * directory           - The local configuration directory
+     * defaultConfigSubdir - Default subdirectory under directory for configuration
+     *                       files
+     *
+     * @var array
      */
     protected $localConfigDirStack;
 
     /**
      * Constructor
      *
-     * @param string   $baseConfigDir       Base configuration directory
-     * @param string[] $localConfigDirStack Local configuration directory stack
+     * @param array $baseDirectorySpec   Base directory specification
+     * @param array $localConfigDirStack Local configuration directory specification
+     * stack
      */
-    public function __construct(string $baseConfigDir, array $localConfigDirStack)
-    {
-        $this->baseConfigDir = $baseConfigDir;
+    public function __construct(
+        array $baseDirectorySpec,
+        array $localConfigDirStack
+    ) {
+        $this->baseDirectorySpec = $baseDirectorySpec;
         $this->localConfigDirStack = $localConfigDirStack;
     }
 
@@ -91,12 +106,9 @@ class PathResolver
         ?string $path = null,
         bool $force = false
     ): ?string {
-        if (null === $path) {
-            $path = self::DEFAULT_CONFIG_PATH;
-        }
         $fallbackResult = null;
-        foreach (array_reverse($this->localConfigDirStack) as $localDir) {
-            $configPath = "$localDir/$path/$filename";
+        foreach (array_reverse($this->localConfigDirStack) as $localDirSpec) {
+            $configPath = $this->buildPath($localDirSpec, $path, $filename);
             if (file_exists($configPath)) {
                 return $configPath;
             }
@@ -118,10 +130,7 @@ class PathResolver
      */
     public function getBaseConfigPath(string $filename, ?string $path = null): string
     {
-        if (null === $path) {
-            $path = self::DEFAULT_CONFIG_PATH;
-        }
-        return "{$this->baseConfigDir}/$path/$filename";
+        return $this->buildPath($this->baseDirectorySpec, $path, $filename);
     }
 
     /**
@@ -143,5 +152,25 @@ class PathResolver
 
         // Return base version:
         return $this->getBaseConfigPath($filename, $path);
+    }
+
+    /**
+     * Build a complete file path from a directory specification, optional
+     * configuration file sub-directory and a filename.
+     *
+     * @param array   $directorySpec Directory specification
+     * @param ?string $configSubdir  Optional configuration file subdirectory
+     * @param string  $filename      Filename
+     *
+     * @return string
+     */
+    protected function buildPath(
+        array $directorySpec,
+        ?string $configSubdir,
+        string $filename
+    ): string {
+        return $directorySpec['directory']
+            . '/' . ($configSubdir ?? $directorySpec['defaultConfigSubdir'])
+            . "/$filename";
     }
 }

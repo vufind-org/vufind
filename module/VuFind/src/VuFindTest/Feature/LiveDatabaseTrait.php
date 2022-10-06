@@ -75,7 +75,7 @@ trait LiveDatabaseTrait
                 $config['vufind']['config_reader']
             );
             $container->set(\VuFind\Config\PluginManager::class, $configManager);
-            $this->addPathResolverFactory($container);
+            $this->addPathResolverToContainer($container);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );

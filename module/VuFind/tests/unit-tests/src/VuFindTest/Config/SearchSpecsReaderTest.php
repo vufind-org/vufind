@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Config;
 
-use VuFind\Config\PathResolver;
 use VuFind\Config\SearchSpecsReader;
 
 /**
@@ -43,6 +42,7 @@ use VuFind\Config\SearchSpecsReader;
 class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -126,7 +126,7 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
     {
         $reader = new SearchSpecsReader(
             null,
-            new PathResolver($this->getFixtureDir() . 'configs/inheritance', [])
+            $this->getPathResolver($this->getFixtureDir() . 'configs/inheritance')
         );
 
         $this->assertEquals(

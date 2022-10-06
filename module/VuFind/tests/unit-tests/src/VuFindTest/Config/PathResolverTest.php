@@ -61,10 +61,19 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     {
         $fixtureDir = $this->getStackedFixtureDir();
         $this->stackedResolver = new PathResolver(
-            APPLICATION_PATH,
             [
-                $fixtureDir . 'secondary',
-                $fixtureDir . 'primary',
+                'directory' => APPLICATION_PATH,
+                'defaultConfigSubdir' => 'config/vufind'
+            ],
+            [
+                [
+                    'directory' => $fixtureDir . 'secondary',
+                    'defaultConfigSubdir' => 'config/vufind'
+                ],
+                [
+                    'directory' => $fixtureDir . 'primary',
+                    'defaultConfigSubdir' => 'config/vufind'
+                ]
             ]
         );
     }
@@ -76,9 +85,9 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
      */
     public function testPathResolver(): void
     {
-        $baseConfig = APPLICATION_PATH . '/' . PathResolver::DEFAULT_CONFIG_PATH
+        $baseConfig = APPLICATION_PATH . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
             . '/config.ini';
-        $localConfig = LOCAL_OVERRIDE_DIR . '/' . PathResolver::DEFAULT_CONFIG_PATH
+        $localConfig = LOCAL_OVERRIDE_DIR . '/' . PathResolver::DEFAULT_CONFIG_SUBDIR
             . '/config.ini';
 
         $pathResolver = $this->getPathResolver();

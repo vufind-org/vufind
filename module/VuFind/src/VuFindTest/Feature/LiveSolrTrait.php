@@ -69,7 +69,7 @@ trait LiveSolrTrait
             $config['vufind']['config_reader']
         );
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
-        $this->addPathResolverFactory($container);
+        $this->addPathResolverToContainer($container);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();
         $container->set(
             \VuFindHttp\HttpService::class,
