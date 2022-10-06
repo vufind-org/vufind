@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Config;
 
-use VuFind\Config\Locator;
 use VuFind\Config\SearchSpecsReader;
 
 /**
@@ -43,50 +42,8 @@ use VuFind\Config\SearchSpecsReader;
 class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
     use \VuFindTest\Feature\ReflectionTrait;
-
-    /**
-     * Flag -- did writing config files fail?
-     *
-     * @var bool
-     */
-    protected static $writeFailed = false;
-
-    /**
-     * Array of files to clean up after test.
-     *
-     * @var array
-     */
-    protected static $filesToDelete = [];
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass(): void
-    {
-        // Create test files:
-        $parentPath = Locator::getLocalConfigPath('top.yaml', null, true);
-        $parent = "top: foo";
-        $childPath = Locator::getLocalConfigPath('middle.yaml', null, true);
-        $child = "\"@parent_yaml\": $parentPath\nmiddle: bar";
-        $grandchildPath = Locator::getLocalConfigPath('bottom.yaml', null, true);
-        $grandchild = "\"@parent_yaml\": $childPath\nbottom: baz";
-
-        // Fail if we are unable to write files:
-        if (null === $parentPath || null === $childPath || null === $grandchildPath
-            || !file_put_contents($parentPath, $parent)
-            || !file_put_contents($childPath, $child)
-            || !file_put_contents($grandchildPath, $grandchild)
-        ) {
-            self::$writeFailed = true;
-            return;
-        }
-
-        // Mark for cleanup:
-        self::$filesToDelete = [$parentPath, $childPath, $grandchildPath];
-    }
 
     /**
      * Test loading of a YAML file.
@@ -167,30 +124,46 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testParentYaml()
     {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-        $reader = new SearchSpecsReader();
-        $core = Locator::getLocalConfigPath('middle.yaml', null, true);
-        $local = Locator::getLocalConfigPath('bottom.yaml', null, true);
+        $reader = new SearchSpecsReader(
+            null,
+            $this->getPathResolver($this->getFixtureDir() . 'configs/inheritance')
+        );
+
+        $this->assertEquals(
+            [
+                'top' => 'foo',
+                'middle' => 'bar',
+            ],
+            $reader->get('middle.yaml')
+        );
+
         $this->assertEquals(
             [
                 'top' => 'foo',
                 'middle' => 'bar',
                 'bottom' => 'baz',
             ],
-            $this->callMethod($reader, 'getFromPaths', [$core, $local])
+            $reader->get('bottom.yaml')
         );
-    }
 
-    /**
-     * Standard teardown method.
-     *
-     * @return void
-     */
-    public static function tearDownAfterClass(): void
-    {
-        // Clean up test files:
-        array_map('unlink', self::$filesToDelete);
+        $this->assertEquals(
+            [
+                'top' => 'foo',
+                'middle' => 'bar',
+                'bottom' => 'baz',
+            ],
+            $this->callMethod(
+                $reader,
+                'getFromPaths',
+                [
+                    $this->getFixturePath(
+                        'configs/inheritance/config/vufind/middle.yaml'
+                    ),
+                    $this->getFixturePath(
+                        'configs/inheritance/config/vufind/bottom.yaml'
+                    ),
+                ]
+            )
+        );
     }
 }

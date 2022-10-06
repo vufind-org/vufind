@@ -70,7 +70,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
         bool $expectedNoBarcodeResult
     ): void {
         // Create a helper object:
-        $helper = new \VuFind\View\Helper\Root\Holdings($config);
+        $helper = new \VuFind\View\Helper\Root\Holdings(['Catalog' => $config]);
         $this->assertEquals(
             $expectedBarcodeResult,
             $helper->holdingIsVisible(['barcode' => '1234'])

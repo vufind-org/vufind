@@ -36,6 +36,7 @@ use Laminas\Session\Container as SessionContainer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use LmcRbacMvc\Service\AuthorizationService as LmAuthorizationService;
 use OpenIDConnectServer\ClaimExtractor;
+use VuFind\Config\PathResolver;
 use VuFind\Db\Table\AccessToken;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\OAuth2\Entity\UserEntity;
@@ -125,11 +126,11 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     protected $claimExtractor;
 
     /**
-     * Callback for getting a configuration file path
+     * Config file path resolver
      *
-     * @var callable
+     * @var PathResolver
      */
-    protected $configPathCallback;
+    protected $pathResolver;
 
     /**
      * Constructor
@@ -144,7 +145,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      * @param IdentityRepository      $ir      Identity repository
      * @param AccessToken             $at      Access token table
      * @param ClaimExtractor          $ce      Claim extractor
-     * @param callable                $confCb  Callback for getting a config file
+     * @param PathResolver            $pr      Config file path resolver
      * path
      */
     public function __construct(
@@ -158,7 +159,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         IdentityRepository $ir,
         AccessToken $at,
         ClaimExtractor $ce,
-        callable $confCb
+        PathResolver $pr
     ) {
         parent::__construct($sm);
         $this->oauth2Config = $config;
@@ -170,7 +171,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         $this->identityRepository = $ir;
         $this->accessTokenTable = $at;
         $this->claimExtractor = $ce;
-        $this->configPathCallback = $confCb;
+        $this->pathResolver = $pr;
     }
 
     /**
@@ -348,7 +349,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         $result = [];
         $keyPath = $this->oauth2Config['Server']['publicKeyPath'] ?? '';
         if (strncmp($keyPath, '/', 1) !== 0) {
-            $keyPath = ($this->configPathCallback)($keyPath);
+            $keyPath = $this->pathResolver->getConfigPath($keyPath);
         }
         if (file_exists($keyPath)) {
             $keyDetails = openssl_pkey_get_details(
