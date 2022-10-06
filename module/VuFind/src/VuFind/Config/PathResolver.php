@@ -53,7 +53,7 @@ class PathResolver
      *
      * Must contain the following keys:
      *
-     * directory           - The local configuration directory
+     * directory           - The base configuration directory
      * defaultConfigSubdir - Default subdirectory under directory for configuration
      *                       files
      *
