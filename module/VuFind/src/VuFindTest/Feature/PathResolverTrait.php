@@ -61,7 +61,7 @@ trait PathResolverTrait
         return new \VuFind\Config\PathResolver(
             [
                 'directory' => $baseDirectory ?? APPLICATION_PATH,
-                'defaultConfigSubdir' => 'config/vufind'
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
             ],
             $localDirs
         );

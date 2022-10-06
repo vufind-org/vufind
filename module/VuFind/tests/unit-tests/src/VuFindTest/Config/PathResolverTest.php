@@ -63,16 +63,16 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
         $this->stackedResolver = new PathResolver(
             [
                 'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => 'config/vufind'
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
             ],
             [
                 [
                     'directory' => $fixtureDir . 'secondary',
-                    'defaultConfigSubdir' => 'config/vufind'
+                    'defaultConfigSubdir' => 'config/custom'
                 ],
                 [
                     'directory' => $fixtureDir . 'primary',
-                    'defaultConfigSubdir' => 'config/vufind'
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
                 ]
             ]
         );
@@ -132,7 +132,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
             [
                 // A file that exists in the secondary path as well as base path:
                 'facets.ini',
-                $fixtureDir . 'secondary/config/vufind/facets.ini'
+                $fixtureDir . 'secondary/config/custom/facets.ini'
             ],
             [
                 // A file that exists only in the base path:

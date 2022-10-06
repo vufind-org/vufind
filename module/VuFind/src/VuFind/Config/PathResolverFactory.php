@@ -45,11 +45,18 @@ use Psr\Container\ContainerInterface;
 class PathResolverFactory implements FactoryInterface
 {
     /**
-     * Default config file directory under a local override directory
+     * Default base config file subdirectory under the base directory
      *
      * @var string
      */
-    protected $defaultConfigDirectory = PathResolver::DEFAULT_CONFIG_SUBDIR;
+    protected $defaultBaseConfigSubdir = PathResolver::DEFAULT_CONFIG_SUBDIR;
+
+    /**
+     * Default config file subdirectory under a local override directory
+     *
+     * @var string
+     */
+    protected $defaultLocalConfigSubdir = PathResolver::DEFAULT_CONFIG_SUBDIR;
 
     /**
      * Create an object
@@ -78,13 +85,13 @@ class PathResolverFactory implements FactoryInterface
                 ? [
                     [
                         'directory' => LOCAL_OVERRIDE_DIR,
-                        'defaultConfigSubdir' => $this->defaultConfigDirectory
+                        'defaultConfigSubdir' => $this->defaultLocalConfigSubdir
                     ]
                 ] : [];
         return new $requestedName(
             [
                 'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => 'config/vufind'
+                'defaultConfigSubdir' => $this->defaultBaseConfigSubdir
             ],
             $localDirs
         );
