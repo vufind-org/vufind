@@ -40,20 +40,6 @@ namespace VuFindTest\Mink;
 class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Test that hierarchy facets work properly.
      *
      * @return void

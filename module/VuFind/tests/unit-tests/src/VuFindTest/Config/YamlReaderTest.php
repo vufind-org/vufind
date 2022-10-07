@@ -32,6 +32,7 @@ namespace VuFindTest\Config;
 use Laminas\Cache\Storage\Adapter\AbstractAdapter;
 use VuFind\Config\YamlReader;
 use VuFindTest\Feature\FixtureTrait;
+use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config YamlReader Test Class
@@ -46,6 +47,7 @@ use VuFindTest\Feature\FixtureTrait;
 class YamlReaderTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
+    use PathResolverTrait;
 
     /**
      * Test that the cache is updated as expected.
@@ -147,11 +149,10 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
      */
     public function testParentConfig(): void
     {
-        // Same path passed as both base and local, no problem for the test:
-        $callback = function ($filename) {
-            return $this->getFixturePath("configs/yaml/$filename");
-        };
-        $reader = new YamlReader(null, $callback);
+        $reader = new YamlReader(
+            null,
+            $this->getPathResolver($this->getFixtureDir() . 'configs/yaml')
+        );
         $config = $reader->get('yamlreader-child.yaml');
         $this->assertEquals(
             [
