@@ -326,6 +326,47 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful place hold
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHold(): void
+    {
+        $this->createConnector('successful-place-hold');
+        $details = [
+            'requiredBy' => '2022-01-01',
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/requests',
+            $this->testRequestLog[1]['path']
+        );
+        $request = json_decode($this->testRequestLog[1]['params'], true);
+        // Request date changes on every request, so let's not assert about it:
+        unset($request['requestDate']);
+        $this->assertEquals(
+            [
+                'itemId' => 'record1',
+                'requestType' => 'Page',
+                'requesterId' => 'foo',
+                'fulfilmentPreference' => 'Hold Shelf',
+                'requestExpirationDate' => '2022-01-01',
+                'pickupServicePointId' => 'desk1',
+            ],
+            $request
+        );
+    }
+
+    /**
      * Test successful renewal
      *
      * @return void
