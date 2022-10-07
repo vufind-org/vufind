@@ -68,6 +68,26 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
+     * Expected parameters to patron login request
+     *
+     * @var array
+     */
+    protected $expectedLoginRequest = [
+        'GET',
+        '/_rest/databases/api_database_name/templates/Borrower/search-result',
+        [
+            'page-size' => 1,
+            'page' => 0,
+            'fields' => 'ID,Name,Email',
+            'command' => "Email == 'foo@foo.com' AND InstitutionalIdNumber == 'bar'",
+        ],
+        [
+            'Accept: application/json',
+            'Authorization: Bearer fake-token',
+        ]
+    ];
+
+    /**
      * Expected parameters to token generation request
      *
      * @var array
@@ -151,6 +171,52 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test token auto-renewal
+     *
+     * @return void
+     */
+    public function testTokenAutoRenewal(): void
+    {
+        $goodToken = $this->getMockResponse(
+            $this->getFixture('genieplus/token.json')
+        );
+        $expiredToken = $this->getMockResponse('Forbidden', 403);
+        $patronLogin = $this->getMockResponse(
+            $this->getFixture('genieplus/patronLogin.json')
+        );
+        $this->driver->expects($this->exactly(5))
+            ->method('makeRequest')
+            ->withConsecutive(
+                // first attempt (new token):
+                $this->expectedTokenRequest,
+                $this->expectedLoginRequest,
+                // second attempt (renew expired token):
+                $this->expectedLoginRequest,
+                $this->expectedTokenRequest,
+                $this->expectedLoginRequest,
+            )->willReturnOnConsecutiveCalls(
+                // first attempt (new token):
+                $goodToken,
+                $patronLogin,
+                // second attempt (renew expired token):
+                $expiredToken,
+                $goodToken,
+                $patronLogin,
+            );
+        $this->driver->setConfig($this->config);
+        $this->driver->init();
+        // We'll call patronLogin twice -- the first time will simulate a "normal"
+        // first login, the second will simulate the token having expired after the
+        // passage of time.
+        for ($i = 0; $i < 2; $i++) {
+            $this->assertEquals(
+                $this->defaultPatron,
+                $this->driver->patronLogin('foo@foo.com', 'bar')
+            );
+        }
+    }
+
+    /**
      * Test patron login
      *
      * @return void
@@ -167,20 +233,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             ->method('makeRequest')
             ->withConsecutive(
                 $this->expectedTokenRequest,
-                [
-                    'GET',
-                    '/_rest/databases/api_database_name/templates/Borrower/search-result',
-                    [
-                        'page-size' => 1,
-                        'page' => 0,
-                        'fields' => 'ID,Name,Email',
-                        'command' => "Email == 'foo@foo.com' AND InstitutionalIdNumber == 'bar'",
-                    ],
-                    [
-                        'Accept: application/json',
-                        'Authorization: Bearer fake-token',
-                    ]
-                ],
+                $this->expectedLoginRequest,
             )->willReturnOnConsecutiveCalls(
                 $response1,
                 $response2,
