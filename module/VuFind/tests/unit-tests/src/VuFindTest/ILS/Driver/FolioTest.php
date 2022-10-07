@@ -49,7 +49,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected $testConfig = [
+    protected $defaultDriverConfig = [
         'API' => [
             'base_url' => 'localhost',
             'tenant' => 'config_tenant',
@@ -118,11 +118,12 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param string $test Name of test fixture to load
+     * @param string $test   Name of test fixture to load
+     * @param array  $config Driver configuration (null to use default)
      *
      * @return void
      */
-    protected function createConnector(string $test): void
+    protected function createConnector(string $test, array $config = null): void
     {
         // Setup test responses
         $this->testResponses = $this->getJsonFixture("folio/responses/$test.json");
@@ -139,7 +140,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
-        $this->driver->setConfig($this->testConfig);
+        $this->driver->setConfig($config ?? $this->defaultDriverConfig);
         $this->driver->expects($this->any())
             ->method('makeRequest')
             ->will($this->returnCallback([$this, 'mockMakeRequest']));
@@ -160,7 +161,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
         // - Right tenant
         $this->assertEquals(
-            $this->testConfig['API']['tenant'],
+            $this->defaultDriverConfig['API']['tenant'],
             $this->testRequestLog[0]['headers']['X-Okapi-Tenant']
         );
         // Profile request
@@ -262,6 +263,46 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             '{"requesterId":"foo","itemId":"item2","status":"Closed - Cancelled","cancellationReasonId":"75187e8d-e25a-47a7-89ad-23ba612338de"}',
             $this->testRequestLog[4]['params']
+        );
+    }
+
+    /**
+     * Test patron login with Okapi
+     *
+     * @return void
+     */
+    public function testSuccessfulPatronLoginWithOkapi(): void
+    {
+        $this->createConnector(
+            'successful-patron-login-with-okapi',
+            $this->defaultDriverConfig + ['User' => ['okapi_login' => true]]
+        );
+        $result = $this->driver->patronLogin('foo', 'bar');
+        $expected = [
+            'id' => 'fake-id',
+            'username' => 'foo',
+            'cat_username' => 'foo',
+            'cat_password' => 'bar',
+            'firstname' => 'first',
+            'lastname' => 'last',
+            'email' => 'fake@fake.com',
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/authn/login',
+            $this->testRequestLog[1]['path']
+        );
+        $this->assertEquals(
+            '{"tenant":"config_tenant","username":"foo","password":"bar"}',
+            $this->testRequestLog[1]['params']
+        );
+        $this->assertEquals(
+            '/users',
+            $this->testRequestLog[2]['path']
+        );
+        $this->assertEquals(
+            ['query' => 'username == foo'],
+            $this->testRequestLog[2]['params']
         );
     }
 }
