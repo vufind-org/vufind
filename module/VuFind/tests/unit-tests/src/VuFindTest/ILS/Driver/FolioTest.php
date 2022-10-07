@@ -324,4 +324,39 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             $this->testRequestLog[2]['params']
         );
     }
+
+    /**
+     * Test successful renewal
+     *
+     * @return void
+     */
+    public function testSuccessfulRenewMyItems(): void
+    {
+        $this->createConnector('successful-renew-my-items');
+        $details = [
+            'patron' => ['id' => 'foo'],
+            'details' => ['record1'],
+        ];
+        $result = $this->driver->renewMyItems($details);
+        $expected = [
+            'details' => [
+                'record1' => [
+                    'success' => true,
+                    'sysMessage' => 'success',
+                    'new_date' => '01-01-2022',
+                    'new_time' => '00:00',
+                    'item_id' => 'record1',
+                ]
+            ]
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/renew-by-id',
+            $this->testRequestLog[1]['path']
+        );
+        $this->assertEquals(
+            '{"itemId":"record1","userId":"foo"}',
+            $this->testRequestLog[1]['params']
+        );
+    }
 }
