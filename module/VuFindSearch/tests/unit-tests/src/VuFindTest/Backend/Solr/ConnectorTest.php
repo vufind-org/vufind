@@ -119,7 +119,6 @@ class ConnectorTest extends TestCase
     public function testWriteCSV()
     {
         $csvData = 'a,b,c';
-        $map = new HandlerMap();
         $client = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['setEncType', 'setRawBody'])
@@ -129,10 +128,7 @@ class ConnectorTest extends TestCase
             ->withConsecutive(['application/x-www-form-urlencoded'], ['text/csv']);
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($csvData));
-        $conn = $this->getMockBuilder(Connector::class)
-            ->onlyMethods(['send'])
-            ->setConstructorArgs(['http://foo', $map, $client, 'id'])
-            ->getMock();
+        $conn = $this->getConnectorMock(['send'], $client);
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
         $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument($csvData);
@@ -147,7 +143,6 @@ class ConnectorTest extends TestCase
     public function testWriteJSON()
     {
         $jsonData = '[1,2,3]';
-        $map = new HandlerMap();
         $client = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['setEncType', 'setRawBody'])
@@ -159,10 +154,7 @@ class ConnectorTest extends TestCase
         );
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($jsonData));
-        $conn = $this->getMockBuilder(Connector::class)
-            ->onlyMethods(['send'])
-            ->setConstructorArgs(['http://foo', $map, $client, 'id'])
-            ->getMock();
+        $conn = $this->getConnectorMock(['send'], $client);
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
         $json = new \VuFindSearch\Backend\Solr\Document\RawJSONDocument($jsonData);
@@ -219,7 +211,14 @@ class ConnectorTest extends TestCase
         $url = 'http://example.tld/';
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
         $key = 'foo';
-        $conn = new Connector($url, $map, new \Laminas\Http\Client(), $key);
+        $conn = new Connector(
+            $url,
+            $map,
+            function () {
+                return new \Laminas\Http\Client();
+            },
+            $key
+        );
         $this->assertEquals($url, $conn->getUrl());
         $this->assertEquals($map, $conn->getMap());
         $this->assertEquals($key, $conn->getUniqueKey());
@@ -265,6 +264,32 @@ class ConnectorTest extends TestCase
     }
 
     /**
+     * Test that making a request calls the HTTP client factory
+     *
+     * @return void
+     */
+    public function testClientCreation()
+    {
+        $this->response
+            = $this->getFixture('solr/response/single-record', 'VuFindSearch');
+
+        $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)
+            ->getMock();
+        $httpService->expects($this->once())
+            ->method('createClient')
+            ->with('http://localhost/select?q=id%3A%221%22')
+            ->willReturn($this->createClient());
+        $connector = new Connector(
+            'http://localhost',
+            new HandlerMap(['select' => ['fallback' => true]]),
+            function (string $url) use ($httpService) {
+                return $httpService->createClient($url);
+            }
+        );
+        $connector->retrieve('1');
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string     $fixture Fixture file
@@ -283,11 +308,40 @@ class ConnectorTest extends TestCase
 
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
         return new Connector(
-            'http://example.tld/',
+            'http://localhost/',
             $map,
-            $client ?: $this->createClient(),
+            function () use ($client) {
+                return $client ?: $this->createClient();
+            },
             'id'
         );
+    }
+
+    /**
+     * Return connector mock.
+     *
+     * @param array      $mock   Functions to mock
+     * @param HttpClient $client HTTP Client (optional)
+     *
+     * @return Connector
+     */
+    protected function getConnectorMock(array $mock = [], $client = null)
+    {
+        $map = new HandlerMap(['select' => ['fallback' => true]]);
+        return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
+            ->onlyMethods($mock)
+            ->setConstructorArgs(
+                [
+                    'http://localhost/',
+                    $map,
+                    function () use ($client) {
+                        // If client is provided, return it since it may have test
+                        // expectations:
+                        return $client ?? new \Laminas\Http\Client();
+                    }
+                ]
+            )
+            ->getMock();
     }
 
     /**

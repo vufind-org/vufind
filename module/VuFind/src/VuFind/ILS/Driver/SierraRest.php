@@ -511,7 +511,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id']],
             [
-                'fields' => 'names,emails,phones,addresses,expirationDate'
+                'fields' => 'names,emails,phones,addresses,birthDate,expirationDate'
             ],
             'GET',
             $patron
@@ -554,6 +554,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'address1' => $address,
             'zip' => $zip,
             'city' => $city,
+            'birthdate' => $result['birthDate'] ?? '',
             'expiration_date' => $expirationDate
         ];
     }

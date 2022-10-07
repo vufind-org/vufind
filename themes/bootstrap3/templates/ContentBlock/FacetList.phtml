@@ -16,7 +16,7 @@
           $script = <<<JS
 $(document).ready(function() {
   $('#facet_{$this->escapeHtml($field)}_container').removeClass('hide');
-  initFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
+  loadFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
 });
 JS;
           echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

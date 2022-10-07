@@ -33,7 +33,6 @@ use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
-use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
@@ -54,6 +53,8 @@ use VuFind\Validator\CsrfInterface;
  */
 class MyResearchController extends AbstractBase
 {
+    use Feature\CatchIlsExceptionsTrait;
+
     /**
      * Permission that must be granted to access this module (false for no
      * restriction, null to use configured default (which is usually the same
@@ -122,37 +123,6 @@ class MyResearchController extends AbstractBase
     protected function storeRefererForPostLoginRedirect()
     {
         $this->setFollowupUrlToReferer();
-    }
-
-    /**
-     * Execute the request
-     *
-     * @param \Laminas\Mvc\MvcEvent $event Event
-     *
-     * @return mixed
-     * @throws Exception\DomainException
-     */
-    public function onDispatch(\Laminas\Mvc\MvcEvent $event)
-    {
-        // Catch any ILSExceptions thrown during processing and display a generic
-        // failure message to the user (instead of going to the fatal exception
-        // screen). This offers a slightly more forgiving experience when there is
-        // an unexpected ILS issue. Note that most ILS exceptions are handled at a
-        // lower level in the code (see \VuFind\ILS\Connection and the config.ini
-        // loadNoILSOnFailure setting), but there are some rare edge cases (for
-        // example, when the MultiBackend driver fails over to NoILS while used in
-        // combination with MultiILS authentication) that could lead here.
-        try {
-            return parent::onDispatch($event);
-        } catch (ILSException $exception) {
-            // Always display generic message:
-            $this->flashMessenger()->addErrorMessage('ils_connection_failed');
-            // In development mode, also show technical failure message:
-            if ('development' == APPLICATION_ENV) {
-                $this->flashMessenger()->addErrorMessage($exception->getMessage());
-            }
-            return $this->createViewModel();
-        }
     }
 
     /**
@@ -664,8 +634,14 @@ class MyResearchController extends AbstractBase
         $patron = $this->catalogLogin();
         if (is_array($patron)) {
             // Process home library parameter (if present and allowed):
-            $homeLibrary = $this->params()->fromPost('home_library', false);
-            if ($allowHomeLibrary && !empty($homeLibrary)) {
+            $homeLibrary = $this->params()->fromPost('home_library');
+            if ($allowHomeLibrary && null !== $homeLibrary) {
+                // Note: for backward compatibility user's home library defaults to
+                // empty string indicating system default. We also allow null for
+                // "Always ask me", and the choice is encoded as ' ** ' on the form:
+                if (' ** ' === $homeLibrary) {
+                    $homeLibrary = null;
+                }
                 $user->changeHomeLibrary($homeLibrary);
                 $this->getAuthManager()->updateSession($user);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
@@ -1976,7 +1952,7 @@ class MyResearchController extends AbstractBase
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
-                return $this->forwardTo('MyResearch', 'Login');
+                return $this->forwardTo('MyResearch', 'Profile');
             } else {
                 $table = $this->getTable('User');
                 $user = $table->getByVerifyHash($hash);
@@ -1990,12 +1966,12 @@ class MyResearchController extends AbstractBase
                     $user->saveEmailVerified();
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
-                    return $this->redirect()->toRoute('myresearch-userlogin');
+                    return $this->redirect()->toRoute('myresearch-profile');
                 }
             }
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
-        return $this->redirect()->toRoute('myresearch-userlogin');
+        return $this->redirect()->toRoute('myresearch-profile');
     }
 
     /**

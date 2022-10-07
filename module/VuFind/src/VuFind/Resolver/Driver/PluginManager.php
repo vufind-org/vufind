@@ -64,7 +64,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Alma::class => DriverWithHttpClientFactory::class,
+        Alma::class => AlmaFactory::class,
         Threesixtylink::class => DriverWithHttpClientFactory::class,
         Demo::class => InvokableFactory::class,
         Jop::class => JopFactory::class,

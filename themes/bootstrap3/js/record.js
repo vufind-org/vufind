@@ -4,7 +4,7 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestType) {
+function checkRequestIsValid(element, requestType, icon = 'place-hold') {
   var recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
   var vars = deparam(element.href);
   vars.id = recordId;
@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType) {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + VuFind.updateCspNonce(response.data.msg));
+          .html(VuFind.icon(icon) + VuFind.updateCspNonce(response.data.msg));
       } else {
         $(element).remove();
       }
@@ -36,13 +36,13 @@ function checkRequestIsValid(element, requestType) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function checkRequest() {
-    checkRequestIsValid(this, 'Hold');
+    checkRequestIsValid(this, 'Hold', 'place-hold');
   });
   $('.checkStorageRetrievalRequest').each(function checkStorageRetrievalRequest() {
-    checkRequestIsValid(this, 'StorageRetrievalRequest');
+    checkRequestIsValid(this, 'StorageRetrievalRequest', 'place-storage-retrieval');
   });
   $('.checkILLRequest').each(function checkILLRequest() {
-    checkRequestIsValid(this, 'ILLRequest');
+    checkRequestIsValid(this, 'ILLRequest', 'place-ill-request');
   });
 }
 
@@ -334,6 +334,13 @@ function removeCheckRouteParam() {
 
 function recordDocReady() {
   removeCheckRouteParam();
+  $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
+  $('.record-tabs .nav-tabs .initiallyActive').attr('aria-selected', 'true');
+  // update aria-selected attributes after a tab has been shown
+  $('.record-tabs .nav-tabs a').on('shown.bs.tab', function shownTab(e) {
+    $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
+    $(e.target).parent().attr('aria-selected', 'true');
+  });
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
