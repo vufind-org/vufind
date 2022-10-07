@@ -267,6 +267,25 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test an unsuccessful patron login with default settings
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPatronLogin(): void
+    {
+        $this->createConnector('empty');
+        $this->assertNull($this->driver->patronLogin('foo', 'bar'));
+        $this->assertEquals(
+            '/users',
+            $this->testRequestLog[1]['path']
+        );
+        $this->assertEquals(
+            ['query' => 'username == "foo"'],
+            $this->testRequestLog[1]['params']
+        );
+    }
+
+    /**
      * Test patron login with Okapi
      *
      * @return void
