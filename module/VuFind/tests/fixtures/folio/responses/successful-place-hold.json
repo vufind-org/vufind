@@ -1,0 +1,4 @@
+[
+    { "comment": "Initial request for token" },
+    { "body": "{ \"status\": \"success\" }" }
+]
