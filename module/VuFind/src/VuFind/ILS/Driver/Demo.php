@@ -155,6 +155,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $instructors = ["Instructor A", "Instructor B", "Instructor C"];
 
     /**
+     * Default pickup location
+     *
+     * @var string
+     */
+    protected $defaultPickUpLocation;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -205,6 +212,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         if (isset($this->config['Failure_Probabilities'])) {
             $this->failureProbabilities = $this->config['Failure_Probabilities'];
+        }
+        $this->defaultPickUpLocation
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
+        if ($this->defaultPickUpLocation === 'user-selected') {
+            $this->defaultPickUpLocation = false;
         }
         $this->checkIntermittentFailure();
     }
@@ -1428,15 +1440,15 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * placeHold, minus the patron data.  May be used to limit the pickup options
      * or may be ignored.
      *
-     * @return string A location ID
+     * @return false|string      The default pickup location for the patron or false
+     * if the user has to choose.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
-        $locations = $this->getPickUpLocations($patron);
-        return $locations[0]['locationID'];
+        return $this->defaultPickUpLocation;
     }
 
     /**
@@ -2103,6 +2115,19 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 "sysMessage" => 'Storage Retrieval Requests are disabled.'
             ];
         }
+
+        // Make sure pickup location is valid
+        $pickUpLocation = $details['pickUpLocation'] ?? null;
+        $validLocations = array_column($this->getPickUpLocations(), 'locationID');
+        if (null !== $pickUpLocation
+            && !in_array($pickUpLocation, $validLocations)
+        ) {
+            return [
+                'success' => false,
+                'sysMessage' => 'storage_retrieval_request_invalid_pickup'
+            ];
+        }
+
         // Simulate failure:
         if ($this->isFailing(__METHOD__, 50)) {
             return [

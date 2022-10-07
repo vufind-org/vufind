@@ -99,34 +99,45 @@ trait StorageRetrievalRequestsTrait
             // If we made it this far, we're ready to place the hold;
             // if successful, we will redirect and can stop here.
 
-            // Add Patron Data to Submitted Data
-            $details = $gatheredDetails + ['patron' => $patron];
-
-            // Attempt to place the hold:
-            $function = (string)$checkRequests['function'];
-            $results = $catalog->$function($details);
-
-            // Success: Go to Display Storage Retrieval Requests
-            if (isset($results['success']) && $results['success'] == true) {
-                $msg = [
-                    'html' => true,
-                    'msg' => 'storage_retrieval_request_place_success_html',
-                    'tokens' => [
-                        '%%url%%' => $this->url()
-                            ->fromRoute('myresearch-storageretrievalrequests')
-                    ],
-                ];
-                $this->flashMessenger()->addMessage($msg, 'success');
-                return $this->redirectToRecord('#top');
+            // Check that any pick up location is valid:
+            $validPickup = $this->storageRetrievalRequests()->validatePickUpInput(
+                $gatheredDetails['pickUpLocation'] ?? null,
+                $extraFields,
+                $pickup
+            );
+            if (!$validPickup) {
+                $this->flashMessenger()
+                    ->addErrorMessage('storage_retrieval_request_invalid_pickup');
             } else {
-                // Failure: use flash messenger to display messages, stay on
-                // the current form.
-                if (isset($results['status'])) {
-                    $this->flashMessenger()->addMessage($results['status'], 'error');
-                }
-                if (isset($results['sysMessage'])) {
-                    $this->flashMessenger()
-                        ->addMessage($results['sysMessage'], 'error');
+                // Add Patron Data to Submitted Data
+                $details = $gatheredDetails + ['patron' => $patron];
+
+                // Attempt to place the hold:
+                $function = (string)$checkRequests['function'];
+                $results = $catalog->$function($details);
+
+                // Success: Go to Display Storage Retrieval Requests
+                if (isset($results['success']) && $results['success'] == true) {
+                    $msg = [
+                        'html' => true,
+                        'msg' => 'storage_retrieval_request_place_success_html',
+                        'tokens' => [
+                            '%%url%%' => $this->url()
+                                ->fromRoute('myresearch-storageretrievalrequests')
+                        ],
+                    ];
+                    $this->flashMessenger()->addMessage($msg, 'success');
+                    return $this->redirectToRecord('#top');
+                } else {
+                    // Failure: use flash messenger to display messages, stay on
+                    // the current form.
+                    if (isset($results['status'])) {
+                        $this->flashMessenger()->addErrorMessage($results['status']);
+                    }
+                    if (isset($results['sysMessage'])) {
+                        $this->flashMessenger()
+                            ->addMessage($results['sysMessage'], 'error');
+                    }
                 }
             }
         }

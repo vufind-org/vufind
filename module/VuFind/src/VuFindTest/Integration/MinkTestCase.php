@@ -32,7 +32,8 @@ use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
-use VuFind\Config\Locator as ConfigLocator;
+use Symfony\Component\Yaml\Yaml;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
 /**
@@ -48,6 +49,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
 
@@ -59,11 +61,25 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $modifiedConfigs = [];
 
     /**
+     * Modified yaml configurations
+     *
+     * @var array
+     */
+    protected $modifiedYamlConfigs = [];
+
+    /**
      * Mink session
      *
      * @var Session
      */
     protected $session;
+
+    /**
+     * Configuration file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
 
     /**
      * Reconfigure VuFind for the current test.
@@ -87,6 +103,26 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Reconfigure VuFind for the current test.
+     *
+     * @param array $configs Array of settings to change. Top-level keys correspond
+     * with yaml config filenames (i.e. use 'searchspecs' for searchspecs.yaml,
+     * etc.);
+     * @param array $replace Array of config files to completely override (as
+     * opposed to modifying); if a config file from $configs is included in this
+     * array, the $configs setting will be used as the entire configuration, and
+     * the defaults from the config/vufind directory will be ignored.
+     *
+     * @return void
+     */
+    protected function changeYamlConfigs($configs, $replace = [])
+    {
+        foreach ($configs as $file => $settings) {
+            $this->changeYamlConfigFile($file, $settings, in_array($file, $replace));
+        }
+    }
+
+    /**
      * Support method for changeConfig; act on a single file.
      *
      * @param string $configName Configuration to modify.
@@ -99,14 +135,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function changeConfigFile($configName, $settings, $replace = false)
     {
         $file = $configName . '.ini';
-        $local = ConfigLocator::getLocalConfigPath($file, null, true);
+        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
         if (!in_array($configName, $this->modifiedConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy(ConfigLocator::getBaseConfigPath($file), $local);
+                copy($this->pathResolver->getBaseConfigPath($file), $local);
             }
 
             $this->modifiedConfigs[] = $configName;
@@ -123,6 +159,38 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             }
         }
         $writer->save();
+    }
+
+    /**
+     * Support method for changeYamlConfig; act on a single file.
+     *
+     * @param string $configName Configuration to modify.
+     * @param array  $settings   Settings to change.
+     * @param bool   $replace    Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
+     *
+     * @return void
+     */
+    protected function changeYamlConfigFile($configName, $settings, $replace = false)
+    {
+        $file = $configName . '.yaml';
+        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
+        if (!in_array($configName, $this->modifiedYamlConfigs)) {
+            if (file_exists($local)) {
+                // File exists? Make a backup!
+                copy($local, $local . '.bak');
+            } else {
+                // File doesn't exist? Make a baseline version.
+                copy($this->pathResolver->getBaseConfigPath($file), $local);
+            }
+
+            $this->modifiedYamlConfigs[] = $configName;
+        }
+
+        // Read the original file, modify and write it out:
+        $config = $replace ? [] : Yaml::parseFile($local);
+        $config = array_replace_recursive($config, $settings);
+        file_put_contents($local, Yaml::dump($config));
     }
 
     /**
@@ -245,19 +313,26 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function restoreConfigs()
     {
-        foreach ($this->modifiedConfigs as $current) {
-            $file = $current . '.ini';
-            $local = ConfigLocator::getLocalConfigPath($file, null, true);
-            $backup = $local . '.bak';
+        $configs = [
+            '.ini' => $this->modifiedConfigs,
+            '.yaml' => $this->modifiedYamlConfigs
+        ];
+        foreach ($configs as $extension => $files) {
+            foreach ($files as $current) {
+                $file = $current . $extension;
+                $local = $this->pathResolver->getLocalConfigPath($file, null, true);
+                $backup = $local . '.bak';
 
-            // Do we have a backup? If so, restore from it; otherwise, just
-            // delete the local file, as it did not previously exist:
-            unlink($local);
-            if (file_exists($backup)) {
-                rename($backup, $local);
+                // Do we have a backup? If so, restore from it; otherwise, just
+                // delete the local file, as it did not previously exist:
+                unlink($local);
+                if (file_exists($backup)) {
+                    rename($backup, $local);
+                }
             }
         }
         $this->modifiedConfigs = [];
+        $this->modifiedYamlConfigs = [];
     }
 
     /**
@@ -664,7 +739,8 @@ EOS
      */
     public function setUp(): void
     {
-        // Give up if we're not running in CI:
+        // Give up if we're not running in CI (throws, so no problem with any
+        // further actions in any setUp methods of child classes):
         if (!$this->continuousIntegrationRunning()) {
             $this->markTestSkipped('Continuous integration not running.');
             return;
@@ -672,6 +748,9 @@ EOS
 
         // Reset the modified configs list.
         $this->modifiedConfigs = [];
+
+        // Create a pathResolver:
+        $this->pathResolver = $this->getPathResolver();
     }
 
     /**

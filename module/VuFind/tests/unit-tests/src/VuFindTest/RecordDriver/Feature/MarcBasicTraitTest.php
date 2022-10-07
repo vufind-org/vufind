@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020.
+ * Copyright (C) The National Library of Finland 2020-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,6 +27,8 @@
  */
 namespace VuFindTest\RecordDriver\Feature;
 
+use VuFind\RecordDriver\WorldCat;
+
 /**
  * Record Driver Marc Traits Test Class
  *
@@ -47,13 +49,7 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
      */
     public function testMarcBasicTrait()
     {
-        $xml = $this->getFixture('marc/marctraits.xml');
-        $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
+        $obj = $this->createMockRecord('marctraits.xml');
 
         $this->assertEquals(
             ['9783161484100', '9783161484101', '1843560283'],
@@ -88,5 +84,41 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
             ['1 book : colored, 28 cm 1 cd'],
             $obj->getPhysicalDescriptions()
         );
+    }
+
+    /**
+     * Test methods in MarcBasicTrait with missing fields.
+     *
+     * @return void
+     */
+    public function testMarcBasicTraitMissingFields()
+    {
+        $obj = $this->createMockRecord('marctraitsempty.xml');
+
+        $this->assertSame([], $obj->getFormats());
+        $this->assertSame([], $obj->getCallNumbers());
+        $this->assertSame([], $obj->getISBNs());
+        $this->assertSame([], $obj->getISSNs());
+        $this->assertSame([], $obj->getPrimaryAuthors());
+        $this->assertSame('', $obj->getTitle());
+    }
+
+    /**
+     * Create mock record
+     *
+     * @param string $fixture Record metadata fixture
+     *
+     * @return MockObjec&WorldCat
+     */
+    protected function createMockRecord(string $fixture): WorldCat
+    {
+        $xml = $this->getFixture("marc/$fixture");
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(WorldCat::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->will($this->returnValue($record));
+        return $obj;
     }
 }
