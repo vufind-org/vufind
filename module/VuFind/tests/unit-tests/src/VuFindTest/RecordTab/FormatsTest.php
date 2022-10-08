@@ -54,14 +54,29 @@ class FormatsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testIsActive.
+     *
+     * @return array
+     */
+    public function isActiveProvider(): array
+    {
+        return ['Not Enabed' => [false, false], 'Enabled' => [true, true]];
+    }
+
+    /**
      * Test if the tab is active.
      *
+     * @param bool $enable Enable the formats tab
+     * @param bool $expectedResult Expected return value from isActive
+     * 
      * @return void
+     * 
+     * @dataProvider isActiveProvider
      */
-    public function testisActive(): void
+    public function testisActive(bool $enable, bool $expectedResult): void
     {
-        $obj=$this->getFormats();
-        $this->assertTrue($obj->isActive());
+        $obj = $this->getFormats($enable);
+        $this->assertSame($expectedResult,$obj->isActive());
     }
 
     /**

@@ -48,29 +48,58 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     public function testGetDescription(): void
     {
         $obj = new UserComments();
-        $expected = 'Comments';
-        $this->assertSame($expected, $obj->getDescription());
+        $this->assertSame("Comments", $obj->getDescription());
     }
 
     /**
-     * Test if the tab is active
+     * Data provider for testIsActive.
      *
-     * @return void
+     * @return array
      */
-    public function testIsActive(): void
+    public function isActiveProvider(): array
     {
-        $obj = new UserComments();
-        $this->assertTrue($obj->isActive());
+        return ['Enabled' => [true, true], 'Not Enabled' => [false, false]];
     }
 
     /**
-     * Test if Captcha is active
-     *
+     * Test if the tab is active.
+     * 
+     * @param bool $enable is this tab enabled
+     * @param bool $expectedResult Expected return value from isActive
+     * 
      * @return void
+     * 
+     * @dataProvider isActiveProvider
      */
-    public function testIsCaptchaActive(): void
+    public function testIsActive(bool $enable, bool $expectedResult): void
     {
-        $obj = new UserComments();
-        $this->assertFalse($obj->isCaptchaActive());
+        $obj = new UserComments($enable);
+        $this->assertSame($expectedResult, $obj->isActive());
+    }
+
+    /**
+     * Data provider for testIsCaptchaActive.
+     *
+     * @return array
+     */
+    public function isCaptchaActiveProvider(): array
+    {
+        return ['Active' => [true, true], 'InActive' => [false, false]];
+    }
+
+    /**
+     * Test if the Captcha is Active.
+     * 
+     * @param bool $captcha is captcha active
+     * @param bool $expectedResult Expected return value from isActive
+     * 
+     * @return void
+     * 
+     * @dataProvider isCaptchaActiveProvider
+     */
+    public function testIsCaptchaActive(bool $captcha, bool $expectedResult): void
+    {
+        $obj = new UserComments(uc : $captcha);
+        $this->assertSame($expectedResult, $obj->isCaptchaActive());
     }
 }

@@ -30,7 +30,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\Preview;
 
 /**
- * Reviews Test Class
+ * Preview Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -53,30 +53,40 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test if the tab is active.
+     * Data provider for testIsActive.
      *
-     * @return void
+     * @return array
      */
-    public function testisActive(): void
+    public function isActiveProvider(): array
     {
-        $expected_false = false;
-        $expected_true = true;
-        $obj1=$this->getPreview(false);
-        $obj2=$this->getPreview(true);
-        $this->assertSame($expected_false, $obj1->isActive());
-        $this->assertSame($expected_true, $obj2->isActive());
+        return ['Active' => [false, false], 'InActive' => [true, true]];
     }
 
     /**
-     * Test if the tab is intially visible.
+     * Test if the tab is active.
+     *
+     * @param bool $enable         Enable the Preview tab
+     * @param bool $expectedResult Expected return value from isActive
+     * 
+     * @return void
+     * 
+     * @dataProvider isActiveProvider
+     */
+    public function testisActive(bool $enable, bool $expectedResult): void
+    {
+        $obj = $this->getPreview($enable);
+        $this->assertSame($expectedResult,$obj->isActive());
+    }
+
+    /**
+     * Test if the tab is initially visible.
      *
      * @return void
      */
     public function testisVisible(): void
     {
-        $expected = false;
-        $obj=$this->getPreview();
-        $this->assertSame($expected, $obj->isVisible());
+        $obj = $this->getPreview();
+        $this->assertFalse($obj->isVisible());
     }
 
     /**
@@ -86,9 +96,8 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
      */
     public function testsupportsAjax(): void
     {
-        $expected = false;
-        $obj=$this->getPreview();
-        $this->assertSame($expected, $obj->supportsAjax());
+        $obj = $this->getPreview();
+        $this->assertFalse($obj->supportsAjax());
     }
 
     /**

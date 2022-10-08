@@ -66,11 +66,26 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testIsActive.
+     *
+     * @return array
+     */
+    public function isActiveProvider(): array
+    {
+        return ['no children' => [0, false], 'children' => [10, true]];
+    }
+
+    /**
      * Test if the tab is active.
      *
+     * @param int  $childCount   Child count for record driver to report
+     * @param bool $expectedResult Expected return value from isActive
+     *
      * @return void
+     *
+     * @dataProvider isActiveProvider
      */
-    public function testIsActive(): void
+    public function testIsActive(int $childCount, bool $expectedResult): void
     {
         $searchObj = $this->getService();
         $obj = new ComponentParts($searchObj);
@@ -79,9 +94,9 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getChildRecordCount'))
-            ->will($this->returnValue(10));
+            ->will($this->returnValue($childCount));
         $obj->setRecordDriver($recordDriver);
-        $this->assertTrue($obj->isActive());
+        $this->assertSame($expectedResult, $obj->isActive());
     }
 
     /**
@@ -97,15 +112,20 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $rci = $this->getMockBuilder(
             \VuFindSearch\Response\RecordCollectionInterface::class
         )->disableOriginalConstructor()->getMock();
-        $searchObj->expects($this->any())->method('search')
+        $searchObj->expects($this->once())->method('search')
             ->with(
                 $this->equalTo("bar"),
-                $this->anything(),
+                $this->equalTo(new \VuFindSearch\Query\Query('hierarchy_parent_id:"foo"')),
                 $this->equalTo(0),
                 $this->anything(),
-                $this->anything()
+                $this->equalTo(new \VuFindSearch\ParamBag(
+                    [
+                        'hl' => ['false'],
+                        'sort' => 'hierarchy_sequence ASC,title ASC',
+                    ]
+                )
             )
-            ->will($this->returnValue($rci));
+        )->will($this->returnValue($rci));
         $obj = new ComponentParts($searchObj);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
             ->disableOriginalConstructor()

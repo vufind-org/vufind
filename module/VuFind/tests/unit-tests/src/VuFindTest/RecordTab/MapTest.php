@@ -41,29 +41,6 @@ use VuFind\RecordTab\Map;
 class MapTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test getting Description.
-     *
-     * @return void
-     */
-    public function testGetDescription(): void
-    {
-        $obj = new Map();
-        $expected = 'Map View';
-        $this->assertSame($expected, $obj->getDescription());
-    }
-
-    /**
-     * Test if the tab loaded via AJAX.
-     *
-     * @return void
-     */
-    public function testSupportsAjax(): void
-    {
-        $obj = new Map();
-        $this->assertFalse($obj->supportsAjax());
-    }
-
-    /**
      * get a Map object
      *
      * @return Map
@@ -78,10 +55,33 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $mapTabOptions = [
             'displayCoords' => true,
             'mapLabels'     => null,
-            'graticule'     => false
+            'graticule'     => true
         ];
         $obj = new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
         return $obj;
+    }
+
+    /**
+     * Test getting Description.
+     *
+     * @return void
+     */
+    public function testGetDescription(): void
+    {
+        $obj = $this->getMap();
+        $expected = 'Map View';
+        $this->assertSame($expected, $obj->getDescription());
+    }
+
+    /**
+     * Test if the tab loaded via AJAX.
+     *
+     * @return void
+     */
+    public function testSupportsAjax(): void
+    {
+        $obj = $this->getMap();
+        $this->assertFalse($obj->supportsAjax());
     }
 
     /**
@@ -91,9 +91,10 @@ class MapTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMapGraticule(): void
     {
-        $obj = $this->getMap();
-        $expected = false;
-        $this->assertSame($expected, $obj->getMapGraticule());
+        $configuredMap = $this->getMap();
+        $defaultMap = new Map();
+        $this->assertTrue($configuredMap->getMapGraticule());
+        $this->assertFalse($defaultMap->getMapGraticule());
     }
 
     /**
@@ -119,7 +120,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->any())->method('tryMethod')
+        $recordDriver->expects($this->exactly(2))->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
             ->willReturnOnConsecutiveCalls("555", null);
         $obj->setRecordDriver($recordDriver);
@@ -139,7 +140,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->any())->method('tryMethod')
+        $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getDisplayCoordinates'))
             ->will($this->returnValue($coordinates));
         $obj->setRecordDriver($recordDriver);
@@ -159,7 +160,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->any())->method('tryMethod')
+        $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
             ->will($this->returnValue($coordinates));
         $obj->setRecordDriver($recordDriver);

@@ -66,15 +66,35 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue("Count:%%count%%"));
         $obj->setTranslator($translator);
         $obj->getDescription();
-        $this->assertEquals("Count:5", $obj->getDescription());
+        $this->assertEquals("Count:$count", $obj->getDescription());
+    }
+
+    /**
+     * Data provider for testIsActive.
+     *
+     * @return array
+     */
+    public function isActiveProvider(): array
+    {
+        return ['Test1' => [true, 1, true], 
+                'Test2' => [true, 0, false],
+                'Test3' => [false, 1, false],
+                'Test4' => [true, 0, false]
+            ];
     }
 
     /**
      * Test if the tab is active.
-     *
+     * 
+     * @param bool $versionAction Action from Plugin
+     * @param int  $versionCount  Version count from Record Driver    
+     * @param bool $expectedResult Expected return value from isActive
+     * 
      * @return void
+     * 
+     * @dataProvider isActiveProvider
      */
-    public function testisActive(): void
+    public function testisActive(bool $versionAction, int $versionCount, bool $expectedResult): void
     {
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();
@@ -84,22 +104,19 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $som->expects($this->any())->method('get')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($optionsMock));
-        $optionsMock->expects($this->any())->method('getVersionsAction')
-            ->willReturnOnConsecutiveCalls(true, false);
+        $optionsMock->expects($this->once())->method('getVersionsAction')
+            ->will($this->returnValue($versionAction));
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->any())->method('getSourceIdentifier')
+        $recordDriver->expects($this->once())->method('getSourceIdentifier')
             ->will($this->returnValue('foo'));
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getOtherVersionCount'))
-            ->willReturnOnConsecutiveCalls(1, 0);
+            ->will($this->returnValue($versionCount));
         $obj= new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
-        //Test when the tab is active
-        $this->assertTrue($obj->isActive());
-        //Test when the tab is not active
-        $this->assertFalse($obj->isActive());
+        $this->assertSame($expectedResult, $obj->isActive());
     }
 
     /**

@@ -56,22 +56,37 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test if the tab is active.
+     * Data provider for testIsActive.
      *
-     * @return void
+     * @return array
      */
-    public function testIsActive(): void
+    public function isActiveProvider(): array
+    {
+        return ['Enabed' => ["foo", true], 'Not Enabled' => ["", false]];
+    }
+
+    /**
+     * Test if the tab is active.
+     * 
+     * @param string $oclcnum OCLCNum
+     * @param bool   $expectedResult Expected return value from isActive
+     * 
+     * @return void
+     * 
+     * @dataProvider isActiveProvider
+     */
+    public function testIsActive(string $oclcnum, bool $expectedResult): void
     {
         $searchObj = $this->getService();
         $obj = new HoldingsWorldCat($searchObj);
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
+        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getCleanOCLCNum'))
-            ->will($this->returnValue("foo"));
+            ->will($this->returnValue($oclcnum));
         $obj->setRecordDriver($recordDriver);
-        $this->assertTrue($obj->isActive());
+        $this->assertSame($expectedResult, $obj->isActive());
     }
 
     /**
@@ -85,9 +100,13 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $obj = new HoldingsWorldCat($searchObj);
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
+        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $recordDriver->expects($this->once())->method('tryMethod')
+            ->with($this->equalTo('getCleanOCLCNum'))
+            ->will($this->returnValue("bar"));
+        $obj->setRecordDriver($recordDriver);
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -95,7 +114,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
         $checkCommand = function ($command) {
             return get_class($command) === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
-                    && $command->getArguments()[0] === "foo"
+                    && $command->getArguments()[0] === "bar"
                     && $command->getTargetIdentifier() === "WorldCat";
         };
         $searchObj->expects($this->any())->method('invoke')

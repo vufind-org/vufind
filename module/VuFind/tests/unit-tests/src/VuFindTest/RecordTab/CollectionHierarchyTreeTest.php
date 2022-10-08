@@ -41,7 +41,7 @@ use VuFind\RecordTab\CollectionHierarchyTree;
 class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test getting Description.
+     * Test that getActiveRecord loads the correct record ID.
      *
      * @return void
      */

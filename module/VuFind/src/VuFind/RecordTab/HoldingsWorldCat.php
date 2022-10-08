@@ -100,11 +100,7 @@ class HoldingsWorldCat extends AbstractBase
      * @return string
      */
     protected function getOCLCNum()
-    {
-        static $id = false;     // cache value in static variable
-        if (!$id) {
-            $id = $this->getRecordDriver()->tryMethod('getCleanOCLCNum');
-        }
-        return $id;
+    {     
+        return $this->getRecordDriver()->tryMethod('getCleanOCLCNum');      
     }
 }

@@ -53,22 +53,35 @@ class TOCTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test if the tab is active.
+     * Data provider for testIsActive.
      *
-     * @return void
+     * @return array
      */
-    public function testIsActive(): void
+    public function isActiveProvider(): array
+    {
+        return ['Enabled' => ["foo", true], 'Not Enabled' => ["", false]];
+    }
+
+    /**
+     * Test if the tab is active.
+     * 
+     * @param string $toc TOC from record driver
+     * @param bool   $expectedResult Expected return value from isActive
+     * 
+     * @return void
+     * 
+     * @dataProvider isActiveProvider
+     */
+    public function testIsActive(string $toc, bool $expectedResult): void
     {
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->any())->method('tryMethod')
-            ->with($this->equalTo('getTOC'))
-            ->will($this->returnValue(true));
-        // considering the complexity to create mock objects
-        // for parent class, only one test case was tested
-        $obj=new TOC();
+            ->withConsecutive([$this->equalTo('getTOC')], [$this->equalTo('getCleanISBN')])
+            ->willReturnOnConsecutiveCalls($this->returnValue($toc), $this->returnValue("bar"));
+        $obj = new TOC();
         $obj->setRecordDriver($recordDriver);
-        $this->assertTrue($obj->isActive());
+        $this->assertSame($expectedResult, $obj->isActive());
     }
 }
