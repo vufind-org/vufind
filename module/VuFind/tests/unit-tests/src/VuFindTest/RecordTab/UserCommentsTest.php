@@ -99,7 +99,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
      */
     public function testIsCaptchaActive(bool $captcha, bool $expectedResult): void
     {
-        $obj = new UserComments(uc: $captcha);
+        $obj = new UserComments(true, $captcha);
         $this->assertSame($expectedResult, $obj->isCaptchaActive());
     }
 }
