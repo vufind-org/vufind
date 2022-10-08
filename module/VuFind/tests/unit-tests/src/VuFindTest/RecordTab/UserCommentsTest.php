@@ -63,12 +63,12 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test if the tab is active.
-     * 
+     *
      * @param bool $enable is this tab enabled
      * @param bool $expectedResult Expected return value from isActive
-     * 
+     *
      * @return void
-     * 
+     *
      * @dataProvider isActiveProvider
      */
     public function testIsActive(bool $enable, bool $expectedResult): void
@@ -89,17 +89,17 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test if the Captcha is Active.
-     * 
+     *
      * @param bool $captcha is captcha active
      * @param bool $expectedResult Expected return value from isActive
-     * 
+     *
      * @return void
-     * 
+     *
      * @dataProvider isCaptchaActiveProvider
      */
     public function testIsCaptchaActive(bool $captcha, bool $expectedResult): void
     {
-        $obj = new UserComments(uc : $captcha);
+        $obj = new UserComments(uc: $captcha);
         $this->assertSame($expectedResult, $obj->isCaptchaActive());
     }
 }

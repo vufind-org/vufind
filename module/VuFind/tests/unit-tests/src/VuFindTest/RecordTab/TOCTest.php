@@ -64,12 +64,12 @@ class TOCTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test if the tab is active.
-     * 
+     *
      * @param string $toc TOC from record driver
      * @param bool   $expectedResult Expected return value from isActive
-     * 
+     *
      * @return void
-     * 
+     *
      * @dataProvider isActiveProvider
      */
     public function testIsActive(string $toc, bool $expectedResult): void

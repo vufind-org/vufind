@@ -68,15 +68,15 @@ class FormatsTest extends \PHPUnit\Framework\TestCase
      *
      * @param bool $enable Enable the formats tab
      * @param bool $expectedResult Expected return value from isActive
-     * 
+     *
      * @return void
-     * 
+     *
      * @dataProvider isActiveProvider
      */
     public function testisActive(bool $enable, bool $expectedResult): void
     {
         $obj = $this->getFormats($enable);
-        $this->assertSame($expectedResult,$obj->isActive());
+        $this->assertSame($expectedResult, $obj->isActive());
     }
 
     /**

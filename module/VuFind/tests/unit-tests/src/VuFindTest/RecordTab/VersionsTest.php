@@ -76,7 +76,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      */
     public function isActiveProvider(): array
     {
-        return ['Test1' => [true, 1, true], 
+        return ['Test1' => [true, 1, true],
                 'Test2' => [true, 0, false],
                 'Test3' => [false, 1, false],
                 'Test4' => [true, 0, false]
@@ -85,13 +85,13 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test if the tab is active.
-     * 
+     *
      * @param bool $versionAction Action from Plugin
-     * @param int  $versionCount  Version count from Record Driver    
+     * @param int  $versionCount  Version count from Record Driver
      * @param bool $expectedResult Expected return value from isActive
-     * 
+     *
      * @return void
-     * 
+     *
      * @dataProvider isActiveProvider
      */
     public function testisActive(bool $versionAction, int $versionCount, bool $expectedResult): void
