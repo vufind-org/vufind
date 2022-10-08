@@ -117,15 +117,8 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo("bar"),
                 $this->equalTo(new \VuFindSearch\Query\Query('hierarchy_parent_id:"foo"')),
                 $this->equalTo(0),
-                $this->anything(),
-                $this->equalTo(
-                    new \VuFindSearch\ParamBag(
-                    [
-                        'hl' => ['false'],
-                        'sort' => 'hierarchy_sequence ASC,title ASC',
-                    ]
-                )
-                )
+                $this->equalTo(101),
+                $this->anything()
             )->will($this->returnValue($rci));
         $obj = new ComponentParts($searchObj);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
