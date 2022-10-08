@@ -100,7 +100,7 @@ class HoldingsWorldCat extends AbstractBase
      * @return string
      */
     protected function getOCLCNum()
-    {     
-        return $this->getRecordDriver()->tryMethod('getCleanOCLCNum');      
+    {
+        return $this->getRecordDriver()->tryMethod('getCleanOCLCNum');
     }
 }
