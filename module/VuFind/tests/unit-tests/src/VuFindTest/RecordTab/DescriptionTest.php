@@ -1,6 +1,6 @@
 <?php
 /**
- * Reviews Test Class
+ * Description Test Class
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordTab\Reviews;
+use VuFind\RecordTab\Description;
 
 /**
- * Reviews Test Class
+ * Description Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -38,7 +38,7 @@ use VuFind\RecordTab\Reviews;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ReviewsTest extends \PHPUnit\Framework\TestCase
+class DescriptionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting Description.
@@ -47,8 +47,9 @@ class ReviewsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $obj = new Reviews();
-        $expected = 'Reviews';
+        $obj = new Description();
+        $expected = 'Description';
+
         $this->assertSame($expected, $obj->getDescription());
     }
 }
