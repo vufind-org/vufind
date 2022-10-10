@@ -69,4 +69,29 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
         $obj->setRequest($request);
         $this->assertSame($recordDriver, $obj->getActiveRecord());
     }
+
+    /**
+     * Test that getActiveRecord returns false when no ID parameter is provided.
+     *
+     * @return void
+     */
+    public function testGetActiveRecordWithEmptyId(): void
+    {
+        $conf = $this->getMockBuilder(\Laminas\Config\Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request = $this->getMockBuilder(\Laminas\Http\Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects($this->once())->method('getQuery')
+            ->with($this->equalTo('recordID'), $this->equalTo(false))
+            ->will($this->returnValue(false));
+        $load->expects($this->never())->method('load');
+        $obj = new CollectionHierarchyTree($conf, $load);
+        $obj->setRequest($request);
+        $this->assertFalse($obj->getActiveRecord());
+    }
 }
