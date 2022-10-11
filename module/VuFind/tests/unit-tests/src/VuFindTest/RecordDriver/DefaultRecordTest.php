@@ -289,39 +289,39 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             . "ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction"
             . "al+edition.&rft.isbn=8820737493&rft_id=info%3Adoi%2Fxxx&rft_id=pmid%3Ayyy";
 
-            // Parameters returned by getBookOpenUrlParams with rft_id added
-            $openUrlParams = [
-                "url_ver" => "Z39.88-2004",
-                "ctx_ver" => "Z39.88-2004",
-                "ctx_enc" => "info:ofi/enc:UTF-8",
-                "rfr_id" => "info:sid/vufind.svn.sourceforge.net:generator",
-                "rft.title" => "La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /",
-                "rft.date" => "1992",
-                "rft_val_fmt" => "info:ofi/fmt:kev:mtx:book",
-                "rft.genre" => "book",
-                "rft.btitle" => "La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /",
-                "rft.series" => "Vico, Giambattista, 1668-1744. Works. 1982 ;",
-                "rft.au" => "Vico, Giambattista, 1668-1744.",
-                "rft.pub" => "Centro di Studi Vichiani,",
-                "rft.edition" => "Fictional edition.",
-                "rft.isbn" => "8820737493",
-                "rft_id" => [
-                    "info:doi/xxx",
-                    "pmid:yyy"
-                ]
-            ];
+        // Parameters returned by getBookOpenUrlParams with rft_id added
+        $openUrlParams = [
+            "url_ver" => "Z39.88-2004",
+            "ctx_ver" => "Z39.88-2004",
+            "ctx_enc" => "info:ofi/enc:UTF-8",
+            "rfr_id" => "info:sid/vufind.svn.sourceforge.net:generator",
+            "rft.title" => "La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /",
+            "rft.date" => "1992",
+            "rft_val_fmt" => "info:ofi/fmt:kev:mtx:book",
+            "rft.genre" => "book",
+            "rft.btitle" => "La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /",
+            "rft.series" => "Vico, Giambattista, 1668-1744. Works. 1982 ;",
+            "rft.au" => "Vico, Giambattista, 1668-1744.",
+            "rft.pub" => "Centro di Studi Vichiani,",
+            "rft.edition" => "Fictional edition.",
+            "rft.isbn" => "8820737493",
+            "rft_id" => [
+                "info:doi/xxx",
+                "pmid:yyy"
+            ]
+        ];
 
-            $fixture = $this->getJsonFixture('misc/testbug2.json');
-            $fields = $fixture['response']['docs'][0];
-            $mock = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::Class)
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
+        $fields = $fixture['response']['docs'][0];
+        $mock = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::Class)
             ->setMethods(['getBookOpenUrlParams'])
             ->getMock();
-            $mock->setRawData($fields);
-            $mock->expects($this->any())
+        $mock->setRawData($fields);
+        $mock->expects($this->any())
             ->method('getBookOpenUrlParams')
             ->will($this->returnValue($openUrlParams));
 
-            $this->assertEquals($openUrl, $mock->getOpenUrl());
+        $this->assertEquals($openUrl, $mock->getOpenUrl());
     }
 
     /**
