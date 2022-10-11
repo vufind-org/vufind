@@ -141,6 +141,7 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
 
         $offset = 0;
         while ($offset < $dirLen) {
+            // Use substr for byte-based positions:
             $tag = substr($marc, self::LEADER_LEN + $offset, 3);
             $len = (int)substr($marc, self::LEADER_LEN + $offset + 3, 4);
             $dataOffset
@@ -169,8 +170,11 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
                     if ('' === $subfield) {
                         continue;
                     }
+                    // Use mb_substr to extract the first character and the rest to
+                    // ensure proper results with multibyte characters:
                     $newField['subfields'][] = [
-                        (string)$subfield[0] => substr($subfield, 1)
+                        mb_substr($subfield, 0, 1, 'UTF-8')
+                            => mb_substr($subfield, 1, null, 'UTF-8')
                     ];
                 }
                 $fields[] = [$tag => $newField];
