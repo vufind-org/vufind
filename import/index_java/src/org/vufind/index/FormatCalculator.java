@@ -21,6 +21,8 @@ package org.vufind.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -452,14 +454,10 @@ public class FormatCalculator
     protected boolean isConferenceProceeding(Record record) {
         // Is there a main entry meeting name?
         DataField conference1 = (DataField) record.getVariableField("111");
-        // The 711 could possibly have more then one entry, although probably unlikely
+        // The 711 could possibly have more than one entry, although probably unlikely
         DataField conference2 = (DataField) null;
-        List conferenceFields = record.getVariableFields("711");
-        Iterator conferenceFieldsIter = conferenceFields.iterator();
-        if (conferenceFields != null) {
-            if (conferenceFieldsIter.hasNext()) {
-                conference2 = (DataField) conferenceFieldsIter.next();
-            }
+        for (VariableField variableField : record.getVariableFields("711")) {
+            conference2 = (DataField) variableField;
         }
         return (conference1 != null || conference2 != null);
     }
@@ -474,10 +472,8 @@ public class FormatCalculator
     protected boolean isElectronic(Record record, char recordType) {
         /* Example from Villanova of how to use holdings locations to detect online status;
          * You can override this method in a subclass if you wish to use this approach.
-        List holdingsFields = record.getVariableFields("852");
-        Iterator holdingsIterator = holdingsFields.iterator();
-        while (holdingsIterator.hasNext()) {
-            DataField holdingsField = (DataField) holdingsIterator.next();
+        for (VariableField variableField : record.getVariableFields("852")) {
+            DataField holdingsField = (DataField) variableField;
             if (holdingsField.getSubfield('b') != null) {
                 String holdingsLocation = holdingsField.getSubfield('b').getData().toLowerCase();
                 if (holdingsLocation.equals("www") || holdingsLocation.equals("e-ref")) {
@@ -499,6 +495,11 @@ public class FormatCalculator
         if (recordType == 'm') {
             return true;
         }
+
+        if (isOnlineAccordingTo338(record)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -535,17 +536,60 @@ public class FormatCalculator
         // The 773 could possibly have more then one entry, although probably unlikely.
         // If any contain a subfield 'g' return true to indicate the host is a serial
         // see https://www.oclc.org/bibformats/en/specialcataloging.html#relatedpartsandpublications
-        List hostFields = record.getVariableFields("773");
-        Iterator hostFieldsIter = hostFields.iterator();
-        if (hostFields != null) {
-            while (hostFieldsIter.hasNext()) {
-                DataField hostField = (DataField) hostFieldsIter.next();
-                if (hostField.getSubfield('g') != null) {
-                    return true;
-                }
+        for (VariableField variableField : record.getVariableFields("773")) {
+            DataField hostField = (DataField) variableField;
+            if (hostField.getSubfield('g') != null) {
+                return true;
             }
         }
         return false;
+    }
+
+    protected String getSubfieldOrDefault(DataField field, char subfieldCode, String defaultValue) {
+        Subfield subfield = field.getSubfield(subfieldCode);
+        String data = subfield.getData();
+        return data == null ? defaultValue : data;
+    }
+
+    protected boolean isOnlineAccordingTo338(Record record) {
+        // Does the RDA carrier indicate that this is online?
+        for (VariableField variableField : record.getVariableFields("338")) {
+            DataField carrierField = (DataField) variableField;
+            String desc = getSubfieldOrDefault(carrierField, 'a', "");
+            String code = getSubfieldOrDefault(carrierField, 'b', "");
+            String source = getSubfieldOrDefault(carrierField, '2', "");
+            if ((desc.equals("online resource") || code.equals("cr")) && source.equals("rdacarrier")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines record formats using 33x fields.
+     *
+     * This is not currently comprehensive; it is designed to supplement but not
+     * replace existing support for 007 analysis and can be expanded in future.
+     *
+     * @param  Record record
+     * @return Set format(s) of record
+     */
+    protected List<String> getFormatsFrom33xFields(Record record) {
+        boolean isOnline = isOnlineAccordingTo338(record);
+        List<String> formats = new ArrayList<String>();
+        for (VariableField variableField : record.getVariableFields("336")) {
+            DataField typeField = (DataField) variableField;
+            String desc = getSubfieldOrDefault(typeField, 'a', "");
+            String code = getSubfieldOrDefault(typeField, 'b', "");
+            String source = getSubfieldOrDefault(typeField, '2', "");
+            if ((desc.equals("two-dimensional moving image") || code.equals("tdi")) && source.equals("rdacontent")) {
+                formats.add("Video");
+                if (isOnline) {
+                    formats.add("VideoOnline");
+                }
+            }
+        }
+        return formats;
     }
 
     /**
@@ -580,30 +624,34 @@ public class FormatCalculator
             result.add("ConferenceProceeding");
         }
 
+        // check the 33x fields; these may give us clear information in newer records;
+        // in current partial implementation of getFormatsFrom33xFields(), if we find
+        // something here, it indicates non-book content.
+        List formatsFrom33x = getFormatsFrom33xFields(record);
+        if (formatsFrom33x.size() > 0) {
+            couldBeBook = false;
+            result.addAll(formatsFrom33x);
+        }
+
         // check the 007 - this is a repeating field
-        List fields = record.getVariableFields("007");
         List<Character> formatCodes007 = new ArrayList<Character>();
-        Iterator fieldsIter = fields.iterator();
-        if (fields != null) {
-            ControlField formatField;
-            while(fieldsIter.hasNext()) {
-                formatField = (ControlField) fieldsIter.next();
-                formatString = formatField.getData().toLowerCase();
-                formatCode = formatString.length() > 0 ? formatString.charAt(0) : ' ';
-                formatCodes007.add(formatCode);
-                if (definitelyNotBookBasedOn007(formatCode)) {
-                    couldBeBook = false;
-                }
-                if (formatCode == 'v') {
-                    // All video content should get flagged as video; we will also
-                    // add a more detailed value in getFormatFrom007 to distinguish
-                    // different types of video.
-                    result.add("Video");
-                }
-                String formatFrom007 = getFormatFrom007(formatCode, formatString);
-                if (formatFrom007.length() > 0) {
-                    result.add(formatFrom007);
-                }
+        for (VariableField variableField : record.getVariableFields("007")) {
+            ControlField formatField = (ControlField) variableField;
+            formatString = formatField.getData().toLowerCase();
+            formatCode = formatString.length() > 0 ? formatString.charAt(0) : ' ';
+            formatCodes007.add(formatCode);
+            if (definitelyNotBookBasedOn007(formatCode)) {
+                couldBeBook = false;
+            }
+            if (formatCode == 'v') {
+                // All video content should get flagged as video; we will also
+                // add a more detailed value in getFormatFrom007 to distinguish
+                // different types of video.
+                result.add("Video");
+            }
+            String formatFrom007 = getFormatFrom007(formatCode, formatString);
+            if (formatFrom007.length() > 0) {
+                result.add(formatFrom007);
             }
         }
 
@@ -611,7 +659,10 @@ public class FormatCalculator
         if (definitelyNotBookBasedOnRecordType(recordType, marc008)) {
             couldBeBook = false;
         }
-        String formatFromRecordType = getFormatFromRecordType(record, recordType, marc008, formatCodes007);
+        // If we already have 33x results, skip the record type:
+        String formatFromRecordType = formatsFrom33x.size() == 0
+            ? getFormatFromRecordType(record, recordType, marc008, formatCodes007)
+            : "";
         if (formatFromRecordType.length() > 0) {
             result.add(formatFromRecordType);
         }

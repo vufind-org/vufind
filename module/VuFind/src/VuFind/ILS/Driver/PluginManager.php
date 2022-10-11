@@ -109,7 +109,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Virtua::class => InvokableFactory::class,
         Voyager::class => DriverWithDateConverterFactory::class,
         VoyagerRestful::class => VoyagerRestfulFactory::class,
-        XCNCIP2::class => DriverWithDateConverterFactory::class,
+        XCNCIP2::class => XCNCIP2Factory::class,
     ];
 
     /**

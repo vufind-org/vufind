@@ -47,20 +47,6 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected $activeFilterSelector = '.active-filters.hidden-xs .filters .filter-value';
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Get filtered search
      *
      * @return \Behat\Mink\Element\Element

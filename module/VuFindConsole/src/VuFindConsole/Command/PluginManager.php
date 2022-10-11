@@ -74,6 +74,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/cssBuilder' => Util\CssBuilderCommand::class,
         'util/dedupe' => Util\DedupeCommand::class,
         'util/deletes' => Util\DeletesCommand::class,
+        'util/expire_access_tokens' => Util\ExpireAccessTokensCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
@@ -133,6 +134,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
         Util\DedupeCommand::class => InvokableFactory::class,
         Util\DeletesCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\ExpireAccessTokensCommand::class =>
+            Util\ExpireAccessTokensCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
             Util\ExpireAuthHashesCommandFactory::class,
         Util\ExpireExternalSessionsCommand::class =>
