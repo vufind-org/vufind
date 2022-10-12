@@ -224,12 +224,13 @@ EOT;
      */
     public function testMultiByteSubfields(): void
     {
-        $reader = new MarcReader($this->getFixture('marc/multibyte_subfields.mrc'));
+        $record = $this->getFixture('marc/multibyte_subfields.mrc');
+        $reader = new MarcReader($record);
         $this->assertEquals(
             [
                 'tag' => '035',
-                'i1' =>  ' ',
-                'i2' =>  ' ',
+                'i1' => ' ',
+                'i2' => ' ',
                 'subfields' => [
                     [
                         'code' => '‡',
@@ -238,6 +239,43 @@ EOT;
                 ],
             ],
             $reader->getField('035')
+        );
+        $this->assertEquals(
+            $record,
+            $reader->toFormat('ISO2709')
+        );
+    }
+
+    /**
+     * Test correct handling of multibyte indicators code in ISO2709
+     *
+     * @return void
+     */
+    public function testMultiByteIndicators(): void
+    {
+        $record = $this->getFixture('marc/multibyte_indicators.mrc');
+        $reader = new MarcReader($record);
+        $this->assertEquals(
+            [
+                'tag' => '084',
+                'i1' => ' ',
+                'i2' => '§',
+                'subfields' => [
+                    [
+                        'code' => 'a',
+                        'data' => '38.3',
+                    ],
+                    [
+                        'code' => '2',
+                        'data' => 'ykl',
+                    ],
+                ],
+            ],
+            $reader->getField('084')
+        );
+        $this->assertEquals(
+            $record,
+            $reader->toFormat('ISO2709')
         );
     }
 
