@@ -209,8 +209,8 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
             $tag = (string)key($fieldData);
             $field = current($fieldData);
             if (is_array($field)) {
-                $fieldStr = str_pad(substr($field['ind1'], 0, 1), 1)
-                    . str_pad(substr($field['ind2'], 0, 1), 1);
+                $fieldStr = mb_substr($field['ind1'] . ' ', 0, 1, 'UTF-8')
+                    . mb_substr($field['ind2'] . ' ', 0, 1, 'UTF-8');
                 foreach ((array)($field['subfields'] ?? []) as $subfield) {
                     $subfieldCode = (string)key($subfield);
                     $fieldStr .= self::SUBFIELD_INDICATOR
