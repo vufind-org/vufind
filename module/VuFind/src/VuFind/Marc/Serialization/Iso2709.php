@@ -158,13 +158,16 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
             if (ctype_digit($tag) && $tag < 10) {
                 $fields[] = [$tag => $tagData];
             } else {
+                // Use mb_substr to extract indicators to ensure proper results with
+                // multibyte characters, and make sure we have at least a space for
+                // an indicator:
                 $newField = [
-                    'ind1' => $tagData[0] ?? ' ',
-                    'ind2' => $tagData[1] ?? ' '
+                    'ind1' => mb_substr($tagData . ' ', 0, 1, 'UTF-8'),
+                    'ind2' => mb_substr($tagData . '  ', 1, 1, 'UTF-8')
                 ];
                 $subfields = explode(
                     self::SUBFIELD_INDICATOR,
-                    substr($tagData, 3)
+                    mb_substr($tagData, 3, null, 'UTF-8')
                 );
                 foreach ($subfields as $subfield) {
                     if ('' === $subfield) {
