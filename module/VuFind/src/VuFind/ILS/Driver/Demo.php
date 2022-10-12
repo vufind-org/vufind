@@ -155,6 +155,26 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $instructors = ["Instructor A", "Instructor B", "Instructor C"];
 
     /**
+     * Item and pick up locations
+     *
+     * @var array
+     */
+    protected $locations = [
+        [
+            'locationID' => 'A',
+            'locationDisplay' => 'Campus A'
+        ],
+        [
+            'locationID' => 'B',
+            'locationDisplay' => 'Campus B'
+        ],
+        [
+            'locationID' => 'C',
+            'locationDisplay' => 'Campus C'
+        ]
+    ];
+
+    /**
      * Default pickup location
      *
      * @var string
@@ -248,7 +268,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     protected function getFakeLoc($returnText = true)
     {
-        $locations = $this->getPickUpLocations();
+        $locations = $this->locations;
         $loc = rand() % count($locations);
         return $returnText
             ? $locations[$loc]['locationDisplay']
@@ -1386,26 +1406,25 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
-        $result = [
-            [
-                'locationID' => 'A',
-                'locationDisplay' => 'Campus A'
-            ],
-            [
-                'locationID' => 'B',
-                'locationDisplay' => 'Campus B'
-            ],
-            [
-                'locationID' => 'C',
-                'locationDisplay' => 'Campus C'
-            ]
-        ];
+        $result = $this->locations;
         if (($holdDetails['reqnum'] ?? '') == 1) {
             $result[] = [
                 'locationID' => 'D',
                 'locationDisplay' => 'Campus D'
             ];
         }
+
+        if (isset($this->config['Holds']['excludePickupLocations'])) {
+            $excluded
+                = explode(':', $this->config['Holds']['excludePickupLocations']);
+            $result = array_filter(
+                $result,
+                function ($loc) use ($excluded) {
+                    return !in_array($loc['locationID'], $excluded);
+                }
+            );
+        }
+
         return $result;
     }
 
