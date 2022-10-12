@@ -1,6 +1,6 @@
 <?php
 /**
- * Reviews Test Class
+ * TOC Test Class
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordTab\Reviews;
+use VuFind\RecordTab\TOC;
 
 /**
- * Reviews Test Class
+ * TOC Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -38,7 +38,7 @@ use VuFind\RecordTab\Reviews;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ReviewsTest extends \PHPUnit\Framework\TestCase
+class TOCTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting Description.
@@ -47,8 +47,41 @@ class ReviewsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $obj = new Reviews();
-        $expected = 'Reviews';
+        $obj = new TOC();
+        $expected = 'Table of Contents';
         $this->assertSame($expected, $obj->getDescription());
+    }
+
+    /**
+     * Data provider for testIsActive.
+     *
+     * @return array
+     */
+    public function isActiveProvider(): array
+    {
+        return ['Enabled' => ["foo", true], 'Not Enabled' => ["", false]];
+    }
+
+    /**
+     * Test if the tab is active.
+     *
+     * @param string $toc TOC from record driver
+     * @param bool   $expectedResult Expected return value from isActive
+     *
+     * @return void
+     *
+     * @dataProvider isActiveProvider
+     */
+    public function testIsActive(string $toc, bool $expectedResult): void
+    {
+        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $recordDriver->expects($this->any())->method('tryMethod')
+            ->withConsecutive([$this->equalTo('getTOC')], [$this->equalTo('getCleanISBN')])
+            ->willReturnOnConsecutiveCalls($this->returnValue($toc), $this->returnValue("bar"));
+        $obj = new TOC();
+        $obj->setRecordDriver($recordDriver);
+        $this->assertSame($expectedResult, $obj->isActive());
     }
 }

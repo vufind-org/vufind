@@ -1,0 +1,4 @@
+[
+    { "comment": "Initial request for token" },
+    { "body": "{ \"requesterId\": \"foo\" }" }
+]

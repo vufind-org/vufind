@@ -1,6 +1,6 @@
 <?php
 /**
- * Reviews Test Class
+ * Formats Test Class
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordTab\Reviews;
+use VuFind\RecordTab\Formats;
 
 /**
- * Reviews Test Class
+ * Formats Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -38,7 +38,7 @@ use VuFind\RecordTab\Reviews;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ReviewsTest extends \PHPUnit\Framework\TestCase
+class FormatsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting Description.
@@ -47,8 +47,47 @@ class ReviewsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $obj = new Reviews();
-        $expected = 'Reviews';
+        $obj = $this->getFormats();
+        $expected = 'Formats';
+
         $this->assertSame($expected, $obj->getDescription());
+    }
+
+    /**
+     * Data provider for testIsActive.
+     *
+     * @return array
+     */
+    public function isActiveProvider(): array
+    {
+        return ['Not Enabed' => [false, false], 'Enabled' => [true, true]];
+    }
+
+    /**
+     * Test if the tab is active.
+     *
+     * @param bool $enable Enable the formats tab
+     * @param bool $expectedResult Expected return value from isActive
+     *
+     * @return void
+     *
+     * @dataProvider isActiveProvider
+     */
+    public function testisActive(bool $enable, bool $expectedResult): void
+    {
+        $obj = $this->getFormats($enable);
+        $this->assertSame($expectedResult, $obj->isActive());
+    }
+
+    /**
+     * Get a configured Formats object.
+     *
+     * @param bool $enabled Is this tab enabled?
+     *
+     * @return Formats
+     */
+    protected function getFormats($enabled = true)
+    {
+        return new Formats($enabled);
     }
 }
