@@ -40,7 +40,7 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    2
+ * @retry    4
  */
 final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 {
