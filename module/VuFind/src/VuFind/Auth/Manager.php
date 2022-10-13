@@ -265,6 +265,19 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
     }
 
     /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getUsernamePolicy($authMethod = null)
+    {
+        return $this->getAuth($authMethod)->getUsernamePolicy();
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @param string $authMethod optional; check this auth method rather than

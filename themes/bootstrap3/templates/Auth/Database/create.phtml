@@ -1,12 +1,23 @@
 <?php
-  $pattern = '';
+  $usernamePattern = '';
+  if (isset($this->usernamePolicy['pattern'])) {
+    if ($this->usernamePolicy['pattern'] == 'numeric') {
+      $usernamePattern = '\d+';
+    } elseif ($this->usernamePolicy['pattern'] == 'alphanumeric') {
+      $usernamePattern = '[\da-zA-Z]+';
+    } else {
+      $usernamePattern = $this->usernamePolicy['pattern'];
+    }
+  }
+
+  $passwordPattern = '';
   if (isset($this->passwordPolicy['pattern'])) {
     if ($this->passwordPolicy['pattern'] == 'numeric') {
-      $pattern = '\d+';
+      $passwordPattern = '\d+';
     } elseif ($this->passwordPolicy['pattern'] == 'alphanumeric') {
-      $pattern = '[\da-zA-Z]+';
+      $passwordPattern = '[\da-zA-Z]+';
     } else {
-      $pattern = $this->passwordPolicy['pattern'];
+      $passwordPattern = $this->passwordPolicy['pattern'];
     }
   }
 ?>
@@ -25,7 +36,14 @@
 </div>
 <div class="form-group">
   <label class="control-label" for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
-  <input id="account_username" type="text" name="username" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
+  <input id="account_username" type="text" name="username" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"
+<?php /*    <?=isset($this->usernamePolicy['minLength']) ? ' data-minlength="' . $this->usernamePolicy['minLength'] . '" data-minlength-error="' . $this->transEscAttr('username_minimum_length', ['%%minlength%%' => $this->usernamePolicy['minLength']]) . '"' : ''?>
+    <?=isset($this->usernamePolicy['maxLength']) ? ' maxlength="' . $this->usernamePolicy['maxLength'] . '"' : ''?>
+    <?=$usernamePattern ? ' pattern="' . $usernamePattern . '"' : '' ?>*/ ?>
+  />
+  <?php if ($this->usernamePolicy['hint']): ?>
+    <div class="help-block"><?=$this->transEsc($this->usernamePolicy['hint']) ?></div>
+  <?php endif; ?>
   <div class="help-block with-errors"></div>
 </div>
 <div class="form-group">
@@ -33,7 +51,7 @@
   <input id="account_password" type="password" name="password" required aria-required="true" class="form-control"
     <?=isset($this->passwordPolicy['minLength']) ? ' data-minlength="' . $this->passwordPolicy['minLength'] . '" data-minlength-error="' . $this->transEscAttr('password_minimum_length', ['%%minlength%%' => $this->passwordPolicy['minLength']]) . '"' : ''?>
     <?=isset($this->passwordPolicy['maxLength']) ? ' maxlength="' . $this->passwordPolicy['maxLength'] . '"' : ''?>
-    <?=$pattern ? ' pattern="' . $pattern . '"' : '' ?>
+    <?=$passwordPattern ? ' pattern="' . $passwordPattern . '"' : '' ?>
   />
   <?php if ($this->passwordPolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->passwordPolicy['hint']) ?></div>
