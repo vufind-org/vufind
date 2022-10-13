@@ -32,7 +32,6 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use VuFindTheme\View\Helper\HeadScript;
 
 /**
  * Factory for InjectTemplateListener
@@ -40,7 +39,6 @@ use VuFindTheme\View\Helper\HeadScript;
  * @category VuFind
  * @package  Theme
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
- * @author   Robert Lange <lange@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org Main Site
  */
@@ -92,54 +90,6 @@ class InjectTemplateListenerFactory implements FactoryInterface
             }
         );
 
-        $this->loadConfiguredJavascriptFilesFromMixin($config, $container);
-
         return new $requestedName(array_unique($prefixes));
-    }
-
-    /**
-     * Load configured javascript files from mixin.config.php if existing
-     *
-     * @param array              $config    main config
-     * @param ContainerInterface $container Service manager
-     *
-     * @return void
-     */
-    public function loadConfiguredJavascriptFilesFromMixin(
-        array $config,
-        ContainerInterface $container
-    ): void {
-        $templatePathStack = $config['view_manager']['template_path_stack'] ?? false;
-        if ($templatePathStack) {
-            /* @var HeadScript $headScript */
-            $headScript = $container->get('ViewHelperManager')->get('headScript') ??
-                $container->get('headScript');
-            foreach ($templatePathStack as $templatePath) {
-                if (file_exists($mixin = $templatePath . '/../mixin.config.php')) {
-                    $resourceContainer = $container
-                        ->get(\VuFindTheme\ResourceContainer::class);
-                    $resources = include $mixin;
-                    foreach ($resources as $type => $files) {
-                        switch ($type) {
-                        case 'js':
-                            foreach ($files as $file) {
-                                $path = dirname($mixin) . "/$type/$file";
-                                if (file_exists($path)) {
-                                    if ($headScript->isPipelineActive()) {
-                                        $headScript->appendFile(
-                                            $path
-                                        );
-                                    } else {
-                                        $headScript->appendScript(
-                                            file_get_contents($path)
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

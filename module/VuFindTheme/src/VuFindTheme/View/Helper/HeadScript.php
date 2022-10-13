@@ -230,4 +230,27 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
     {
         $item->attributes['nonce'] = $this->cspNonce;
     }
+
+    /**
+     * Append possible non-public files
+     *
+     * @param string $filePath path to ressource
+     *
+     * @return void
+     */
+    public function appendInternalRessource(
+        string $filePath
+    ): void {
+        if (file_exists($filePath)) {
+            if ($this->isPipelineActive()) {
+                $this->appendFile(
+                    $filePath
+                );
+            } else {
+                $this->appendScript(
+                    file_get_contents($filePath)
+                );
+            }
+        }
+    }
 }

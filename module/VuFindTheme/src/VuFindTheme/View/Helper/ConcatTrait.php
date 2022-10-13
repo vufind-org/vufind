@@ -426,7 +426,7 @@ trait ConcatTrait
      *
      * @return bool
      */
-    public function isPipelineActive()
+    protected function isPipelineActive()
     {
         if ($this->usePipeline) {
             try {
