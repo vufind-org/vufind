@@ -227,6 +227,7 @@ CREATE TABLE `user` (
   `last_login` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `auth_method` varchar(50) DEFAULT NULL,
   `last_language` varchar(30) NOT NULL DEFAULT '',
+  `cypher_method` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`(190)),
   UNIQUE KEY `cat_id` (`cat_id`(190))

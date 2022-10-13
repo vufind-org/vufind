@@ -226,6 +226,7 @@ class SwitchDbHashCommand extends Command
             $newcipher->setKey($newkey);
             $row['cat_password'] = null;
             $row['cat_pass_enc'] = $newcipher->encrypt($pass);
+            $row['cypher_method'] = $newhash;
             $row->save();
         }
 

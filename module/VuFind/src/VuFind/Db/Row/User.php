@@ -63,6 +63,7 @@ use Laminas\Db\Sql\Select;
  * @property string  $last_login
  * @property ?string $auth_method
  * @property string  $last_language
+ * @property ?string $cypher_method
  */
 class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
@@ -232,20 +233,34 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             return $text;
         }
 
+        $configAuth = $this->config->Authentication;
+
+        // Set undefined cypher method
+        // TODO: This will cause problems if a user hasn't logged in and the cypher has been changed
+        if ($this->cypher_method == -1) {
+            $this->cypher_method = $configAuth->ils_encryption_algo ?? null;
+            $this->save();
+        }
+
+        if ($this->cypher_method != $configAuth->ils_encryption_algo) {
+            // TODO convert (with SwitchDBHashCommand?)
+        }
+
         // Load encryption key from configuration if not already present:
-        if (null === $this->encryptionKey) {
-            if (!isset($this->config->Authentication->ils_encryption_key)
-                || empty($this->config->Authentication->ils_encryption_key)
+        if ($this->encryptionKey === null) {
+            if (!isset($configAuth->ils_encryption_key)
+                || empty($configAuth->ils_encryption_key)
             ) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'ILS password encryption on, but no key set.'
                 );
             }
-            $this->encryptionKey = $this->config->Authentication->ils_encryption_key;
+
+            $this->encryptionKey = $configAuth->ils_encryption_key;
         }
 
         // Perform encryption:
-        $algo = $this->config->Authentication->ils_encryption_algo ?? 'blowfish';
+        $algo = $configAuth->ils_encryption_algo ?? 'aes-256';
         $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
