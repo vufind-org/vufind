@@ -271,7 +271,7 @@
           <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
            <then>
             <mkdir dir="${srcdir}/downloads" />
-            <httpget url="http://archive.apache.org/dist/lucene/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+            <httpget url="http://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
