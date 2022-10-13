@@ -141,6 +141,7 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
 
         $offset = 0;
         while ($offset < $dirLen) {
+            // Use substr for byte-based positions:
             $tag = substr($marc, self::LEADER_LEN + $offset, 3);
             $len = (int)substr($marc, self::LEADER_LEN + $offset + 3, 4);
             $dataOffset
@@ -157,20 +158,26 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
             if (ctype_digit($tag) && $tag < 10) {
                 $fields[] = [$tag => $tagData];
             } else {
+                // Use mb_substr to extract indicators to ensure proper results with
+                // multibyte characters, and make sure we have at least a space for
+                // an indicator:
                 $newField = [
-                    'ind1' => $tagData[0] ?? ' ',
-                    'ind2' => $tagData[1] ?? ' '
+                    'ind1' => mb_substr($tagData . ' ', 0, 1, 'UTF-8'),
+                    'ind2' => mb_substr($tagData . '  ', 1, 1, 'UTF-8')
                 ];
                 $subfields = explode(
                     self::SUBFIELD_INDICATOR,
-                    substr($tagData, 3)
+                    mb_substr($tagData, 3, null, 'UTF-8')
                 );
                 foreach ($subfields as $subfield) {
                     if ('' === $subfield) {
                         continue;
                     }
+                    // Use mb_substr to extract the first character and the rest to
+                    // ensure proper results with multibyte characters:
                     $newField['subfields'][] = [
-                        (string)$subfield[0] => substr($subfield, 1)
+                        mb_substr($subfield, 0, 1, 'UTF-8')
+                            => mb_substr($subfield, 1, null, 'UTF-8')
                     ];
                 }
                 $fields[] = [$tag => $newField];
@@ -202,8 +209,8 @@ class Iso2709 extends AbstractSerializationFile implements SerializationInterfac
             $tag = (string)key($fieldData);
             $field = current($fieldData);
             if (is_array($field)) {
-                $fieldStr = str_pad(substr($field['ind1'], 0, 1), 1)
-                    . str_pad(substr($field['ind2'], 0, 1), 1);
+                $fieldStr = mb_substr($field['ind1'] . ' ', 0, 1, 'UTF-8')
+                    . mb_substr($field['ind2'] . ' ', 0, 1, 'UTF-8');
                 foreach ((array)($field['subfields'] ?? []) as $subfield) {
                     $subfieldCode = (string)key($subfield);
                     $fieldStr .= self::SUBFIELD_INDICATOR

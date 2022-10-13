@@ -192,10 +192,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
         if (!isset($this->consentConfig['Categories'][$category])) {
             return false;
         }
-        if ($consentJson = $this->cookieManager->get($this->consentCookieName)) {
-            if ($consent = json_decode($consentJson, true)) {
-                return in_array($category, (array)($consent['categories'] ?? []));
-            }
+        if ($consent = $this->getCurrentConsent()) {
+            return in_array($category, (array)($consent['categories'] ?? []));
         }
         return false;
     }
@@ -238,8 +236,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
      */
     public function getConsentInformation(): ?array
     {
-        if ($consentJson = $this->cookieManager->get($this->consentCookieName)) {
-            $result = json_decode($consentJson, true);
+        if ($result = $this->getCurrentConsent()) {
             if (!empty($result['consentId'])
                 && !empty($result['lastConsentTimestamp'])
                 && !empty($result['categories'])
@@ -293,7 +290,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
             'manageScriptTags' => $this->consentConfig['ManageScripts'] ?? true,
             'hideFromBots' => $this->consentConfig['HideFromBots'] ?? true,
             'cookie' => $cookieSettings,
-            'revision' => (int)($this->config['Cookies']['consentRevision'] ?? 0),
+            'revision' => $this->getConsentRevision(),
             'guiOptions' => [
                 'consentModal' => [
                     'layout' => 'bar',
@@ -488,5 +485,32 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
             $this->hostName = $this->getView()->plugin('serverUrl')->getHost();
         }
         return $this->hostName;
+    }
+
+    /**
+     * Get current consent revision
+     *
+     * @return int
+     */
+    protected function getConsentRevision(): int
+    {
+        return (int)($this->config['Cookies']['consentRevision'] ?? 0);
+    }
+
+    /**
+     * Get current consent data
+     *
+     * @return array
+     */
+    protected function getCurrentConsent(): array
+    {
+        if ($consentJson = $this->cookieManager->get($this->consentCookieName)) {
+            if ($consent = json_decode($consentJson, true)) {
+                if (($consent['revision'] ?? null) === $this->getConsentRevision()) {
+                    return $consent;
+                }
+            }
+        }
+        return [];
     }
 }

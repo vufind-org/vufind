@@ -33,7 +33,7 @@ use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
 use Symfony\Component\Yaml\Yaml;
-use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
 /**
@@ -49,6 +49,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
 
@@ -72,6 +73,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var Session
      */
     protected $session;
+
+    /**
+     * Configuration file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
 
     /**
      * Reconfigure VuFind for the current test.
@@ -127,14 +135,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function changeConfigFile($configName, $settings, $replace = false)
     {
         $file = $configName . '.ini';
-        $local = ConfigLocator::getLocalConfigPath($file, null, true);
+        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
         if (!in_array($configName, $this->modifiedConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy(ConfigLocator::getBaseConfigPath($file), $local);
+                copy($this->pathResolver->getBaseConfigPath($file), $local);
             }
 
             $this->modifiedConfigs[] = $configName;
@@ -166,14 +174,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function changeYamlConfigFile($configName, $settings, $replace = false)
     {
         $file = $configName . '.yaml';
-        $local = ConfigLocator::getLocalConfigPath($file, null, true);
+        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
         if (!in_array($configName, $this->modifiedYamlConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy(ConfigLocator::getBaseConfigPath($file), $local);
+                copy($this->pathResolver->getBaseConfigPath($file), $local);
             }
 
             $this->modifiedYamlConfigs[] = $configName;
@@ -312,7 +320,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         foreach ($configs as $extension => $files) {
             foreach ($files as $current) {
                 $file = $current . $extension;
-                $local = ConfigLocator::getLocalConfigPath($file, null, true);
+                $local = $this->pathResolver->getLocalConfigPath($file, null, true);
                 $backup = $local . '.bak';
 
                 // Do we have a backup? If so, restore from it; otherwise, just
@@ -731,7 +739,8 @@ EOS
      */
     public function setUp(): void
     {
-        // Give up if we're not running in CI:
+        // Give up if we're not running in CI (throws, so no problem with any
+        // further actions in any setUp methods of child classes):
         if (!$this->continuousIntegrationRunning()) {
             $this->markTestSkipped('Continuous integration not running.');
             return;
@@ -739,6 +748,9 @@ EOS
 
         // Reset the modified configs list.
         $this->modifiedConfigs = [];
+
+        // Create a pathResolver:
+        $this->pathResolver = $this->getPathResolver();
     }
 
     /**

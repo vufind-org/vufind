@@ -40,7 +40,7 @@ use OpenIDConnectServer\Entities\ClaimSetEntity;
 use OpenIDConnectServer\IdTokenResponse;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Locator;
+use VuFind\Config\PathResolver;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
 use VuFind\OAuth2\Repository\AuthCodeRepository;
@@ -82,6 +82,13 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected $accessTokenTable;
 
     /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
      * Claim extractor
      *
      * @var ClaimExtractor
@@ -111,6 +118,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         $this->container = $container;
+        $this->pathResolver = $container->get(PathResolver::class);
 
         // Load configuration:
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
@@ -137,7 +145,8 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $session,
                 $container->get(IdentityRepository::class),
                 $tablePluginManager->get('AccessToken'),
-                $this->getClaimExtractor()
+                $this->getClaimExtractor(),
+                $this->pathResolver
             )
         );
     }
@@ -321,7 +330,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         $keyPath = $this->getOAuth2ServerSetting($key);
         if (strncmp($keyPath, '/', 1) !== 0) {
             // Convert relative path:
-            $keyPath = Locator::getConfigPath($keyPath);
+            $keyPath = $this->pathResolver->getConfigPath($keyPath);
         }
         return new CryptKey(
             $keyPath,

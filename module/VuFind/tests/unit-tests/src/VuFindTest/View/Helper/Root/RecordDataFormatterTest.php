@@ -44,6 +44,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
 
     /**
      * Get a mock record router.
@@ -150,6 +151,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             \VuFind\Config\PluginManager::class,
             new \VuFind\Config\PluginManager($container)
         );
+        $this->addPathResolverToContainer($container);
         $formatter = $factory($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:
