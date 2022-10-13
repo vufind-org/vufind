@@ -74,6 +74,14 @@
 }
 
 /* ------ Tags ------ */
+.tag-record {
+  @extend .toolbar-btn;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 .tagList button {
   margin-top: 0;
   padding-top: 0;
