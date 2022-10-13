@@ -1,7 +1,12 @@
 <?php $loginTargets = $this->auth()->getManager()->getLoginTargets(); ?>
 <div class="form-group">
   <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-  <?php $currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
+  <?php
+    $currentTarget = $this->request->get('target');
+    if (!$currentTarget || !in_array($currentTarget, $loginTargets)) {
+      $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();
+    }
+  ?>
   <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" class="form-control">
     <?php foreach ($loginTargets as $target):?>
       <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>

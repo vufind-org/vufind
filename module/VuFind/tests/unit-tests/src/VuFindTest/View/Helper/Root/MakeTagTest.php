@@ -234,4 +234,18 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         $this->expectException(\InvalidArgumentException::class);
         $helper($tagName, '');
     }
+
+    /**
+     * Test deprecated elements
+     */
+    public function testDeprecatedElementTriggersWarning()
+    {
+        $helper = $this->getHelper();
+
+        // Fulfill plugin quota
+        $helper('sanity-check', 'this is good');
+
+        $this->expectWarning();
+        $helper('marquee', 'Now Playing: A Simpler Time!');
+    }
 }

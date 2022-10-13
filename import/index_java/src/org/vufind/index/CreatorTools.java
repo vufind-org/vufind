@@ -21,6 +21,7 @@ package org.vufind.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
+import org.marc4j.marc.VariableField;
 import org.solrmarc.index.SolrIndexer;
 import org.apache.log4j.Logger;
 import org.vufind.index.FieldSpecTools;
@@ -216,26 +217,21 @@ public class CreatorTools
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
-        List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
-        Iterator fieldsIter = fields.iterator();
-        if (fields != null){
-            DataField authorField;
-            while (fieldsIter.hasNext()){
-                authorField = (DataField) fieldsIter.next();
-                // add all author types to the result set; if we have multiple relators, repeat the authors
-                for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
-                    for (String subfields : parsedTagList.get(authorField.getTag())) {
-                        String current = SolrIndexer.instance().getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
-                        // TODO: we may eventually be able to use this line instead,
-                        // but right now it's not handling separation between the
-                        // subfields correctly, so it's commented out until that is
-                        // fixed.
-                        //String current = authorField.getSubfieldsAsString(subfields);
-                        if (null != current) {
-                            result.add(fixTrailingPunctuation(current));
-                            if (firstOnly) {
-                                return result;
-                            }
+        for (VariableField variableField : SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList)) {
+            DataField authorField = (DataField) variableField;
+            // add all author types to the result set; if we have multiple relators, repeat the authors
+            for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
+                for (String subfields : parsedTagList.get(authorField.getTag())) {
+                    String current = SolrIndexer.instance().getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                    // TODO: we may eventually be able to use this line instead,
+                    // but right now it's not handling separation between the
+                    // subfields correctly, so it's commented out until that is
+                    // fixed.
+                    //String current = authorField.getSubfieldsAsString(subfields);
+                    if (null != current) {
+                        result.add(fixTrailingPunctuation(current));
+                        if (firstOnly) {
+                            return result;
                         }
                     }
                 }
@@ -433,15 +429,10 @@ public class CreatorTools
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
-        List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
-        Iterator fieldsIter = fields.iterator();
-        if (fields != null){
-            DataField authorField;
-            while (fieldsIter.hasNext()){
-                authorField = (DataField) fieldsIter.next();
-                //add all author types to the result set
-                result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
-            }
+        for (VariableField variableField : SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList)) {
+            DataField authorField = (DataField) variableField;
+            //add all author types to the result set
+            result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
         }
         return result;
     }
