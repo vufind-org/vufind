@@ -27,11 +27,11 @@
  */
 namespace VuFind\Form;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for configurable forms.
@@ -71,10 +71,12 @@ class FormFactory implements FactoryInterface
             ->get('config')->toArray();
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $viewHelperManager = $container->get('ViewHelperManager');
+        $handlerManager = $container->get(\VuFind\Form\Handler\PluginManager::class);
 
         return new $requestedName(
             $yamlReader,
             $viewHelperManager,
+            $handlerManager,
             $config
         );
     }

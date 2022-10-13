@@ -35,7 +35,7 @@
             <textarea class="form-control" id="edit_notes<?=$current['listId'] ?>" name="notes<?=$current['listId'] ?>" rows="3"><?=$this->escapeHtml($current['notes'])?></textarea>
           </div>
           <a href="<?=$this->url('userList', ['id' => $current['listId']]) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getSourceIdentifier())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" data-lightbox>
-            <i class="fa fa-trash"></i> <?=$this->transEsc('Delete') ?>
+            <?=$this->icon('user-list-delete') ?> <?=$this->transEsc('Delete') ?>
           </a>
         </fieldset>
       <?php endforeach; ?>

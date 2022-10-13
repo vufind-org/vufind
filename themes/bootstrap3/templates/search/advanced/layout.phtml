@@ -89,7 +89,7 @@
         </div>
       </div>
       <span id="groupPlaceHolder" class="hidden">
-        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+        <?=$this->icon('ui-add') ?>
         <a href="#" role="button"><?= $this->transEsc('add_search_group') ?></a>
       </span>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
@@ -116,14 +116,14 @@
                       <?php endforeach; ?>
                     </select>
                     <a href="#" class="adv-term-remove hidden">
-                      <i class="fa fa-times" aria-hidden="true"></i>
+                      <?=$this->icon('ui-remove') ?>
                       <span class="sr-only"><?=$this->transEsc('remove') ?></span>
                     </a>
                   </div>
                   <?php if($group == 0 && $search == 0): ?>
-                      </div>
+                    </div>
                     <span class="float-left">
-                      <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i>
+                      <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
                       <a href="#" class="add_search_link hidden" role="button"><?=$this->transEsc("add_search")?></a>
                     </span>
                   <?php endif; ?>
@@ -137,7 +137,10 @@
                   <option value="NOT"<?php if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_NOT")?></option>
                 </select>
               </div>
-              <a href="#" class="adv-group-close hidden" role="button"><i class="fa fa-close"></i> <?=$this->transEsc("del_search")?></a>
+              <a href="#" class="adv-group-close hidden" role="button">
+                <?=$this->icon('ui-remove') ?>
+                <?=$this->transEsc("del_search")?>
+              </a>
             </div>
             <?php if($group == 0): ?>
               </div>
@@ -203,7 +206,7 @@
 <?php
 $script = <<<JS
 $('#groupPlaceHolder a').click(function(e) {
-  addGroup();
+  addGroup(null, null, null, true);
   return false;
 })
 JS;

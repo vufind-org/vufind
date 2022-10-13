@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection>
+  <record>
+    <leader>00000cam a22000004i 4500</leader>
+    <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
+    <datafield tag="100" ind1="0" ind2="0">
+      <subfield code="a">Author, Test</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="4">
+      <subfield code="a">The Foo</subfield>
+    </datafield>
+  </record>
+
+  <record>
+    <leader>00000cam a22000004i 4500</leader>
+    <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
+    <datafield tag="100" ind1="0" ind2="0">
+      <subfield code="a">Author, Test</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="4">
+      <subfield code="a">The Bar</subfield>
+    </datafield>
+  </record>
+
+  <record xmlns="http://vufind.org/bad">
+    <leader>00000cam a22000004i 4500</leader>
+    <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
+    <datafield tag="100" ind1="0" ind2="0">
+      <subfield code="a">Author, Test</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="4">
+      <subfield code="a">The Bar</subfield>
+    </datafield>
+  </record>
+
+  <item xmlns="http://vufind.org/bad">
+    <leader>00000cam a22000004i 4500</leader>
+    <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
+    <datafield tag="100" ind1="0" ind2="0">
+      <subfield code="a">Author, Test</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="4">
+      <subfield code="a">The Bar</subfield>
+    </datafield>
+  </item>
+</collection>

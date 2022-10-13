@@ -48,6 +48,26 @@ interface SerializationInterface
     public static function canParse(string $marc): bool;
 
     /**
+     * Check if the serialization class can parse the given MARC collection string
+     *
+     * @param string $marc MARC
+     *
+     * @return bool
+     */
+    public static function canParseCollection(string $marc): bool;
+
+    /**
+     * Parse MARC collection from a string into an array of MarcReader classes
+     *
+     * @param string $collection MARC record collection in the format supported by
+     * the serialization class
+     *
+     * @throws Exception
+     * @return array
+     */
+    public static function collectionFromString(string $collection): array;
+
+    /**
      * Parse MARC from a string
      *
      * @param string $marc MARC record in the format supported by the serialization
@@ -62,10 +82,9 @@ interface SerializationInterface
      * Convert record to a string representing the format supported by the
      * serialization class
      *
-     * @param string $leader Leader
-     * @param array  $fields Record fields
+     * @param array $data Record data
      *
      * @return string
      */
-    public static function toString(string $leader, array $fields): string;
+    public static function toString(array $data): string;
 }

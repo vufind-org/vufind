@@ -369,7 +369,7 @@ trait ConcatTrait
         if ($this->view) {
             $useCdata = $this->view->plugin('doctype')->isXhtml();
         } else {
-            $useCdata = $this->useCdata;
+            $useCdata = $this->useCdata ?? false;
         }
 
         $escapeStart = ($useCdata) ? '//<![CDATA[' : '//<!--';
@@ -378,6 +378,13 @@ trait ConcatTrait
         $output = [];
         foreach ($this->groups as $group) {
             if (isset($group['other'])) {
+                /**
+                 * PHPStan doesn't like this because of incompatible itemToString
+                 * signatures in HeadLink/HeadScript, but it is safe to use because
+                 * the extra parameters will be ignored appropriately.
+                 *
+                 * @phpstan-ignore-next-line
+                 */
                 $output[] = $this->itemToString(
                     $group['item'],
                     $indent,
@@ -392,6 +399,13 @@ trait ConcatTrait
                 $path = $this->getConcatenatedFilePath($group);
                 $item = $this->setResourceFilePath($group['items'][0], $path);
                 $this->addNonce($item);
+                /**
+                 * PHPStan doesn't like this because of incompatible itemToString
+                 * signatures in HeadLink/HeadScript, but it is safe to use because
+                 * the extra parameters will be ignored appropriately.
+                 *
+                 * @phpstan-ignore-next-line
+                 */
                 $output[] = parent::itemToString(
                     $item,
                     $indent,

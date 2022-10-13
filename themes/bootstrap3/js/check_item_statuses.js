@@ -47,18 +47,27 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       for (var x = 0; x < result.locationList.length; x++) {
         locationListHTML += '<div class="groupLocation">';
         if (result.locationList[x].availability) {
-          locationListHTML += '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML +=
+            '<span class="text-success">' +
+              VuFind.icon("status-available") + " " +
+              result.locationList[x].location +
+            '</span> ';
         } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
                   && result.locationList[x].status_unknown
         ) {
           if (result.locationList[x].location) {
-            locationListHTML += '<span class="text-warning"><i class="fa fa-status-unknown" aria-hidden="true"></i> '
-                          + result.locationList[x].location + '</span> ';
+            locationListHTML +=
+              '<span class="text-warning">' +
+                VuFind.icon("status-indicator") + " " +
+                result.locationList[x].location +
+              '</span> ';
           }
         } else {
-          locationListHTML += '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML +=
+            '<span class="text-danger">' +
+              VuFind.icon('status-unavailable') + " " +
+              result.locationList[x].location +
+            '</span> ';
         }
         locationListHTML += '</div>';
         locationListHTML += '<div class="groupCallnumber">';

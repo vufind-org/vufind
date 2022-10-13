@@ -57,7 +57,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
@@ -75,10 +76,13 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->getSubmitResponse()
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
+        $this->assertEquals([], $form->mapRequestParamsToFieldValues([]));
+
         $this->assertEquals(
             'Laminas\InputFilter\InputFilter',
             get_class($form->getInputFilter())
         );
+        $this->assertEquals(0, count($form->getSecondaryHandlers()));
     }
 
     /**
@@ -96,6 +100,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $form = new Form(
             new YamlReader(),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class),
             ['Feedback' => $defaults]
         );
         $this->assertEquals(
@@ -117,7 +122,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('foo');
     }
@@ -131,7 +137,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId('FeedbackSite');
 
@@ -159,7 +166,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 50],
+                    'settings' => ['size' => 254],
                 ],
                 [
                     'type' => 'submit',
@@ -182,43 +189,51 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'Thank you for your feedback.',
             $form->getSubmitResponse()
         );
+        $expectedFields = [
+            [
+                'type' => 'textarea',
+                'value' => 'x',
+                'valueLabel' => null,
+                'label' => 'Comments',
+                'name' => 'message',
+                'required' => true,
+                'settings' => ['cols' => 50, 'rows' => 8],
+            ],
+            [
+                'type' => 'text',
+                'value' => 'y',
+                'valueLabel' => null,
+                'name' => 'name',
+                'group' => '__sender__',
+                'label' => 'feedback_name',
+                'settings' => ['size' => 50],
+            ],
+            [
+                'type' => 'email',
+                'value' => 'z@foo.com',
+                'valueLabel' => null,
+                'name' => 'email',
+                'group' => '__sender__',
+                'label' => 'feedback_email',
+                'settings' => ['size' => 254],
+            ],
+        ];
+        $postParams = [
+            'message' => 'x',
+            'name' => 'y',
+            'email' => 'z@foo.com'
+        ];
+
         $this->assertEquals(
             [
-                [
-                    [
-                        'type' => 'textarea',
-                        'value' => 'x',
-                        'label' => 'Comments',
-                        'name' => 'message',
-                        'required' => true,
-                        'settings' => ['cols' => 50, 'rows' => 8],
-                    ],
-                    [
-                        'type' => 'text',
-                        'value' => 'y',
-                        'name' => 'name',
-                        'group' => '__sender__',
-                        'label' => 'feedback_name',
-                        'settings' => ['size' => 50],
-                    ],
-                    [
-                        'type' => 'email',
-                        'value' => 'z@foo.com',
-                        'name' => 'email',
-                        'group' => '__sender__',
-                        'label' => 'feedback_email',
-                        'settings' => ['size' => 50],
-                    ],
-                ],
+                $expectedFields,
                 'Email/form.phtml'
             ],
-            $form->formatEmailMessage(
-                [
-                    'message' => 'x',
-                    'name' => 'y',
-                    'email' => 'z@foo.com'
-                ]
-            )
+            $form->formatEmailMessage($postParams)
+        );
+        $this->assertEquals(
+            $expectedFields,
+            $form->mapRequestParamsToFieldValues($postParams)
         );
         $this->assertEquals(
             'Laminas\InputFilter\InputFilter',
@@ -244,6 +259,144 @@ class FormTest extends \PHPUnit\Framework\TestCase
         // Validators: Good data
         $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
         $this->assertTrue($form->isValid());
+    }
+
+    /**
+     * Test sender field merging.
+     *
+     * @return void
+     */
+    public function testSenderFieldMerging()
+    {
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
+        );
+        $form->setFormId('FeedbackSite');
+
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['cols' => 50, 'rows' => 8],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'feedback_name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
+
+        $form = $this->getMockTestForm('TestSenderFields');
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'group' => '__sender__',
+                    'label' => 'Phone Number',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['cols' => 50, 'rows' => 8],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
+    }
+
+    /**
+     * Test sender field merging.
+     *
+     * @return void
+     */
+    public function testSenderFieldMergingWithSettings()
+    {
+        $form = $this->getMockTestForm('TestSenderFieldsWithSettings');
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 100],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'group' => '__sender__',
+                    'label' => 'Phone Number',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => [
+                        'size' => 254,
+                        'aria-label' => 'Test label'
+                    ],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['cols' => 50, 'rows' => 8],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
     }
 
     /**
@@ -279,7 +432,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         $form = new Form(
             $this->getMockTestFormYamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $form->setFormId($formId);
         return $form;
@@ -308,58 +462,128 @@ class FormTest extends \PHPUnit\Framework\TestCase
         // Select element optionGroup: options with labels and values
         $el = $getElement('select', $elements);
         $this->assertEquals(
-            ['value-1' => 'label-1', 'value-2' => 'label-2'],
+            [
+                'o1' => [
+                    'value' => 'value-1',
+                    'label' => 'label-1'
+                ],
+                'o2' => [
+                    'value' => 'value-2',
+                    'label' => 'label-2'
+                ]
+            ],
             $el['optionGroups']['group-1']['options']
         );
 
         // Select element optionGroup: options with values
         $el = $getElement('select2', $elements);
         $this->assertEquals(
-            ['option-1' => 'option-1', 'option-2' => 'option-2'],
+            [
+                'o1' => [
+                    'value' => 'option-1',
+                    'label' => 'option-1'
+                ],
+                'o2' => [
+                    'value' => 'option-2',
+                    'label' => 'option-2'
+                ]
+            ],
             $el['optionGroups']['group-1']['options']
         );
 
         // Select element options with labels and values
         $el = $getElement('select3', $elements);
         $this->assertEquals(
-            [['label' => 'label-1', 'value' => 'value-1'],
-             ['value' => 'value-2', 'label' => 'label-2']],
+            [
+                'o1' => [
+                    'label' => 'label-1',
+                    'value' => 'value-1'
+                ],
+                'o2' => [
+                    'label' => 'label-2',
+                    'value' => 'value-2'
+                ]
+            ],
             $el['options']
         );
 
         // Select element options with values
         $el = $getElement('select4', $elements);
         $this->assertEquals(
-            [['label' => 'option-1', 'value' => 'option-1'],
-             ['value' => 'option-2', 'label' => 'option-2']],
+            [
+                'o1' => [
+                    'label' => 'option-1',
+                    'value' => 'option-1'
+                ],
+                'o2' => [
+                    'label' => 'option-2',
+                    'value' => 'option-2'
+                ]
+            ],
             $el['options']
         );
 
         // Radio element options with labels and values
         $el = $getElement('radio', $elements);
         $this->assertEquals(
-            ['value-1' => 'label-1', 'value-2' => 'label-2'],
+            [
+                'o1' => [
+                    'label' => 'label-1',
+                    'value' => 'value-1'
+                ],
+                'o2' => [
+                    'label' => 'label-2',
+                    'value' => 'value-2'
+                ]
+            ],
             $el['options']
         );
 
         // Radio element options with values
         $el = $getElement('radio2', $elements);
         $this->assertEquals(
-            ['option-1' => 'option-1', 'option-2' => 'option-2'],
+            [
+                'o1' => [
+                    'label' => 'option-1',
+                    'value' => 'option-1'
+                ],
+                'o2' => [
+                    'label' => 'option-2',
+                    'value' => 'option-2'
+                ]
+            ],
             $el['options']
         );
 
         // Checkbox element options with labels and values
         $el = $getElement('checkbox', $elements);
         $this->assertEquals(
-            ['value-1' => 'label-1', 'value-2' => 'label-2'],
+            [
+                'o1' => [
+                    'label' => 'label-1',
+                    'value' => 'value-1'
+                ],
+                'o2' => [
+                    'label' => 'label-2',
+                    'value' => 'value-2'
+                ]
+            ],
             $el['options']
         );
 
         // Checkbox element options with values
         $el = $getElement('checkbox2', $elements);
         $this->assertEquals(
-            ['option-1' => 'option-1', 'option-2' => 'option-2'],
+            [
+                'o1' => [
+                    'label' => 'option-1',
+                    'value' => 'option-1'
+                ],
+                'o2' => [
+                    'label' => 'option-2',
+                    'value' => 'option-2'
+                ]
+            ],
             $el['options']
         );
     }
@@ -375,15 +599,19 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         // Select element optionGroup: options with labels and values
         // Valid option value
-        $form->setData(['select' => 'value-1']);
+        $form->setData(['select' => 'o1']);
         $this->assertTrue($form->isValid());
-        // Invalid option value
+        // Invalid option values
         $form->setData(['select' => 'invalid-value']);
+        $this->assertFalse($form->isValid());
+        $form->setData(['select' => 0]);
+        $this->assertFalse($form->isValid());
+        $form->setData(['select' => 'o11']);
         $this->assertFalse($form->isValid());
 
         // Select element optionGroup: options with values
         // Valid option value
-        $form->setData(['select2' => 'option-1']);
+        $form->setData(['select2' => 'o1']);
         $this->assertTrue($form->isValid());
         // Invalid option value
         $form->setData(['select2' => 'invalid-option']);
@@ -391,7 +619,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         // Select element options with labels and values
         // Valid option value
-        $form->setData(['select3' => 'value-1']);
+        $form->setData(['select3' => 'o1']);
         $this->assertTrue($form->isValid());
         // Invalid option value
         $form->setData(['select3' => 'invalid-value']);
@@ -399,7 +627,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         // Select element options with values
         // Valid option value
-        $form->setData(['select4' => 'option-1']);
+        $form->setData(['select4' => 'o1']);
         $this->assertTrue($form->isValid());
         // Invalid option value
         $form->setData(['select4' => 'invalid-option']);
@@ -407,7 +635,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         // Radio element options with labels and values
         // Valid option value
-        $form->setData(['radio' => 'value-1']);
+        $form->setData(['radio' => 'o1']);
         $this->assertTrue($form->isValid());
         // Invalid option value
         $form->setData(['radio' => 'invalid-value']);
@@ -415,7 +643,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         // Radio element options with values
         // Valid option value
-        $form->setData(['radio2' => 'option-1']);
+        $form->setData(['radio2' => 'o1']);
         $this->assertTrue($form->isValid());
         // Invalid option value
         $form->setData(['radio2' => 'invalid-option']);
@@ -423,7 +651,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         // Checkbox element options with labels and values
         // Valid option value
-        $form->setData(['checkbox' => 'value-1']);
+        $form->setData(['checkbox' => 'o1']);
         $this->assertTrue($form->isValid());
         // Invalid option value
         $form->setData(['checkbox' => 'invalid-value']);
@@ -431,7 +659,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         // Checkbox element options with values
         // Valid option value
-        $form->setData(['checkbox2' => 'option-1']);
+        $form->setData(['checkbox2' => 'o1']);
         $this->assertTrue($form->isValid());
         // Invalid option value
         $form->setData(['checkbox2' => 'invalid-option']);
@@ -459,19 +687,19 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($form->isValid());
 
             // One OK option, another missing
-            $form->setData(['checkbox' => ['option-1']]);
+            $form->setData(['checkbox' => ['o1']]);
             $this->assertFalse($form->isValid());
 
             // One OK option, another invalid
-            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $form->setData(['checkbox' => ['o1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
 
             // Both required options
-            $form->setData(['checkbox' => ['option-1', 'option-2']]);
+            $form->setData(['checkbox' => ['o1', 'o2']]);
             $this->assertTrue($form->isValid());
 
             // Both required options and one invalid
-            $form->setData(['checkbox' => ['option-1', 'option-2', 'invalid-option']]);
+            $form->setData(['checkbox' => ['o1', 'o2', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
 
@@ -493,19 +721,19 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($form->isValid());
 
             // One OK option
-            $form->setData(['checkbox' => ['option-1']]);
+            $form->setData(['checkbox' => ['o1']]);
             $this->assertTrue($form->isValid());
 
             // One OK option
-            $form->setData(['checkbox' => ['option-2']]);
+            $form->setData(['checkbox' => ['o2']]);
             $this->assertTrue($form->isValid());
 
             // Both options OK
-            $form->setData(['checkbox' => ['option-1', 'option-2']]);
+            $form->setData(['checkbox' => ['o1', 'o2']]);
             $this->assertTrue($form->isValid());
 
             // One OK and one invalid option
-            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $form->setData(['checkbox' => ['o1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
 
@@ -529,11 +757,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($form->isValid());
 
             // One OK option
-            $form->setData(['checkbox' => ['option-1']]);
+            $form->setData(['checkbox' => ['o1']]);
             $this->assertTrue($form->isValid());
 
             // One OK and one invalid option
-            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $form->setData(['checkbox' => ['o1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
 
@@ -558,11 +786,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($form->isValid());
 
             // One OK option
-            $form->setData(['checkbox' => ['option-1']]);
+            $form->setData(['checkbox' => ['o1']]);
             $this->assertTrue($form->isValid());
 
             // One OK and one invalid option
-            $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+            $form->setData(['checkbox' => ['o1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
     }
@@ -606,7 +834,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'text1' => 'One',
                 'text2' => 'Two',
-                'checkbox' => ['option-1']
+                'checkbox' => ['o1']
             ]
         );
         $this->assertTrue($form->isValid());

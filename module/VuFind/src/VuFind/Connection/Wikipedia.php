@@ -91,7 +91,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @param string $author The author name to search for
      *
-     * @return array
+     * @return ?array
      */
     public function get($author)
     {
@@ -408,7 +408,7 @@ class Wikipedia implements TranslatorAwareInterface
      * This method is responsible for parsing the output from the Wikipedia
      * REST API.
      *
-     * @param string $rawBody The Wikipedia response to parse
+     * @param array $rawBody The Wikipedia response to parse
      *
      * @return array
      * @author Rushikesh Katikar <rushikesh.katikar@gmail.com>

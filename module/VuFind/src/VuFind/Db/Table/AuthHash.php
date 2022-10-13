@@ -75,7 +75,7 @@ class AuthHash extends Gateway
      * @param string $type   Hash type
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return \VuFind\Db\Row\AuthHash
+     * @return ?\VuFind\Db\Row\AuthHash
      */
     public function getByHashAndType($hash, $type, $create = true)
     {
@@ -108,14 +108,14 @@ class AuthHash extends Gateway
     /**
      * Update the select statement to find records to delete.
      *
-     * @param Select $select  Select clause
-     * @param int    $daysOld Age in days of an "expired" record.
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld)
+    protected function expirationCallback($select, $dateLimit)
     {
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $select->where->lessThan('created', date('Y-m-d H:i:s', $expireDate));
+        $select->where->lessThan('created', $dateLimit);
     }
 }

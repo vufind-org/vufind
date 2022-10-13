@@ -301,10 +301,10 @@ class Options extends \VuFind\Search\Base\Options
      */
     protected function setCommonSettings($searchSettings, $setting, $list, $target)
     {
-        if (isset($searchSettings->General->$setting)) {
+        if (!empty($searchSettings->General->$setting)) {
             $userValues = explode(',', $searchSettings->General->$setting);
 
-            if (!empty($userValues) && isset($this->$list) && !empty($this->$list)) {
+            if (!empty($this->$list)) {
                 // Reference to property containing API-provided list of legal values
                 $listRef = & $this->$list;
                 // Reference to property containing final common settings
@@ -536,19 +536,17 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return array
      */
-    protected function populateLimiterValues($limiterValues)
+    protected function populateLimiterValues(array $limiterValues)
     {
         $availableLimiterValues = [];
-        if (isset($limiterValues)) {
-            foreach ($limiterValues as $limiterValue) {
-                $availableLimiterValues[] = [
-                    'Value' => $limiterValue['Value'],
-                    'LimiterValues' => isset($limiterValue['LimiterValues'])
-                        ? $this
-                            ->populateLimiterValues($limiterValue['LimiterValues'])
-                        : null
-                ];
-            }
+        foreach ($limiterValues as $limiterValue) {
+            $availableLimiterValues[] = [
+                'Value' => $limiterValue['Value'],
+                'LimiterValues' => isset($limiterValue['LimiterValues'])
+                    ? $this
+                        ->populateLimiterValues($limiterValue['LimiterValues'])
+                    : null
+            ];
         }
         return empty($availableLimiterValues) ? null : $availableLimiterValues;
     }
