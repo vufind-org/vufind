@@ -88,6 +88,14 @@
 }
 
 /* ------ Tags ------ */
+.tag-record {
+  &:extend(.toolbar-btn);
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 .tagList button {
   margin-top: 0;
   padding-top: 0;
@@ -119,6 +127,7 @@
     }
 
     .badge .fa { width: 12px; }
+    .icon--img { font-size: 0.625rem; }
   }
   button { border: 0; }
   .tag-form { display: inline; }
