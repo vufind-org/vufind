@@ -316,7 +316,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Return a canned username policy hint when available
+     * Return a canned username or password policy hint when available
      *
      * @param string  $type    Policy type (password or username)
      * @param ?string $pattern Current policy pattern
@@ -325,8 +325,29 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     protected function getCannedPolicyHint(string $type, ?string $pattern): ?string
     {
+        /* Return a value according to the policy and pattern type, e.g.:
+         *
+         * 'numeric'      => password_only_numeric or username_only_numeric
+         * 'alphanumeric' => password_only_alphanumeric or username_only_alphanumeric
+         * others         => null (any hint should be defined by the password_hint or
+         *                   username_hint setting)
+         */
         return (in_array($pattern, ['numeric', 'alphanumeric']))
             ? $type . '_only_' . $pattern : null;
+    }
+
+    /**
+     * Return a canned password policy hint when available
+     *
+     * @param ?string $pattern Current policy pattern
+     *
+     * @return ?string
+     *
+     * @deprecated Use getCannedPolicyHint instead
+     */
+    protected function getCannedPasswordPolicyHint($pattern)
+    {
+        return $this->getCannedPolicyHint('password', $pattern);
     }
 
     /**
@@ -343,6 +364,13 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $authConfig = isset($config->Authentication)
             ? $config->Authentication->toArray()
             : [];
+        /* Map settings to the policy array, e.g.:
+         *
+         * password_minimum_length or username_minimum_length => minLength
+         * password_maximum_length or username_maximum_length => maxLength
+         * password_pattern or username_pattern => pattern
+         * password_hint or username_hint => hint
+         */
         $map = [
             "minimum_{$type}_length" => 'minLength',
             "maximum_{$type}_length" => 'maxLength',
@@ -439,6 +467,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if (isset($policy['minLength'])
             && mb_strlen($string, 'UTF-8') < $policy['minLength']
         ) {
+            // e.g. password_minimum_length or username_minimum_length:
             throw new AuthException(
                 $this->translate(
                     "{$type}_minimum_length",
@@ -449,6 +478,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if (isset($policy['maxLength'])
             && mb_strlen($string, 'UTF-8') > $policy['maxLength']
         ) {
+            // e.g. password_maximum_length or username_maximum_length:
             throw new AuthException(
                 $this->translate(
                     "{$type}_maximum_length",
@@ -478,6 +508,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 }
             }
             if (!$valid) {
+                // e.g. password_error_invalid or username_error_invalid:
                 throw new AuthException($this->translate("{$type}_error_invalid"));
             }
         }
