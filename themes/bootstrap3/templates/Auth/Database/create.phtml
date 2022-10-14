@@ -1,26 +1,3 @@
-<?php
-  $usernamePattern = '';
-  if (isset($this->usernamePolicy['pattern'])) {
-    if ($this->usernamePolicy['pattern'] == 'numeric') {
-      $usernamePattern = '\d+';
-    } elseif ($this->usernamePolicy['pattern'] == 'alphanumeric') {
-      $usernamePattern = '[\da-zA-Z]+';
-    } else {
-      $usernamePattern = $this->usernamePolicy['pattern'];
-    }
-  }
-
-  $passwordPattern = '';
-  if (isset($this->passwordPolicy['pattern'])) {
-    if ($this->passwordPolicy['pattern'] == 'numeric') {
-      $passwordPattern = '\d+';
-    } elseif ($this->passwordPolicy['pattern'] == 'alphanumeric') {
-      $passwordPattern = '[\da-zA-Z]+';
-    } else {
-      $passwordPattern = $this->passwordPolicy['pattern'];
-    }
-  }
-?>
 <div class="form-group">
   <label class="control-label" for="account_firstname"><?=$this->transEsc('First Name')?>:</label>
   <input id="account_firstname" type="text" name="firstname" value="<?=$this->escapeHtmlAttr($this->request->get('firstname'))?>" class="form-control"/>
@@ -36,11 +13,11 @@
 </div>
 <div class="form-group">
   <label class="control-label" for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
-  <input id="account_username" type="text" name="username" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"
-    <?=isset($this->usernamePolicy['minLength']) ? ' data-minlength="' . $this->usernamePolicy['minLength'] . '" data-minlength-error="' . $this->transEscAttr('username_minimum_length', ['%%minlength%%' => $this->usernamePolicy['minLength']]) . '"' : ''?>
-    <?=isset($this->usernamePolicy['maxLength']) ? ' maxlength="' . $this->usernamePolicy['maxLength'] . '"' : ''?>
-    <?=$usernamePattern ? ' pattern="' . $usernamePattern . '"' : '' ?>
-  />
+  <?php
+    $attrs = $this->htmlAttributes($this->usernamePolicy['inputAttrs'] ?? []);
+    $attrs->merge(['id' => 'account_username', 'type' => 'text', 'name' => 'username', 'value' => $this->request->get('username'), 'class' => 'form-control']);
+  ?>
+  <input <?=$attrs?> required>
   <?php if ($this->usernamePolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->usernamePolicy['hint']) ?></div>
   <?php endif; ?>
@@ -48,11 +25,11 @@
 </div>
 <div class="form-group">
   <label class="control-label" for="account_password"><?=$this->transEsc('Password')?>:</label>
-  <input id="account_password" type="password" name="password" required aria-required="true" class="form-control"
-    <?=isset($this->passwordPolicy['minLength']) ? ' data-minlength="' . $this->passwordPolicy['minLength'] . '" data-minlength-error="' . $this->transEscAttr('password_minimum_length', ['%%minlength%%' => $this->passwordPolicy['minLength']]) . '"' : ''?>
-    <?=isset($this->passwordPolicy['maxLength']) ? ' maxlength="' . $this->passwordPolicy['maxLength'] . '"' : ''?>
-    <?=$passwordPattern ? ' pattern="' . $passwordPattern . '"' : '' ?>
-  />
+  <?php
+    $attrs = $this->htmlAttributes($this->passwordPolicy['inputAttrs'] ?? []);
+    $attrs->merge(['id' => 'account_password', 'type' => 'password', 'name' => 'password', 'class' => 'form-control', 'autocomplete' => 'new-password']);
+  ?>
+  <input <?=$attrs?> required>
   <?php if ($this->passwordPolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->passwordPolicy['hint']) ?></div>
   <?php endif; ?>
@@ -60,6 +37,6 @@
 </div>
 <div class="form-group">
   <label class="control-label" for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
-  <input id="account_password2" type="password" name="password2" required aria-required="true" class="form-control" data-match="#account_password" data-match-error="<?=$this->transEscAttr('Passwords do not match')?>"/>
+  <input id="account_password2" type="password" name="password2" required class="form-control" data-match="#account_password" data-match-error="<?=$this->transEscAttr('Passwords do not match')?>"/>
   <div class="help-block with-errors"></div>
 </div>
