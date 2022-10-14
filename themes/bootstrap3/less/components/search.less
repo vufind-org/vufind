@@ -445,11 +445,14 @@ body.rtl {
 .record-nav .cart-add,
 .record-nav .cart-remove,
 .reset-filters-btn {
-  display: inline-block;
+  &:extend(.icon--link);
+  gap: 0.25rem;
+
   margin-bottom: 4px;
   padding: .5rem 1rem;
   border: 0;
   color: #555;
+  text-decoration: none;
   background-color: rgba(0,0,0,.05);
   border-radius: 4px;
 
