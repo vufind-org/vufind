@@ -1,0 +1,5 @@
+[
+    { "comment": "Initial request for token" },
+    { "comment": "login attempt" },
+    { "comment": "profile retrieval", "body": "{ \"users\": [ { \"id\": \"fake-id\", \"personal\": { \"firstName\": \"first\", \"lastName\": \"last\", \"email\": \"fake@fake.com\" } } ] }" }
+]

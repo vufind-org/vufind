@@ -398,7 +398,13 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $connector = new $this->connectorClass(
             $this->getSolrUrl(),
             new HandlerMap($handlers),
-            $this->createHttpClient($config->Index->timeout ?? 30),
+            function (string $url) use ($config) {
+                return $this->createHttpClient(
+                    $config->Index->timeout ?? 30,
+                    $this->getHttpOptions($url),
+                    $url
+                );
+            },
             $this->uniqueKey
         );
 
@@ -411,6 +417,20 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         }
 
         return $connector;
+    }
+
+    /**
+     * Get HTTP options for the client
+     *
+     * @param string $url URL being requested
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getHttpOptions(string $url): array
+    {
+        return [];
     }
 
     /**

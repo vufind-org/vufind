@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -35,6 +37,7 @@ use Symfony\Component\Yaml\Yaml;
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -55,6 +58,13 @@ class YamlReader
     protected $cacheManager;
 
     /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
      * Cache of loaded files.
      *
      * @var array
@@ -65,10 +75,15 @@ class YamlReader
      * Constructor
      *
      * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param PathResolver          $pathResolver Config file path resolver
+     * (optional; defaults to \VuFind\Config\Locator)
      */
-    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
-    {
+    public function __construct(
+        \VuFind\Cache\Manager $cacheManager = null,
+        PathResolver $pathResolver = null
+    ) {
         $this->cacheManager = $cacheManager;
+        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -88,9 +103,21 @@ class YamlReader
         // to pass $forceReload down another level to load an updated file if
         // something has changed -- it's enough to force a cache recheck).
         if ($forceReload || !isset($this->files[$filename])) {
+            if ($this->pathResolver) {
+                $localConfigPath = $useLocalConfig
+                    ? $this->pathResolver->getLocalConfigPath($filename)
+                    : null;
+            } else {
+                $localConfigPath = $useLocalConfig
+                    ? Locator::getLocalConfigPath($filename)
+                    : null;
+            }
+            $baseConfigPath = $this->pathResolver
+                ? $this->pathResolver->getBaseConfigPath($filename)
+                : Locator::getBaseConfigPath($filename);
             $this->files[$filename] = $this->getFromPaths(
-                Locator::getBaseConfigPath($filename),
-                ($useLocalConfig ? Locator::getLocalConfigPath($filename) : null)
+                $baseConfigPath,
+                $localConfigPath
             );
         }
 
@@ -161,10 +188,32 @@ class YamlReader
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
         }
+        // Check for sections to merge instead of overriding:
+        $mergedSections = [];
+        if (isset($results['@merge_sections'])) {
+            $mergedSections = $results['@merge_sections'];
+            // Swallow the directive after processing it:
+            unset($results['@merge_sections']);
+        }
 
-        // Now load in missing sections from parent, if applicable:
+        // Now load in merged or missing sections from parent, if applicable:
         if (null !== $defaultParent) {
-            foreach ($this->parseYaml($defaultParent) as $section => $contents) {
+            $parentSections = $this->parseYaml($defaultParent);
+            // Process merged sections:
+            foreach ($mergedSections as $path) {
+                $parentElem
+                    = $this->getArrayElemRefByPath($parentSections, $path);
+                if (is_array($parentElem)) {
+                    $resultElemRef
+                        = &$this->getArrayElemRefByPath($results, $path, true);
+                    $resultElemRef
+                        = array_merge_recursive($parentElem, $resultElemRef);
+                    unset($parentElem);
+                    unset($resultElemRef);
+                }
+            }
+            // Add missing sections:
+            foreach ($parentSections as $section => $contents) {
                 if (!isset($results[$section])) {
                     $results[$section] = $contents;
                 }
@@ -172,5 +221,33 @@ class YamlReader
         }
 
         return $results;
+    }
+
+    /**
+     * Return array element reference by path
+     *
+     * @param array $arr    Array to access
+     * @param array $path   Path to retrieve
+     * @param bool  $create Whether to create the path if it doesn't exist. Default
+     * is false.
+     *
+     * @return mixed
+     */
+    protected function &getArrayElemRefByPath(
+        array &$arr,
+        array $path,
+        bool $create = false
+    ) {
+        $result = &$arr;
+        foreach ($path as $pathPart) {
+            if (!array_key_exists($pathPart, $result)) {
+                if (!$create) {
+                    return null;
+                }
+                $result[$pathPart] = [];
+            }
+            $result = &$result[$pathPart];
+        }
+        return $result;
     }
 }

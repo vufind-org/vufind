@@ -68,9 +68,10 @@ class OpenUrlFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
+        $pathResolver = $container->get(\VuFind\Config\PathResolver::class);
         $openUrlRules = json_decode(
             file_get_contents(
-                \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
+                $pathResolver->getConfigPath('OpenUrlRules.json')
             ),
             true
         );
