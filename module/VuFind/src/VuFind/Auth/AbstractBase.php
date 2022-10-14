@@ -432,7 +432,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     protected function validateUsernameAgainstPolicy(string $username): void
     {
-        $this->validateStringAgainstPolicy('username', $username);
+        $this->validateStringAgainstPolicy(
+            'username',
+            $this->getUsernamePolicy(),
+            $username
+        );
     }
 
     /**
@@ -446,7 +450,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     protected function validatePasswordAgainstPolicy(string $password): void
     {
-        $this->validateStringAgainstPolicy('password', $password);
+        $this->validateStringAgainstPolicy(
+            'password',
+            $this->getPasswordPolicy(),
+            $password
+        );
     }
 
     /**
@@ -454,6 +462,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * if the string is invalid.
      *
      * @param string $type   Policy type (password or username)
+     * @param array  $policy Policy configuration
      * @param string $string String to verify
      *
      * @return void
@@ -461,9 +470,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     protected function validateStringAgainstPolicy(
         string $type,
+        array $policy,
         string $string
     ): void {
-        $policy = $this->getPolicyConfig($type);
         if (isset($policy['minLength'])
             && mb_strlen($string, 'UTF-8') < $policy['minLength']
         ) {
