@@ -356,6 +356,21 @@ class Database extends AbstractBase
     }
 
     /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getUsernamePolicy()
+    {
+        $policy = parent::getUsernamePolicy();
+        // Limit maxLength to the database limit
+        if (!isset($policy['maxLength']) || $policy['maxLength'] > 255) {
+            $policy['maxLength'] = 255;
+        }
+        return $policy;
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array
