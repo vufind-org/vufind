@@ -37,9 +37,9 @@
 <div class="form-group">
   <label class="control-label" for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
   <input id="account_username" type="text" name="username" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"
-<?php /*    <?=isset($this->usernamePolicy['minLength']) ? ' data-minlength="' . $this->usernamePolicy['minLength'] . '" data-minlength-error="' . $this->transEscAttr('username_minimum_length', ['%%minlength%%' => $this->usernamePolicy['minLength']]) . '"' : ''?>
+    <?=isset($this->usernamePolicy['minLength']) ? ' data-minlength="' . $this->usernamePolicy['minLength'] . '" data-minlength-error="' . $this->transEscAttr('username_minimum_length', ['%%minlength%%' => $this->usernamePolicy['minLength']]) . '"' : ''?>
     <?=isset($this->usernamePolicy['maxLength']) ? ' maxlength="' . $this->usernamePolicy['maxLength'] . '"' : ''?>
-    <?=$usernamePattern ? ' pattern="' . $usernamePattern . '"' : '' ?>*/ ?>
+    <?=$usernamePattern ? ' pattern="' . $usernamePattern . '"' : '' ?>
   />
   <?php if ($this->usernamePolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->usernamePolicy['hint']) ?></div>
