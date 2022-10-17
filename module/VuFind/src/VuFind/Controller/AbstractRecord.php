@@ -165,8 +165,7 @@ class AbstractRecord extends AbstractBase
 
             // Save rating if allowed:
             if ($driver->isRatingAllowed()
-                && null !== ($rating = $this->params()->fromPost('rating'))
-                && '' !== $rating
+                && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
                 $driver->addOrUpdateRating($user->id, intval($rating));
             }

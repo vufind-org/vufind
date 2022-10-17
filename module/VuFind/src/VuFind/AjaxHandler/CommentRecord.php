@@ -166,8 +166,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         $commentId = $resource->addComment($comment, $this->user);
 
         if ($driver->isRatingAllowed()
-            && null !== ($rating = $params->fromPost('rating'))
-            && '' !== $rating
+            && '0' !== ($rating = $params->fromPost('rating', '0'))
         ) {
             $driver->addOrUpdateRating($this->user->id, intval($rating));
         }
