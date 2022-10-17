@@ -182,7 +182,7 @@
          -->
 
     <!-- VuFind uses the default Solr settings for filterCache, which should produce a high
-         hit rate. You can carefully adjust the filterCache and check the hit ratio in 
+         hit rate. You can carefully adjust the filterCache and check the hit ratio in
          admin>plugins>stats -->
     <filterCache
       class="solr.FastLRUCache"
