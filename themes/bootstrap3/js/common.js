@@ -89,6 +89,10 @@ var VuFind = (function VuFind() {
         if (elem.hasAttribute('data-click-callback')) {
           return evalCallback(elem.dataset.clickCallback, event, {});
         }
+        if (elem.hasAttribute('data-click-set-checked')) {
+          document.getElementById(elem.dataset.clickSetChecked).checked = true;
+          event.preventDefault();
+        }
       }
     );
     window.addEventListener(

@@ -25,3 +25,6 @@
     <input class="rating__input" name="<?=$fieldName?>" id="<?=$fieldId?>" value="<?=$level ?>" type="radio"<?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked' : ''?><?=$this->readonly ? ' disabled' : ''?><?=$inputAttrs?>>
   <?php endfor; ?>
 </div>
+<?php if (!empty($this->allowClear)): ?>
+  <a href="#" data-click-set-checked="rating_<?=$id?>_none"><?=$this->transEsc('Clear')?></a>
+<?php endif; ?>

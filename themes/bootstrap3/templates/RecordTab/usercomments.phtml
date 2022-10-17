@@ -16,7 +16,7 @@
       <textarea name="comment" class="form-control" rows="3" required></textarea>
       <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">
-          <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->driver->getRatingData($user->id)]);?>
+          <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->driver->getRatingData($user->id), 'allowClear' => true]);?>
         </div>
       <?php endif; ?>
       <?php if ($this->tab->isCaptchaActive()): ?>
