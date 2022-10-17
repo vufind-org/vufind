@@ -361,6 +361,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     public function testFindInPackageForJsFile()
     {
         $ti = $this->getThemeInfo();
+        $relPath = 'module/VuFindTheme/tests/fixtures/vendor/example/res/theme/js/package.js';
         $file = '/usr/local/vufind/module/VuFindTheme/tests/fixtures/vendor/example/res/theme/js/package.js';
         $expected = [
             'path' => $file,
@@ -377,10 +378,10 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsAlreadyWebAccessibleThemeFile()
+    public function testIsAlreadyWebAccessibleThemeFileTrue()
     {
         $ti = $this->getThemeInfo();
-        $file = '/usr/local/vufind/themes/bootstrap3/js/vendor/bootstrap.min.js';
+        $file = 'themes/bootstrap3/js/vendor/bootstrap.min.js';
         $result = $ti->isAlreadyWebAccessible(
             $file
         );
@@ -392,10 +393,10 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsAlreadyWebAccessibleComposerPackageFile()
+    public function testIsAlreadyWebAccessibleComposerPackageFileFalse()
     {
         $ti = $this->getThemeInfo();
-        $file = '/usr/local/vufind/vendor/ahand/mobileesp/JavaScript/mdetect.js';
+        $file = 'vendor/ahand/mobileesp/JavaScript/mdetect.js';
         $result = $ti->isAlreadyWebAccessible(
             $file
         );

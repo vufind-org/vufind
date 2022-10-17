@@ -417,6 +417,7 @@ class ThemeInfo
      */
     public function isAlreadyWebAccessible($filePath)
     {
+        $filePath = realpath($filePath);
         if (strpos($filePath, APPLICATION_PATH . '/themes') !== false) {
             return true;
         }
