@@ -456,16 +456,20 @@ class Initializer
         if ($templatePathStack) {
             /* @var HeadScript $headScript */
             $headScript = $this->serviceManager->get('ViewHelperManager')
-                    ->get('headScript') ?? $this->serviceManager->get('headScript');
+                    ->get(HeadScript::class);
+
             foreach ($templatePathStack as $templatePath) {
-                if (file_exists($mixin = $templatePath . '/../mixin.config.php')) {
-                    $resources = include $mixin;
-                    foreach ($resources as $type => $files) {
-                        switch ($type) {
-                        case 'js':
-                            foreach ($files as $file) {
-                                $headScript->appendInternalRessource(
-                                    realpath(dirname($mixin) . "/$type/$file")
+                $merged = $this->tools->getMergedConfig(
+                    $templatePath . '/../mixin.config.php'
+                );
+                foreach ($merged as $type => $files) {
+                    switch ($type) {
+                    case 'js':
+                        foreach ($files as $file) {
+                            $file = realpath(dirname($templatePath) . "/$type/$file");
+                            if (!$this->tools->isAlreadyWebAccessible($file)) {
+                                $headScript->appendInternalResource(
+                                    $file
                                 );
                             }
                         }

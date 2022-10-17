@@ -238,11 +238,11 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
     /**
      * Append possible non-public files
      *
-     * @param string $filePath path to ressource
+     * @param string $filePath path to resource
      *
      * @return void
      */
-    public function appendInternalRessource(
+    public function appendInternalResource(
         string $filePath
     ): void {
         if (file_exists($filePath)) {

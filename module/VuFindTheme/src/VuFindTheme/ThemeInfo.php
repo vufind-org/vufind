@@ -274,6 +274,12 @@ class ThemeInfo
             $currentTheme = $allThemeInfo[$currentTheme]['extends'];
         }
 
+        if (empty($merged)) {
+            if (file_exists($key)) {
+                $merged = include $key;
+            }
+        }
+
         if ($this->cache !== null) {
             $this->cache->setItem($cacheKey, $merged);
         }
@@ -380,7 +386,7 @@ class ThemeInfo
     }
 
     /**
-     * Search vendor directory for a file.
+     * Search for an internal resource file.
      *
      * @param string $filePath Absolute path to file
      * @param string $fileType Specified file extension
@@ -389,7 +395,7 @@ class ThemeInfo
      */
     public function findInPackage($filePath, $fileType = 'js')
     {
-        if (strpos($filePath, 'vendor/') !== false
+        if (!$this->isAlreadyWebAccessible($filePath)
             && ($filePath = realpath($filePath))
             && pathinfo($filePath, PATHINFO_EXTENSION) === $fileType
         ) {
@@ -400,5 +406,25 @@ class ThemeInfo
         }
 
         return null;
+    }
+
+    /**
+     * Check if filePath is public
+     *
+     * @param string $filePath Absolute path to file
+     *
+     * @return bool
+     */
+    public function isAlreadyWebAccessible($filePath)
+    {
+        if (strpos($filePath, APPLICATION_PATH . '/themes') !== false) {
+            return true;
+        }
+
+        if (strpos($filePath, APPLICATION_PATH . '/public') !== false) {
+            return true;
+        }
+
+        return false;
     }
 }

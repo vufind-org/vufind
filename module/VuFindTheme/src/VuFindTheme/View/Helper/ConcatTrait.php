@@ -188,7 +188,6 @@ trait ConcatTrait
             );
 
             if (null === $details) {
-                // Check for files in vendor
                 $details = $this->themeInfo
                     ->findInPackage($item->attributes['src']);
             }
@@ -315,6 +314,9 @@ trait ConcatTrait
             );
             if (null === $details) {
                 $details = $this->themeInfo->findInPackage($item->attributes['src']);
+            }
+            if (null === $details) {
+                continue;
             }
             $details['path'] = realpath($details['path']);
             $data[] = $this->getMinifiedData($details, $concatPath);
