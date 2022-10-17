@@ -466,7 +466,9 @@ class Initializer
                     switch ($type) {
                     case 'js':
                         foreach ($files as $file) {
-                            $file = realpath(dirname($templatePath) . "/$type/$file");
+                            $file = realpath(
+                                dirname($templatePath) . "/$type/$file"
+                            );
                             if (!$this->tools->isAlreadyWebAccessible($file)) {
                                 $headScript->appendInternalResource(
                                     $file
