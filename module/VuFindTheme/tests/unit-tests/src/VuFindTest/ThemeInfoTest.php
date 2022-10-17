@@ -348,7 +348,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     {
         $ti = $this->getThemeInfo();
         $config = $ti->getMergedConfig(
-            '/usr/local/vufind/module/VuFindTheme/tests/fixtures/vendor/example/res/theme/mixin.config.php'
+            'module/VuFindTheme/tests/fixtures/vendor/example/res/theme/mixin.config.php'
         );
         $this->assertEquals('package.js', $config['js'][0]);
     }
@@ -363,14 +363,11 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $relPath = 'module/VuFindTheme/tests/fixtures/vendor/example/res/theme/js/package.js';
         $file = '/usr/local/vufind/module/VuFindTheme/tests/fixtures/vendor/example/res/theme/js/package.js';
-        $expected = [
-            'path' => $file,
-            'type' => 'js'
-        ];
         $result = $ti->findInPackage(
-            $file
+            $relPath
         );
-        $this->assertEquals($expected, $result);
+        $this->assertEquals('js', $result['type']);
+        $this->assertFalse(empty($result['path']));
     }
 
     /**
