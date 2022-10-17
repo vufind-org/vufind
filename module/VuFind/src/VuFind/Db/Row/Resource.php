@@ -164,16 +164,16 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Add or update user's rating for the current resource.
      *
-     * @param int $userId User ID
-     * @param int $rating Rating
+     * @param int  $userId User ID
+     * @param ?int $rating Rating
      *
      * @throws LoginRequiredException
      * @throws \Exception
-     * @return int ID of newly-created rating
+     * @return int ID of rating added, deleted or updated
      */
-    public function addOrUpdateRating(int $userId, int $rating): int
+    public function addOrUpdateRating(int $userId, ?int $rating): int
     {
-        if ($rating < 0 || $rating > 100) {
+        if (null !== $rating && ($rating < 0 || $rating > 100)) {
             throw new \Exception('Rating value out of range');
         }
 
@@ -183,8 +183,12 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $select->where->equalTo('ratings.user_id', $userId);
         };
         if ($existing = $ratings->select($callback)->current()) {
-            $existing->rating = $rating;
-            $existing->save();
+            if (null === $rating) {
+                $existing->delete();
+            } else {
+                $existing->rating = $rating;
+                $existing->save();
+            }
             return $existing->id;
         }
 

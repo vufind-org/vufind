@@ -122,4 +122,14 @@ class Config extends \Laminas\View\Helper\AbstractHelper
         return (bool)($this->get('config')->Record
             ->alwaysDisplayIndexRecordInStaffView ?? false);
     }
+
+    /**
+     * Check if record ratings can be removed
+     *
+     * @return bool
+     */
+    public function allowsRemoveRating(): bool
+    {
+        return (bool)($this->get('config')->Social->remove_rating ?? true);
+    }
 }

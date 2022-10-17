@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
@@ -296,7 +297,15 @@ class AbstractRecord extends AbstractBase
 
         // Save rating, if any:
         if (null !== ($rating = $this->params()->fromPost('rating'))) {
-            $driver->addOrUpdateRating($user->id, intval($rating));
+            if ('' === $rating
+                && !($this->getConfig()->Social->remove_rating ?? true)
+            ) {
+                throw new BadRequestException('error_inconsistent_parameters');
+            }
+            $driver->addOrUpdateRating(
+                $user->id,
+                '' === $rating ? null : intval($rating)
+            );
             $this->flashMessenger()->addSuccessMessage('rating_add_success');
             if ($this->inLightbox()) {
                 return $this->getRefreshResponse();

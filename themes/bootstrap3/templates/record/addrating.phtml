@@ -18,5 +18,16 @@
   </div>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>"/>
+    <?php if ($this->config()->allowsRemoveRating()): ?>
+      <input form="form_remove_rating" class="btn btn-default" type="submit" value="<?=$this->transEscAttr('rating_remove')?>"/>
+    <?php endif; ?>
   </div>
 </form>
+<?php if ($this->config()->allowsRemoveRating()): ?>
+  <form method="post" name="rateRecord" id="form_remove_rating" class="form-remove-rating">
+    <input type="hidden" name="submit" value="1" />
+    <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+    <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
+    <input type="hidden" name="rating" value="" />
+  </form>
+<?php endif; ?>

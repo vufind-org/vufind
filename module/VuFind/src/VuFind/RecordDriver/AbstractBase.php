@@ -265,12 +265,13 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Add or update user's rating for the record.
      *
-     * @param int $userId ID of the user posting the rating
-     * @param int $rating The user-provided rating
+     * @param int  $userId ID of the user posting the rating
+     * @param ?int $rating The user-provided rating, or null to clear any existing
+     * rating
      *
      * @return void
      */
-    public function addOrUpdateRating(int $userId, int $rating): void
+    public function addOrUpdateRating(int $userId, ?int $rating): void
     {
         // Clear rating cache:
         $this->ratingCache = [];
