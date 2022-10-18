@@ -32,6 +32,8 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
+use VuFindSearch\Command\RetrieveCommand;
+use VuFindSearch\Command\SimilarCommand;
 
 /**
  * "Similar items" channel provider.
@@ -169,10 +171,13 @@ class SimilarItems extends AbstractChannelProvider
             && is_object($driver ?? null)
             && $channelToken !== null
         ) {
-            $driver = $this->searchService->retrieve(
+            $command = new RetrieveCommand(
                 $driver->getSourceIdentifier(),
                 $channelToken
-            )->first();
+            );
+            $driver = $this->searchService->invoke(
+                $command
+            )->getResult()->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
             }
@@ -204,11 +209,12 @@ class SimilarItems extends AbstractChannelProvider
             $retVal['token'] = $driver->getUniqueID();
         } else {
             $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
-            $similar = $this->searchService->similar(
+            $command = new SimilarCommand(
                 $driver->getSourceIdentifier(),
                 $driver->getUniqueID(),
                 $params
             );
+            $similar = $this->searchService->invoke($command)->getResult();
             $retVal['contents'] = $this->summarizeRecordDrivers($similar);
             $route = $this->recordRouter->getRouteDetails($driver);
             $retVal['links'][] = [

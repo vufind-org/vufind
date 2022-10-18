@@ -28,6 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Service;
 
 /**
@@ -99,8 +100,12 @@ class Reserves extends AbstractPlugin
         if ($this->useIndex()) {
             // get the selected reserve record from reserves index
             // and extract the bib IDs from it
+            $command = new RetrieveCommand(
+                'SolrReserves', 
+                $course . '|' . $inst . '|' . $dept
+            );
             $result = $this->searchService
-                ->retrieve('SolrReserves', $course . '|' . $inst . '|' . $dept);
+                ->invoke($command)->getResult();
             $bibs = [];
             if ($result->getTotal() < 1) {
                 return $bibs;

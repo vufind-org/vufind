@@ -27,6 +27,8 @@
  */
 namespace VuFind\Recommend;
 
+use VuFindSearch\Command\RandomCommand;
+
 /**
  * RandomRecommend Module
  *
@@ -59,7 +61,7 @@ class RandomRecommend implements RecommendInterface
     /**
      * Results Limit
      *
-     * @var number
+     * @var int
      */
     protected $limit = 10;
 
@@ -180,12 +182,14 @@ class RandomRecommend implements RecommendInterface
         }
         $query = $randomParams->getQuery();
         $paramBag = $randomParams->getBackendParameters();
-        $this->results = $this->searchService->random(
+        $command = new RandomCommand(
             $this->backend,
             $query,
             $this->limit,
             $paramBag
-        )->getRecords();
+        );
+        $this->results = $this->searchService->invoke($command)
+            ->getResult()->getRecords();
     }
 
     /**
