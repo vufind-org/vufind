@@ -165,7 +165,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * Add or update user's rating for the current resource.
      *
      * @param int  $userId User ID
-     * @param ?int $rating Rating
+     * @param ?int $rating Rating (null to delete)
      *
      * @throws LoginRequiredException
      * @throws \Exception
@@ -190,6 +190,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
                 $existing->save();
             }
             return $existing->id;
+        }
+
+        if (null === $rating) {
+            return 0;
         }
 
         $row = $ratings->createRow();

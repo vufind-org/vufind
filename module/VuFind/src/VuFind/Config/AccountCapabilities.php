@@ -181,4 +181,15 @@ class AccountCapabilities
         // We can't use account features if login is broken or privacy is on:
         return $this->auth->loginEnabled() && !$this->auth->inPrivacyMode();
     }
+
+
+    /**
+     * Check if record ratings can be removed
+     *
+     * @return bool
+     */
+    public function isRatingRemovalAllowed(): bool
+    {
+        return (bool)($this->Config->Social->remove_rating ?? true);
+    }
 }
