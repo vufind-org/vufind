@@ -307,7 +307,50 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that user profile action blocks login with catalog login is disabled.
+     * Note that we need to run this test FIRST, because after this, VuFind will
+     * remember the credentials and won't display the login form again.
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
+     */
+    public function testDisabledUserLogin(): void
+    {
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['allowUserLogin'] = false;
+        $this->changeConfigs(
+            [
+                'config' => $config,
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $page = $session->getPage();
+
+        // Set up user account:
+        $this->clickCss($page, '.createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Confirm that login form is disabled:
+        $this->unFindCss($page, "#profile_cat_username");
+        $this->assertEquals(
+            "Connection to the library management system failed. Information related to your library account cannot be displayed. If the problem persists, please contact your library.",
+            $this->findCss($page, "div.alert-warning")->getText()
+        );
+
+        // Clean up the user account so we can sign up again in the next test:
+        static::removeUsers(['username1']);
+    }
+
+    /**
      * Test user profile action.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
