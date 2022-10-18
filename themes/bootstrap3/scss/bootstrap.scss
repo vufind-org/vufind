@@ -50,33 +50,6 @@ label { cursor: pointer; }
     background-color: $well-bg;
 }
 
-.icon-link {
-  display: inline-flex;
-  gap: 0.25rem;
-}
-.icon-link,
-.icon-link:active,
-.icon-link:focus,
-.icon-link:hover {
-  text-decoration: none;
-}
-.icon-link__icon {
-  flex: none;
-  padding: 0;
-  line-height: inherit;
-  color: inherit;
-}
-.icon-link__label {
-  text-decoration: $link-hover-decoration;
-}
-.icon-link:hover .icon-link__label {
-  text-decoration: none;
-}
-.icon-link.active .icon-link__icon,
-.icon-link.active .icon-link__label {
-  color: #fff;
-}
-
 // Improve contrast
 .btn.disabled:active,
 .btn.disabled:focus,
@@ -86,7 +59,7 @@ label { cursor: pointer; }
 
 // Icons vs. Underline fix
 .btn-link {
-  @extend .icon--link;
+  @extend .icon-link;
 
   &.pull-left,
   &.pull-right {
@@ -94,7 +67,7 @@ label { cursor: pointer; }
   }
 }
 .nav > li > a {
-  @extend .icon--link;
+  @extend .icon-link;
   text-decoration: none;
 }
 .nav .dropdown-toggle {

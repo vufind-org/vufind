@@ -36,9 +36,13 @@
         <td><?=$this->escapeHtml($username)?></td>
         <td>
           <div class="btn-group">
-            <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"><?=$this->icon('profile-card-edit') ?> <?=$this->transEsc('Edit')?></a>
-            <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
-              <?=$this->icon('profile-card-delete') ?> <?=$this->transEsc('Delete')?>
+            <a class="btn btn-link icon-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
+              <?=$this->icon('profile-card-edit', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
+            </a>
+            <a class="btn btn-link icon-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
+              <?=$this->icon('profile-card-delete', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('Delete')?></span>
             </a>
             <ul class="dropdown-menu">
               <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1" data-clear-account-cache><?=$this->transEsc('confirm_dialog_yes') ?></a></li>

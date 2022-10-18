@@ -168,7 +168,10 @@
             <?php if (!is_array($urls)) { $urls = []; }
               if(!$this->driver->isCollection()):
                 foreach ($urls as $current): ?>
-                  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=$this->icon('external-link') ?> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+                  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext icon-link" target="new">
+                    <?=$this->icon('external-link', 'icon-link__icon') ?>
+                    <span class="icon-link__label"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></span>
+                  </a>
                 <?php endforeach; ?>
               <?php endif; ?>
             <?php endif; ?>

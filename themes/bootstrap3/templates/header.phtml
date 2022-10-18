@@ -12,9 +12,9 @@
         <ul class="nav navbar-nav navbar-right flip">
           <?php if ($this->feedback()->tabEnabled()): ?>
             <li>
-              <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>">
-                <?=$this->icon('feedback') ?>
-                <?=$this->transEsc("Feedback")?>
+              <a class="icon-link" id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>">
+                <?=$this->icon('feedback', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc("Feedback")?></span>
               </a>
             </li>
           <?php endif; ?>

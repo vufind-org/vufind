@@ -1,13 +1,19 @@
 <?php foreach ($checkboxFilters as $current): ?>
+  <?php
+    $isHidden = !($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']);
+    $href = $current['selected']
+      ? $results->getUrlQuery()->removeFilter($current['filter'])
+      : $results->getUrlQuery()->addFilter($current['filter']);
+  ?>
   <div class="facet" >
-    <a class="checkbox-filter<?php if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?>" href="<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
+    <a class="checkbox-filter icon-link<?php if($isHidden): ?> hidden<?php endif; ?>" href="<?=$href ?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
       <?php if ($current['selected']): ?>
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
       <?php endif; ?>
-      <span class="text">
-        <?=$this->icon($current['selected'] ? 'facet-checked' : 'facet-unchecked') ?>
-        <?=$this->transEsc($current['desc']) ?>
-      </span>
+
+      <?=$this->icon($current['selected'] ? 'facet-checked' : 'facet-unchecked', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc($current['desc']) ?></span>
+
       <?php if (!$current['selected']): ?>
         <span class="badge avail-count"></span>
       <?php endif; ?>

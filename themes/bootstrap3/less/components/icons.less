@@ -3,11 +3,38 @@
  * generated through the Icon view helper.
  */
 
-.icon--link {
-    display: inline-flex;
-    gap: 0.125rem;
-    align-items: center;
-    vertical-align: inherit;
+.icon-link {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+.icon-link,
+.icon-link:active,
+.icon-link:focus,
+.icon-link:hover {
+  text-decoration: none;
+}
+.icon-link__icon {
+  flex: none;
+  padding: 0;
+  line-height: inherit;
+  color: inherit;
+}
+.icon-link__label {
+  text-decoration: @link-hover-decoration;
+}
+span.icon-link .icon-link__label,
+.disabled .icon-link__label,
+[disabled] .icon-link__label {
+  text-decoration: none;
+}
+.icon-link.active .icon-link__icon,
+.icon-link.active .icon-link__label {
+  color: #fff;
+}
+
+.pager .icon-link__label,
+.action-toolbar .icon-link__label {
+  text-decoration: none;
 }
 
 .icon--font {
