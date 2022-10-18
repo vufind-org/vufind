@@ -1,0 +1,58 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('rating_add_or_update'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
+    . '<li class="active">' . $this->transEsc('rating_add_or_update') . '</li>';
+
+  $ratingData = $this->driver->getRatingBreakdown([1 => [0, 29], 2 => [30, 49], 3 => [50, 69], 4 => [70, 89], 5 => [90, 100]]);
+  krsort($ratingData['groups']);
+?>
+<?php if ($ratingData['count']): ?>
+  <h2><?=$this->transEsc($ratingData['count'] === 1 ? 'rating_summary_single' : 'rating_summary', ['%%count%%' => $ratingData['count']])?></h2>
+  <div class="rating-breakdown">
+    <?php foreach ($ratingData['groups'] as $group => $groupCount): ?>
+      <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => ['count' => 1, 'rating' => $group / 5 * 100]]);?>
+      <div class="rating-breakdown-percentage">
+        <?=$this->transEsc('rating_breakdown_percentage', ['%%count%%' => $ratingData['count'], '%%percentage%%' => floor($groupCount / $ratingData['count']) * 100])?>
+      </div>
+      <br>
+    <?php endforeach; ?>
+  </div>
+  <h3><?=$this->transEsc('rating_add_or_update') ?></h3>
+<?php else: ?>
+  <h2><?=$this->transEsc('rating_add_or_update') ?></h2>
+<?php endif; ?>
+<?php if ($this->auth()->isLoggedIn()): ?>
+  <form method="post" name="rateRecord" class="form-add-rating">
+    <input type="hidden" name="submit" value="1" />
+    <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+    <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
+    <div class="form-group">
+      <label class="control-label" for="add_rating"><?=$this->transEsc('rating_prompt')?>:</label>
+      <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->currentRating, 'inputAttrs' => ['data-submit-on-change']]);?>
+    </div>
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>"/>
+      <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
+        <input form="form_remove_rating" class="btn btn-default" type="submit" value="<?=$this->transEscAttr('rating_remove')?>" <?=$this->currentRating['count'] === 0 ? ' disabled' : ''?>/>
+      <?php endif; ?>
+    </div>
+  </form>
+  <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
+    <form method="post" name="rateRecord" id="form_remove_rating" class="form-remove-rating">
+      <input type="hidden" name="submit" value="1" />
+      <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
+      <input type="hidden" name="rating" value="" />
+    </form>
+  <?php endif; ?>
+<?php else: ?>
+  <?php $singleSignOn = $this->auth()->getManager()->getSessionInitiator($this->serverUrl(true)); ?>
+  <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary"<?php if (!$singleSignOn): ?> data-lightbox<?php endif; ?> title="<?=$this->transEscAttr('Login')?>">
+    <?=$this->icon('sign-in') ?>
+    <?=$this->transEsc("You must be logged in first") ?>
+  </a>
+<?php endif; ?>

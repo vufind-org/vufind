@@ -117,6 +117,77 @@ class Ratings extends Gateway
     }
 
     /**
+     * Get rating breakdown for the specified resource.
+     *
+     * @param string $id     Record ID to look up
+     * @param string $source Source of record to look up
+     * @param array  $groups Group definition (key => [min, max])
+     *
+     * @return array Array with keys count and rating (between 0 and 100) as well as
+     * an groups array with ratings from lowest to highest
+     */
+    public function getCountsForResource(
+        string $id,
+        string $source,
+        array $groups
+    ): array {
+        $result = [
+            'count' => 0,
+            'rating' => 0,
+            'groups' => [],
+        ];
+        foreach (array_keys($groups) as $key) {
+            $result['groups'][$key] = 0;
+        }
+
+        $resourceTable = $this->getDbTable('Resource');
+        $resource = $resourceTable->findResource($id, $source, false);
+        if (empty($resource)) {
+            $result;
+        }
+
+        $callback = function ($select) use ($resource) {
+            $select->columns(
+                [
+                    // RowGateway requires an id field:
+                    'id' => new Expression(
+                        '1',
+                        [],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'count' => new Expression(
+                        'COUNT(?)',
+                        [Select::SQL_STAR],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'rating' => 'rating',
+                ]
+            );
+            $select->where->equalTo('ratings.resource_id', $resource->id);
+            $select->group('rating');
+        };
+
+        $ratingTotal = 0;
+        $groupCount = 0;
+        foreach ($this->select($callback) as $rating) {
+            $result['count'] += $rating->count;
+            $ratingTotal += $rating->rating;
+            ++$groupCount;
+            if ($groups) {
+                foreach ($groups as $key => $range) {
+                    if ($rating->rating >= $range[0] && $rating->rating <= $range[1])
+                    {
+                        $result['groups'][$key] = ($result['groups'][$key] ?? 0)
+                            + $rating->count;
+                    }
+                }
+            }
+        }
+        $result['rating'] = $groupCount ? floor($ratingTotal / $groupCount) : 0;
+        return $result;
+    }
+
+    /**
      * Delete a rating if the owner is logged in.  Returns true on success.
      *
      * @param int                 $id   ID of row to delete

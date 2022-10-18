@@ -263,6 +263,28 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Get rating breakdown for this record.
+     *
+     * Returns an array with the following keys:
+     *
+     * rating - average rating (0-100)
+     * count  - count of ratings
+     * groups - grouped counts
+     *
+     * @param array $groups Group definition (key => [min, max])
+     *
+     * @return array
+     */
+    public function getRatingBreakdown(array $groups)
+    {
+        return $this->getDbTable('Ratings')->getCountsForResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier(),
+            $groups
+        );
+    }
+
+    /**
      * Add or update user's rating for the record.
      *
      * @param int  $userId ID of the user posting the rating

@@ -4,7 +4,7 @@
     '%%rating%%' => $this->localizedNumber($ratingData['rating']),
     '%%count%%' => $this->localizedNumber($ratingData['count'])
   ];
-  $addUrlEsc = $this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddRating'));
+  $addUrlEsc = $this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Rating'));
   $countKeys = [
     0 => 'rating_summary_unrated',
     1 => 'rating_summary_single',
