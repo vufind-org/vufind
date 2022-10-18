@@ -819,7 +819,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
         return $this->config->Catalog->allowUserLogin ?? true;
     }
 
-    /*
+    /**
      * Process a raw policy configuration
      *
      * @param array $policy Policy configuration
