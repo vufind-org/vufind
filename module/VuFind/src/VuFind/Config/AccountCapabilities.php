@@ -182,7 +182,6 @@ class AccountCapabilities
         return $this->auth->loginEnabled() && !$this->auth->inPrivacyMode();
     }
 
-
     /**
      * Check if record ratings can be removed
      *
