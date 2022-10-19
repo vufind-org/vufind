@@ -132,7 +132,7 @@ function registerAjaxCommentRecord(_context) {
         refreshRecordRating(id, recordSource);
         $form.find('textarea[name="comment"]').val('');
         $form.find('input[type="submit"]').button('loading');
-        if ($form.data('ratingRemoval') === false && Object.prototype.hasOwnProperty.call(data, 'rating') && '0' !== data.rating) {
+        if ($form.data('ratingRemoval') === false && Object.prototype.hasOwnProperty.call(data, 'rating') && '' !== data.rating) {
           $form.find('a[data-click-set-checked]').remove();
         }
         resetCaptcha($form);
