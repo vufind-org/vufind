@@ -97,17 +97,19 @@ class CachingDownloader
     }
 
     /**
-     * Download a resorce using the cache in the background.
+     * Download a resource using the cache in the background.
      *
      * @param string   $url              URL
      * @param array    $params           Request parameters (e.g. additional headers)
-     * @param callable $validateCallback Callback for validation before storing to cache
+     * @param callable $validateCallback Callback for validation
+     *                                   before storing to cache
      * @param callable $decodeCallback   Callback for decoding
      *
-     * @return string
+     * @return mixed
      */
-    public function download($url, $params=[], callable $validateCallback=null, callable $decodeCallback=null)
-    {
+    public function download($url, $params=[], callable $validateCallback=null,
+        callable $decodeCallback=null
+    ) {
         $cacheItemKey = md5($url);
         foreach ($params as $paramKey => $paramValue) {
             $cacheItemKey .= '#' . $paramKey . '§' . $paramValue;
@@ -132,5 +134,27 @@ class CachingDownloader
         } else {
             return $decodeCallback($body);
         }
+    }
+
+    /**
+     * Download a resource using the cache in the background,
+     * including validation / decoding for JSON.
+     *
+     * @param string $url    URL
+     * @param array  $params Request parameters (e.g. additional headers)
+     *
+     * @return stdClass
+     */
+    public function downloadJson($url, $params)
+    {
+        $validateJson = function ($json) {
+            return (json_decode($json) !== null);
+        };
+
+        $decodeJson = function ($json) {
+            return json_decode($json);
+        };
+
+        return $this->download($url, $params, $validateJson, $decodeJson);
     }
 }
