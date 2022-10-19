@@ -57,7 +57,7 @@ use Laminas\Db\Sql\Select;
  * @property ?string $cat_pass_enc
  * @property string  $college
  * @property string  $major
- * @property string  $home_library
+ * @property ?string $home_library
  * @property string  $created
  * @property string  $verify_hash
  * @property string  $last_login
@@ -254,9 +254,12 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Change home library.
      *
-     * @param string $homeLibrary New home library to store.
+     * @param ?string $homeLibrary New home library to store, or null to indicate
+     * that the user does not want a default. An empty string is the default for
+     * backward compatibility and indicates that system's default pick up location is
+     * to be used
      *
-     * @return mixed           The output of the save method.
+     * @return mixed               The output of the save method.
      */
     public function changeHomeLibrary($homeLibrary)
     {

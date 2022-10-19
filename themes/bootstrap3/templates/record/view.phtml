@@ -44,7 +44,7 @@
     <?php if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
       <div class="record-tabs">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs" role="tablist">
           <?php foreach ($this->tabs as $tab => $obj): ?>
             <?php
               $desc = $obj->getDescription();
@@ -60,7 +60,7 @@
               if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
               if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
             ?>
-            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+            <li class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
               <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
                 <?=$this->transEsc($desc)?>
               </a>

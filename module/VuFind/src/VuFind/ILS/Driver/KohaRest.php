@@ -57,7 +57,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
     use \VuFind\I18n\HasSorterTrait;
 
@@ -621,7 +621,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'zip' => $result['postal_code'],
             'city' => $result['city'],
             'country' => $result['country'],
-            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null)
+            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null),
+            'birthdate' => $result['date_of_birth'] ?? ''
         ];
     }
 

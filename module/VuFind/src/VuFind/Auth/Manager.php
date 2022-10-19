@@ -265,6 +265,21 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
     }
 
     /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getUsernamePolicy($authMethod = null)
+    {
+        return $this->processPolicyConfig(
+            $this->getAuth($authMethod)->getUsernamePolicy()
+        );
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @param string $authMethod optional; check this auth method rather than
@@ -274,7 +289,9 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
      */
     public function getPasswordPolicy($authMethod = null)
     {
-        return $this->getAuth($authMethod)->getPasswordPolicy();
+        return $this->processPolicyConfig(
+            $this->getAuth($authMethod)->getPasswordPolicy()
+        );
     }
 
     /**
@@ -790,5 +807,48 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
         $user->auth_method = strtolower($method);
         $user->last_login = date('Y-m-d H:i:s');
         $user->save();
+    }
+
+    /**
+     * Is the user allowed to log directly into the ILS?
+     *
+     * @return bool
+     */
+    public function allowsUserIlsLogin(): bool
+    {
+        return $this->config->Catalog->allowUserLogin ?? true;
+    }
+
+    /**
+     * Process a raw policy configuration
+     *
+     * @param array $policy Policy configuration
+     *
+     * @return array
+     */
+    protected function processPolicyConfig(array $policy): array
+    {
+        // Convert 'numeric' or 'alphanumeric' pattern to a regular expression:
+        switch ($policy['pattern'] ?? '') {
+        case 'numeric':
+            $policy['pattern'] = '\d+';
+            break;
+        case 'alphanumeric':
+            $policy['pattern'] = '[\da-zA-Z]+';
+        }
+
+        // Map settings to attributes for a text input field:
+        $inputMap = [
+            'minLength' => 'data-minlength',
+            'maxLength' => 'maxlength',
+            'pattern' => 'pattern',
+        ];
+        $policy['inputAttrs'] = [];
+        foreach ($inputMap as $from => $to) {
+            if (isset($policy[$from])) {
+                $policy['inputAttrs'][$to] = $policy[$from];
+            }
+        }
+        return $policy;
     }
 }

@@ -15,6 +15,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
+@import "components/cookie-consent";
 @import "components/devtools";
 @import "components/form";
 @import "components/icons";
@@ -55,6 +56,28 @@ label { cursor: pointer; }
 .btn.disabled:hover { color: #000; }
 .list-unstyled { margin: 0; }
 .icon-bar { background-color: #888; }
+
+// Icons vs. Underline fix
+.btn-link {
+  @extend .icon--link;
+
+  &.pull-left,
+  &.pull-right {
+    display: flex;
+  }
+}
+.nav > li > a {
+  @extend .icon--link;
+  text-decoration: none;
+}
+.nav .dropdown-toggle {
+  padding-right: 8px;
+
+  body.rtl & {
+    padding-left: 8px;
+    padding-right: 10px;
+  }
+}
 
 // Normalize highlighting
 .highlight,
@@ -143,9 +166,15 @@ footer {
 .sms-error { @extend .has-error; }
 .help-block.with-errors {
   margin: 0;
-  padding-top: $padding-base-vertical;
+  &:first-child {
+    padding-top: $padding-base-vertical;
+  }
   padding-bottom: $padding-base-vertical;
   &:empty {padding: 0;}
+
+  ul.list-unstyled {
+    margin: 0;
+  }
 }
 
 /* ------ Admin ------ */
@@ -232,76 +261,64 @@ footer {
 
 /* ------ MyResearch ------ */
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
-.myresearch-menu a {
-  display: block;
-  padding: 10px 15px;
-  &:hover,
-  &:focus { background-color: $nav-link-hover-bg; }
-  &.user-list-link i {
-    margin-left: 0.5rem;
+.myresearch-menu {
+  a {
+    display: block;
+    padding: 10px 15px;
+    &.flex {
+      display: flex;
+    }
+    &:hover {
+      background-color: $gray-lighter;
+      outline: dotted 1px #000;
+    }
+    &:focus {
+      background-color: $nav-link-hover-bg;
+    }
+    &.user-list-link i {
+      margin-left: 0.5rem;
+    }
+    &.active {
+      background-color: $brand-primary;
+      color: #fff;
+    }
+  }
+
+  .status {
+    float: right;
+    display: flex;
+    flex: none;
+    .badge {
+      border-radius: 2px;
+      margin: 0 2px;
+      border: 1px solid; /* color inherited from bootstrap */
+      height: 20px;
+
+      &.account-none {
+        color: $gray-dark;
+        background-color: $gray-lighter;
+      }
+      &.account-info {
+        color: $state-success-text;
+        background-color: $state-success-bg;
+      }
+      &.account-warning {
+        color: $state-warning-text;
+        background-color: $state-warning-bg;
+      }
+      &.account-alert {
+        color: $state-danger-text;
+        background-color: $state-danger-bg;
+      }
+    }
+  }
+
+  .active .status .badge {
+    color: #fff;
+    background-color: transparent;
+    border: 1px solid #fff;
   }
 }
-.myresearch-menu .flex { display: flex; }
-.myresearch-menu a:hover {
-  background-color: $gray-lighter;
-  outline: dotted 1px #000;
-}
-.myresearch-menu a.active {
-  background-color: $brand-primary;
-  color: #fff;
-}
-.myresearch-menu .active .badge {
-  background-color: #fff;
-  color: $gray-darker;
-}
-.myresearch-menu a > .badge { float: right; }
-.myresearch-menu .status {
-  float: right;
-  display: flex;
-  flex: none;
-}
-.myresearch-menu .status .ok,
-.myresearch-menu .status.ok { color: $state-success-text; }
-.myresearch-menu .status .warn,
-.myresearch-menu .status.warn { color: $state-warning-text; }
-.myresearch-menu .status .overdue,
-.myresearch-menu .status.overdue { color: $state-danger-text; }
-.myresearch-menu .badge.ok { background-color: $state-success-bg; }
-.myresearch-menu .badge.warn { background-color: $state-warning-bg; }
-.myresearch-menu .badge.overdue { background-color: $state-danger-bg; }
-.myresearch-menu .status .fa {
-  height: 1rem;
-  margin-top: 3px;
-}
-
-.checkedout-status .badge {
-  border-radius: 2px;
-  margin: 0 2px;
-  border: 1px solid; /* color inherited from bootstrap */
-  height: 20px;
-}
-.myresearch-menu .active .status .badge {
-  color: #fff;
-  background-color: transparent;
-  border: 1px solid #fff;
-}
-.myresearch-menu .active .ok {
-  background-color: $state-success-text;
-  border-color: $state-success-bg;
-}
-.myresearch-menu .active .warn {
-  background-color: $state-warning-text;
-  border-color: $state-warning-bg;
-}
-.myresearch-menu .active .overdue {
-  background-color: $state-danger-text;
-  border-color: $state-danger-bg;
-}
-.myresearch-menu .active .warn { background-color: $state-warning-text; }
-.myresearch-menu .active .overdue { background-color: $state-danger-text; }
-.myresearch-menu .active .text-success { color: $state-success-bg; }
-.myresearch-menu .active .text-warning { color: $state-warning-bg; }
-.myresearch-menu .active .text-danger { color: $state-danger-bg; }
 
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
 #login-dropdown a {
@@ -404,3 +421,52 @@ div.holding-notes {
   padding: 7px;
 }
 
+.oauth2-prompt {
+  ul {
+    margin-top: 1rem;
+  }
+  .oauth2-ils-selection {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
+    form {
+      margin-top: 1rem;
+    }
+  }
+}
+
+/* --- Cookie Consent --- */
+.disable--interaction #cc-main .cm-wrapper::before,
+.show--preferences #cc-main .c--anim.pm-wrapper::before {
+  opacity: $modal-backdrop-opacity;
+}
+
+#cc-main {
+  a {
+    &:hover {
+      color: $link-hover-color;
+      text-decoration: $link-hover-decoration;
+      background-size: 0%;
+    }
+  }
+
+  .c--anim .cm__close,
+  .c--anim .cm__btn,
+  .pm__btn {
+    transition: none;
+  }
+  .cm--bar .cm__btn, .pm__btn {
+    font-size: 14px;
+  }
+  .cm--bar .cm__btn {
+    flex: none;
+  }
+
+  .pm__section--expandable .pm__section-arrow {
+    background: none;
+  }
+
+  .pm__section--toggle {
+    background: transparent;
+  }
+}

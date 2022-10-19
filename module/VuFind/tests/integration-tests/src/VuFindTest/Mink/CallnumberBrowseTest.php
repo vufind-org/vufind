@@ -47,20 +47,6 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     protected $id = 'testdeweybrowse';
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Set config for callnumber tests
      * Sets callnumber_handler to false
      *

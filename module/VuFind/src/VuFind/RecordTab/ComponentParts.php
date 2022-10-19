@@ -103,7 +103,7 @@ class ComponentParts extends AbstractBase
     /**
      * Get the contents for display.
      *
-     * @return array
+     * @return RecordCollectionInterface
      */
     public function getResults()
     {

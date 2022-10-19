@@ -46,6 +46,7 @@ use VuFind\Validator\CsrfInterface;
  */
 class HoldsController extends AbstractBase
 {
+    use Feature\CatchIlsExceptionsTrait;
     use \VuFind\Cache\CacheTrait;
 
     /**
