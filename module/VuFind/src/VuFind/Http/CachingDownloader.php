@@ -148,7 +148,7 @@ class CachingDownloader
      *
      * @return stdClass
      */
-    public function downloadJson($url, $params)
+    public function downloadJson($url, $params=[])
     {
         $validateJson = function ($json) {
             // Use PhpSerialize instead of json_decode for better performance
