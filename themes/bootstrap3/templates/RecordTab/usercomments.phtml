@@ -6,7 +6,7 @@
 <div class="comment-list">
   <?=$this->render('record/comments-list.phtml')?>
 </div>
-<form class="comment-form" name="commentRecord" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddComment')) ?>" method="post">
+<form class="comment-form" name="commentRecord" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddComment')) ?>" method="post"<?php if ($this->driver->isRatingAllowed()): ?> data-rating-removal="<?=$this->accountCapabilities()->isRatingRemovalAllowed() ? 'true' : 'false'?>"<?php endif; ?>>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
   <label class="comment-label"><?=$this->transEsc("Your Comment")?></label>
@@ -16,7 +16,8 @@
       <textarea name="comment" class="form-control" rows="3" required></textarea>
       <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">
-          <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $this->driver->getRatingData($user->id), 'allowClear' => true]);?>
+          <?php $ratingData = $this->driver->getRatingData($user->id); ?>
+          <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $ratingData, 'allowClear' => 0 === $ratingData['count'] || $this->accountCapabilities()->isRatingRemovalAllowed()]);?>
         </div>
       <?php endif; ?>
       <?php if ($this->tab->isCaptchaActive()): ?>

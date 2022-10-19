@@ -28,6 +28,7 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource;
@@ -83,26 +84,36 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     protected $recordLoader;
 
     /**
+     * Account capabilities helper
+     *
+     * @var AccountCapabilities
+     */
+    protected $accountCapabilities;
+
+    /**
      * Constructor
      *
-     * @param Resource     $table   Resource database table
-     * @param Captcha      $captcha Captcha controller plugin
-     * @param User|bool    $user    Logged in user (or false)
-     * @param bool         $enabled Are comments enabled?
-     * @param RecordLoader $loader  Record loader
+     * @param Resource            $table   Resource database table
+     * @param Captcha             $captcha Captcha controller plugin
+     * @param User|bool           $user    Logged in user (or false)
+     * @param bool                $enabled Are comments enabled?
+     * @param RecordLoader        $loader  Record loader
+     * @param AccountCapabilities $ac      Account capabilities helper
      */
     public function __construct(
         Resource $table,
         Captcha $captcha,
         $user,
         $enabled,
-        RecordLoader $loader
+        RecordLoader $loader,
+        AccountCapabilities $ac
     ) {
         $this->table = $table;
         $this->captcha = $captcha;
         $this->user = $user;
         $this->enabled = $enabled;
         $this->recordLoader = $loader;
+        $this->accountCapabilities = $ac;
     }
 
     /**
@@ -165,10 +176,15 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         $resource = $this->table->findResource($id, $source);
         $commentId = $resource->addComment($comment, $this->user);
 
+        $rating = $params->fromPost('rating', '0');
         if ($driver->isRatingAllowed()
-            && '0' !== ($rating = $params->fromPost('rating', '0'))
+            && ('0' !== $rating
+            || $this->accountCapabilities->isRatingRemovalAllowed())
         ) {
-            $driver->addOrUpdateRating($this->user->id, intval($rating));
+            $driver->addOrUpdateRating(
+                $this->user->id,
+                '0' === $rating ? null : intval($rating)
+            );
         }
 
         return $this->formatResponse(compact('commentId'));

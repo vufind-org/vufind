@@ -189,6 +189,6 @@ class AccountCapabilities
      */
     public function isRatingRemovalAllowed(): bool
     {
-        return (bool)($this->Config->Social->remove_rating ?? true);
+        return (bool)($this->config->Social->remove_rating ?? true);
     }
 }
