@@ -107,7 +107,10 @@ class CachingDownloader
      *
      * @return mixed
      */
-    public function download($url, $params=[], callable $validateCallback=null,
+    public function download(
+        $url,
+        $params=[],
+        callable $validateCallback=null,
         callable $decodeCallback=null
     ) {
         $cacheItemKey = md5($url);
@@ -148,13 +151,18 @@ class CachingDownloader
     public function downloadJson($url, $params)
     {
         $validateJson = function ($json) {
-            return (json_decode($json) !== null);
+            // Use PhpSerialize instead of json_decode for better performance
+            $serializer = \Laminas\Serializer\Serializer::factory(
+                \Laminas\Serializer\Adapter\PhpSerialize::class
+            );
+            try {
+                $serializer->unserialize($json);
+                return true;
+            } catch (\Laminas\Serializer\Exception\ExceptionInterface $e) {
+                return false;
+            }
         };
 
-        $decodeJson = function ($json) {
-            return json_decode($json);
-        };
-
-        return $this->download($url, $params, $validateJson, $decodeJson);
+        return $this->download($url, $params, $validateJson);
     }
 }
