@@ -284,7 +284,7 @@ class Database extends AbstractBase
             }
 
             $bcrypt = new Bcrypt();
-            return $bcrypt->verify($password, $userRow->pass_hash);
+            return $bcrypt->verify($password, $userRow->pass_hash ?? '');
         }
 
         // Default case: unencrypted passwords:

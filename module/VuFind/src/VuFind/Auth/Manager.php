@@ -810,6 +810,16 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
     }
 
     /**
+     * Is the user allowed to log directly into the ILS?
+     *
+     * @return bool
+     */
+    public function allowsUserIlsLogin(): bool
+    {
+        return $this->config->Catalog->allowUserLogin ?? true;
+    }
+
+    /**
      * Process a raw policy configuration
      *
      * @param array $policy Policy configuration
