@@ -259,7 +259,7 @@
 
   /* If any input is checked, make its following siblings grey */
   .rating__input:checked ~ .rating__label .rating__icon--star {
-    color: $gray-lighter;
+    color: #ddd;
   }
 
   /* Make all stars highlight on rating group hover */
@@ -272,7 +272,7 @@
     /* Make hovered input's following siblings grey on hover */
     .rating__input:hover ~ .rating__label .rating__icon--star,
     .rating__input:hover ~ .rating__label--half .rating__icon--star {
-      color: $gray-lighter;
+      color: #ddd;
     }
   }
 }
