@@ -516,6 +516,27 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Confirm default setting of allowsUserIlsLogin().
+     *
+     * @return void
+     */
+    public function testAllowsUserIlsLoginDefault(): void
+    {
+        $this->assertTrue($this->getManager()->allowsUserIlsLogin());
+    }
+
+    /**
+     * Confirm configurability of allowsUserIlsLogin().
+     *
+     * @return void
+     */
+    public function testAllowsUserIlsLoginConfiguration(): void
+    {
+        $config = ['Catalog' => ['allowUserLogin' => false]];
+        $this->assertFalse($this->getManager($config)->allowsUserIlsLogin());
+    }
+
+    /**
      * Get a manager object to test with.
      *
      * @param array          $config         Configuration
