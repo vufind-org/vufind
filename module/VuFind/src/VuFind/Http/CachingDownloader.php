@@ -28,9 +28,6 @@
 namespace VuFind\Http;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Http\Client;
-use Laminas\Stdlib\ArrayUtils;
-use Traversable;
 use VuFind\Cache\Manager as CacheManager;
 use VuFindHttp\HttpService;
 
@@ -74,12 +71,6 @@ class CachingDownloader
     protected $httpService;
 
     /**
-     * These result modes indicate whether the responses should be decoded.
-     */
-    public const RESULT_MODE_RAW = 'RAW';
-    public const RESULT_MODE_JSON = 'JSON';
-
-    /**
      * Constructor
      *
      * @param HttpService $httpService  HTTP service
@@ -108,56 +99,38 @@ class CachingDownloader
     /**
      * Download a resorce using the cache in the background.
      *
-     * @param string $url        URL
-     * @param array  $params     Request parameters (e.g. additional headers)
-     * @param string $resultMode See self::RESULT_MODE_... constants
+     * @param string   $url              URL
+     * @param array    $params           Request parameters (e.g. additional headers)
+     * @param callable $validateCallback Callback for validation before storing to cache
+     * @param callable $decodeCallback   Callback for decoding
      *
      * @return string
      */
-    public function download($url, $params=[], $resultMode = self::RESULT_MODE_RAW)
+    public function download($url, $params=[], callable $validateCallback=null, callable $decodeCallback=null)
     {
         $cacheItemKey = md5($url);
         foreach ($params as $paramKey => $paramValue) {
             $cacheItemKey .= '#' . $paramKey . '§' . $paramValue;
         }
 
-        // Return item if exists in cache
-        if ($this->cache->hasItem($cacheItemKey)) {
-            $body = $this->cache->getItem($cacheItemKey);
-            return $this->decodeBody($body, $resultMode, $url);
-        }
-
         // Add new item to cache if not exists
-        $response = $this->httpService->get($url, $params);
-        if (!$response->isOk()) {
-            throw new \Exception('Could not download URL: ' . $url);
-        }
-        $body = $response->getBody();
-        $this->cache->addItem($cacheItemKey, $body);
-        return $this->decodeBody($body, $resultMode, $url);
-    }
-
-    /**
-     * Decode the body according to the given result mode (e.g. RAW or JSON).
-     *
-     * @param string $body       Body
-     * @param string $resultMode See self::RESULT_MODE_... constants
-     * @param string $url        URL (for exception message)
-     *
-     * @return string
-     */
-    protected function decodeBody($body, $resultMode, $url)
-    {
-        switch ($resultMode) {
-        case static::RESULT_MODE_JSON:
-            $decodedJson = json_decode($body);
-            if (empty($decodedJson)) {
-                throw new \Exception('Unable to decode JSON from URL: ' . $url);
+        if (!$this->cache->hasItem($cacheItemKey)) {
+            $response = $this->httpService->get($url, $params);
+            if (!$response->isOk()) {
+                throw new \Exception('Could not download URL: ' . $url);
             }
-            return $decodedJson;
-        case static::RESULT_MODE_RAW:
-        default:
+            $body = $response->getBody();
+            if ($validateCallback !== null && ($validateCallback($body) === false)) {
+                throw new \Exception('Invalid response body from URL: ' . $url);
+            }
+            $this->cache->addItem($cacheItemKey, $body);
+        }
+
+        $body = $this->cache->getItem($cacheItemKey);
+        if ($decodeCallback === null) {
             return $body;
+        } else {
+            return $decodeCallback($body);
         }
     }
 }
