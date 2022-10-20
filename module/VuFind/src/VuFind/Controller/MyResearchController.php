@@ -2218,7 +2218,8 @@ class MyResearchController extends AbstractBase
                 $csrf->trimTokenList(0);
             }
             $user->delete(
-                $config->Authentication->delete_comments_with_user ?? true
+                $config->Authentication->delete_comments_with_user ?? true,
+                $config->Authentication->delete_ratings_with_user ?? true
             );
             $view->accountDeleted = true;
             $view->redirectUrl = $this->getAuthManager()->logout(
