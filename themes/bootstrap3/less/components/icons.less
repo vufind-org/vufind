@@ -6,6 +6,8 @@
 .icon-link {
   display: inline-flex;
   gap: 0.25rem;
+  align-items: center;
+  vertical-align: middle;
 }
 .icon-link,
 .icon-link:active,
@@ -45,9 +47,12 @@ span.icon-link .icon-link__label,
 
 .icon--font {
     display: inline-block;
-    width: 1.25em;
+    max-width: 1.25em;
+    height: min-content; /* FF */
+    height: fit-content;
     line-height: inherit;
     text-align: center;
+    vertical-align: top;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -62,11 +67,11 @@ span.icon-link .icon-link__label,
 }
 
 .icon--svg {
-    width: 1.1em;
-    height: 1.1em;
-    margin-top: 0.25em;
+    display: inline-block;
+    max-width: 1.25em;
+    max-height: 1.25em;
     fill: currentColor;
-    vertical-align: top;
+    vertical-align: text-bottom;
 }
 
 .show--closed,
