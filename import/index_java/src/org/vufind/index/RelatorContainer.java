@@ -19,15 +19,20 @@ package org.vufind.index;
  */
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.log4j.Logger;
 
 /**
  * Singleton for storing relator information.
  */
 public class RelatorContainer
 {
-   private static ThreadLocal<RelatorContainer> containerCache =
+    // Initialize logging category
+    static Logger logger = Logger.getLogger(ConfigManager.class.getName());
+
+    private static ThreadLocal<RelatorContainer> containerCache =
         new ThreadLocal<RelatorContainer>()
         {
             @Override
@@ -37,8 +42,11 @@ public class RelatorContainer
             }
         };
 
+    private static String configFilename = "author-classification.ini";
+
     private ConcurrentHashMap<String, String> relatorSynonymLookup = new ConcurrentHashMap<String, String>();
     private Set<String> knownRelators = new LinkedHashSet<String>();
+    private Set<String> relatorPrefixesToStrip = new LinkedHashSet<String>();
 
     public ConcurrentHashMap<String, String> getSynonymLookup()
     {
@@ -48,6 +56,24 @@ public class RelatorContainer
     public Set<String> getKnownRelators()
     {
         return knownRelators;
+    }
+
+    public Set<String> getRelatorPrefixesToStrip()
+    {
+        // Populate set if empty:
+        if (relatorPrefixesToStrip.isEmpty()) {
+            String configSection = "RelatorPrefixesToStrip";
+            Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
+            if (all.isEmpty()) {
+                logger.warn(configSection + " section missing from " + configFilename);
+            } else {
+                for (String prefix : all.values()) {
+                    relatorPrefixesToStrip.add(prefix);
+                }
+            }
+        }
+        System.out.println(relatorPrefixesToStrip);
+        return relatorPrefixesToStrip;
     }
 
     public static RelatorContainer instance()
