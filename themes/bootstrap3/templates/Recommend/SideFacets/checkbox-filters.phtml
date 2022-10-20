@@ -6,7 +6,7 @@
       : $results->getUrlQuery()->addFilter($current['filter']);
   ?>
   <div class="facet" >
-    <a class="checkbox-filter icon-link<?php if($isHidden): ?> hidden<?php endif; ?>" href="<?=$href ?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
+    <a class="checkbox-filter icon-link<?=$isHidden ? ' hidden' : '' ?>" href="<?=$href ?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
       <?php if ($current['selected']): ?>
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
       <?php endif; ?>
