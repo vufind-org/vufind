@@ -75,7 +75,12 @@ class AuthorityController extends AbstractSearch
      */
     public function recordAction()
     {
-        $id = $this->params()->fromQuery('id');
+        // Due to quirks of the MVC router and the way this controller is structured,
+        // trying to access a record with an ID of "Record" will route the user
+        // directly to this action instead of through the homeAction, which means
+        // that we need to default the id to the value of 'Record' to allow support
+        // for this (unlikely but not impossible) situation.
+        $id = $this->params()->fromQuery('id', 'Record');
         $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)
             ->load($id, 'SolrAuth');
         $request = $this->getRequest();

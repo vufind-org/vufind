@@ -689,7 +689,7 @@ $dynamicRoutes = [
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
     'Alphabrowse/Home', 'Author/FacetList', 'Author/Home', 'Author/Search',
-    'Authority/FacetList', 'Authority/Home', 'Authority/Record', 'Authority/Search',
+    'Authority/FacetList', 'Authority/Home', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'BrowZine/Home', 'BrowZine/Search',
