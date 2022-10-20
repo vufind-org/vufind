@@ -193,7 +193,7 @@
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
           <?php /* Add to favorites */ ?>
-          <a class="result-link icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+          <a class="save-record result-link icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
             <?=$this->icon('user-favorites', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
           </a><br/>
