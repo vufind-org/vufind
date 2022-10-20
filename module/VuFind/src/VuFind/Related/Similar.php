@@ -27,6 +27,8 @@
  */
 namespace VuFind\Related;
 
+use VuFindSearch\Command\SimilarCommand;
+
 /**
  * Related Records: Solr-based similarity
  *
@@ -72,10 +74,11 @@ class Similar implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $this->results = $this->searchService->similar(
+        $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
             $driver->getUniqueId()
         );
+        $this->results = $this->searchService->invoke($command)->getResult();
     }
 
     /**

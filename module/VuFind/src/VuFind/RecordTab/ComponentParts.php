@@ -27,6 +27,8 @@
  */
 namespace VuFind\RecordTab;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
  * Component parts display tab
  *
@@ -120,7 +122,7 @@ class ComponentParts extends AbstractBase
                 'sort' => 'hierarchy_sequence ASC,title ASC',
             ]
         );
-        return $this->searchService->search(
+        $command = new SearchCommand(
             $record->getSourceIdentifier(),
             $query,
             0,
@@ -129,5 +131,6 @@ class ComponentParts extends AbstractBase
             $this->maxResults + 1,
             $params
         );
+        return $this->searchService->invoke($command)->getResult();
     }
 }

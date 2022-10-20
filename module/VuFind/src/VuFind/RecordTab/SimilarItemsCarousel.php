@@ -27,6 +27,8 @@
  */
 namespace VuFind\RecordTab;
 
+use VuFindSearch\Command\SimilarCommand;
+
 /**
  * Similar items carousel tab.
  *
@@ -82,10 +84,11 @@ class SimilarItemsCarousel extends AbstractBase
     {
         $record = $this->getRecordDriver();
         $params = new \VuFindSearch\ParamBag(['rows' => 40]);
-        return $this->searchService->similar(
+        $command = new SimilarCommand(
             $record->getSourceIdentifier(),
             $record->getUniqueId(),
             $params
         );
+        return $this->searchService->invoke($command)->getResult();
     }
 }

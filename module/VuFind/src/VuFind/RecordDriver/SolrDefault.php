@@ -30,6 +30,8 @@
  */
 namespace VuFind\RecordDriver;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
@@ -291,9 +293,9 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
         );
         // Disable highlighting for efficiency; not needed here:
         $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
+        $command = new SearchCommand($this->sourceIdentifier, $query, 0, 0, $params);
         return $this->searchService
-            ->search($this->sourceIdentifier, $query, 0, 0, $params)
-            ->getTotal();
+            ->invoke($command)->getResult()->getTotal();
     }
 
     /**
