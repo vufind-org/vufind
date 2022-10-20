@@ -162,6 +162,50 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
+     * Add or update user's rating for the current resource.
+     *
+     * @param int  $userId User ID
+     * @param ?int $rating Rating (null to delete)
+     *
+     * @throws LoginRequiredException
+     * @throws \Exception
+     * @return int ID of rating added, deleted or updated
+     */
+    public function addOrUpdateRating(int $userId, ?int $rating): int
+    {
+        if (null !== $rating && ($rating < 0 || $rating > 100)) {
+            throw new \Exception('Rating value out of range');
+        }
+
+        $ratings = $this->getDbTable('Ratings');
+        $callback = function ($select) use ($userId) {
+            $select->where->equalTo('ratings.resource_id', $this->id);
+            $select->where->equalTo('ratings.user_id', $userId);
+        };
+        if ($existing = $ratings->select($callback)->current()) {
+            if (null === $rating) {
+                $existing->delete();
+            } else {
+                $existing->rating = $rating;
+                $existing->save();
+            }
+            return $existing->id;
+        }
+
+        if (null === $rating) {
+            return 0;
+        }
+
+        $row = $ratings->createRow();
+        $row->user_id = $userId;
+        $row->resource_id = $this->id;
+        $row->rating = $rating;
+        $row->created = date('Y-m-d H:i:s');
+        $row->save();
+        return $row->id;
+    }
+
+    /**
      * Use a record driver to assign metadata to the current row.  Return the
      * current object to allow fluent interface.
      *

@@ -229,6 +229,8 @@ return [
             'profile-email' => 'FontAwesome:envelope',
             'profile-sms' => 'FontAwesome:phone',
             'qrcode' => 'FontAwesome:qrcode',
+            'rating-half' => 'FontAwesome:star-half',
+            'rating-full' => 'FontAwesome:star',
             'search' => 'FontAwesome:search',
             'search-delete' => 'Alias:ui-delete',
             'search-filter-remove' => 'FontAwesome:times',
