@@ -92,11 +92,6 @@ class ServiceInitializer implements InitializerInterface
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
             $instance->setTranslator($sm->get(\Laminas\Mvc\I18n\Translator::class));
         }
-        if ($instance instanceof \VuFind\Http\CachingDownloaderAwareInterface) {
-            $instance->setCachingDownloader(
-                $sm->get(\VuFind\Http\CachingDownloader::class)
-            );
-        }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
         }

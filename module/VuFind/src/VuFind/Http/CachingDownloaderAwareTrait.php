@@ -63,6 +63,6 @@ trait CachingDownloaderAwareTrait
     public function setCachingDownloader(CachingDownloader $cachingDownloader)
     {
         $this->cachingDownloader = $cachingDownloader;
-        $this->cachingDownloader->setCacheId($this->downloaderCacheId);
+        $this->cachingDownloader->setCache($this->downloaderCacheId);
     }
 }
