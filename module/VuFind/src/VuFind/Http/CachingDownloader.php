@@ -87,7 +87,7 @@ class CachingDownloader
     {
         $this->httpService = $httpService;
         $this->cacheManager = $cacheManager;
-        $this->setCache('downloader');
+        $this->setUpCache('downloader');
     }
 
     /**
@@ -105,13 +105,13 @@ class CachingDownloader
     }
 
     /**
-     * Set a different cache.
+     * Set up a different cache.
      *
      * @param string $cacheId Cache ID
      *
      * @return void
      */
-    public function setCache($cacheId)
+    public function setUpCache($cacheId)
     {
         $this->cacheId = $cacheId;
         $this->cache = null;
@@ -136,7 +136,7 @@ class CachingDownloader
         callable $decodeCallback=null
     ) {
         $cache = $this->getCache();
-        $cacheItemKey = md5(http_build_query(array_merge([$url], $params)));
+        $cacheItemKey = md5($url . http_build_query($params));
 
         // Add new item to cache if not exists
         if (!$cache->hasItem($cacheItemKey)) {
