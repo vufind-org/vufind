@@ -144,15 +144,17 @@ class CachingDownloader
             if (!$response->isOk()) {
                 throw new \Exception('Could not download URL: ' . $url);
             }
-            $body = $response->getBody();
-            if ($validateCallback !== null && ($validateCallback($body) === false)) {
+            if ($validateCallback !== null
+                && ($validateCallback($response) === false)
+            ) {
                 throw new \Exception('Invalid response body from URL: ' . $url);
             }
-            $cache->addItem($cacheItemKey, $body);
+            $cache->addItem($cacheItemKey, $response);
         }
 
-        $body = $cache->getItem($cacheItemKey);
-        return ($decodeCallback === null) ? $body : $decodeCallback($body);
+        $response = $cache->getItem($cacheItemKey);
+        return ($decodeCallback === null) ?
+            $response->getBody() : $decodeCallback($response);
     }
 
     /**
@@ -166,14 +168,14 @@ class CachingDownloader
      */
     public function downloadJson($url, $params=[])
     {
-        $validateJson = function ($json) {
+        $validateJson = function ($response) {
             // Use PhpSerialize instead of json_decode for better performance
             $serializer = \Laminas\Serializer\Serializer::factory(
                 \Laminas\Serializer\Adapter\Json::class
             );
 
             try {
-                $serializer->unserialize($json);
+                $serializer->unserialize($response->getBody());
                 return true;
             } catch (\Laminas\Serializer\Exception\ExceptionInterface $e) {
                 return false;
