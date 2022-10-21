@@ -387,6 +387,11 @@ class AbstractBase extends AbstractActionController
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
+            // If somebody is POSTing credentials but that logic is disabled, we
+            // should throw an exception!
+            if (!$account->allowsUserIlsLogin()) {
+                throw new \Exception('Unexpected ILS credential submission.');
+            }
             // Check for multiple ILS target selection
             $target = $this->params()->fromPost('target', false);
             if ($target) {

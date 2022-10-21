@@ -211,9 +211,10 @@ class MyResearchController extends AbstractBase
 
         // Make view
         $view = $this->createViewModel();
+        // Username policy
+        $view->usernamePolicy = $this->getAuthManager()->getUsernamePolicy($method);
         // Password policy
-        $view->passwordPolicy = $this->getAuthManager()
-            ->getPasswordPolicy($method);
+        $view->passwordPolicy = $this->getAuthManager()->getPasswordPolicy($method);
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
@@ -2217,7 +2218,8 @@ class MyResearchController extends AbstractBase
                 $csrf->trimTokenList(0);
             }
             $user->delete(
-                $config->Authentication->delete_comments_with_user ?? true
+                $config->Authentication->delete_comments_with_user ?? true,
+                $config->Authentication->delete_ratings_with_user ?? true
             );
             $view->accountDeleted = true;
             $view->redirectUrl = $this->getAuthManager()->logout(
