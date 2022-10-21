@@ -64,6 +64,13 @@ class CachingDownloader
     protected $cache;
 
     /**
+     * Cache ID to use for downloads
+     *
+     * @var string
+     */
+    protected $cacheId;
+
+    /**
      * HTTP service
      *
      * @var HttpService
@@ -80,7 +87,21 @@ class CachingDownloader
     {
         $this->httpService = $httpService;
         $this->cacheManager = $cacheManager;
-        $this->setCacheId('downloader');
+        $this->setCache('downloader');
+    }
+
+    /**
+     * Get cache and initialize it, if necessary.
+     *
+     * @return StorageInterface
+     */
+    protected function getCache()
+    {
+        if ($this->cache == null) {
+            $cacheName = $this->cacheManager->addDownloaderCache($this->cacheId);
+            $this->cache = $this->cacheManager->getCache($cacheName);
+        }
+        return $this->cache;
     }
 
     /**
@@ -90,20 +111,21 @@ class CachingDownloader
      *
      * @return void
      */
-    public function setCacheId($cacheId)
+    public function setCache($cacheId)
     {
-        $cacheName = $this->cacheManager->addDownloaderCache($cacheId);
-        $this->cache = $this->cacheManager->getCache($cacheName);
+        $this->cacheId = $cacheId;
+        $this->cache = null;
     }
 
     /**
      * Download a resource using the cache in the background.
      *
-     * @param string   $url              URL
-     * @param array    $params           Request parameters (e.g. additional headers)
-     * @param callable $validateCallback Callback for validation
-     *                                   before storing to cache
-     * @param callable $decodeCallback   Callback for decoding
+     * @param string    $url              URL
+     * @param array     $params           Request parameters
+     *                                    (e.g. additional headers)
+     * @param ?callable $validateCallback Callback for validation
+     *                                    before storing to cache
+     * @param ?callable $decodeCallback   Callback for decoding
      *
      * @return mixed
      */
@@ -113,13 +135,11 @@ class CachingDownloader
         callable $validateCallback=null,
         callable $decodeCallback=null
     ) {
-        $cacheItemKey = md5($url);
-        foreach ($params as $paramKey => $paramValue) {
-            $cacheItemKey .= '#' . $paramKey . '§' . $paramValue;
-        }
+        $cache = $this->getCache();
+        $cacheItemKey = md5(http_build_query(array_merge([$url], $params)));
 
         // Add new item to cache if not exists
-        if (!$this->cache->hasItem($cacheItemKey)) {
+        if (!$cache->hasItem($cacheItemKey)) {
             $response = $this->httpService->get($url, $params);
             if (!$response->isOk()) {
                 throw new \Exception('Could not download URL: ' . $url);
@@ -128,15 +148,11 @@ class CachingDownloader
             if ($validateCallback !== null && ($validateCallback($body) === false)) {
                 throw new \Exception('Invalid response body from URL: ' . $url);
             }
-            $this->cache->addItem($cacheItemKey, $body);
+            $cache->addItem($cacheItemKey, $body);
         }
 
-        $body = $this->cache->getItem($cacheItemKey);
-        if ($decodeCallback === null) {
-            return $body;
-        } else {
-            return $decodeCallback($body);
-        }
+        $body = $cache->getItem($cacheItemKey);
+        return ($decodeCallback === null) ? $body : $decodeCallback($body);
     }
 
     /**
@@ -153,8 +169,9 @@ class CachingDownloader
         $validateJson = function ($json) {
             // Use PhpSerialize instead of json_decode for better performance
             $serializer = \Laminas\Serializer\Serializer::factory(
-                \Laminas\Serializer\Adapter\PhpSerialize::class
+                \Laminas\Serializer\Adapter\Json::class
             );
+
             try {
                 $serializer->unserialize($json);
                 return true;
