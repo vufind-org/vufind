@@ -21,7 +21,7 @@
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkFunction('getMyTransactionHistory', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-historicloans')?>" class="icon-link <?=$this->active == 'historicloans' ? ' active' : ''?>">
+    <a href="<?=$this->url('myresearch-historicloans')?>" class="icon-link<?=$this->active == 'historicloans' ? ' active' : ''?>">
       <?=$this->icon('user-loan-history') ?>
       <span class="icon-link__label"><?=$this->transEsc('Loan History')?></span>
     </a>
