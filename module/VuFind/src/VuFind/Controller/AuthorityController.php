@@ -60,7 +60,9 @@ class AuthorityController extends AbstractSearch
     {
         // If we came in with a record ID, forward to the record action:
         if ($id = $this->params()->fromRoute('id', false)) {
-            $this->getRequest()->getQuery()->set('id', $id);
+            if ($id !== 'Record') {
+                $this->getRequest()->getQuery()->set('id', $id);
+            }
             return $this->forwardTo('Authority', 'Record');
         }
 
