@@ -46,7 +46,7 @@ public class RelatorContainer
 
     private ConcurrentHashMap<String, String> relatorSynonymLookup = new ConcurrentHashMap<String, String>();
     private Set<String> knownRelators = new LinkedHashSet<String>();
-    private Set<String> relatorPrefixesToStrip = new LinkedHashSet<String>();
+    private Set<String> relatorPrefixesToStrip = null;
 
     public ConcurrentHashMap<String, String> getSynonymLookup()
     {
@@ -61,7 +61,8 @@ public class RelatorContainer
     public Set<String> getRelatorPrefixesToStrip()
     {
         // Populate set if empty:
-        if (relatorPrefixesToStrip.isEmpty()) {
+        if (relatorPrefixesToStrip == null) {
+            relatorPrefixesToStrip = new LinkedHashSet<String>();
             String configSection = "RelatorPrefixesToStrip";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
             if (all.isEmpty()) {
@@ -72,7 +73,6 @@ public class RelatorContainer
                 }
             }
         }
-        System.out.println(relatorPrefixesToStrip);
         return relatorPrefixesToStrip;
     }
 
