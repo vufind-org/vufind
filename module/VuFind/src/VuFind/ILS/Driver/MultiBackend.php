@@ -1311,6 +1311,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         }
 
         foreach ($data as $key => $value) {
+            if (null === $value) {
+                continue;
+            }
             if (is_array($value)) {
                 $data[$key] = $this->addIdPrefixes(
                     $value,
@@ -1353,6 +1356,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $array = is_array($data) ? $data : [$data];
 
         foreach ($array as $key => $value) {
+            if (null === $value) {
+                continue;
+            }
             if (is_array($value)) {
                 if (in_array($key, $ignoreFields)) {
                     continue;

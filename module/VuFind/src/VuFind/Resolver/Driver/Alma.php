@@ -57,11 +57,20 @@ class Alma extends AbstractBase
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
+     * @param array                $options    OpenURL Configuration (optional)
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
-    {
+    public function __construct(
+        $baseUrl,
+        \Laminas\Http\Client $httpClient,
+        array $options = []
+    ) {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
+        if (isset($options['ignoredFilterReasons'])) {
+            $this->ignoredFilterReasons
+                = empty($options['ignoredFilterReasons'])
+                    ? [] : array_filter((array)$options['ignoredFilterReasons']);
+        }
     }
 
     /**

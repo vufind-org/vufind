@@ -6,6 +6,7 @@
  *
  * Copyright (C) Leipzig University Library 2015.
  * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) Düsseldorf University and State Library 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Helge Ahrens <helge.ahrens@ulb.hhu.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -45,6 +47,7 @@ use VuFind\Resolver\Driver\Alma;
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Helge Ahrens <helge.ahrens@ulb.hhu.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -167,7 +170,97 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($result, $testResult);
+        $this->assertEquals($testResult, $result);
+    }
+
+    /**
+     * Test link parser without ignored filters
+     *
+     * @return void
+     */
+    public function testParseLinksWithoutIgnoredFiltering()
+    {
+        $conn = $this->createConnector('alma.xml', ['ignoredFilterReasons' => '']);
+
+        $openUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004";
+        $result = $conn->parseLinks($conn->fetchLinks($openUrl));
+
+        $testResult = [
+            [
+                'title' => 'Unpaywall',
+                'coverage' => '',
+                'access' => 'open',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=1',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getFullTxt',
+            ],
+            [
+                'title' => 'Ebook override',
+                'coverage' => 'Available from 2019',
+                'access' => 'limited',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861830000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getFullTxt',
+            ],
+            [
+                'title' => 'ebrary Academic Complete Subscription UKI Edition',
+                'coverage' => '',
+                'access' => 'limited',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861800000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getFullTxt',
+            ],
+            [
+                'title' => 'ebrary Science & Technology Subscription',
+                'coverage' => '',
+                'access' => 'limited',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861790000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getFullTxt',
+            ],
+            [
+                'title' => 'EBSCOhost Academic eBook Collection (North America)',
+                'coverage' => '',
+                'access' => 'open',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861770000561&institutionId=561&customerId=550',
+                'notes' => 'notessssssssssss SERVICE LEVEL PUBLIC NOTE',
+                'authentication' => 'collection level auth SERVICE LEVEL AUTHE NOTE',
+                'service_type' => 'getFullTxt',
+            ],
+            [
+                'title' => 'EBSCOhost eBook Community College Collection',
+                'coverage' => '',
+                'access' => 'limited',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861780000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getHolding',
+            ],
+            [
+                'title' => 'Elsevier ScienceDirect Books',
+                'coverage' => '',
+                'access' => 'limited',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861820000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getFullTxt',
+            ],
+            [
+                'title' => 'Request Assistance for this Resource!',
+                'coverage' => '',
+                'access' => '',
+                'href' => 'https://www.google.com/search?Testingrft.oclcnum=437189463&q=Fundamental+Data+Compression&rft.archive=9942811800561',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getWebService',
+            ],
+        ];
+
+        $this->assertEquals($testResult, $result);
     }
 
     /**
@@ -179,7 +272,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null)
+    protected function createConnector($fixture = null, $options = [])
     {
         $adapter = new TestAdapter();
         if ($fixture) {
@@ -193,7 +286,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
         $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
-        $conn = new Alma($this->openUrlConfig['OpenURL']['url'], $client);
+        $conn = new Alma($this->openUrlConfig['OpenURL']['url'], $client, $options);
         return $conn;
     }
 }
