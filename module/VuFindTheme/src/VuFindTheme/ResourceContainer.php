@@ -81,25 +81,6 @@ class ResourceContainer
     protected $generator = '';
 
     /**
-     * Add a Less CSS file.
-     *
-     * @param array|string $less Less CSS file (or array of Less CSS files) to add
-     *
-     * @return void
-     */
-    public function addLessCss($less)
-    {
-        if (!is_array($less) && !is_a($less, 'Traversable')) {
-            $less = [$less];
-        }
-        unset($less['active']);
-        foreach ($less as $current) {
-            $this->less[] = $current;
-            $this->removeCSS($current);
-        }
-    }
-
-    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -280,16 +261,6 @@ class ResourceContainer
         // Insert at end if either no priority/dependency is given
         // or no other element has been found
         $array[] = $entry;
-    }
-
-    /**
-     * Get Less CSS files.
-     *
-     * @return array
-     */
-    public function getLessCss()
-    {
-        return array_unique($this->less);
     }
 
     /**
