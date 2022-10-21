@@ -62,15 +62,13 @@ public class RelatorContainer
     {
         // Populate set if empty:
         if (relatorPrefixesToStrip == null) {
-            relatorPrefixesToStrip = new LinkedHashSet<String>();
             String configSection = "RelatorPrefixesToStrip";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
             if (all.isEmpty()) {
+                relatorPrefixesToStrip = new LinkedHashSet<String>();
                 logger.warn(configSection + " section missing from " + configFilename);
             } else {
-                for (String prefix : all.values()) {
-                    relatorPrefixesToStrip.add(prefix);
-                }
+                relatorPrefixesToStrip = new LinkedHashSet<String>(all.values());
             }
         }
         return relatorPrefixesToStrip;
