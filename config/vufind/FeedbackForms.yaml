@@ -150,7 +150,7 @@ forms:
   # Main Feedback form
 
   FeedbackSite:
-    title: Send us your feedback!
+    title: Send us your feedback
     enabled: true
     useCaptcha: true
     reportReferrer: false
@@ -246,7 +246,7 @@ forms:
 
       - name: boolean
         type: radio
-        label: Need Help?
+        label: Need Help
         required: true
         options:
           - Yes

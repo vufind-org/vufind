@@ -182,7 +182,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->getRecipient()
         );
 
-        $this->assertEquals('Send us your feedback!', $form->getTitle());
+        $this->assertEquals('Send us your feedback', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
