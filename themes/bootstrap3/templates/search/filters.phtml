@@ -43,7 +43,7 @@
         <?=$desc?>
         <?php if($removeLink): ?>
           <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>">
-            <?=$this->icon('ui-remove') ?>
+            <?=$this->icon('search-filter-remove') ?>
           </a>
         <?php endif; ?>
       </span>
@@ -95,6 +95,7 @@
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
+<<<<<<< HEAD
         <a class="filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
           <span class="sr-only">
             <?=$this->translate('Remove filter') ?>
@@ -104,6 +105,12 @@
           </span>
           <?=$this->icon('ui-remove') ?>
         </a>
+=======
+          <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>">
+            <?=$this->icon('search-filter-remove') ?>
+          </a>
+        </span>
+>>>>>>> origin/dev
         <?php if ($dropdown): ?>
           </li>
         <?php endif; ?>

@@ -150,6 +150,14 @@ trait ILLRequestsTrait
         // selected.
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
 
+        // Check that there are pick up locations to choose from if the field is
+        // required:
+        if (in_array('pickUpLocation', $extraFields) && !$pickupLocations) {
+            $this->flashMessenger()
+                ->addErrorMessage('No pickup locations available');
+            return $this->redirectToRecord('#top');
+        }
+
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
             ? $this->getUser()->home_library : '';

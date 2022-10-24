@@ -37,7 +37,6 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
 use VuFind\Config\Writer;
@@ -61,6 +60,8 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  */
 class UpgradeController extends AbstractBase
 {
+    use Feature\ConfigPathTrait;
+
     /**
      * Cookie container
      *
@@ -218,8 +219,7 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
-        $localConfig
-            = dirname(ConfigLocator::getLocalConfigPath('config.ini', null, true));
+        $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
         $confDir = $this->cookie->oldVersion < 2
             ? $this->cookie->sourceDir . '/web/conf'
             : $localConfig;
@@ -227,7 +227,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->oldVersion,
             $this->cookie->newVersion,
             $confDir,
-            dirname(ConfigLocator::getBaseConfigPath('config.ini')),
+            dirname($this->getBaseConfigFilePath('config.ini')),
             $localConfig
         );
         try {
@@ -287,7 +287,7 @@ class UpgradeController extends AbstractBase
      */
     protected function setDbEncodingConfiguration($charset)
     {
-        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $config = $this->getForcedLocalConfigPath('config.ini');
         $writer = new Writer($config);
         $writer->set('Database', 'charset', $charset);
         if (!$writer->save()) {
@@ -878,9 +878,8 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'configDir' => dirname(
-                    ConfigLocator::getLocalConfigPath('config.ini', null, true)
-                ),
+                'configDir'
+                    => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
                 'oldVersion' => $this->cookie->oldVersion
             ]

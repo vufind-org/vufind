@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Config\Config;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Stdlib\Parameters;
 use VuFind\Auth\Database;
@@ -85,6 +86,338 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $db = new Database();
         $arr = $this->getCreateParams();
         $arr['password2'] = 'bad';
+        $db->create($this->getRequest($arr));
+    }
+
+    /**
+     * Data provider for testCreateWithPasswordPolicy
+     *
+     * @return array
+     */
+    public function getTestCreateWithPasswordPolicyData(): array
+    {
+        $numericConfig = [
+            'minimum_password_length' => 4,
+            'maximum_password_length' => 5,
+            'password_pattern' => 'numeric',
+        ];
+        $alnumConfig = [
+            'minimum_password_length' => 4,
+            'maximum_password_length' => 5,
+            'password_pattern' => 'alphanumeric',
+        ];
+        $patternConfig = [
+            'minimum_password_length' => 4,
+            'maximum_password_length' => 5,
+            'password_pattern' => '([\p{L}\p{N}]+)',
+        ];
+        return [
+            // Numeric:
+            [
+                $numericConfig,
+                '123',
+                \VuFind\Exception\Auth::class,
+                'password_minimum_length',
+            ],
+            [
+                $numericConfig,
+                '123456',
+                \VuFind\Exception\Auth::class,
+                'password_maximum_length',
+            ],
+            [
+                $numericConfig,
+                'pass',
+                \VuFind\Exception\Auth::class,
+                'password_error_invalid',
+            ],
+            [
+                $numericConfig,
+                '1234',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+            [
+                $numericConfig,
+                '12345',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+
+            // Alphanumeric:
+            [
+                $alnumConfig,
+                '1ab',
+                \VuFind\Exception\Auth::class,
+                'password_minimum_length',
+            ],
+            [
+                $alnumConfig,
+                '1abcde',
+                \VuFind\Exception\Auth::class,
+                'password_maximum_length',
+            ],
+            [
+                $alnumConfig,
+                'pass!',
+                \VuFind\Exception\Auth::class,
+                'password_error_invalid',
+            ],
+            [
+                $alnumConfig,
+                '1abc',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+            [
+                $alnumConfig,
+                '1abcd',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+
+            // Pattern:
+            [
+                $patternConfig,
+                '1abc!',
+                \VuFind\Exception\Auth::class,
+                'password_error_invalid',
+            ],
+            [
+                $patternConfig,
+                'abd/e',
+                \VuFind\Exception\Auth::class,
+                'password_error_invalid',
+            ],
+            [
+                $patternConfig,
+                '1abcÖ',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+            [
+                $patternConfig,
+                'abcδ',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+        ];
+    }
+
+    /**
+     * Test validation of create request with a password policy.
+     *
+     * @dataProvider getTestCreateWithPasswordPolicyData
+     *
+     * @return void
+     */
+    public function testCreateWithPasswordPolicy(
+        array $authConfig,
+        string $password,
+        string $expectedExceptionClass,
+        string $expectedExceptionMsg
+    ): void {
+        $config = new Config(
+            [
+                'Authentication' => $authConfig
+            ]
+        );
+        $db = new Database();
+        $db->setConfig($config);
+        $arr = $this->getCreateParams();
+        $arr['password'] = $password;
+        $arr['password2'] = $password;
+        $this->expectException($expectedExceptionClass);
+        $this->expectExceptionMessage($expectedExceptionMsg);
+        $db->create($this->getRequest($arr));
+    }
+
+    /**
+     * Test validation of create request with a password policy.
+     *
+     * @return void
+     */
+    public function testCreateWithBadPasswordPolicyPattern(): void
+    {
+        $config = new Config(
+            [
+                'Authentication' => [
+                    'password_pattern' => 'a/'
+                ]
+            ]
+        );
+        $db = new Database();
+        $db->setConfig($config);
+        $arr = $this->getCreateParams();
+        $arr['password'] = 'abcδ';
+        $arr['password2'] = 'abcδ';
+        $this->expectWarning();
+        $db->create($this->getRequest($arr));
+    }
+
+    /**
+     * Data provider for testCreateWithUsernamePolicy
+     *
+     * @return array
+     */
+    public function getTestCreateWithUsernamePolicyData(): array
+    {
+        $defaultConfig = [
+            'username_pattern' => "([\\x21\\x23-\\x2B\\x2D-\\x2F\\x3D\\x3F\\x40"
+            . "\\x5E-\\x60\\x7B-\\x7E\\p{L}\\p{Nd}]+)"
+        ];
+        $numericConfig = [
+            'minimum_username_length' => 4,
+            'maximum_username_length' => 5,
+            'username_pattern' => 'numeric',
+        ];
+        $alnumConfig = [
+            'minimum_username_length' => 4,
+            'maximum_username_length' => 5,
+            'username_pattern' => 'alphanumeric',
+        ];
+        $patternConfig = [
+            'minimum_username_length' => 4,
+            'maximum_username_length' => 5,
+            'username_pattern' => '([\p{L}\p{N}]+)',
+        ];
+        return [
+            // Default pattern:
+            [
+                $defaultConfig,
+                '"foo"',
+                \VuFind\Exception\Auth::class,
+                'username_error_invalid',
+            ],
+            [
+                $defaultConfig,
+                '😀',
+                \VuFind\Exception\Auth::class,
+                'username_error_invalid',
+            ],
+            [
+                $defaultConfig,
+                "!#$%&'*+-/=?^_`{|}~abcδä",
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+
+            // Numeric:
+            [
+                $numericConfig,
+                '123',
+                \VuFind\Exception\Auth::class,
+                'username_minimum_length',
+            ],
+            [
+                $numericConfig,
+                '123456',
+                \VuFind\Exception\Auth::class,
+                'username_maximum_length',
+            ],
+            [
+                $numericConfig,
+                'abcd',
+                \VuFind\Exception\Auth::class,
+                'username_error_invalid',
+            ],
+            [
+                $numericConfig,
+                '1234',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+            [
+                $numericConfig,
+                '12345',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+
+            // Alphanumeric:
+            [
+                $alnumConfig,
+                '1ab',
+                \VuFind\Exception\Auth::class,
+                'username_minimum_length',
+            ],
+            [
+                $alnumConfig,
+                '1abcde',
+                \VuFind\Exception\Auth::class,
+                'username_maximum_length',
+            ],
+            [
+                $alnumConfig,
+                'pass!',
+                \VuFind\Exception\Auth::class,
+                'username_error_invalid',
+            ],
+            [
+                $alnumConfig,
+                '1abc',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+            [
+                $alnumConfig,
+                '1abcd',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+
+            // Pattern:
+            [
+                $patternConfig,
+                '1abc!',
+                \VuFind\Exception\Auth::class,
+                'username_error_invalid',
+            ],
+            [
+                $patternConfig,
+                'abd/e',
+                \VuFind\Exception\Auth::class,
+                'username_error_invalid',
+            ],
+            [
+                $patternConfig,
+                '1abcÖ',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+            [
+                $patternConfig,
+                'abcδ',
+                \Exception::class,
+                'DB table manager missing.', // == success
+            ],
+        ];
+    }
+
+    /**
+     * Test validation of create request with a username policy.
+     *
+     * @dataProvider getTestCreateWithUsernamePolicyData
+     *
+     * @return void
+     */
+    public function testCreateWithUsernamePolicy(
+        array $authConfig,
+        string $username,
+        string $expectedExceptionClass,
+        string $expectedExceptionMsg
+    ): void {
+        $config = new Config(
+            [
+                'Authentication' => $authConfig
+            ]
+        );
+        $db = new Database();
+        $db->setConfig($config);
+        $arr = $this->getCreateParams();
+        $arr['username'] = $username;
+        $this->expectException($expectedExceptionClass);
+        $this->expectExceptionMessage($expectedExceptionMsg);
         $db->create($this->getRequest($arr));
     }
 
