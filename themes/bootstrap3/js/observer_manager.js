@@ -7,6 +7,30 @@ VuFind.register('observerManager', () => {
   let observers = {};
 
   /**
+   * Observe given elements. Observer used is identified with identifier.
+   *
+   * @param {String}         identifier Observers identifier
+   * @param {Array|NodeList} elements   Elements to observe
+   */
+  function observe(identifier, elements) {
+    if (typeof observers[identifier] === 'undefined') {
+      console.error(`Observer with identifier ${identifier} is undefined`);
+      return;
+    }
+    for (let i = 0; i < elements.length; i++) {
+      const current = elements[i];
+      switch (typeof observers[identifier]) {
+      case 'function':
+        observers[identifier](current);
+        break;
+      case 'object':
+        observers[identifier].observe(current);
+        break;
+      }
+    }
+  }
+
+  /**
    * Create an IntersectionObserver.
    * If the IntersectionObserver is not supported, onIntersect will be used as a
    * standalone function.
@@ -41,30 +65,6 @@ VuFind.register('observerManager', () => {
 
     if (typeof elements !== 'undefined' && elements.length) {
       observe(identifier, elements);
-    }
-  }
-
-  /**
-   * Observe given elements. Observer used is identified with identifier.
-   *
-   * @param {String}         identifier Observers identifier
-   * @param {Array|NodeList} elements   Elements to observe
-   */
-  function observe(identifier, elements) {
-    if (typeof observers[identifier] === 'undefined') {
-      console.error(`Observer with identifier ${identifier} is undefined`);
-      return;
-    }
-    for (let i = 0; i < elements.length; i++) {
-      const current = elements[i];
-      switch (typeof observers[identifier]) {
-      case 'function':
-        observers[identifier](current);
-        break;
-      case 'object':
-        observers[identifier].observe(current);
-        break;
-      }
     }
   }
 
