@@ -13,11 +13,12 @@ VuFind.register('observerManager', () => {
    *
    * @link https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API 
    *
-   * @param {String}   identifier  Id of the observer to create
-   * @param {Function} onIntersect Callback to use on elements
-   * @param {Object}   options     Options for the Intersection Observer
+   * @param {String}         identifier  Id of the observer to create
+   * @param {Function}       onIntersect Callback to use on elements
+   * @param {Array|NodeList} elements    Initial elements to be observed
+   * @param {Object}         options     Options for the Intersection Observer
    */
-  function createIntersectionObserver(identifier, onIntersect, options) {
+  function createIntersectionObserver(identifier, onIntersect, elements, options) {
     if (typeof observers[identifier] !== 'undefined') {
       return;
     }
@@ -37,6 +38,10 @@ VuFind.register('observerManager', () => {
         }); 
       }, options);
     }
+
+    if (typeof elements !== 'undefined' && elements.length) {
+      observe(identifier, elements);
+    }
   }
 
   /**
@@ -46,6 +51,10 @@ VuFind.register('observerManager', () => {
    * @param {Array|NodeList} elements   Elements to observe
    */
   function observe(identifier, elements) {
+    if (typeof observers[identifier] === 'undefined') {
+      console.error(`Observer with identifier ${identifier} is undefined`);
+      return;
+    }
     for (let i = 0; i < elements.length; i++) {
       const current = elements[i];
       switch (typeof observers[identifier]) {
@@ -54,9 +63,6 @@ VuFind.register('observerManager', () => {
         break;
       case 'object':
         observers[identifier].observe(current);
-        break;
-      default:
-        console.error(`Observer with identifier: ${identifier} not found.`);
         break;
       }
     }
@@ -68,15 +74,10 @@ VuFind.register('observerManager', () => {
    * @param {String} identifier Identifier of observer to remove
    */
   function disconnect(identifier) {
-    switch (typeof observers[identifier]) {
-    case 'object':
+    if (typeof observers[identifier] === 'object') {
       observers[identifier].disconnect();
-      delete observers[identifier];
-      break;
-    case 'function':
-      delete observers[identifier];
-      break;
     }
+    delete observers[identifier];
   }
 
   return { createIntersectionObserver, observe, disconnect };
