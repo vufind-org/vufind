@@ -33,9 +33,9 @@ use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\AlphabeticBrowseCommand;
-use VuFindSearch\ParamBag;
-use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
+use VuFindSearch\ParamBag;
 
 /**
  * Alphabrowse channel provider.

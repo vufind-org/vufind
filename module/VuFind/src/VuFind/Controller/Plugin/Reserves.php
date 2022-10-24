@@ -101,7 +101,7 @@ class Reserves extends AbstractPlugin
             // get the selected reserve record from reserves index
             // and extract the bib IDs from it
             $command = new RetrieveCommand(
-                'SolrReserves', 
+                'SolrReserves',
                 $course . '|' . $inst . '|' . $dept
             );
             $result = $this->searchService

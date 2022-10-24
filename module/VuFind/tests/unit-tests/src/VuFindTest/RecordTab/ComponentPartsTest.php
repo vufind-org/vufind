@@ -106,21 +106,12 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResults(): void
     {
-        $searchObj = $this->getMockBuilder(\VuFindSearch\Service::class)
+        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
         $rci = $this->getMockBuilder(
             \VuFindSearch\Response\RecordCollectionInterface::class
         )->disableOriginalConstructor()->getMock();
-        $searchObj->expects($this->once())->method('search')
-            ->with(
-                $this->equalTo("bar"),
-                $this->equalTo(new \VuFindSearch\Query\Query('hierarchy_parent_id:"foo"')),
-                $this->equalTo(0),
-                $this->equalTo(101),
-                $this->anything()
-            )->will($this->returnValue($rci));
-        $obj = new ComponentParts($searchObj);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -128,6 +119,23 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue("foo"));
         $recordDriver->expects($this->any())->method('getSourceIdentifier')
             ->will($this->returnValue("bar"));
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->any())->method('getResult')
+            ->will($this->returnValue($rci));
+        $checkCommand = function ($command) {
+            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === "bar"
+                && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
+                && $command->getArguments()[1] === 0
+                && $command->getArguments()[2] === 101
+                && get_class($command->getArguments()[3]) === \VuFindSearch\ParamBag::class;
+        };
+        $service->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
+        $obj = new ComponentParts($service);
         $obj->setRecordDriver($recordDriver);
         $this->assertEquals($rci, $obj->getResults());
     }

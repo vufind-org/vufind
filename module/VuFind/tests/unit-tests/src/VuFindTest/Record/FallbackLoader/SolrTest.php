@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -59,13 +59,21 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         );
         $collection->add($record);
         $expectedQuery = new \VuFindSearch\Query\Query('previous_id_str_mv:"oldId"');
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->any())->method('getResult')
+            ->will($this->returnValue($collection));
+        $checkCommand = function ($command) {
+            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === "Solr"
+                && $command->getArguments()[0]->getString() === 'previous_id_str_mv:"oldId"';
+        };
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $search->expects($this->once())->method('search')
-            ->with(
-                $this->equalTo('Solr'),
-                $this->equalTo($expectedQuery)
-            )->will($this->returnValue($collection));
+        $search->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
             ->disableOriginalConstructor()->getMock();
         $resource->expects($this->once())->method('updateRecordId')
