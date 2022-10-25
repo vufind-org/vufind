@@ -256,7 +256,6 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         };
 
         $checkCommand3 = function ($command) {
-            var_dump($command->getArguments()[1]->getArrayCopy());
             return get_class($command) === \VuFindSearch\Command\RetrieveBatchCommand::class
                 && $command->getTargetIdentifier() === "WorldCat"
                 && $command->getArguments()[0] === ["test4"]

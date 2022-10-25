@@ -62,13 +62,13 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResults(): void
     {
-        $search = $this->getMockBuilder(\VuFindSearch\Service::class)
+        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
         $rci = $this->getMockBuilder(
             \VuFindSearch\Response\RecordCollectionInterface::class
         )->getMock();
-        $obj = new SimilarItemsCarousel($search);
+        $obj = new SimilarItemsCarousel($service);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -77,12 +77,22 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $recordDriver->expects($this->once())->method('getUniqueId')
             ->will($this->returnValue("bar"));
         $obj->setRecordDriver($recordDriver);
-        $search->expects($this->once())->method('similar')
-            ->with(
-                $this->equalTo("foo"),
-                $this->equalTo("bar"),
-                $this->equalTo(new \VuFindSearch\ParamBag(['rows' => 40])),
-            )->will($this->returnValue($rci));
+
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->any())->method('getResult')
+            ->will($this->returnValue($rci));
+
+        $checkCommand = function ($command) {
+            return get_class($command) === \VuFindSearch\Command\SimilarCommand::class
+                && $command->getTargetIdentifier() === "foo"
+                && $command->getArguments()[0] === "bar"
+                && $command->getArguments()[1]->getArrayCopy() === ['rows' => [40]];
+        };
+        $service->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         $this->assertSame($rci, $obj->getResults());
     }
 }

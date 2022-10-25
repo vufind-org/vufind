@@ -202,7 +202,8 @@ class AlphaBrowse extends AbstractChannelProvider
         if (empty($channels) && is_object($driver) && $channelToken !== null) {
             $command = new RetrieveCommand(
                 $driver->getSourceIdentifier(),
-                $channelToken);
+                $channelToken
+            );
             $driver = $this->searchService->invoke($command)->getResult()->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
