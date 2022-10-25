@@ -43,24 +43,23 @@ VuFind.register('observerManager', () => {
    * @param {Object}         options     Options for the Intersection Observer
    */
   function createIntersectionObserver(identifier, onIntersect, elements, options) {
-    if (typeof observers[identifier] !== 'undefined') {
-      return;
-    }
-    if (!('IntersectionObserver' in window) ||
-      !('IntersectionObserverEntry' in window) ||
-      !('isIntersecting' in window.IntersectionObserverEntry.prototype) ||
-      !('intersectionRatio' in window.IntersectionObserverEntry.prototype)
-    ) {
-      observers[identifier] = onIntersect;
-    } else {
-      observers[identifier] = new IntersectionObserver((entries, obs) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            onIntersect(entry.target);
-            obs.unobserve(entry.target);
-          }
-        }); 
-      }, options);
+    if (typeof observers[identifier] === 'undefined') {
+      if (!('IntersectionObserver' in window) ||
+        !('IntersectionObserverEntry' in window) ||
+        !('isIntersecting' in window.IntersectionObserverEntry.prototype) ||
+        !('intersectionRatio' in window.IntersectionObserverEntry.prototype)
+      ) {
+        observers[identifier] = onIntersect;
+      } else {
+        observers[identifier] = new IntersectionObserver((entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              onIntersect(entry.target);
+              obs.unobserve(entry.target);
+            }
+          }); 
+        }, options);
+      }
     }
 
     if (typeof elements !== 'undefined' && elements.length) {
