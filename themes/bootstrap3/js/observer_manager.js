@@ -3,7 +3,7 @@
 /**
  * Manager for creating observers.
  */
-VuFind.register('observerManager', () => {
+ VuFind.register('observerManager', () => {
   let observers = {};
 
   /**
@@ -19,13 +19,10 @@ VuFind.register('observerManager', () => {
     }
     for (let i = 0; i < elements.length; i++) {
       const current = elements[i];
-      switch (typeof observers[identifier]) {
-      case 'function':
-        observers[identifier](current);
-        break;
-      case 'object':
-        observers[identifier].observe(current);
-        break;
+      if (typeof observers[identifier].observer !== 'undefined') {
+        observers[identifier].observer.observe(current);
+      } else {
+        observers[identifier].function(current)
       }
     }
   }
@@ -44,22 +41,29 @@ VuFind.register('observerManager', () => {
    */
   function createIntersectionObserver(identifier, onIntersect, elements, options) {
     if (typeof observers[identifier] === 'undefined') {
-      if (!('IntersectionObserver' in window) ||
-        !('IntersectionObserverEntry' in window) ||
-        !('isIntersecting' in window.IntersectionObserverEntry.prototype) ||
-        !('intersectionRatio' in window.IntersectionObserverEntry.prototype)
+      observers[identifier] = {
+        function: onIntersect
+      };
+      if (('IntersectionObserver' in window) &&
+        ('IntersectionObserverEntry' in window) &&
+        ('isIntersecting' in window.IntersectionObserverEntry.prototype) &&
+        ('intersectionRatio' in window.IntersectionObserverEntry.prototype)
       ) {
-        observers[identifier] = onIntersect;
-      } else {
-        observers[identifier] = new IntersectionObserver((entries, obs) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              onIntersect(entry.target);
-              obs.unobserve(entry.target);
-            }
-          }); 
-        }, options);
+        observers[identifier].observer = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                onIntersect(entry.target);
+                obs.unobserve(entry.target);
+              }
+            }); 
+          }, options);
       }
+    } else if (observers[identifier].function.toString() !== onIntersect.toString()) {
+      console.warn(
+        `Intersection observer with identifier: ${identifier} 
+        called multiple times with different callback.`
+      );
     }
 
     if (typeof elements !== 'undefined' && elements.length) {
@@ -73,8 +77,10 @@ VuFind.register('observerManager', () => {
    * @param {String} identifier Identifier of observer to remove
    */
   function disconnect(identifier) {
-    if (typeof observers[identifier] === 'object') {
-      observers[identifier].disconnect();
+    if (typeof observers[identifier] !== 'undefined'
+      && typeof observers[identifier].observer !== 'undefined'
+    ) {
+      observers[identifier].observer.disconnect();
     }
     delete observers[identifier];
   }
