@@ -86,7 +86,9 @@ async function compileTheme(theme) {
     await fs.writeFile(`themes/${theme}/css/compiled.css`, result.css);
     mark("write");
   } catch (error) {
-    // console.log(error);
+    if (error instanceof sass.Exception) {
+      console.error(error);
+    }
   }
 }
 
