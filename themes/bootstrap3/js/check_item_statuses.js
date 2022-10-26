@@ -213,6 +213,10 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     container.querySelectorAll(".ajaxItem").forEach(checkItemStatus);
   }
 
+  function init(_container) {
+    var container = typeof _container === 'undefined'
+      ? document.body
+      : _container;
 
     if (VuFind.isPrinting()) {
       checkItemStatuses(container);
