@@ -28,7 +28,7 @@
  */
 namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
-use File_MARC_Record;
+use VuFind\Marc\MarcReader;
 use VuFindSearch\Response\RecordInterface;
 
 /**
@@ -42,60 +42,34 @@ use VuFindSearch\Response\RecordInterface;
  */
 class Record implements RecordInterface
 {
+    use \VuFindSearch\Response\RecordTrait;
+
     /**
      * MARC record.
      *
-     * @var File_MARC_Record
+     * @var MarcReader
      */
     protected $marc;
 
     /**
-     * Source identifier.
-     *
-     * @var string
-     */
-    protected $source;
-
-    /**
      * Constructor.
      *
-     * @param File_MARC_Record $marc MARC record
+     * @param MarcReader $marc MARC record
      *
      * @return void
      */
-    public function __construct(File_MARC_Record $marc)
+    public function __construct(MarcReader $marc)
     {
         $this->marc = $marc;
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        $this->source = $identifier;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier()
-    {
-        return $this->source;
+        $this->setSourceIdentifiers('WorldCat');
     }
 
     /**
      * Get MARC record
      *
-     * @return File_MARC_Record
+     * @return MarcReader
      */
-    public function getMarc()
+    public function getMarc(): MarcReader
     {
         return $this->marc;
     }

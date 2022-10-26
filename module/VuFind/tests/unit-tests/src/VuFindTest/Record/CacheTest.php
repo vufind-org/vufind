@@ -285,7 +285,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     protected function getRecordFactoryManager(): \PHPUnit\Framework\MockObject\MockObject
     {
         $recordFactoryManager = $this->createMock(
-            'VuFind\RecordDriver\PluginManager'
+            \VuFind\RecordDriver\PluginManager::class
         );
         $recordFactoryManager->method('getSolrRecord')->will(
             $this->returnValue($this->getDriver('test', 'Solr'))
@@ -323,7 +323,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      * @return \VuFind\RecordDriver\AbstractBase
      */
     protected function getDriver(
-        $id = 'test', $source = 'Solr'
+        $id = 'test',
+        $source = 'Solr'
     ): \VuFind\RecordDriver\AbstractBase {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->any())

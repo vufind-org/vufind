@@ -49,7 +49,10 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return SideFacets
      */
-    protected function getRecommend($class, $settings = '', $request = null,
+    protected function getRecommend(
+        $class,
+        $settings = '',
+        $request = null,
         $results = null
     ) {
         if (null === $results) {

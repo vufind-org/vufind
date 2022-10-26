@@ -73,6 +73,6 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
     {
         $markdown = "# Main heading\n## Second heading";
         $html = "<h1>Main heading</h1>\n<h2>Second heading</h2>\n";
-        $this->assertEquals($html, $this->getHelper()->__invoke($markdown));
+        $this->assertEquals($html, ($this->getHelper())($markdown));
     }
 }

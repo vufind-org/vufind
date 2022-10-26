@@ -65,6 +65,13 @@ class MultiILS extends ILS
         // We should have target either separately or already embedded into username
         if ($target) {
             $username = "$target.$username";
+        } else {
+            [$target] = explode('.', $username);
+        }
+
+        // Check that the target is valid:
+        if (!in_array($target, $this->getLoginTargets())) {
+            throw new AuthException('authentication_error_admin');
         }
 
         return $this->handleLogin($username, $password, $loginMethod);
@@ -108,6 +115,6 @@ class MultiILS extends ILS
                 'MultiILS authentication requires MultiBackend ILS driver.'
             );
         }
-        return parent::setCatalog($connection);
+        parent::setCatalog($connection);
     }
 }

@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink ChoiceAuth test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,9 +39,8 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
+final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -50,21 +51,7 @@ class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
-    }
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
+        static::failIfDataExists();
     }
 
     /**
@@ -124,16 +111,12 @@ class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '#loginOptions a');
         $this->assertEquals('Login', $element->getText());
         $element->click();
-        $this->snooze();
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
-        $this->snooze();
 
         // Log back in to confirm that creation worked
         $element = $this->findCss($page, '#loginOptions a');

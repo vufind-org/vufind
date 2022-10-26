@@ -1,14 +1,14 @@
 module.exports = {
   extends: "eslint:recommended",
-  env: { "browser": true },
-  globals: {
-    "$": false,
-    "jQuery": false
+  env: {
+    "browser": true,
+    "es6": true,
+    "jquery": true
   },
   rules: {
     // errors
     "block-scoped-var": "error",
-    "func-names": "error",
+    "func-names": ["error", "as-needed"],
     "no-loop-func": "error",
     "no-param-reassign": "error",
     "no-shadow": "error",

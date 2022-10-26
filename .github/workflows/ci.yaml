@@ -1,0 +1,86 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  run-tests:
+    name: Tests with PHP ${{ matrix.php-version }}
+    runs-on: ubuntu-latest
+    env:
+      VUFIND_HOME: $GITHUB_WORKSPACE
+      VUFIND_LOCAL_DIR: $GITHUB_WORKSPACE/local
+    strategy:
+      matrix:
+        php-version: ['7.4', '8.0', '8.1']
+        # We run most tests on all platforms, but we only run Javascript-related tests in 8.1.
+        # Since the results should be the same on all platforms, we don't need to repeat them.
+        include:
+          - php-version: 7.4
+            phing_tasks: "qa-php"
+          - php-version: 8.0
+            phing_tasks: "qa-php"
+          - php-version: 8.1
+            phing_tasks: "qa-console"
+
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: intl, xsl
+          tools: composer:2.1.6
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Disable Solr installation
+        run: touch solr/.disableAutomaticInstall
+
+      - name: Setup node
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Cache NPM dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install node dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        run: npm install --ignore-scripts
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Cache php-cs-fixer data
+        uses: actions/cache@v2
+        with:
+          path: .php_cs_cache
+          key: "php-${{ matrix.php-version }}-php-cs-fixer-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-php-cs-fixer-"
+
+      - name: Cache phpstan data
+        uses: actions/cache@v2
+        with:
+          path: .phpstan_cache
+          key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpstan-"
+
+      - name: Install composer dependencies
+        run: composer install
+
+      - name: Run tests
+        run: vendor/bin/phing ${{ matrix.phing_tasks }}

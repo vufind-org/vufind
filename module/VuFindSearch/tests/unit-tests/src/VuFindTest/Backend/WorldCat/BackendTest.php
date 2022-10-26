@@ -65,7 +65,7 @@ class BackendTest extends TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('690250223', $rec->getMarc()->getField('001')->getData());
+        $this->assertEquals('690250223', $rec->getMarc()->getField('001'));
     }
 
     /**
@@ -87,12 +87,12 @@ class BackendTest extends TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('793503125', $rec->getMarc()->getField('001')->getData());
+        $this->assertEquals('793503125', $rec->getMarc()->getField('001'));
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
-        $this->assertEquals('798169104', $recs[1]->getMarc()->getField('001')->getData());
+        $this->assertEquals('798169104', $recs[1]->getMarc()->getField('001'));
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
-        $this->assertEquals('44310183', $recs[2]->getMarc()->getField('001')->getData());
+        $this->assertEquals('44310183', $recs[2]->getMarc()->getField('001'));
     }
 
     /**
@@ -151,7 +151,7 @@ class BackendTest extends TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\WorldCat\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['fake', $client])
             ->getMock();
     }

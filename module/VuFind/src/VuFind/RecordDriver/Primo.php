@@ -146,8 +146,7 @@ class Primo extends DefaultRecord
      */
     public function getFormats()
     {
-        return isset($this->fields['format'])
-            ? (array)$this->fields['format'] : [];
+        return (array)($this->fields['format'] ?? []);
     }
 
     /**
@@ -199,7 +198,7 @@ class Primo extends DefaultRecord
     /**
      * Get the language associated with the record.
      *
-     * @return String
+     * @return array
      */
     public function getLanguages()
     {

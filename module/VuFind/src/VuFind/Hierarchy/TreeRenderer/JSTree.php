@@ -95,7 +95,9 @@ class JSTree extends AbstractBase
             ) {
                 return [
                     $hierarchyID => $this->getHierarchyName(
-                        $hierarchyID, $inHierarchies, $inHierarchiesTitle
+                        $hierarchyID,
+                        $inHierarchies,
+                        $inHierarchiesTitle
                     )
                 ];
             }
@@ -143,7 +145,10 @@ class JSTree extends AbstractBase
                 }
             } else {
                 return $this->transformCollectionXML(
-                    $context, $mode, $hierarchyID, $recordID
+                    $context,
+                    $mode,
+                    $hierarchyID,
+                    $recordID
                 );
             }
         }
@@ -251,7 +256,9 @@ class JSTree extends AbstractBase
                 ]
             ];
             $cache[$route] = $this->router->fromRoute(
-                $this->getRouteNameFromDataSource($route), $params, $options
+                $this->getRouteNameFromDataSource($route),
+                $params,
+                $options
             );
         }
         return str_replace('__record_id__', urlencode($id), $cache[$route]);
@@ -313,7 +320,10 @@ class JSTree extends AbstractBase
             $html .= '<ul class="fa-ul">';
             foreach ($node->children as $child) {
                 $html .= $this->jsonToHTML(
-                    $child, $context, $hierarchyID, $recordID
+                    $child,
+                    $context,
+                    $hierarchyID,
+                    $recordID
                 );
             }
             $html .= '</ul>';
@@ -332,14 +342,19 @@ class JSTree extends AbstractBase
      * @return string A HTML List
      */
     protected function transformCollectionXML(
-        $context, $mode, $hierarchyID, $recordID
+        $context,
+        $mode,
+        $hierarchyID,
+        $recordID
     ) {
         $record = $this->getRecordDriver();
         $inHierarchies = $record->getHierarchyTopID();
         $inHierarchiesTitle = $record->getHierarchyTopTitle();
 
         $hierarchyTitle = $this->getHierarchyName(
-            $hierarchyID, $inHierarchies, $inHierarchiesTitle
+            $hierarchyID,
+            $inHierarchies,
+            $inHierarchiesTitle
         );
 
         // Set up parameters for XSL transformation

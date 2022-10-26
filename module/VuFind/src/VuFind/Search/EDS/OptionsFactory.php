@@ -27,10 +27,10 @@
  */
 namespace VuFind\Search\EDS;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for EDS search options objects.
@@ -55,17 +55,19 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $backend = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('EDS');
-        $extra = [$backend->getInfo()];
+        $command = new \VuFindSearch\Backend\EDS\Command\GetInfoCommand();
+        $searchService = $container->get(\VuFindSearch\Service::class);
+        $extra = [$searchService->invoke($command)->getResult()];
         return parent::__invoke($container, $requestedName, $extra);
     }
 }

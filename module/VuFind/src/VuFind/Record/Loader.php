@@ -86,8 +86,10 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * @param Cache          $recordCache    Record Cache
      * @param FallbackLoader $fallbackLoader Fallback record loader
      */
-    public function __construct(SearchService $searchService,
-        RecordFactory $recordFactory, Cache $recordCache = null,
+    public function __construct(
+        SearchService $searchService,
+        RecordFactory $recordFactory,
+        Cache $recordCache = null,
         FallbackLoader $fallbackLoader = null
     ) {
         $this->searchService = $searchService;
@@ -108,8 +110,11 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function load($id, $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateMissing = false, ParamBag $params = null
+    public function load(
+        $id,
+        $source = DEFAULT_SEARCH_BACKEND,
+        $tolerateMissing = false,
+        ParamBag $params = null
     ) {
         if (null !== $id && '' !== $id) {
             $results = [];
@@ -159,7 +164,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
             $record->setRawData(['id' => $id]);
-            $record->setSourceIdentifier($source);
+            $record->setSourceIdentifiers($source);
             return $record;
         }
         throw new RecordMissingException(
@@ -181,8 +186,11 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * @throws \Exception
      * @return array
      */
-    public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateBackendExceptions = false, ParamBag $params = null
+    public function loadBatchForSource(
+        $ids,
+        $source = DEFAULT_SEARCH_BACKEND,
+        $tolerateBackendExceptions = false,
+        ParamBag $params = null
     ) {
         $list = new Checklist($ids);
         $cachedRecords = [];
@@ -272,7 +280,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $fields['id'] = $details['id'];
         $record = $this->recordFactory->get('Missing');
         $record->setRawData($fields);
-        $record->setSourceIdentifier($details['source']);
+        $record->setSourceIdentifiers($details['source']);
         return $record;
     }
 
@@ -296,7 +304,9 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * @return array     Array of record drivers
      */
     public function loadBatch(
-        $ids, $tolerateBackendExceptions = false, $params = []
+        $ids,
+        $tolerateBackendExceptions = false,
+        $params = []
     ) {
         // Create a SourceAndIdList object to help sort the IDs by source:
         $list = new SourceAndIdList($ids);
@@ -306,7 +316,10 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         foreach ($list->getIdsBySource() as $source => $currentIds) {
             $sourceParams = $params[$source] ?? null;
             $records = $this->loadBatchForSource(
-                $currentIds, $source, $tolerateBackendExceptions, $sourceParams
+                $currentIds,
+                $source,
+                $tolerateBackendExceptions,
+                $sourceParams
             );
             foreach ($records as $current) {
                 foreach ($list->getRecordPositions($current) as $i => $position) {

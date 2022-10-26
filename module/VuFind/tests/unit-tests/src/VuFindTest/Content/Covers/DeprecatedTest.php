@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -34,7 +34,7 @@ use VuFindCode\ISBN;
  * Unit tests for Deprecated cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -46,7 +46,7 @@ class DeprecatedTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEverythingDisabled()
+    public function testEverythingDisabled(): void
     {
         $sizes = ['small', 'medium', 'large'];
         foreach ($sizes as $size) {
@@ -60,7 +60,7 @@ class DeprecatedTest extends \PHPUnit\Framework\TestCase
      * @param string $size  Size to retrieve
      * @param string $isbn  ISBN to retrieve (empty for none)
      *
-     * @return string
+     * @return string|bool
      */
     protected function getUrl($size, $isbn = '0739313126')
     {

@@ -45,7 +45,7 @@
                   <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($schedule == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
                 <?php endforeach; ?>
               </select>
-              <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
+              <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($info->getSearchId()) ?>"/>
             </form>
           <?php else: ?>
             <span class="disable"><?=$this->transEsc("cannot set")?></span>
@@ -55,9 +55,15 @@
       <?php if ($saveSupported): ?>
         <td>
           <?php if ($this->showSaved): ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_delete_link")?></a>
+            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="text-danger">
+              <?=$this->icon('search-delete') ?>
+              <?=$this->transEsc("history_delete_link")?>
+            </a>
           <?php else: ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc("history_save_link")?></a>
+            <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history">
+              <?=$this->icon('search-save') ?>
+              <?=$this->transEsc("history_save_link")?>
+            </a>
           <?php endif; ?>
         </td>
       <?php endif; ?>

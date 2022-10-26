@@ -89,7 +89,9 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function __construct($operator, array $queries = [],
+    public function __construct(
+        $operator,
+        array $queries = [],
         $reducedHandler = null
     ) {
         $this->setOperator($operator);

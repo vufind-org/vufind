@@ -27,11 +27,12 @@
  */
 namespace VuFind\Service;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * ReCaptcha factory.
@@ -56,9 +57,11 @@ class ReCaptchaFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -93,13 +96,18 @@ class ReCaptchaFactory implements FactoryInterface
         $secretKey = $recaptchaConfig['recaptcha_secretKey'] ?? '';
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
-        $rcOptions = ['lang' => $translator->getLocale()];
+        $language = $container->get(LocaleSettings::class)->getUserLocale();
+        $rcOptions = ['lang' => $language];
         if (isset($recaptchaConfig['recaptcha_theme'])) {
             $rcOptions['theme'] = $recaptchaConfig['recaptcha_theme'];
         }
         return new $requestedName(
-            $siteKey, $secretKey, ['ssl' => true], $rcOptions, null, $httpClient
+            $siteKey,
+            $secretKey,
+            ['ssl' => true],
+            $rcOptions,
+            null,
+            $httpClient
         );
     }
 }

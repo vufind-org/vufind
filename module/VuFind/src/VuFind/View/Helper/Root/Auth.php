@@ -62,7 +62,8 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
      * @param \VuFind\Auth\Manager          $manager          Authentication manager
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
      */
-    public function __construct(\VuFind\Auth\Manager $manager,
+    public function __construct(
+        \VuFind\Auth\Manager $manager,
         \VuFind\Auth\ILSAuthenticator $ilsAuthenticator
     ) {
         $this->manager = $manager;

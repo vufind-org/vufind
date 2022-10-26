@@ -22,11 +22,13 @@
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
 
+use VuFind\I18n\TranslatableString;
 use VuFind\Search\QueryAdapter;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -41,6 +43,7 @@ use VuFindSearch\Query\QueryGroup;
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -348,7 +351,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = $request->get('limit')) != $defaultLimit) {
+        if (($limit = intval($request->get('limit'))) != $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in
@@ -472,7 +475,8 @@ class Params
     {
         if ($this->searchType === 'basic') {
             $this->query = new QueryGroup(
-                'AND', [new QueryGroup('AND', [$this->query])]
+                'AND',
+                [new QueryGroup('AND', [$this->query])]
             );
             $this->searchType = 'advanced';
         }
@@ -496,7 +500,8 @@ class Params
     protected function initAdvancedSearch($request)
     {
         $this->query = QueryAdapter::fromRequest(
-            $request, $this->getOptions()->getDefaultHandler()
+            $request,
+            $this->getOptions()->getDefaultHandler()
         );
 
         $this->searchType = $this->query instanceof Query ? 'basic' : 'advanced';
@@ -522,7 +527,7 @@ class Params
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return string
+     * @return void
      */
     protected function initSort($request)
     {
@@ -551,7 +556,7 @@ class Params
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return string
+     * @return void
      */
     protected function initView($request)
     {
@@ -702,8 +707,7 @@ class Params
      */
     public function getView()
     {
-        return null === $this->view
-            ? $this->getOptions()->getDefaultView() : $this->view;
+        return $this->view ?? $this->getOptions()->getDefaultView();
     }
 
     /**
@@ -770,6 +774,25 @@ class Params
     }
 
     /**
+     * Parse apart any prefix, field and value from a URL filter string.
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return array         Array with elements 0 = prefix, 1 = field, 2 = value.
+     */
+    public function parseFilterAndPrefix($filter)
+    {
+        [$field, $value] = $this->parseFilter($filter);
+        $prefix = substr($field, 0, 1);
+        if (in_array($prefix, ['-', '~'])) {
+            $field = substr($field, 1);
+        } else {
+            $prefix = '';
+        }
+        return [$prefix, $field, $value];
+    }
+
+    /**
      * Given a facet field, return an array containing all aliases of that
      * field.
      *
@@ -806,7 +829,7 @@ class Params
     public function hasFilter($filter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
 
         // Check all of the relevant fields for matches:
         foreach ($this->getAliasesForFacetField($field) as $current) {
@@ -832,7 +855,7 @@ class Params
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasFilter($newFilter)) {
             // Extract field and value from filter string:
-            list($field, $value) = $this->parseFilter($newFilter);
+            [$field, $value] = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
     }
@@ -867,7 +890,7 @@ class Params
     public function removeFilter($oldFilter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($oldFilter);
+        [$field, $value] = $this->parseFilter($oldFilter);
 
         // Make sure the field exists
         if (isset($this->filterList[$field])) {
@@ -889,6 +912,9 @@ class Params
             // If necessary, rebuild the array to remove gaps in the key sequence:
             if ($rebuildArray) {
                 $this->filterList[$field] = array_values($this->filterList[$field]);
+                if (!$this->filterList[$field]) {
+                    unset($this->filterList[$field]);
+                }
             }
         }
     }
@@ -906,7 +932,11 @@ class Params
         if ($field == null) {
             $this->filterList = [];
         } else {
-            $this->filterList[$field] = [];
+            foreach (['', '-', '~'] as $prefix) {
+                if (isset($this->filterList[$prefix . $field])) {
+                    unset($this->filterList[$prefix . $field]);
+                }
+            }
         }
     }
 
@@ -947,18 +977,20 @@ class Params
      * will be applied to the search.  When the checkbox is not checked, no filter
      * will be applied.
      *
-     * @param string $filter [field]:[value] pair to associate with checkbox
-     * @param string $desc   Description to associate with the checkbox
+     * @param string $filter  [field]:[value] pair to associate with checkbox
+     * @param string $desc    Description to associate with the checkbox
+     * @param bool   $dynamic Is this being added dynamically (true) or in response
+     * to a user configuration (false)?
      *
      * @return void
      */
-    public function addCheckboxFacet($filter, $desc)
+    public function addCheckboxFacet($filter, $desc, $dynamic = false)
     {
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
-        list($fieldName) = explode(':', $filter);
+        [$fieldName] = explode(':', $filter);
         $this->checkboxFacets[$fieldName][$filter]
-            = ['desc' => $desc, 'filter' => $filter];
+            = compact('desc', 'filter', 'dynamic');
     }
 
     /**
@@ -969,8 +1001,6 @@ class Params
      * @param string $default Default field name (null for default behavior).
      *
      * @return string         Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
@@ -979,6 +1009,10 @@ class Params
             && isset($this->facetAliases[$field])
         ) {
             $field = $this->facetAliases[$field];
+        }
+        $checkboxFacet = $this->checkboxFacets[$field]["$field:$value"] ?? null;
+        if (null !== $checkboxFacet) {
+            return $checkboxFacet['desc'];
         }
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
@@ -1035,7 +1069,7 @@ class Params
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
-            list($operator, $field) = $this->parseOperatorAndFieldName($field);
+            [$operator, $field] = $this->parseOperatorAndFieldName($field);
             $translate = in_array($field, $translatedFacets);
             // and each value currently used for that field
             foreach ($values as $value) {
@@ -1045,7 +1079,10 @@ class Params
                 ) {
                     $facetLabel = $this->getFacetLabel($field, $value);
                     $list[$facetLabel][] = $this->formatFilterListEntry(
-                        $field, $value, $operator, $translate
+                        $field,
+                        $value,
+                        $operator,
+                        $translate
                     );
                 }
             }
@@ -1054,23 +1091,48 @@ class Params
     }
 
     /**
-     * Check for delimited facets -- if $field is a delimited facet field,
-     * process $displayText accordingly. Return the appropriate display value.
+     * Get a display text for a facet field.
      *
-     * @param string $field       The facet
-     * @param string $displayText The facet value
+     * @param string $field Facet field
+     * @param string $value Facet value
      *
      * @return string
      */
-    public function checkForDelimitedFacetDisplayText($field, $displayText)
+    public function getFacetValueRawDisplayText(string $field, string $value): string
     {
+        // Check for delimited facets -- if $field is a delimited facet field,
+        // process $displayText accordingly:
         $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
         if (isset($delimitedFacetFields[$field])) {
-            $parts = explode($delimitedFacetFields[$field], $displayText);
-            $displayText = end($parts);
+            $parts = explode($delimitedFacetFields[$field], $value);
+            return end($parts);
         }
 
-        return $displayText;
+        return $value;
+    }
+
+    /**
+     * Translate a facet value.
+     *
+     * @param string                    $field Field name
+     * @param string|TranslatableString $text  Field value (processed by
+     * getFacetValueRawDisplayText)
+     *
+     * @return string
+     */
+    public function translateFacetValue(string $field, $text): string
+    {
+        $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+        $translateFormat = $this->getOptions()->getFormatForTranslatedFacet($field);
+        $translated = $this->translate([$domain, $text]);
+        return $translateFormat
+            ? $this->translate(
+                $translateFormat,
+                [
+                    '%%raw%%' => $text,
+                    '%%translated%%' => $translated
+                ]
+            ) : $translated;
     }
 
     /**
@@ -1085,12 +1147,10 @@ class Params
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        $displayText = $this->checkForDelimitedFacetDisplayText($field, $value);
-
-        if ($translate) {
-            $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
-            $displayText = $this->translate("$domain::$displayText");
-        }
+        $rawDisplayText = $this->getFacetValueRawDisplayText($field, $value);
+        $displayText = $translate
+            ? $this->translateFacetValue($field, $rawDisplayText)
+            : $rawDisplayText;
 
         return compact('value', 'displayText', 'field', 'operator');
     }
@@ -1127,7 +1187,7 @@ class Params
         $list = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $current) {
-                list($field, $value) = $this->parseFilter($current['filter']);
+                [$field, $value] = $this->parseFilter($current['filter']);
                 if (!isset($list[$field])) {
                     $list[$field] = [];
                 }
@@ -1140,20 +1200,26 @@ class Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $include List of checkbox filters to return (null for all)
+     * @param array $include        List of checkbox filters to return (null for all)
+     * @param bool  $includeDynamic Should we include dynamically-generated
+     * checkboxes that are not part of the include list above?
      *
      * @return array
      */
-    public function getCheckboxFacets(array $include = null)
-    {
+    public function getCheckboxFacets(
+        array $include = null,
+        bool $includeDynamic = true
+    ) {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
                 // If the current filter is not on the include list, skip it (but
-                // accept everything if the include list is empty).
-                if (!empty($include) && !in_array($facet['filter'], $include)) {
+                // accept everything if the include list is null).
+                if (($include !== null && !in_array($facet['filter'], $include))
+                    && !($includeDynamic && $facet['dynamic'])
+                ) {
                     continue;
                 }
                 $facet['selected'] = $this->hasFilter($facet['filter']);
@@ -1187,14 +1253,14 @@ class Params
      * Support method for initDateFilters() -- normalize a year for use in a
      * year-based date range.
      *
-     * @param string $year Value to check for valid year.
+     * @param ?string $year Value to check for valid year.
      *
      * @return string      Formatted year.
      */
     protected function formatYearForDateRange($year)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
-        $year = preg_match('/\d{2,4}/', $year) ? $year : '*';
+        $year = ($year && preg_match('/\d{2,4}/', $year)) ? $year : '*';
 
         // Pad to four digits:
         if (strlen($year) == 2) {
@@ -1210,22 +1276,22 @@ class Params
      * Support method for initFullDateFilters() -- normalize a date for use in a
      * year/month/day date range.
      *
-     * @param string $date Value to check for valid date.
+     * @param ?string $date Value to check for valid date.
      *
      * @return string      Formatted date.
      */
     protected function formatDateForFullDateRange($date)
     {
         // Make sure date is valid; default to wildcard otherwise:
-        $date = SolrUtils::sanitizeDate($date);
-        return $date === null ? '*' : $date;
+        $date = $date ? SolrUtils::sanitizeDate($date) : null;
+        return $date ?? '*';
     }
 
     /**
      * Support method for initNumericRangeFilters() -- normalize a year for use in
      * a date range.
      *
-     * @param string $num Value to format into a number.
+     * @param ?string $num Value to format into a number.
      *
      * @return string     Formatted number.
      */
@@ -1285,8 +1351,11 @@ class Params
      *
      * @return void
      */
-    protected function initGenericRangeFilters($request,
-        $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
+    protected function initGenericRangeFilters(
+        $request,
+        $requestParam = 'genericrange',
+        $valueFilter = null,
+        $filterGenerator = null
     ) {
         $rangeFacets = $request->get($requestParam);
         if (!empty($rangeFacets)) {
@@ -1385,8 +1454,10 @@ class Params
      */
     protected function initDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
-            $request, 'daterange', [$this, 'formatYearForDateRange'],
+        $this->initGenericRangeFilters(
+            $request,
+            'daterange',
+            [$this, 'formatYearForDateRange'],
             [$this, 'buildDateRangeFilter']
         );
     }
@@ -1403,8 +1474,10 @@ class Params
      */
     protected function initFullDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
-            $request, 'fulldaterange', [$this, 'formatDateForFullDateRange'],
+        $this->initGenericRangeFilters(
+            $request,
+            'fulldaterange',
+            [$this, 'formatDateForFullDateRange'],
             [$this, 'buildFullDateRangeFilter']
         );
     }
@@ -1421,8 +1494,10 @@ class Params
      */
     protected function initNumericRangeFilters($request)
     {
-        return $this->initGenericRangeFilters(
-            $request, 'numericrange', [$this, 'formatValueForNumericRange'],
+        $this->initGenericRangeFilters(
+            $request,
+            'numericrange',
+            [$this, 'formatValueForNumericRange'],
             [$this, 'buildNumericRangeFilter']
         );
     }
@@ -1505,7 +1580,7 @@ class Params
     public function hasHiddenFilter($filter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
 
         if (isset($this->hiddenFilters[$field])
             && in_array($value, $this->hiddenFilters[$field])
@@ -1528,7 +1603,7 @@ class Params
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasHiddenFilter($newFilter)) {
             // Extract field and value from filter string:
-            list($field, $value) = $this->parseFilter($newFilter);
+            [$field, $value] = $this->parseFilter($newFilter);
             if (!empty($field) && '' !== $value) {
                 $this->hiddenFilters[$field][] = $value;
             }
@@ -1780,7 +1855,8 @@ class Params
      *
      * @return bool             True if facets set, false if no settings found
      */
-    protected function initCheckboxFacets($facetList = 'CheckboxFacets',
+    protected function initCheckboxFacets(
+        $facetList = 'CheckboxFacets',
         $cfgFile = null
     ) {
         $config = $this->configLoader

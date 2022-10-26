@@ -40,41 +40,6 @@ import org.solrmarc.index.SolrIndexer;
 public class CallNumberTools
 {
     /**
-     * Extract the full call number from a record, stripped of spaces
-     * @param record MARC record
-     * @return Call number label
-     * @deprecated Obsolete as of VuFind 2.4.
-     *          This method exists only to support the VuFind call number search, version <= 2.3.
-     *          As of VuFind 2.4, the munging for call number search in handled entirely in Solr.
-     */
-    @Deprecated
-    public String getFullCallNumber(final Record record) {
-
-        return(getFullCallNumber(record, "099ab:090ab:050ab"));
-    }
-
-    /**
-     * Extract the full call number from a record, stripped of spaces
-     * @param record MARC record
-     * @param fieldSpec taglist for call number fields
-     * @return Call number label
-     * @deprecated Obsolete as of VuFind 2.4.
-     *          This method exists only to support the VuFind call number search, version <= 2.3.
-     *          As of VuFind 2.4, the munging for call number search in handled entirely in Solr.
-     */
-    @Deprecated
-    public String getFullCallNumber(final Record record, String fieldSpec) {
-
-        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
-
-        if (val != null) {
-            return val.toUpperCase().replaceAll(" ", "");
-        } else {
-            return val;
-        }
-    }
-
-    /**
      * Extract the call number label from a record
      * @param record MARC record
      * @return Call number label
@@ -388,12 +353,7 @@ public class CallNumberTools
         Set<String> result = new LinkedHashSet<String>();
 
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // Add valid strings to the set, normalizing them to be all uppercase
             // and free from whitespace.
             DeweyCallNumber callNum = new DeweyCallNumber(current);
@@ -420,12 +380,7 @@ public class CallNumberTools
      */
     public String getDeweySortable(Record record, String fieldSpec) {
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // If this is a valid Dewey number, return the sortable shelf key:
             DeweyCallNumber callNum = new DeweyCallNumber(current);
             if (callNum.isValid()) {
@@ -502,12 +457,7 @@ public class CallNumberTools
         List<String> result = new LinkedList<String>();
 
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // gather all sort keys, even if number is not valid
             DeweyCallNumber callNum = new DeweyCallNumber(current);
             result.add(callNum.getShelfKey());

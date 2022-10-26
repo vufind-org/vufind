@@ -27,10 +27,10 @@
  */
 namespace VuFind\AjaxHandler;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for CommentRecord AJAX handler.
@@ -56,11 +56,13 @@ class CommentRecordFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -74,7 +76,9 @@ class CommentRecordFactory
             $controllerPluginManager
                 ->get(\VuFind\Controller\Plugin\Captcha::class),
             $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
-            $capabilities->getCommentSetting() !== 'disabled'
+            $capabilities->getCommentSetting() !== 'disabled',
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Config\AccountCapabilities::class)
         );
     }
 }

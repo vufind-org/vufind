@@ -36,17 +36,18 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 /**
  * Shibboleth authentication test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ShibbolethTest extends \PHPUnit\Framework\TestCase
+final class ShibbolethTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
-    use \VuFindTest\Feature\UserCreationTrait;
 
     protected $user1 = [
         'Shib-Identity-Provider' => 'https://idp1.example.org/',
@@ -84,7 +85,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -122,8 +123,11 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
         } else {
             $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
         }
-        $obj = new Shibboleth($this->createMock(\Laminas\Session\ManagerInterface::class), $loader,
-            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class));
+        $obj = new Shibboleth(
+            $this->createMock(\Laminas\Session\ManagerInterface::class),
+            $loader,
+            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class)
+        );
         $obj->setDbTableManager($this->getLiveTableManager());
         $obj->setConfig($config);
         return $obj;
@@ -165,7 +169,8 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
                 'username' => 'username',
                 'email' => 'email',
                 'cat_username' => 'userLibraryId',
-            ], true
+            ],
+            true
         );
         $example2 = new Config(
             [
@@ -175,7 +180,8 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
                 'cat_username' => 'alephId',
                 'userattribute_1' => 'eduPersonScopedAffiliation',
                 'userattribute_value_1' => 'member@example.org',
-            ], true
+            ],
+            true
         );
         $config = [
             'example1' => $example1,

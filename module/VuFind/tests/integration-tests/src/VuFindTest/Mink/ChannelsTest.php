@@ -41,8 +41,6 @@ use Behat\Mink\Element\Element;
  */
 class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Get a reference to a standard search results page.
      *
@@ -86,10 +84,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
         // Click first add button
         $this->clickCss($channel, '.add-btn');
-        $this->snooze();
         // Post count
-        $this->assertEquals(8, count($page->findAll('css', 'div.channel-wrapper')));
-        $this->assertEquals(6, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
+        $this->waitStatement('$("div.channel-wrapper").length === 8');
+        $this->waitStatement('$(".channel-add-menu:first .dropdown-menu li").length === 6');
     }
 
     /**
@@ -101,10 +98,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $channel = $this->findCss($page, 'div.channel-wrapper');
         // Click dropdown to display links
         $this->clickCss($channel, '.dropdown');
-        $this->snooze();
         // Click link to go to search results
         $this->clickCss($channel, '.channel_search');
-        $this->snooze();
         // Make sure the search translated
         $this->assertEquals(
             'building:"weird_ids.mrc"',

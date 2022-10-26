@@ -82,7 +82,8 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals(
-            ['guest', 'loggedin'], $provider->getPermissions($ipAddr)
+            ['guest', 'loggedin'],
+            $provider->getPermissions($ipAddr)
         );
     }
 

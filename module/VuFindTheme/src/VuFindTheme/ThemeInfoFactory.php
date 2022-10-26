@@ -27,11 +27,11 @@
  */
 namespace VuFindTheme;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * ThemeInfo factory.
@@ -56,16 +56,34 @@ class ThemeInfoFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            realpath(APPLICATION_PATH . '/themes'), 'bootprint3'
+
+        $themeInfo = new $requestedName(
+            realpath(APPLICATION_PATH . '/themes'),
+            'bootprint3'
         );
+
+        // As of release 1.1.0, the memory storage adapter has a flaw which can cause
+        // unnecessary out of memory exceptions when a memory limit is enabled; we
+        // can disable these problematic checks by setting memory_limit to -1.
+        $cacheConfig = [
+            'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
+            'options' => ['memory_limit' => -1]
+        ];
+        $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+            ->createFromArrayConfiguration($cacheConfig);
+
+        $themeInfo->setCache($cache);
+
+        return $themeInfo;
     }
 }

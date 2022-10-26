@@ -42,6 +42,8 @@ use VuFind\Controller\Plugin\ResultScroller;
  */
 class ResultScrollerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test next_prev_nav bug
      * Expect next_prev to behave like it's disabled if the last search didn't return any results
@@ -61,7 +63,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
 
         $this->assertEquals(
-            $expected, $plugin->getScrollData(
+            $expected,
+            $plugin->getScrollData(
                 $results->getMockRecordDriver('sorted20')
             )
         );
@@ -332,7 +335,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             'currentPosition' => 20, 'resultTotal' => 30
         ];
         $this->assertEquals(
-            $expected, $plugin->getScrollData(
+            $expected,
+            $plugin->getScrollData(
                 $results->getMockRecordDriver('sorted20')
             )
         );
@@ -349,14 +353,16 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindTest\Search\TestHarness\Results
      */
-    protected function getMockResults($page = 1, $limit = 20, $total = 0,
-        $firstLast = true, $sort = null
+    protected function getMockResults(
+        $page = 1,
+        $limit = 20,
+        $total = 0,
+        $firstLast = true,
+        $sort = null
     ): \VuFindTest\Search\TestHarness\Results {
-        $pm = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->disableOriginalConstructor()->getMock();
-        $config = new \Laminas\Config\Config(
-            $firstLast ? $this->getFirstLastConfig() : []
+        $pm = $this->getMockConfigPluginManager(
+            ['config' => $firstLast ? $this->getFirstLastConfig() : []]
         );
-        $pm->expects($this->any())->method('get')->will($this->returnValue($config));
         $options = new \VuFindTest\Search\TestHarness\Options($pm);
         $params = new \VuFindTest\Search\TestHarness\Params($options, $pm);
         $params->setPage($page);
@@ -369,7 +375,10 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()->getMock();
         $results = new \VuFindTest\Search\TestHarness\Results(
-            $params, $ss, $rl, $total
+            $params,
+            $ss,
+            $rl,
+            $total
         );
         return $results;
     }

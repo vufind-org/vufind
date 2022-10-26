@@ -32,6 +32,13 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
 
+  <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
+    <strong>
+      <?=$this->icon('user-public-list-indicator', 'user-list__public-icon') ?>
+      <?=$this->transEscAttr('public_list_indicator') ?>
+    </strong>
+  <?php endif; ?>
+
   <?=$this->flashmessages()?>
 
   <nav class="search-header hidden-print">
@@ -50,12 +57,17 @@
     <div class="search-controls">
       <?php if (isset($list)): ?>
         <?php if ($list->editAllowed($account->isLoggedIn())): ?>
-          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
+          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link">
+            <?=$this->icon('user-list-edit') ?>
+            <?=$this->transEsc("edit_list")?>
+          </a>
           <div class="btn-group">
             <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
-              <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc("delete_list")?>
+              <?=$this->icon('user-list-delete') ?>
+              <?=$this->transEsc("delete_list")?>
             </a>
             <ul class="dropdown-menu">
+              <li class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></li>
               <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
               <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
@@ -77,9 +89,11 @@
   <?php if ($recordTotal > 0): ?>
     <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
-      <?php foreach ($this->results->getResults() as $i => $current): ?>
-        <?=$this->record($current)->getListEntry($list, $user)?>
-      <?php endforeach; ?>
+      <ul class="record-list">
+        <?php foreach ($this->results->getResults() as $i => $current): ?>
+          <?=$this->record($current)->getListEntry($list, $user)?>
+        <?php endforeach; ?>
+      </ul>
     </form>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
   <?php else: ?>

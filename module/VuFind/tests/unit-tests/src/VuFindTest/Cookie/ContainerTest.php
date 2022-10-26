@@ -40,7 +40,12 @@ use VuFind\Cookie\Container;
  */
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
-    protected $ns;
+    /**
+     * Cookie container
+     *
+     * @var Container
+     */
+    protected $container;
 
     /**
      * Setup method: establish Container.

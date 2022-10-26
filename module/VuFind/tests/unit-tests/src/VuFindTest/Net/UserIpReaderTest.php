@@ -58,7 +58,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
         );
         // Test appropriate behavior with forwarding configured to prefer Real-IP:
         $reader1 = new UserIpReader(
-            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+            $params,
+            'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
         $this->assertEquals('1.2.3.4', $reader1->getUserIp());
         // Test appropriate behavior with forwarding configured to ignore Real-IP:
@@ -196,7 +197,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
         );
         // Test appropriate behavior with forwarding enabled:
         $reader1 = new UserIpReader(
-            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+            $params,
+            'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
         $this->assertEquals('127.0.0.1', $reader1->getUserIp());
         // Test appropriate behavior with forwarding disabled:

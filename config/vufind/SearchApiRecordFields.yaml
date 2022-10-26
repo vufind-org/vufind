@@ -1,9 +1,9 @@
 # Key is the field name that can be requested. It has the following subkeys:
 # - vufind.method: name to call (either in the SearchApiController class or the record driver)
 # - vufind.default: true if the field is displayed by default when the request does not specify fields
-# - Swagger specification fields describing the returned data.
+# - OpenAPI 3 specification fields describing the returned data.
 #
-# See http://swagger.io/specification/ for information on the Swagger-specific fields
+# See https://spec.openapis.org/oas/v3.0.3 for information on the format.
 #
 accessRestrictions:
   vufind.method: getAccessRestrictions
@@ -19,7 +19,7 @@ authors:
     authors
   type: array
   items:
-    $ref: '#/definitions/Authors'
+    $ref: '#/components/schemas/Authors'
 awards:
   vufind.method: getAwards
   description: Award notes
@@ -41,6 +41,12 @@ bibliographicLevel:
 bibliographyNotes:
   vufind.method: getBibliographyNotes
   description: Bibliography notes
+  type: array
+  items:
+    type: string
+buildings:
+  vufind.method: getBuildings
+  description: Buildings where the record is held
   type: array
   items:
     type: string
@@ -290,7 +296,7 @@ recordLinks:
   description: Links to other related records
   type: array
   items:
-    $ref: '#/definitions/RecordLink'
+    $ref: '#/components/schemas/RecordLink'
 recordPage:
   vufind.method: "Formatter::getRecordPage"
   description: Link to the record page in the UI
@@ -333,7 +339,7 @@ subjectsExtended:
   description: Subject headings with type and source information
   type: array
   items:
-    $ref: '#/definitions/Subject'
+    $ref: '#/components/schemas/Subject'
 subTitle:
   vufind.method: getSubTitle
   description: Subtitle
@@ -381,4 +387,4 @@ urls:
   description: URLs contained in the record
   type: array
   items:
-    $ref: '#/definitions/Url'
+    $ref: '#/components/schemas/Url'

@@ -72,9 +72,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
-        $this->collectionClass = (null === $collectionClass)
-            ? 'VuFindSearch\Backend\EIT\Response\XML\RecordCollection'
-            : $collectionClass;
+        $this->collectionClass = $collectionClass ?? RecordCollection::class;
     }
 
     /**

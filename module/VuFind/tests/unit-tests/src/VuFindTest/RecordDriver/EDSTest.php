@@ -286,7 +286,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriverWithIdentifierData();
         $this->assertEquals(
-            ['1234-5678', '5678-1234'], $driver->getISSNs()
+            ['1234-5678', '5678-1234'],
+            $driver->getISSNs()
         );
     }
 
@@ -299,7 +300,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriverWithIdentifierData();
         $this->assertEquals(
-            ['0123456789X', 'fakeisbnxxx'], $driver->getISBNs()
+            ['0123456789X', 'fakeisbnxxx'],
+            $driver->getISBNs()
         );
     }
 

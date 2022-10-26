@@ -51,7 +51,9 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke(RecommendInterface $recommend, $location = null,
+    public function __invoke(
+        RecommendInterface $recommend,
+        $location = null,
         $index = null
     ) {
         $template = 'Recommend/%s.phtml';

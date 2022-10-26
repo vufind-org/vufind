@@ -19,8 +19,8 @@
         <select name="user_id" id="user_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach($this->uniqueUsers as $user):?>
-            <option value="<?= $user['user_id'] ?>"<?php if(isset($this->params['user_id']) && $user['user_id'] == $this->params['user_id']): ?> selected="selected"<?php endif;?>>
-              <?=$user['username'] ?>
+            <option value="<?=$this->escapeHtmlAttr($user['user_id'])?>"<?php if ($user['user_id'] == ($this->params['user_id'] ?? null)): ?> selected="selected"<?php endif;?>>
+              <?=$this->escapeHtml($user['username']) ?>
             </option>
           <?php endforeach;?>
         </select>
@@ -30,8 +30,8 @@
         <select name="tag_id" id="tag_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach($this->uniqueTags as $tag):?>
-          <option value="<?= $tag['tag_id'] ?>"<?php if(isset($this->params['tag_id']) && $tag['tag_id'] == $this->params['tag_id']): ?> selected="selected"<?php endif;?>>
-              <?=$tag['tag'] ?>
+          <option value="<?=$this->escapeHtmlAttr($tag['tag_id'])?>"<?php if ($tag['tag_id'] == ($this->params['tag_id'] ?? null)): ?> selected="selected"<?php endif;?>>
+              <?=$this->escapeHtml($tag['tag']) ?>
           </option>
           <?php endforeach;?>
         </select>
@@ -41,26 +41,26 @@
         <select name="resource_id" id="resource_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
           <?php foreach($this->uniqueResources as $resource):?>
-          <option value="<?= $resource['resource_id']; ?>" title="<?=$resource['title'] ?>"<?php if(isset($this->params['resource_id']) && $resource['resource_id'] == $this->params['resource_id']): ?> selected="selected"<?php endif;?>>
-              <?=$this->truncate($resource['title'], 80) ?> (<?=$resource['resource_id'] ?>)
+          <option value="<?=$this->escapeHtmlAttr($resource['resource_id'])?>" title="<?=$this->escapeHtmlAttr($resource['title']) ?>"<?php if ($resource['resource_id'] == ($this->params['resource_id'] ?? null)): ?> selected="selected"<?php endif;?>>
+              <?=$this->escapeHtml($this->truncate($resource['title'], 80)) ?> (<?=$this->escapeHtml($resource['resource_id']) ?>)
           </option>
           <?php endforeach;?>
         </select>
       </label>
       <label for="taglistsubmit">
         <input type="submit" id="taglistsubmit" value="<?=$this->transEscAttr('Filter')?>" class="btn btn-primary">
-        <?php if((isset($this->params['user_id']) && null !== $this->params['user_id']) || (isset($this->params['tag_id']) && null !== $this->params['tag_id']) || (isset($this->params['resource_id']) && null !== $this->params['resource_id'])):?>
+        <?php if (('ALL' !== ($this->params['user_id'] ?? 'ALL')) || ('ALL' !== ($this->params['tag_id'] ?? 'ALL')) || ('ALL' !== ($this->params['resource_id'] ?? 'ALL'))):?>
           <a href="<?= $this->url('admin/tags', ['action' => 'List']); ?>"><?=$this->translate('clear_tag_filter')?></a>
         <?php endif;?>
       </label>
     </div>
   </form>
 
-  <?php if(count($this->results) > 0):?>
+  <?php if (count($this->results) > 0):?>
     <form action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
-      <input type="hidden" name="user_id" value="<?=$this->params['user_id'] ?? '' ?>" />
-      <input type="hidden" name="tag_id" value="<?=$this->params['tag_id'] ?? '' ?>" />
-      <input type="hidden" name="resource_id" value="<?=$this->params['resource_id'] ?? '' ?>" />
+      <input type="hidden" name="user_id" value="<?=$this->escapeHtmlAttr($this->params['user_id'] ?? '') ?>" />
+      <input type="hidden" name="tag_id" value="<?=$this->escapeHtmlAttr($this->params['tag_id'] ?? '') ?>" />
+      <input type="hidden" name="resource_id" value="<?=$this->escapeHtmlAttr($this->params['resource_id'] ?? '') ?>" />
       <input type="hidden" name="origin" value="list" />
 
       <table class="table table-striped">

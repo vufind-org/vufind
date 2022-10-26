@@ -26,8 +26,9 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Marc\MarcCollection;
+use VuFind\Marc\MarcReader;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -44,9 +45,11 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
-class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Host
@@ -133,7 +136,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -152,10 +155,12 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
@@ -172,7 +177,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $libraries = [];
 
         foreach ($lines as $line) {
-            list($code, $name) = explode('|', $line);
+            [$code, $name] = explode('|', $line);
             $libraries[] = [
                 'locationID' => $code,
                 'locationDisplay' => empty($name) ? $code : $name
@@ -254,7 +259,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $results = [];
         $lines = explode("\n", $response);
         foreach ($lines as $line) {
-            list($chargeKey, $result) = explode('-----API_RESULT-----', $line);
+            [$chargeKey, $result] = explode('-----API_RESULT-----', $line);
             $results[$chargeKey] = ['item_id' => $chargeKey];
             $matches = [];
             preg_match('/\^MN([0-9][0-9][0-9])/', $result, $matches);
@@ -270,7 +275,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             preg_match('/\^CI([^\^]+)\^/', $result, $matches);
             if (isset($matches[1])) {
-                list($newDate, $newTime) = explode(',', $matches[1]);
+                [$newDate, $newTime] = explode(',', $matches[1]);
                 $results[$chargeKey]['new_date'] = $newDate;
                 $results[$chargeKey]['new_time'] = $newTime;
             }
@@ -317,17 +322,16 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $items[] = $item;
         }
 
-        if (!empty($items)) {
-            // sort the items by shelving key in descending order, then ascending by
-            // copy number
-            $cmp = function ($a, $b) {
-                if ($a['shelving_key'] == $b['shelving_key']) {
-                    return $a['number'] - $b['number'];
-                }
-                return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by shelving key in descending order, then ascending by
+        // copy number
+        $cmp = function ($a, $b) {
+            if ($a['shelving_key'] == $b['shelving_key']) {
+                return $a['number'] - $b['number'];
+            }
+            return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
+        };
+        usort($items, $cmp);
+
         return $items;
     }
 
@@ -497,11 +501,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return null;
         }
 
-        list($user_key, $alt_id, $barcode, $name, $library, $profile,
-        $cat1, $cat2, $cat3, $cat4, $cat5, $expiry, $holds, $status)
-            = explode('|', $response);
+        [$user_key, $alt_id, $barcode, $name, $library, $profile, $cat1, $cat2,
+        $cat3, $cat4, $cat5, $expiry, $holds, $status] = explode('|', $response);
 
-        list($last, $first) = explode(',', $name);
+        [$last, $first] = explode(',', $name);
         $first = rtrim($first, " ");
 
         if ($expiry != '0') {
@@ -555,8 +558,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
         $response = $this->querySirsi($params);
 
-        list(, , , , $library, $profile, , , , , , , ,
-        $email, $address1, $zip, $phone, $address2) = explode('|', $response);
+        [, , , , $library, $profile, , , , , , , , $email, $address1, $zip, $phone,
+        $address2] = explode('|', $response);
 
         return [
             'firstname' => $patron['firstname'],
@@ -597,8 +600,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lines = explode("\n", $response);
         $items = [];
         foreach ($lines as $item) {
-            list($catkey, $amount, $balance, $date_billed, $number_of_payments,
-            $with_items, $reason, $date_charged, $duedate, $date_recalled)
+            [$catkey, $amount, $balance, $date_billed, $number_of_payments,
+            $with_items, $reason, $date_charged, $duedate, $date_recalled]
                 = explode('|', $item);
 
             // the amount and balance are in cents, so we need to turn them into
@@ -655,9 +658,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lines = explode("\n", $response);
         $items = [];
         foreach ($lines as $item) {
-            list($catkey, $holdkey, $available, , $date_expires, , $date_created, ,
-            $type, $pickup_library, , , , , , , $barcode)
-                = explode('|', $item);
+            [$catkey, $holdkey, $available, , $date_expires, , $date_created, ,
+            $type, $pickup_library, , , , , , , $barcode] = explode('|', $item);
 
             $date_created = $this->parseDateTime($date_created);
             $date_expires = $this->parseDateTime($date_expires);
@@ -685,11 +687,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * separated by a pipe, which is then submitted as form data in Hold.php. This
      * value is then extracted by the CancelHolds function.
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['item_id'];
     }
@@ -731,7 +736,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($lines as $line) {
                 // error lines start with '**'
                 if (strpos(trim($line), '**') === 0) {
-                    list(, $holdKey) = explode(':', $line);
+                    [, $holdKey] = explode(':', $line);
                     $failures[] = trim($holdKey, '()');
                 }
             }
@@ -782,10 +787,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $item_lines = explode("\n", $response);
         $items = [];
         foreach ($item_lines as $item) {
-            list($catkey, $date_charged, $duedate, $date_renewed, $accrued_fine,
-            $overdue, $number_of_renewals, $date_recalled,
-            $charge_key1, $charge_key2, $charge_key3, $charge_key4, $recall_period,
-            $callnum)
+            [$catkey, $date_charged, $duedate, $date_renewed, $accrued_fine,
+            $overdue, $number_of_renewals, $date_recalled, $charge_key1,
+            $charge_key2, $charge_key3, $charge_key4, $recall_period, $callnum]
                 = explode('|', $item);
 
             $duedate = $original_duedate = $this->parseDateTime($duedate);
@@ -793,7 +797,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $date_recalled = $this->parseDateTime($date_recalled);
             if ($date_recalled) {
                 $duedate = $recall_duedate = $this->calculateRecallDueDate(
-                    $date_recalled, $recall_period, $original_duedate
+                    $date_recalled,
+                    $recall_period,
+                    $original_duedate
                 );
             }
             $charge_key = "$charge_key1|$charge_key2|$charge_key3|$charge_key4";
@@ -819,16 +825,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             ];
         }
 
-        if (!empty($items)) {
-            // sort the items by due date
-            $cmp = function ($a, $b) {
-                if ($a['duedate_raw'] == $b['duedate_raw']) {
-                    return $a['id'] < $b['id'] ? -1 : 1;
-                }
-                return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by due date
+        $cmp = function ($a, $b) {
+            if ($a['duedate_raw'] == $b['duedate_raw']) {
+                return $a['id'] < $b['id'] ? -1 : 1;
+            }
+            return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
+        };
+        usort($items, $cmp);
 
         return $items;
     }
@@ -852,11 +856,11 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $courses = [];
 
         foreach ($course_lines as $course) {
-            list($id, $code, $name) = explode('|', $course);
+            [$id, $code, $name] = explode('|', $course);
             $name = ($code == $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
-        asort($courses);
+        $this->getSorter()->asort($courses);
         return $courses;
     }
 
@@ -879,10 +883,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $users = [];
 
         foreach ($user_lines as $user) {
-            list($id, $name) = explode('|', $user);
+            [$id, $name] = explode('|', $user);
             $users[$id] = $name;
         }
-        asort($users);
+        $this->getSorter()->asort($users);
         return $users;
     }
 
@@ -905,10 +909,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $depts = [];
 
         foreach ($dept_lines as $dept) {
-            list($id, $name) = explode('|', $dept);
+            [$id, $name] = explode('|', $dept);
             $depts[$id] = $name;
         }
-        asort($depts);
+        $this->getSorter()->asort($depts);
         return $depts;
     }
 
@@ -955,7 +959,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $item_lines = explode("\n", $response);
         $items = [];
         foreach ($item_lines as $item) {
-            list($instructor_id, $course_id, $dept_id, $bib_id)
+            [$instructor_id, $course_id, $dept_id, $bib_id]
                 = explode('|', $item);
             if ($bib_id && (empty($instructorId) || $instructorId == $instructor_id)
                 && (empty($courseId) || $courseId == $course_id)
@@ -1048,14 +1052,12 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function parseStatusLine($line)
     {
-        list($catkey, $shelving_key, $callnum,
-        $itemkey1, $itemkey2, $itemkey3, $barcode, $reserve,
-        $number_of_charges, $item_type, $recirculate_flag,
-        $holdcount, $library_code, $library,
-        $location_code, $location, $currLocCode, $current_location,
-        $holdable,
-        $circulation_rule, $duedate, $date_recalled, $recall_period,
-        $format, $title_holds) = explode("|", $line);
+        [$catkey, $shelving_key, $callnum, $itemkey1, $itemkey2, $itemkey3,
+        $barcode, $reserve, $number_of_charges, $item_type, $recirculate_flag,
+        $holdcount, $library_code, $library, $location_code, $location,
+        $currLocCode, $current_location, $holdable, $circulation_rule, $duedate,
+        $date_recalled, $recall_period, $format, $title_holds]
+            = explode("|", $line);
 
         // availability
         $availability = ($number_of_charges == 0) ? 1 : 0;
@@ -1069,7 +1071,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // a recalled item has a new due date, we have to calculate that new due date
         if ($date_recalled !== false) {
             $duedate = $this->calculateRecallDueDate(
-                $date_recalled, $recall_period, $duedate
+                $date_recalled,
+                $recall_period,
+                $duedate
             );
         }
 
@@ -1260,10 +1264,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $dateTimeString = '';
         if ($time) {
-            $dateTimeString = strftime('%m/%d/%Y %H:%M', $time);
-            $dateTimeString = $this->dateConverter->convertToDisplayDate(
-                'm/d/Y H:i', $dateTimeString
-            );
+            $dateTimeString = $this->dateConverter->convertToDisplayDate('U', $time);
         }
         return $dateTimeString;
     }
@@ -1287,32 +1288,30 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * reflect local policies regarding interpretation of the a, b and
      * c subfields of  852.
      *
-     * @param File_Marc_Field $field Location field to be processed.
+     * @param MarcReader $record MARC record.
+     * @param array      $field  Location field to be processed.
      *
      * @return array Location information.
      */
-    protected function processMarcHoldingLocation($field)
+    protected function processMarcHoldingLocation(MarcReader $record, $field)
     {
-        $library_code  = $field->getSubfield('b')->getData();
-        $location_code = $field->getSubfield('c')->getData();
+        $library_code  = $record->getSubfield($field, 'b');
+        $location_code = $record->getSubfield($field, 'c');
         $location = [
             'library_code'  => $library_code,
             'library'       => $this->mapLibrary($library_code),
             'location_code' => $location_code,
             'location'      => $this->mapLocation($location_code),
-            'notes'   => [],
-            'marc852' => $field
+            'notes'         => $record->getSubfields($field, 'z'),
+            'marc852'       => $field
         ];
-        foreach ($field->getSubfields('z') as $note) {
-            $location['notes'][] = $note->getData();
-        }
         return $location;
     }
 
     /**
      * Decode a MARC holding record.
      *
-     * @param File_MARC_Record $record Holding record to decode..
+     * @param MarcReader $record Holding record to decode..
      *
      * @return array Has two elements: the first is the list of
      *               locations found in the record, the second are the
@@ -1321,7 +1320,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @todo Check if is OK to print multiple times textual holdings
      *       that had more than one $8.
      */
-    protected function decodeMarcHoldingRecord($record)
+    protected function decodeMarcHoldingRecord(MarcReader $record)
     {
         $locations = [];
         $holdings = [];
@@ -1332,19 +1331,20 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         //    able to easily check later what fields from enumeration
         //    and chronology they override.
         $textuals = [];
-        foreach ($record->getFields('852|866', true) as $field) {
-            switch ($field->getTag()) {
+        $fields = array_merge($record->getFields('852'), $record->getFields('866'));
+        foreach ($fields as $field) {
+            switch ($field['tag']) {
             case '852':
-                $locations[] = $this->processMarcHoldingLocation($field);
+                $locations[] = $this->processMarcHoldingLocation($record, $field);
                 break;
             case '866':
-                $linking_fields = $field->getSubfields('8');
+                $linking_fields = $record->getSubfields($field, '8');
                 if ($linking_fields === false) {
                     // Skip textual holdings fields with no linking
                     continue 2;
                 }
                 foreach ($linking_fields as $linking_field) {
-                    $linking = explode('.', $linking_field->getData());
+                    $linking = explode('.', $linking_field);
                     // Only the linking part is used in textual
                     // holdings...
                     $linking = $linking[0];
@@ -1366,14 +1366,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                   ? []
                   : $record->getFields('863'))
                  as $field) {
-            $linking_field = $field->getSubfield('8');
+            $linking_field = $record->getSubfield($field, '8');
 
             if ($linking_field === false) {
                 // Skip record if there is no linking number
                 continue;
             }
 
-            $linking = explode('.', $linking_field->getData());
+            $linking = explode('.', $linking_field);
             if (1 < count($linking)) {
                 $sequence = explode('\\', $linking[1]);
                 // Lets ignore the link type, as we only care for \x
@@ -1390,11 +1390,11 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
 
             $decoded_holding = '';
-            foreach ($field->getSubfields() as $subfield) {
-                if (strpos('68x', $subfield->getCode()) !== false) {
+            foreach ($field['subfields'] as $subfield) {
+                if (strpos('68x', $subfield['code']) !== false) {
                     continue;
                 }
-                $decoded_holding .= ' ' . $subfield->getData();
+                $decoded_holding .= ' ' . $subfield['data'];
             }
 
             $ndx = (int)($linking
@@ -1403,9 +1403,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         foreach ($textuals as $linking => $field) {
-            $textual_holding = $field->getSubfield('a')->getData();
-            foreach ($field->getSubfields('z') as $note) {
-                $textual_holding .= ' ' . $note->getData();
+            $textual_holding = $record->getSubfield($field, 'a');
+            foreach ($record->getSubfields($field, 'z') as $note) {
+                $textual_holding .= ' ' . $note;
             }
 
             $ndx = (int)($linking . sprintf("%0{$link_digits}u", 0));
@@ -1426,10 +1426,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function getMarcHoldings($marc)
     {
         $holdings = [];
-        $file = new File_MARC($marc, File_MARC::SOURCE_STRING);
-        while ($marc = $file->next()) {
-            list($locations, $record_holdings)
-                = $this->decodeMarcHoldingRecord($marc);
+        $collection = new MarcCollection($marc);
+        foreach ($collection as $record) {
+            [$locations, $record_holdings]
+                = $this->decodeMarcHoldingRecord($record);
             // Flatten locations with corresponding holdings as VuFind
             // expects it.
             foreach ($locations as $location) {

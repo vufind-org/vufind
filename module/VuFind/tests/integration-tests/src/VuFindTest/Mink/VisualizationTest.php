@@ -39,35 +39,62 @@ namespace VuFindTest\Mink;
  */
 class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
+    /**
+     * Config overrides for visual facets.
+     *
+     * @var array
+     */
+    protected $visualConfig = [
+        'searches' => [
+            'General' => [
+                'default_top_recommend' => ['VisualFacets'],
+            ],
+            'Views' => ['list' => 'List', 'visual' => 'Visual'],
+        ]
+    ];
 
     /**
-     * Test that combined results work in mixed AJAX/non-AJAX mode.
+     * Run the basic visualization test procedure; this allows us to do the same
+     * checks in multiple configuration contexts.
      *
      * @return void
      */
-    public function testVisualization()
+    protected function doVisualizationCheck(): void
     {
-        $this->changeConfigs(
-            [
-                'searches' => [
-                    'General' => [
-                        'default_top_recommend' => ['VisualFacets'],
-                    ],
-                    'Views' => ['list' => 'List', 'visual' => 'Visual'],
-                ]
-            ]
-        );
         $session = $this->getMinkSession();
         $session->visit(
             $this->getVuFindUrl()
             . '/Search/Results?filter[]=building%3A"journals.mrc"&view=visual'
         );
         $page = $session->getPage();
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $text = $this->findCss($page, '#visualResults')->getText();
         // Confirm that some content has been dynamically loaded into the
         // visualization area:
         $this->assertStringContainsString('A - General Works', $text);
+    }
+
+    /**
+     * Test that visualization results display correctly.
+     *
+     * @return void
+     */
+    public function testVisualization(): void
+    {
+        $this->changeConfigs($this->visualConfig);
+        $this->doVisualizationCheck();
+    }
+
+    /**
+     * Test that visualization results display correctly even when no other
+     * recommendation modules are active.
+     *
+     * @return void
+     */
+    public function testVisualizationWithoutSideFacets(): void
+    {
+        // ONLY set up visual facets, while removing all other configs!
+        $this->changeConfigs($this->visualConfig, ['searches']);
+        $this->doVisualizationCheck();
     }
 }

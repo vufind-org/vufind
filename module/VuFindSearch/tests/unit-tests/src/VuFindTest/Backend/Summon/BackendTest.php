@@ -257,7 +257,7 @@ class BackendTest extends TestCase
     protected function getConnectorMock(array $mock = [])
     {
         return $this->getMockBuilder(\SerialsSolutions\Summon\Laminas::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['id', 'key'])
             ->getMock();
     }

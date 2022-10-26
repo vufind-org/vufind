@@ -39,7 +39,9 @@
     <select id="save_list" name="list" class="form-control">
       <?php if (count($this->lists) > 0): ?>
         <?php foreach ($this->lists as $list): ?>
-          <option value="<?=$list['id'] ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+          <option value="<?=$this->escapeHtmlAttr($list['id']) ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+            <?=$this->escapeHtml($list['title'])?><?php if ($list['public']):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
+          </option>
         <?php endforeach; ?>
       <?php else: ?>
         <option value=""><?=$this->transEsc('My Favorites') ?></option>

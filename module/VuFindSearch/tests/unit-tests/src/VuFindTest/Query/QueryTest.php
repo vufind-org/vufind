@@ -112,11 +112,15 @@ class QueryTest extends TestCase
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         $q = new Query("color code");
         $q->replaceTerm(
-            'color code', '((color code) OR (color codes))', $normalizer
+            'color code',
+            '((color code) OR (color codes))',
+            $normalizer
         );
         $this->assertEquals('((color code) OR (color codes))', $q->getString());
         $q->replaceTerm(
-            'color code', '((color code) OR (color coded))', $normalizer
+            'color code',
+            '((color code) OR (color coded))',
+            $normalizer
         );
         $this->assertEquals(
             '((((color code) OR (color coded))) OR (color codes))',
@@ -136,7 +140,8 @@ class QueryTest extends TestCase
         $this->assertFalse($q->containsTerm('test'));
         $this->assertTrue($q->containsTerm('test', $normalizer));
         $this->assertEquals(
-            'this is a test of things', $q->getString($normalizer)
+            'this is a test of things',
+            $q->getString($normalizer)
         );
         $q->replaceTerm('test', 'mess', $normalizer);
         $this->assertEquals('this is a mess of things', $q->getString());

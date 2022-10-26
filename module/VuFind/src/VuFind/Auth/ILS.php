@@ -151,7 +151,10 @@ class ILS extends AbstractBase
             return parent::getPasswordPolicy();
         }
         if (isset($policy['pattern']) && empty($policy['hint'])) {
-            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+            $policy['hint'] = $this->getCannedPolicyHint(
+                'password',
+                $policy['pattern']
+            );
         }
         return $policy;
     }
@@ -209,7 +212,8 @@ class ILS extends AbstractBase
     public function getILSLoginMethod($target = '')
     {
         $config = $this->getCatalog()->checkFunction(
-            'patronLogin', ['patron' => ['cat_username' => "$target.login"]]
+            'patronLogin',
+            ['patron' => ['cat_username' => "$target.login"]]
         );
         return $config['loginMethod'] ?? 'password';
     }

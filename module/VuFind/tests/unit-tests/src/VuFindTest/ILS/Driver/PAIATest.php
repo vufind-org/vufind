@@ -56,17 +56,18 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'PAIA' =>
             [
                 'baseUrl'            => 'http://paia.gbv.de/',
+                'grantType'          => 'password',
             ]
     ];
 
     protected $patron = [
         'id' => '08301001001',
-        'firstname' => 'Nobody',
+        'firstname' => 'Susan Q.',
         'lastname' => 'Nothing',
         'email' => 'nobody@vufind.org',
         'major' => null,
         'college' => null,
-        'name' => ' Nobody Nothing',
+        'name' => ' Susan Q. Nothing',
         'expires' => '9999-12-31',
         'status' => 0,
         'address' => 'No street at all 8, D-21073 Hamburg',
@@ -305,7 +306,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     protected $profileTestResult = [
-        'firstname' => "Nobody",
+        'firstname' => "Susan Q.",
         'lastname' => "Nothing",
         'address1' => "No street at all 8, D-21073 Hamburg",
         'address2' => null,
@@ -443,22 +444,34 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $conn = $this->createMockConnector('patron.json');
 
         $result = $conn->checkRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron
+            'http://paia.gbv.de/',
+            [],
+            $this->patron
         );
         $resultStorageRetrieval = $conn->checkStorageRetrievalRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron
+            'http://paia.gbv.de/',
+            [],
+            $this->patron
         );
         $result_bad = $conn->checkRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_bad
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_bad
         );
         $resultStorage_bad = $conn->checkStorageRetrievalRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_bad
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_bad
         );
         $result_expired = $conn->checkRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_expired
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_expired
         );
         $resultStorage_expired = $conn->checkStorageRetrievalRequestIsValid(
-            'http://paia.gbv.de/', [], $this->patron_expired
+            'http://paia.gbv.de/',
+            [],
+            $this->patron_expired
         );
 
         $this->assertEquals(true, $result);
@@ -610,7 +623,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $sessionManager = new \Laminas\Session\SessionManager();
         $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
             ->setConstructorArgs([$dateConverter, $sessionManager])
-            ->setMethods(['getScope'])
+            ->onlyMethods(['getScope'])
             ->getMock();
         $conn->expects($this->any())->method('getScope')
             ->will(

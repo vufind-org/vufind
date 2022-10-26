@@ -136,7 +136,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), [], $context
+            $this->loadRecordFixture('testbug1.json'),
+            [],
+            $context
         );
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/format-class.phtml');
         $this->assertEquals('success', $record->getFormatClass('foo'));
@@ -300,7 +302,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), [], $context
+            $this->loadRecordFixture('testbug1.json'),
+            [],
+            $context
         );
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml');
         $this->assertEquals('success', $record->getLink('bar', 'foo'));
@@ -321,7 +325,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             )
             ->willReturnOnConsecutiveCalls('success', 'success');
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), [], $context
+            $this->loadRecordFixture('testbug1.json'),
+            [],
+            $context
         );
         // We run the test twice to ensure that checkbox incrementing works properly:
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
@@ -497,6 +503,40 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getLinkDetails with duplicate URLs
+     *
+     * @return void
+     */
+    public function testGetLinkDetailsWithDuplicateURLs()
+    {
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(
+            [
+                'URLs' => [
+                    ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
+                    ['desc' => 'link 2', 'url' => 'http://foo/baz2'],
+                    ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
+                    ['desc' => 'link 1 (alternate description)',
+                        'url' => 'http://foo/baz1'],
+                    ['url' => 'http://foo/baz3'],
+                    ['url' => 'http://foo/baz3']
+                ]
+            ]
+        );
+        $record = $this->getRecord($driver);
+        $this->assertEquals(
+            [
+                ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
+                ['desc' => 'link 2', 'url' => 'http://foo/baz2'],
+                ['desc' => 'link 1 (alternate description)',
+                    'url' => 'http://foo/baz1'],
+                ['desc' => 'http://foo/baz3', 'url' => 'http://foo/baz3']
+            ],
+            $record->getLinkDetails()
+        );
+    }
+
+    /**
      * Test getUrlList
      *
      * @return void
@@ -513,7 +553,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
         $record = $this->getRecord($driver, [], null, 'fake-route', true);
         $this->assertEquals(
-            ['http://proxy?_=http://server-foo/baz'], $record->getUrlList()
+            ['http://proxy?_=http://server-foo/baz'],
+            $record->getUrlList()
         );
     }
 
@@ -528,8 +569,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return Record
      */
-    protected function getRecord($driver, $config = [], $context = null,
-        $url = false, $serverurl = false
+    protected function getRecord(
+        $driver,
+        $config = [],
+        $context = null,
+        $url = false,
+        $serverurl = false
     ) {
         if (null === $context) {
             $context = $this->getMockContext();
@@ -550,7 +595,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = new Record($config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);
-        return $record->__invoke($driver);
+        return $record($driver);
     }
 
     /**
@@ -646,7 +691,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setSuccessTemplate($record, $tpl, $response = 'success',
+    protected function setSuccessTemplate(
+        $record,
+        $tpl,
+        $response = 'success',
         $matcher = null
     ) {
         $record->getView()->resolver()->expects($matcher ?? $this->once())->method('resolve')
@@ -682,7 +730,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
         }

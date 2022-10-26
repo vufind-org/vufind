@@ -1,15 +1,23 @@
-/*global Hunt, VuFind */
+/*global VuFind */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
-  function linkCallnumbers(callnumber, callnumber_handler) {
-    if (callnumber_handler) {
-      var cns = callnumber.split(',\t');
-      for (var i = 0; i < cns.length; i++) {
-        cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+  function formatCallnumbers(callnumber, callnumber_handler) {
+    var cns = callnumber.split(',\t');
+    for (var i = 0; i < cns.length; i++) {
+      // If the call number has a special delimiter, it indicates a prefix that
+      // should be used for display but not for sorting/searching.
+      var actualCallNumber = cns[i];
+      var displayCallNumber = cns[i];
+      var parts = cns[i].split('::::');
+      if (parts.length > 1) {
+        displayCallNumber = parts[0] + " " + parts[1];
+        actualCallNumber = parts[1];
       }
-      return cns.join(',\t');
+      cns[i] = callnumber_handler
+        ? '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(actualCallNumber) + '">' + displayCallNumber + '</a>'
+        : displayCallNumber;
     }
-    return callnumber;
+    return cns.join(',\t');
   }
   function displayItemStatus(result, $item) {
     $item.addClass('js-item-done').removeClass('js-item-pending');
@@ -25,7 +33,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           && $item.find('.callnumAndLocation').length > 0
     ) {
       // Full status mode is on -- display the HTML and hide extraneous junk:
-      $item.find('.callnumAndLocation').empty().append(result.full_status);
+      $item.find('.callnumAndLocation').empty().append(VuFind.updateCspNonce(result.full_status));
       $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
     } else if (typeof(result.missing_data) !== 'undefined'
           && result.missing_data
@@ -39,30 +47,39 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       for (var x = 0; x < result.locationList.length; x++) {
         locationListHTML += '<div class="groupLocation">';
         if (result.locationList[x].availability) {
-          locationListHTML += '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML +=
+            '<span class="text-success">' +
+              VuFind.icon("status-available") + " " +
+              result.locationList[x].location +
+            '</span> ';
         } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
                   && result.locationList[x].status_unknown
         ) {
           if (result.locationList[x].location) {
-            locationListHTML += '<span class="text-warning"><i class="fa fa-status-unknown" aria-hidden="true"></i> '
-                          + result.locationList[x].location + '</span> ';
+            locationListHTML +=
+              '<span class="text-warning">' +
+                VuFind.icon("status-indicator") + " " +
+                result.locationList[x].location +
+              '</span> ';
           }
         } else {
-          locationListHTML += '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML +=
+            '<span class="text-danger">' +
+              VuFind.icon('status-unavailable') + " " +
+              result.locationList[x].location +
+            '</span> ';
         }
         locationListHTML += '</div>';
         locationListHTML += '<div class="groupCallnumber">';
         locationListHTML += (result.locationList[x].callnumbers)
-          ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
+          ? formatCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
         locationListHTML += '</div>';
       }
       $item.find('.locationDetails').removeClass('hidden');
       $item.find('.locationDetails').html(locationListHTML);
     } else {
       // Default case -- load call number and location into appropriate containers:
-      $item.find('.callnumber').empty().append(linkCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
+      $item.find('.callnumber').empty().append(formatCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
       $item.find('.location').empty().append(
         result.reserve === 'true'
           ? result.reserve_message
@@ -149,6 +166,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         .fail( this.itemStatusFail)
         .always(function queueAjaxAlways() {
           this.itemStatusRunning = false;
+          VuFind.emit("item-status-done");
         });
     }//end runItemAjaxForQueue
   };
@@ -172,7 +190,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       return;
     }
     if ($item.find('.hiddenId').length === 0) {
-      return false;
+      return;
     }
     var id = $item.find('.hiddenId').val();
     var handlerName = 'ils';
@@ -197,17 +215,22 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
   function init(_container) {
-    if (typeof Hunt === 'undefined') {
-      checkItemStatuses(_container);
-    } else {
-      var container = typeof _container === 'undefined'
-        ? document.body
-        : _container;
-      new Hunt(
-        $(container).find('.ajaxItem').toArray(),
-        { enter: checkItemStatus }
-      );
+    var container = typeof _container === 'undefined'
+      ? document.body
+      : _container;
+
+    if (VuFind.isPrinting()) {
+      checkItemStatuses(container);
+      return;
     }
+    VuFind.observerManager.createIntersectionObserver(
+      'itemStatuses',
+      checkItemStatus
+    );
+    VuFind.observerManager.observe(
+      'itemStatuses',
+      $(container).find('.ajaxItem').toArray()
+    );
   }
 
   return { init: init, check: checkItemStatuses, checkRecord: checkItemStatus };

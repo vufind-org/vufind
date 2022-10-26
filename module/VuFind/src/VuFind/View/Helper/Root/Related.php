@@ -72,8 +72,10 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      * @param ConfigManager  $cm            Configuration manager
      * @param OptionsManager $om            Search options manager
      */
-    public function __construct(RelatedManager $pluginManager,
-        ConfigManager $cm, OptionsManager $om
+    public function __construct(
+        RelatedManager $pluginManager,
+        ConfigManager $cm,
+        OptionsManager $om
     ) {
         $this->pluginManager = $pluginManager;
         $this->configManager = $cm;
@@ -109,7 +111,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     public function getList(\VuFind\RecordDriver\AbstractBase $driver)
     {
         $retVal = [];
-        $config = $this->getConfigForSource($driver->getSourceIdentifier());
+        $config = $this->getConfigForSource($driver->getSearchBackendIdentifier());
         foreach ($config as $current) {
             $parts = explode(':', $current, 2);
             $type = $parts[0];

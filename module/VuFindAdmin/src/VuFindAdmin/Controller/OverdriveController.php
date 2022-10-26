@@ -54,12 +54,10 @@ class OverdriveController extends AbstractAdmin
      */
     protected function getParam($param)
     {
-        return (isset($this->params[$param]))
-            ? $this->params[$param]
-            : $this->params()->fromPost(
-                $param,
-                $this->params()->fromQuery($param, null)
-            );
+        return $this->params[$param] ?? $this->params()->fromPost(
+            $param,
+            $this->params()->fromQuery($param, null)
+        );
     }
 
     /**
@@ -70,7 +68,7 @@ class OverdriveController extends AbstractAdmin
     public function homeAction()
     {
         $connector  = $this->serviceLocator
-            ->get('VuFind\DigitalContent\OverdriveConnector');
+            ->get(\VuFind\DigitalContent\OverdriveConnector::class);
 
         $view = $this->createViewModel();
         $view->setTemplate('admin/overdrive/home');

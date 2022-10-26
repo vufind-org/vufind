@@ -200,11 +200,11 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return User
      */
-    protected function getMockUser($methods = null)
+    protected function getMockUser($methods = [])
     {
         return $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -215,11 +215,11 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return Manager
      */
-    protected function getMockManager($methods = null)
+    protected function getMockManager($methods = [])
     {
         return $this->getMockBuilder(\VuFind\Auth\Manager::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -230,11 +230,14 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return ILSConnection
      */
-    protected function getMockConnection($methods = null)
+    protected function getMockConnection($methods = [])
     {
+        // We need to use addMethods here instead of onlyMethods, because
+        // we're generally mocking behavior that gets handled by __call
+        // instead of by real methods on the Connection class.
         return $this->getMockBuilder(\VuFind\ILS\Connection::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->addMethods($methods)
             ->getMock();
     }
 }

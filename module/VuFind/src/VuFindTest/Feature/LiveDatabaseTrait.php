@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Mix-in for accessing a real database during testing.
+ * Mix-in for accessing a real database during testing. Some user-related
+ * functionality depends upon the LiveDetectionTrait for identification of a live
+ * test environment.
  *
  * PHP version 7
  *
@@ -39,6 +41,8 @@ namespace VuFindTest\Feature;
  */
 trait LiveDatabaseTrait
 {
+    use PathResolverTrait;
+
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
      * dependencies).
@@ -67,14 +71,17 @@ trait LiveDatabaseTrait
                 . '/module/VuFind/config/module.config.php';
             $container = new \VuFindTest\Container\MockContainer($this);
             $configManager = new \VuFind\Config\PluginManager(
-                $container, $config['vufind']['config_reader']
+                $container,
+                $config['vufind']['config_reader']
             );
             $container->set(\VuFind\Config\PluginManager::class, $configManager);
+            $this->addPathResolverToContainer($container);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );
             $container->set(
-                \Laminas\Db\Adapter\Adapter::class, $adapterFactory->getAdapter()
+                \Laminas\Db\Adapter\Adapter::class,
+                $adapterFactory->getAdapter()
             );
             $container->set(\VuFind\Tags::class, new \VuFind\Tags());
             $container->set('config', $config);
@@ -83,10 +90,12 @@ trait LiveDatabaseTrait
                 new \VuFind\Db\Row\PluginManager($container, [])
             );
             $this->liveTableManager = new \VuFind\Db\Table\PluginManager(
-                $container, []
+                $container,
+                []
             );
             $container->set(
-                \VuFind\Db\Table\PluginManager::class, $this->liveTableManager
+                \VuFind\Db\Table\PluginManager::class,
+                $this->liveTableManager
             );
         }
         return $this->liveTableManager;
@@ -102,5 +111,81 @@ trait LiveDatabaseTrait
     public function getTable($table)
     {
         return $this->getLiveTableManager()->get($table);
+    }
+
+    /**
+     * Static setup support function to fail if there is already data in the
+     * database. We want to ensure a clean state for each test!
+     *
+     * @return void
+     */
+    protected static function failIfDataExists(): void
+    {
+        $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDetectionTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
+        if (!$test->continuousIntegrationRunning()) {
+            return;
+        }
+        // Fail if there are already records in the database (we don't want to run
+        // this on a real system -- it's only meant for the continuous integration
+        // server)
+        $checks = [
+            [
+                'table' => \VuFind\Db\Table\User::class,
+                'name' => 'users'
+            ],
+            [
+                'table' => \VuFind\Db\Table\Tags::class,
+                'name' => 'tags'
+            ],
+        ];
+        foreach ($checks as $check) {
+            $table = $test->getTable($check['table']);
+            if (count($table->select()) > 0) {
+                self::fail(
+                    "Test cannot run with pre-existing {$check['name']} in database!"
+                );
+                return;
+            }
+        }
+    }
+
+    /**
+     * Static teardown support function to destroy user accounts. Accounts are
+     * expected to exist, and the method will fail if they are missing.
+     *
+     * @param array|string $users User(s) to delete
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected static function removeUsers($users)
+    {
+        $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDetectionTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
+        if (!$test->continuousIntegrationRunning()) {
+            return;
+        }
+        // Delete test user
+        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
+        foreach ((array)$users as $username) {
+            $user = $userTable->getByUsername($username, false);
+            if (!empty($user)) {
+                $user->delete();
+            }
+        }
     }
 }

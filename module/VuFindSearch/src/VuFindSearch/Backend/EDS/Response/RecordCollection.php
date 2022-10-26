@@ -49,6 +49,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $response;
 
     /**
+     * Facet fields.
+     *
+     * @var array
+     */
+    protected $facetFields = null;
+
+    /**
      * Constructor.
      *
      * @param array $response EdsApi response
@@ -82,30 +89,39 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
-     * Return available facet information.
+     * Return available facets.
+     *
+     * Returns an associative array with the field name as key. The value is an
+     * associative array of available facets for the field, indexed by facet value.
      *
      * @return array
      */
     public function getFacets()
     {
-        $vufindFacetList = [];
-        $facets = $this->response['SearchResult']['AvailableFacets'] ?? [];
-        foreach ($facets as $facet) {
-            $vufindFacet['displayName'] = $facet['Id'];
-            $vufindFacet['displayText'] = $facet['Label'];
-            $vufindFacet['fieldName'] = $facet['Id'];
-            $values = [];
-            foreach ($facet['AvailableFacetValues'] as $availableFacetValue) {
-                $values[] = [
-                    'value' => $availableFacetValue['Value'],
-                    'count' => $availableFacetValue['Count'],
-                    'displayText' => $availableFacetValue['Value']
-                ];
+        if ($this->facetFields === null) {
+            $this->facetFields = [];
+            $facets = $this->response['SearchResult']['AvailableFacets'] ?? [];
+            foreach ($facets as $facet) {
+                $values = [];
+                foreach ($facet['AvailableFacetValues'] as $facetValue) {
+                    $values[$facetValue['Value']] = $facetValue['Count'];
+                }
+                $this->facetFields[$facet['Id']] = $values;
             }
-            $vufindFacet['counts'] = $values;
-            $vufindFacetList[$facet['Id']] = $vufindFacet;
         }
-        return $vufindFacetList;
+        return $this->facetFields;
+    }
+
+    /**
+     * Set facets.
+     *
+     * @param array $facets Facet fields
+     *
+     * @return void
+     */
+    public function setFacets(array $facets): void
+    {
+        $this->facetFields = $facets;
     }
 
     /**
@@ -119,7 +135,8 @@ class RecordCollection extends AbstractRecordCollection
             && !empty($this->response['SearchRequestGet']['QueryString'])
         ) {
             $qsParameters = explode(
-                '&', $this->response['SearchRequestGet']['QueryString']
+                '&',
+                $this->response['SearchRequestGet']['QueryString']
             );
             $page = empty($qsParameters['pagenumber'])
                 ? 0 : $qsParameters['pagenumber'];

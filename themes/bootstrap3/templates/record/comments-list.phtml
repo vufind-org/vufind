@@ -9,13 +9,21 @@
         <small>
           <?=$this->escapeHtml($comment->created)?>
           <?php if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
-            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete"><?=$this->transEsc('Delete')?></a>
+            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'DeleteComment'))?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete"><?=$this->transEsc('Delete')?></a>
           <?php endif; ?>
         </small>
       </div>
       <div class="comment-text">
         <?=$this->escapeHtml($comment->comment)?>
       </div>
+      <?php if ($this->driver->isRatingAllowed()): ?>
+        <div class="comment-rating">
+          <?php $ratingData = $this->driver->getRatingData($comment->user_id); ?>
+          <?php if ($ratingData['count']): ?>
+            <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData]);?>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>

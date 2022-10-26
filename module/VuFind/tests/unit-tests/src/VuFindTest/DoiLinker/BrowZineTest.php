@@ -28,6 +28,7 @@
 namespace VuFindTest\DoiLinker;
 
 use VuFind\DoiLinker\BrowZine;
+use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
 
 /**
@@ -42,6 +43,20 @@ use VuFindSearch\Backend\BrowZine\Connector;
 class BrowZineTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\SearchServiceTrait;
+
+    /**
+     * Given a connector, wrap it up in a backend and backend manager
+     *
+     * @return BackendManager
+     */
+    protected function getBackendManager(Connector $connector): BackendManager
+    {
+        $backend = new \VuFindSearch\Backend\BrowZine\Backend($connector);
+        $registry = new \VuFindTest\Container\MockContainer($this);
+        $registry->set('BrowZine', $backend);
+        return new BackendManager($registry);
+    }
 
     /**
      * Get a mock connector
@@ -49,7 +64,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      * @param string $doi      DOI expected by connector
      * @param array  $response Response for connector to return
      *
-     * @return void
+     * @return Connector
      */
     protected function getMockConnector($doi, $response)
     {
@@ -122,7 +137,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         foreach ($testData as $data) {
             $dois = array_keys($data['response']);
             $connector = $this->getMockConnector($dois[0], $rawData);
-            $browzine = new BrowZine($connector, $data['config']);
+            $ss = $this->getSearchService($this->getBackendManager($connector));
+            $browzine = new BrowZine($ss, $data['config']);
             $this->assertEquals(
                 $data['response'],
                 $browzine->getLinks($dois)

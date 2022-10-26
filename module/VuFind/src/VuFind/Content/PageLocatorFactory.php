@@ -28,10 +28,11 @@
  */
 namespace VuFind\Content;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * Page locator factory
@@ -57,20 +58,20 @@ class PageLocatorFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $defaultLanguage = $config->Site->language;
+        $settings = $container->get(LocaleSettings::class);
+        $language = $settings->getUserLocale();
+        $defaultLanguage = $settings->getDefaultLocale();
         $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
-        $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
-        $language = $translator->getLocale();
 
         return new $requestedName($themeInfo, $language, $defaultLanguage);
     }

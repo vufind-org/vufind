@@ -33,14 +33,18 @@
           $removeLink = isset($urlQuery)
             ? $urlQuery->removeFilter($filter['filter'])
             : $this->searchMemory()->getEditLink(
-              $this->searchClassId, 'removeFilter', $filter['filter']
+                $this->searchClassId,
+                'removeFilter',
+                $filter['filter']
             );
           $desc = $this->translate($filter['desc']);
           $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
         ?>
         <?=$desc?>
         <?php if($removeLink): ?>
-          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><!--icon from css --></a>
+          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>">
+            <?=$this->icon('search-filter-remove') ?>
+          </a>
         <?php endif; ?>
       </span>
     <?php endif ?>
@@ -95,7 +99,9 @@
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
-          <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
+          <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>">
+            <?=$this->icon('search-filter-remove') ?>
+          </a>
         </span>
         <?php if ($dropdown): ?>
           </li>

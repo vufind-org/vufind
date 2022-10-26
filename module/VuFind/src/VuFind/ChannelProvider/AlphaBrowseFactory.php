@@ -27,11 +27,11 @@
  */
 namespace VuFind\ChannelProvider;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for AlphaBrowse channel provider.
@@ -56,9 +56,11 @@ class AlphaBrowseFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
@@ -66,7 +68,6 @@ class AlphaBrowseFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
-            $container->get(\VuFind\Search\BackendManager::class)->get('Solr'),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get(\VuFind\Record\Router::class)
         );

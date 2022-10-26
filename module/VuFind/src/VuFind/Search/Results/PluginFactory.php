@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Results;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Search results plugin factory
@@ -60,7 +60,9 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $extras = null
     ) {
         $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
@@ -70,7 +72,10 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
         $recordLoader = $container->get(\VuFind\Record\Loader::class);
         $class = $this->getClassName($requestedName);
         return new $class(
-            $params, $searchService, $recordLoader, ...($extras ?: [])
+            $params,
+            $searchService,
+            $recordLoader,
+            ...($extras ?: [])
         );
     }
 }

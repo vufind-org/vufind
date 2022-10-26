@@ -2,7 +2,7 @@
   $this->headLink()->appendStylesheet('EDS.css');
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
-  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLinker()->getUrl($this->driver));
   $cover = $coverDetails['html'];
 ?>
 <?php
@@ -30,7 +30,7 @@
             if (!empty($item)): ?>
               <div class="resultItemLine1">
                 <?php if('Ti' == $item['Group']): ?>
-                  <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull _record_link"  data-view="<?=$this->params->getOptions()->getListViewOption()?>">
+                  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
                   <?=$item['Data']?> </a>
                 <?php else:?>
                   <p>
@@ -70,29 +70,33 @@
             </span>
           <?php endforeach; ?>
         <?php endif; ?>
+        <?php if ($labels = trim($this->record($this->driver)->getLabelList())): ?>
+          <?=$customLinks ? '<br>' : '' ?>
+          <?=$labels?>
+        <?php endif; ?>
       </div>
 
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver) ?>#html" class="icon html fulltext _record_link" target="_blank">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)) ?>#html" class="icon html fulltext _record_link" target="_blank">
           <?=$this->transEsc('HTML Full Text')?>
         </a>
         &nbsp; &nbsp;
       <?php endif; ?>
 
       <?php if ($this->driver->hasLinkedFullTextAvailable()): ?>
-        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'LinkedText'); ?>" class="fulltext" target="_blank">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'LinkedText')) ?>" class="fulltext" target="_blank">
           <?=$this->transEsc('Linked Full Text')?>
         </a>
       <?php endif; ?>
 
       <?php if ($this->driver->hasPdfAvailable()): ?>
-        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'PDF'); ?>" class="icon pdf fulltext" target="_blank">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'PDF')) ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <?php endif; ?>
 
       <?php if ($this->driver->hasEpubAvailable()): ?>
-        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'Epub'); ?>" class="icon epub fulltext" target="_blank">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Epub')) ?>" class="icon epub fulltext" target="_blank">
           <?=$this->transEsc('ePub Full Text')?>
         </a>
       <?php endif; ?>
@@ -110,7 +114,7 @@
           $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <span class="hidden-xs">
-          <i class="fa fa-fw fa-qrcode" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+          <?=$this->icon('qrcode') ?> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
           <div class="qrcode hidden">
             <script type="text/template" class="qrCodeImgTag">
               <img alt="<?=$this->transEscAttr('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
@@ -125,7 +129,7 @@
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php /* Add to favorites */ ?>
-        <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEscAttr('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <?=$this->icon('user-list-add') ?> <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEscAttr('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
         <?php /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
@@ -138,8 +142,8 @@
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
-            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID])?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>">
+            <?=$this->icon('tree-context') ?>
+            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>">
               <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
             </a>
           </div>

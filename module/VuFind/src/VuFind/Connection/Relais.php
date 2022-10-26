@@ -87,8 +87,8 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
     /**
      * Format the parameters needed to look up an OCLC number in the API.
      *
-     * @param string $oclc   OCLC number to look up
-     * @param string $patron Patron ID (null to use default from config)
+     * @param string  $oclc   OCLC number to look up
+     * @param ?string $patron Patron ID (null to use default from config)
      *
      * @return array
      */
@@ -122,7 +122,7 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
             ->setMethod('POST');
         $requestBody = json_encode($data + $this->getDefaultData());
         $this->debug('Posting ' . $requestBody . ' to ' . $uri);
-        $this->client->setRawBody($requestBody, 'application/json');
+        $this->client->setRawBody($requestBody);
         $this->client->getRequest()->getHeaders()
             ->addHeaderLine('Content-Type: application/json');
         $response = $this->client->send();

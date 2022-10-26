@@ -8,4 +8,9 @@
   <rule ref="PEAR">
     <exclude name="PEAR.Commenting.FunctionComment.ParamCommentAlignment" />
   </rule>
+  <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent">
+    <properties>
+      <property name="multilevel" value="true" />
+    </properties>
+  </rule>
 </ruleset>

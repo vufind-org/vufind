@@ -115,6 +115,12 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                 <ns1:ItemIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ns1:ItemIdentifierType>
                 <ns1:ItemIdentifierValue>MZK01000353880-MZK50000353880000040</ns1:ItemIdentifierValue>
             </ns1:ItemId>
+            <ns1:BibliographicId>
+                <ns1:BibliographicRecordId>
+                    <ns1:BibliographicRecordIdentifier>111</ns1:BibliographicRecordIdentifier>
+                    <ns1:BibliographicRecordIdentifierCode ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">URI</ns1:BibliographicRecordIdentifierCode>
+                </ns1:BibliographicRecordId>
+            </ns1:BibliographicId>
             <ns1:RequestType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Hold</ns1:RequestType>
             <ns1:RequestStatusType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requeststatustype/requeststatustype.scm">In Process</ns1:RequestStatusType>
             <ns1:DatePlaced>2014-10-10T13:14:00Z</ns1:DatePlaced>
@@ -127,10 +133,6 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                     <ns1:Publisher>Erika,</ns1:Publisher>
                     <ns1:Title>Ahoj, Blanko! : dívčí román / Eva Bernardinová</ns1:Title>
                     <ns1:MediumType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</ns1:MediumType>
-                    <ns1:BibliographicRecordId>
-                        <ns1:BibliographicRecordIdentifier>111</ns1:BibliographicRecordIdentifier>
-                        <ns1:BibliographicRecordIdentifierCode ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">URI</ns1:BibliographicRecordIdentifierCode>
-                    </ns1:BibliographicRecordId>
                 </ns1:BibliographicDescription>
                 <ns1:EarliestDateNeeded>2014-10-10T00:00:00Z</ns1:EarliestDateNeeded>
                 <ns1:NeedBeforeDate>2014-11-20T01:00:00Z</ns1:NeedBeforeDate>
@@ -367,11 +369,6 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
             <ns1:UserAddressInformation>
                 <ns1:UserAddressRoleType ns1:Scheme="http://www.niso.org/ncip/v2_0/imp1/schemes/useraddressroletype/useraddressroletype.scm">Ship To</ns1:UserAddressRoleType>
                 <ns1:PhysicalAddress>
-                    <ns1:StructuredAddress>
-                        <ns1:Street>Trvalá ulice 123</ns1:Street>
-                        <ns1:Locality>Trvalé</ns1:Locality>
-                        <ns1:PostalCode>12345 </ns1:PostalCode>
-                    </ns1:StructuredAddress>
                     <ns1:UnstructuredAddress>
                         <ns1:UnstructuredAddressData>Trvalá ulice 123, Big City, 12345</ns1:UnstructuredAddressData>
                     </ns1:UnstructuredAddress>

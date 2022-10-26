@@ -74,14 +74,53 @@ class Minified
     public $hf = [];
 
     /**
-     * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
+     * Search ID
+     *
+     * @var int
      */
     public $id;
+
+    /**
+     * Search start time
+     *
+     * @var float
+     */
     public $i;
+
+    /**
+     * Search duration
+     *
+     * @var float
+     */
     public $s;
+
+    /**
+     * Total result count
+     *
+     * @var int
+     */
     public $r;
+
+    /**
+     * Search type
+     *
+     * @var string
+     */
     public $ty;
+
+    /**
+     * Search class
+     *
+     * @var string
+     */
     public $cl;
+
+    /**
+     * Extra data (not used by default)
+     *
+     * @var array
+     */
+    public $ex = [];
 
     /**
      * Constructor. Building minified object from the
@@ -109,6 +148,9 @@ class Minified
         //      it would be a nightmare to maintain.
         $this->f = $searchObject->getParams()->getRawFilters();
         $this->hf = $searchObject->getParams()->getHiddenFilters();
+
+        // Extra data has implementation-specific contents, store as is
+        $this->ex = $searchObject->getExtraData();
     }
 
     /**

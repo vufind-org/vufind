@@ -70,7 +70,8 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
         $regEx = '/123\.124\..*/';
         $provider = $this->getPermissionProvider('123.124.125.126');
         $this->assertEquals(
-            ['guest', 'loggedin'], $provider->getPermissions($regEx)
+            ['guest', 'loggedin'],
+            $provider->getPermissions($regEx)
         );
     }
 

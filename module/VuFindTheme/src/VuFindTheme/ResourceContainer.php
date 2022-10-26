@@ -81,25 +81,6 @@ class ResourceContainer
     protected $generator = '';
 
     /**
-     * Add a Less CSS file.
-     *
-     * @param array|string $less Less CSS file (or array of Less CSS files) to add
-     *
-     * @return void
-     */
-    public function addLessCss($less)
-    {
-        if (!is_array($less) && !is_a($less, 'Traversable')) {
-            $less = [$less];
-        }
-        unset($less['active']);
-        foreach ($less as $current) {
-            $this->less[] = $current;
-            $this->removeCSS($current);
-        }
-    }
-
-    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -189,6 +170,10 @@ class ResourceContainer
      */
     protected function addJsArrayEntry($jsEntry)
     {
+        if (!isset($jsEntry['position'])) {
+            $jsEntry['position'] = 'header';
+        }
+
         if (isset($jsEntry['priority']) && isset($jsEntry['load_after'])) {
             throw new \Exception(
                 'Using "priority" as well as "load_after" in the same entry '
@@ -196,9 +181,14 @@ class ResourceContainer
             );
         }
 
+        // If we are disabling the dependency, remove it now.
+        if ($jsEntry['disabled'] ?? false) {
+            $this->removeEntry($jsEntry, $this->js);
+            return;
+        }
+
         foreach ($this->js as $existingEntry) {
             if ($existingEntry['file'] == $jsEntry['file']) {
-
                 // If we have the same settings as before, just skip this entry.
                 if ($existingEntry == $jsEntry) {
                     return;
@@ -212,6 +202,24 @@ class ResourceContainer
         }
 
         $this->insertEntry($jsEntry, $this->js);
+    }
+
+    /**
+     * Helper function to remove an entry from an array based on filename.
+     *
+     * @param array $entry The entry to remove.
+     * @param array $array The array from which the entry shall be removed.
+     *
+     * @return void
+     */
+    protected function removeEntry($entry, &$array)
+    {
+        foreach (array_keys($array) as $i) {
+            if (($array[$i]['file'] ?? '') === ($entry['file'] ?? null)) {
+                unset($array[$i]);
+                return;
+            }
+        }
     }
 
     /**
@@ -256,16 +264,6 @@ class ResourceContainer
     }
 
     /**
-     * Get Less CSS files.
-     *
-     * @return array
-     */
-    public function getLessCss()
-    {
-        return array_unique($this->less);
-    }
-
-    /**
      * Get CSS files.
      *
      * @return array
@@ -278,11 +276,23 @@ class ResourceContainer
     /**
      * Get Javascript files.
      *
+     * @param string $position Position where the files should be inserted
+     * (allowed values are 'header' or 'footer').
+     *
      * @return array
      */
-    public function getJs()
+    public function getJs(string $position = null)
     {
-        return $this->js;
+        if (!isset($position)) {
+            return $this->js;
+        } else {
+            return array_filter(
+                $this->js,
+                function ($jsFile) use ($position) {
+                    return $jsFile['position'] == $position;
+                }
+            );
+        }
     }
 
     /**
@@ -386,7 +396,7 @@ class ResourceContainer
         if (empty($this->less)) {
             return false;
         }
-        list($fileName, ) = explode('.', $file);
+        [$fileName, ] = explode('.', $file);
         $lessFile = $fileName . '.less';
         return in_array($lessFile, $this->less, true);
     }
@@ -396,11 +406,11 @@ class ResourceContainer
      *
      * @param string $file Filename to remove
      *
-     * @return bool
+     * @return void
      */
     protected function removeCSS($file)
     {
-        list($name, ) = explode('.', $file);
+        [$name, ] = explode('.', $file);
         $name .= '.css';
         $index = array_search($name, $this->css);
         if (false !== $index) {

@@ -96,7 +96,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper(['parent', 'child']);
         $this->assertEquals(
             "{$this->fixturePath}/parent/templates/everything.phtml",
-            $helper->__invoke('everything.phtml')
+            $helper('everything.phtml')
         );
     }
 
@@ -110,7 +110,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper(['parent', 'noop', 'skip', 'child']);
         $this->assertEquals(
             "{$this->fixturePath}/parent/templates/everything.phtml",
-            $helper->__invoke('everything.phtml')
+            $helper('everything.phtml')
         );
     }
 
@@ -125,6 +125,6 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('not found in parent themes: missing.phtml');
 
         $helper = $this->getHelper(['parent', 'child']);
-        $helper->__invoke('missing.phtml');
+        $helper('missing.phtml');
     }
 }

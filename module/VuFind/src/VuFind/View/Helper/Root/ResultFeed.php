@@ -28,10 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
-use Interop\Container\ContainerInterface;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
 use Laminas\View\Helper\AbstractHelper;
+use Psr\Container\ContainerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -78,17 +78,19 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($container);
         $manager->setInvokableClass(
             'DublinCore\Renderer\Entry',
-            'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
+            \VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry::class
         );
         $manager->setInvokableClass(
-            'DublinCore\Entry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
+            'DublinCore\Entry',
+            \VuFind\Feed\Writer\Extension\DublinCore\Entry::class
         );
         $manager->setInvokableClass(
             'OpenSearch\Renderer\Feed',
-            'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
+            \VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed::class
         );
         $manager->setInvokableClass(
-            'OpenSearch\Feed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+            'OpenSearch\Feed',
+            \VuFind\Feed\Writer\Extension\OpenSearch\Feed::class
         );
         FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
@@ -108,10 +110,11 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         // Determine base URL if not already provided:
         if (null === $currentPath) {
-            $currentPath = $this->getView()->plugin('currentPath')->__invoke();
+            $currentPath = ($this->getView()->plugin('currentPath'))();
         }
         $serverUrl = $this->getView()->plugin('serverurl');
         $baseUrl = $serverUrl($currentPath);
+        $lang = $this->getTranslatorLocale();
 
         // Create the parent feed
         $feed = new Feed();
@@ -124,10 +127,15 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             );
         }
         $feed->setLink(
-            $baseUrl . $results->getUrlQuery()->setViewParam(null)->getParams(false)
+            $baseUrl . $results->getUrlQuery()
+                ->setDefaultParameter('lng', $lang, true)
+                ->setViewParam(null)
+                ->getParams(false)
         );
         $feed->setFeedLink(
-            $baseUrl . $results->getUrlQuery()->getParams(false),
+            $baseUrl . $results->getUrlQuery()
+                ->setDefaultParameter('lng', $lang, true)
+                ->getParams(false),
             $results->getParams()->getView()
         );
         $feed->setDescription(
@@ -147,31 +155,45 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 
         // add atom links for easier paging
         $feed->addOpensearchLink(
-            $baseUrl . $results->getUrlQuery()->setPage(1)->getParams(false),
+            $baseUrl . $results->getUrlQuery()
+                ->setPage(1)
+                ->setDefaultParameter('lng', $lang, true)
+                ->getParams(false),
             'first',
-            $params->getView()
+            $params->getView(),
+            $this->translate('page_first')
         );
         if ($params->getPage() > 1) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage() - 1)->getParams(false),
+                    ->setPage($params->getPage() - 1)
+                    ->setDefaultParameter('lng', $lang, true)
+                    ->getParams(false),
                 'previous',
-                $params->getView()
+                $params->getView(),
+                $this->translate('page_prev')
             );
         }
         $lastPage = ceil($results->getResultTotal() / $params->getLimit());
         if ($params->getPage() < $lastPage) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage() + 1)->getParams(false),
+                    ->setPage($params->getPage() + 1)
+                    ->setDefaultParameter('lng', $lang, true)
+                    ->getParams(false),
                 'next',
-                $params->getView()
+                $params->getView(),
+                $this->translate('page_next')
             );
         }
         $feed->addOpensearchLink(
-            $baseUrl . $results->getUrlQuery()->setPage($lastPage)->getParams(false),
+            $baseUrl . $results->getUrlQuery()
+                ->setPage($lastPage)
+                ->setDefaultParameter('lng', $lang, true)
+                ->getParams(false),
             'last',
-            $params->getView()
+            $params->getView(),
+            $this->translate('page_last')
         );
 
         // add opensearch fields
@@ -238,9 +260,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             empty($title) ? $this->translate('Title not available') : $title
         );
         $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordLink');
+        $recordLinker = $this->getView()->plugin('recordLinker');
         try {
-            $url = $serverUrl($recordLink->getUrl($record));
+            $url = $serverUrl($recordLinker->getUrl($record));
         } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.
@@ -261,7 +283,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $formats = $record->tryMethod('getFormats');
         if (is_array($formats)) {
             foreach ($formats as $format) {
-                $entry->addDCFormat($format);
+                $entry->addDCFormat($this->translate($format));
             }
         }
         $dcDate = $this->getDcDate($record);

@@ -27,10 +27,10 @@
  */
 namespace VuFind\RecordTab;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for building the Map tab.
@@ -55,11 +55,13 @@ class MapFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -74,6 +76,11 @@ class MapFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $basemapConfig = $container->get(\VuFind\GeoFeatures\BasemapConfig::class);
         $basemapOptions = $basemapConfig->getBasemap('MapTab');
 
-        return new $requestedName($mapTabDisplay, $basemapOptions, $mapTabOptions);
+        return new $requestedName(
+            $mapTabDisplay,
+            $basemapOptions,
+            $mapTabOptions,
+            $container->get(\VuFind\Config\PathResolver::class)
+        );
     }
 }

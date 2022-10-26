@@ -72,7 +72,9 @@ class DoiLookup extends AbstractBase
      * find results for the same DOI (may be 'first' -- use first match, or 'merge'
      * -- use all results)
      */
-    public function __construct(PluginManager $pluginManager, $resolvers,
+    public function __construct(
+        PluginManager $pluginManager,
+        $resolvers,
         $multiMode = 'first'
     ) {
         $this->pluginManager = $pluginManager;

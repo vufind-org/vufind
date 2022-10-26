@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink ILS actions test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,9 +41,8 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
+final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\DemoDriverTestTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
@@ -53,21 +54,7 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
-    }
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
+        static::failIfDataExists();
     }
 
     /**
@@ -75,13 +62,12 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getConfigIniOverrides()
+    public function getConfigIniOverrides(): array
     {
         return [
             'Catalog' => [
                 'driver' => 'Demo',
-                'holds_mode' => 'driver',
-                'title_level_holds_mode' => 'driver',
+                'holds_mode' => 'driver',   // needed to display login link
                 'renewals_enabled' => true,
             ]
         ];
@@ -92,61 +78,15 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $id ID of record to access.
      *
-     * @return \Behat\Mink\Element\Element
+     * @return Element
      */
-    protected function gotoRecordById($id = 'testsample1')
+    protected function gotoRecordById(string $id = 'testsample1'): Element
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
-        return $session->getPage();
-    }
-
-    /**
-     * Fill in and submit the catalog login form with the provided credentials.
-     *
-     * @param Element $page     Page element.
-     * @param string  $username Username
-     * @param string  $password Password
-     *
-     * @return void
-     */
-    protected function submitCatalogLoginForm(Element $page, $username, $password)
-    {
-        $this->findCss($page, '#profile_cat_username')->setValue($username);
-        $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
-    }
-
-    /**
-     * Support method to place a hold and click through to "Your Holds and Recalls."
-     *
-     * @param Element $page Page element.
-     *
-     * @return void
-     */
-    protected function placeHoldAndGoToHoldsScreen($page)
-    {
-        // Open the "place hold" dialog
-        $this->clickCss($page, 'a.placehold');
-        $this->snooze();
-
-        // Set pickup location to a non-default value so we can confirm that
-        // the element is being passed through correctly, then submit form:
-        $this->findCss($page, '#pickUpLocation')->setValue('B');
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
-
-        // If successful, we should now have a link to review the hold:
-        $link = $this->findCss($page, '.modal-body a');
-        $this->assertEquals('Your Holds and Recalls', $link->getText());
-        $link->click();
-        $this->snooze();
-
-        // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
-        );
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
     }
 
     /**
@@ -156,30 +96,30 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function placeIllRequestAndGoToIllScreen($page)
+    protected function placeIllRequestAndGoToIllScreen(Element $page): void
     {
-        // Open the "place hold" dialog
-        $this->snooze();
+        // Open the "place ILL request" dialog
+        $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placeILLRequest');
-        $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickupLibrary')->setValue('2');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->findCss($page, '#pickupLibraryLocation')->setValue('3');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
-        // If successful, we should now have a link to review the hold:
+        // If successful, we should now have a link to review the request:
+        $this->waitForPageLoad($page);
         $link = $this->findCss($page, '.modal-body a');
         $this->assertEquals('Interlibrary Loan Requests', $link->getText());
         $link->click();
-        $this->snooze();
 
         // Make sure we arrived where we expected to:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Interlibrary Loan Requests', $this->findCss($page, 'h2')->getText()
+            'Interlibrary Loan Requests',
+            $this->findCss($page, 'h2')->getText()
         );
     }
 
@@ -191,80 +131,29 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function placeStorageRetrievalRequestAndGoToSRRScreen($page)
-    {
-        // Open the "place hold" dialog
-        $this->snooze();
+    protected function placeStorageRetrievalRequestAndGoToSRRScreen(
+        Element $page
+    ): void {
+        // Open the "place storage request" dialog
+        $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placeStorageRetrievalRequest');
-        $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '.modal-body select')->setValue('C');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
 
-        // If successful, we should now have a link to review the hold:
+        // If successful, we should now have a link to review the request:
         $link = $this->findCss($page, '.modal-body a');
         $this->assertEquals('Storage Retrieval Requests', $link->getText());
         $link->click();
-        $this->snooze();
 
         // Make sure we arrived where we expected to:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Storage Retrieval Requests', $this->findCss($page, 'h2')->getText()
+            'Storage Retrieval Requests',
+            $this->findCss($page, 'h2')->getText()
         );
-    }
-
-    /**
-     * Test placing a hold
-     *
-     * @retryCallback tearDownAfterClass
-     *
-     * @return void
-     */
-    public function testPlaceHold()
-    {
-        $this->changeConfigs(
-            [
-                'config' => $this->getConfigIniOverrides(),
-                'Demo' => $this->getDemoIniOverrides(),
-            ]
-        );
-        $page = $this->gotoRecordById();
-        $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login for hold and recall information', $element->getText());
-        $element->click();
-        $this->snooze();
-        $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
-        $this->fillInAccountForm($page);
-        $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
-
-        // Test invalid patron login
-        $this->submitCatalogLoginForm($page, 'bad', 'incorrect');
-        $this->assertEquals(
-            'Invalid Patron Login',
-            $this->findCss($page, '.alert.alert-danger')->getText()
-        );
-
-        // Test valid patron login
-        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
-
-        // Create the hold and go to the holds screen:
-        $this->placeHoldAndGoToHoldsScreen($page);
-
-        // Verify the hold is correct:
-        $this->assertEquals(
-            'Journal of rational emotive therapy :'
-            . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
-        );
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus B'));
-
-        // Confirm that no cancel button appears, since it is not configured:
-        $this->assertNull($page->find('css', '#cancelAll'));
     }
 
     /**
@@ -275,7 +164,7 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickButtonGroupLink($page, $text)
+    protected function clickButtonGroupLink(Element $page, string $text): void
     {
         $link = $this->findCss($page, '.btn-group.open')->findLink($text);
         $this->assertTrue(is_object($link));
@@ -283,47 +172,58 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling a hold.
+     * Test canceling a request with the "cancel selected" button.
      *
-     * @depends testPlaceHold
+     * @param Element $page Page element.
+     * @param string  $type Request type being tested.
      *
      * @return void
      */
-    public function testCancelHold()
+    protected function cancelSelectedProcedure(Element $page, string $type): void
     {
-        // Turn on "cancel holds" in addition to normal defaults:
-        $config = $this->getConfigIniOverrides();
-        $config['Catalog']['cancel_holds_enabled'] = 1;
-        $this->changeConfigs(
-            [
-                'config' => $config,
-                'Demo' => $this->getDemoIniOverrides(),
-            ]
+        // First make sure item is there before cancel is pushed:
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
         );
 
-        // Log in the user on the record page:
-        $page = $this->gotoRecordById();
-        $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Login for hold and recall information', $element->getText());
-        $element->click();
-        $this->snooze();
-        $this->fillInLoginForm($page, 'username1', 'test', false);
-        $this->submitLoginForm($page, false);
+        // Test that control is disabled upon empty selection
+        $this->clickCss($page, '#cancelSelected');
+        $this->assertNull($page->find('css', '.btn-group.open'));
 
-        // Place the hold:
-        $this->placeHoldAndGoToHoldsScreen($page);
+        // Test that control becomes active if we click a checkbox (but don't
+        // actually cancel anything yet).
+        $this->clickCss($page, "#checkbox_testsample1");
+        $this->clickCss($page, '#cancelSelected');
+        $this->clickButtonGroupLink($page, 'No');
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
 
-        // Test empty selection
+        // Now cancel for real:
         $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
         $this->assertEquals(
-            'No holds were selected',
-            $this->findCss($page, '.alert.alert-danger')->getText()
+            '1 request(s) were successfully canceled',
+            $this->findCss($page, '.alert.alert-success')->getText()
         );
+        $this->assertNull($page->find('css', 'a.title'));
+    }
 
-        // Test "cancel all" button -- first make sure item is there before
-        // cancel is pushed:
+    /**
+     * Test canceling a request with the "cancel all" button.
+     *
+     * @param Element $page Page element.
+     * @param string  $type Request type being tested.
+     *
+     * @return void
+     */
+    protected function cancelAllProcedure(Element $page, string $type): void
+    {
+        // First make sure item is there before cancel is pushed:
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -333,7 +233,7 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click cancel but bail out with no... item should still be there.
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'No');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -343,7 +243,6 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Now cancel for real:
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
         $this->assertEquals(
             '1 request(s) were successfully canceled',
             $this->findCss($page, '.alert.alert-success')->getText()
@@ -352,35 +251,25 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test ILL requests.
+     * Routine to place an ILL request
      *
-     * @depends testPlaceHold
+     * @param Element $page Page element.
      *
      * @return void
      */
-    public function testIllRequest()
+    protected function illRequestProcedure(Element $page): void
     {
-        // Turn on "cancel holds" in addition to normal defaults:
-        $this->changeConfigs(
-            [
-                'config' => $this->getConfigIniOverrides(),
-                'Demo' => $this->getDemoIniOverrides(),
-            ]
-        );
-
-        // Log in the user on the record page:
-        $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
-        // Place the hold:
+        // Place the request:
         $this->placeIllRequestAndGoToIllScreen($page);
 
         // Verify the request is correct:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -390,35 +279,25 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test storage retrieval requests.
+     * Routine to place a storage retrieval request
      *
-     * @depends testPlaceHold
+     * @param Element $page Page element.
      *
      * @return void
      */
-    public function testStorageRetrievalRequest()
+    protected function storageRetrievalRequestProcedure(Element $page): void
     {
-        // Turn on "cancel holds" in addition to normal defaults:
-        $this->changeConfigs(
-            [
-                'config' => $this->getConfigIniOverrides(),
-                'Demo' => $this->getDemoIniOverrides(),
-            ]
-        );
-
-        // Log in the user on the record page:
-        $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
-        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
-        // Place the hold:
+        // Place the request:
         $this->placeStorageRetrievalRequestAndGoToSRRScreen($page);
 
         // Verify the request is correct:
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
@@ -428,13 +307,54 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test user profile action.
+     * Test that user profile action blocks login with catalog login is disabled.
+     * Note that we need to run this test FIRST, because after this, VuFind will
+     * remember the credentials and won't display the login form again.
      *
-     * @depends testPlaceHold
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
-    public function testProfile()
+    public function testDisabledUserLogin(): void
+    {
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['allowUserLogin'] = false;
+        $this->changeConfigs(
+            [
+                'config' => $config,
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $page = $session->getPage();
+
+        // Set up user account:
+        $this->clickCss($page, '.createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Confirm that login form is disabled:
+        $this->unFindCss($page, "#profile_cat_username");
+        $this->assertEquals(
+            "Connection to the library management system failed. Information related to your library account cannot be displayed. If the problem persists, please contact your library.",
+            $this->findCss($page, "div.alert-warning")->getText()
+        );
+
+        // Clean up the user account so we can sign up again in the next test:
+        static::removeUsers(['username1']);
+    }
+
+    /**
+     * Test user profile action.
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
+     */
+    public function testProfile(): void
     {
         $this->changeConfigs(
             [
@@ -448,11 +368,16 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
         $page = $session->getPage();
 
-        // Log in
-        $this->fillInLoginForm($page, 'username1', 'test', false);
-        $this->submitLoginForm($page, false);
+        // Set up user account:
+        $this->clickCss($page, '.createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Link ILS profile:
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Confirm that demo driver expected values are present:
+        $this->waitForPageLoad($page);
         $texts = [
             'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
         ];
@@ -462,13 +387,161 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test renewal action.
+     * Test ILL requests.
      *
-     * @depends testPlaceHold
+     * @depends testProfile
      *
      * @return void
      */
-    public function testRenewal()
+    public function testIllRequest(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $this->illRequestProcedure($page);
+
+        // Confirm that no cancel buttons appear, since they are not configured:
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
+    }
+
+    /**
+     * Set up a cancel ILL request test.
+     *
+     * @return Element
+     */
+    protected function setUpCancelIllTest(): Element
+    {
+        // Turn on "cancel ILL requests" in addition to normal defaults:
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['cancel_ill_requests_enabled'] = 1;
+        $this->changeConfigs(
+            [
+                'config' => $config,
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $this->illRequestProcedure($page);
+        return $page;
+    }
+
+    /**
+     * Test canceling an ILL request with "cancel all."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelAllIllRequest(): void
+    {
+        $page = $this->setUpCancelIllTest();
+        $this->cancelAllProcedure($page, 'interlibrary loan requests');
+    }
+
+    /**
+     * Test canceling an ILL request with "cancel selected."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelSelectedIllRequest(): void
+    {
+        $page = $this->setUpCancelIllTest();
+        $this->cancelSelectedProcedure($page, 'interlibrary loan requests');
+    }
+
+    /**
+     * Test storage retrieval requests.
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testStorageRetrievalRequest(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $this->storageRetrievalRequestProcedure($page);
+
+        // Confirm that no cancel buttons appear, since they are not configured:
+        $this->unFindCss($page, '#cancelSelected');
+        $this->unFindCss($page, '#cancelAll');
+    }
+
+    /**
+     * Set up a cancel storage retrieval request test.
+     *
+     * @return Element
+     */
+    protected function setUpCancelStorageRetrievalTest(): Element
+    {
+        // Turn on "cancel storage requests" in addition to normal defaults:
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['cancel_storage_retrieval_requests_enabled'] = 1;
+        $this->changeConfigs(
+            [
+                'config' => $config,
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $this->storageRetrievalRequestProcedure($page);
+        return $page;
+    }
+
+    /**
+     * Test canceling storage retrieval requests with "cancel all."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelAllStorageRetrievalRequest(): void
+    {
+        $page = $this->setUpCancelStorageRetrievalTest();
+        $this->cancelAllProcedure($page, 'storage retrieval requests');
+    }
+
+    /**
+     * Test canceling storage retrieval requests with "cancel selected."
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testCancelSelectedStorageRetrievalRequest(): void
+    {
+        $page = $this->setUpCancelStorageRetrievalTest();
+        $this->cancelSelectedProcedure($page, 'storage retrieval requests');
+    }
+
+    /**
+     * Test renewal action.
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testRenewal(): void
     {
         $this->changeConfigs(
             [
@@ -488,7 +561,7 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test submitting with no selected checkboxes:
         $this->clickCss($page, '#renewSelected');
-        $this->snooze();
+        $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'No items were selected',
             $this->findCss($page, '.alert.alert-danger')->getText()
@@ -496,81 +569,11 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test "renew all":
         $this->clickCss($page, '#renewAll');
-        $this->snooze();
+        $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Renewal Successful',
             $this->findCss($page, '.alert.alert-success')->getText()
         );
-    }
-
-    /**
-     * Test create account path when in holds_mode = "all"
-     *
-     * IMPORTANT: this test uses an ID with a slash in it; if it fails, ensure
-     * that Apache is configured with "AllowEncodedSlashes on" inside the
-     * VirtualHost used for your VuFind test instance!
-     *
-     * @retryCallback removeUsername2
-     *
-     * @return void
-     */
-    public function testHoldsAll()
-    {
-        $config = $this->getConfigIniOverrides();
-        $config['Catalog']['holds_mode'] = 'all';
-        $config['Catalog']['title_level_holds_mode'] = 'always';
-        $this->changeConfigs(
-            [
-                'config' => $config,
-                'Demo' => $this->getDemoIniOverrides(),
-            ]
-        );
-        $page = $this->gotoRecordById('dollar$ign/slashcombo');
-        // No login at top
-        $this->assertNull($page->find('css', '.alert.alert-info a'));
-        // Hold links should be visible
-        $element = $this->findCss($page, 'a.placehold');
-        $element->click();
-        $this->snooze();
-        // Since we're not logged in...
-        $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
-        $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'u2@vufind.org']
-        );
-        $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
-
-        // Test valid patron login
-        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
-
-        // Go directly to holds screen
-        // Set pickup location to a non-default value so we can confirm that
-        // the element is being passed through correctly, then submit form:
-        $this->findCss($page, '#pickUpLocation')->setValue('B');
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
-
-        // If successful, we should now have a link to review the hold:
-        $link = $this->findCss($page, '.modal-body a');
-        $this->assertEquals('Your Holds and Recalls', $link->getText());
-        $link->click();
-        $this->snooze();
-
-        // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
-        );
-    }
-
-    /**
-     * Retry cleanup method in case of failure during testHoldsAll.
-     *
-     * @return void
-     */
-    protected function removeUsername2()
-    {
-        static::removeUsers(['username2']);
     }
 
     /**
@@ -580,6 +583,6 @@ class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2']);
+        static::removeUsers(['username1']);
     }
 }

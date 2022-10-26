@@ -1,0 +1,59 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://vufind.org/marc.schema.json",
+    "title": "MARC-in-JSON",
+    "description": "A MARC record in JSON format",
+    "type": "object",
+    "properties": {
+        "leader": {
+            "type": "string",
+            "minLength": 24,
+            "maxLength": 24
+        },
+        "fields": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "description": "A MARC Control Field",
+                        "additionalProperties": {
+                            "type":"string"
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type":"object",
+                            "description": "A MARC Variable Field",
+                            "properties": {
+                                "ind1": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 1
+                                },
+                                "ind2": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 1
+                                },
+                                "subfields": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "description": "A MARC Subfield",
+                                        "additionalProperties": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}

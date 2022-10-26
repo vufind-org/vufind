@@ -38,6 +38,14 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property string  $record_id
+ * @property string  $title
+ * @property ?string $author
+ * @property ?int    $year
+ * @property string  $source
+ * @property ?string $extra_metadata
  */
 class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
@@ -87,7 +95,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
             $linker = $this->getDbTable('ResourceTags');
             $linker->createLink(
-                $this->id, $tag->id, is_object($user) ? $user->id : null, $list_id
+                $this->id,
+                $tag->id,
+                is_object($user) ? $user->id : null,
+                $list_id
             );
         }
     }
@@ -114,7 +125,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             if (!empty($tagIds)) {
                 $linker = $this->getDbTable('ResourceTags');
                 $linker->destroyResourceLinks(
-                    $this->id, $user->id, $list_id, $tagIds
+                    $this->id,
+                    $user->id,
+                    $list_id,
+                    $tagIds
                 );
             }
         }
@@ -142,6 +156,50 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $row->user_id = $user->id;
         $row->resource_id = $this->id;
         $row->comment = $comment;
+        $row->created = date('Y-m-d H:i:s');
+        $row->save();
+        return $row->id;
+    }
+
+    /**
+     * Add or update user's rating for the current resource.
+     *
+     * @param int  $userId User ID
+     * @param ?int $rating Rating (null to delete)
+     *
+     * @throws LoginRequiredException
+     * @throws \Exception
+     * @return int ID of rating added, deleted or updated
+     */
+    public function addOrUpdateRating(int $userId, ?int $rating): int
+    {
+        if (null !== $rating && ($rating < 0 || $rating > 100)) {
+            throw new \Exception('Rating value out of range');
+        }
+
+        $ratings = $this->getDbTable('Ratings');
+        $callback = function ($select) use ($userId) {
+            $select->where->equalTo('ratings.resource_id', $this->id);
+            $select->where->equalTo('ratings.user_id', $userId);
+        };
+        if ($existing = $ratings->select($callback)->current()) {
+            if (null === $rating) {
+                $existing->delete();
+            } else {
+                $existing->rating = $rating;
+                $existing->save();
+            }
+            return $existing->id;
+        }
+
+        if (null === $rating) {
+            return 0;
+        }
+
+        $row = $ratings->createRow();
+        $row->user_id = $userId;
+        $row->resource_id = $this->id;
+        $row->rating = $rating;
         $row->created = date('Y-m-d H:i:s');
         $row->save();
         return $row->id;

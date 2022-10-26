@@ -37,6 +37,10 @@ use VuFindTheme\ThemeInfo;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @method getWhitespace(string|int $indent)
+ * @method getIndent()
+ * @method getSeparator()
  */
 class HeadScript extends \Laminas\View\Helper\HeadScript
     implements \Laminas\Log\LoggerAwareInterface
@@ -126,7 +130,9 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
      *
      * @return void
      */
-    public function forcePrependFile($src = null, $type = 'text/javascript',
+    public function forcePrependFile(
+        $src = null,
+        $type = 'text/javascript',
         array $attrs = []
     ) {
         // Look for existing entry and remove it if found. Comparison method

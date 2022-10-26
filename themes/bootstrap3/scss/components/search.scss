@@ -3,6 +3,19 @@ $thumbnail-width-small:   60px;
 $thumbnail-width-medium: 100px;
 $thumbnail-width-large:  160px;
 
+// record result list ol, ul that contains li.result
+.record-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &.search-results-solr-auth {
+    .media-left, .media-right {
+      display: none;
+    }
+  }
+}
+
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
@@ -127,6 +140,7 @@ header .container.navbar { margin-bottom: 0; }
     margin: 0;
     padding-right: 10px;
     padding-left: 10px;
+    overflow: visible;
   }
   .media-left,
   .media-right {
@@ -140,6 +154,9 @@ header .container.navbar { margin-bottom: 0; }
       text-align: center;
       white-space: nowrap;
       text-decoration: underline;
+    }
+    .rating-summary a {
+      white-space: normal;
     }
 
     img {
@@ -162,6 +179,7 @@ header .container.navbar { margin-bottom: 0; }
   .media-body {
     flex: 1;
     width: unset;
+    overflow: visible;
   }
 }
 
@@ -430,11 +448,14 @@ body.rtl {
 .record-nav .cart-add,
 .record-nav .cart-remove,
 .reset-filters-btn {
-  display: inline-block;
+  @extend .icon--link;
+  gap: 0.25rem;
+
   margin-bottom: 4px;
   padding: .5rem 1rem;
   border: 0;
   color: #555;
+  text-decoration: none;
   background-color: rgba(0,0,0,.05);
   border-radius: 4px;
 
@@ -456,10 +477,6 @@ body.rtl {
 }
 .active-filters .search-filter-remove:hover {
   color: red;
-}
-.search-filter-remove::after {
-  content: "\f2d3"; /* fa-window-close */
-  font-family: "FontAwesome";
 }
 .search-filter-dropdown {
   display: inline-block;
@@ -500,8 +517,8 @@ body.rtl {
 }
 
 .search-history-table {
-  @extend .table all;
-  @extend .table-striped all;
+  @extend .table;
+  @extend .table-striped;
 }
 table.search-history-table {
   table-layout: auto;

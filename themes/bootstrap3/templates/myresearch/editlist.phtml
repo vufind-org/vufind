@@ -1,6 +1,6 @@
 <?php
   // Set up page title:
-  $pageTitle = empty($this->list->id) ? 'Create a List' : "edit_list";
+  $pageTitle = $this->newList ? 'Create a List' : "edit_list";
   $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
@@ -10,10 +10,17 @@
 
 <?=$this->flashmessages()?>
 
+<?php if ($this->auth()->isLoggedIn() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
+  <div class="<?=$this->layoutClass('mainbody')?>">
+  <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" aria-label="<?=$this->transEsc('sidebar_expand')?>">
+      <?=$this->transEsc('Your Account') ?>
+  </a>
+<?php endif; ?>
+
 <h2><?=$this->transEsc($pageTitle); ?></h2>
 
-<form class="form-edit-list" method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>">
-  <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->list->id ?>"/>
+<form class="form-edit-list" method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>">
+  <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->escapeHtmlAttr($this->list->id) ?>"/>
   <div class="form-group">
     <label class="control-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
     <input id="list_title" class="form-control" type="text" name="title" value="<?=isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : ''?>"/>
@@ -52,3 +59,9 @@
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>"/>
   </div>
 </form>
+<?php if ($this->auth()->isLoggedIn() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
+  </div>
+  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+      <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'editlist/NEW'])?>
+  </div>
+<?php endif; ?>

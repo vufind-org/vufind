@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Trait with utility methods for user creation/management. Depends upon the
- * LiveDatabaseTrait for database access and the LiveDetectionTrait for
- * identification of a live test environment.
+ * Trait with utility methods for user creation/management.
  *
  * PHP version 7
  *
@@ -33,9 +31,7 @@ namespace VuFindTest\Feature;
 use Behat\Mink\Element\Element;
 
 /**
- * Trait with utility methods for user creation/management. Depends upon the
- * LiveDatabaseTrait for database access and the LiveDetectionTrait for
- * identification of a live test environment.
+ * Trait with utility methods for user creation/management.
  *
  * @category VuFind
  * @package  Tests
@@ -45,59 +41,6 @@ use Behat\Mink\Element\Element;
  */
 trait UserCreationTrait
 {
-    /**
-     * Static setup support function to fail if users already exist in the database.
-     * We want to ensure a clean state for each test!
-     *
-     * @return void
-     */
-    protected static function failIfUsersExist(): void
-    {
-        $test = new static();   // create instance of current class
-        // Fail if the test does not include the LiveDetectionTrait.
-        if (!$test->hasLiveDetectionTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-        // Fail if the test does not include the LiveDatabaseTrait.
-        if (!$test->hasLiveDatabaseTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-        // Fail if there are already users in the database (we don't want to run this
-        // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
-        if (count($userTable->select()) > 0) {
-            self::fail(
-                'Test cannot run with pre-existing user data!'
-            );
-            return;
-        }
-    }
-
-    /**
-     * Mink support function: assert a warning message in the lightbox.
-     *
-     * @param Element $page    Page element
-     * @param string  $message Expected message
-     *
-     * @return void
-     */
-    protected function assertLightboxWarning(Element $page, $message)
-    {
-        $warning = $page->find('css', '.modal-body .alert-danger .message');
-        if (!$warning || strlen(trim($warning->getText())) == 0) {
-            $warning = $this->findCss($page, '.modal-body .alert-danger');
-        }
-        $this->assertEquals($message, $warning->getText());
-    }
-
     /**
      * Mink support function: fill in the account creation form.
      *
@@ -119,7 +62,8 @@ trait UserCreationTrait
 
         foreach ($defaults as $field => $default) {
             $this->findCssAndSetValue(
-                $page, '#account_' . $field,
+                $page,
+                '#account_' . $field,
                 $overrides[$field] ?? $default
             );
         }
@@ -136,18 +80,26 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function fillInLoginForm(Element $page, $username, $password,
-        $inModal = true, $prefix = ''
+    protected function fillInLoginForm(
+        Element $page,
+        $username,
+        $password,
+        $inModal = true,
+        $prefix = ''
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         if (null !== $username) {
             $this->findCssAndSetValue(
-                $page, $prefix . '[name="username"]', $username
+                $page,
+                $prefix . '[name="username"]',
+                $username
             );
         }
         if (null !== $password) {
             $this->findCssAndSetValue(
-                $page, $prefix . '[name="password"]', $password
+                $page,
+                $prefix . '[name="password"]',
+                $password
             );
         }
     }
@@ -163,8 +115,12 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function fillInChangePasswordForm(Element $page, $old, $new,
-        $inModal = false, $prefix = '#newpassword '
+    protected function fillInChangePasswordForm(
+        Element $page,
+        $old,
+        $new,
+        $inModal = false,
+        $prefix = '#newpassword '
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $this->findCssAndSetValue($page, $prefix . '[name="oldpwd"]', $old);
@@ -186,47 +142,5 @@ trait UserCreationTrait
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
-        $this->snooze();
-    }
-
-    /**
-     * Static teardown support function to destroy user accounts. Accounts are
-     * expected to exist, and the method will fail if they are missing.
-     *
-     * @param array|string $users User(s) to delete
-     *
-     * @return void
-     *
-     * @throws \Exception
-     */
-    protected static function removeUsers($users)
-    {
-        $test = new static();   // create instance of current class
-        // Fail if the test does not include the LiveDetectionTrait.
-        if (!$test->hasLiveDetectionTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-
-        // Fail if the test does not include the LiveDatabaseTrait.
-        if (!$test->hasLiveDatabaseTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-
-        // Delete test user
-        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
-        foreach ((array)$users as $username) {
-            $user = $userTable->getByUsername($username, false);
-            if (!empty($user)) {
-                $user->delete();
-            }
-        }
     }
 }

@@ -109,7 +109,10 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
         return $this->renderClassTemplate(
-            $template, $className, $context ?? ['driver' => $this->driver], $throw
+            $template,
+            $className,
+            $context ?? ['driver' => $this->driver],
+            $throw
         );
     }
 
@@ -187,7 +190,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getFormatClass($format)
     {
         return $this->renderTemplate(
-            'format-class.phtml', ['format' => $format]
+            'format-class.phtml',
+            ['format' => $format]
         );
     }
 
@@ -199,6 +203,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getFormatList()
     {
         return $this->renderTemplate('format-list.phtml');
+    }
+
+    /**
+     * Render a list of record labels.
+     *
+     * @return string
+     */
+    public function getLabelList()
+    {
+        return $this->renderTemplate('label-list.phtml');
     }
 
     /**
@@ -337,7 +351,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
         $link .= $this->getView()->plugin('searchTabs')
-            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+            ->getCurrentHiddenFilterParams(
+                $this->driver->getSearchBackendIdentifier()
+            );
         return $link;
     }
 
@@ -400,7 +416,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $context['formAttr'] = $formAttr;
         }
         return $this->contextHelper->renderInContext(
-            'record/checkbox.phtml', $context
+            'record/checkbox.phtml',
+            $context
         );
     }
 
@@ -468,7 +485,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 }
             }
             if ($details['size'] === false) {
-                list($details['size']) = explode(':', $preferredSize);
+                [$details['size']] = explode(':', $preferredSize);
             }
             $details['html'] = $this->renderTemplate('cover.phtml', $details);
         }
@@ -527,7 +544,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string|bool
      */
-    public function getQrCode($context, $extra = [], $level = "L", $size = 3,
+    public function getQrCode(
+        $context,
+        $extra = [],
+        $level = "L",
+        $size = 3,
         $margin = 4
     ) {
         if (!isset($this->config->QRCode)) {
@@ -553,7 +574,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
 
         // Try to build text:
         $text = $this->renderTemplate(
-            $template, $extra + ['driver' => $this->driver]
+            $template,
+            $extra + ['driver' => $this->driver]
         );
         $qrcode = [
             "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
@@ -646,7 +668,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return $link;
         };
 
-        return array_map($formatLink, $urls);
+        return $this->deduplicateLinks(array_map($formatLink, $urls));
     }
 
     /**
@@ -660,5 +682,20 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     {
         return isset($this->config->OpenURL->replace_other_urls)
             && $this->config->OpenURL->replace_other_urls;
+    }
+
+    /**
+     * Remove duplicates from the array. All keys and values are being used
+     * recursively to compare, so if there are 2 links with the same url
+     * but different desc, they will both be preserved.
+     *
+     * @param array $links array of associative arrays,
+     * each containing 'desc' and 'url' keys
+     *
+     * @return array
+     */
+    protected function deduplicateLinks($links)
+    {
+        return array_values(array_unique($links, SORT_REGULAR));
     }
 }

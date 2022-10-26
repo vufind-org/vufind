@@ -36,8 +36,10 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Summon extends DefaultRecord
+class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
 {
+    use Feature\PreviousUniqueIdTrait;
+
     /**
      * Fields that may contain subject headings, and their descriptions
      *
@@ -56,35 +58,6 @@ class Summon extends DefaultRecord
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter = null;
-
-    /**
-     * Previous unique ID (if applicable).
-     *
-     * @var string
-     */
-    protected $previousUniqueId = null;
-
-    /**
-     * Get previous unique ID (or null if not applicable).
-     *
-     * @return string
-     */
-    public function getPreviousUniqueId()
-    {
-        return $this->previousUniqueId;
-    }
-
-    /**
-     * Set previous unique ID
-     *
-     * @param string $id ID to set
-     *
-     * @return void
-     */
-    public function setPreviousUniqueId($id)
-    {
-        $this->previousUniqueId = $id;
-    }
 
     /**
      * Get all subject headings associated with this record.  Each heading is
@@ -499,7 +472,9 @@ class Summon extends DefaultRecord
         $sub = $this->getSubtitle();
         $title = empty($sub) ? $title : "{$title}: {$sub}";
         return str_replace(
-            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $title
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+            '',
+            $title
         );
     }
 

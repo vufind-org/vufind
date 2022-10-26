@@ -27,10 +27,13 @@
  */
 namespace VuFind\I18n\Translator;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
+use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * Translator factory.
@@ -41,51 +44,59 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
+class TranslatorFactory implements DelegatorFactoryInterface
 {
+    use \VuFind\I18n\Translator\LanguageInitializerTrait;
+
     /**
-     * Create an object
+     * A factory that creates delegates of a given service
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * @param ContainerInterface $container Container
+     * @param string             $name      Service name
+     * @param callable           $callback  Primary factory
+     * @param null|array         $options   Options
      *
      * @return object
-     *
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
+     *     creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $name,
+        callable $callback,
         array $options = null
     ) {
-        $translator = parent::__invoke($container, $requestedName, $options);
-
-        // Set up the ExtendedIni plugin:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $pathStack = [
-            APPLICATION_PATH . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages'
-        ];
-        $fallbackLocales = $config->Site->language == 'en'
-            ? 'en'
-            : [$config->Site->language, 'en'];
-        try {
-            $pm = $translator->getPluginManager();
-        } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $ex) {
-            // If getPluginManager is missing, this means that the user has
-            // disabled translation in module.config.php or PHP's intl extension
-            // is missing. We can do no further configuration of the object.
+        $translator = $callback();
+        if (!extension_loaded('intl')) {
+            error_log(
+                'Translation broken due to missing PHP intl extension.'
+            );
             return $translator;
         }
-        $pm->setService(
-            'ExtendedIni', new Loader\ExtendedIni($pathStack, $fallbackLocales)
-        );
+        $settings = $container->get(LocaleSettings::class);
+        $language = $settings->getUserLocale();
+        $this->enableCaching($translator, $container);
+        $this->addLanguageToTranslator($translator, $settings, $language);
 
+        return $translator;
+    }
+
+    /**
+     * Add caching to a translator object
+     *
+     * @param TranslatorInterface $translator Translator object
+     * @param ContainerInterface  $container  Service manager
+     *
+     * @return void
+     */
+    protected function enableCaching(
+        TranslatorInterface $translator,
+        ContainerInterface $container
+    ): void {
         // Set up language caching for better performance:
         try {
             $translator->setCache(
@@ -100,7 +111,5 @@ class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
                 . $e->getMessage()
             );
         }
-
-        return $translator;
     }
 }

@@ -33,15 +33,15 @@
 
     <h2><?=$this->transEsc('User Access')?></h2>
     <ul class="list-group">
-        <?php if($this->hasAccess->status):?>
+        <?php if ($this->hasAccess->status):?>
         <li class="list-group-item"><?php echo "<strong>Current User Has Access?:</strong> Yes"?></li>
         <li class="list-group-item"><?php echo "<strong>Current User API Token?:</strong> " . $this->hasAccess->status;?></li>
         <?php else:?>
         <li class="list-group-item"><?php echo "<strong>Current User Has Access?:</strong> No"?></li>
         <?php endif;?>
         <li class="list-group-item"><?php echo "<strong>Test User:</strong>"?>
-            <div class="alert alert-info"><i class='fa fa-exclamation-triangle'></i>
-                Feature not ready yet
+            <div class="alert alert-info">
+                <?=$this->icon('warning') ?> Feature not ready yet
             </div>
         </li>
     </ul>

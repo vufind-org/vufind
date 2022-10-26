@@ -40,16 +40,12 @@ if (!empty($journalTitle)) {
     }
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
-if (!empty($author)) {
-    echo "A1 $author\n";
+foreach ($this->driver->tryMethod('getPrimaryAuthors', [], []) as $current) {
+    echo "A1 $current\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo "A2 $current\n";
-    }
+foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
+    echo "A2 $current\n";
 }
 
 $languages = $this->driver->tryMethod('getLanguages');
@@ -90,7 +86,7 @@ if (!empty($edition)) {
     echo "ED $edition\n";
 }
 
-echo "UL " . $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+echo "UL " . $this->serverUrl($this->recordLinker()->getUrl($this->driver)) . "\n";
 
 $summary = $this->driver->tryMethod('getSummary');
 if (is_array($summary)) {

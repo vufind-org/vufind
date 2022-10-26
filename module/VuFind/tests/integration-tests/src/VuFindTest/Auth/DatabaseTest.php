@@ -32,17 +32,18 @@ use VuFind\Auth\Database;
 /**
  * Database authentication test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DatabaseTest extends \PHPUnit\Framework\TestCase
+final class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
-    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Object to test
@@ -58,7 +59,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**

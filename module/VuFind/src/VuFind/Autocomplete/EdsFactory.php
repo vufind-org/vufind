@@ -28,10 +28,10 @@
  */
 namespace VuFind\Autocomplete;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
@@ -57,15 +57,15 @@ class EdsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
-        return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class)->get('EDS')
-        );
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }

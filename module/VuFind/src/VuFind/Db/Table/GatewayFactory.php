@@ -27,10 +27,10 @@
  */
 namespace VuFind\Db\Table;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Generic table gateway factory.
@@ -71,9 +71,11 @@ class GatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         $adapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
@@ -82,7 +84,11 @@ class GatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $rowPrototype = $this->getRowPrototype($container, $requestedName);
         $args = $options ? $options : [];
         return new $requestedName(
-            $adapter, $tm, $config, $rowPrototype, ...$args
+            $adapter,
+            $tm,
+            $config,
+            $rowPrototype,
+            ...$args
         );
     }
 }

@@ -27,11 +27,11 @@
  */
 namespace VuFindTheme;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Theme Initializer
@@ -61,7 +61,7 @@ class Initializer
     /**
      * Top-level service container
      *
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     protected $serviceManager;
 
@@ -169,6 +169,7 @@ class Initializer
         $this->sendThemeOptionsToView();
 
         // Make sure the current theme is set correctly in the tools object:
+        $error = null;
         try {
             $this->tools->setTheme($currentTheme);
         } catch (\Exception $error) {
@@ -207,11 +208,13 @@ class Initializer
             ? $this->config->mobile_theme : false;
 
         // Find out if the user has a saved preference in the POST, URL or cookies:
+        $selectedUI = null;
         if (isset($request)) {
             $selectedUI = $request->getPost()->get(
-                'ui', $request->getQuery()->get(
-                    'ui', isset($request->getCookie()->ui)
-                    ? $request->getCookie()->ui : null
+                'ui',
+                $request->getQuery()->get(
+                    'ui',
+                    $request->getCookie()->ui ?? null
                 )
             );
         }
@@ -338,6 +341,17 @@ class Initializer
             }
         }
 
+        // Determine doctype and apply it:
+        $doctype = 'HTML5';
+        foreach ($themes as $key => $currentThemeInfo) {
+            if (isset($currentThemeInfo['doctype'])) {
+                $doctype = $currentThemeInfo['doctype'];
+                break;
+            }
+        }
+        $loader = $this->serviceManager->get('ViewHelperManager');
+        ($loader->get('doctype'))($doctype);
+
         // Apply the loaded theme settings in reverse for proper inheritance:
         foreach ($themes as $key => $currentThemeInfo) {
             if (isset($currentThemeInfo['helpers'])) {
@@ -348,9 +362,6 @@ class Initializer
             $templatePathStack[] = $this->tools->getBaseDir() . "/$key/templates";
 
             // Add CSS and JS dependencies:
-            if ($lessActive && isset($currentThemeInfo['less'])) {
-                $resources->addLessCss($currentThemeInfo['less']);
-            }
             if (isset($currentThemeInfo['css'])) {
                 $resources->addCss($currentThemeInfo['css']);
             }
@@ -371,7 +382,7 @@ class Initializer
 
         // Inject the path stack generated above into the resolver:
         $resolver = $this->serviceManager->get(TemplatePathStack::class);
-        $resolver->setPaths($templatePathStack);
+        $resolver->addPaths($templatePathStack);
 
         // Add theme specific language files for translation
         $this->updateTranslator($themes);
@@ -387,6 +398,7 @@ class Initializer
      */
     protected function updateTranslator($themes)
     {
+        $theme = null;
         $pathStack = [];
         foreach (array_keys($themes) as $theme) {
             $dir = APPLICATION_PATH . '/themes/' . $theme . '/languages';

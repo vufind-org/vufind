@@ -1,25 +1,45 @@
-<?=$this->doctype('HTML5')?>
+<?=$this->doctype()?>
+
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
-    <?php $this->headThemeResources(); ?>
-    <meta charset="utf-8">
+    <?php $this->setupThemeResources(); ?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
-    <?=$this->headTitle()?>
+
     <?php
+      // Format the page title using the translation system:
+      $siteConfig = $this->config()->get('config')->Site;
+      // Disabled escaping of title temporarily so that we get it unescaped first:
+      $this->headTitle()->setAutoEscape(false);
+      $fullTitle = $this->translate(
+          'title_wrapper',
+          [
+            '%%pageTitle%%' => $this->headTitle()->renderTitle(),
+            '%%siteTitle%%' => $siteConfig->title,
+            '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::'
+          ]
+      );
+      // Enable escaping again for proper output:
+      $this->headTitle()->setAutoEscape(true);
+      echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
+
       // Set up OpenSearch link:
       $this->headLink(
-        [
-          'href' => $this->url('search-opensearch') . '?method=describe',
-          'type' => 'application/opensearchdescription+xml',
-          'title' => $this->transEsc('Library Catalog Search'),
-          'rel' => 'search'
-        ]
+          [
+            'href' => $this->url('search-opensearch') . '?method=describe',
+            'type' => 'application/opensearchdescription+xml',
+            'title' => $this->transEsc('Library Catalog Search'),
+            'rel' => 'search'
+          ]
       );
+      // We need to generate the icons early, because they may add some stylesheets;
+      // if we render them after the headLink / headStyle calls, some dependencies
+      // may not load correctly. Thus, we render early, but use this later.
+      $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
     ?>
-    <!-- RTL styling -->
     <?php if ($this->layout()->rtl) {
+      // RTL styling
       $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
     } ?>
     <?=$this->headLink()?>
@@ -34,21 +54,18 @@
         if ($cart->isActive()) {
           $this->headScript()->appendFile("vendor/js.cookie.js");
           $this->headScript()->appendFile("cart.js");
-          $domain = $cart->getCookieDomain();
-          if (!empty($domain)) {
+          if ($domain = $cart->getCookieDomain()) {
             $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
           }
-          $cookiePath = $cart->getCookiePath();
-          if (!empty($cookiePath)) {
+          if ($cookiePath = $cart->getCookiePath()) {
             $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
           }
-          $cookieSameSite = $cart->getCookieSameSite();
-          if (null !== $cookieSameSite) {
+          if ($cookieSameSite = $cart->getCookieSameSite()) {
             $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
           }
         }
         $this->headScript()->prependScript(
-          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+            'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );
       }
 
@@ -67,10 +84,13 @@
       $root = rtrim($this->url('home'), '/');
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
+      $cspNonce = $this->cspNonce();
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
+VuFind.addIcons({$icons});
+VuFind.setCspNonce('{$cspNonce}');
 JS;
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
@@ -78,7 +98,8 @@ JS;
           $this->headScript()->appendFile("covers.js");
       }
     ?>
-    <?=$this->headScript()?>
+    <?=$this->cookieConsent()->render()?>
+    <?=$this->headScript() ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <?php // Set up the search box -- there are three possible cases:
@@ -100,28 +121,8 @@ JS;
     </header>
     <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
       <div class="container">
-        <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
-          && !empty($this->layout()->breadcrumbs)
-          && $this->layout()->breadcrumbs !== false
-        ): ?>
-          <ul class="breadcrumb hidden-print">
-            <?php if(is_array($this->layout()->breadcrumbs)): ?>
-              <?php if(count($this->layout()->breadcrumbs) > 1): ?>
-                <?=$this->render('breadcrumbs/multi.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title' => $this->layout()->title,
-                    'from' => $this->layout()->from
-                  ]) ?>
-              <?php else: ?>
-                <?=$this->render('breadcrumbs/default.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title' => $this->layout()->title
-                  ]) ?>
-              <?php endif; ?>
-            <?php else: ?>
-              <?=$this->layout()->breadcrumbs ?>
-            <?php endif; ?>
-          </ul>
+        <?php if (!empty($this->layout()->showBreadcrumbs ?? true) && !empty($this->layout()->breadcrumbs)): ?>
+          <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
         <?php endif; ?>
       </div>
     </nav>
@@ -132,21 +133,24 @@ JS;
     </div>
     <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal">
-            <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+            <?=$this->icon('lightbox-close', ['aria-label' => $this->transEscAttr('Close')]) ?>
           </button>
-          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
+          <div class="modal-body"></div>
         </div>
       </div>
     </div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
+    <?=$this->matomo()?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
     <?php endforeach; ?>
+
+    <?=$this->footScript() ?>
   </body>
 </html>

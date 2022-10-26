@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         Amazon::class => Deprecated::class,
         'amazon' => Deprecated::class,
+        'bokinfo' => Bokinfo::class,
         'booksite' => Booksite::class,
         'buchhandel' => Buchhandel::class,
         'browzine' => BrowZine::class,
@@ -58,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'localfile' => LocalFile::class,
         'obalkyknih' => ObalkyKnih::class,
         'openlibrary' => OpenLibrary::class,
+        'orb' => Orb::class,
         'summon' => Summon::class,
         'syndetics' => Syndetics::class,
     ];
@@ -69,6 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Amazon::class => AmazonFactory::class,
+        Bokinfo::class => InvokableFactory::class,
         Booksite::class => BooksiteFactory::class,
         BrowZine::class => BrowZineFactory::class,
         Buchhandel::class => BuchhandelFactory::class,
@@ -79,6 +82,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         LocalFile::class => InvokableFactory::class,
         ObalkyKnih::class => ObalkyKnihContentFactory::class,
         OpenLibrary::class => InvokableFactory::class,
+        Orb::class => OrbFactory::class,
         Summon::class => InvokableFactory::class,
         Syndetics::class => SyndeticsFactory::class,
     ];

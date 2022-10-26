@@ -116,7 +116,8 @@ VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
 $expectedBaseDir and $localFixtures respectively.
 TEXT;
         $this->assertEquals(
-            $expectedOutput, trim($commandTester->getDisplay())
+            $expectedOutput,
+            trim($commandTester->getDisplay())
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -172,7 +173,8 @@ VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
 $expectedBaseDir and $localFixtures respectively.
 EXPECTED;
         $this->assertEquals(
-            $expectedOutput, trim($commandTester->getDisplay())
+            $expectedOutput,
+            trim($commandTester->getDisplay())
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -188,7 +190,7 @@ EXPECTED;
         array $methods = ['buildDirs', 'getInput', 'writeFileToDisk']
     ) {
         return $this->getMockBuilder(InstallCommand::class)
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

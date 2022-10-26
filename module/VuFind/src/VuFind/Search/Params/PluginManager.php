@@ -44,6 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'blender' => \VuFind\Search\Blender\Params::class,
         'browzine' => \VuFind\Search\BrowZine\Params::class,
         'combined' => \VuFind\Search\Combined\Params::class,
         'eds' => \VuFind\Search\EDS\Params::class,
@@ -73,6 +74,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        \VuFind\Search\Blender\Params::class
+            => \VuFind\Search\Blender\ParamsFactory::class,
         \VuFind\Search\BrowZine\Params::class => ParamsFactory::class,
         \VuFind\Search\Combined\Params::class => ParamsFactory::class,
         \VuFind\Search\EDS\Params::class => ParamsFactory::class,
@@ -107,7 +110,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,

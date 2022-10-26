@@ -108,7 +108,7 @@ class Backend extends AbstractBackend
     protected $orgId;
 
     /**
-     * Vufind Authentication manager
+     * VuFind Authentication manager
      *
      * @var \VuFind\Auth\Manager
      */
@@ -145,9 +145,13 @@ class Backend extends AbstractBackend
      * @param Config                           $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
-    public function __construct(Connector $client,
-        RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
-        SessionContainer $session, Config $config = null, $isGuest = true
+    public function __construct(
+        Connector $client,
+        RecordCollectionFactoryInterface $factory,
+        CacheAdapter $cache,
+        SessionContainer $session,
+        Config $config = null,
+        $isGuest = true
     ) {
         // Save dependencies/incoming parameters:
         $this->client = $client;
@@ -177,7 +181,10 @@ class Backend extends AbstractBackend
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      **/
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         // process EDS API communication tokens.
@@ -193,7 +200,7 @@ class Backend extends AbstractBackend
         }
 
         // create query parameters from VuFind data
-        $queryString = !empty($query) ? $query->getAllTerms() : '';
+        $queryString = $query->getAllTerms();
         $paramsStr = implode('&', null !== $params ? $params->request() : []);
         $this->debugPrint(
             "Query: $queryString, Limit: $limit, Offset: $offset, "
@@ -244,7 +251,10 @@ class Backend extends AbstractBackend
                 // controller can fix it from here:
                 $legalPage = floor($legalPos / $limit);
                 throw new \VuFindSearch\Backend\Exception\DeepPagingException(
-                    $e->getMessage(), $e->getCode(), $legalPage, $e
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $legalPage,
+                    $e
                 );
             default:
                 $response = [];
@@ -269,6 +279,7 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
             $authenticationToken = $this->getAuthenticationToken();
             // check to see if the profile is overridden
@@ -283,7 +294,7 @@ class Backend extends AbstractBackend
                     'Retrieval id is not in the correct format.'
                 );
             }
-            list($dbId, $an) = $parts;
+            [$dbId, $an] = $parts;
             $hlTerms = (null !== $params)
                 ? $params->get('highlightterms') : null;
             $extras = [];
@@ -293,9 +304,16 @@ class Backend extends AbstractBackend
                 $extras['ebookpreferredformat'] = $eBookFormat;
             }
             $response = $this->client->retrieve(
-                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms, $extras
+                $an,
+                $dbId,
+                $authenticationToken,
+                $sessionToken,
+                $hlTerms,
+                $extras
             );
         } catch (ApiException $e) {
+            // Error codes can be reviewed at
+            // https://connect.ebsco.com/s/article/EBSCO-Discovery-Service-API-Reference-Guide-Error-Codes
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
             case 104:
@@ -309,14 +327,24 @@ class Backend extends AbstractBackend
                         $sessionToken = $this->getSessionToken(true);
                     }
                     $response = $this->client->retrieve(
-                        $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
+                        $an,
+                        $dbId,
+                        $authenticationToken,
+                        $sessionToken,
+                        $hlTerms
                     );
                 } catch (Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
+            case 132:
+            case 133:
             case 135:
-                // DbId not in profile, fall through to treat as "record not found"
+                /* 132 Record not found
+                 * 133 Simultaneous User Limit Reached
+                 * 135 DbId not in profile
+                 * -> fall through to treat as "record not found"
+                 */
                 $response = [];
                 break;
             default:
@@ -567,7 +595,8 @@ class Backend extends AbstractBackend
             ? $this->defaultProfile : $this->profile;
         $this->session->sessionGuest = $this->isGuest();
         $this->session->sessionID = $this->createSession(
-            $this->session->sessionGuest, $this->session->profileID
+            $this->session->sessionGuest,
+            $this->session->profileID
         );
         return $this->session->sessionID;
     }

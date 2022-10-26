@@ -60,7 +60,8 @@ class ReCaptcha extends AbstractBase
      * @param \VuFind\Service\ReCaptcha $recaptcha ReCaptcha Service
      * @param string                    $language  Translator locale
      */
-    public function __construct(\VuFind\Service\ReCaptcha $recaptcha,
+    public function __construct(
+        \VuFind\Service\ReCaptcha $recaptcha,
         string $language
     ) {
         $this->recaptcha = $recaptcha;

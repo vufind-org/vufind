@@ -28,7 +28,8 @@
 namespace VuFind\Controller;
 
 use Laminas\Session\SessionManager;
-use Laminas\Stdlib\Parameters;
+use Laminas\Stdlib\ResponseInterface as Response;
+use Laminas\View\Model\ViewModel;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -69,7 +70,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -81,7 +82,7 @@ class AbstractSearch extends AbstractBase
     /**
      * Handle an advanced search
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ViewModel
      */
     public function advancedAction()
     {
@@ -199,7 +200,8 @@ class AbstractSearch extends AbstractBase
             return $all;
         }
         return array_diff(
-            $all, array_map('trim', explode(',', strtolower($noRecommend)))
+            $all,
+            array_map('trim', explode(',', strtolower($noRecommend)))
         );
     }
 
@@ -284,11 +286,49 @@ class AbstractSearch extends AbstractBase
     /**
      * Send search results to results view
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return Response|ViewModel
      */
     public function resultsAction()
     {
         return $this->getSearchResultsView();
+    }
+
+    /**
+     * Support method for getSearchResultsView() -- return the search results
+     * reformatted as an RSS feed.
+     *
+     * @param $view ViewModel View model
+     *
+     * @return Response
+     */
+    protected function getRssSearchResponse(ViewModel $view): Response
+    {
+        // Build the RSS feed:
+        $feedHelper = $this->getViewRenderer()->plugin('resultfeed');
+        $feed = $feedHelper($view->results);
+        $writer = new \Laminas\Feed\Writer\Renderer\Feed\Rss($feed);
+        $writer->render();
+
+        // Apply XSLT if we can find a relevant file:
+        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
+        $themeHits = $themeInfo->findInThemes('assets/xsl/rss.xsl');
+        if ($themeHits) {
+            $xsl = $this->url()->fromRoute('home') . 'themes/'
+                . $themeHits[0]['theme'] . '/' . $themeHits[0]['relativeFile'];
+            $writer->getElement()->parentNode->insertBefore(
+                $writer->getDomDocument()->createProcessingInstruction(
+                    'xml-stylesheet',
+                    'type="text/xsl" href="' . $xsl . '"'
+                ),
+                $writer->getElement()
+            );
+        }
+
+        // Format the response:
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
+        $response->setContent($writer->saveXml());
+        return $response;
     }
 
     /**
@@ -297,7 +337,7 @@ class AbstractSearch extends AbstractBase
      * @param callable $setupCallback Optional setup callback that overrides the
      * default one
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return Response|ViewModel
      */
     protected function getSearchResultsView($setupCallback = null)
     {
@@ -319,7 +359,8 @@ class AbstractSearch extends AbstractBase
             ->retrieveLastSetting($this->searchClassId, 'view');
         try {
             $view->results = $results = $runner->run(
-                $request, $this->searchClassId,
+                $request,
+                $this->searchClassId,
                 $setupCallback ?: $this->getSearchSetupCallback(),
                 $lastView
             );
@@ -360,19 +401,18 @@ class AbstractSearch extends AbstractBase
 
         // Special case: If we're in RSS view, we need to render differently:
         if (isset($view->params) && $view->params->getView() == 'rss') {
-            $response = $this->getResponse();
-            $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
-            $feed = $this->getViewRenderer()->plugin('resultfeed');
-            $response->setContent($feed($view->results)->export('rss'));
-            return $response;
+            return $this->getRssSearchResponse($view);
         }
 
         // Search toolbar
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $view->showBulkOptions = isset($config->Site->showBulkOptions)
-          && $config->Site->showBulkOptions;
+        $view->showBulkOptions = $config->Site->showBulkOptions ?? false;
 
+        // Schedule options for footer tools
+        $view->scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
         return $view;
     }
 
@@ -382,7 +422,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param \VuFind\Search\Base\Results $results Search results object.
      *
-     * @return bool|\Laminas\View\Model\ViewModel
+     * @return bool|ViewModel
      */
     protected function processJumpTo($results)
     {
@@ -390,8 +430,7 @@ class AbstractSearch extends AbstractBase
         $default = null;
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        if (isset($config->Record->jump_to_single_search_result)
-            && $config->Record->jump_to_single_search_result
+        if (($config->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
         ) {
             $default = 1;
@@ -421,7 +460,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $searchId Primary key value
      *
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
      */
     protected function retrieveSearchSecurely($searchId)
     {
@@ -445,7 +484,9 @@ class AbstractSearch extends AbstractBase
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
-            $this->getResultsManager(), $results, $sessId,
+            $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
+            $results,
+            $sessId,
             $user->id ?? null
         );
     }
@@ -517,15 +558,13 @@ class AbstractSearch extends AbstractBase
             // Check to see if there is an existing range in the search object:
             if ($savedSearch) {
                 $filters = $savedSearch->getParams()->getRawFilters();
-                if (isset($filters[$field])) {
-                    foreach ($filters[$field] as $current) {
-                        if ($range = SolrUtils::parseRange($current)) {
-                            $from = $range['from'] == '*' ? '' : $range['from'];
-                            $to = $range['to'] == '*' ? '' : $range['to'];
-                            $savedSearch->getParams()
-                                ->removeFilter($field . ':' . $current);
-                            break;
-                        }
+                foreach ($filters[$field] ?? [] as $current) {
+                    if ($range = SolrUtils::parseRange($current)) {
+                        $from = $range['from'] == '*' ? '' : $range['from'];
+                        $to = $range['to'] == '*' ? '' : $range['to'];
+                        $savedSearch->getParams()
+                            ->removeFilter($field . ':' . $current);
+                        break;
                     }
                 }
             }
@@ -576,7 +615,9 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getDateRangeSettings($savedSearch = false, $config = 'facets',
+    protected function getDateRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
         $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'dateRange', $filter);
@@ -593,8 +634,10 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getFullDateRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = []
+    protected function getFullDateRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
+        $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'fullDateRange', $filter);
         return $this->getRangeSettings($fields, 'fulldate', $savedSearch);
@@ -610,8 +653,10 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getGenericRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = []
+    protected function getGenericRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
+        $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'genericRange', $filter);
         return $this->getRangeSettings($fields, 'generic', $savedSearch);
@@ -627,8 +672,10 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getNumericRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = []
+    protected function getNumericRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
+        $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'numericRange', $filter);
         return $this->getRangeSettings($fields, 'numeric', $savedSearch);
@@ -643,31 +690,41 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getAllRangeSettings($specialFacets, $savedSearch = false,
+    protected function getAllRangeSettings(
+        $specialFacets,
+        $savedSearch = false,
         $config = 'facets'
     ) {
         $result = [];
         if (isset($specialFacets['daterange'])) {
             $dates = $this->getDateRangeSettings(
-                $savedSearch, $config, $specialFacets['daterange']
+                $savedSearch,
+                $config,
+                $specialFacets['daterange']
             );
             $result = array_merge($result, $dates);
         }
         if (isset($specialFacets['fulldaterange'])) {
             $fulldates = $this->getFullDateRangeSettings(
-                $savedSearch, $config, $specialFacets['fulldaterange']
+                $savedSearch,
+                $config,
+                $specialFacets['fulldaterange']
             );
             $result = array_merge($result, $fulldates);
         }
         if (isset($specialFacets['genericrange'])) {
             $generic = $this->getGenericRangeSettings(
-                $savedSearch, $config, $specialFacets['genericrange']
+                $savedSearch,
+                $config,
+                $specialFacets['genericrange']
             );
             $result = array_merge($result, $generic);
         }
         if (isset($specialFacets['numericrange'])) {
             $numeric = $this->getNumericRangeSettings(
-                $savedSearch, $config, $specialFacets['numericrange']
+                $savedSearch,
+                $config,
+                $specialFacets['numericrange']
             );
             $result = array_merge($result, $numeric);
         }
@@ -712,13 +769,14 @@ class AbstractSearch extends AbstractBase
             ->get($config);
 
         // Process checkbox settings in config:
+        $flipCheckboxes = false;
         if (substr($section, 0, 1) == '~') {        // reverse flag
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
         $checkboxFacets = ($section && isset($config->$section))
             ? $config->$section->toArray() : [];
-        if (isset($flipCheckboxes) && $flipCheckboxes) {
+        if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
 
@@ -772,7 +830,11 @@ class AbstractSearch extends AbstractBase
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         $facets = $results->getPartialFieldFacets(
-            [$facet], false, $limit, $sort, $page,
+            [$facet],
+            false,
+            $limit,
+            $sort,
+            $page,
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
         $list = $facets[$facet]['data']['list'] ?? [];
@@ -781,7 +843,7 @@ class AbstractSearch extends AbstractBase
         $view = $this->createViewModel(
             [
                 'data' => $list,
-                'exclude' => $this->params()->fromQuery('facetexclude', 0),
+                'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
                 'facet' => $facet,
                 'facetLabel' => $facetLabel,
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),

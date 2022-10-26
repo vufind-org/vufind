@@ -57,11 +57,20 @@ class Alma extends AbstractBase
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
+     * @param array                $options    OpenURL Configuration (optional)
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
-    {
+    public function __construct(
+        $baseUrl,
+        \Laminas\Http\Client $httpClient,
+        array $options = []
+    ) {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
+        if (isset($options['ignoredFilterReasons'])) {
+            $this->ignoredFilterReasons
+                = empty($options['ignoredFilterReasons'])
+                    ? [] : array_filter((array)$options['ignoredFilterReasons']);
+        }
     }
 
     /**
@@ -109,9 +118,8 @@ class Alma extends AbstractBase
                     continue;
                 }
             }
-            $serviceType = $this->mapServiceType(
-                (string)$service->attributes()->service_type
-            );
+            $originalServiceType = (string)$service->attributes()->service_type;
+            $serviceType = $this->mapServiceType($originalServiceType);
             if (!$serviceType) {
                 continue;
             }
@@ -120,10 +128,18 @@ class Alma extends AbstractBase
                 $href = $this->getKeyWithId($service, 'url');
                 $access = '';
             } else {
-                $title = $this->getKeyWithId($service, 'package_public_name');
+                $title = $this->getKeyWithId($service, 'package_display_name');
+                if (!$title) {
+                    $title = $this->getKeyWithId($service, 'package_public_name');
+                }
                 $href = (string)$service->resolution_url;
-                $access = $this->getKeyWithId($service, 'Is_free')
-                    ? 'open' : 'limited';
+                if ('getOpenAccessFullText' === $originalServiceType
+                    || $this->getKeyWithId($service, 'Is_free')
+                ) {
+                    $access = 'open';
+                } else {
+                    $access = 'limited';
+                }
             }
             if ($coverage = $this->getKeyWithId($service, 'Availability')) {
                 $coverage = $this->cleanupText($coverage);
@@ -137,7 +153,12 @@ class Alma extends AbstractBase
             }
 
             $record = compact(
-                'title', 'coverage', 'access', 'href', 'notes', 'authentication'
+                'title',
+                'coverage',
+                'access',
+                'href',
+                'notes',
+                'authentication'
             );
             $record['service_type'] = $serviceType;
             $records[] = $record;
@@ -175,6 +196,7 @@ class Alma extends AbstractBase
     {
         $map = [
             'getFullTxt' => 'getFullTxt',
+            'getOpenAccessFullText' => 'getFullTxt',
             'getHolding' => 'getHolding',
             'GeneralElectronicService' => 'getWebService',
             'DB' => 'getFullTxt',

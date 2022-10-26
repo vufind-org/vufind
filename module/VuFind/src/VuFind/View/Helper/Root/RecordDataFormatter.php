@@ -243,7 +243,9 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return array
      */
-    protected function renderMulti(RecordDriver $driver, $data,
+    protected function renderMulti(
+        RecordDriver $driver,
+        $data,
         array $options
     ) {
         // Make sure we have a callback for sorting the $data into groups...
@@ -281,7 +283,9 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return string
      */
-    protected function renderRecordHelper(RecordDriver $driver, $data,
+    protected function renderRecordHelper(
+        RecordDriver $driver,
+        $data,
         array $options
     ) {
         $method = $options['helperMethod'] ?? null;
@@ -301,7 +305,9 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return string
      */
-    protected function renderRecordDriverTemplate(RecordDriver $driver, $data,
+    protected function renderRecordDriverTemplate(
+        RecordDriver $driver,
+        $data,
         array $options
     ) {
         if (!isset($options['template'])) {

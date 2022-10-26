@@ -1,4 +1,6 @@
-<?php $this->metadata()->generateMetatags($this->driver);?>
+<?php
+  $this->metadata()->generateMetatags($this->driver);
+?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");
@@ -6,8 +8,9 @@
     $cover = $coverDetails['html'];
     $preview = ($this->previewOverride ?? false)
       ? $this->previewOverride : $this->record($this->driver)->getPreviews();
+    $rating = $this->driver->isRatingAllowed();
   ?>
-  <?php if ($QRCode || $cover || $preview): ?>
+  <?php if ($QRCode || $cover || $preview || $rating): ?>
     <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
       <?php /* Display thumbnail if appropriate: */ ?>
       <?php if($cover): ?>
@@ -19,6 +22,11 @@
         <span class="hidden-xs">
           <br/><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
+      <?php endif; ?>
+
+      <?php /* Display rating if enabled: */ ?>
+      <?php if ($rating): ?>
+        <?=$this->record($this->driver)->renderTemplate('rating.phtml')?>
       <?php endif; ?>
 
       <?php // if you have a preview tab but want to move or remove the preview link
@@ -35,6 +43,11 @@
   <div class="media-body">
 
     <h1 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+    <?php foreach ($this->driver->tryMethod('getFullTitlesAltScript', [], []) as $altTitle): ?>
+      <div class="title-alt">
+        <?=$this->escapeHtml($altTitle)?>
+      </div>
+    <?php endforeach; ?>
 
     <?php if(!empty($this->extraControls)): ?>
       <?=$this->extraControls['actionControls'] ?? ''?>
@@ -50,7 +63,7 @@
       <p><?=$this->truncate($summary, 300)?></p>
 
       <?php if(strlen($summary) > 300): ?>
-        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
+        <p><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Description'))?>#tabnav"><?=$this->transEsc('Full description')?></a></p>
       <?php endif; ?>
     <?php endif; ?>
 

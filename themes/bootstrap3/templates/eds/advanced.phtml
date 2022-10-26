@@ -29,13 +29,17 @@
             <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
           <?php endforeach; ?>
         </select>
-        <a class="adv-term-remove">&times;</a>
+        <a href="#" class="adv-term-remove">
+          <?=$this->icon('ui-remove') ?>
+          <span class="sr-only"><?=$this->transEsc('remove') ?></span>
+        </a>
       </div>
       <?php if ($search === 0): ?>
         </div>
       <?php endif; ?>
     <?php endfor; ?>
-    <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
+    <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
+    <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
   </div>
 </div>
 <?php

@@ -134,8 +134,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             };
             $corporateAuthors = $authors = $this->prepareAuthors(
                 array_map(
-                    $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
-                ), true
+                    $trimmer,
+                    (array)$driver->tryMethod('getCorporateAuthors')
+                ),
+                true
             );
         }
         $secondary = $this->prepareAuthors(
@@ -156,7 +158,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
         // Find subtitle in title if they're not separated:
         if (empty($subtitle) && strstr($title, ':')) {
-            list($title, $subtitle) = explode(':', $title, 2);
+            [$title, $subtitle] = explode(':', $title, 2);
         }
 
         // Extract the additional details from the record driver:
@@ -169,7 +171,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $this->details = [
             'authors' => $authors,
             'corporateAuthors' => $corporateAuthors,
-            'title' => trim($title), 'subtitle' => trim($subtitle),
+            'title' => trim($title ?? ''),
+            'subtitle' => trim($subtitle ?? ''),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
@@ -305,7 +308,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
 
         // If we got this far, it's the default article case:
-        list($apa['volume'], $apa['issue'], $apa['date'])
+        [$apa['volume'], $apa['issue'], $apa['date']]
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
@@ -323,7 +326,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     public function getCitationChicago()
     {
         return $this->getCitationMLA(
-            9, ', no. ', ' ', '', ' (%s)', ':', true, 'https://dx.doi.org/', false
+            9,
+            ', no. ',
+            ' ',
+            '',
+            ' (%s)',
+            ':',
+            true,
+            'https://doi.org/',
+            false,
+            false
         );
     }
 
@@ -346,13 +358,22 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * @param string $doiPrefix       Prefix to display in front of DOI; set to
      * false to omit DOIs.
      * @param bool   $labelPageRange  Should we include p./pp. before page ranges?
+     * @param bool   $doiArticleComma Should we put a comma instead of period before
+     * a DOI in an article-style citation?
      *
      * @return string
      */
-    public function getCitationMLA($etAlThreshold = 2, $volNumSeparator = ', no. ',
-        $numPrefix = ', ', $volPrefix = 'vol. ', $yearFormat = ', %s',
-        $pageNoSeparator = ',', $includePubPlace = false, $doiPrefix = false,
-        $labelPageRange = true
+    public function getCitationMLA(
+        $etAlThreshold = 2,
+        $volNumSeparator = ', no. ',
+        $numPrefix = ', ',
+        $volPrefix = 'vol. ',
+        $yearFormat = ', %s',
+        $pageNoSeparator = ',',
+        $includePubPlace = false,
+        $doiPrefix = 'https://doi.org/',
+        $labelPageRange = true,
+        $doiArticleComma = true
     ) {
         $mla = [
             'title' => $this->getMLATitle(),
@@ -375,10 +396,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             return $partial('Citation/mla.phtml', $mla);
         }
         // If we got this far, we should add other journal-specific details:
+        $mla['doiArticleComma'] = $doiArticleComma;
         $mla['pageRange'] = $this->getPageRange();
         $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
         $mla['numberAndDate'] = $numPrefix . $this->getMLANumberAndDate(
-            $volNumSeparator, $volPrefix, $yearFormat
+            $volNumSeparator,
+            $volPrefix,
+            $yearFormat
         );
         return $partial('Citation/mla-article.phtml', $mla);
     }
@@ -406,7 +430,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    protected function getMLANumberAndDate($volNumSeparator = '.', $volPrefix = '',
+    protected function getMLANumberAndDate(
+        $volNumSeparator = '.',
+        $volPrefix = '',
         $yearFormat = ', %s'
     ) {
         $vol = $this->driver->tryMethod('getContainerVolume');
@@ -605,7 +631,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // For good measure, strip out any remaining date ranges lurking in
         // non-standard places.
         return preg_replace(
-            '/\s+(\d{4}-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/', '', $name
+            '/\s+(\d{4}\-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/',
+            '',
+            $name
         );
     }
 
@@ -935,7 +963,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             if (strlen($numericDate) > 4) {
                 try {
                     return $this->dateConverter->convertFromDisplayDate(
-                        'Y', $this->details['pubDate']
+                        'Y',
+                        $this->details['pubDate']
                     );
                 } catch (\Exception $e) {
                     // Ignore date errors -- no point in dying here:

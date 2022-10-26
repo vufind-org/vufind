@@ -21,21 +21,23 @@
               // along with the foreach below to display facet options in the
               // correct order.
               $conf = $this->options->limitOrderOverride($field);
+              $conf = array_flip($conf);
               $sorted = [];
               $filtered = [];
+              $filterKeys = [];
               foreach ($list['list'] as $i => $value) {
-                if (!empty($value['displayText'])) {
-                  if (in_array($value['displayText'], $conf)) {
+                if (!empty($value['value'] && !empty($value['displayText']))) {
+                  if (isset($conf[$value['value']])) {
                     $filtered[$i] = $value['displayText'];
+                    $filterKeys[$value['displayText']] = $conf[$value['value']];
                   } else {
                     $sorted[$i] = $value['displayText'];
                   }
                 }
               }
-              natcasesort($sorted);
+              $this->sorter()->natsort($sorted);
 
               // Order filtered items according to how they appear in the config.
-              $filterKeys = array_flip($conf);
               uasort($filtered, function ($a, $b) use ($filterKeys) {
                 return $filterKeys[$a] <=> $filterKeys[$b];
               });
@@ -60,7 +62,7 @@
   <fieldset class="solr">
     <legend><?=$this->transEsc("Illustrated")?>:</legend>
     <?php foreach ($this->illustratedLimit as $current): ?>
-      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
+      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked" data-checked-by-default="true"':''?>/>
       <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
     <?php endforeach; ?>
   </fieldset>

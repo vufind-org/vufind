@@ -161,12 +161,17 @@ class AbstractExpireCommand extends Command
         if ($daysOld < $this->minAge) {
             $output->writeln(
                 str_replace(
-                    '%%age%%', number_format($this->minAge, 1, '.', ''),
+                    '%%age%%',
+                    number_format($this->minAge, 1, '.', ''),
                     'Expiration age must be at least %%age%% days.'
                 )
             );
             return 1;
         }
+
+        // Calculate date threshold once to avoid creeping a few seconds in each loop
+        // iteration:
+        $dateLimit = $this->getDateThreshold($daysOld);
 
         // Delete the expired rows--this cleans up any junk left in the database
         // e.g. from old searches or sessions that were not caught by the session
@@ -174,7 +179,7 @@ class AbstractExpireCommand extends Command
         // delete are found.
         $total = 0;
         do {
-            $count = $this->table->deleteExpired($daysOld, $batchSize);
+            $count = $this->table->deleteExpired($dateLimit, $batchSize);
             if ($count > 0) {
                 $output->writeln(
                     $this->getTimestampedMessage("$count {$this->rowLabel} deleted.")
@@ -189,5 +194,17 @@ class AbstractExpireCommand extends Command
             $this->getTimestampedMessage("Total $total {$this->rowLabel} deleted.")
         );
         return 0;
+    }
+
+    /**
+     * Convert days to a date threshold
+     *
+     * @param float $daysOld Days before now
+     *
+     * @return string
+     */
+    protected function getDateThreshold(float $daysOld): string
+    {
+        return date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
     }
 }

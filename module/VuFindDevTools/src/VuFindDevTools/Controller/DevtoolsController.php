@@ -28,6 +28,7 @@
  */
 namespace VuFindDevTools\Controller;
 
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
@@ -54,15 +55,14 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function getQueryBuilder($id)
     {
+        $command = new \VuFindSearch\Command\GetQueryBuilderCommand($id);
         try {
-            $backend = $this->serviceLocator
-                ->get(\VuFind\Search\BackendManager::class)
-                ->get($id);
+            $this->serviceLocator->get(\VuFindSearch\Service::class)
+                ->invoke($command);
         } catch (\Exception $e) {
             return null;
         }
-        return is_callable([$backend, 'getQueryBuilder'])
-            ? $backend->getQueryBuilder() : null;
+        return $command->getResult();
     }
 
     /**
@@ -107,6 +107,20 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
+     * Icon action
+     *
+     * @return array
+     */
+    public function iconAction()
+    {
+        $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
+            ->getMergedConfig('icons', true);
+        $aliases = array_keys($config['aliases'] ?? []);
+        sort($aliases);
+        return compact('aliases');
+    }
+
+    /**
      * Language action
      *
      * @return array
@@ -115,7 +129,12 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         // Test languages with no local overrides and no fallback:
         $loader = new ExtendedIni([APPLICATION_PATH . '/languages']);
-        $helper = new LanguageHelper($loader, $this->getConfig());
-        return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));
+        $langs = $this->serviceLocator->get(LocaleSettings::class)
+            ->getEnabledLocales();
+        $helper = new LanguageHelper($loader, $langs);
+        return $helper->getAllDetails(
+            $this->params()->fromQuery('main', 'en'),
+            (bool)$this->params()->fromQuery('includeOptional', 1)
+        );
     }
 }

@@ -9,6 +9,9 @@ var VuFind = (function VuFind() {
   var path = null;
   var _initialized = false;
   var _submodules = [];
+  var _cspNonce = '';
+
+  var _icons = {};
   var _translations = {};
 
   // Emit a custom event
@@ -38,6 +41,71 @@ var VuFind = (function VuFind() {
       }
     }
   };
+
+  /**
+   * Evaluate a callback
+   */
+  var evalCallback = function evalCallback(callback, event, data) {
+    if ('function' === typeof window[callback]) {
+      return window[callback](event, data);
+    }
+    var parts = callback.split('.');
+    if (typeof window[parts[0]] === 'object') {
+      var obj = window[parts[0]];
+      for (var i = 1; i < parts.length; i++) {
+        if (typeof obj[parts[i]] === 'undefined') {
+          obj = false;
+          break;
+        }
+        obj = obj[parts[i]];
+      }
+      if ('function' === typeof obj) {
+        return obj(event, data);
+      }
+    }
+    console.error('Callback function ' + callback + ' not found.');
+    return null;
+  };
+
+  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
+    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
+      var $form = $(this);
+      // Disable submit elements via setTimeout so that the submit button value gets
+      // included in the submitted data before being disabled:
+      setTimeout(
+        function disableSubmit() {
+          $form.find('[type=submit]').prop('disabled', true);
+        },
+        0
+      );
+    });
+  };
+
+  var initClickHandlers = function initClickHandlers() {
+    window.addEventListener(
+      'click',
+      function handleClick(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-click-callback')) {
+          return evalCallback(elem.dataset.clickCallback, event, {});
+        }
+        if (elem.hasAttribute('data-click-set-checked')) {
+          document.getElementById(elem.dataset.clickSetChecked).checked = true;
+          event.preventDefault();
+        }
+      }
+    );
+    window.addEventListener(
+      'change',
+      function handleChange(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-submit-on-change')) {
+          elem.form.requestSubmit();
+        }
+      }
+    );
+  };
+
   var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
@@ -45,6 +113,9 @@ var VuFind = (function VuFind() {
       }
     }
     _initialized = true;
+
+    initDisableSubmitOnClick();
+    initClickHandlers();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -55,7 +126,7 @@ var VuFind = (function VuFind() {
     }
   };
   var translate = function translate(op, _replacements) {
-    var replacements = _replacements || [];
+    var replacements = _replacements || {};
     var translation = _translations[op] || op;
     if (replacements) {
       for (var key in replacements) {
@@ -65,6 +136,65 @@ var VuFind = (function VuFind() {
       }
     }
     return translation;
+  };
+
+  var addIcons = function addIcons(s) {
+    for (var i in s) {
+      if (Object.prototype.hasOwnProperty.call(s, i)) {
+        _icons[i] = s[i];
+      }
+    }
+  };
+  var icon = function icon(name, attrs = {}) {
+    if (typeof _icons[name] == "undefined") {
+      console.error("JS icon missing: " + name);
+      return name;
+    }
+
+    var html = _icons[name];
+
+    // Add additional attributes
+    function addAttrs(_html, _attrs = {}) {
+      var mod = String(_html);
+      for (var attr in _attrs) {
+        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
+          var sliceStart = html.indexOf(" ");
+          var sliceEnd = sliceStart;
+          var value = _attrs[attr];
+          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
+          var existing = html.match(regex);
+          if (existing) {
+            sliceStart = existing.index;
+            sliceEnd = sliceStart + existing[0].length;
+            value = existing[2] + " " + value;
+          }
+          mod = mod.slice(0, sliceStart) +
+              " " + attr + '="' + value + '"' +
+              mod.slice(sliceEnd);
+        }
+      }
+      return mod;
+    }
+
+    if (typeof attrs == "string") {
+      return addAttrs(html, { class: attrs });
+    }
+
+    if (Object.keys(attrs).length > 0) {
+      return addAttrs(html, attrs);
+    }
+
+    return html;
+  };
+  // Icon shortcut methods
+  var spinner = function spinner(extraClass = "") {
+    let className = ("loading-spinner " + extraClass).trim();
+    return '<span class="' + className + '">' + icon('spinner') + '</span>';
+  };
+  var loading = function loading(text = null, extraClass = "") {
+    let className = ("loading-spinner " + extraClass).trim();
+    let string = translate(text === null ? 'loading_ellipsis' : text);
+    return '<span class="' + className + '">' + icon('spinner') + ' ' + string + '</span>';
   };
 
   /**
@@ -83,18 +213,60 @@ var VuFind = (function VuFind() {
     }
   };
 
+  var getCspNonce = function getCspNonce() {
+    return _cspNonce;
+  };
+
+  var setCspNonce = function setCspNonce(nonce) {
+    _cspNonce = nonce;
+  };
+
+  var updateCspNonce = function updateCspNonce(html) {
+    // Fix any inline script nonces
+    return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
+  };
+
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var $elem = $(_element);
+    if ($elem.length === 0) {
+      return;
+    }
+    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
+      if ('success' === textStatus || 'notmodified' === textStatus) {
+        $elem.html(updateCspNonce(responseText));
+      }
+      if (typeof success !== 'undefined') {
+        success(responseText, textStatus, jqXhr);
+      }
+    });
+  };
+
+  var isPrinting = function() {
+    return Boolean(window.location.search.match(/[?&]print=/));
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
     path: path,
 
+    addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    evalCallback: evalCallback,
+    getCspNonce: getCspNonce,
+    icon: icon,
+    isPrinting: isPrinting,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
-    translate: translate
+    setCspNonce: setCspNonce,
+    spinner: spinner,
+    loadHtml: loadHtml,
+    loading: loading,
+    translate: translate,
+    updateCspNonce: updateCspNonce
   };
 })();
 
@@ -250,7 +422,7 @@ function setupAutocomplete() {
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
-    loadingString: VuFind.translate('loading') + '...',
+    loadingString: VuFind.translate('loading_ellipsis'),
     // Auto-submit selected item
     callback: acCallback,
     // AJAX call for autocomplete results
@@ -351,18 +523,25 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
   $(searchPrefix + 'target').change(function onChangeLoginTarget() {
     var target = $(this).val();
-    var $usernameGroup = $(searchPrefix + 'username').closest('.form-group');
+    var $username = $(searchPrefix + 'username');
+    var $usernameGroup = $username.closest('.form-group');
     var $password = $(searchPrefix + 'password');
     if (loginMethods[target] === 'email') {
+      $username.attr('type', 'email').attr('autocomplete', 'email');
       $usernameGroup.find('label.password-login').addClass('hidden');
       $usernameGroup.find('label.email-login').removeClass('hidden');
       $password.closest('.form-group').addClass('hidden');
       // Set password to a dummy value so that any checks for username+password work
       $password.val('****');
     } else {
+      $username.attr('type', 'text').attr('autocomplete', 'username');
       $usernameGroup.find('label.password-login').removeClass('hidden');
       $usernameGroup.find('label.email-login').addClass('hidden');
       $password.closest('.form-group').removeClass('hidden');
+      // Reset password from the dummy value in email login
+      if ($password.val() === '****') {
+        $password.val('');
+      }
     }
   }).change();
 }
@@ -405,39 +584,32 @@ $(document).ready(function commonDocReady() {
   setupQRCodeLinks();
 
   // Checkbox select all
-  $('.checkbox-select-all').change(function selectAllCheckboxes() {
+  $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
     var $form = this.form ? $(this.form) : $(this).closest('form');
-    $form.find('.checkbox-select-item').prop('checked', this.checked);
+    if (this.checked) {
+      $form.find('.checkbox-select-item:not(:checked)').trigger('click');
+    } else {
+      $form.find('.checkbox-select-item:checked').trigger('click');
+    }
     $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
     $form.find('.checkbox-select-all').prop('checked', this.checked);
     $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
   });
-  $('.checkbox-select-item').change(function selectAllDisable() {
+  $('.checkbox-select-item').on('change', function selectAllDisable() {
     var $form = this.form ? $(this.form) : $(this).closest('form');
     if ($form.length === 0) {
       return;
     }
-    $form.find('.checkbox-select-all').prop('checked', false);
-    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
+    if (!$(this).prop('checked')) {
+      $form.find('.checkbox-select-all').prop('checked', false);
+      $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
+    }
   });
 
   // Print
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
-    $(document).ajaxStop(function triggerPrint() {
-      // Print dialogs cause problems during testing, so disable them
-      // when the "test mode" cookie is set. This should never happen
-      // under normal usage outside of the Phing startup process.
-      if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
-        window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
-        window.print();
-      } else {
-        console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
-      }
-    });
-    // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   setupIeSupport();

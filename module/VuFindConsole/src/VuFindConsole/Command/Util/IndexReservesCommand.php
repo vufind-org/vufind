@@ -126,9 +126,13 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return UpdateDocument
      */
-    protected function buildReservesIndex($instructors, $courses, $departments,
+    protected function buildReservesIndex(
+        $instructors,
+        $courses,
+        $departments,
         $reserves
     ) {
+        $index = [];
         foreach ($reserves as $record) {
             $requiredKeysFound
                 = count(array_intersect(array_keys($record), $this->requiredKeys));
@@ -178,7 +182,9 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return CsvReader
      */
-    protected function getCsvReader($files, string $delimiter,
+    protected function getCsvReader(
+        $files,
+        string $delimiter,
         string $template
     ): CsvReader {
         return new CsvReader($files, $delimiter, $template);
@@ -242,7 +248,10 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
             // Build and Save the index
             $index = $this->buildReservesIndex(
-                $instructors, $courses, $departments, $reserves
+                $instructors,
+                $courses,
+                $departments,
+                $reserves
             );
             $this->solr->save('SolrReserves', $index);
 
@@ -253,7 +262,15 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             $output->writeln('Successfully loaded ' . count($reserves) . ' rows.');
             return 0;
         }
-        $output->writeln('Unable to load data.');
+        $missing = array_merge(
+            empty($instructors) ? ['instructors'] : [],
+            empty($courses) ? ['courses'] : [],
+            empty($departments) ? ['departments'] : [],
+            empty($reserves) ? ['reserves'] : []
+        );
+        $output->writeln(
+            'Unable to load data. No data found for: ' . implode(', ', $missing)
+        );
         return 1;
     }
 }

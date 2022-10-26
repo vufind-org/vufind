@@ -1,6 +1,6 @@
 <?php
 /**
- * VF Configuration Locator
+ * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Config;
 
 /**
- * Class to find VuFind configuration files
+ * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *
  * @category VuFind
  * @package  Config
@@ -41,61 +41,78 @@ class Locator
     /**
      * Get the file path to the local configuration file (null if none found).
      *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind if set to null)
-     * @param bool   $force    force method to return path even if file does not
+     * @param string  $filename config file name
+     * @param ?string $path     path relative to VuFind base (optional; use null for
+     * default)
+     * @param bool    $force    force method to return path even if file does not
      * exist (default = false, do not force)
      *
-     * @return string
+     * @return ?string
+     *
+     * @deprecated Use PathResolver instead
      */
-    public static function getLocalConfigPath($filename, $path = null,
+    public static function getLocalConfigPath(
+        $filename,
+        $path = null,
         $force = false
     ) {
-        if (null === $path) {
-            $path = 'config/vufind';
-        }
-        if (defined('LOCAL_OVERRIDE_DIR') && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0) {
-            $path = LOCAL_OVERRIDE_DIR . '/' . $path . '/' . $filename;
-            if ($force || file_exists($path)) {
-                return $path;
-            }
-        }
-        return null;
+        return static::getPathResolver()
+            ->getLocalConfigPath($filename, $path, $force);
     }
 
     /**
      * Get the file path to the base configuration file.
      *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind
+     * @param string  $filename config file name
+     * @param ?string $path     path relative to VuFind base (optional; use null for
+     * default)
      *
      * @return string
+     *
+     * @deprecated Use PathResolver instead
      */
-    public static function getBaseConfigPath($filename, $path = 'config/vufind')
+    public static function getBaseConfigPath($filename, $path = null)
     {
-        return APPLICATION_PATH . '/' . $path . '/' . $filename;
+        return static::getPathResolver()->getBaseConfigPath($filename, $path);
     }
 
     /**
      * Get the file path to a config file.
      *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind
+     * @param string  $filename Config file name
+     * @param ?string $path     Path relative to VuFind base (optional; use null for
+     * default)
      *
      * @return string
+     *
+     * @deprecated Use PathResolver instead
      */
-    public static function getConfigPath($filename, $path = 'config/vufind')
+    public static function getConfigPath($filename, $path = null)
     {
-        // Check if config exists in local dir:
-        $local = static::getLocalConfigPath($filename, $path);
-        if (!empty($local)) {
-            return $local;
-        }
+        return static::getPathResolver()->getConfigPath($filename, $path);
+    }
 
-        // No local version?  Return default core version:
-        return static::getBaseConfigPath($filename, $path);
+    /**
+     * Get a PathResolver with default configuration file paths
+     *
+     * @return PathResolver
+     */
+    protected static function getPathResolver(): PathResolver
+    {
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? [
+                [
+                    'directory' => LOCAL_OVERRIDE_DIR,
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                ]
+            ] : [];
+        return new \VuFind\Config\PathResolver(
+            [
+                'directory' => APPLICATION_PATH,
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+            ],
+            $localDirs
+        );
     }
 }

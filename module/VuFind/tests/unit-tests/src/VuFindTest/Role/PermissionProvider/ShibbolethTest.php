@@ -96,7 +96,10 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function checkShibboleth($headers, $options, $expectedResult,
+    protected function checkShibboleth(
+        $headers,
+        $options,
+        $expectedResult,
         $config = []
     ) {
         $request = new \Laminas\Http\PhpEnvironment\Request();

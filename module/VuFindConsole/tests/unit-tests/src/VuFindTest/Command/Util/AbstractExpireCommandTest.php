@@ -28,6 +28,7 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Table\Gateway;
 use VuFindConsole\Command\Util\AbstractExpireCommand;
 
 /**
@@ -121,13 +122,14 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessfulExpiration()
     {
+        $date = date('Y-m-d H:i:s');
         $table = $this->getMockBuilder($this->validTableClass)
             ->disableOriginalConstructor()
             ->getMock();
         $table->expects($this->exactly(3))->method('deleteExpired')
-            ->withConsecutive([2, 1000], [2, 1000], [2, 1000])
+            ->withConsecutive([$date, 1000], [$date, 1000], [$date, 1000])
             ->willReturnOnConsecutiveCalls(1000, 7, false);
-        $command = new $this->targetClass($table, 'foo');
+        $command = $this->getCommand($table, $date);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--sleep' => 1]);
         $response = $commandTester->getDisplay();
@@ -157,13 +159,14 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessfulNonExpiration()
     {
+        $date = date('Y-m-d H:i:s');
         $table = $this->getMockBuilder($this->validTableClass)
             ->disableOriginalConstructor()
             ->getMock();
         $table->expects($this->once())->method('deleteExpired')
-            ->with($this->equalTo(2))
+            ->with($this->equalTo($date))
             ->will($this->returnValue(0));
-        $command = new $this->targetClass($table, 'foo');
+        $command = $this->getCommand($table, $date);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $response = $commandTester->getDisplay();
@@ -172,8 +175,32 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $parts = explode("\n", trim($response));
         $this->assertEquals(1, count($parts));
         $this->assertEquals(
-            "Total 0 {$this->rowLabel} deleted.", explode('] ', $parts[0])[1]
+            "Total 0 {$this->rowLabel} deleted.",
+            explode('] ', $parts[0])[1]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Get the command class
+     *
+     * @param Gateway $table Table to process
+     * @param string  $date  Expiration date threshold
+     *
+     * @return MockObject&AbstractExpireCommand
+     */
+    protected function getCommand(
+        Gateway $table,
+        string $date
+    ): AbstractExpireCommand {
+        $command = $this->getMockBuilder($this->targetClass)
+            ->setConstructorArgs([$table, 'foo'])
+            ->onlyMethods(['getDateThreshold'])
+            ->getMock();
+        $command->expects($this->once())
+            ->method('getDateThreshold')
+            ->with(2)
+            ->willReturn($date);
+        return $command;
     }
 }

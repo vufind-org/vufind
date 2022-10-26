@@ -68,7 +68,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(HeadMeta::class)
             ->disableOriginalConstructor()
-            ->setMethods(['appendName'])
+            ->addMethods(['appendName'])    // mocking __call
             ->getMock();
         $mock->expects($this->once())->method('appendName')
             ->with($this->equalTo('prism.title'), $this->equalTo('Fake Title'));
@@ -84,7 +84,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
+            ->onlyMethods(['get'])
             ->getMock();
         $mock->expects($this->once())->method('get')
             ->with($this->equalTo('PRISM'))

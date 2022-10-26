@@ -506,13 +506,34 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
 
         // Fake the session inside the manager:
         $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
         $mockSession->expects($this->any())->method('__get')->with($this->equalTo('userId'))->will($this->returnValue('foo'));
         $this->setProperty($manager, 'session', $mockSession);
 
         $this->assertEquals($user, $manager->isLoggedIn());
+    }
+
+    /**
+     * Confirm default setting of allowsUserIlsLogin().
+     *
+     * @return void
+     */
+    public function testAllowsUserIlsLoginDefault(): void
+    {
+        $this->assertTrue($this->getManager()->allowsUserIlsLogin());
+    }
+
+    /**
+     * Confirm configurability of allowsUserIlsLogin().
+     *
+     * @return void
+     */
+    public function testAllowsUserIlsLoginConfiguration(): void
+    {
+        $config = ['Catalog' => ['allowUserLogin' => false]];
+        $this->assertFalse($this->getManager($config)->allowsUserIlsLogin());
     }
 
     /**
@@ -538,14 +559,19 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $pm = $this->getMockPluginManager();
         }
         $cookies = new \VuFind\Cookie\CookieManager([]);
-        $csrf = new \VuFind\Validator\Csrf(
+        $csrf = new \VuFind\Validator\SessionCsrf(
             [
                 'session' => new \Laminas\Session\Container('csrf', $sessionManager),
                 'salt' => 'csrftest'
             ]
         );
         return new Manager(
-            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
+            $config,
+            $userTable,
+            $sessionManager,
+            $pm,
+            $cookies,
+            $csrf
         );
     }
 
@@ -596,10 +622,10 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $mockShib = $this->getMockBuilder(\VuFind\Auth\Shibboleth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('VuFind\Auth\ChoiceAuth', $mockChoice);
-        $pm->setService('VuFind\Auth\Database', $mockDb);
-        $pm->setService('VuFind\Auth\MultiILS', $mockMulti);
-        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
+        $pm->setService(\VuFind\Auth\ChoiceAuth::class, $mockChoice);
+        $pm->setService(\VuFind\Auth\Database::class, $mockDb);
+        $pm->setService(\VuFind\Auth\MultiILS::class, $mockMulti);
+        $pm->setService(\VuFind\Auth\Shibboleth::class, $mockShib);
         return $pm;
     }
 

@@ -47,7 +47,8 @@ class ConfigController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/config/home');
-        $view->baseConfigPath = \VuFind\Config\Locator::getBaseConfigPath('');
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $view->baseConfigPath = $resolver->getBaseConfigPath('');
         $conf = $this->getConfig();
         $view->showInstallLink
             = isset($conf->System->autoConfigure) && $conf->System->autoConfigure;
@@ -61,7 +62,14 @@ class ConfigController extends AbstractAdmin
      */
     public function enableautoconfigAction()
     {
-        $configFile = \VuFind\Config\Locator::getConfigPath('config.ini');
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        if (!($configFile = $resolver->getLocalConfigPath('config.ini'))) {
+            $this->flashMessenger()->addErrorMessage(
+                'Could not enable auto-configuration; local '
+                . $configFile . ' not found.'
+            );
+            return $this->forwardTo('AdminConfig', 'Home');
+        }
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if ($writer->save()) {
@@ -75,7 +83,8 @@ class ConfigController extends AbstractAdmin
         } else {
             $this->flashMessenger()->addMessage(
                 'Could not enable auto-configuration; check permissions on '
-                . $configFile . '.', 'error'
+                . $configFile . '.',
+                'error'
             );
         }
         return $this->forwardTo('AdminConfig', 'Home');

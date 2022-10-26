@@ -1,14 +1,17 @@
 <?php if (!isset($this->indexStart)) $this->indexStart = 0; ?>
 <?php $i = $this->indexStart; ?>
-<?php foreach ($this->results->getResults() as $current): ?>
-  <?php $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
-  <div id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
-    <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
-      <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
-    <?php endif; ?>
-    <div class="record-number">
-      <?=$recordNumber ?>
-    </div>
-    <?=$this->record($current)->getSearchResult('list')?>
-  </div>
-<?php endforeach; ?>
+<?php $listStart = $this->results->getStartRecord() + $i - $this->indexStart; ?>
+<ol class="<?=$this->escapeHtmlAttr(trim('record-list ' . ($this->resultsClass ?? '')))?>" start="<?=$listStart?>">
+  <?php foreach ($this->results->getResults() as $current): ?>
+    <?php $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
+    <li id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
+      <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+        <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
+      <?php endif; ?>
+      <div class="record-number">
+        <?=$recordNumber ?>
+      </div>
+      <?=$this->record($current)->getSearchResult('list')?>
+    </li>
+  <?php endforeach; ?>
+</ol>

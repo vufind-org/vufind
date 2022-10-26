@@ -35,7 +35,7 @@ $config = [
             'content-page' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
-                    'route'    => '/Content/[:page]',
+                    'route'    => '/Content/:page',
                     'constraints' => [
                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ],
@@ -159,6 +159,7 @@ $config = [
             'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\HoldsController' => 'VuFind\Controller\HoldsControllerFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\InstallController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -166,6 +167,7 @@ $config = [
             'VuFind\Controller\MissingrecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\OaiController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\OAuth2Controller' => 'VuFind\Controller\OAuth2ControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Pazpar2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\PrimoController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -243,6 +245,8 @@ $config = [
             'help' => 'VuFind\Controller\HelpController',
             'Hierarchy' => 'VuFind\Controller\HierarchyController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',
+            'Holds' => 'VuFind\Controller\HoldsController',
+            'holds' => 'VuFind\Controller\HoldsController',
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
             'Install' => 'VuFind\Controller\InstallController',
@@ -257,6 +261,8 @@ $config = [
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'OAI' => 'VuFind\Controller\OaiController',
             'oai' => 'VuFind\Controller\OaiController',
+            'OAuth2' => 'VuFind\Controller\OAuth2Controller',
+            'oauth2' => 'VuFind\Controller\OAuth2Controller',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
             'overdrive' => 'VuFind\Controller\OverdriveController',
             'Pazpar2' => 'VuFind\Controller\Pazpar2Controller',
@@ -303,6 +309,7 @@ $config = [
             'VuFind\Controller\Plugin\Followup' => 'VuFind\Controller\Plugin\FollowupFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
+            'VuFind\Controller\Plugin\IlsRecords' => 'VuFind\Controller\Plugin\IlsRecordsFactory',
             'VuFind\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
             'VuFind\Controller\Plugin\Renewals' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -322,6 +329,7 @@ $config = [
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
+            'ilsRecords' => 'VuFind\Controller\Plugin\IlsRecords',
             'newItems' => 'VuFind\Controller\Plugin\NewItems',
             'permission' => 'VuFind\Controller\Plugin\Permission',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
@@ -333,7 +341,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'League\CommonMark\MarkdownConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
@@ -348,6 +356,7 @@ $config = [
             'VuFind\ChannelProvider\ChannelLoader' => 'VuFind\ChannelProvider\ChannelLoaderFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Config\AccountCapabilities' => 'VuFind\Config\AccountCapabilitiesFactory',
+            'VuFind\Config\PathResolver' => 'VuFind\Config\PathResolverFactory',
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
@@ -380,6 +389,7 @@ $config = [
             'VuFind\Export' => 'VuFind\ExportFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
             'VuFind\Form\Form' => 'VuFind\Form\FormFactory',
+            'VuFind\Form\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
             'VuFind\GeoFeatures\MapTabConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
             'VuFind\GeoFeatures\MapSelectionConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
@@ -388,6 +398,8 @@ $config = [
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
+            'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',
             'VuFind\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'VuFind\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\ILS\Logic\Holds' => 'VuFind\ILS\Logic\LogicFactory',
@@ -400,6 +412,12 @@ $config = [
             'VuFind\Net\UserIpReader' => 'VuFind\Net\UserIpReaderFactory',
             'VuFind\OAI\Server' => 'VuFind\OAI\ServerFactory',
             'VuFind\OAI\Server\Auth' => 'VuFind\OAI\ServerFactory',
+            'VuFind\OAuth2\Repository\AccessTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
+            'VuFind\OAuth2\Repository\AuthCodeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
+            'VuFind\OAuth2\Repository\ClientRepository' => 'VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory',
+            'VuFind\OAuth2\Repository\IdentityRepository' => 'VuFind\OAuth2\Repository\IdentityRepositoryFactory',
+            'VuFind\OAuth2\Repository\RefreshTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
+            'VuFind\OAuth2\Repository\ScopeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory',
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
@@ -414,38 +432,49 @@ $config = [
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Role\PermissionDeniedManagerFactory',
             'VuFind\Search\BackendManager' => 'VuFind\Search\BackendManagerFactory',
-            'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
-            'VuFind\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'VuFind\Search\FacetCache\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Factory\UrlQueryHelperFactory' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
+            'VuFind\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'VuFind\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Search\SearchNormalizer' => 'VuFind\Search\SearchNormalizerFactory',
             'VuFind\Search\SearchRunner' => 'VuFind\Search\SearchRunnerFactory',
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',
+            'VuFind\Search\Solr\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelperFactory',
             'VuFind\Security\CspHeaderGenerator' => 'VuFind\Security\CspHeaderGeneratorFactory',
             'VuFind\Security\NonceGenerator' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Service\CurrencyFormatter' => 'VuFind\Service\CurrencyFormatterFactory',
             'VuFind\Service\ReCaptcha' => 'VuFind\Service\ReCaptchaFactory',
             'VuFind\Session\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Session\Settings' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Sitemap\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\SMS\SMSInterface' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
             'VuFind\Tags' => 'VuFind\TagsFactory',
             'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
-            'VuFind\Validator\Csrf' => 'VuFind\Validator\CsrfFactory',
+            'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
             'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
-            'Laminas\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+        ],
+        'delegators' => [
+            'Laminas\I18n\Translator\TranslatorInterface' => [
+                'VuFind\I18n\Translator\TranslatorFactory',
+            ],
+            'SlmLocale\Locale\Detector' => [
+                'VuFind\I18n\Locale\LocaleDetectorFactory',
+            ],
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'League\CommonMark\MarkdownConverterInterface' => 'League\CommonMark\ConverterInterface',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
@@ -506,10 +535,23 @@ $config = [
             'VuFind\Translator' => 'Laminas\Mvc\I18n\Translator',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
-            'Laminas\Validator\Csrf' => 'VuFind\Validator\Csrf',
+            'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
+        ],
+        'shared' => [
+            'VuFind\Form\Form' => false,
         ],
     ],
     'translator' => [],
+    'translator_plugins' => [
+        'factories' => [
+            'VuFind\I18n\Translator\Loader\ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIniFactory',
+        ],
+        'aliases' => [
+            'ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIni'
+        ],
+    ],
     'view_helpers' => [
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -521,9 +563,6 @@ $config = [
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_path_stack'      => [],
-        'whoops_no_catch' => [
-            'VuFind\Exception\RecordMissing',
-        ],
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Laminas components).
@@ -535,7 +574,9 @@ $config = [
             'auth_hash'        => ['id', 'auth_hash_id_seq'],
             'comments'         => ['id', 'comments_id_seq'],
             'external_session' => ['id', 'external_session_id_seq'],
+            'feedback'         => ['id', 'feedback_id_seq'],
             'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
+            'ratings'          => ['id', 'ratings_id_seq'],
             'record'           => ['id', 'record_id_seq'],
             'resource'         => ['id', 'resource_id_seq'],
             'resource_tags'    => ['id', 'resource_tags_id_seq'],
@@ -568,6 +609,7 @@ $config = [
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
             'doilinker' => [ /* see VuFind\DoiLinker\PluginManager for defaults */ ],
+            'form_handler' => [ /* see VuFind\Form\Handler\PluginManager for defaults */],
             'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
             'hierarchy_treedataformatter' => [ /* see VuFind\Hierarchy\TreeDataFormatter\PluginManager for defaults */ ],
             'hierarchy_treedatasource' => [ /* see VuFind\Hierarchy\TreeDataSource\PluginManager for defaults */ ],
@@ -586,7 +628,14 @@ $config = [
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
             'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
             'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
+            'sitemap' => [ /* see VuFind\Sitemap\PluginManager for defaults */ ],
             'urlshortener' => [ /* see VuFind\UrlShortener\PluginManager for defaults */ ],
+        ],
+    ],
+    // Whoops configuration:
+    'whoops' => [
+        'ignored_exceptions' => [
+            'VuFind\Exception\RecordMissing',
         ],
     ],
     // Authorization configuration:
@@ -623,6 +672,13 @@ $recordRoutes = [
     'search2collectionrecord' => 'Search2Record',
 ];
 
+// Define non tab record actions
+$nonTabRecordActions = [
+    'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
+    'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating'
+];
+
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
     'Feedback' => ['feedback-form' => 'Form/[:id]'],
@@ -647,12 +703,14 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Holds/Edit', 'Holds/List',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'LibGuides/Home', 'LibGuides/Results',
     'LibraryCards/Home', 'LibraryCards/SelectCard',
+    'LibraryCards/ConnectCard', 'LibraryCards/ConnectCardLogin',
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
     'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
@@ -662,7 +720,7 @@ $staticRoutes = [
     'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
-    'MyResearch/StorageRetrievalRequests',
+    'MyResearch/ScheduleSearch', 'MyResearch/StorageRetrievalRequests',
     'MyResearch/Unsubscribe', 'MyResearch/UserLogin',
     'MyResearch/Verify', 'MyResearch/VerifyEmail', 'OAI/Server',
     'Overdrive/MyContent','Overdrive/Hold',
@@ -670,7 +728,7 @@ $staticRoutes = [
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
-    'Search/Advanced', 'Search/CollectionFacetList',
+    'Search/Advanced', 'Search/Blended', 'Search/CollectionFacetList',
     'Search/EditMemory', 'Search/Email',
     'Search/FacetList', 'Search/History', 'Search/Home', 'Search/NewItem',
     'Search/OpenSearch', 'Search/Reserves', 'Search/ReservesFacetList',
@@ -689,6 +747,7 @@ $staticRoutes = [
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addNonTabRecordActions($config, $nonTabRecordActions);
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);

@@ -48,7 +48,7 @@ class Search2recordController extends AbstractRecord
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->searchClassId = 'Search2';
+        $this->sourceId = 'Search2';
         $this->fallbackDefaultTab = 'Description';
         parent::__construct($sm);
     }
@@ -60,7 +60,7 @@ class Search2recordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config::class)
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Search2');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

@@ -128,7 +128,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         }
 
                         $toc[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/', '',
+                            '/<a>|<a [^>]*>|<\/a>/',
+                            '',
                             html_entity_decode($li)
                         );
                     }

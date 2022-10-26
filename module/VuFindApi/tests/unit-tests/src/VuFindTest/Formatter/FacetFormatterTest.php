@@ -101,7 +101,6 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
         ];
         if (!$includeOr) {
             unset($data['xyzzy']);
-            unset($data['hierarchical_xyzzy']);
         }
         return $data;
     }
@@ -164,7 +163,10 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
         $urlQuery = $factory->fromParams($params);
         foreach ($data as $facet => $values) {
             $results[$facet] = $helper->buildFacetArray(
-                $facet, $values, $urlQuery, false
+                $facet,
+                $values,
+                $urlQuery,
+                false
             );
         }
 
@@ -204,7 +206,8 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
             'filter' => ['foo:baz', 'hierarchical_foo:1/bar/cookie/'],
         ];
         $formatted = $formatter->format(
-            $request, $this->getFakeResults($request, $this->getFakeFacetData()),
+            $request,
+            $this->getFakeResults($request, $this->getFakeFacetData()),
             $this->getFakeHierarchicalFacetData($request)
         );
 
@@ -259,7 +262,8 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
             'facetFilter' => ['foo:..z', 'xyzzy:val(2|3)'],
         ];
         $formatted = $formatter->format(
-            $request, $this->getFakeResults($request, $this->getFakeFacetData(true)),
+            $request,
+            $this->getFakeResults($request, $this->getFakeFacetData(true)),
             $this->getFakeHierarchicalFacetData($request, true)
         );
 

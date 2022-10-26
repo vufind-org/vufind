@@ -69,7 +69,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $currentPath->expects($this->any())->method('__invoke')
             ->will($this->returnValue('/test/path'));
 
-        $recordLink = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLink::class)
+        $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
@@ -77,18 +77,14 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                     )
                 ]
             )->getMock();
-        $recordLink->expects($this->any())->method('getUrl')
+        $recordLinker->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->any())->method('__invoke')
             ->will($this->returnValue('http://server/url'));
 
-        return [
-            'currentPath' => $currentPath,
-            'recordLink' => $recordLink,
-            'serverurl' => $serverUrl
-        ];
+        return compact('currentPath', 'recordLinker') + ['serverurl' => $serverUrl];
     }
 
     /**
@@ -98,11 +94,21 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockTranslator()
     {
+        $translations = [
+            'Results for' => 'Results for',
+            'showing_results_of_html' => 'Showing <strong>%%start%% - %%end%%'
+                . '</strong> results of <strong>%%total%%</strong>'
+        ];
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
         $mock->expects($this->any())->method('translate')
-            ->withConsecutive(['Results for'], ['showing_results_of_html', 'default'])
-            ->willReturnOnConsecutiveCalls('Results for', 'Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>');
+            ->will(
+                $this->returnCallback(
+                    function ($str, $params, $default) use ($translations) {
+                        return $translations[$str] ?? $default ?? $str;
+                    }
+                )
+            );
         return $mock;
     }
 
@@ -129,7 +135,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
-        $feed = $helper->__invoke($results, '/test/path');
+        $feed = $helper($results, '/test/path');
         $this->assertTrue(is_object($feed));
         $rss = $feed->export('rss');
 
@@ -139,10 +145,14 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         // Make sure custom Dublin Core elements are present:
         $this->assertTrue(strstr($rss, 'dc:format') !== false);
 
+        // Make sure custom Atom link elements are present:
+        $this->assertTrue(strstr($rss, 'atom:link') !== false);
+
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(
-            'Showing 1 - 2 results of 2', $parsedFeed->getDescription()
+            'Showing 1 - 2 results of 2',
+            $parsedFeed->getDescription()
         );
         $items = [];
         $i = 0;

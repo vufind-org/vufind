@@ -120,7 +120,7 @@ class Utils
         $date = str_replace(['/', '--', '-0'], '-', $date);
 
         // If multiple dates are &'ed together, take just the first:
-        list($date) = explode('&', $date);
+        [$date] = explode('&', $date);
 
         // Default to January 1 if no month/day present:
         if (strlen($date) < 5) {

@@ -27,8 +27,8 @@
  */
 namespace VuFind\ServiceManager;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Abstract Plugin Factory
@@ -104,7 +104,9 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         $class = $this->getClassName($requestedName);

@@ -76,7 +76,8 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
                 'port' => 1234,
                 'basedn' => 'basedn',
                 'username' => 'username'
-            ], true
+            ],
+            true
         );
         return new Config(['LDAP' => $ldapConfig], true);
     }

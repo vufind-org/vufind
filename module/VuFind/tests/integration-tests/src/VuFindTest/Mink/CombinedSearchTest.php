@@ -41,8 +41,6 @@ use Behat\Mink\Element\Element;
  */
 class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Get config settings for combined.ini.
      *
@@ -80,10 +78,13 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         ];
         foreach ($expectedResults as $container => $title) {
             $this->assertEquals(
-                $title, $this->findCss($page, "$container a.title")->getText()
+                $title,
+                $this->findCss($page, "$container a.title")->getText()
             );
             // Check for sample driver location/call number in output (this will
             // only appear after AJAX returns):
+            $this->unFindCss($page, '.callnumber.ajax-availability');
+            $this->unFindCss($page, '.location.ajax-availability');
             $this->assertEquals(
                 'A1234.567',
                 $this->findCss($page, "$container .callnumber")->getText()
@@ -103,7 +104,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testCombinedSearchResults()
     {
         $this->changeConfigs(
-            ['combined' => $this->getCombinedIniOverrides()], ['combined']
+            ['combined' => $this->getCombinedIniOverrides()],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');
@@ -111,7 +113,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -126,7 +129,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $config['Solr:one']['ajax'] = true;
         $config['Solr:two']['ajax'] = true;
         $this->changeConfigs(
-            ['combined' => $config], ['combined']
+            ['combined' => $config],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');
@@ -134,7 +138,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -148,7 +152,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
         $this->changeConfigs(
-            ['combined' => $config], ['combined']
+            ['combined' => $config],
+            ['combined']
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Combined');
@@ -156,7 +161,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->assertResultsForDefaultQuery($page);
     }
 }

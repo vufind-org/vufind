@@ -40,6 +40,29 @@ use Laminas\Db\Sql\Select;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property ?string $username
+ * @property string  $password
+ * @property ?string $pass_hash
+ * @property string  $firstname
+ * @property string  $lastname
+ * @property string  $email
+ * @property ?string $email_verified
+ * @property string  $pending_email
+ * @property int     $user_provided_email
+ * @property ?string $cat_id
+ * @property ?string $cat_username
+ * @property ?string $cat_password
+ * @property ?string $cat_pass_enc
+ * @property string  $college
+ * @property string  $major
+ * @property ?string $home_library
+ * @property string  $created
+ * @property string  $verify_hash
+ * @property string  $last_login
+ * @property ?string $auth_method
+ * @property string  $last_language
  */
 class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
@@ -231,9 +254,12 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Change home library.
      *
-     * @param string $homeLibrary New home library to store.
+     * @param ?string $homeLibrary New home library to store, or null to indicate
+     * that the user does not want a default. An empty string is the default for
+     * backward compatibility and indicates that system's default pick up location is
+     * to be used
      *
-     * @return mixed           The output of the save method.
+     * @return mixed               The output of the save method.
      */
     public function changeHomeLibrary($homeLibrary)
     {
@@ -269,7 +295,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
         return $this->getDbTable('Tags')
-            ->getForUser($this->id, $resourceId, $listId, $source);
+            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
     }
 
     /**
@@ -338,14 +364,17 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
                 [
                     Select::SQL_STAR,
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', ['ur.resource_id'],
+                        'COUNT(DISTINCT(?))',
+                        ['ur.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
                     )
                 ]
             );
             $select->join(
-                ['ur' => 'user_resource'], 'user_list.id = ur.list_id',
-                [], $select::JOIN_LEFT
+                ['ur' => 'user_resource'],
+                'user_list.id = ur.list_id',
+                [],
+                $select::JOIN_LEFT
             );
             $select->where->equalTo('user_list.user_id', $userId);
             $select->group(
@@ -371,7 +400,9 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return array
      */
-    public function getSavedData($resourceId, $listId = null,
+    public function getSavedData(
+        $resourceId,
+        $listId = null,
         $source = DEFAULT_SEARCH_BACKEND
     ) {
         $table = $this->getDbTable('UserResource');
@@ -393,7 +424,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @return void
      */
     public function saveResource(
-        $resource, $list, $tagArray, $notes, $replaceExisting = true
+        $resource,
+        $list,
+        $tagArray,
+        $notes,
+        $replaceExisting = true
     ) {
         // Create the resource link if it doesn't exist and update the notes in any
         // case:
@@ -492,7 +527,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             }
             if ($this->passwordEncryptionEnabled()) {
                 $row->cat_password = $this->encryptOrDecrypt(
-                    $row->cat_pass_enc, false
+                    $row->cat_pass_enc,
+                    false
                 );
             }
         }
@@ -573,8 +609,12 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @return int Card ID
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function saveLibraryCard($id, $cardName, $username,
-        $password, $homeLib = ''
+    public function saveLibraryCard(
+        $id,
+        $cardName,
+        $username,
+        $password,
+        $homeLib = ''
     ) {
         if (!$this->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
@@ -663,10 +703,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * Destroy the user.
      *
      * @param bool $removeComments Whether to remove user's comments
+     * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
      */
-    public function delete($removeComments = true)
+    public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
@@ -682,6 +723,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         if ($removeComments) {
             $comments = $this->getDbTable('Comments');
             $comments->deleteByUser($this);
+        }
+        if ($removeRatings) {
+            $ratings = $this->getDbTable('Ratings');
+            $ratings->deleteByUser($this);
         }
 
         // Remove the user itself:

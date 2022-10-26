@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\Command\Generate;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Generate\ExtendClassCommand;
 use VuFindConsole\Generator\GeneratorTools;
@@ -162,7 +162,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -177,7 +177,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

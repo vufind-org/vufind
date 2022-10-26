@@ -63,18 +63,18 @@ class RecordCollection extends AbstractRecordCollection
     protected $response;
 
     /**
-     * Facets.
-     *
-     * @var Facets
-     */
-    protected $facets;
-
-    /**
      * Spellcheck information.
      *
      * @var Spellcheck
      */
     protected $spellcheck;
+
+    /**
+     * Facet fields.
+     *
+     * @var array
+     */
+    protected $facetFields = null;
 
     /**
      * Constructor.
@@ -104,7 +104,8 @@ class RecordCollection extends AbstractRecordCollection
     {
         if (!$this->spellcheck) {
             $this->spellcheck = new Spellcheck(
-                $this->getRawSpellcheckSuggestions(), $this->getSpellcheckQuery()
+                $this->getRawSpellcheckSuggestions(),
+                $this->getSpellcheckQuery()
             );
         }
         return $this->spellcheck;
@@ -121,16 +122,75 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
-     * Return SOLR facet information.
+     * Return available facets.
+     *
+     * Returns an associative array with the field name as key. The value is an
+     * associative array of available facets for the field, indexed by facet value.
      *
      * @return array
      */
     public function getFacets()
     {
-        if (!$this->facets) {
-            $this->facets = new Facets($this->response['facet_counts']);
+        if (null === $this->facetFields) {
+            $this->facetFields = [];
+            foreach ($this->response['facet_counts']['facet_fields'] ?? []
+                as $field => $facetData
+            ) {
+                $values = [];
+                foreach ($facetData as $value) {
+                    $values[$value[0]] = $value[1];
+                }
+                $this->facetFields[$field] = $values;
+            }
         }
-        return $this->facets;
+        return $this->facetFields;
+    }
+
+    /**
+     * Set facets.
+     *
+     * @param array $facets Facet fields
+     *
+     * @return void
+     */
+    public function setFacets(array $facets): void
+    {
+        $this->facetFields = $facets;
+    }
+
+    /**
+     * Return available query facets.
+     *
+     * Returns an associative array with the internal field name as key. The
+     * value is an associative array of the available facets for the field,
+     * indexed by facet value.
+     *
+     * @return array
+     */
+    public function getQueryFacets()
+    {
+        return $this->response['facet_counts']['facet_queries'] ?? [];
+    }
+
+    /**
+     * Return available pivot facets.
+     *
+     * Returns an associative array with the internal field name as key. The
+     * value is an associative array of the available facets for the field,
+     * indexed by facet value.
+     *
+     * @return array
+     */
+    public function getPivotFacets()
+    {
+        $result = [];
+        foreach ($this->response['facet_counts']['facet_pivot'] ?? [] as $facetData
+        ) {
+            foreach ($facetData as $current) {
+                $result[$current['value']] = $current;
+            }
+        }
+        return $result;
     }
 
     /**

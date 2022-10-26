@@ -58,6 +58,13 @@ abstract class AbstractCommand extends Command
     protected $reader;
 
     /**
+     * Language directory
+     *
+     * @var string
+     */
+    protected $languageDir;
+
+    /**
      * Constructor
      *
      * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
@@ -66,8 +73,11 @@ abstract class AbstractCommand extends Command
      * @param string|null           $name        The name of the command; passing
      * null means it must be set in configure()
      */
-    public function __construct(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null, $name = null
+    public function __construct(
+        ExtendedIniNormalizer $normalizer = null,
+        ExtendedIniReader $reader = null,
+        $languageDir = null,
+        $name = null
     ) {
         $this->normalizer = $normalizer ?? new ExtendedIniNormalizer();
         $this->reader = $reader ?? new ExtendedIniReader();
@@ -118,7 +128,9 @@ abstract class AbstractCommand extends Command
      *
      * @return object|bool
      */
-    protected function getLangDir(OutputInterface $output, $domain = 'default',
+    protected function getLangDir(
+        OutputInterface $output,
+        $domain = 'default',
         $createIfMissing = false
     ) {
         $subDir = $domain == 'default' ? '' : ('/' . $domain);

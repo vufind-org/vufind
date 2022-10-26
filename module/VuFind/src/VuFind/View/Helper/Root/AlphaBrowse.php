@@ -48,13 +48,22 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
     protected $url;
 
     /**
+     * Additional configuration options.
+     *
+     * @var array
+     */
+    protected $options;
+
+    /**
      * Constructor
      *
-     * @param Url $helper URL helper
+     * @param Url   $helper  URL helper
+     * @param array $options Additional configuration options
      */
-    public function __construct(Url $helper)
+    public function __construct(Url $helper, array $options = [])
     {
         $this->url = $helper;
+        $this->options = $options;
     }
 
     /**
@@ -75,10 +84,13 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
             'type' => ucwords($source) . 'Browse',
             'lookfor' => $this->escapeForSolr($item['heading']),
         ];
+        if ($this->options['bypass_default_filters'] ?? true) {
+            $query['dfApplied'] = 1;
+        }
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
         }
-        return $this->url->__invoke('search-results', [], ['query' => $query]);
+        return ($this->url)('search-results', [], ['query' => $query]);
     }
 
     /**

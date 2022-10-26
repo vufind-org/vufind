@@ -5,7 +5,7 @@
       <div class="list-group-item">
         <span>
           <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
-          <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
             <?=$this->record($driver)->getTitleHtml()?>
           </a>
           <?php $summAuthors = $driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
@@ -17,6 +17,6 @@
         </span>
       </div>
     <?php endforeach; ?>
-    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a>
+    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?></a>
   </div>
 <?php endif ?>

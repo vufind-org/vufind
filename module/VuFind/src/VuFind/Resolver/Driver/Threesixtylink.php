@@ -106,19 +106,22 @@ class Threesixtylink extends AbstractBase
                 $record = [];
                 // select the deepest link returned
                 $elems = $xpath->query(
-                    ".//ssopenurl:url[@type='article']", $linkGroup
+                    ".//ssopenurl:url[@type='article']",
+                    $linkGroup
                 );
                 if ($elems->length > 0) {
                     $record['linktype'] = 'article';
                 } else {
                     $elems = $xpath->query(
-                        ".//ssopenurl:url[@type='journal']", $linkGroup
+                        ".//ssopenurl:url[@type='journal']",
+                        $linkGroup
                     );
                     if ($elems->length > 0) {
                         $record['linktype'] = 'journal';
                     } else {
                         $elems = $xpath->query(
-                            ".//ssopenurl:url[@type='source']", $linkGroup
+                            ".//ssopenurl:url[@type='source']",
+                            $linkGroup
                         );
                         if ($elems->length > 0) {
                             $record['linktype'] = 'source';
@@ -133,22 +136,26 @@ class Threesixtylink extends AbstractBase
                     $record['service_type'] = 'getHolding';
                 }
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:providerName", $linkGroup
+                    ".//ssopenurl:holdingData/ssopenurl:providerName",
+                    $linkGroup
                 );
                 $title = $elems->item(0)->textContent;
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:databaseName", $linkGroup
+                    ".//ssopenurl:holdingData/ssopenurl:databaseName",
+                    $linkGroup
                 );
                 $title .= ' - ' . $elems->item(0)->textContent;
                 $record['title'] = $title;
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:startDate", $linkGroup
+                    ".//ssopenurl:holdingData/ssopenurl:startDate",
+                    $linkGroup
                 );
                 if ($elems->length > 0) {
                     $record['coverage'] = $elems->item(0)->textContent . ' - ';
                 }
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:endDate", $linkGroup
+                    ".//ssopenurl:holdingData/ssopenurl:endDate",
+                    $linkGroup
                 );
                 if ($elems->length > 0) {
                     $record['coverage'] .= $elems->item(0)->textContent;

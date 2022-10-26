@@ -1,24 +1,24 @@
 <h1>Tipy pro vyhledávání</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Zástupné znaky</a></li>
-  <li><a href="#Fuzzy Searches">Přibližné vyhledávání</a></li>
-  <li><a href="#Proximity Searches">Hledání podle blízkosti slov</a></li>
-  <li><a href="#Range Searches">Hledání podle rozsahu</a></li>
-  <li><a href="#Boosting a Term">Váhy slov v dotazu</a></li>
-  <li><a href="#Boolean operators">Logické vyhledávací operátory</a>
+  <li><a href="#wildcard_searches">Zástupné znaky</a></li>
+  <li><a href="#fuzzy_searches">Přibližné vyhledávání</a></li>
+  <li><a href="#proximity_searches">Hledání podle blízkosti slov</a></li>
+  <li><a href="#range_searches">Hledání podle rozsahu</a></li>
+  <li><a href="#boosting_a_term">Váhy slov v dotazu</a></li>
+  <li><a href="#boolean_operators">Logické vyhledávací operátory</a>
     <ul>
-      <li><a href="#AND">AND (a)</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR (nebo)</a></li>
-      <li><a href="#NOT">NOT (ne)</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND (a)</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR (nebo)</a></li>
+      <li><a href="#boolean_not">NOT (ne)</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Zástupné znaky</dt>
+  <dt><a id="wildcard_searches"></a>Zástupné znaky</dt>
   <dd>
     <p>Pro nahrazení přesně jednoho znaku ve vyhledávacím výrazu použijte znak <strong>?</strong>.</p>
     <p>Příklad: chceme najít "text" nebo "test":</p>
@@ -30,17 +30,17 @@
     <pre class="code">te*t</pre>
     <p>Poznámka: Zástupné znaky * a ? nelze použít na začátku vyhledávacího výrazu.</p>
   </dd>
-  
-  <dt><a name="Fuzzy Searches"></a>Přibližné vyhledávání</dt>
+
+  <dt><a id="fuzzy_searches"></a>Přibližné vyhledávání</dt>
   <dd>
     <p>Použijte znak <strong>~</strong> (vlnovka, tilda) na konci <strong>jednoslovného</strong> výrazu. Například pro všechna slova podobná slovu "zrno" můžete použít následující výraz: </p>
     <pre class="code">zrno~</pre>
-    <p>Pro upřesnění podobnosti je možné použít další parametr. Jeho hodnota musí být mezi 0 a 1, čím více se hodnota blíží 1, tím podobnější slova jsou vyhledán. Například:</p>
+    <p>Pro upřesnění podobnosti je možné použít další parametr. Jeho hodnota musí být mezi 0 a 1, čím více se hodnota blíží 1, tím podobnější slova jsou vyhledána. Například:</p>
     <pre class="code">zrno~0.8</pre>
     <p>Výchozí hodnota tohoto upřesňujícího parametru je 0.5.</p>
   </dd>
-  
-  <dt><a name="Proximity Searches"></a>Hledání podle blízkosti slov</dt>
+
+  <dt><a id="proximity_searches"></a>Hledání podle blízkosti slov</dt>
   <dd>
     <p>
       Použijte znak <strong>~</strong> (vlnovka, tilda) na konci <strong>víceslovného</strong> výrazu.
@@ -48,8 +48,8 @@
     </p>
     <pre class="code">"ekonomika Pilný"~10</pre>
   </dd>
-  
-  <dt><a name="Range Searches"></a>Hledání podle rozsahu</dt>
+
+  <dt><a id="range_searches"></a>Hledání podle rozsahu</dt>
   <dd>
     <p>
       Pro vyhledávání podle rozsahu použijte složené závorky <strong>{ }</strong>.
@@ -57,12 +57,12 @@
     </p>
     <pre class="code">{A TO C}</pre>
     <p>
-      Stejným zposobem je možné použít i čísla. Například pro vyhledávání podle let:
+      Obdobně je možné hledat i podle číselného rozsahu. Například pro vyhledávání podle let:
     </p>
     <pre class="code">[2000 TO 2003]</pre>
   </dd>
-  
-  <dt><a name="Boosting a Term"></a>Váhy slov v dotazu</dt>
+
+  <dt><a id="boosting_a_term"></a>Váhy slov v dotazu</dt>
   <dd>
     <p>
       Pro zvýšení váhy (významu) některého slova proti ostatním je možné použít znak<strong>^</strong> (caret, vynechávka).
@@ -71,8 +71,8 @@
     <pre class="code">ekonomika Pilný^5</pre>
     <p>Bude kladen větší důraz na slovo "Pilný"</p>
   </dd>
-  
-  <dt><a name="Boolean operators"></a>Logické vyhledávací operátory</dt>
+
+  <dt><a id="boolean_operators"></a>Logické vyhledávací operátory</dt>
   <dd>
     <p>
       Booleovské operátory umožňují kombinovat dotaz pomocí logiky.
@@ -80,7 +80,7 @@
     </p>
     <p>Poznámka: Tyto operátory musejí být vždy psány VELKÝMI písmeny</p>
     <dl>
-      <dt><a name="AND"></a>AND (a)</dt>
+      <dt><a id="boolean_and"></a>AND (a)</dt>
       <dd>
         <p>Operátor <strong>AND</strong> je výchozí spojovací operátor. To znamená, že pokud nepoužijete žádný operátor použije se vždy operátor AND. Operátor AND vrátí takové výsledky, které obsahují všechna vyhledávaná slova.</p>
         <p>Pro vyhledání záznamů, které obsahují slova "ekonomika" a "Pilný" použijte tento dotaz: </p>
@@ -88,19 +88,19 @@
         <p>nebo</p>
         <pre class="code">ekonomika AND Pilný</pre>
       </dd>
-      <dt><a name="+"></a>+</dt>
+      <dt><a id="boolean_plus"></a>+</dt>
       <dd>
         <p>Operátor "+" znamená, že slovo za ním "+" se v záznamu musí vždy nacházet.</p>
         <p>Pro vyhledání zaznamá, které musí obsahovat slovo "ekonomika" a mohou obsahovat slovo "Pilný" použijte tento dotaz:</p>
         <pre class="code">+ekonomika Pilný</pre>
       </dd>
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p>Operátor <strong>OR</strong> způsobí, že vy výsledcích budou záznamy, které obsahují alespoň jedno ze zadaných slov.</p>
         <p>Pro vyhledání záznamů, které obsahují výraz "ekonomika Pilný" nebo jenom "Pilný" použijte tento dotaz:</p>
         <pre class="code">"ekonomika Pilný" OR Pilný</pre>
       </dd>
-      <dt><a name="NOT"></a>NOT (ne)</dt>
+      <dt><a id="boolean_not"></a>NOT (ne)</dt>
       <dd>
         <p>Operátor NOT vyloučí z výsledků ty záznamy, které obsahují slovo uvedené za operátorem NOT.</p>
         <p>Pro vyhledání všech záznamů, které obsahují slovo "ekonomika", ale neobsahují slovo "Pilný" použijte tento dotaz: </p>
@@ -108,7 +108,7 @@
         <p>Poznámka: Operátor NOT není možné použít, pokud je vyhledávacím výrazem pouze jeden výraz. Následují dotaz nevrátí žádné výsledky:</p>
         <pre class="code">NOT ekonomika</pre>
       </dd>
-      <dt><a name="-"></a>-</dt>
+      <dt><a id="boolean_minus"></a>-</dt>
       <dd>
         <p>Operátor <strong>-</strong> vyloučí z výsledků ty záznamy, které obsahují výraz za tímto operátorem.</p>
         <p>Pro vyhledání všech záznamů, které obsahují slovo "ekonomika", ale ne "Pilný" použijte tento dotaz: </p>

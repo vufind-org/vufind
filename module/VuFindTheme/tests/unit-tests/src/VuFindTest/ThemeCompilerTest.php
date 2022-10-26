@@ -65,7 +65,8 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $this->info = new ThemeInfo(
-            $this->getFixtureDir('VuFindTheme') . 'themes', 'parent'
+            $this->getFixtureDir('VuFindTheme') . 'themes',
+            'parent'
         );
         $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:
@@ -121,6 +122,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
                     'xyzzy' => 'Xyzzy',
                 ]
             ],
+            'doctype' => 'HTML5',
         ];
         $mergedConfig = include "{$this->targetPath}/theme.config.php";
         $this->assertEquals($expectedConfig, $mergedConfig);
@@ -172,13 +174,14 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
             'js' => ['hello.js', 'extra.js', 'mixin.js'],
             'helpers' => [
                 'factories' => [
-                    'foo' => 'fooOverrideFactory',
+                    'foo' => 'fooMixinFactory',
                     'bar' => 'barFactory',
                 ],
                 'aliases' => [
                     'xyzzy' => 'Xyzzy',
                 ]
             ],
+            'doctype' => 'HTML5',
         ];
         $mergedConfig = include "{$this->targetPath}/theme.config.php";
         $this->assertEquals($expectedConfig, $mergedConfig);

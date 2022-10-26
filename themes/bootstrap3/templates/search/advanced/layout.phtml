@@ -20,23 +20,29 @@
         $groups = $searchDetails->getQueries();
     }
     $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
-    $searchFilters = $this->saved->getParams()->getFilterList();
+    $checkboxFilters = array_filter(
+        $this->saved->getParams()->getCheckboxFacets(),
+        function ($current) {
+            return $current['selected'];
+        }
+    );
+    $searchFilters = $this->saved->getParams()->getFilterList(true);
     $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
-    $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
+    $hasDefaultsApplied = $searchDetails = $checkboxFilters = $searchFilters = $groups = false;
     $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true);
   }
 
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
-    $this->advancedSearchJsOverride ?? 'advanced_search.js'
+      $this->advancedSearchJsOverride ?? 'advanced_search.js'
   );
   // Step 2: Build the page
   $this->headScript()->appendScript(
-    $this->partial(
-      $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
-      ['options' => $this->options, 'searchDetails' => $searchDetails]
-    )
+      $this->partial(
+          $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
+          ['options' => $this->options, 'searchDetails' => $searchDetails]
+      )
   );
 
   // Collect previous search queries
@@ -83,7 +89,7 @@
         </div>
       </div>
       <span id="groupPlaceHolder" class="hidden">
-        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+        <?=$this->icon('ui-add') ?>
         <a href="#" role="button"><?= $this->transEsc('add_search_group') ?></a>
       </span>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
@@ -97,27 +103,27 @@
             <?php endif; ?>
             <div id="group<?=$group ?>" class="adv-group">
               <div class="adv-group-terms">
-                <label class="adv-group-label" for="search_lookfor<?=$group ?>_0"><?=$this->transEsc("adv_search_label")?>:</label>
+                <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
                 <?php for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
                   <?php if($group == 0 && $search == 0): ?>
                     <div id="new_search_template">
                   <?php endif; ?>
                   <div id="search<?=$group . '_' . $search ?>" class="adv-search">
-                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?php if (isset($setQueries[$group][$search])): ?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?php endif; ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
+                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?php if (isset($setQueries[$group][$search])): ?> value="<?=$this->escapeHtmlAttr($setQueries[$group][$search]->getString())?>"<?php endif; ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
                     <select class="adv-term-type form-control" name="type<?=$group ?>[]" aria-label="<?=$this->transEscAttr("Search type")?>">
                       <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                        <option value="<?=$this->escapeHtml($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
+                        <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
                       <?php endforeach; ?>
                     </select>
                     <a href="#" class="adv-term-remove hidden">
-                      <i class="fa fa-times" aria-hidden="true"></i>
+                      <?=$this->icon('ui-remove') ?>
                       <span class="sr-only"><?=$this->transEsc('remove') ?></span>
                     </a>
                   </div>
                   <?php if($group == 0 && $search == 0): ?>
-                      </div>
+                    </div>
                     <span class="float-left">
-                      <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i>
+                      <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
                       <a href="#" class="add_search_link hidden" role="button"><?=$this->transEsc("add_search")?></a>
                     </span>
                   <?php endif; ?>
@@ -131,7 +137,10 @@
                   <option value="NOT"<?php if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_NOT")?></option>
                 </select>
               </div>
-              <a href="#" class="adv-group-close hidden" role="button"><i class="fa fa-close"></i> <?=$this->transEsc("del_search")?></a>
+              <a href="#" class="adv-group-close hidden" role="button">
+                <?=$this->icon('ui-remove') ?>
+                <?=$this->transEsc("del_search")?>
+              </a>
             </div>
             <?php if($group == 0): ?>
               </div>
@@ -140,16 +149,16 @@
         <?php endif; ?>
       </div>
       <div class="adv-submit">
-        <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
-        <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
+        <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">
+        <input class="btn btn-primary" type="submit" value="<?= $this->transEscAttr('Find')?>">
       </div>
       <?php if (isset($this->extraAdvancedControls)): ?>
         <div class="clearfix">
           <?=$this->extraAdvancedControls ?>
         </div>
         <div class="adv-submit">
-          <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
-          <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
+          <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">
+          <input class="btn btn-primary" type="submit" value="<?= $this->transEscAttr('Find')?>">
         </div>
       <?php endif; ?>
     </div>
@@ -158,7 +167,7 @@
       <?php if ($hasDefaultsApplied): ?>
         <input type="hidden" name="dfApplied" value="1" />
       <?php endif ?>
-      <?php if (!empty($searchFilters)): ?>
+      <?php if ($checkboxFilters || $searchFilters): ?>
         <h2><?=$this->transEsc("adv_search_filters")?></h2>
         <div class="facet-group">
           <label class="checkbox">
@@ -166,6 +175,17 @@
             <?=$this->transEsc("adv_search_select_all")?>
           </label>
         </div>
+
+        <?php if ($checkboxFilters): ?>
+          <div class="checkboxFilter">
+            <?php foreach ($checkboxFilters as $data): ?>
+              <div class="checkbox-filter">
+                <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($data['filter'])?>" /> <?=$this->transEsc($data['desc'])?></label>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
         <?php foreach ($searchFilters as $field => $data): ?>
           <div class="facet-group">
             <div class="title"><?=$this->transEsc($field)?></div>
@@ -186,7 +206,7 @@
 <?php
 $script = <<<JS
 $('#groupPlaceHolder a').click(function(e) {
-  addGroup();
+  addGroup(null, null, null, true);
   return false;
 })
 JS;

@@ -229,7 +229,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\LibGuides\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['fakeid', $client])
             ->getMock();
     }

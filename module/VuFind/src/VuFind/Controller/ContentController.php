@@ -71,22 +71,7 @@ class ContentController extends AbstractBase
 
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['path'])
-            : $this->notFoundAction($this->getResponse());
-    }
-
-    /**
-     * Action called if matched action does not exist
-     *
-     * @return ViewModel
-     */
-    public function notFoundAction(): ViewModel
-    {
-        $response   = $this->response;
-
-        if ($response instanceof \Laminas\Http\Response) {
-            return $this->createHttpNotFoundModel($response);
-        }
-        return $this->createConsoleNotFoundModel($response);
+            : $this->notFoundAction();
     }
 
     /**

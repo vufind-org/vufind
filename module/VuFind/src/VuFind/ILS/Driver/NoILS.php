@@ -87,7 +87,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         return $this->config[$function] ?? false;
     }
@@ -258,7 +258,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             $field = $marcStatus['marcField'];
             unset($marcStatus['marcField']);
             $result = $recordDriver->tryMethod(
-                'getFormattedMarcDetails', [$field, $marcStatus]
+                'getFormattedMarcDetails',
+                [$field, $marcStatus]
             );
             // If the details coming back from the record driver include the
             // ID prefix, strip it off!

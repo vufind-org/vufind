@@ -27,7 +27,7 @@
  */
 namespace VuFind\UrlShortener;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory to construct the configured UrlShortener service.
@@ -49,7 +49,9 @@ class ServiceFactory
      *
      * @return object
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

@@ -27,24 +27,25 @@
   }
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
-<?php if ($results->getResultTotal() > 0): ?>
-  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h2>
-<?php endif; ?>
-<?php $checkboxFilters = $this->recommend->getCheckboxFacetSet(); ?>
-<?php $checkboxesShown = false; ?>
-<?php if (count($checkboxFilters) > 0):
+<?php
+  $checkboxFilters = $this->recommend->getCheckboxFacetSet();
+  $hasVisibleCheckboxes = false;
+  if (count($checkboxFilters) > 0) {
     foreach ($checkboxFilters as $current) {
       if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
-        $checkboxesShown = true;
+        $hasVisibleCheckboxes = true;
         break;
       }
     }
-  ?>
-  <?php if ($checkboxesShown): ?>
-    <div class="checkboxFilter">
-      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
-    </div>
-  <?php endif; ?>
+  }
+?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+<?php endif; ?>
+<?php if ($hasVisibleCheckboxes): ?>
+  <div class="checkboxFilter">
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+  </div>
 <?php endif; ?>
 <?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
@@ -53,20 +54,23 @@
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <button class="title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
-        <?=$this->transEsc($cluster['label'])?>
+      <button class="title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+        <span class="facet-title"><?=$this->transEsc($cluster['label'])?></span>
+        <?=$this->icon('collapse', 'facet-title-icon') ?>
       </button>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if (!in_array($title, $collapsedFacets)): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
-        <?=$this->context($this)->renderInContext(
-          'Recommend/SideFacets/facet.phtml',
-          [
-            'facet' => $title,
-            'cluster' => $cluster,
-            'collapsedFacets' => $collapsedFacets
-          ]
-        ); ?>
+        <?=
+          $this->context($this)->renderInContext(
+              'Recommend/SideFacets/facet.phtml',
+              [
+                  'facet' => $title,
+                  'cluster' => $cluster,
+                  'collapsedFacets' => $collapsedFacets
+              ]
+          );
+        ?>
       </div>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerMoreLessFacetsEventHandlers();", 'SET');?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerSideFacetTruncation();", 'SET');?>

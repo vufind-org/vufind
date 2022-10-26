@@ -59,7 +59,8 @@ class Terms implements IteratorAggregate
     public function __construct(array $terms)
     {
         $terms = array_replace(
-            ['responseHeader' => [], 'terms' => []], $terms
+            ['responseHeader' => [], 'terms' => []],
+            $terms
         );
         $this->terms = new ArrayObject();
         foreach ($terms['terms'] as $field => $info) {
@@ -72,7 +73,7 @@ class Terms implements IteratorAggregate
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->terms->getIterator();
     }

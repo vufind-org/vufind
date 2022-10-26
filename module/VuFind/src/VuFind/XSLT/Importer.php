@@ -29,7 +29,6 @@ namespace VuFind\XSLT;
 
 use DOMDocument;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
 
@@ -72,7 +71,10 @@ class Importer
      * @throws \Exception
      * @return string            Transformed XML
      */
-    public function save($xmlFile, $properties, $index = 'Solr',
+    public function save(
+        $xmlFile,
+        $properties,
+        $index = 'Solr',
         $testMode = false
     ) {
         // Process the file:
@@ -98,21 +100,20 @@ class Importer
     protected function generateXML($xmlFile, $properties)
     {
         // Load properties file:
-        $properties = ConfigLocator::getConfigPath($properties, 'import');
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $properties = $resolver->getConfigPath($properties, 'import');
         if (!file_exists($properties)) {
             throw new \Exception("Cannot load properties file: {$properties}.");
         }
         $options = parse_ini_file($properties, true);
 
         // Make sure required parameter is set:
-        if (!isset($options['General']['xslt'])) {
+        if (!($filename = $options['General']['xslt'] ?? '')) {
             throw new \Exception(
                 "Properties file ({$properties}) is missing General/xslt setting."
             );
         }
-        $xslFile = ConfigLocator::getConfigPath(
-            $options['General']['xslt'], 'import/xsl'
-        );
+        $xslFile = $resolver->getConfigPath($filename, 'import/xsl');
 
         // Initialize the XSL processor:
         $xsl = $this->initProcessor($options);

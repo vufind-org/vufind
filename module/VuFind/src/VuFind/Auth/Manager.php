@@ -33,7 +33,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Validator\Csrf;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -44,8 +44,11 @@ use VuFind\Validator\Csrf;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
+class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Authentication modules
      *
@@ -117,6 +120,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     protected $currentUser = false;
 
     /**
+     * CSRF validator
+     *
+     * @var CsrfInterface
+     */
+    protected $csrf;
+
+    /**
      * Constructor
      *
      * @param Config         $config         VuFind configuration
@@ -124,11 +134,15 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      * @param SessionManager $sessionManager Session manager
      * @param PluginManager  $pm             Authentication plugin manager
      * @param CookieManager  $cookieManager  Cookie manager
-     * @param Csrf           $csrf           CSRF validator
+     * @param CsrfInterface  $csrf           CSRF validator
      */
-    public function __construct(Config $config, UserTable $userTable,
-        SessionManager $sessionManager, PluginManager $pm,
-        CookieManager $cookieManager, Csrf $csrf
+    public function __construct(
+        Config $config,
+        UserTable $userTable,
+        SessionManager $sessionManager,
+        PluginManager $pm,
+        CookieManager $cookieManager,
+        CsrfInterface $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -237,6 +251,35 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     }
 
     /**
+     * Is connecting library card allowed and supported?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return bool
+     */
+    public function supportsConnectingLibraryCard($authMethod = null)
+    {
+        return ($this->config->Catalog->auth_based_library_cards ?? false)
+            && $this->getAuth($authMethod)->supportsConnectingLibraryCard();
+    }
+
+    /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getUsernamePolicy($authMethod = null)
+    {
+        return $this->processPolicyConfig(
+            $this->getAuth($authMethod)->getUsernamePolicy()
+        );
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @param string $authMethod optional; check this auth method rather than
@@ -246,7 +289,9 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      */
     public function getPasswordPolicy($authMethod = null)
     {
-        return $this->getAuth($authMethod)->getPasswordPolicy();
+        return $this->processPolicyConfig(
+            $this->getAuth($authMethod)->getPasswordPolicy()
+        );
     }
 
     /**
@@ -451,13 +496,17 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
                     ->select(['id' => $this->session->userId]);
                 $this->currentUser = count($results) < 1
                     ? false : $results->current();
+                // End the session since the logged-in user cannot be found:
+                if (false === $this->currentUser) {
+                    $this->logout('');
+                }
             } elseif (isset($this->session->userDetails)) {
                 // privacy mode
                 $results = $this->userTable->createRow();
                 $results->exchangeArray($this->session->userDetails);
                 $this->currentUser = $results;
             } else {
-                // unexpected state
+                // not logged in
                 $this->currentUser = false;
             }
         }
@@ -583,9 +632,12 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
         if ($this->config->Authentication->verify_email ?? false) {
-            $user->pending_email = $email;
+            // If new email address is the current address, just reset any pending
+            // email address:
+            $user->pending_email = ($email === $user->email) ? '' : $email;
         } else {
             $user->updateEmail($email, true);
+            $user->pending_email = '';
         }
         $user->save();
         $this->updateSession($user);
@@ -621,6 +673,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                 $this->getAuth()->resetState();
+                $this->logWarning("Invalid CSRF token passed to login");
                 throw new AuthException('authentication_error_technical');
             } else {
                 // After successful token verification, clear list to shrink session:
@@ -640,11 +693,8 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         } catch (\Exception $e) {
             // Catch other exceptions, log verbosely, and treat them as technical
             // difficulties
-            error_log(
-                "Exception in " . get_class($this) . "::login: " . $e->getMessage()
-            );
-            error_log($e);
-            throw new AuthException('authentication_error_technical');
+            $this->logError((string)$e);
+            throw new AuthException('authentication_error_technical', 0, $e);
         }
 
         // Update user object
@@ -685,7 +735,8 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         if (!isset($this->auth[$method])) {
             $this->legalAuthOptions = array_unique(
                 array_merge(
-                    $this->legalAuthOptions, $this->getSelectableAuthOptions()
+                    $this->legalAuthOptions,
+                    $this->getSelectableAuthOptions()
                 )
             );
         }
@@ -724,6 +775,26 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     }
 
     /**
+     * Connect authenticated user as library card to his account.
+     *
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object
+     * containing account credentials.
+     * @param \VuFind\Db\Row\User                  $user    Connect newly created
+     * library card to this user.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function connectLibraryCard($request, $user)
+    {
+        $auth = $this->getAuth();
+        if (!$auth->supportsConnectingLibraryCard()) {
+            throw new \Exception("Connecting of library cards is not supported");
+        }
+        $auth->connectLibraryCard($request, $user);
+    }
+
+    /**
      * Update common user attributes on login
      *
      * @param \VuFind\Db\Row\User $user User object
@@ -740,5 +811,48 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         $user->auth_method = strtolower($method);
         $user->last_login = date('Y-m-d H:i:s');
         $user->save();
+    }
+
+    /**
+     * Is the user allowed to log directly into the ILS?
+     *
+     * @return bool
+     */
+    public function allowsUserIlsLogin(): bool
+    {
+        return $this->config->Catalog->allowUserLogin ?? true;
+    }
+
+    /**
+     * Process a raw policy configuration
+     *
+     * @param array $policy Policy configuration
+     *
+     * @return array
+     */
+    protected function processPolicyConfig(array $policy): array
+    {
+        // Convert 'numeric' or 'alphanumeric' pattern to a regular expression:
+        switch ($policy['pattern'] ?? '') {
+        case 'numeric':
+            $policy['pattern'] = '\d+';
+            break;
+        case 'alphanumeric':
+            $policy['pattern'] = '[\da-zA-Z]+';
+        }
+
+        // Map settings to attributes for a text input field:
+        $inputMap = [
+            'minLength' => 'data-minlength',
+            'maxLength' => 'maxlength',
+            'pattern' => 'pattern',
+        ];
+        $policy['inputAttrs'] = [];
+        foreach ($inputMap as $from => $to) {
+            if (isset($policy[$from])) {
+                $policy['inputAttrs'][$to] = $policy[$from];
+            }
+        }
+        return $policy;
     }
 }

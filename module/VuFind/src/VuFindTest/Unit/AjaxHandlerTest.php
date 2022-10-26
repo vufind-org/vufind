@@ -79,7 +79,8 @@ abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
     protected function getMockAuthManager($user)
     {
         $authManager = $this->container->createMock(
-            'VuFind\Auth\Manager', ['isLoggedIn']
+            \VuFind\Auth\Manager::class,
+            ['isLoggedIn']
         );
         $authManager->expects($this->any())->method('isLoggedIn')
             ->will($this->returnValue($user));
@@ -101,7 +102,8 @@ abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
         $request->setQuery(new Parameters($get));
         $request->setPost(new Parameters($post));
         $controller = $this->container->createMock(
-            'Laminas\Mvc\Controller\AbstractActionController', ['getRequest']
+            'Laminas\Mvc\Controller\AbstractActionController',
+            ['getRequest']
         );
         $controller->expects($this->any())->method('getRequest')
             ->will($this->returnValue($request));

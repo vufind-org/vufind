@@ -39,28 +39,12 @@ namespace VuFindTest\Mink;
  */
 class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Record ID to use in testing.
      *
      * @var string
      */
     protected $id = 'testdeweybrowse';
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
 
     /**
      * Set config for callnumber tests
@@ -102,7 +86,8 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $href = $link->getAttribute('href');
         $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
-        $this->assertStringContainsString($link->getText(), $href);
+        $hrefCallnum = explode('&from=', $href)[1];
+        $this->assertStringEndsWith($hrefCallnum, $link->getText());
     }
 
     protected function setupMultipleCallnumbers()
@@ -113,7 +98,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                 'Catalog' => ['driver' => 'Demo']
             ],
             'Demo' => [
-                'Holdings' => [
+                'StaticHoldings' => [
                     $this->id => json_encode(
                         [
                         ['callnumber' => 'CallNumberOne', 'location' => 'Villanova'],
@@ -142,26 +127,29 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         // Single callnumbers (Sample)
         $this->changeConfigs(
             [
-            'config' => [
-                'Catalog' => ['driver' => 'Sample'],
-                'Item_Status' => ['callnumber_handler' => $type]
-            ]
+                'config' => [
+                    'Catalog' => ['driver' => 'Sample'],
+                    'Item_Status' => ['callnumber_handler' => $type]
+                ]
             ]
         );
-        $this->getMinkSession()->reload();
-        $this->snooze();
-        $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
+        $callnumberSelector = '.callnumber a,.groupCallnumber a,.fullCallnumber a';
+        $session = $this->getMinkSession();
+        $session->reload();
+        $this->waitForPageLoad($page);
+        $link = $this->findCss($page, $callnumberSelector);
         $this->checkLink($link, $type);
 
         // Multiple callnumbers
         $this->setupMultipleCallnumbers();
-        $this->getMinkSession()->reload();
-        $this->snooze();
-        $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
+        $session->reload();
+        $this->waitForPageLoad($page);
         if ($expectLinks) {
+            $link = $this->findCss($page, $callnumberSelector);
             $this->checkLink($link, $type);
         } else {
-            $this->assertTrue(null === $link);
+            $link = $page->find('css', $callnumberSelector);
+            $this->assertNull($link);
         }
     }
 
@@ -195,11 +183,6 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFirstAndMsg()
     {
-        $this->changeConfigs(
-            [
-            'config' => ['Item_Status' => ['show_full_status' => false]]
-            ]
-        );
         $this->validateSetting('first');
     }
 

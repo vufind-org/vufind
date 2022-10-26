@@ -13,7 +13,7 @@ VuFind.register('recordVersions', function recordVersions() {
       }
       $elem.addClass('loaded');
       $elem.removeClass('hidden');
-      $elem.append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
+      $elem.append('<span class="js-load">' + VuFind.translate('loading_ellipsis') + '</span>');
       var $item = $(this).parents('.result');
       var id = $item.find('.hiddenId')[0].value;
       var source = $item.find('.hiddenSource')[0].value;
@@ -27,7 +27,7 @@ VuFind.register('recordVersions', function recordVersions() {
       )
         .done(function onGetVersionsDone(response) {
           if (response.data.length > 0) {
-            $elem.html(response.data);
+            $elem.html(VuFind.updateCspNonce(response.data));
           } else {
             $elem.text('');
           }
@@ -39,7 +39,7 @@ VuFind.register('recordVersions', function recordVersions() {
   }
 
   function init(_container) {
-    if (typeof Hunt === 'undefined') {
+    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
       checkRecordVersions(_container);
     } else {
       var container = typeof _container === 'undefined'

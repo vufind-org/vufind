@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
+use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 
@@ -44,11 +44,25 @@ use VuFindSearch\Query\QueryGroup;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
-     * Facet details:
+     * Field facets.
      *
      * @var array
      */
     protected $responseFacets = null;
+
+    /**
+     * Query facets.
+     *
+     * @var array
+     */
+    protected $responseQueryFacets = null;
+
+    /**
+     * Pivot facets.
+     *
+     * @var array
+     */
+    protected $responsePivotFacets = null;
 
     /**
      * Search backend identifier.
@@ -79,25 +93,6 @@ class Results extends \VuFind\Search\Base\Results
      * @var null|string
      */
     protected $cursorMark = null;
-
-    /**
-     * Hierarchical facet helper
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $hierarchicalFacetHelper = null;
-
-    /**
-     * Set hierarchical facet helper
-     *
-     * @param HierarchicalFacetHelper $helper Hierarchical facet helper
-     *
-     * @return void
-     */
-    public function setHierarchicalFacetHelper(HierarchicalFacetHelper $helper)
-    {
-        $this->hierarchicalFacetHelper = $helper;
-    }
 
     /**
      * Get spelling processor.
@@ -172,7 +167,7 @@ class Results extends \VuFind\Search\Base\Results
                 ->search($this->backendId, $query, $offset, $limit, $params);
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             // If the query caused a parser error, see if we can clean it up:
-            if ($e->hasTag('VuFind\Search\ParserError')
+            if ($e->hasTag(ErrorListener::TAG_PARSER_ERROR)
                 && $newQuery = $this->fixBadQuery($query)
             ) {
                 // We need to get a fresh set of $params, since the previous one was
@@ -186,6 +181,8 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         $this->responseFacets = $collection->getFacets();
+        $this->responseQueryFacets = $collection->getQueryFacets();
+        $this->responsePivotFacets = $collection->getPivotFacets();
         $this->resultTotal = $collection->getTotal();
 
         // Process spelling suggestions
@@ -274,7 +271,9 @@ class Results extends \VuFind\Search\Base\Results
     public function getSpellingSuggestions()
     {
         return $this->getSpellingProcessor()->processSuggestions(
-            $this->getRawSuggestions(), $this->spellingQuery, $this->getParams()
+            $this->getRawSuggestions(),
+            $this->spellingQuery,
+            $this->getParams()
         );
     }
 
@@ -288,76 +287,10 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        // Make sure we have processed the search before proceeding:
         if (null === $this->responseFacets) {
             $this->performAndProcessSearch();
         }
-
-        // If there is no filter, we'll use all facets as the filter:
-        if (null === $filter) {
-            $filter = $this->getParams()->getFacetConfig();
-        }
-
-        // Start building the facet list:
-        $list = [];
-
-        // Loop through every field returned by the result set
-        $fieldFacets = $this->responseFacets->getFieldFacets();
-        $translatedFacets = $this->getOptions()->getTranslatedFacets();
-        $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
-        foreach (array_keys($filter) as $field) {
-            $data = $fieldFacets[$field] ?? [];
-            // Skip empty arrays:
-            if (count($data) < 1) {
-                continue;
-            }
-            // Initialize the settings for the current field
-            $list[$field] = [];
-            // Add the on-screen label
-            $list[$field]['label'] = $filter[$field];
-            // Build our array of values for this field
-            $list[$field]['list']  = [];
-            // Should we translate values for the current facet?
-            if ($translate = in_array($field, $translatedFacets)) {
-                $translateTextDomain = $this->getOptions()
-                    ->getTextDomainForTranslatedFacet($field);
-            }
-            $hierarchical = in_array($field, $hierarchicalFacets);
-            // Loop through values:
-            foreach ($data as $value => $count) {
-                // Initialize the array of data about the current facet:
-                $currentSettings = [];
-                $currentSettings['value'] = $value;
-
-                $displayText = $this->getParams()
-                    ->checkForDelimitedFacetDisplayText($field, $value);
-
-                if ($hierarchical) {
-                    if (!$this->hierarchicalFacetHelper) {
-                        throw new \Exception(
-                            get_class($this)
-                            . ': hierarchical facet helper unavailable'
-                        );
-                    }
-                    $displayText = $this->hierarchicalFacetHelper
-                        ->formatDisplayText($displayText);
-                }
-                $currentSettings['displayText'] = $translate
-                    ? $this->translate([$translateTextDomain, $displayText])
-                    : $displayText;
-
-                $currentSettings['count'] = $count;
-                $currentSettings['operator']
-                    = $this->getParams()->getFacetOperator($field);
-                $currentSettings['isApplied']
-                    = $this->getParams()->hasFilter("$field:" . $value)
-                    || $this->getParams()->hasFilter("~$field:" . $value);
-
-                // Store the collected values:
-                $list[$field]['list'][] = $currentSettings;
-            }
-        }
-        return $list;
+        return $this->buildFacetList($this->responseFacets, $filter);
     }
 
     /**
@@ -375,8 +308,13 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array list facet values for each index field with label and more bool
      */
-    public function getPartialFieldFacets($facetfields, $removeFilter = true,
-        $limit = -1, $facetSort = null, $page = null, $ored = false
+    public function getPartialFieldFacets(
+        $facetfields,
+        $removeFilter = true,
+        $limit = -1,
+        $facetSort = null,
+        $page = null,
+        $ored = false
     ) {
         $clone = clone $this;
         $params = $clone->getParams();
@@ -452,8 +390,7 @@ class Results extends \VuFind\Search\Base\Results
         $flare = new \stdClass();
         $flare->name = "flare";
         $flare->total = $this->resultTotal;
-        $visualFacets = $this->responseFacets->getPivotFacets();
-        $flare->children = $visualFacets;
+        $flare->children = $this->responsePivotFacets;
         return $flare;
     }
 }

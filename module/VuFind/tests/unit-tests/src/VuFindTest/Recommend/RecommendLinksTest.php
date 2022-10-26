@@ -40,6 +40,8 @@ use VuFind\Recommend\RecommendLinks;
  */
 class RecommendLinksTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test configuration data.
      *
@@ -79,7 +81,9 @@ class RecommendLinksTest extends \PHPUnit\Framework\TestCase
      */
     public function testRecommendLinksWithDefaultConfiguration()
     {
-        $cm = $this->getConfigManager('RecommendLinks', 'searches');
+        $cm = $this->getMockConfigPluginManager(
+            ['searches' => ['RecommendLinks' => $this->sampleLinks]]
+        );
         $this->runTestProcedure($cm, '');
     }
 
@@ -90,25 +94,9 @@ class RecommendLinksTest extends \PHPUnit\Framework\TestCase
      */
     public function testRecommendLinksWithCustomConfiguration()
     {
-        $cm = $this->getConfigManager('bar', 'foo');
+        $cm = $this->getMockConfigPluginManager(
+            ['foo' => ['bar' => $this->sampleLinks]]
+        );
         $this->runTestProcedure($cm, 'bar:foo');
-    }
-
-    /**
-     * Build a mock config manager to support the test.
-     *
-     * @return \VuFind\Config\PluginManager
-     */
-    protected function getConfigManager(string $section, string $ini)
-    {
-        $config = new \Laminas\Config\Config([$section => $this->sampleLinks]);
-        $mock = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['get'])
-            ->getMock();
-        $mock->expects($this->once())->method('get')
-            ->with($this->equalTo($ini))
-            ->will($this->returnValue($config));
-        return $mock;
     }
 }

@@ -40,6 +40,18 @@ use LmcRbacMvc\Service\AuthorizationService;
  */
 class UserTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Current test user
+     *
+     * @var string
+     */
+    protected $testuser = 'testuser1';
+
+    /**
+     * User test data for testing.
+     *
+     * @var array
+     */
     protected $userValueMap = [
         'testuser1' =>
         [
@@ -107,12 +119,11 @@ class UserTest extends \PHPUnit\Framework\TestCase
             : 'testuser1';
 
         $auth = $this->getMockAuthorizationService();
-        $this->permissionProvider
-            = new \VuFind\Role\PermissionProvider\User($auth);
+        $permissionProvider = new \VuFind\Role\PermissionProvider\User($auth);
 
         $this->assertEquals(
             $roles,
-            $this->permissionProvider->getPermissions($options)
+            $permissionProvider->getPermissions($options)
         );
     }
 

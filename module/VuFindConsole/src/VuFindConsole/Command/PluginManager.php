@@ -58,6 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'generate/thememixin' => Generate\ThemeMixinCommand::class,
         'harvest/harvest_oai' => Harvest\HarvestOaiCommand::class,
         'harvest/merge-marc' => Harvest\MergeMarcCommand::class,
+        'import/import-csv' => Import\ImportCsvCommand::class,
         'import/import-xsl' => Import\ImportXslCommand::class,
         'import/webcrawl' => Import\WebCrawlCommand::class,
         'install/install' => Install\InstallCommand::class,
@@ -70,9 +71,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/commit' => Util\CommitCommand::class,
         'util/createHierarchyTrees' => Util\CreateHierarchyTreesCommand::class,
-        'util/cssBuilder' => Util\CssBuilderCommand::class,
         'util/dedupe' => Util\DedupeCommand::class,
         'util/deletes' => Util\DeletesCommand::class,
+        'util/expire_access_tokens' => Util\ExpireAccessTokensCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
@@ -113,6 +114,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Generate\ThemeMixinCommandFactory::class,
         Harvest\MergeMarcCommand::class => InvokableFactory::class,
         Harvest\HarvestOaiCommand::class => Harvest\HarvestOaiCommandFactory::class,
+        Import\ImportCsvCommand::class => Import\ImportCsvCommandFactory::class,
         Import\ImportXslCommand::class => Import\ImportXslCommandFactory::class,
         Import\WebCrawlCommand::class => Import\WebCrawlCommandFactory::class,
         Install\InstallCommand::class => InvokableFactory::class,
@@ -128,9 +130,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CommitCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\CreateHierarchyTreesCommand::class =>
         Util\CreateHierarchyTreesCommandFactory::class,
-        Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
         Util\DedupeCommand::class => InvokableFactory::class,
         Util\DeletesCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\ExpireAccessTokensCommand::class =>
+            Util\ExpireAccessTokensCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
             Util\ExpireAuthHashesCommandFactory::class,
         Util\ExpireExternalSessionsCommand::class =>
@@ -159,7 +162,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         //$this->addAbstractFactory(PluginFactory::class);

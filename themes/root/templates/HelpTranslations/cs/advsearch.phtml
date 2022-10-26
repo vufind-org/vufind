@@ -1,20 +1,20 @@
 <h1>Tipy pro pokročilé vyhledávání</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Search Fields">Vyhledávací pole</a></li>
-  <li><a href="#Search Groups">Vyhledávací skupiny</a></li>
+  <li><a href="#search_fields">Vyhledávací pole</a></li>
+  <li><a href="#search_groups">Vyhledávací skupiny</a></li>
 </ul>
 
 <dl class="Content">
-  <dt><a name="Search Fields"></a>Vyhledávací pole</dt>
+  <dt><a id="search_fields"></a>Vyhledávací pole</dt>
   <dd>
-    <p>Na stránce pro zadání pokročilého vyhledávání můžete vidět několik 
+    <p>Na stránce pro zadání pokročilého vyhledávání můžete vidět několik
        vyhledávacích polí. Do každého pole můžete napsat slovo, které hledáte.
        Je také možné použít <a href="<?=$this->url('help-home')?>?topic=search">
        vyhledávací operátory</a>.</p>
-    <p>Vedle každého pole se nachází rozbalovací seznam pro zadání typu dat, 
+    <p>Vedle každého pole se nachází rozbalovací seznam pro zadání typu dat,
        která se budou prohledávat (název, autor, atd.). Typy hledání můžete
-       kombinovat jak vás napadne.</p>
+       podle potřeby kombinovat.</p>
     <p>Nastavení "Shody" vám umožňuje vybrat, jakým způsobem budou jednotlivá
        pole kombinována. Typy shody jsou následující:</p>
     <ul>
@@ -25,11 +25,11 @@
       <li>ŽÁDNÉ výrazy - Vrátí všechny záznamy, které NEodpovídají vyhledávacím
           polím.</li>
     </ul>
-    <p>Tlačítko "Přidat vyhledávací pole" slouží pro přidání dalších polí do 
+    <p>Tlačítko "Přidat vyhledávací pole" slouží pro přidání dalších polí do
        formuláře. Můžete použít libovolné množství polí.</p>
   </dd>
-  
-  <dt><a name="Search Groups"></a>Vyhledávací skupiny</dt>
+
+  <dt><a id="search_groups"></a>Vyhledávací skupiny</dt>
   <dd>
     <p>Pro některé složitější dotazy nemusí být jedna sada vyhledávacích polí
        dostatečná. Předpokládejme například, že budete chtít najít všechny dokumenty
@@ -41,10 +41,10 @@
        vyhledávací skupinu tlačítkem "Přidat vyhledávací skupinu". Objeví se další
        skupina polí. Pokud máte zobrazeno více skupin, je možné některé (nepotřebné)
        odstranit tlačítkem "Odstranit vyhledávací skupinu". Dále je možné
-       specifikovat jestli hledat podle shody VŠECH skupin nebo LIBOVOLNÉ skupiny.
+       specifikovat zda hledat podle shody VŠECH skupin nebo LIBOVOLNÉ skupiny.
        </p>
     <p>Použijeme-li předchozí příklad s historií Číny a Indie, můžeme výsledku
-       dosáhnout pomocí skupiny takto:</p>
+       dosáhnout pomocí vyhledávacích skupin takto:</p>
     <ul>
       <li>V první vyhledávací skupině vložte slova "Čína" a "Indie" a shodu nastavte
           na "LIBOVOLNÉ výrazy".</li>

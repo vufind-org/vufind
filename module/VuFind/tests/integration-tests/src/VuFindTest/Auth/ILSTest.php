@@ -34,17 +34,19 @@ use VuFind\Db\Table\User;
 /**
  * ILS authentication test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSTest extends \PHPUnit\Framework\TestCase
+final class ILSTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
-    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -53,7 +55,7 @@ class ILSTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -78,11 +80,11 @@ class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver($type = 'Sample', $methods = [])
+    protected function getMockDriver($type = 'Sample', $methods = ['patronLogin'])
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -105,13 +107,12 @@ class ILSTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
-        $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockConfigReader->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Laminas\Config\Config([])));
+        $mockConfigReader = $this->getMockConfigPluginManager([]);
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
                 new \Laminas\Config\Config(['driver' => 'Sample']),
-                $driverManager, $mockConfigReader
+                $driverManager,
+                $mockConfigReader
             ),
             $authenticator
         );
@@ -371,7 +372,7 @@ class ILSTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
-            ->setMethods(['storedCatalogLogin'])
+            ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
         $mock->expects($this->any())->method('storedCatalogLogin')
             ->will($this->returnValue($patron));

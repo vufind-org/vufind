@@ -68,7 +68,10 @@ interface BackendInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     );
 

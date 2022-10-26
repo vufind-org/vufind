@@ -63,16 +63,12 @@ if (is_array($series)) {
     }
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
-if (!empty($author)) {
-    echo 'AU  - ' . "$author\r\n";
+foreach ($this->driver->tryMethod('getPrimaryAuthors', [], []) as $current) {
+    echo 'AU  - ' . "$current\r\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo 'A2  - ' . "$current\r\n";
-    }
+foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
+    echo 'A2  - ' . "$current\r\n";
 }
 
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');

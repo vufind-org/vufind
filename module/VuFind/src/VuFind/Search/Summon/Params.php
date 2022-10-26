@@ -112,7 +112,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // Field name may have parameters attached -- remove them:
         $parts = explode(',', $newField);
-        return parent::addFacet($parts[0], $newAlias, $ored);
+        parent::addFacet($parts[0], $newAlias, $ored);
     }
 
     /**
@@ -168,20 +168,24 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $include List of checkbox filters to return (null for all)
+     * @param array $include        List of checkbox filters to return (null for all)
+     * @param bool  $includeDynamic Should we include dynamically-generated
+     * checkboxes that are not part of the include list above?
      *
      * @return array
      */
-    public function getCheckboxFacets(array $include = null)
-    {
+    public function getCheckboxFacets(
+        array $include = null,
+        bool $includeDynamic = true
+    ) {
         // Grab checkbox facet details using the standard method:
-        $facets = parent::getCheckboxFacets($include);
+        $facets = parent::getCheckboxFacets($include, $includeDynamic);
 
         // Special case -- if we have a "holdings only" or "expand query" facet,
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
         foreach ($facets as $i => $facet) {
-            list($field) = explode(':', $facet['filter']);
+            [$field] = explode(':', $facet['filter']);
             if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
                 $facets[$i]['alwaysVisible'] = true;
             }
@@ -221,7 +225,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getOptions()->getTranslator()->getLocale();
+        $lang = $this->getOptions()->getTranslatorLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {
@@ -283,13 +287,15 @@ class Params extends \VuFind\Search\Base\Params
                     // other facets.
                     if ($filt['field'] == 'holdingsOnly') {
                         $params->set(
-                            'holdings', strtolower(trim($safeValue)) == 'true'
+                            'holdings',
+                            strtolower(trim($safeValue)) == 'true'
                         );
                     } elseif ($filt['field'] == 'queryExpansion') {
                         // Special case -- "query expansion" is a separate parameter
                         // from other facets.
                         $params->set(
-                            'expand', strtolower(trim($safeValue)) == 'true'
+                            'expand',
+                            strtolower(trim($safeValue)) == 'true'
                         );
                     } elseif ($filt['field'] == 'openAccessFilter') {
                         // Special case -- "open access filter" is a separate
@@ -326,7 +332,8 @@ class Params extends \VuFind\Search\Base\Params
                 // Deal with OR facets:
                 foreach ($orFacets as $field => $values) {
                     $params->add(
-                        'groupFilters', $field . ',or,' . implode(',', $values)
+                        'groupFilters',
+                        $field . ',or,' . implode(',', $values)
                     );
                 }
             }
@@ -346,7 +353,10 @@ class Params extends \VuFind\Search\Base\Params
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
         $filter = parent::formatFilterListEntry(
-            $field, $value, $operator, $translate
+            $field,
+            $value,
+            $operator,
+            $translate
         );
 
         // Convert range queries to a language-non-specific format:

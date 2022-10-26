@@ -16,7 +16,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?php if (!empty($this->alertemail)): ?>
     <div class="alert alert-info alert-email-notification">
-      <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail ?>
+      <?=$this->transEsc("alert_email_address") . ': ' . $this->escapeHtml($this->alertemail) ?>
       <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
         (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
       <?php endif; ?>
@@ -35,7 +35,7 @@
   <h2><?=$this->transEsc("history_recent_searches")?></h2>
   <?php if (!empty($this->unsaved)): ?>
     <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
-    <a href="?purge=true"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a>
+    <a href="?purge=true"><?=$this->icon('search-delete') ?> <?=$this->transEsc("history_purge")?></a>
   <?php else: ?>
     <?=$this->transEsc("history_no_searches")?>
   <?php endif; ?>
@@ -43,12 +43,13 @@
 
 <?php if ($saveSupported): ?>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-    <?=$this->context($this)->renderInContext(
-        "myresearch/menu.phtml",
-        // Only activate search history in account menu if user is logged in.
-        $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
-     );
-     ?>
+    <?=
+      $this->context($this)->renderInContext(
+          "myresearch/menu.phtml",
+          // Only activate search history in account menu if user is logged in.
+          $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
+      );
+    ?>
   </div>
 <?php endif; ?>
 

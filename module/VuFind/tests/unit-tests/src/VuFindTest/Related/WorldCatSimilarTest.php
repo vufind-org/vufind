@@ -49,7 +49,7 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
     public function testGetResults()
     {
         $driver = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
-            ->setMethods(['tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getSourceIdentifier'])
+            ->onlyMethods(['tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getSourceIdentifier'])
             ->getMock();
         $driver->expects($this->once())
             ->method('tryMethod')
@@ -71,10 +71,10 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
             ->method('getSourceIdentifier')
             ->will($this->returnValue('WorldCat'));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->setMethods(['search'])->getMock();
+            ->onlyMethods(['search'])->getMock();
         $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"');
         $response = $this->getMockBuilder(\VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection::class)
-            ->setMethods(['getRecords'])
+            ->onlyMethods(['getRecords'])
             ->setConstructorArgs([['offset' => 0, 'total' => 0]])
             ->getMock();
         $response->expects($this->once())

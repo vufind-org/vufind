@@ -47,7 +47,7 @@ class PluginManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testShareByDefault()
+    public function testShareByDefault(): void
     {
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $this->assertTrue($this->getProperty($pm, 'sharedByDefault'));
@@ -58,7 +58,7 @@ class PluginManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExpectedInterface()
+    public function testExpectedInterface(): void
     {
         $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
         $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Content\\AbstractCover');

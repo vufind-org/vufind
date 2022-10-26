@@ -30,13 +30,13 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC;
 use Laminas\Validator\EmailAddress as EmailAddressValidator;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Marc\MarcReader;
 use Yajra\Pdo\Oci8;
 
 /**
@@ -155,7 +155,8 @@ class Voyager extends AbstractBase
         $this->displayDueTimeIntervals
             = isset($this->config['Loans']['display_due_time_only_for_intervals'])
             ? explode(
-                ':', $this->config['Loans']['display_due_time_only_for_intervals']
+                ':',
+                $this->config['Loans']['display_due_time_only_for_intervals']
             ) : [];
     }
 
@@ -187,6 +188,27 @@ class Voyager extends AbstractBase
                      ')' .
                    ')';
             try {
+                if ((!defined('PHP_MAJOR_VERSION') || PHP_MAJOR_VERSION >= 8)
+                    && empty($this->config['Catalog']['forceOCI8Support'])
+                ) {
+                    $this->error(
+                        <<<EOT
+Voyager connection is only supported on PHP 7 by default. To enable support, you
+will need to manually update the yajra/laravel-pdo-via-oci8 package using the
+following command:
+
+php [path/to/]composer.phar update yajra/laravel-pdo-via-oci8 --ignore-platform-reqs
+
+Then force the Voyager driver to connect by adding the following setting to
+Voyager.ini or VoyagerRestful.ini:
+
+[Catalog]
+forceOCI8Support = true
+
+EOT
+                    );
+                    throw new ILSException('Unsupported PHP version');
+                }
                 $this->lazyDb = new Oci8(
                     "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
@@ -198,7 +220,7 @@ class Voyager extends AbstractBase
                 $this->error(
                     "PDO Connection failed ($this->dbName): " . $e->getMessage()
                 );
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
         }
         return $this->lazyDb;
@@ -273,7 +295,7 @@ class Voyager extends AbstractBase
             try {
                 $sqlStmt = $this->executeSQL($sql);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Read results
@@ -284,7 +306,8 @@ class Voyager extends AbstractBase
 
             if (!empty($this->config['StatusRankings'])) {
                 $this->statusRankings = array_merge(
-                    $this->statusRankings, $this->config['StatusRankings']
+                    $this->statusRankings,
+                    $this->config['StatusRankings']
                 );
             }
         }
@@ -475,8 +498,7 @@ class Voyager extends AbstractBase
         $data = [];
 
         foreach ($sqlRows as $row) {
-            $rowId = null !== $row['ITEM_ID']
-                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? 'MFHD' . $row['MFHD_ID'];
             if (!isset($data[$rowId])) {
                 $data[$rowId] = [
                     'id' => $row['BIB_ID'],
@@ -492,7 +514,8 @@ class Voyager extends AbstractBase
                 ];
             } else {
                 $statusFound = in_array(
-                    $row['STATUS'], $data[$rowId]['status_array']
+                    $row['STATUS'],
+                    $data[$rowId]['status_array']
                 );
                 if (!$statusFound) {
                     $data[$rowId]['status_array'][] = $row['STATUS'];
@@ -578,7 +601,7 @@ class Voyager extends AbstractBase
             try {
                 $sqlStmt = $this->executeSQL($sql);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             $sqlRows = [];
@@ -832,7 +855,7 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $id]);
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $raw = $processed = [];
         // Collect raw data:
@@ -841,7 +864,7 @@ EOT;
         }
         // Deduplicate data and format it:
         foreach (array_unique($raw) as $current) {
-            list($holdings_id, $issue) = explode('||', $current, 2);
+            [$holdings_id, $issue] = explode('||', $current, 2);
             $processed[] = compact('issue', 'holdings_id');
         }
         return $processed;
@@ -850,14 +873,14 @@ EOT;
     /**
      * Get specified fields from an MFHD MARC Record
      *
-     * @param object       $record     File_MARC object
+     * @param MarcReader   $record     Marc reader
      * @param array|string $fieldSpecs Array or colon-separated list of
      * field/subfield specifications (3 chars for field code and then subfields,
      * e.g. 866az)
      *
-     * @return string|string[] Results as a string if single, array if multiple
+     * @return string|array Results as a string if single, array if multiple
      */
-    protected function getMFHDData($record, $fieldSpecs)
+    protected function getMFHDData(MarcReader $record, $fieldSpecs)
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
@@ -868,16 +891,17 @@ EOT;
             $subfieldCodes = substr($fieldSpec, 3);
             if ($fields = $record->getFields($fieldCode)) {
                 foreach ($fields as $field) {
-                    if ($subfields = $field->getSubfields()) {
+                    if ($subfields = $field['subfields'] ?? []) {
                         $line = '';
-                        foreach ($subfields as $code => $subfield) {
-                            if (false === strpos($subfieldCodes, $code)) {
+                        foreach ($subfields as $subfield) {
+                            if (false === strpos($subfieldCodes, $subfield['code'])
+                            ) {
                                 continue;
                             }
                             if ($line) {
                                 $line .= ' ';
                             }
-                            $line .= $subfield->getData();
+                            $line .= $subfield['data'];
                         }
                         if ($line) {
                             if (!$results) {
@@ -908,54 +932,50 @@ EOT;
         $marcDetails = [];
 
         try {
-            $marc = new File_MARC(
-                str_replace(["\n", "\r"], '', $recordSegment),
-                File_MARC::SOURCE_STRING
+            $record = new MarcReader(str_replace(["\n", "\r"], '', $recordSegment));
+            // Get Notes
+            $data = $this->getMFHDData(
+                $record,
+                $this->config['Holdings']['notes'] ?? '852z'
             );
-            if ($record = $marc->next()) {
-                // Get Notes
+            if ($data) {
+                $marcDetails['notes'] = $data;
+            }
+
+            // Get Summary (may be multiple lines)
+            $data = $this->getMFHDData(
+                $record,
+                $this->config['Holdings']['summary'] ?? '866a'
+            );
+            if ($data) {
+                $marcDetails['summary'] = $data;
+            }
+
+            // Get Supplements
+            if (isset($this->config['Holdings']['supplements'])) {
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['notes'] ?? '852z'
+                    $this->config['Holdings']['supplements']
                 );
                 if ($data) {
-                    $marcDetails['notes'] = $data;
+                    $marcDetails['supplements'] = $data;
                 }
+            }
 
-                // Get Summary (may be multiple lines)
+            // Get Indexes
+            if (isset($this->config['Holdings']['indexes'])) {
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['summary'] ?? '866a'
+                    $this->config['Holdings']['indexes']
                 );
                 if ($data) {
-                    $marcDetails['summary'] = $data;
-                }
-
-                // Get Supplements
-                if (isset($this->config['Holdings']['supplements'])) {
-                    $data = $this->getMFHDData(
-                        $record,
-                        $this->config['Holdings']['supplements']
-                    );
-                    if ($data) {
-                        $marcDetails['supplements'] = $data;
-                    }
-                }
-
-                // Get Indexes
-                if (isset($this->config['Holdings']['indexes'])) {
-                    $data = $this->getMFHDData(
-                        $record,
-                        $this->config['Holdings']['indexes']
-                    );
-                    if ($data) {
-                        $marcDetails['indexes'] = $data;
-                    }
+                    $marcDetails['indexes'] = $data;
                 }
             }
         } catch (\Exception $e) {
             trigger_error(
-                'Poorly Formatted MFHD Record', E_USER_NOTICE
+                'Poorly Formatted MFHD Record',
+                E_USER_NOTICE
             );
         }
         return $marcDetails;
@@ -1013,6 +1033,44 @@ EOT;
     }
 
     /**
+     * Support method for processHoldingData: format a due date for inclusion in
+     * holdings data.
+     *
+     * @param array $row Row to process
+     *
+     * @return string|bool
+     */
+    protected function processHoldingDueDate(array $row)
+    {
+        if (!empty($row['DUEDATE'])) {
+            return $this->dateFormat->convertToDisplayDate(
+                "m-d-y",
+                $row['DUEDATE']
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Support method for processHoldingData: format a return date for inclusion in
+     * holdings data.
+     *
+     * @param array $row Row to process
+     *
+     * @return string|bool
+     */
+    protected function processHoldingReturnDate(array $row)
+    {
+        if (!empty($row['RETURNDATE'])) {
+            return $this->dateFormat->convertToDisplayDateAndTime(
+                'm-d-y H:i',
+                $row['RETURNDATE']
+            );
+        }
+        return false;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array  $data   Item Data
@@ -1049,20 +1107,6 @@ EOT;
                         = $this->pickStatus($availability['otherStatuses']);
                 }
 
-                // Convert Voyager Format to display format
-                $dueDate = false;
-                if (!empty($row['DUEDATE'])) {
-                    $dueDate = $this->dateFormat->convertToDisplayDate(
-                        "m-d-y", $row['DUEDATE']
-                    );
-                }
-                $returnDate = false;
-                if (!empty($row['RETURNDATE'])) {
-                    $returnDate = $this->dateFormat->convertToDisplayDateAndTime(
-                        'm-d-y H:i', $row['RETURNDATE']
-                    );
-                }
-
                 $requests_placed = $row['HOLDS_PLACED'] ?? 0;
                 if (isset($row['RECALLS_PLACED'])) {
                     $requests_placed += $row['RECALLS_PLACED'];
@@ -1079,10 +1123,10 @@ EOT;
                     'availability' => $availability['available'],
                     'enumchron' => isset($row['ITEM_ENUM'])
                         ? utf8_encode($row['ITEM_ENUM']) : null,
-                    'duedate' => $dueDate,
+                    'duedate' => $this->processHoldingDueDate($row),
                     'number' => $number,
                     'requests_placed' => $requests_placed,
-                    'returnDate' => $returnDate,
+                    'returnDate' => $this->processHoldingReturnDate($row),
                     'purchase_history' => $purchases
                 ];
 
@@ -1153,7 +1197,7 @@ EOT;
             try {
                 $sqlStmt = $this->executeSQL($sql);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             $sqlRows = [];
@@ -1217,13 +1261,16 @@ EOT;
         // Load the field used for verifying the login from the config file, and
         // make sure there's nothing crazy in there:
         $usernameField = preg_replace(
-            '/[^\w]/', '',
+            '/[^\w]/',
+            '',
             $this->config['Catalog']['username_field'] ?? 'PATRON_BARCODE'
         );
         $loginField = $this->config['Catalog']['login_field'] ?? 'LAST_NAME';
         $loginField = preg_replace('/[^\w]/', '', $loginField);
         $fallbackLoginField = preg_replace(
-            '/[^\w]/', '', $this->config['Catalog']['fallback_login_field'] ?? ''
+            '/[^\w]/',
+            '',
+            $this->config['Catalog']['fallback_login_field'] ?? ''
         );
 
         // Turns out it's difficult and inefficient to handle the mismatching
@@ -1293,7 +1340,7 @@ EOT;
             }
             return null;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1413,10 +1460,12 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y H:i", $sqlRow['DUEDATE']
+                "m-d-y H:i",
+                $sqlRow['DUEDATE']
             );
             $dueTime = $this->dateFormat->convertToDisplayTime(
-                "m-d-y H:i", $sqlRow['DUEDATE']
+                "m-d-y H:i",
+                $sqlRow['DUEDATE']
             );
         }
 
@@ -1490,7 +1539,7 @@ EOT;
             }
             return $transList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1556,7 +1605,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['DUEDATE']
+                "m-d-y",
+                $sqlRow['DUEDATE']
             );
         }
 
@@ -1564,7 +1614,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATEDATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CREATEDATE']
+                "m-d-y",
+                $sqlRow['CREATEDATE']
             );
         }
 
@@ -1572,7 +1623,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CHARGEDATE'])) {
             $chargeDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CHARGEDATE']
+                "m-d-y",
+                $sqlRow['CHARGEDATE']
             );
         }
 
@@ -1612,7 +1664,7 @@ EOT;
             }
             return $fineList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1698,7 +1750,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
             $expireDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['EXPIRE_DATE']
+                "m-d-y",
+                $sqlRow['EXPIRE_DATE']
             );
         }
 
@@ -1706,7 +1759,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CREATE_DATE']
+                "m-d-y",
+                $sqlRow['CREATE_DATE']
             );
         }
 
@@ -1786,7 +1840,7 @@ EOT;
             $returnList = $this->processHoldsList($holdList);
             return $returnList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1891,12 +1945,14 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['PROCESSED_DATE'])) {
             $processedDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['PROCESSED_DATE']
+                "m-d-y",
+                $sqlRow['PROCESSED_DATE']
             );
         }
         if (!empty($sqlRow['STATUS_DATE'])) {
             $statusDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['STATUS_DATE']
+                "m-d-y",
+                $sqlRow['STATUS_DATE']
             );
         }
 
@@ -1904,7 +1960,8 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y", $sqlRow['CREATE_DATE']
+                "m-d-y",
+                $sqlRow['CREATE_DATE']
             );
         }
 
@@ -1922,7 +1979,9 @@ EOT;
             'reqnum' => $sqlRow['CALL_SLIP_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
             'volume' => str_replace(
-                "v.", "", utf8_encode($sqlRow['ITEM_ENUM'])
+                "v.",
+                "",
+                utf8_encode($sqlRow['ITEM_ENUM'])
             ),
             'issue' => utf8_encode($sqlRow['ITEM_CHRON']),
             'year' => utf8_encode($sqlRow['ITEM_YEAR']),
@@ -1954,7 +2013,7 @@ EOT;
             }
             return $list;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -2032,7 +2091,7 @@ EOT;
             }
             return empty($patron) ? null : $patron;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -2106,7 +2165,7 @@ EOT;
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['COUNT'];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $page = ($page) ? $page : 1;
@@ -2141,7 +2200,7 @@ EOT;
             }
             return $items;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -2213,7 +2272,7 @@ EOT;
                 $list[$name] = $name;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
@@ -2246,7 +2305,7 @@ EOT;
                 $deptList[$row['DEPARTMENT_ID']] = $row['DEPARTMENT_NAME'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $deptList;
@@ -2279,7 +2338,7 @@ EOT;
                 $instList[$row['INSTRUCTOR_ID']] = $row['NAME'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $instList;
@@ -2312,7 +2371,7 @@ EOT;
                 $courseList[$row['COURSE_ID']] = $row['NAME'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $courseList;
@@ -2428,7 +2487,7 @@ EOT;
                 $recordList[] = $row;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $recordList;
@@ -2446,7 +2505,9 @@ EOT;
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+    public function getRecentlyReturnedBibs(
+        $limit = 30,
+        $maxage = 30,
         $patron = null
     ) {
         $recordList = [];
@@ -2479,7 +2540,7 @@ EOT;
                 $recordList[] = ['id' => $row['BIB_ID']];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $recordList;
     }
@@ -2530,7 +2591,7 @@ EOT;
                 $recordList[] = ['id' => $row['BIB_ID']];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $recordList;
     }
@@ -2554,7 +2615,7 @@ EOT;
                 $list[] = $row['BIB_ID'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
@@ -2576,7 +2637,7 @@ EOT;
             $sql = $sql['string'];
         }
         if ($this->logger) {
-            list(, $caller) = debug_backtrace(false);
+            [, $caller] = debug_backtrace(false);
             $this->debugSQL($caller['function'], $sql, $bind);
         }
         $sqlStmt = $this->getDb()->prepare($sql);

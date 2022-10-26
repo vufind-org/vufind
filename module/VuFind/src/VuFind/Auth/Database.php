@@ -105,6 +105,19 @@ class Database extends AbstractBase
     }
 
     /**
+     * Does the provided exception indicate that a duplicate key value has been
+     * created?
+     *
+     * @param \Exception $e Exception to check
+     *
+     * @return bool
+     */
+    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
+    {
+        return strstr($e->getMessage(), 'Duplicate entry') !== false;
+    }
+
+    /**
      * Create a new user account from the request.
      *
      * @param Request $request Request object containing new account details.
@@ -118,7 +131,8 @@ class Database extends AbstractBase
         $params = $this->collectParamsFromRequest($request);
 
         // Validate username and password
-        $this->validateUsernameAndPassword($params);
+        $this->validateUsername($params);
+        $this->validatePassword($params);
 
         // Get the user table
         $userTable = $this->getUserTable();
@@ -128,7 +142,19 @@ class Database extends AbstractBase
 
         // If we got this far, we're ready to create the account:
         $user = $this->createUserFromParams($params, $userTable);
-        $user->save();
+        try {
+            $user->save();
+        } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
+            // In a scenario where the unique key of the user table is
+            // shorter than the username field length, it is possible that
+            // a user will pass validation but still get rejected due to
+            // the inability to generate a unique key. This is a very
+            // unlikely scenario, but if it occurs, we will treat it the
+            // same as a duplicate username. Other unexpected database
+            // errors will be passed through unmodified.
+            throw $this->exceptionIndicatesDuplicateKey($e)
+                ? new AuthException('That username is already taken') : $e;
+        }
 
         // Verify email address:
         $this->checkEmailVerified($user);
@@ -155,8 +181,10 @@ class Database extends AbstractBase
             $params[$param] = $request->getPost()->get($param, $default);
         }
 
-        // Validate Input
-        $this->validateUsernameAndPassword($params);
+        // Validate username and password, but skip validation of username policy
+        // since the account already exists):
+        $this->validateUsername($params, false);
+        $this->validatePassword($params);
 
         // Create the row and send it back to the caller:
         $table = $this->getUserTable();
@@ -172,19 +200,35 @@ class Database extends AbstractBase
     }
 
     /**
-     * Make sure username and password aren't blank
-     * Make sure passwords match
+     * Make sure username isn't blank and matches the policy.
      *
-     * @param array $params request parameters
+     * @param array $params      Request parameters
+     * @param bool  $checkPolicy Whether to check the policy as well (default is
+     * true)
      *
      * @return void
      */
-    protected function validateUsernameAndPassword($params)
+    protected function validateUsername($params, $checkPolicy = true)
     {
         // Needs a username
         if (trim($params['username']) == '') {
             throw new AuthException('Username cannot be blank');
         }
+        if ($checkPolicy) {
+            // Check username policy
+            $this->validateUsernameAgainstPolicy($params['username']);
+        }
+    }
+
+    /**
+     * Make sure password isn't blank, matches the policy and passwords match.
+     *
+     * @param array $params Request parameters
+     *
+     * @return void
+     */
+    protected function validatePassword($params)
+    {
         // Needs a password
         if (trim($params['password']) == '') {
             throw new AuthException('Password cannot be blank');
@@ -193,7 +237,7 @@ class Database extends AbstractBase
         if ($params['password'] != $params['password2']) {
             throw new AuthException('Passwords do not match');
         }
-        // Password policy
+        // Check password policy
         $this->validatePasswordAgainstPolicy($params['password']);
     }
 
@@ -240,7 +284,7 @@ class Database extends AbstractBase
             }
 
             $bcrypt = new Bcrypt();
-            return $bcrypt->verify($password, $userRow->pass_hash);
+            return $bcrypt->verify($password, $userRow->pass_hash ?? '');
         }
 
         // Default case: unencrypted passwords:
@@ -269,7 +313,8 @@ class Database extends AbstractBase
 
         // Normalize the allowed list:
         $includeList = array_map(
-            'trim', array_map('strtolower', $rawIncludeList)
+            'trim',
+            array_map('strtolower', $rawIncludeList)
         );
 
         // Extract the domain from the email address:
@@ -308,6 +353,21 @@ class Database extends AbstractBase
     public function supportsPasswordRecovery()
     {
         return true;
+    }
+
+    /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getUsernamePolicy()
+    {
+        $policy = parent::getUsernamePolicy();
+        // Limit maxLength to the database limit
+        if (!isset($policy['maxLength']) || $policy['maxLength'] > 255) {
+            $policy['maxLength'] = 255;
+        }
+        return $policy;
     }
 
     /**

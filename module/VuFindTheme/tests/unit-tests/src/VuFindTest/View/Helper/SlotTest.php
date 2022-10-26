@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\View\Helper;
 
-use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\Slot;
 
 /**
@@ -49,7 +48,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     public function testInstance()
     {
         $helper = $this->getHelper();
-        $ret = $helper->__invoke('test');
+        $ret = $helper('test');
         $this->assertTrue($ret instanceof Slot);
     }
 
@@ -63,13 +62,13 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
 
         // test empty default
-        $this->assertEquals(null, $helper->__invoke('test')->get());
-        $this->assertEquals('default', $helper->__invoke('test')->get('default'));
+        $this->assertEquals(null, $helper('test')->get());
+        $this->assertEquals('default', $helper('test')->get('default'));
 
         // test populated over default
-        $helper->__invoke('test')->set('ONE');
-        $this->assertEquals('ONE', $helper->__invoke('test')->get());
-        $this->assertEquals('ONE', $helper->__invoke('test')->get('default'));
+        $helper('test')->set('ONE');
+        $this->assertEquals('ONE', $helper('test')->get());
+        $this->assertEquals('ONE', $helper('test')->get('default'));
     }
 
     /**
@@ -82,40 +81,40 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
 
         // test return
-        $ret = $helper->__invoke('test')->set('ONE');
+        $ret = $helper('test')->set('ONE');
         $this->assertEquals('ONE', $ret);
 
         // test get
-        $this->assertEquals('ONE', $helper->__invoke('test')->get());
+        $this->assertEquals('ONE', $helper('test')->get());
 
         // test no override
-        $ret = $helper->__invoke('test')->set('TWO');
+        $ret = $helper('test')->set('TWO');
         $this->assertEquals('ONE', $ret);
 
         // test number
-        $ret = $helper->__invoke('array')->set(100);
+        $ret = $helper('array')->set(100);
         $this->assertEquals(100, $ret);
 
         // test empty string (not null)
-        $helper->__invoke('empty')->clear();
-        $ret = $helper->__invoke('empty')->set('');
+        $helper('empty')->clear();
+        $ret = $helper('empty')->set('');
         $this->assertEquals('', $ret);
-        $this->assertEquals('', $helper->__invoke('empty')->get('default'));
+        $this->assertEquals('', $helper('empty')->get('default'));
 
         // test array
-        $helper->__invoke('array')->clear();
-        $ret = $helper->__invoke('array')->set([1, 2, 3]);
+        $helper('array')->clear();
+        $ret = $helper('array')->set([1, 2, 3]);
         $this->assertEquals([1, 2, 3], $ret);
 
         // test object
-        $helper->__invoke('array')->clear();
-        $ret = $helper->__invoke('array')->set(new \SplStack());
-        $this->assertEquals('SplStack', get_class($ret));
+        $helper('array')->clear();
+        $ret = $helper('array')->set(new \SplStack());
+        $this->assertEquals(\SplStack::class, get_class($ret));
 
         // test shortcuts
-        $ret = $helper->__invoke('short', 'SUCCESS');
+        $ret = $helper('short', 'SUCCESS');
         $this->assertEquals('SUCCESS', $ret);
-        $this->assertEquals('SUCCESS', $helper->__invoke('short'));
+        $this->assertEquals('SUCCESS', $helper('short'));
     }
 
     /**
@@ -128,15 +127,15 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
 
         // test capture
-        $helper->__invoke('test')->start();
+        $helper('test')->start();
         echo 'BUFFER';
-        $ret = $helper->__invoke('test')->end();
+        $ret = $helper('test')->end();
         $this->assertEquals('BUFFER', $ret);
 
         // test no override
-        $helper->__invoke('test')->start();
+        $helper('test')->start();
         echo 'OVERRIDE';
-        $ret = $helper->__invoke('test')->end();
+        $ret = $helper('test')->end();
         $this->assertEquals('BUFFER', $ret);
     }
 
@@ -148,19 +147,19 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     public function testClear()
     {
         $helper = $this->getHelper();
-        $set1 = $helper->__invoke('test')->set('ONE');
+        $set1 = $helper('test')->set('ONE');
         $this->assertEquals('ONE', $set1);
 
-        $ret = $helper->__invoke('test')->clear();
+        $ret = $helper('test')->clear();
 
         // test returns old content
         $this->assertEquals('ONE', $ret);
 
         // test now null
-        $this->assertEquals(null, $helper->__invoke('test')->get());
+        $this->assertEquals(null, $helper('test')->get());
 
         // test set after clear
-        $set1 = $helper->__invoke('test')->set('TWO');
+        $set1 = $helper('test')->set('TWO');
         $this->assertEquals('TWO', $set1);
     }
 
@@ -174,35 +173,35 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
 
         // test no block
-        $ret = $helper->__invoke('test')->prepend('PRE1');
+        $ret = $helper('test')->prepend('PRE1');
         $this->assertEquals('PRE1', $ret);
         // default only returns of all are unset
-        $this->assertEquals('PRE1', $helper->__invoke('test')->get('default'));
+        $this->assertEquals('PRE1', $helper('test')->get('default'));
 
         // test with block
-        $ret = $helper->__invoke('test')->set('BLOCK');
+        $ret = $helper('test')->set('BLOCK');
         $this->assertEquals('PRE1 BLOCK', $ret);
 
         // test capture prepend
-        $helper->__invoke('test')->start();
+        $helper('test')->start();
         echo 'PRE2';
-        $ret = $helper->__invoke('test')->end('PREPEND'); // end mode
+        $ret = $helper('test')->end('PREPEND'); // end mode
         $this->assertEquals('PRE2 PRE1 BLOCK', $ret);
 
         // test get
-        $this->assertEquals('PRE2 PRE1 BLOCK', $helper->__invoke('test')->get());
+        $this->assertEquals('PRE2 PRE1 BLOCK', $helper('test')->get());
 
         // test clear
-        $helper->__invoke('test')->clear();
-        $this->assertEquals(null, $helper->__invoke('test')->get());
+        $helper('test')->clear();
+        $this->assertEquals(null, $helper('test')->get());
 
         // test empty strings
-        $ret = $helper->__invoke('test')->set('');
-        $ret = $helper->__invoke('test')->prepend('PRE1');
+        $ret = $helper('test')->set('');
+        $ret = $helper('test')->prepend('PRE1');
         $this->assertEquals('PRE1', $ret);
-        $helper->__invoke('test')->clear();
-        $ret = $helper->__invoke('test')->set('BASE');
-        $ret = $helper->__invoke('test')->prepend('');
+        $helper('test')->clear();
+        $ret = $helper('test')->set('BASE');
+        $ret = $helper('test')->prepend('');
         $this->assertEquals('BASE', $ret);
     }
 
@@ -216,35 +215,35 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
 
         // test no block
-        $ret = $helper->__invoke('test')->append('POST1');
+        $ret = $helper('test')->append('POST1');
         $this->assertEquals('POST1', $ret);
         // default only returns of all are unset
-        $this->assertEquals('POST1', $helper->__invoke('test')->get('default'));
+        $this->assertEquals('POST1', $helper('test')->get('default'));
 
         // test with block
-        $ret = $helper->__invoke('test')->set('BLOCK');
+        $ret = $helper('test')->set('BLOCK');
         $this->assertEquals('BLOCK POST1', $ret);
 
         // test capture append
-        $helper->__invoke('test')->start();
+        $helper('test')->start();
         echo 'POST2';
-        $ret = $helper->__invoke('test')->end('APPEND'); // end mode
+        $ret = $helper('test')->end('APPEND'); // end mode
         $this->assertEquals('BLOCK POST1 POST2', $ret);
 
         // test get
-        $this->assertEquals('BLOCK POST1 POST2', $helper->__invoke('test')->get());
+        $this->assertEquals('BLOCK POST1 POST2', $helper('test')->get());
 
         // test clear
-        $helper->__invoke('test')->clear();
-        $this->assertEquals(null, $helper->__invoke('test')->get());
+        $helper('test')->clear();
+        $this->assertEquals(null, $helper('test')->get());
 
         // test empty strings
-        $ret = $helper->__invoke('test')->set('');
-        $ret = $helper->__invoke('test')->append('POST');
+        $ret = $helper('test')->set('');
+        $ret = $helper('test')->append('POST');
         $this->assertEquals('POST', $ret);
-        $helper->__invoke('test')->clear();
-        $ret = $helper->__invoke('test')->set('BASE');
-        $ret = $helper->__invoke('test')->append('');
+        $helper('test')->clear();
+        $ret = $helper('test')->set('BASE');
+        $ret = $helper('test')->append('');
         $this->assertEquals('BASE', $ret);
     }
 
@@ -257,16 +256,16 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
 
-        $helper->__invoke('parent')->start();
+        $helper('parent')->start();
         echo '<parent>';
 
-        $helper->__invoke('child')->start();
+        $helper('child')->start();
         echo 'CHILD';
-        echo $child = $helper->__invoke('child')->end();
+        echo $child = $helper('child')->end();
         $this->assertEquals('CHILD', $child);
 
         echo '</parent>';
-        $ret = $helper->__invoke('parent')->end();
+        $ret = $helper('parent')->end();
         $this->assertEquals('<parent>CHILD</parent>', $ret);
     }
 
@@ -279,16 +278,16 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
 
-        $helper->__invoke('parent')->start();
+        $helper('parent')->start();
         echo '<parent>';
 
-        $helper->__invoke('child')->start();
+        $helper('child')->start();
         echo 'CHILD';
-        $child = $helper->__invoke('child')->end(); // no echo
+        $child = $helper('child')->end(); // no echo
         $this->assertEquals('CHILD', $child);
 
         echo '</parent>';
-        $ret = $helper->__invoke('parent')->end();
+        $ret = $helper('parent')->end();
         $this->assertEquals('<parent></parent>', $ret);
     }
 
@@ -299,22 +298,9 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $helper = new Slot($this->getResourceContainer());
+        $helper = new Slot();
         $helper->setView($this->getMockView());
         return $helper;
-    }
-
-    /**
-     * Get a populated resource container for testing.
-     *
-     * @return ResourceContainer
-     */
-    protected function getResourceContainer()
-    {
-        $rc = new ResourceContainer();
-        $rc->setEncoding('utf-8');
-        $rc->setGenerator('fake-generator');
-        return $rc;
     }
 
     /**

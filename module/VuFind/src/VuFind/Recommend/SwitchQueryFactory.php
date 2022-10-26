@@ -27,10 +27,10 @@
  */
 namespace VuFind\Recommend;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * SwitchQuery recommendation module factory.
@@ -55,18 +55,18 @@ class SwitchQueryFactory implements \Laminas\ServiceManager\Factory\FactoryInter
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class)
-        );
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }

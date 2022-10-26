@@ -4,7 +4,7 @@
   <h2><?=$this->info['name'] ?></h2>
 
   <?php if (isset($this->info['image'])): ?>
-    <img class="pull-left flip" src="<?=$this->info['image'] ?>" alt="<?=$this->escapeHtmlAttr($this->info['altimage']) ?>" width="150px"/>
+    <img class="pull-left flip" src="<?=$this->escapeHtmlAttr($this->info['image']) ?>" alt="<?=$this->escapeHtmlAttr($this->info['altimage']) ?>" width="150px"/>
   <?php endif; ?>
 
   <?=preg_replace('/___baseurl___/', $this->url('search-results'), $this->info['description']) ?>

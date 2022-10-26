@@ -67,8 +67,11 @@ trait ClassBasedTemplateRendererTrait
      *
      * @return string
      */
-    protected function resolveClassTemplate($template, $className,
-        ResolverInterface $resolver, $topClassName = null
+    protected function resolveClassTemplate(
+        $template,
+        $className,
+        ResolverInterface $resolver,
+        $topClassName = null
     ) {
         // If the template resolves, return it:
         $templateWithClass = $this->getTemplateWithClass($template, $className);
@@ -85,7 +88,10 @@ trait ClassBasedTemplateRendererTrait
 
         // Recurse until we find a template or run out of parents...
         return $this->resolveClassTemplate(
-            $template, $parentClass, $resolver, $topClassName ?? $className
+            $template,
+            $parentClass,
+            $resolver,
+            $topClassName ?? $className
         );
     }
 
@@ -102,7 +108,10 @@ trait ClassBasedTemplateRendererTrait
      * @return string
      * @throws RuntimeException
      */
-    protected function renderClassTemplate($template, $className, $context = [],
+    protected function renderClassTemplate(
+        $template,
+        $className,
+        $context = [],
         $throw = true
     ) {
         // Set up the needed context in the view:
@@ -141,7 +150,9 @@ trait ClassBasedTemplateRendererTrait
         if (!isset($this->templateCache[$className][$template])) {
             $this->templateCache[$className][$template]
                 = $this->resolveClassTemplate(
-                    $template, $className, $this->getView()->resolver()
+                    $template,
+                    $className,
+                    $this->getView()->resolver()
                 );
         }
         return $this->templateCache[$className][$template];
@@ -168,7 +179,9 @@ trait ClassBasedTemplateRendererTrait
      *
      * @return string
      */
-    protected function getTemplateWithClass(string $template, string $className
+    protected function getTemplateWithClass(
+        string $template,
+        string $className
     ): string {
         return sprintf($template, $this->getBriefClass($className));
     }

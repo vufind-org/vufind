@@ -21,17 +21,18 @@
     <div class="collection-control">
       <form class="form-inline" role="form" method="get" name="keywordFilterForm" id="keywordFilterForm">
         <div class="input-group">
-          <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEscAttr('Search within collection')?>" value="<?=$params->getDisplayQuery()?>" class="form-control">
+          <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEscAttr('Search within collection')?>" value="<?=$this->escapeHtmlAttr($params->getDisplayQuery())?>" class="form-control">
           <?php foreach ($filterList as $field => $filters): ?>
             <?php foreach ($filters as $filter): ?>
               <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />
             <?php endforeach; ?>
           <?php endforeach; ?>
-          <input type="hidden" name="limit" value="<?=$params->getLimit() ?>" />
-          <input type="hidden" name="sort" value="<?=$params->getSort() ?>" />
+          <input type="hidden" name="limit" value="<?=$this->escapeHtmlAttr($params->getLimit()) ?>" />
+          <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($params->getSort()) ?>" />
           <span class="input-group-btn">
             <button class="btn btn-primary" type="submit" name="submit">
-              <span class="sr-only"><?=$this->transEsc('Search')?></span><i class="fa fa-search"></i>
+              <span class="sr-only"><?=$this->transEsc('Search')?></span>
+              <?=$this->icon('search') ?>
             </button>
           </span>
         </div>
@@ -47,15 +48,18 @@
 
 
   <?php if ($filterList || $checkboxFilters): ?>
-    <?=$this->render('search/filters.phtml',
-      [
-        'urlQuery' => $results->getUrlQuery(),
-        'filterList' => $filterList,
-        'checkboxFilters' => $checkboxFilters,
-        'searchClassId' => $this->searchClassId,
-        'searchType' => 'basic',
-      ]
-    ); ?>
+    <?=
+      $this->render(
+          'search/filters.phtml',
+          [
+            'urlQuery' => $results->getUrlQuery(),
+            'filterList' => $filterList,
+            'checkboxFilters' => $checkboxFilters,
+            'searchClassId' => $this->searchClassId,
+            'searchType' => 'basic',
+          ]
+      );
+    ?>
   <?php endif; ?>
 
   <div class="collection-list-results">

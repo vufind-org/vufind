@@ -44,7 +44,6 @@ rem #   Tweak these in accordance to your needs
 rem # Xmx and Xms set the heap size for the Java Virtual Machine
 rem # You may also want to add the following:
 rem # -XX:+UseParallelGC
-rem # -XX:+AggressiveOpts
 rem ##################################################
 if not "!%INDEX_OPTIONS%!"=="!!" goto indexoptionsfound
 set INDEX_OPTIONS=-Xms512m -Xmx512m -DentityExpansionLimit=0
@@ -123,6 +122,7 @@ set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dlog4j.configuration="fi
 echo Now Importing %1 ...
 echo %RUN_CMD%
 %RUN_CMD%
+exit /b %ERRORLEVEL%
 
 :end
 

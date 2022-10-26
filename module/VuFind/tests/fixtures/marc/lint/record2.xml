@@ -1,0 +1,57 @@
+<record>
+    <leader>00000nam  22002538a 4500</leader>
+    <datafield tag="041" ind1="0" ind2=" ">
+        <subfield code="a">end</subfield>,
+        <subfield code="a">fren</subfield>
+    </datafield>
+    <datafield tag="043" ind1=" " ind2=" ">
+        <subfield code="a">n-us-pn</subfield>
+    </datafield>
+    <datafield tag="082" ind1="0" ind2="4">
+        <subfield code="a">005.13/3</subfield>
+    <!-- typo 'R' for 'W' and missing 'b' subfield -->
+        <subfield code="R">all</subfield>
+        <subfield code="2">21</subfield>
+    </datafield>
+    <datafield tag="082" ind1="1" ind2="4">
+        <subfield code="a">005.13</subfield>
+        <subfield code="b">Wall</subfield>
+        <subfield code="2">14</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2="4">
+        <subfield code="a">Wall, Larry</subfield>
+    </datafield>
+    <datafield tag="110" ind1="1" ind2=" ">
+        <subfield code="a">O&apos;Reilly &amp; Associates.</subfield>
+    </datafield>
+    <datafield tag="245" ind1="9" ind2="0">
+        <subfield code="a">Programming Perl / </subfield>
+        <subfield code="a">Big Book of Perl /</subfield>
+        <subfield code="c">Larry Wall, Tom Christiansen &amp; Jon Orwant.</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+        <subfield code="a">3rd ed.</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+        <subfield code="a">3rd ed.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2=" ">
+        <subfield code="a">Cambridge, Mass. : </subfield>
+        <subfield code="b">O&apos;Reilly</subfield>
+        <subfield code="r">2000.</subfield>
+    </datafield>
+    <datafield tag="590" ind1="4" ind2=" ">
+        <subfield code="a">Personally signed by Larry.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+        <subfield code="a">Perl (Computer program language)</subfield>
+        <subfield code="0">(DLC)sh 95010633</subfield>
+    </datafield>
+    <datafield tag="856" ind1="4" ind2="3">
+        <subfield code="u">http://www.perl.com/</subfield>
+    </datafield>
+    <datafield tag="886" ind1="0" ind2=" ">
+        <subfield code="4">Some foreign thing</subfield>
+        <subfield code="q">Another foreign thing</subfield>
+    </datafield>
+</record>

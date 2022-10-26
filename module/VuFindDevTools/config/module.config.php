@@ -32,6 +32,16 @@ $config = [
                     ]
                 ]
             ],
+            'devtools-icon' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/devtools/icon',
+                    'defaults' => [
+                        'controller' => 'DevTools',
+                        'action'     => 'Icon',
+                    ]
+                ]
+            ],
             'devtools-language' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [

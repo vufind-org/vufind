@@ -23,12 +23,12 @@
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
 
-use Laminas\Http\Client\Adapter\Curl as CurlAdapter;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Log\LoggerAwareInterface;
 
@@ -38,12 +38,15 @@ use Laminas\Log\LoggerAwareInterface;
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 class Connector extends Base implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * The HTTP Request object to execute EDS API transactions
@@ -51,22 +54,6 @@ class Connector extends Base implements LoggerAwareInterface
      * @var HttpClient
      */
     protected $client;
-
-    /**
-     * Print a message if debug is enabled.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     */
-    protected function debugPrint($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug("$msg\n");
-        } else {
-            parent::debugPrint($msg);
-        }
-    }
 
     /**
      * Constructor
@@ -80,23 +67,12 @@ class Connector extends Base implements LoggerAwareInterface
      *      <li>orgid - Organization making calls to the EDS API</li>
      *      <li>timeout - HTTP timeout value (default = 120)</li>
      *    </ul>
-     * @param HttpClient $client   HTTP client object (optional)
+     * @param HttpClient $client   HTTP client object
      */
-    public function __construct($settings = [], $client = null)
+    public function __construct($settings, $client)
     {
         parent::__construct($settings);
-        $this->client = is_object($client) ? $client : new HttpClient();
-        $this->client->setOptions(['timeout' => $settings['timeout'] ?? 120]);
-        $adapter = new CurlAdapter();
-        $adapter->setOptions(
-            [
-                'curloptions' => [
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_FOLLOWLOCATION => true,
-                ]
-            ]
-        );
-        $this->client->setAdapter($adapter);
+        $this->client = $client;
     }
 
     /**
@@ -108,12 +84,19 @@ class Connector extends Base implements LoggerAwareInterface
      * @param array  $headers       HTTP headers to send
      * @param string $messageBody   Message body to for HTTP Request
      * @param string $messageFormat Format of request $messageBody and respones
+     * @param bool   $cacheable     Whether the request is cacheable
      *
      * @throws ApiException
      * @return string               HTTP response body
      */
-    protected function httpRequest($baseUrl, $method, $queryString, $headers,
-        $messageBody = null, $messageFormat = "application/json; charset=utf-8"
+    protected function httpRequest(
+        $baseUrl,
+        $method,
+        $queryString,
+        $headers,
+        $messageBody = null,
+        $messageFormat = "application/json; charset=utf-8",
+        $cacheable = true
     ) {
         $this->debugPrint("{$method}: {$baseUrl}?{$queryString}");
 
@@ -129,12 +112,42 @@ class Connector extends Base implements LoggerAwareInterface
         }
         $this->client->setUri($baseUrl);
         $this->client->setEncType($messageFormat);
-        $result = $this->client->send();
-        if (!$result->isSuccess()) {
-            $error = $result->getBody();
-            $decodedError = json_decode($error, true);
-            throw new ApiException($decodedError ? $decodedError : $error);
+
+        // Check cache:
+        $cacheKey = null;
+        if ($cacheable && $this->cache) {
+            $cacheKey = $this->getCacheKey($this->client);
+            if ($result = $this->getCachedData($cacheKey)) {
+                return $result;
+            }
         }
-        return $result->getBody();
+
+        // Send request:
+        $result = $this->client->send();
+        $resultBody = $result->getBody();
+        if (!$result->isSuccess()) {
+            $decodedError = json_decode($resultBody, true);
+            throw new ApiException($decodedError ?: $resultBody);
+        }
+        if ($cacheKey) {
+            $this->putCachedData($cacheKey, $resultBody);
+        }
+        return $resultBody;
+    }
+
+    /**
+     * Print a message if debug is enabled.
+     *
+     * @param string $msg Message to print
+     *
+     * @return void
+     */
+    protected function debugPrint($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug("$msg\n");
+        } else {
+            parent::debugPrint($msg);
+        }
     }
 }

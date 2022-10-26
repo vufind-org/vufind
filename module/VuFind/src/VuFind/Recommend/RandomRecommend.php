@@ -118,7 +118,8 @@ class RandomRecommend implements RecommendInterface
      * @param \VuFindSearch\Service               $searchService VuFind Search Serive
      * @param \VuFind\Search\Params\PluginManager $paramManager  Params manager
      */
-    public function __construct(\VuFindSearch\Service $searchService,
+    public function __construct(
+        \VuFindSearch\Service $searchService,
         \VuFind\Search\Params\PluginManager $paramManager
     ) {
         $this->searchService = $searchService;
@@ -155,7 +156,8 @@ class RandomRecommend implements RecommendInterface
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -179,7 +181,10 @@ class RandomRecommend implements RecommendInterface
         $query = $randomParams->getQuery();
         $paramBag = $randomParams->getBackendParameters();
         $this->results = $this->searchService->random(
-            $this->backend, $query, $this->limit, $paramBag
+            $this->backend,
+            $query,
+            $this->limit,
+            $paramBag
         )->getRecords();
     }
 

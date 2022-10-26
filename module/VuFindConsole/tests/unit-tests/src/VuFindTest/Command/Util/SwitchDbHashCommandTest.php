@@ -31,7 +31,6 @@ use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Locator;
 use VuFind\Config\Writer;
 use VuFind\Db\Table\User;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
@@ -47,6 +46,15 @@ use VuFindConsole\Command\Util\SwitchDbHashCommand;
  */
 class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+
+    /**
+     * Expected path to config.ini
+     *
+     * @var string
+     */
+    protected $expectedConfigIniPath;
+
     /**
      * Prepare a mock object
      *
@@ -85,7 +93,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     new Config($config),
                     $table ?? $this->getMockTable(),
                 ]
-            )->setMethods(['getConfigWriter'])
+            )->onlyMethods(['getConfigWriter'])
             ->getMock();
     }
 
@@ -97,6 +105,17 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockConfigWriter()
     {
         return $this->prepareMock(Writer::class);
+    }
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->expectedConfigIniPath = $this->getPathResolver()
+            ->getLocalConfigPath('config.ini', null, true);
     }
 
     /**
@@ -175,9 +194,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tWrite failed!\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tWrite failed!\n",
             $commandTester->getDisplay()
         );
     }
@@ -207,10 +225,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 0 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 0 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
     }
@@ -233,7 +250,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->setConstructorArgs([$adapter])
-            ->setMethods(['save'])
+            ->onlyMethods(['save'])
             ->getMock();
         $user->populate($data, true);
         return $user;
@@ -276,10 +293,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 1 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 1 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(null, $user['cat_password']);

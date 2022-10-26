@@ -48,4 +48,10 @@ form {
             font-weight: 700;
         }
     }
+
+    &.dynamic-form {
+        input[type=date] {
+            padding-top: 0;
+        }
+    }
 }

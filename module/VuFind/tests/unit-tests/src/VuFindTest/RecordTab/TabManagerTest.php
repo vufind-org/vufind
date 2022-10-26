@@ -42,6 +42,26 @@ use VuFind\RecordTab\TabManager;
  */
 class TabManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
+    /**
+     * Default configuration for mock plugin manager
+     *
+     * @var array
+     */
+    protected $defaultConfig = [
+        'RecordTabs' => [
+            'VuFind\RecordDriver\EDS' => [
+                'tabs' => [
+                    'xyzzy' => 'yzzyx',
+                    'zip' => 'line',
+                ],
+                'defaultTab' => 'zip',
+                'backgroundLoadedTabs' => ['xyzzy'],
+            ],
+        ]
+    ];
+
     /**
      * Set up a tab manager for testing.
      *
@@ -49,7 +69,8 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      * @param  ConfigManager $configManager Config manager to use (null for default)
      * @return TabManager
      */
-    protected function getTabManager(PluginManager $pluginManager = null,
+    protected function getTabManager(
+        PluginManager $pluginManager = null,
         ConfigManager $configManager = null
     ) {
         $legacyConfig = [
@@ -74,7 +95,8 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         ];
         return new TabManager(
             $pluginManager ?? $this->getMockPluginManager(),
-            $configManager ?? $this->getMockConfigManager(),
+            $configManager
+                ?? $this->getMockConfigPluginManager($this->defaultConfig),
             $legacyConfig
         );
     }
@@ -87,7 +109,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     protected function getMockPluginManager()
     {
         $mockTab = $this->getMockBuilder(\VuFind\RecordTab\StaffViewArray::class)
-            ->disableOriginalConstructor()->setMethods(['isActive'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['isActive'])->getMock();
         $mockTab->expects($this->any())->method('isActive')
             ->will($this->returnValue(true));
         $pm = $this->getMockBuilder(\VuFind\RecordTab\PluginManager::class)
@@ -97,36 +119,6 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         $pm->expects($this->any())->method('get')
             ->will($this->returnValue($mockTab));
         return $pm;
-    }
-
-    /**
-     * Build a mock config manager.
-     *
-     * @return ConfigManager
-     */
-    protected function getMockConfigManager()
-    {
-        $iniConfig = new \Laminas\Config\Config(
-            [
-                'VuFind\RecordDriver\EDS' => [
-                    'tabs' => [
-                        'xyzzy' => 'yzzyx',
-                        'zip' => 'line',
-                    ],
-                    'defaultTab' => 'zip',
-                    'backgroundLoadedTabs' => ['xyzzy'],
-                ],
-            ]
-        );
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['has', 'get'])
-            ->getMock();
-        $configManager->expects($this->any())->method('has')
-            ->will($this->returnValue(true));
-        $configManager->expects($this->any())->method('get')
-            ->will($this->returnValue($iniConfig));
-        return $configManager;
     }
 
     /**

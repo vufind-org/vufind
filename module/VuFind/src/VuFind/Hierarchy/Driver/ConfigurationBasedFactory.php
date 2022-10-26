@@ -27,7 +27,7 @@
  */
 namespace VuFind\Hierarchy\Driver;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Hierarchy Driver Factory Class
@@ -55,7 +55,9 @@ class ConfigurationBasedFactory
      *
      * @throws Exception if options is populated
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

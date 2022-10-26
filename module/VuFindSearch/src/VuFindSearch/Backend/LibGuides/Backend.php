@@ -80,8 +80,10 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function __construct(Connector $connector,
-        RecordCollectionFactoryInterface $factory = null, $defaultSearch = null
+    public function __construct(
+        Connector $connector,
+        RecordCollectionFactoryInterface $factory = null,
+        $defaultSearch = null
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
@@ -101,7 +103,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);

@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
@@ -83,7 +84,7 @@ class AbstractRecord extends AbstractBase
      *
      * @var string
      */
-    protected $searchClassId = 'Solr';
+    protected $sourceId = 'Solr';
 
     /**
      * Record driver
@@ -102,8 +103,9 @@ class AbstractRecord extends AbstractBase
     protected function createViewModel($params = null)
     {
         $view = parent::createViewModel($params);
-        $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
         $view->driver = $this->loadRecord();
+        $this->layout()->searchClassId = $view->searchClassId
+            = $view->driver->getSearchBackendIdentifier();
         return $view;
     }
 
@@ -130,7 +132,8 @@ class AbstractRecord extends AbstractBase
 
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
-                null, ['comment' => $this->params()->fromPost('comment')]
+                null,
+                ['comment' => $this->params()->fromPost('comment')]
             );
         }
 
@@ -154,9 +157,20 @@ class AbstractRecord extends AbstractBase
         if (!empty($comment)) {
             $table = $this->getTable('Resource');
             $resource = $table->findResource(
-                $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
+                $driver->getUniqueId(),
+                $driver->getSourceIdentifier(),
+                true,
+                $driver
             );
             $resource->addComment($comment, $user);
+
+            // Save rating if allowed:
+            if ($driver->isRatingAllowed()
+                && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
+            ) {
+                $driver->addOrUpdateRating($user->id, intval($rating));
+            }
+
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
@@ -253,11 +267,55 @@ class AbstractRecord extends AbstractBase
                 [
                     'msg' => 'tags_deleted',
                     'tokens' => ['%count%' => 1]
-                ], 'success'
+                ],
+                'success'
             );
         }
 
         return $this->redirectToRecord();
+    }
+
+    /**
+     * Display and add ratings
+     *
+     * @return mixed
+     */
+    public function ratingAction()
+    {
+        // Obtain the current record object:
+        $driver = $this->loadRecord();
+
+        // Make sure ratings are allowed for the record:
+        if (!$driver->isRatingAllowed()) {
+            throw new ForbiddenException('rating_disabled');
+        }
+
+        // Save rating, if any, and user has logged in:
+        $user = $this->getUser();
+        if ($user && null !== ($rating = $this->params()->fromPost('rating'))) {
+            if ('' === $rating
+                && !($this->getConfig()->Social->remove_rating ?? true)
+            ) {
+                throw new BadRequestException('error_inconsistent_parameters');
+            }
+            $driver->addOrUpdateRating(
+                $user->id,
+                '' === $rating ? null : intval($rating)
+            );
+            $this->flashMessenger()->addSuccessMessage('rating_add_success');
+            if ($this->inLightbox()) {
+                return $this->getRefreshResponse();
+            }
+            return $this->redirectToRecord();
+        }
+
+        // Display the "add rating" form:
+        $view = $this->createViewModel(
+            [
+                'currentRating' => $user ? $driver->getRatingData($user->id) : null
+            ]
+        );
+        return $view;
     }
 
     /**
@@ -306,8 +364,10 @@ class AbstractRecord extends AbstractBase
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
+        $this->layout()->setVariable('layoutContext', 'tabs');
         return $this->showTab(
-            $this->params()->fromPost('tab', $this->getDefaultTab()), true
+            $this->params()->fromPost('tab', $this->getDefaultTab()),
+            true
         );
     }
 
@@ -403,7 +463,9 @@ class AbstractRecord extends AbstractBase
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $user->getSavedData(
-            $driver->getUniqueId(), null, $driver->getSourceIdentifier()
+            $driver->getUniqueId(),
+            null,
+            $driver->getSourceIdentifier()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
@@ -415,13 +477,9 @@ class AbstractRecord extends AbstractBase
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->id, $listIds)) {
-                $containingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $containingLists[] = $list->toArray();
             } else {
-                $nonContainingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $nonContainingLists[] = $list->toArray();
             }
         }
 
@@ -456,7 +514,8 @@ class AbstractRecord extends AbstractBase
         // Create view
         $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(
-            null, $mailer->getDefaultRecordSubject($driver)
+            null,
+            $mailer->getDefaultRecordSubject($driver)
         );
         $mailer->setMaxRecipients($view->maxRecipients);
 
@@ -469,8 +528,13 @@ class AbstractRecord extends AbstractBase
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
                 $mailer->sendRecord(
-                    $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer(), $view->subject, $cc
+                    $view->to,
+                    $view->from,
+                    $view->message,
+                    $driver,
+                    $this->getViewRenderer(),
+                    $view->subject,
+                    $cc
                 );
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
@@ -518,11 +582,18 @@ class AbstractRecord extends AbstractBase
         $view->validation = $sms->getValidationType();
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('sms');
+        // Send parameters back to view so form can be re-populated:
+        $view->to = $this->params()->fromPost('to');
+        $view->provider = $this->params()->fromPost('provider');
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
-            // Send parameters back to view so form can be re-populated:
-            $view->to = $this->params()->fromPost('to');
-            $view->provider = $this->params()->fromPost('provider');
+            // Do CSRF check
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
 
             // Attempt to send the email and show an appropriate flash message:
             try {
@@ -552,6 +623,18 @@ class AbstractRecord extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->setTemplate('record/cite');
+        return $view;
+    }
+
+    /**
+     * Show permanent link for the current record.
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function permalinkAction()
+    {
+        $view = $this->createViewModel();
+        $view->setTemplate('record/permalink');
         return $view;
     }
 
@@ -611,7 +694,8 @@ class AbstractRecord extends AbstractBase
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', $params
+                    'cart/export-success.phtml',
+                    $params
                 )
             ];
             $this->flashMessenger()->addSuccessMessage($msg);
@@ -663,7 +747,7 @@ class AbstractRecord extends AbstractBase
             }
             $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
-                $this->searchClassId,
+                $this->sourceId,
                 false,
                 $params
             );

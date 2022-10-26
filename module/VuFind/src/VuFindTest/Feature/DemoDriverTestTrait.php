@@ -28,6 +28,8 @@
  */
 namespace VuFindTest\Feature;
 
+use Behat\Mink\Element\Element;
+
 /**
  * Trait with utility methods for configuring the demo driver in a test
  *
@@ -97,8 +99,9 @@ trait DemoDriverTestTrait
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
                 'renewMyItems' => 0,
+                'updateHolds' => 0,
             ],
-            'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
+            'StaticHoldings' => [$bibId => json_encode([$this->getFakeItem()])],
             'Users' => ['catuser' => 'catpass'],
         ];
     }
@@ -123,6 +126,26 @@ trait DemoDriverTestTrait
             'addLink'      => true,
             'addStorageRetrievalRequestLink' => 'check',
             'addILLRequestLink' => 'check',
+            "__electronic__" => false,
         ];
+    }
+
+    /**
+     * Fill in and submit the catalog login form with the provided credentials.
+     *
+     * @param Element $page     Page element.
+     * @param string  $username Username
+     * @param string  $password Password
+     *
+     * @return void
+     */
+    protected function submitCatalogLoginForm(
+        Element $page,
+        string $username,
+        string $password
+    ): void {
+        $this->findCss($page, '#profile_cat_username')->setValue($username);
+        $this->findCss($page, '#profile_cat_password')->setValue($password);
+        $this->clickCss($page, 'input.btn.btn-primary');
     }
 }

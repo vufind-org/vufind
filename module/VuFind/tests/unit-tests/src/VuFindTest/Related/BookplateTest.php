@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Related;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Related\Bookplate;
 use VuFind\Related\BookplateFactory;
@@ -45,6 +44,8 @@ use VuFindTest\RecordDriver\TestHarness as RecordDriver;
  */
 class BookplateTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test default behavior (no bookplates)
      *
@@ -164,12 +165,14 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
      * @return MockContainer
      */
     protected function getContainer(
-        string $expectedConfig = 'config', array $config = []
+        string $expectedConfig = 'config',
+        array $config = []
     ): MockContainer {
         $container = new MockContainer($this);
-        $container->get(ConfigManager::class)->expects($this->once())->method('get')
-            ->with($this->equalTo($expectedConfig))
-            ->will($this->returnValue(new Config($config)));
+        $container->set(
+            ConfigManager::class,
+            $this->getMockConfigPluginManager([$expectedConfig => $config])
+        );
         return $container;
     }
 

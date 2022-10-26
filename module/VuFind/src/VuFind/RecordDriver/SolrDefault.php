@@ -45,9 +45,11 @@ namespace VuFind\RecordDriver;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
+class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInterface,
+    Feature\VersionAwareInterface
 {
-    use HierarchyAwareTrait;
+    use Feature\HierarchyAwareTrait;
+    use Feature\PreviousUniqueIdTrait;
     use Feature\VersionAwareTrait;
 
     /**
@@ -121,9 +123,12 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
      * @param \Laminas\Config\Config $searchSettings Search-specific configuration
      * file
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
+        $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
         $this->snippet = !isset($searchSettings->General->snippets)
             ? false : $searchSettings->General->snippets;
@@ -248,8 +253,7 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
         if (!$this->highlight) {
             return '';
         }
-        return (isset($this->highlightDetails['title'][0]))
-            ? $this->highlightDetails['title'][0] : '';
+        return $this->highlightDetails['title'][0] ?? '';
     }
 
     /**

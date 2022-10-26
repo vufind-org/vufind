@@ -7,7 +7,7 @@
     // since text messages can be short, and we want the most important stuff
     // at the top!
     $recordUrl = $this->shortenUrl(
-        $this->serverUrl($this->recordLink()->getUrl($this->driver))
+        $this->serverUrl($this->recordLinker()->getUrl($this->driver))
     );
     if ($this->driver->supportsAjaxStatus()) {
         $holdings = $this->driver->getRealTimeHoldings();

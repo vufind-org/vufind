@@ -63,11 +63,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         $config = [
             'url' => 'http://foo/bar'
         ];
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'results');
+        $driver = $this->getMockDriver();
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'results');
         $this->assertTrue($openUrl->isActive());
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'foo');
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'foo');
         $this->assertFalse($openUrl->isActive());
     }
 
@@ -83,11 +82,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
             'show_in_results' => false,
             'show_in_foo' => true,
         ];
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'results');
+        $driver = $this->getMockDriver();
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'results');
         $this->assertFalse($openUrl->isActive());
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'foo');
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'foo');
         $this->assertTrue($openUrl->isActive());
     }
 
@@ -98,11 +96,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckContextNoUrl()
     {
-        $openUrl = $this->getOpenUrl()
-            ->__invoke($this->getMockDriver(), 'results');
+        $driver = $this->getMockDriver();
+        $openUrl = ($this->getOpenUrl())($driver, 'results');
         $this->assertFalse($openUrl->isActive());
-        $openUrl = $this->getOpenUrl()
-            ->__invoke($this->getMockDriver(), 'foo');
+        $openUrl = ($this->getOpenUrl())($driver, 'foo');
         $this->assertFalse($openUrl->isActive());
     }
 
@@ -114,9 +111,9 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckExcludedRecordsRulesFalse()
     {
-        $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule1.json"), $this->rulesConfig)
-            ->__invoke($this->getMockDriver(), 'results');
+        $fixture = $this->getJsonFixture("openurlrules/rule1.json");
+        $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
+        $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertTrue($openUrl->isActive());
     }
 
@@ -128,9 +125,9 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckExcludedRecordsRulesTrue()
     {
-        $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule2.json"), $this->rulesConfig)
-            ->__invoke($this->getMockDriver(), 'results');
+        $fixture = $this->getJsonFixture("openurlrules/rule2.json");
+        $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
+        $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertFalse($openUrl->isActive());
     }
 
@@ -144,11 +141,14 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     public function testCheckExcludedRecordsRulesFalseDueToWildcardFailure()
     {
         $driver = $this->getMockDriver(
-            'fake-data', 'VuFind\RecordDriver\SolrMarc', ['Article'], false
+            'fake-data',
+            \VuFind\RecordDriver\SolrMarc::class,
+            ['Article'],
+            false
         );
-        $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule5.json"), $this->rulesConfig)
-            ->__invoke($driver, 'results');
+        $fixture = $this->getJsonFixture("openurlrules/rule5.json");
+        $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
+        $openUrl = $helper($driver, 'results');
         $this->assertFalse($openUrl->isActive());
     }
 
@@ -160,9 +160,9 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckSupportedRecordsRulesFalse()
     {
-        $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule3.json"), $this->rulesConfig)
-            ->__invoke($this->getMockDriver(), 'results');
+        $fixture = $this->getJsonFixture("openurlrules/rule3.json");
+        $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
+        $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertFalse($openUrl->isActive());
     }
 
@@ -176,11 +176,13 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     public function testCheckSupportedRecordsRulesWithWildcardStillFalse()
     {
         $driver = $this->getMockDriver(
-            'fake-openurl', 'VuFind\RecordDriver\SolrDefault', ['CrazyFormat']
+            'fake-openurl',
+            \VuFind\RecordDriver\SolrDefault::class,
+            ['CrazyFormat']
         );
-        $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule5.json"), $this->rulesConfig)
-            ->__invoke($driver, 'results');
+        $fixture = $this->getJsonFixture("openurlrules/rule5.json");
+        $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
+        $openUrl = $helper($driver, 'results');
         $this->assertFalse($openUrl->isActive());
     }
 
@@ -192,9 +194,9 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckSupportedRecordsRulesTrue()
     {
-        $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule4.json"), $this->rulesConfig)
-            ->__invoke($this->getMockDriver(), 'results');
+        $fixture = $this->getJsonFixture("openurlrules/rule4.json");
+        $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
+        $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertTrue($openUrl->isActive());
     }
 
@@ -208,15 +210,19 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     {
         $formats = ['Article'];
         $defaultDriver = $this->getMockDriver(
-            'fake-data', 'VuFind\RecordDriver\SolrDefault', $formats
+            'fake-data',
+            \VuFind\RecordDriver\SolrDefault::class,
+            $formats
         );
         $marcDriver = $this->getMockDriver(
-            'fake-data', 'VuFind\RecordDriver\SolrMarc', $formats
+            'fake-data',
+            \VuFind\RecordDriver\SolrMarc::class,
+            $formats
         );
         $openUrl = $this
             ->getOpenUrl($this->getJsonFixture("openurlrules/rule1.json"), $this->rulesConfig);
-        $this->assertTrue($openUrl->__invoke($defaultDriver, 'results')->isActive());
-        $this->assertFalse($openUrl->__invoke($marcDriver, 'results')->isActive());
+        $this->assertTrue($openUrl($defaultDriver, 'results')->isActive());
+        $this->assertFalse($openUrl($marcDriver, 'results')->isActive());
     }
 
     /**
@@ -240,8 +246,9 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\RecordDriver\SolrDefault
      */
-    protected function getMockDriver($openUrl = 'fake-data',
-        $class = 'VuFind\RecordDriver\SolrDefault',
+    protected function getMockDriver(
+        $openUrl = 'fake-data',
+        $class = \VuFind\RecordDriver\SolrDefault::class,
         $formats = ['ElectronicArticle', 'Article'],
         $issn = '1234-5678'
     ) {

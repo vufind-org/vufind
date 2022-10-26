@@ -49,7 +49,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         '360link' => Threesixtylink::class,
         'alma' => Alma::class,
         'demo' => Demo::class,
-        'ezb' => Ezb::class,
+        'ezb' => Jop::class,
+        'jop' => Jop::class,
         'sfx' => Sfx::class,
         'redi' => Redi::class,
         'threesixtylink' => Threesixtylink::class,
@@ -63,10 +64,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Alma::class => DriverWithHttpClientFactory::class,
+        Alma::class => AlmaFactory::class,
         Threesixtylink::class => DriverWithHttpClientFactory::class,
         Demo::class => InvokableFactory::class,
-        Ezb::class => EzbFactory::class,
+        Jop::class => JopFactory::class,
         Sfx::class => DriverWithHttpClientFactory::class,
         Redi::class => DriverWithHttpClientFactory::class,
         Generic::class => AbstractBaseFactory::class,
@@ -81,7 +82,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

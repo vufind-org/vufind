@@ -73,7 +73,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        Config $mainConfig = null, $recordConfig = null,
+        Config $mainConfig = null,
+        $recordConfig = null,
         OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
@@ -393,48 +394,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return $this->getIsMarc()
             ? parent::getMarcReader()
             : new $this->marcReaderClass('<record></record>');
-    }
-
-    /**
-     * Get Marc Record
-     *
-     * Override the base marc trait to return a fake marc object
-     *
-     * @return     \File_MARCBASE
-     * @throws     \File_MARC_Exception
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        if ($this->getIsMarc()) {
-            return parent::getMarcRecord();
-        }
-        // No MARC support? Return new fake MARC class.
-        return new class {
-            /**
-             * Get the field
-             *
-             * @param string $f Fieldname
-             *
-             * @return string
-             */
-            public function getField($f)
-            {
-                return "";
-            }
-
-            /**
-             * Get the fields
-             *
-             * @param array $f Fieldnames
-             *
-             * @return array
-             */
-            public function getFields($f)
-            {
-                return [];
-            }
-        };
     }
 
     /**

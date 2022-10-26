@@ -133,8 +133,8 @@ class CopyStringCommand extends AbstractCommand
         $replaceDelimiter = $input->getOption('replaceDelimiter');
         $replaceRule = empty($replace) ? [] : explode($replaceDelimiter, $replace);
 
-        list($sourceDomain, $sourceKey) = $this->extractTextDomain($source);
-        list($targetDomain, $targetKey) = $this->extractTextDomain($target);
+        [$sourceDomain, $sourceKey] = $this->extractTextDomain($source);
+        [$targetDomain, $targetKey] = $this->extractTextDomain($target);
 
         if (!($sourceDir = $this->getLangDir($output, $sourceDomain))
             || !($targetDir = $this->getLangDir($output, $targetDomain, true))
@@ -152,7 +152,8 @@ class CopyStringCommand extends AbstractCommand
                     return;
                 }
                 $sources[basename($full)] = $this->applyReplaceRule(
-                    $strings[$sourceKey], $replaceRule
+                    $strings[$sourceKey],
+                    $replaceRule
                 );
             };
         $this->processDirectory($sourceDir, $sourceCallback, [$output, 'writeln']);
@@ -161,7 +162,7 @@ class CopyStringCommand extends AbstractCommand
         $this->createMissingFiles($targetDir->path, array_keys($sources));
 
         // Now copy the values to their destination:
-        $targetCallback = function ($full) use ($output, $targetKey, $sources) {
+        $targetCallback = function ($full) use ($targetKey, $sources) {
             if (isset($sources[basename($full)])) {
                 $this->addLineToFile($full, $targetKey, $sources[basename($full)]);
                 $this->normalizer->normalizeFile($full);

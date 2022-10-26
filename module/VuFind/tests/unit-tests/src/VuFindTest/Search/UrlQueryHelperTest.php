@@ -70,7 +70,8 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('?foo=bar&amp;lookfor=search', $helper->getParams());
         $this->assertEquals('?foo=bar&amp;lookfor=search', (string)$helper);
         $this->assertEquals(
-            ['foo' => 'bar', 'lookfor' => 'search'], $helper->getParamArray()
+            ['foo' => 'bar', 'lookfor' => 'search'],
+            $helper->getParamArray()
         );
         $this->assertEquals(
             '<input type="hidden" name="foo" value="bar" />',
@@ -108,7 +109,8 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
 
         // Confirm that we can look up a list of configured parameters:
         $this->assertEquals(
-            ['foo', 'xyzzy'], $helper->getParamsWithConfiguredDefaults()
+            ['foo', 'xyzzy'],
+            $helper->getParamsWithConfiguredDefaults()
         );
     }
 
@@ -218,7 +220,8 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         $factory = new UrlQueryHelperFactory();
         $config = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new \VuFindTest\Search\TestHarness\Params(
-            new \VuFindTest\Search\TestHarness\Options($config), $config
+            new \VuFindTest\Search\TestHarness\Options($config),
+            $config
         );
         $params->setBasicSearch('foo', 'bar');
         $params->setLimit(100);

@@ -60,11 +60,11 @@
     </tr>
     <?php foreach ($this->results->getResults() as $record): ?>
       <?php
-          $url = $this->currentPath() . $this->escapeHtmlAttr(
-              '?inst=' . urlencode($record->getInstructorId())
-              . '&course=' . urlencode($record->getCourseId())
-              . '&dept=' . urlencode($record->getDepartmentId())
-          );
+        $url = $this->currentPath() . $this->escapeHtmlAttr(
+            '?inst=' . urlencode($record->getInstructorId())
+            . '&course=' . urlencode($record->getCourseId())
+            . '&dept=' . urlencode($record->getDepartmentId())
+        );
       ?>
       <tr>
         <td class="department"><a href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?></a></td>
@@ -78,10 +78,10 @@
   <?php endif; ?>
 </div>
 
-<?php /* Narrow Search Options */ ?>
+<?php /* Refine Search Options */ ?>
 <div class="<?=$this->layoutClass('sidebar')?>">
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
 </div>
-<?php /* End Narrow Search Options */ ?>
+<?php /* End Refine Search Options */ ?>

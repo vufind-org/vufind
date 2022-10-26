@@ -31,8 +31,8 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Row\User;
 use VuFind\ILS\Connection;
+use VuFind\Service\CurrencyFormatter;
 use VuFind\Session\Settings as SessionSettings;
-use VuFind\View\Helper\Root\SafeMoneyFormat;
 
 /**
  * "Get User Fines" AJAX handler
@@ -46,19 +46,30 @@ use VuFind\View\Helper\Root\SafeMoneyFormat;
 class GetUserFines extends AbstractIlsAndUserAction
 {
     /**
+     * Currency formatter
+     *
+     * @var CurrencyFormatter
+     */
+    protected $currencyFormatter;
+
+    /**
      * Constructor
      *
-     * @param SessionSettings  $ss               Session settings
-     * @param Connection       $ils              ILS connection
-     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
-     * @param User|bool        $user             Logged in user (or false)
-     * @param SafeMoneyFormat  $safeMoneyFormat  Money formatting view helper
+     * @param SessionSettings   $ss                Session settings
+     * @param Connection        $ils               ILS connection
+     * @param ILSAuthenticator  $ilsAuthenticator  ILS authenticator
+     * @param User|bool         $user              Logged in user (or false)
+     * @param CurrencyFormatter $currencyFormatter Currency formatter
      */
-    public function __construct(SessionSettings $ss, Connection $ils,
-        ILSAuthenticator $ilsAuthenticator, $user, SafeMoneyFormat $safeMoneyFormat
+    public function __construct(
+        SessionSettings $ss,
+        Connection $ils,
+        ILSAuthenticator $ilsAuthenticator,
+        $user,
+        CurrencyFormatter $currencyFormatter
     ) {
         parent::__construct($ss, $ils, $ilsAuthenticator, $user);
-        $this->safeMoneyFormat = $safeMoneyFormat;
+        $this->currencyFormatter = $currencyFormatter;
     }
 
     /**
@@ -73,17 +84,17 @@ class GetUserFines extends AbstractIlsAndUserAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH, 401);
+            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
         }
         if (!$this->ils->checkCapability('getMyFines')) {
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $sum = 0;
         foreach ($this->ils->getMyFines($patron) as $fine) {
             $sum += $fine['balance'];
         }
         $value = $sum / 100;
-        $display = $this->safeMoneyFormat->__invoke($sum / 100);
+        $display = $this->currencyFormatter->convertToDisplayFormat($value);
         return $this->formatResponse(compact('value', 'display'));
     }
 }

@@ -61,7 +61,7 @@ trait AutoRetryTrait
      *
      * @var int
      */
-    protected $retriesLeft;
+    protected $retriesLeft = 0;
 
     /**
      * Override PHPUnit's main run method, introducing annotation-based retry
@@ -79,7 +79,8 @@ trait AutoRetryTrait
         // the cause of the initial error. We only really want to retry if it
         // will prevent ANY failures from occurring.
         $annotations = Test::parseTestMethodAnnotations(
-            static::class, $this->getName(false)
+            static::class,
+            $this->getName(false)
         );
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;
@@ -106,6 +107,20 @@ trait AutoRetryTrait
                 // Execute callbacks for interrupted test, unless this is the
                 // last round of testing:
                 if ($this->retriesLeft > 0) {
+                    $logMethod = [
+                        $this,
+                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning'
+                    ];
+                    if (is_callable($logMethod)) {
+                        $method = get_class($this) . '::' . $this->getName(false);
+                        $msg = "RETRY TEST $method ({$this->retriesLeft} left)"
+                            . ' after exception: ' . $e->getMessage() . '.';
+                        call_user_func(
+                            $logMethod,
+                            $msg . ' See PHP error log for details.',
+                            $msg . ' Full exception: ' . (string)$e
+                        );
+                    }
                     foreach ($retryCallbacks as $callback) {
                         if (is_callable([$this, $callback])) {
                             $this->{$callback}();

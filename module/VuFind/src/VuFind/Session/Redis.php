@@ -81,7 +81,7 @@ class Redis extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId)
+    public function read($sessId): string
     {
         $session = $this->connection->get("vufind_sessions/{$sessId}");
         return $session !== false ? $session : '';
@@ -95,10 +95,12 @@ class Redis extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data)
+    protected function saveSession($sessId, $data): bool
     {
         return $this->connection->setex(
-            "vufind_sessions/{$sessId}", $this->lifetime, $data
+            "vufind_sessions/{$sessId}",
+            $this->lifetime,
+            $data
         );
     }
 
@@ -110,7 +112,7 @@ class Redis extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId)
+    public function destroy($sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);

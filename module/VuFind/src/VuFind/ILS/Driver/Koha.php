@@ -73,6 +73,32 @@ class Koha extends AbstractBase
     protected $dateConverter = null;
 
     /**
+     * Should we validate passwords against Koha system?
+     *
+     * @var boolean
+     */
+    protected $validatePasswords;
+
+    /**
+     * Default terms for block types, can be overridden by configuration
+     *
+     * @var array
+     */
+    protected $blockTerms = [
+        'SUSPENSION' => 'Account Suspended',
+        'OVERDUES' => 'Account Blocked (Overdue Items)',
+        'MANUAL' => 'Account Blocked',
+        'DISCHARGE' => 'Account Blocked for Discharge',
+    ];
+
+    /**
+     * Display comments for patron debarments, see Koha.ini
+     *
+     * @var array
+     */
+    protected $showBlockComments;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
@@ -124,14 +150,6 @@ class Koha extends AbstractBase
         // option isn't present in Koha.ini then ILS passwords will be validated)
         $this->validatePasswords
             = empty($this->config['Catalog']['dontValidatePasswords']);
-
-        // Set our default terms for block types
-        $this->blockTerms = [
-            'SUSPENSION' => 'Account Suspended',
-            'OVERDUES' => 'Account Blocked (Overdue Items)',
-            'MANUAL' => 'Account Blocked',
-            'DISCHARGE' => 'Account Blocked for Discharge',
-        ];
 
         // Now override the default with any defined in the `Koha.ini` config file
         foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
@@ -254,10 +272,10 @@ class Koha extends AbstractBase
                     'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 ];
             }
-            return $holding;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holding;
     }
 
     /**
@@ -322,7 +340,7 @@ class Koha extends AbstractBase
             }
             return $fineLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -360,10 +378,10 @@ class Koha extends AbstractBase
                     'create' => $this->displayDate($row['RSVDATE'])
                 ];
             }
-            return $holdLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holdLst;
     }
 
     /**
@@ -401,10 +419,10 @@ class Koha extends AbstractBase
                 ];
                 return $profile;
             }
-            return null;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return null;
     }
 
     /**
@@ -440,10 +458,10 @@ class Koha extends AbstractBase
                     'renew' => $row['RENEWALS']
                 ];
             }
-            return $transactionLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $transactionLst;
     }
 
     /**
@@ -483,7 +501,7 @@ class Koha extends AbstractBase
                 $blocks[] = implode(' - ', $block);
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return count($blocks) ? $blocks : false;
@@ -508,9 +526,6 @@ class Koha extends AbstractBase
         $historicLoans = [];
         $row = $sql = $sqlStmt = '';
         try {
-            if (!$this->db) {
-                $this->initDb();
-            }
             $id = $patron['id'];
 
             // Get total count first
@@ -563,13 +578,13 @@ class Koha extends AbstractBase
                     'returnDate' => $this->displayDateTime($row['RETURNED']),
                 ];
             }
-            return [
-                'count' => $totalCount,
-                'transactions' => $historicLoans
-            ];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return [
+            'count' => $totalCount,
+            'transactions' => $historicLoans
+        ];
     }
 
     /**
@@ -672,7 +687,7 @@ class Koha extends AbstractBase
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if ("$2a$" == substr($stored_hash, 0, 4)) {
@@ -721,7 +736,7 @@ class Koha extends AbstractBase
             }
             return null;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -762,7 +777,8 @@ class Koha extends AbstractBase
             // YYYY-MM-DD HH:MM:SS
             return
                 $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d H:i:s', $date
+                    'Y-m-d H:i:s',
+                    $date
                 );
         } else {
             error_log("Unexpected date format: $date");
@@ -775,10 +791,13 @@ class Koha extends AbstractBase
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = [])
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {

@@ -1,10 +1,10 @@
 Package: vufind
-Version: 7.1
+Version: 8.1.1
 Section: World Wide Web
 Priority: Optional
 Architecture: all
 Depends: apache2,
-         default-jdk | openjdk-11-jdk | openjdk-8-jdk,
+         default-jdk | java-compiler,
          libapache2-mod-php,
          mysql-server | virtual-mysql-server-core,
          php-pear,

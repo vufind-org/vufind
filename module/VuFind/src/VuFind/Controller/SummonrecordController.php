@@ -49,7 +49,7 @@ class SummonrecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
-        $this->searchClassId = 'Summon';
+        $this->sourceId = 'Summon';
         $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:
@@ -94,7 +94,9 @@ class SummonrecordController extends AbstractRecord
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
         $events->attach(
-            MvcEvent::EVENT_DISPATCH, [$this, 'injectSummonMessage'], 1000
+            MvcEvent::EVENT_DISPATCH,
+            [$this, 'injectSummonMessage'],
+            1000
         );
     }
 }

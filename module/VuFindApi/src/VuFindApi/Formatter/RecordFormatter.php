@@ -61,7 +61,9 @@ class RecordFormatter extends BaseFormatter
      * @param array               $recordFields  Record field definitions
      * @param HelperPluginManager $helperManager View helper plugin manager
      */
-    public function __construct($recordFields, HelperPluginManager $helperManager
+    public function __construct(
+        $recordFields,
+        HelperPluginManager $helperManager
     ) {
         $this->recordFields = $recordFields;
         $this->helperManager = $helperManager;
@@ -143,7 +145,7 @@ class RecordFormatter extends BaseFormatter
      */
     protected function getRecordPage($record)
     {
-        $urlHelper = $this->helperManager->get('recordLink');
+        $urlHelper = $this->helperManager->get('recordLinker');
         return $urlHelper->getUrl($record);
     }
 
@@ -215,7 +217,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Return record field specs for the Swagger specification
+     * Return record field specs for the API specification
      *
      * @return array
      */

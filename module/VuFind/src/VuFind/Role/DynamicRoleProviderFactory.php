@@ -27,9 +27,9 @@
  */
 namespace VuFind\Role;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind dynamic role provider factory.
@@ -72,7 +72,8 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * @return PermissionProviderPluginManager
      */
     protected function getPermissionProviderPluginManager(
-        ContainerInterface $serviceLocator, array $rbacConfig
+        ContainerInterface $serviceLocator,
+        array $rbacConfig
     ) {
         $pm = new PermissionProvider\PluginManager(
             $serviceLocator,
@@ -90,7 +91,8 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * @return array
      */
     protected function getPermissionConfiguration(
-        ContainerInterface $serviceLocator, array $rbacConfig
+        ContainerInterface $serviceLocator,
+        array $rbacConfig
     ) {
         // Get role provider settings from the LmcRbacMvc configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
@@ -117,7 +119,8 @@ class DynamicRoleProviderFactory implements FactoryInterface
      *
      * @return array
      */
-    protected function addLegacySettings(\VuFind\Config\PluginManager $loader,
+    protected function addLegacySettings(
+        \VuFind\Config\PluginManager $loader,
         array $permissions
     ) {
         // Add admin settings if they are absent:

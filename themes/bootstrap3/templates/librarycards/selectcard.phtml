@@ -11,9 +11,9 @@
             $target = '';
             $username = $card->cat_username;
             if (strstr($username, '.')) {
-              list($target, $username) = explode('.', $username, 2);
+              [$target, $username] = explode('.', $username, 2);
             }
-            $display = $this->transEsc($card->card_name ? $card->card_name : $card->cat_username);
+            $display = $this->escapeHtml($card->card_name ? $card->card_name : $card->cat_username);
             if ($target) {
               $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
             }

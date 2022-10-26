@@ -27,11 +27,11 @@
  */
 namespace VuFind\Search;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Search tabs helper factory.
@@ -56,9 +56,11 @@ class SearchTabsHelperFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -72,10 +74,15 @@ class SearchTabsHelperFactory implements FactoryInterface
             ? $config->SearchTabsFilters->toArray() : [];
         $permissionConfig = isset($config->SearchTabsPermissions)
             ? $config->SearchTabsPermissions->toArray() : [];
+        $settings = isset($config->SearchTabsSettings)
+            ? $config->SearchTabsSettings->toArray() : [];
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $tabConfig, $filterConfig,
-            $container->get('Application')->getRequest(), $permissionConfig
+            $tabConfig,
+            $filterConfig,
+            $container->get('Application')->getRequest(),
+            $permissionConfig,
+            $settings
         );
     }
 }

@@ -27,8 +27,8 @@
  */
 namespace VuFind\RecordDriver;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * ILS aware delegator factory
@@ -53,8 +53,11 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $name,
-        callable $callback, array $options = null
+    public function __invoke(
+        ContainerInterface $container,
+        $name,
+        callable $callback,
+        array $options = null
     ) {
         $driver = call_user_func($callback);
 

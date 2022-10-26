@@ -180,8 +180,6 @@
    <field name="author2_role" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author_corporate" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author_corporate_role" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author_fuller" type="textProper" indexed="true" stored="true" multiValued="true" />
-   <field name="author2_fuller" type="textProper" indexed="true" stored="true" multiValued="true" />
    <field name="author_additional" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="title_alt" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_old" type="text" indexed="true" stored="true" multiValued="true"/>

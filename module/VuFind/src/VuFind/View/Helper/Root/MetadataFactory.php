@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Metadata helper factory
@@ -45,14 +45,16 @@ class MetadataFactory implements FactoryInterface
      * Create an object
      *
      * @param ContainerInterface $container     Service Manager
-     * @param type               $requestedName Service being created
+     * @param string             $requestedName Service being created
      * @param null|array         $options       Extra options (optional)
      *
      * @return object
      *
      * @throws \Exception (options not allowed in this implementation)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

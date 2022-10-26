@@ -18,14 +18,17 @@
   <?=$this->flashmessages();?>
 
   <table class="table table-striped">
-    <?=$this->renderArray(
-      $arrTemplate, $this->user,
-      [
-        $this->transEsc('First Name') => 'firstname',
-        $this->transEsc('Last Name') => 'lastname',
-        $this->transEsc('Email') => 'email',
-      ]
-    )?>
+    <?=
+      $this->renderArray(
+          $arrTemplate,
+          $this->user,
+          [
+              $this->transEsc('First Name') => 'firstname',
+              $this->transEsc('Last Name') => 'lastname',
+              $this->transEsc('Email') => 'email',
+          ]
+      );
+    ?>
     <?php /* this section renders under two distinct circumstances; see if/else below: */ ?>
     <?php if (count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
       <tr>
@@ -33,11 +36,17 @@
         <td>
           <?php if (count($this->pickup ?? []) > 1): // case 1: set home library allowed ?>
             <?php
-              $selected = (strlen($this->profile['home_library'] ?? '') > 0)
-                ? $this->profile['home_library'] : $this->defaultPickupLocation
+              // Use ' ** ' for null ()
+              $selected = $this->profile['home_library'] ?? ' ** ';
             ?>
             <form id="profile_form" class="form-inline" method="post">
               <select id="home_library" name="home_library" class="form-control">
+                <option value=""<?='' === $selected ? ' selected="selected"' : ''?>>
+                  <?=$this->transEsc('preferred_library_default')?>
+                </option>
+                <option value="<?=$this->escapeHtmlAttr(' ** ')?>"<?=' ** ' === $selected ? ' selected="selected"' : ''?>>
+                  <?=$this->transEsc('Always ask me')?>
+                </option>
                 <?php foreach ($this->pickup as $lib): ?>
                   <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
@@ -55,19 +64,19 @@
   <div id="account-actions">
     <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-changeemail') ?>">
-        <i class="fa fa-fw fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Change Email Address') ?>
+        <?=$this->icon('profile-email') ?> <?=$this->transEsc('Change Email Address') ?>
       </a>
     <?php endif; ?>
 
     <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
-        <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
+        <?=$this->icon('profile-change-password') ?> <?=$this->transEsc('Change Password') ?>
       </a>
     <?php endif; ?>
 
     <?php if ($this->accountDeletion): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox>
-        <i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?>
+        <?=$this->icon('profile-delete') ?> <?=$this->transEsc('delete_account_title') ?>
       </a>
     <?php endif; ?>
   </div>
@@ -78,22 +87,25 @@
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
     </p>
     <table class="table table-striped">
-      <?=$this->renderArray(
-        $arrTemplate, $this->profile,
-        [
-          $this->transEsc('First Name') => 'firstname',
-          $this->transEsc('Last Name') => 'lastname',
-          $this->transEsc('Address') . ' 1' => 'address1',
-          $this->transEsc('Address') . ' 2' => 'address2',
-          $this->transEsc('Zip') => 'zip',
-          $this->transEsc('City') => 'city',
-          $this->transEsc('Country') => 'country',
-          $this->transEsc('Phone Number') => 'phone',
-          $this->transEsc('Mobile Number') => 'mobile_phone',
-          $this->transEsc('Group') => 'group',
-          $this->transEsc('Expires') => 'expiration_date'
-        ]
-      )?>
+      <?=
+        $this->renderArray(
+            $arrTemplate,
+            $this->profile,
+            [
+              $this->transEsc('First Name') => 'firstname',
+              $this->transEsc('Last Name') => 'lastname',
+              $this->transEsc('Address') . ' 1' => 'address1',
+              $this->transEsc('Address') . ' 2' => 'address2',
+              $this->transEsc('Zip') => 'zip',
+              $this->transEsc('City') => 'city',
+              $this->transEsc('Country') => 'country',
+              $this->transEsc('Phone Number') => 'phone',
+              $this->transEsc('Mobile Number') => 'mobile_phone',
+              $this->transEsc('Group') => 'group',
+              $this->transEsc('patron_account_expires') => 'expiration_date'
+            ]
+        );
+      ?>
     </table>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>

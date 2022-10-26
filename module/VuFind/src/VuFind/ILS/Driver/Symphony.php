@@ -203,7 +203,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return object The SoapHeader object
      */
-    protected function getSoapHeader($login = null, $password = null,
+    protected function getSoapHeader(
+        $login = null,
+        $password = null,
         $reset = false
     ) {
         $data = ['clientID' => $this->config['WebServices']['clientID']];
@@ -226,14 +228,17 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * If the cached session token is expired or otherwise defective,
      * the caller can use the $reset parameter.
      *
-     * @param string $login    The login account name
-     * @param string $password The login password, or null for no password
-     * @param bool   $reset    If true, replace any currently cached token
+     * @param string  $login    The login account name
+     * @param ?string $password The login password, or null for no password
+     * @param bool    $reset    If true, replace any currently cached token
      *
      * @return string The session token
      */
-    protected function getSessionToken($login, $password, $reset = false)
-    {
+    protected function getSessionToken(
+        string $login,
+        ?string $password = null,
+        bool $reset = false
+    ) {
         static $sessionTokens = [];
 
         // If we keyed only by $login, we might mistakenly retrieve a valid
@@ -277,7 +282,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return mixed the result of the SOAP call
      */
-    protected function makeRequest($service, $operation, $parameters = [],
+    protected function makeRequest(
+        $service,
+        $operation,
+        $parameters = [],
         $options = []
     ) {
         // If provided, use the SoapHeader and skip the rest of makeRequest().
@@ -500,10 +508,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     {
         $notIncluded = !empty($this->config['LibraryFilter']['include_only'])
             && !in_array(
-                $libraryID, $this->config['LibraryFilter']['include_only']
+                $libraryID,
+                $this->config['LibraryFilter']['include_only']
             );
         $excluded = in_array(
-            $libraryID, $this->config['LibraryFilter']['exclude']
+            $libraryID,
+            $this->config['LibraryFilter']['exclude']
         );
         return $notIncluded || $excluded;
     }
@@ -520,7 +530,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array An array of items, an empty array otherwise
      */
-    protected function parseCallInfo($callInfos, $titleID, $is_holdable = false,
+    protected function parseCallInfo(
+        $callInfos,
+        $titleID,
+        $is_holdable = false,
         $bound_in = null
     ) {
         $items = [];
@@ -549,10 +562,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             foreach ($itemInfos as $itemInfo) {
                 $in_transit = isset($itemInfo->transitReason);
                 $currentLocation = $this->translatePolicyID(
-                    'LOCN', $itemInfo->currentLocationID
+                    'LOCN',
+                    $itemInfo->currentLocationID
                 );
                 $homeLocation = $this->translatePolicyID(
-                    'LOCN', $itemInfo->homeLocationID
+                    'LOCN',
+                    $itemInfo->homeLocationID
                 );
 
                 /* I would like to be able to write
@@ -631,14 +646,16 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $transitSourceLibrary
                     = isset($itemInfo->transitSourceLibraryID)
                     ? $this->translatePolicyID(
-                        'LIBR', $itemInfo->transitSourceLibraryID
+                        'LIBR',
+                        $itemInfo->transitSourceLibraryID
                     )
                     : null;
 
                 $transitDestinationLibrary
                     = isset($itemInfo->transitDestinationLibraryID)
                         ? $this->translatePolicyID(
-                            'LIBR', $itemInfo->transitDestinationLibraryID
+                            'LIBR',
+                            $itemInfo->transitDestinationLibraryID
                         )
                         : null;
 
@@ -783,7 +800,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
              * from returned holdings information. */
             if (isset($this->config['holdings']['exclude_libraries'])
                 && in_array(
-                    $library_id, $this->config['holdings']['exclude_libraries']
+                    $library_id,
+                    $this->config['holdings']['exclude_libraries']
                 )
             ) {
                 continue;
@@ -792,6 +810,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $nr_copies = $titleOrderInfo->copiesOrdered;
             $library   = $this->translatePolicyID('LIBR', $library_id);
 
+            $statuses = [];
             if (!empty($titleOrderInfo->orderDateReceived)) {
                 $statuses[] = "Received $titleOrderInfo->orderDateReceived";
             }
@@ -879,6 +898,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     protected function getLiveStatuses($ids)
     {
+        $items = [];
         foreach ($ids as $id) {
             $items[$id] = [];
         }
@@ -959,7 +979,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param string $policyType The policy type, e.g. LOCN or LIBR.
      * @param string $policyID   The policy ID, e.g. VIDEO-COLL or SWEM.
      *
-     * @return The policy description, if found, or the policy ID, if not.
+     * @return string The policy description, if found, or the policy ID, if not.
      *
      * @todo policy description override
      */
@@ -1194,7 +1214,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $group = null;
             }
 
-            list($lastname, $firstname)
+            [$lastname, $firstname]
                 = explode(', ', $result->patronInfo->displayName);
 
             $profile = [
@@ -1206,11 +1226,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 'phone' => $phone,
                 'group' => $group
             ];
-
-            return $profile;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $profile;
     }
 
     /**
@@ -1268,10 +1287,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     ];
                 }
             }
-            return $transList;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $transList;
     }
 
     /**
@@ -1323,12 +1342,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     'title' => $hold->title
                 ];
             }
-            return $holdList;
         } catch (SoapFault $e) {
             return null;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**
@@ -1376,10 +1395,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
 
             return $fineList;
-        } catch (SoapFault $e) {
-            throw new ILSException($e->getMessage());
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+        } catch (SoapFault | \Exception $e) {
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1388,11 +1405,14 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * Supplies the form details required to cancel a hold
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string  Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
     }
@@ -1456,7 +1476,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -1622,7 +1642,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $policyList = [];
                 $options    = ['policyType' => $policyType];
                 $policies   = $this->makeRequest(
-                    'admin', 'lookupPolicyList', $options
+                    'admin',
+                    'lookupPolicyList',
+                    $options
                 );
 
                 foreach ($policies->policyInfo as $policyInfo) {
@@ -1650,10 +1672,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
