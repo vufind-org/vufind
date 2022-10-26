@@ -604,7 +604,8 @@ class Folio extends AbstractAPI implements
                 $locationCode = $locationData['code'];
                 // concatenate enumeration fields if present
                 $enum = implode(
-                    ' ', array_filter(
+                    ' ',
+                    array_filter(
                         [
                             $item->volume ?? null,
                             $item->enumeration ?? null,
