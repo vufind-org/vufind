@@ -555,7 +555,8 @@ class Folio extends AbstractAPI implements
                         [
                             $item->volume ?? null,
                             $item->enumeration ?? null,
-                            $item->chronology ?? null]
+                            $item->chronology ?? null
+                        ]
                     )
                 );
                 $items[] = [
