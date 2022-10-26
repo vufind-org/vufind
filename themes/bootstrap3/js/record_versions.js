@@ -1,4 +1,4 @@
-/*global Hunt, StatusAjaxQueue, VuFind */
+/*global StatusAjaxQueue, VuFind */
 
 VuFind.register("recordVersions", function recordVersions() {
   function checkVersionStatusSuccess(items, response) {
@@ -69,12 +69,14 @@ VuFind.register("recordVersions", function recordVersions() {
   function init($container = document) {
     const container = $container instanceof Node ? $container : $container[0];
 
-    if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
+    if (VuFind.isPrinting()) {
       checkRecordVersions(container);
     } else {
-      new Hunt(container.querySelectorAll(".record-versions.ajax"), {
-        enter: checkRecordVersions,
-      });
+      VuFind.observerManager.createIntersectionObserver(
+        'recordVersions',
+        checkRecordVersions,
+        Array.from(container.querySelectorAll(".record-versions.ajax"))
+      );
     }
   }
 

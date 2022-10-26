@@ -218,14 +218,13 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
     if (VuFind.isPrinting()) {
       checkAllItemStatuses(container);
-      return;
+    } else {
+      VuFind.observerManager.createIntersectionObserver(
+        'itemStatuses',
+        checkItemStatus,
+        Array.from((container).querySelectorAll('.ajaxItem'))
+      );
     }
-
-    VuFind.observerManager.createIntersectionObserver(
-      'itemStatuses',
-      checkItemStatus,
-      $(container).find('.ajaxItem').toArray()
-    );
   }
 
   return { init };

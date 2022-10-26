@@ -1,4 +1,4 @@
-/*global extractClassParams, Hunt, VuFind */
+/*global extractClassParams, VuFind */
 VuFind.register('openurl', function OpenUrl() {
   function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
@@ -58,12 +58,13 @@ VuFind.register('openurl', function OpenUrl() {
       return false;
     });
 
-    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
+    if (VuFind.isPrinting()) {
       container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
     } else {
-      new Hunt(
-        container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray(),
-        { enter: embedOpenUrlLinks }
+      VuFind.observerManager.createIntersectionObserver(
+        'openUrlEmbed',
+        embedOpenUrlLinks,
+        Array.from(container.querySelectorAll('.openUrlEmbed.openUrlEmbedAutoLoad a'))
       );
     }
   }

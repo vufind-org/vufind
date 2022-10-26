@@ -1,4 +1,4 @@
-/*global htmlEncode, userIsLoggedIn, Hunt, StatusAjaxQueue, VuFind */
+/*global htmlEncode, userIsLoggedIn, StatusAjaxQueue, VuFind */
 
 VuFind.register("saveStatuses", function ItemStatuses() {
   function displaySaveStatus(itemLists, el) {
@@ -133,12 +133,14 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   function init($container = document) {
     const container = $container instanceof Node ? $container : $container[0];
 
-    if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
+    if (VuFind.isPrinting()) {
       checkAllSaveStatuses(container);
     } else {
-      new Hunt(container.querySelectorAll(".result,.record"), {
-        enter: checkSaveStatus,
-      });
+      VuFind.observerManager.createIntersectionObserver(
+        'saveStatuses',
+        checkSaveStatus,
+        Array.from(container.querySelectorAll(".result,.record"))
+      );
     }
   }
 
