@@ -3,7 +3,7 @@
 /**
  * Manager for creating observers.
  */
- VuFind.register('observerManager', () => {
+VuFind.register('observerManager', () => {
   let observers = {};
 
   /**
