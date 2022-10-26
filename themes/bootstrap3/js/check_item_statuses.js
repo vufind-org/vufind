@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/*global Hunt, StatusAjaxQueue, VuFind */
-=======
-/*global VuFind */
->>>>>>> origin/dev
+/*global StatusAjaxQueue, VuFind */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   function formatCallnumbers(callnumber, callnumber_handler) {
@@ -188,7 +184,6 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       return;
     }
 
-<<<<<<< HEAD
     let handlerName = "ils";
     if (el.dataset.handlerName) {
       handlerName = el.dataset.handlerName;
@@ -218,40 +213,12 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     container.querySelectorAll(".ajaxItem").forEach(checkItemStatus);
   }
 
-  function init($container = document) {
-    const container = $container instanceof Node ? $container : $container[0];
-
-    if (typeof Hunt === "undefined" || VuFind.isPrinting()) {
-      checkAllItemStatuses(container);
-    } else {
-      new Hunt(container.querySelectorAll(".ajaxItem"), {
-        enter: checkItemStatus,
-      });
-=======
-    //queue the element into the handler
-    checkItemHandlers[handlerName].itemQueueAjax(id, $item);
-  }
-
-  function checkItemStatuses(_container) {
-    var container = typeof _container === 'undefined'
-      ? document.body
-      : _container;
-
-    var ajaxItems = $(container).find('.ajaxItem');
-    for (var i = 0; i < ajaxItems.length; i++) {
-      checkItemStatus($(ajaxItems[i]));
-    }
-  }
-  function init(_container) {
-    var container = typeof _container === 'undefined'
-      ? document.body
-      : _container;
 
     if (VuFind.isPrinting()) {
       checkItemStatuses(container);
       return;
->>>>>>> origin/dev
     }
+
     VuFind.observerManager.createIntersectionObserver(
       'itemStatuses',
       checkItemStatus,
