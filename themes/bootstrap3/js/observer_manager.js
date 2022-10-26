@@ -22,7 +22,7 @@ VuFind.register('observerManager', () => {
       if (typeof observers[identifier].observer !== 'undefined') {
         observers[identifier].observer.observe(current);
       } else {
-        observers[identifier].function(current)
+        observers[identifier].function(current);
       }
     }
   }
