@@ -602,6 +602,17 @@ class Folio extends AbstractAPI implements
                 $locationData = $this->getLocationData($locationId);
                 $locationName = $locationData['name'];
                 $locationCode = $locationData['code'];
+                // concatenate enumeration fields if present
+                $enum = implode(
+                    ' ',
+                    array_filter(
+                        [
+                            $item->volume ?? null,
+                            $item->enumeration ?? null,
+                            $item->chronology ?? null
+                        ]
+                    )
+                );
                 $callNumberData = $this->chooseCallNumber(
                     $holdingCallNumberPrefix,
                     $holdingCallNumber,
@@ -625,6 +636,7 @@ class Folio extends AbstractAPI implements
                     'item_id' => $item->id,
                     'holding_id' => $holding->id,
                     'number' => count($items) + 1,
+                    'enumchron' => $enum,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'duedate' => $dueDateValue,
