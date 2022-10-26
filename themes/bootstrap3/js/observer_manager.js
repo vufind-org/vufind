@@ -61,8 +61,8 @@ VuFind.register('observerManager', () => {
       }
     } else if (observers[identifier].function.toString() !== onIntersect.toString()) {
       console.warn(
-        `Intersection observer with identifier: ${identifier} 
-        called multiple times with different callback.`
+        `Attempt to reinitialize intersection observer with identifier: ${identifier}
+        using different callback.`
       );
     }
 
