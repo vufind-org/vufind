@@ -86,21 +86,6 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock HeadLink helper configured with standard expectations.
-     *
-     * @return HeadLink
-     */
-    protected function getMockHeadLink(): HeadLink
-    {
-        $mock = $this->getMockBuilder(HeadLink::class)
-            ->addMethods(['appendStylesheet'])
-            ->disableOriginalConstructor()->getMock();
-        $mock->expects($this->once())->method('appendStylesheet')
-            ->with($this->equalTo('icon-helper.css'));
-        return $mock;
-    }
-
-    /**
      * Get a mock ImageLink helper
      *
      * @param string $expected Expected image
@@ -130,7 +115,6 @@ class IconTest extends \PHPUnit\Framework\TestCase
     protected function getIconHelper(
         array $config = null,
         StorageInterface $cache = null,
-        HeadLink $headLink = null,
         array $plugins = [],
         $rtl = false
     ): Icon {
@@ -138,7 +122,6 @@ class IconTest extends \PHPUnit\Framework\TestCase
             $config ?? $this->getDefaultTestConfig(),
             $cache ?? new BlackHole(),
             new EscapeHtmlAttr(),
-            $headLink ?? $this->getMockHeadLink(),
             $rtl
         );
         $icon->setView($this->getPhpRenderer($plugins));
@@ -227,7 +210,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testImageIcon(): void
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
-        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $helper = $this->getIconHelper(null, null, $plugins);
         $expected = '<img class="icon--img" src="baz.png" aria-hidden="true"/>';
         $this->assertEquals($expected, $helper('bar'));
     }
@@ -241,7 +224,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testImageIconWithExtraClasses(): void
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zzz.png')];
-        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $helper = $this->getIconHelper(null, null, $plugins);
         $expected = '<img class="icon--img weird:class foo" src="zzz.png" aria-hidden="true"/>';
         $this->assertEquals($expected, $helper('extraClassy'));
     }
@@ -254,7 +237,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testImageIconWithExtras(): void
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
-        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $helper = $this->getIconHelper(null, null, $plugins);
         $expected
             = '<img class="icon--img myclass" src="baz.png" aria-hidden="true"/>';
         // Send a string, validating the shortcut where strings are treated as
@@ -271,13 +254,13 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         // RTL exists
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zab.png')];
-        $helper = $this->getIconHelper(null, null, null, $plugins, true);
+        $helper = $this->getIconHelper(null, null, $plugins, true);
         $expected = '<img class="icon--img" src="zab.png" aria-hidden="true"/>';
         $this->assertEquals($expected, $helper('bar'));
 
         // RTL does not exist
         $plugins = ['imageLink' => $this->getMockImageLink('icons/ltronly.png')];
-        $helper = $this->getIconHelper(null, null, null, $plugins, true);
+        $helper = $this->getIconHelper(null, null, $plugins, true);
         $expected = '<img class="icon--img" src="ltronly.png" aria-hidden="true"/>';
         $this->assertEquals($expected, $helper('ltronly'));
     }
@@ -326,7 +309,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testSvgIcon(): void
     {
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
-        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
 <svg class="icon--svg" aria-hidden="true">
     <use xlink:href="mysprites.svg#sprite"></use>
@@ -343,7 +326,7 @@ EXPECTED;
     public function testSvgIconWithExtras(): void
     {
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
-        $helper = $this->getIconHelper(null, null, null, $plugins);
+        $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
 <svg class="icon--svg myclass" data-foo="bar" aria-hidden="true">
     <use xlink:href="mysprites.svg#sprite"></use>

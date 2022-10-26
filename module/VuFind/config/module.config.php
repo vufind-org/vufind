@@ -356,6 +356,7 @@ $config = [
             'VuFind\ChannelProvider\ChannelLoader' => 'VuFind\ChannelProvider\ChannelLoaderFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Config\AccountCapabilities' => 'VuFind\Config\AccountCapabilitiesFactory',
+            'VuFind\Config\PathResolver' => 'VuFind\Config\PathResolverFactory',
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
@@ -575,6 +576,7 @@ $config = [
             'external_session' => ['id', 'external_session_id_seq'],
             'feedback'         => ['id', 'feedback_id_seq'],
             'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
+            'ratings'          => ['id', 'ratings_id_seq'],
             'record'           => ['id', 'record_id_seq'],
             'resource'         => ['id', 'resource_id_seq'],
             'resource_tags'    => ['id', 'resource_tags_id_seq'],
@@ -674,7 +676,7 @@ $recordRoutes = [
 $nonTabRecordActions = [
     'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
     'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
-    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink',
+    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating'
 ];
 
 // Define dynamic routes -- controller => [route name => action]

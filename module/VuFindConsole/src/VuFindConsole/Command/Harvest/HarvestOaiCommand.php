@@ -29,6 +29,8 @@ namespace VuFindConsole\Command\Harvest;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Config\PathResolver;
+use VuFindHarvest\OaiPmh\HarvesterFactory;
 
 /**
  * Console command: VuFind-specific customizations to OAI-PMH harvest command
@@ -47,6 +49,37 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      * @var string
      */
     protected static $defaultName = 'harvest/harvest_oai';
+
+    /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
+     * Constructor
+     *
+     * @param Client           $client       HTTP client (omit for default)
+     * @param string           $harvestRoot  Root directory for harvesting (omit for
+     * default)
+     * @param HarvesterFactory $factory      Harvester factory (omit for default)
+     * @param bool             $silent       Should we suppress output?
+     * @param string|null      $name         The name of the command; passing null
+     * means it must be set in configure()
+     * @param PathResolver     $pathResolver Config file path resolver
+     */
+    public function __construct(
+        $client = null,
+        $harvestRoot = null,
+        HarvesterFactory $factory = null,
+        $silent = false,
+        $name = null,
+        PathResolver $pathResolver = null
+    ) {
+        parent::__construct($client, $harvestRoot, $factory, $silent, $name);
+        $this->pathResolver = $pathResolver;
+    }
 
     /**
      * Warn the user if VUFIND_LOCAL_DIR is not set.
@@ -86,7 +119,9 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 
         // Add the default --ini setting if missing:
         if (!$input->getOption('ini')) {
-            $ini = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
+            $ini = $this->pathResolver
+                ? $this->pathResolver->getConfigPath('oai.ini', 'harvest')
+                : \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
             $input->setOption('ini', $ini);
         }
         return parent::execute($input, $output);

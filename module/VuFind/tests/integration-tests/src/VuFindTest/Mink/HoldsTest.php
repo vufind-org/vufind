@@ -59,20 +59,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Get config.ini override settings for testing ILS functions.
      *
      * @return array
@@ -102,25 +88,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         return $page;
-    }
-
-    /**
-     * Fill in and submit the catalog login form with the provided credentials.
-     *
-     * @param Element $page     Page element.
-     * @param string  $username Username
-     * @param string  $password Password
-     *
-     * @return void
-     */
-    protected function submitCatalogLoginForm(
-        Element $page,
-        string $username,
-        string $password
-    ): void {
-        $this->findCss($page, '#profile_cat_username')->setValue($username);
-        $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->clickCss($page, 'input.btn.btn-primary');
     }
 
     /**
@@ -588,6 +555,50 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test placing a hold with no valid pick up locations
+     *
+     * @retryCallback removeUsername3
+     *
+     * @return void
+     */
+    public function testPlaceHoldWithoutPickUpLocations(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['Holds']['excludePickupLocations'] = 'A:B:C:D';
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        // Create account and log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm(
+            $page,
+            [
+                'username' => 'username3',
+                'email' => "username3@ignore.com"
+            ]
+        );
+        $this->clickCss($page, 'input.btn.btn-primary');
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
+
+        // Open the "place hold" dialog and check for error message:
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'a.placehold');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'No pickup locations available',
+            $this->findCss($page, '.alert.alert-danger')->getText()
+        );
+    }
+
+    /**
      * Retry cleanup method in case of failure during testHoldsAll.
      *
      * @return void
@@ -598,12 +609,23 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Retry cleanup method in case of failure during
+     * testPlaceHoldWithoutPickUpLocations.
+     *
+     * @return void
+     */
+    protected function removeUsername3(): void
+    {
+        static::removeUsers(['username3']);
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2']);
+        static::removeUsers(['username1', 'username2', 'username3']);
     }
 }
