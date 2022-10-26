@@ -263,11 +263,12 @@ footer {
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu {
   a {
-    display: block;
+    display: inline-flex;
+    gap: 0.375rem;
+    width: 100%;
     padding: 10px 15px;
-    &.flex {
-      display: flex;
-    }
+    line-height: 1.15;
+
     &:hover {
       background-color: $gray-lighter;
       outline: dotted 1px #000;
@@ -282,10 +283,14 @@ footer {
       background-color: $brand-primary;
       color: #fff;
     }
+
+    .icon-link__icon {
+      width: 1rem;
+      text-align: center;
+    }
   }
 
   .status {
-    float: right;
     display: flex;
     flex: none;
     .badge {

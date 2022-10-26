@@ -17,7 +17,7 @@
     <a href="<?=$this->url('myresearch-checkedout')?>" class="checkedout icon-link<?=$this->active == 'checkedout' ? ' active' : ''?>">
       <?=$this->icon('user-checked-out', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Checked Out Items')?></span>
-      <span class="checkedout-status status icon-link__icon hidden"><?=$this->icon('spinner') ?></span>
+      <span class="checkedout-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkFunction('getMyTransactionHistory', $capabilityParams)): ?>
@@ -30,21 +30,21 @@
     <a href="<?=$this->url('holds-list')?>" class="icon-link <?=$this->active == 'holds' ? ' active' : ''?>">
       <?=$this->icon('user-holds', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Holds and Recalls')?></span>
-      <span class="holds-status status icon-link__icon hidden"><?=$this->icon('spinner') ?></span>
+      <span class="holds-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="icon-link <?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
       <?=$this->icon('user-storage-retrievals', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Storage Retrieval Requests')?></span>
-      <span class="storageretrievalrequests-status status icon-link__icon hidden"><?=$this->icon('spinner') ?></span>
+      <span class="storageretrievalrequests-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-illrequests')?>" class="icon-link <?=$this->active == 'ILLRequests' ? ' active' : ''?>">
       <?=$this->icon('user-ill-requests', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Interlibrary Loan Requests')?></span>
-      <span class="illrequests-status status icon-link__icon hidden"><?=$this->icon('spinner') ?></span>
+      <span class="illrequests-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
@@ -55,7 +55,7 @@
       ?>
       <?=$this->icon($currencyIcon, 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Fines')?></span>
-      <span class="fines-status status icon-link__icon hidden"><?=$this->icon('spinner') ?></span>
+      <span class="fines-status status hidden"><?=$this->icon('spinner') ?></span>
     </a>
   <?php endif; ?>
   <a href="<?=$this->url('myresearch-profile')?>" class="icon-link <?=$this->active == 'profile' ? ' active' : ''?>">

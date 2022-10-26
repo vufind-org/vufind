@@ -34,8 +34,9 @@
             <label class="control-label" for="edit_notes<?=$current['listId'] ?>"><?=$this->transEsc('Notes') ?>:</label>
             <textarea class="form-control" id="edit_notes<?=$current['listId'] ?>" name="notes<?=$current['listId'] ?>" rows="3"><?=$this->escapeHtml($current['notes'])?></textarea>
           </div>
-          <a href="<?=$this->url('userList', ['id' => $current['listId']]) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getSourceIdentifier())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" data-lightbox>
-            <?=$this->icon('user-list-delete') ?> <?=$this->transEsc('Delete') ?>
+          <a class="icon-link" href="<?=$this->url('userList', ['id' => $current['listId']]) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getSourceIdentifier())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" data-lightbox>
+            <?=$this->icon('user-list-delete', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Delete') ?></span>
           </a>
         </fieldset>
       <?php endforeach; ?>
