@@ -217,7 +217,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     const container = $container instanceof Node ? $container : $container[0];
 
     if (VuFind.isPrinting()) {
-      checkItemStatuses(container);
+      checkAllItemStatuses(container);
       return;
     }
 
