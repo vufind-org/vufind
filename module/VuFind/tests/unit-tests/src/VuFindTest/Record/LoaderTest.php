@@ -62,7 +62,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
@@ -89,7 +89,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
@@ -118,7 +118,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
@@ -154,7 +154,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
@@ -186,7 +186,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
@@ -235,7 +235,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->exactly(3))->method('getResult')
             ->willReturnOnConsecutiveCalls($collection1, $collection2, $collection3);
 
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
@@ -261,7 +261,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
                 && $command->getArguments()[0] === ["test4"]
                 && $command->getArguments()[1]->getArrayCopy() === ['fq'=> ['id:test4']];
         };
-        $service->expects($this->any())->method('invoke')
+        $service->expects($this->exactly(3))->method('invoke')
             ->withConsecutive(
                 [$this->callback($checkCommand1)],
                 [$this->callback($checkCommand2)],
@@ -304,7 +304,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->exactly(2))->method('getResult')
             ->willReturnOnConsecutiveCalls($collection1, $collection2);
 
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
@@ -324,7 +324,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
                 && ($command->getArguments()[1]->getArrayCopy() === []);
         };
 
-        $service->expects($this->any())->method('invoke')
+        $service->expects($this->exactly(2))->method('invoke')
             ->withConsecutive(
                 [$this->callback($checkCommand1)],
                 [$this->callback($checkCommand2)]

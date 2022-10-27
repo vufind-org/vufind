@@ -122,7 +122,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($rci));
         $checkCommand = function ($command) {
             return get_class($command) === \VuFindSearch\Command\SearchCommand::class

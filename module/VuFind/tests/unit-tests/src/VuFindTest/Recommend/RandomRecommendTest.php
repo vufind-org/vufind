@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -157,7 +158,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $checkCommand = function ($command) {
@@ -205,7 +206,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
         ->disableOriginalConstructor()
         ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $checkCommand = function ($command) {
@@ -254,7 +255,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($results));
 
         $checkCommand = function ($command) {
@@ -307,7 +308,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($results));
 
         $checkCommand = function ($command) {

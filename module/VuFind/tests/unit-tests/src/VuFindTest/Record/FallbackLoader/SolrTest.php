@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -62,12 +63,13 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $checkCommand = function ($command) {
             return get_class($command) === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0]->getString() === 'previous_id_str_mv:"oldId"';
+                && $command->getArguments()[0]->getString() ===
+                'previous_id_str_mv:"oldId"';
         };
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();

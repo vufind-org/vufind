@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2022.
  * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -210,7 +210,11 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $genuineRecords = [];
         if ($list->hasUnchecked()) {
             try {
-                $command = new RetrieveBatchCommand($source, $list->getUnchecked(), $params);
+                $command = new RetrieveBatchCommand(
+                    $source,
+                    $list->getUnchecked(),
+                    $params
+                );
                 $genuineRecords = $this->searchService
                     ->invoke($command)->getResult()->getRecords();
             } catch (BackendException $e) {

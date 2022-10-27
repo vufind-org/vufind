@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -59,7 +59,7 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue(['fakeresponse']));
         $checkCommand = function ($command) {
             return get_class($command) === \VuFindSearch\Command\SimilarCommand::class
