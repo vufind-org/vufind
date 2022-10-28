@@ -241,7 +241,6 @@ return [
             'sign-out' => 'FontAwesome:sign-out',
             'spinner' => 'FontAwesome:spinner:icon--spin',
             'status-available' => 'FontAwesome:check',
-            'status-indicator' => 'FontAwesome:circle',
             'status-pending' => 'FontAwesome:clock-o',
             'status-ready' => 'FontAwesome:bell',
             'status-unavailable' => 'FontAwesome:times',
