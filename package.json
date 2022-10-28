@@ -13,15 +13,16 @@
     "lint": "eslint themes/**/*.js",
     "sass-dev": "node scripts/sass.js development",
     "sass": "node scripts/sass.js production",
-    "tsc": "tsc --check themes/**/*.js",
+    "tsc": "tsc",
     "watch-lint": "chokidar 'themes/**/*.js' -c 'npm run lint'",
     "watch-sass": "chokidar 'themes/**/*.scss' -c 'npm run sass-dev'",
-    "watch-tsc": "chokidar 'themes/**/*.js' -c 'npm run tsc'"
+    "watch-tsc": "tsc --watch"
   },
   "dependencies": {
     "vanilla-cookieconsent": "3.0.0-rc.7"
   },
   "devDependencies": {
+    "@types/node": "^18.11.7",
     "chokidar-cli": "^3.0.0",
     "eslint": "^8.15.0",
     "jshint": "^2.13.4",

@@ -1,10 +1,18 @@
-const fs = require("node:fs/promises");
-const path = require("path");
-const sass = require("sass");
-const { performance } = require("node:perf_hooks");
+/// <reference types="node" />
 
+const fs = require("node:fs/promises");
+const path = require("node:path");
+const { performance } = require("node:perf_hooks");
+const sass = require("sass");
+
+// @type {string}
 const mode = process.argv[2];
 
+/**
+ * [getLoadPaths description]
+ * @param  {string} theme path name of theme (themes/THISPART/js/...)
+ * @return {Promise<Array<string>>}
+ */
 async function getLoadPaths(theme) {
   // initialize search path with directory containing LESS file
   let loadPaths = new Set();
@@ -30,8 +38,8 @@ async function getLoadPaths(theme) {
       for (let i = 0; i < mixinParts.length; i++) {
         const mixin = mixinParts[i].trim().replace(/['']/g, "");
         loadPaths.add(`themes/${mixin}/scss/`);
+        queue.push(mixin);
       }
-      queue.push(mixin);
     }
 
     // Now move up to parent theme:
@@ -50,21 +58,29 @@ async function getLoadPaths(theme) {
   return Array.from(loadPaths);
 }
 
+/**
+ * [timestamp description]
+ * @param  {string} theme [description]
+ * @return {(string) => void}
+ */
 function timestamp(theme) {
   const start = performance.now();
   let mark = performance.now();
 
   return (task) => {
     console.log(
-      `${theme} ${task}: ${Math.floor(
-        performance.now() - mark
-      )}ms (${Math.floor(performance.now() - start)}ms)`
+      `${theme} ${task}: ${Math.floor(performance.now() - mark)}ms (${Math.floor(performance.now() - start)}ms)`
     );
 
     mark = performance.now();
   };
 }
 
+/**
+ * [getLoadPaths description]
+ * @param  {string} theme path name of theme (themes/THISPART/js/...)
+ * @return {Promise<void>}
+ */
 async function compileTheme(theme) {
   try {
     const mark = timestamp(theme);
@@ -75,7 +91,7 @@ async function compileTheme(theme) {
     let options = {
       loadPaths: await getLoadPaths(theme),
       sourceMap: mode == "development",
-      style: mode == "production" ? "compressed" : "expanded",
+      outputStyle: mode == "production" ? "compressed" : "expanded",
       logger: sass.Logger.silent,
     };
     mark("get paths");
@@ -96,4 +112,6 @@ fs.readdir(path.resolve("themes"))
   .then((themes) => {
     Promise.all(themes.map(compileTheme));
   })
-  .catch(console.error.bind(console));
+  .catch((error) => {
+    console.error(error);
+  });
