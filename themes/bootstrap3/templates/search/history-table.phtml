@@ -55,7 +55,7 @@
       <?php if ($saveSupported): ?>
         <td>
           <?php if ($this->showSaved): ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="text-danger">
+            <a class="icon-link text-danger" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history">
               <?=$this->icon('search-delete', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc("history_delete_link")?></span>
             </a>

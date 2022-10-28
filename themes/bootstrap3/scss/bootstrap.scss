@@ -288,14 +288,18 @@ footer {
       width: 1rem;
       text-align: center;
     }
+
+    .icon-link__label {
+      flex: 1 1 0%;
+    }
   }
 
   .status {
     display: flex;
+    gap: 2px;
     flex: none;
     .badge {
       border-radius: 2px;
-      margin: 0 2px;
       border: 1px solid; /* color inherited from bootstrap */
       height: 20px;
 
