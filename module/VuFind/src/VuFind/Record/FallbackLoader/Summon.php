@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,6 +28,7 @@
 namespace VuFind\Record\FallbackLoader;
 
 use SerialsSolutions\Summon\Laminas as Connector;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
 /**
@@ -64,7 +65,12 @@ class Summon extends AbstractFallbackLoader
                 $params = new ParamBag(
                     ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
                 );
-                return $this->searchService->retrieve('Summon', $bookmark, $params);
+                $command = new RetrieveCommand(
+                    'Summon',
+                    $bookmark,
+                    $params
+                );
+                return $this->searchService->invoke($command)->getResult();
             }
         }
         return new \VuFindSearch\Backend\Summon\Response\RecordCollection([]);

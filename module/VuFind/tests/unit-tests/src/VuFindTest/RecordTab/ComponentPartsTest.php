@@ -127,10 +127,13 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $checkCommand = function ($command) {
             return get_class($command) === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === "bar"
-                && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
+                && $command->getArguments()[0]->getAllTerms() === 'hierarchy_parent_id:"foo"'
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 101
-                && get_class($command->getArguments()[3]) === \VuFindSearch\ParamBag::class;
+                && $command->getArguments()[3]->getArrayCopy() === [
+                    "hl" => ["false"],
+                    "sort" => ["hierarchy_sequence ASC,title ASC"]
+                ];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))

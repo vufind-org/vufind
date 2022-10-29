@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,6 +28,7 @@
 namespace VuFind\Search\Solr;
 
 use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 
@@ -163,8 +164,15 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         try {
-            $collection = $searchService
-                ->search($this->backendId, $query, $offset, $limit, $params);
+            $command = new SearchCommand(
+                $this->backendId,
+                $query,
+                $offset,
+                $limit,
+                $params
+            );
+
+            $collection = $searchService->invoke($command)->getResult();
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             // If the query caused a parser error, see if we can clean it up:
             if ($e->hasTag(ErrorListener::TAG_PARSER_ERROR)
@@ -173,8 +181,14 @@ class Results extends \VuFind\Search\Base\Results
                 // We need to get a fresh set of $params, since the previous one was
                 // manipulated by the previous search() call.
                 $params = $this->getParams()->getBackendParameters();
-                $collection = $searchService
-                    ->search($this->backendId, $newQuery, $offset, $limit, $params);
+                $command = new SearchCommand(
+                    $this->backendId,
+                    $newQuery,
+                    $offset,
+                    $limit,
+                    $params
+                );
+                $collection = $searchService->invoke($command)->getResult();
             } else {
                 throw $e;
             }
