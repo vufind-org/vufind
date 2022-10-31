@@ -593,6 +593,7 @@ public class CreatorTools
      */
     protected String normalizeRelatorString(String string)
     {
+        string = string.trim();
         for (String prefix : relatorPrefixesToStrip) {
             if (string.startsWith(prefix)) {
                 string = string.substring(prefix.length());
@@ -600,7 +601,6 @@ public class CreatorTools
             }
         }
         return string
-            .trim()
             .toLowerCase()
             .replaceAll("\\p{Punct}+", "");    //POSIX character class Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     }
