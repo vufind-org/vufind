@@ -27,6 +27,8 @@
  */
 namespace VuFind\RecordDriver\Feature;
 
+use VuFindSearch\Command\WorkExpressionsCommand;
+
 /**
  * Logic for record versions support.
  *
@@ -75,12 +77,13 @@ trait VersionAwareTrait
 
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', 0);
-            $results = $this->searchService->workExpressions(
+            $command = new WorkExpressionsCommand(
                 $this->getSourceIdentifier(),
                 $this->getUniqueID(),
                 $workKeys,
                 $params
             );
+            $results = $this->searchService->invoke($command)->getResult();
             $this->otherVersionsCount = $results->getTotal();
         }
         return $this->otherVersionsCount;
@@ -109,12 +112,15 @@ trait VersionAwareTrait
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', $count);
             $params->add('start', $offset);
-            $this->otherVersions = $this->searchService->workExpressions(
+            $command = new WorkExpressionsCommand(
                 $this->getSourceIdentifier(),
                 $includeSelf ? '' : $this->getUniqueID(),
                 $workKeys,
                 $params
             );
+            $this->otherVersions = $this->searchService->invoke(
+                $command
+            )->getResult();
         }
         return $this->otherVersions;
     }
