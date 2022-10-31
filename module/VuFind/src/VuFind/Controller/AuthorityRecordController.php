@@ -1,10 +1,10 @@
 <?php
 /**
- * Authority Controller
+ * Authority Record Controller
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Authority Controller
+ * Authority Record Controller
  *
  * @category VuFind
  * @package  Controller
@@ -38,7 +38,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AuthorityController extends AbstractSearch
+class AuthorityRecordController extends AbstractRecord
 {
     /**
      * Constructor
@@ -47,37 +47,25 @@ class AuthorityController extends AbstractSearch
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->searchClassId = 'SolrAuth';
+        // Override some defaults:
+        $this->sourceId = 'SolrAuth';
+
+        // Call standard record controller initialization:
         parent::__construct($sm);
     }
 
     /**
-     * Home action
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
-    public function homeAction()
-    {
-        // If we came in with a record ID, forward to the record action; this
-        // provides backward compatibility with multiple legacy routes.
-        if ($id = $this->params()->fromRoute('id', false)) {
-            if ($id === 'Record') {
-                $id = $this->params()->fromQuery('id', $id);
-            }
-            return $this->redirect()->toRoute('solrauthrecord', compact('id'));
-        }
-
-        // Default behavior:
-        return parent::homeAction();
-    }
-
-    /**
-     * Search action -- call standard results action
+     * Home (default) action -- forward to requested (or default) tab.
      *
      * @return mixed
      */
-    public function searchAction()
+    public function homeAction()
     {
-        return $this->resultsAction();
+        // Apply template for simplified authority record display:
+        $result = parent::homeAction();
+        if (is_callable([$result, 'setTemplate'])) {
+            $result->setTemplate('authority/record');
+        }
+        return $result;
     }
 }
