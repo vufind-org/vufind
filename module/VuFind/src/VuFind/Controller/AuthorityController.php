@@ -62,8 +62,7 @@ class AuthorityController extends AbstractSearch
         // provides backward compatibility with multiple legacy routes.
         if ($id = $this->params()->fromRoute('id', false)) {
             if ($id === 'Record') {
-                $queryId = $this->params()->fromQuery('id');
-                $id = $queryId === null ? $id : $queryId;
+                $id = $this->params()->fromQuery('id', $id);
             }
             return $this->redirect()->toRoute('solrauthrecord', compact('id'));
         }
