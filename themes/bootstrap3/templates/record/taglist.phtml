@@ -9,9 +9,9 @@
             <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>"/>
             <button type="submit" class="badge tag-submit" data-tag="<?=$this->escapeHtmlAttr($tag['tag'])?>" data-selected="<?=$is_me ? 'true' : 'false' ?>"><?=$this->escapeHtml($tag['cnt']) ?>
             <?php if($is_me): ?>
-              <i class="fa fa-close" title="<?=$this->transEscAttr('delete_tag') ?>"></i>
+              <?=$this->icon('tag-remove', ['title' => $this->translate('delete_tag')]) ?>
             <?php else: ?>
-              <i class="fa fa-plus" title="<?=$this->transEscAttr('Add Tag') ?>"></i>
+              <?=$this->icon('tag-add', ['title' => $this->translate('Add Tag')]) ?>
             <?php endif; ?>
             </button>
           </form>

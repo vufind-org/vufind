@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Validator\Csrf;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Controller for the user holds area.
@@ -46,12 +46,13 @@ use VuFind\Validator\Csrf;
  */
 class HoldsController extends AbstractBase
 {
+    use Feature\CatchIlsExceptionsTrait;
     use \VuFind\Cache\CacheTrait;
 
     /**
      * CSRF validator
      *
-     * @var Csrf
+     * @var CsrfInterface
      */
     protected $csrf;
 
@@ -59,12 +60,12 @@ class HoldsController extends AbstractBase
      * Constructor
      *
      * @param ServiceLocatorInterface $sm    Service locator
-     * @param Csrf                    $csrf  CSRF validator
+     * @param CsrfInterface           $csrf  CSRF validator
      * @param StorageInterface        $cache Cache
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Csrf $csrf,
+        CsrfInterface $csrf,
         StorageInterface $cache
     ) {
         parent::__construct($sm);
@@ -208,7 +209,7 @@ class HoldsController extends AbstractBase
         }
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
-        if (array_diff($selectedIds, $this->holds()->getValidIds())) {
+        if ($this->holds()->validateIds($selectedIds)) {
             $this->flashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
             return $this->inLightbox()

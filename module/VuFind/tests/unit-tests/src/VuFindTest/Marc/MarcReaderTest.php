@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020-2021.
+ * Copyright (C) The National Library of Finland 2020-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,8 +27,10 @@
  */
 namespace VuFindTest\Marc;
 
+use VuFind\Marc\MarcReader;
+
 /**
- * SolrMarc Record Driver Test Class
+ * MarcReader Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -49,12 +51,24 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
     {
         $marc = $this->getFixture('marc/marcreader.xml');
 
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $this->assertEquals([], $reader->getWarnings());
 
         // Test round-trips
-        $reader = new \VuFind\Marc\MarcReader($reader->toFormat('MARCXML'));
-        $reader = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
+        $reader = new MarcReader($reader->toFormat('MARCXML'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
+        $reader = new MarcReader($reader->toFormat('ISO2709'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
+        $reader = new MarcReader($reader->toFormat('JSON'));
+        $this->assertXmlStringEqualsXmlString($marc, $reader->toFormat('MARCXML'));
+
+        // Verify JSON schema
+        $validator = new \Opis\JsonSchema\Validator();
+        $result = $validator->validate(
+            json_decode($reader->toFormat('JSON')),
+            $this->getFixture('marc/marc_schema.json')
+        );
+        $this->assertTrue($result->isValid());
 
         $this->assertMatchesRegularExpression(
             '/^\d{5}cam a22\d{5}4i 4500$/',
@@ -157,7 +171,7 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
     {
         $marc = "00047       00037       245000900000\x1e  \x1faFoo\x1f\x1e\x1d";
 
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $field = $reader->getField('245');
         $this->assertEquals([], $reader->getSubfields($field, 'b'));
     }
@@ -173,7 +187,7 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $input = <<<EOT
 <collection xmlns="http://www.loc.gov/MARC21/slim">
   <record>
-    <leader>00047       00037       </leader>
+    <leader>00047cam a22000374i 4500</leader>
     <datafield tag="245" ind1=" " ind2=" ">
       <subfield code="a">Foo</subfield>
       <subfield code="b"></subfield>
@@ -183,9 +197,12 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
 EOT;
 
         $expected = <<<EOT
-<collection xmlns="http://www.loc.gov/MARC21/slim">
+<collection xmlns="http://www.loc.gov/MARC21/slim"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+>
   <record>
-    <leader>00047       00037       </leader>
+    <leader>00000cam a22000004i 4500</leader>
     <datafield tag="245" ind1=" " ind2=" ">
       <subfield code="a">Foo</subfield>
     </datafield>
@@ -193,10 +210,72 @@ EOT;
 </collection>
 EOT;
 
-        $reader = new \VuFind\Marc\MarcReader($input);
+        $reader = new MarcReader($input);
         $this->assertXmlStringEqualsXmlString(
             $expected,
             $reader->toFormat('MARCXML')
+        );
+    }
+
+    /**
+     * Test correct handling of multibyte subfield code in ISO2709
+     *
+     * @return void
+     */
+    public function testMultiByteSubfields(): void
+    {
+        $record = $this->getFixture('marc/multibyte_subfields.mrc');
+        $reader = new MarcReader($record);
+        $this->assertEquals(
+            [
+                'tag' => '035',
+                'i1' => ' ',
+                'i2' => ' ',
+                'subfields' => [
+                    [
+                        'code' => '‡',
+                        'data' => 'a (OCoLC)451129981',
+                    ],
+                ],
+            ],
+            $reader->getField('035')
+        );
+        $this->assertEquals(
+            $record,
+            $reader->toFormat('ISO2709')
+        );
+    }
+
+    /**
+     * Test correct handling of multibyte indicators code in ISO2709
+     *
+     * @return void
+     */
+    public function testMultiByteIndicators(): void
+    {
+        $record = $this->getFixture('marc/multibyte_indicators.mrc');
+        $reader = new MarcReader($record);
+        $this->assertEquals(
+            [
+                'tag' => '084',
+                'i1' => ' ',
+                'i2' => '§',
+                'subfields' => [
+                    [
+                        'code' => 'a',
+                        'data' => '38.3',
+                    ],
+                    [
+                        'code' => '2',
+                        'data' => 'ykl',
+                    ],
+                ],
+            ],
+            $reader->getField('084')
+        );
+        $this->assertEquals(
+            $record,
+            $reader->toFormat('ISO2709')
         );
     }
 
@@ -212,7 +291,7 @@ EOT;
         $this->expectExceptionMessageMatches(
             '/Error 76: Opening and ending tag mismatch/'
         );
-        new \VuFind\Marc\MarcReader($marc);
+        new MarcReader($marc);
     }
 
     /**
@@ -224,7 +303,7 @@ EOT;
     {
         $marc = '00123cam a22000854i 4500';
 
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $this->assertEquals(
             ['Invalid MARC record (end of field not found)'],
             $reader->getWarnings()
@@ -243,7 +322,7 @@ EOT;
         $marc = '<record><datafield tag="245"><subfield code="a">' . $longField
             . '</subfield></datafield></record>';
 
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $this->assertEquals('', $reader->toFormat('ISO2709'));
         $this->assertTrue($reader->toFormat('MARCXML') !== '');
 
@@ -253,7 +332,7 @@ EOT;
         $marc .= str_repeat('<datafield tag="650"><subfield code="a">'
             . $longishField . '</subfield></datafield>', 12);
         $marc .= '</record>';
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $this->assertEquals('', $reader->toFormat('ISO2709'));
         $this->assertTrue($reader->toFormat('MARCXML') !== '');
 
@@ -264,7 +343,7 @@ EOT;
         $marc .= str_repeat('<datafield tag="650"><subfield code="a">'
             . $longishField . '</subfield></datafield>', 10);
         $marc .= '</record>';
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $this->assertEquals('', $reader->toFormat('ISO2709'));
         $this->assertTrue($reader->toFormat('MARCXML') !== '');
     }
@@ -279,7 +358,7 @@ EOT;
         $marc = 'title: foo';
 
         $this->expectExceptionMessage('MARC record format not recognized');
-        new \VuFind\Marc\MarcReader($marc);
+        new MarcReader($marc);
     }
 
     /**
@@ -292,7 +371,7 @@ EOT;
         $marc = '<record></record>';
 
         $this->expectExceptionMessage("Unknown MARC format 'foo' requested");
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $reader->toFormat('foo');
     }
 
@@ -314,10 +393,61 @@ EOT;
 </record>
 EOT;
 
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $this->assertEquals(['Foo'], $reader->getFieldsSubfields('12', ['a']));
-        $reader2 = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
+        $reader2 = new MarcReader($reader->toFormat('ISO2709'));
         $this->assertEquals([], $reader2->getFieldsSubfields('12', ['a']));
+    }
+
+    /**
+     * Test field filtering
+     *
+     * @return void
+     */
+    public function testFieldFiltering()
+    {
+        $marc = $this->getFixture('marc/marcreader.xml');
+        $marcFiltered = $this->getFixture('marc/marcreader_filtered.xml');
+
+        $reader = new MarcReader($marc);
+        $filtered = $reader->getFilteredRecord(
+            [
+                [
+                    'tag' => '008',
+                ],
+                [
+                    'tag' => '2..',
+                    'subfields' => '6',
+                ],
+                [
+                    'tag' => '650',
+                    'subfields' => '[7g]',
+                ],
+                [
+                    'tag' => '655',
+                    'subfields' => '[ab]',
+                ],
+                [
+                    'tag' => '880',
+                ]
+            ]
+        );
+
+        $this->assertXmlStringEqualsXmlString(
+            $marcFiltered,
+            $filtered->toFormat('MARCXML')
+        );
+    }
+
+    /**
+     * Test invalid data array handling
+     *
+     * @return void
+     */
+    public function testInvalidDataArray()
+    {
+        $this->expectExceptionMessage("Invalid data array format provided");
+        new MarcReader([]);
     }
 
     /**
@@ -329,7 +459,7 @@ EOT;
     {
         $marc = $this->getFixture('marc/longrecord.mrc');
 
-        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader = new MarcReader($marc);
         $this->assertEquals(
             ['Invalid MARC record (end of field not found)'],
             $reader->getWarnings()

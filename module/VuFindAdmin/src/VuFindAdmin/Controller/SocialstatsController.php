@@ -48,6 +48,7 @@ class SocialstatsController extends AbstractAdmin
         $view = $this->createViewModel();
         $view->setTemplate('admin/socialstats/home');
         $view->comments = $this->getTable('comments')->getStatistics();
+        $view->ratings = $this->getTable('ratings')->getStatistics();
         $view->favorites = $this->getTable('userresource')->getStatistics();
         $view->tags = $this->getTable('resourcetags')->getStatistics();
         return $view;

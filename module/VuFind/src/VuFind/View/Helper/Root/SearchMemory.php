@@ -150,9 +150,12 @@ class SearchMemory extends AbstractHelper
         // if the user jumps from search results of one backend to a record of a
         // different backend, we don't want to display irrelevant filters. If there
         // is a backend mismatch, don't initialize the parameter object!
-        $expectedPath = $this->view->url($params->getOptions()->getSearchAction());
-        if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
-            $params->initFromRequest($request);
+        if ($lastUrl) {
+            $expectedPath
+                = $this->view->url($params->getOptions()->getSearchAction());
+            if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
+                $params->initFromRequest($request);
+            }
         }
         return $params;
     }

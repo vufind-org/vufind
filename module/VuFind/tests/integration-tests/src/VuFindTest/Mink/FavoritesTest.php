@@ -57,20 +57,6 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Perform a search and return the page after submitting the form.
      *
      * @param string $query Search query to run
@@ -685,24 +671,26 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($links as $link) {
             $data[] = [
                 'text' => $link->getText(),
-                'iconCount' => count($link->findAll('css', 'i.fa-globe')),
+                'iconCount' => count($link->findAll('css', '.user-list__public-icon')),
             ];
             $hrefs[] = $link->getAttribute('href');
         }
+
         $expectedData = [
             ['text' => 'Future List 1', 'iconCount' => 0],
             ['text' => 'Login Test List 1', 'iconCount' => 0],
             ['text' => 'Test List (Public List) 1', 'iconCount' => 1],
         ];
+
         $this->assertEquals($expectedData, $data);
 
         // The "Future List" should NOT be public:
         $this->clickCss($page, 'a[href="' . $hrefs[0] . '"]');
-        $this->unFindCss($page, 'strong i.fa-globe');
+        $this->unFindCss($page, '.mainbody .user-list__public-icon');
 
         // The "Test List" SHOULD be public:
         $this->clickCss($page, 'a[href="' . $hrefs[2] . '"]');
-        $this->waitStatement('$("strong i.fa-globe").length === 1');
+        $this->waitStatement('$(".mainbody .user-list__public-icon").length === 1');
     }
 
     /**

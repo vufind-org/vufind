@@ -28,6 +28,9 @@
           <li><a href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
           <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>
           <li><a href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQs')?></a></li>
+          <?php if ($this->cookieConsent()->isEnabled()): ?>
+            <li><a href="#" data-cc="show-preferencesModal" aria-haspopup="dialog"><?=$this->transEsc('Cookie Settings')?></a></li>
+          <?php endif; ?>
         </ul>
       <?=$this->slot('footer-right')->end(); ?>
     </div>

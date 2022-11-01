@@ -9,7 +9,7 @@
 <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
   <?php $tagList = $this->driver->getTags(null, null, 'count', $user_id); ?>
     <a class="tag-record btn btn-link pull-right flip" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'AddTag'))?>" data-lightbox>
-      <i class="fa fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Add Tag')?>
+      <?=$this->icon('tag-add') ?> <?=$this->transEsc('Add Tag') ?>
     </a>
     <?=$this->context($this)->renderInContext('record/taglist', ['tagList' => $tagList, 'loggedin' => $loggedin]) ?>
 <?php endif; ?>

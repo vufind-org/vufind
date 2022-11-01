@@ -52,12 +52,14 @@ use VuFind\Service\CurrencyFormatter;
 class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Library prefix
@@ -619,7 +621,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'zip' => $result['postal_code'],
             'city' => $result['city'],
             'country' => $result['country'],
-            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null)
+            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null),
+            'birthdate' => $result['date_of_birth'] ?? ''
         ];
     }
 
@@ -936,7 +939,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if (isset($locationOrder[$bLoc])) {
                     return 1;
                 }
-                return strcasecmp($a['locationDisplay'], $b['locationDisplay']);
+                return $this->getSorter()->compare(
+                    $a['locationDisplay'],
+                    $b['locationDisplay']
+                );
             };
             usort($locations, $sortFunction);
         }
@@ -1540,7 +1546,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
@@ -1632,8 +1638,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         // Set timeout value
         $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
+        // Make sure keepalive is disabled as this is known to cause problems:
         $client->setOptions(
-            ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => true]
+            ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => false]
         );
 
         // Set Accept header
@@ -2038,7 +2045,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function statusSortFunction($a, $b)
     {
-        $result = strcmp($a['location'], $b['location']);
+        $result = $this->getSorter()->compare($a['location'], $b['location']);
 
         if (0 === $result && $this->sortItemsBySerialIssue) {
             $result = strnatcmp($a['number'], $b['number']);
@@ -2533,7 +2540,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'item_id' => $entry['item_id'],
                 'barcode' => $entry['external_id'] ?? null,
                 'title' => $this->getBiblioTitle($entry),
-                'volume' => $entry['serial_issue_number'] ?? '',
+                // enumchron should have been mapped to serial_issue_number, but the
+                // mapping is missing from all plugin versions up to v22.05.02:
+                'volume' => $entry['serial_issue_number'] ?? $entry['enumchron']
+                    ?? '',
                 'publication_year' => $entry['copyright_date']
                     ?? $entry['publication_year'] ?? '',
                 'borrowingLocation' => $this->getLibraryName($entry['library_id']),

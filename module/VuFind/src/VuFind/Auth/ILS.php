@@ -151,7 +151,10 @@ class ILS extends AbstractBase
             return parent::getPasswordPolicy();
         }
         if (isset($policy['pattern']) && empty($policy['hint'])) {
-            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+            $policy['hint'] = $this->getCannedPolicyHint(
+                'password',
+                $policy['pattern']
+            );
         }
         return $policy;
     }

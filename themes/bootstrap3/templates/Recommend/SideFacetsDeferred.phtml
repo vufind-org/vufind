@@ -68,26 +68,30 @@
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
   <?php foreach ($activeFacets as $field => $facetName): ?>
-    <?php $allowExclude = $this->recommend->excludeAllowed($field); ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>">
-      <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
+      <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
         <?=$this->transEsc($facetName)?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
-        <span class="facet-load-indicator hidden">
-          <span class="text">
-            <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
-          </span>
-        </span>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>"<?php if (!in_array($field, $hierarchicalFacets)):?> data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php endif ?><?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
         <?php if (in_array($field, $hierarchicalFacets)): ?>
-          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
-              data-facet="<?=$this->escapeHtmlAttr($field)?>"
-              data-path=""
-              data-exclude="<?=$allowExclude?>"
-              data-operator="<?=$this->recommend->getFacetOperator($field)?>"
-              data-exclude-title="<?=$this->transEscAttr('exclude_facet')?>"
-              data-sort="<?=$hierarchicalFacetSortOptions[$field] ?? ''?>">
+          <?=
+            $this->context($this)->renderInContext(
+                'Recommend/SideFacets/hierarchical-facet.phtml',
+                [
+                  'allowExclude' => $this->recommend->excludeAllowed($field),
+                  // Allow hierarchical facets to be untruncated with showMore setting < 1
+                  'facets_before_more' => $this->recommend->getShowMoreSetting($field, 0),
+                  'title' => $field,
+                  'sortOptions' => $hierarchicalFacetSortOptions[$field] ?? $hierarchicalFacetSortOptions['*'] ?? null,
+                  'collapsedFacets' => $collapsedFacets,
+                  'results' => $this->results
+                ]
+            );
+          ?>
+        <?php else: ?>
+          <div class="facet-load-indicator hidden">
+            <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
           </div>
         <?php endif; ?>
       </div>

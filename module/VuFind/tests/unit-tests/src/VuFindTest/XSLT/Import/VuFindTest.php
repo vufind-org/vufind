@@ -40,6 +40,8 @@ use VuFind\XSLT\Import\VuFind;
  */
 class VuFindTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+
     /**
      * Support method -- set up a mock container for testing the class.
      *
@@ -78,6 +80,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetConfig()
     {
         $container = $this->getMockContainer();
+        $this->addPathResolverToContainer($container);
         $config = new \Laminas\Config\Config([]);
         $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
             ->method('get')->with('config')->will($this->returnValue($config));
@@ -243,5 +246,85 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
                 )
             );
         }
+    }
+
+    /**
+     * DataProvider for name-related tests
+     *
+     * @return array
+     */
+    public function nameProvider(): array
+    {
+        return [
+            'single name' => ['foo', 'foo'],
+            'two-part name' => ['foo bar', 'bar, foo'],
+            'long name' => ['foo bar baz xyzzy', 'xyzzy, foo bar baz'],
+        ];
+    }
+
+    /**
+     * DataProvider for testIsInvertedName().
+     *
+     * @return array
+     */
+    public function isInvertedNameProvider(): array
+    {
+        return [
+            ['foo bar', false],
+            ['foo bar, jr.', false],
+            ['bar, foo', true],
+            ['bar, foo, jr.', true],
+        ];
+    }
+
+    /**
+     * Test the isInvertedName helper.
+     *
+     * @param string $input  Input to test
+     * @param bool   $output Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider isInvertedNameProvider
+     */
+    public function testIsInvertedName(string $input, bool $output): void
+    {
+        $this->assertEquals($output, VuFind::isInvertedName($input));
+    }
+
+    /**
+     * Test the invertName helper.
+     *
+     * @param string $input  Input to test
+     * @param string $output Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider nameProvider
+     */
+    public function testInvertName(string $input, string $output): void
+    {
+        $this->assertEquals($output, VuFind::invertName($input));
+    }
+
+    /**
+     * Test the invertNames helper.
+     *
+     * @return void
+     */
+    public function testInvertNames(): void
+    {
+        $input = [];
+        $output = new \DOMDocument('1.0', 'utf-8');
+        // Leverage the data provider to create an array of input elements and
+        // an expected output document to compare against real output:
+        foreach ($this->nameProvider() as $current) {
+            $input[] = new \DOMElement('name', $current[0]);
+            $output->appendChild(new \DOMElement('name', $current[1]));
+        }
+        $this->assertEquals(
+            $output->saveXML(),
+            VuFind::invertNames($input)->saveXML()
+        );
     }
 }

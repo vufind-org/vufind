@@ -1,0 +1,24 @@
+<?php $this->headTitle($this->translate('Privacy Policy')); ?>
+
+<h1><?=$this->transEsc('Privacy Policy') ?></h1>
+
+<p>
+  This is the English "Privacy Policy" page.
+</p>
+<?php if ($this->cookieConsent()->isEnabled()): ?>
+  <h2>Cookie Consent</h2>
+  <?php if ($consent = $this->cookieConsent()->getConsentInformation()): ?>
+    <p>Your cookie consent:</p>
+    <ul>
+      <li>Domain: <?=$this->escapeHtml($consent['domain'] . ('/' !== $consent['path'] ? $consent['path'] : ''))?></li>
+      <li>State: Allow (<?=implode(', ', array_map([$this, 'escapeHtml'], $consent['categoriesTranslated']))?>)</li>
+      <li>Consent ID: <?=$this->escapeHtml($consent['consentId'])?>
+      <li>Consent date: <?=$this->escapeHtml($consent['lastConsentDateTime'])?>
+    </ul>
+  <?php else: ?>
+    <p>You have not yet given consent.</p>
+  <?php endif; ?>
+  <p>
+    <a href="#" data-cc="show-preferencesModal" aria-haspopup="dialog"><?=$this->transEsc('Cookie Settings')?></a>
+  </p>
+<?php endif; ?>

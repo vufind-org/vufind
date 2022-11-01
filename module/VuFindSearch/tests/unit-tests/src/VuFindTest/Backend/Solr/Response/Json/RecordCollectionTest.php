@@ -29,7 +29,6 @@
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use PHPUnit\Framework\TestCase;
-use VuFindSearch\Backend\Solr\Response\Json\Facets;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindTest\RecordDriver\TestHarness;
@@ -55,7 +54,9 @@ class RecordCollectionTest extends TestCase
         $coll = new RecordCollection([]);
         $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
         $this->assertEquals(0, $coll->getTotal());
-        $this->assertTrue($coll->getFacets() instanceof Facets);
+        $this->assertIsArray($coll->getFacets());
+        $this->assertIsArray($coll->getQueryFacets());
+        $this->assertIsArray($coll->getPivotFacets());
         $this->assertEquals([], $coll->getGroups());
         $this->assertEquals([], $coll->getHighlighting());
         $this->assertEquals(0, $coll->getOffset());
@@ -72,7 +73,9 @@ class RecordCollectionTest extends TestCase
         $coll = new RecordCollection(['response' => null]);
         $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
         $this->assertEquals(0, $coll->getTotal());
-        $this->assertTrue($coll->getFacets() instanceof Facets);
+        $this->assertIsArray($coll->getFacets());
+        $this->assertIsArray($coll->getQueryFacets());
+        $this->assertIsArray($coll->getPivotFacets());
         $this->assertEquals([], $coll->getGroups());
         $this->assertEquals([], $coll->getHighlighting());
         $this->assertEquals(0, $coll->getOffset());
@@ -228,5 +231,49 @@ class RecordCollectionTest extends TestCase
         $this->assertEquals(5, $coll->count());
         $coll->add($record, false);
         $this->assertEquals(6, $coll->count());
+    }
+
+    /**
+     * Test facet methods.
+     *
+     * @return void
+     */
+    public function testFacets()
+    {
+        $coll = new RecordCollection(
+            [
+                'facet_counts' => [
+                    'facet_fields' => [
+                        'format' => [
+                            ['Book', 123],
+                            ['Journal', 234],
+                            ['Map', 1],
+                        ]
+                    ]
+                ]
+            ]
+        );
+        $facets = $coll->getFacets();
+        $this->assertEquals(
+            [
+                'format' => [
+                    'Book' => 123,
+                    'Journal' => 234,
+                    'Map' => 1
+                ]
+            ],
+            $facets
+        );
+        unset($facets['format']['Journal']);
+        $coll->setFacets($facets);
+        $this->assertEquals(
+            [
+                'format' => [
+                    'Book' => 123,
+                    'Map' => 1
+                ]
+            ],
+            $coll->getFacets()
+        );
     }
 }

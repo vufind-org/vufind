@@ -51,25 +51,8 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container->addCss(['a', 'b', 'c']);
         $container->addCss('c');
         $container->addCss('d');
-        $container->addLessCss('e.less');
         $container->addCss('e');
         $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getCss()));
-    }
-
-    /**
-     * Test LESS add/remove.
-     *
-     * @return void
-     */
-    public function testLess()
-    {
-        $container = new ResourceContainer();
-        $container->addCss(['c', 'd.css']);
-        $container->addLessCss(['active' => true, 'a', 'b', 'c']);
-        $container->addLessCss('c');
-        $container->addLessCss('d');
-        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getLessCss()));
-        $this->assertEquals(['c'], $container->getCss());
     }
 
     /**

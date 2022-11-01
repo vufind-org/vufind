@@ -27,11 +27,11 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * AlphaBrowse helper factory.
@@ -67,6 +67,10 @@ class AlphaBrowseFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $helpers = $container->get('ViewHelperManager');
-        return new $requestedName($helpers->get('url'));
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $options = isset($config->AlphaBrowse)
+            ? $config->AlphaBrowse->toArray() : [];
+        return new $requestedName($helpers->get('url'), $options);
     }
 }

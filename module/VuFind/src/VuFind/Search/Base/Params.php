@@ -774,6 +774,25 @@ class Params
     }
 
     /**
+     * Parse apart any prefix, field and value from a URL filter string.
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return array         Array with elements 0 = prefix, 1 = field, 2 = value.
+     */
+    public function parseFilterAndPrefix($filter)
+    {
+        [$field, $value] = $this->parseFilter($filter);
+        $prefix = substr($field, 0, 1);
+        if (in_array($prefix, ['-', '~'])) {
+            $field = substr($field, 1);
+        } else {
+            $prefix = '';
+        }
+        return [$prefix, $field, $value];
+    }
+
+    /**
      * Given a facet field, return an array containing all aliases of that
      * field.
      *
@@ -1234,14 +1253,14 @@ class Params
      * Support method for initDateFilters() -- normalize a year for use in a
      * year-based date range.
      *
-     * @param string $year Value to check for valid year.
+     * @param ?string $year Value to check for valid year.
      *
      * @return string      Formatted year.
      */
     protected function formatYearForDateRange($year)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
-        $year = preg_match('/\d{2,4}/', $year) ? $year : '*';
+        $year = ($year && preg_match('/\d{2,4}/', $year)) ? $year : '*';
 
         // Pad to four digits:
         if (strlen($year) == 2) {
@@ -1257,14 +1276,14 @@ class Params
      * Support method for initFullDateFilters() -- normalize a date for use in a
      * year/month/day date range.
      *
-     * @param string $date Value to check for valid date.
+     * @param ?string $date Value to check for valid date.
      *
      * @return string      Formatted date.
      */
     protected function formatDateForFullDateRange($date)
     {
         // Make sure date is valid; default to wildcard otherwise:
-        $date = SolrUtils::sanitizeDate($date);
+        $date = $date ? SolrUtils::sanitizeDate($date) : null;
         return $date ?? '*';
     }
 
@@ -1272,7 +1291,7 @@ class Params
      * Support method for initNumericRangeFilters() -- normalize a year for use in
      * a date range.
      *
-     * @param string $num Value to format into a number.
+     * @param ?string $num Value to format into a number.
      *
      * @return string     Formatted number.
      */
