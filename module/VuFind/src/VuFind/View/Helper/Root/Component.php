@@ -55,7 +55,9 @@ class Component extends AbstractHelper
         // ->component('@atoms/caret')
         // ->component('@organisms/login-menu')
         if (str_starts_with($name, '@')) {
-            $path = substr(first(explode('/', $name)), 1);
+            $parts = explode('/', $name);
+            $path = substr(array_shift($parts), 1);
+            $name = implode('/', $parts);
         }
 
         return $this->view->render("_ui/$path/" . $name, $params);
