@@ -338,7 +338,6 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'Doctrine\DBAL\Connection' => 'VuFind\Db\ConnectionFactory',
             'Doctrine\ORM\Mapping\Driver\AnnotationDriver' => 'VuFind\Db\AnnotationDriverFactory',
             'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
@@ -380,6 +379,7 @@ $config = [
             'VuFind\Crypt\HMAC' => 'VuFind\Crypt\HMACFactory',
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
+            'VuFind\Db\Connection' => 'VuFind\Db\ConnectionFactory',
             'VuFind\Db\Entity\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Service\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -468,9 +468,7 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'doctrine.connection.orm_default' => 'Doctrine\DBAL\Connection',
-            'doctrine.driver.orm_default' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-            'doctrine.entity_manager.orm_default' => 'Doctrine\ORM\EntityManager',
+            'doctrine.connection.orm_vufind' => 'VuFind\Db\Connection',
             'League\CommonMark\MarkdownConverterInterface' => 'League\CommonMark\ConverterInterface',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
@@ -552,6 +550,26 @@ $config = [
                 'result_cache' => 'filesystem',
                 'metadata_cache' => 'filesystem',
                 'hydration_cache' => 'filesystem',
+            ],
+        ],
+        'driver' => [
+            'vufind_annotation_driver' => [
+                'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
+                'cache' => 'filesystem',
+                'paths' => [
+                    'module/VuFind/src/VuFind/Db/Entity',
+                ],
+            ],
+            'orm_default' => [
+                'drivers' => [
+                    'VuFind\Db\Entity' => 'vufind_annotation_driver',
+                ],
+            ],
+        ],
+        'entitymanager' => [
+            'orm_vufind' => [
+                'connection' => 'orm_vufind',
+                'configuration' => 'orm_vufind',
             ],
         ],
     ],
