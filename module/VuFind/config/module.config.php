@@ -338,7 +338,6 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'Doctrine\ORM\Mapping\Driver\AnnotationDriver' => 'VuFind\Db\AnnotationDriverFactory',
             'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
