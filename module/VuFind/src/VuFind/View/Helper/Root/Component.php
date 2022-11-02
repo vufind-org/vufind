@@ -54,7 +54,7 @@ class Component extends AbstractHelper
 
         // ->component('@atoms/caret')
         // ->component('@organisms/login-menu')
-        if (str_starts_with($name, '@')) {
+        if ($name[0] == '@') {
             $parts = explode('/', $name);
             $path = substr(array_shift($parts), 1);
             $name = implode('/', $parts);
