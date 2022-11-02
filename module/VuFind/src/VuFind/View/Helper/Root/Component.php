@@ -50,6 +50,14 @@ class Component extends AbstractHelper
      */
     public function __invoke(string $name, $params = []): string
     {
-        return $this->view->render('_ui/components/' . $name, $params);
+        $path = 'components';
+
+        // ->component('@atoms/caret')
+        // ->component('@organisms/login-menu')
+        if (str_starts_with($name, '@')) {
+            $path = substr(first(explode('/', $name)), 1);
+        }
+
+        return $this->view->render("_ui/$path/" . $name, $params);
     }
 }
