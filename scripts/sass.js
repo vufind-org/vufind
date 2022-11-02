@@ -1,5 +1,7 @@
 /// <reference types="node" />
 
+// #TODO: exclude/ignore SCSS files
+
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const { performance } = require("node:perf_hooks");
