@@ -77,6 +77,13 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     protected $fields = [];
 
     /**
+     * Cache for rating data
+     *
+     * @var array
+     */
+    protected $ratingCache = [];
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
@@ -229,6 +236,76 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Get rating information for this record.
+     *
+     * Returns an array with the following keys:
+     *
+     * rating - average rating (0-100)
+     * count  - count of ratings
+     *
+     * @param ?int $userId User ID, or null for all users
+     *
+     * @return array
+     */
+    public function getRatingData(?int $userId = null)
+    {
+        // Cache data since comments list may ask for same information repeatedly:
+        $cacheKey = $userId ?? '-';
+        if (!isset($this->ratingCache[$cacheKey])) {
+            $table = $this->getDbTable('Ratings');
+            $this->ratingCache[$cacheKey] = $table->getForResource(
+                $this->getUniqueId(),
+                $this->getSourceIdentifier(),
+                $userId
+            );
+        }
+        return $this->ratingCache[$cacheKey];
+    }
+
+    /**
+     * Get rating breakdown for this record.
+     *
+     * Returns an array with the following keys:
+     *
+     * rating - average rating (0-100)
+     * count  - count of ratings
+     * groups - grouped counts
+     *
+     * @param array $groups Group definition (key => [min, max])
+     *
+     * @return array
+     */
+    public function getRatingBreakdown(array $groups)
+    {
+        return $this->getDbTable('Ratings')->getCountsForResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier(),
+            $groups
+        );
+    }
+
+    /**
+     * Add or update user's rating for the record.
+     *
+     * @param int  $userId ID of the user posting the rating
+     * @param ?int $rating The user-provided rating, or null to clear any existing
+     * rating
+     *
+     * @return void
+     */
+    public function addOrUpdateRating(int $userId, ?int $rating): void
+    {
+        // Clear rating cache:
+        $this->ratingCache = [];
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
+        );
+        $resource->addOrUpdateRating($userId, $rating);
+    }
+
+    /**
      * Get notes associated with this record in user lists.
      *
      * @param int $list_id ID of list to load tags from (null for all lists)
@@ -299,6 +376,16 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function supportsCoinsOpenUrl()
     {
         return true;
+    }
+
+    /**
+     * Check if rating the record is allowed.
+     *
+     * @return bool
+     */
+    public function isRatingAllowed(): bool
+    {
+        return !empty($this->recordConfig->Social->rating);
     }
 
     /**

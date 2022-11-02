@@ -42,7 +42,7 @@ namespace VuFind\Db\Row;
  * @property string  $cat_username
  * @property ?string $cat_password
  * @property ?string $cat_pass_enc
- * @property string  $home_library
+ * @property ?string $home_library
  * @property string  $created
  * @property string  $saved
  */

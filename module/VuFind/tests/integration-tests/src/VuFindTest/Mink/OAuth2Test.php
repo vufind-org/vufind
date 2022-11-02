@@ -28,9 +28,7 @@
 declare(strict_types=1);
 namespace VuFindTest\Mink;
 
-use Behat\Mink\Element\Element;
 use const PHP_MAJOR_VERSION;
-use VuFind\Config\Locator;
 
 /**
  * OAuth2/OIDC test class.
@@ -74,11 +72,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     public function setUp(): void
     {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
+        parent::setUp();
+
         $this->createOpenSSLKeyPair();
     }
 
@@ -141,25 +136,6 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->changeYamlConfigs(
             ['OAuth2Server' => $this->getOauth2ConfigOverrides($redirectUri)]
         );
-    }
-
-    /**
-     * Fill in and submit the catalog login form with the provided credentials.
-     *
-     * @param Element $page     Page element.
-     * @param string  $username Username
-     * @param string  $password Password
-     *
-     * @return void
-     */
-    protected function submitCatalogLoginForm(
-        Element $page,
-        string $username,
-        string $password
-    ): void {
-        $this->findCss($page, '#profile_cat_username')->setValue($username);
-        $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->clickCss($page, 'input.btn.btn-primary');
     }
 
     /**
@@ -462,10 +438,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     protected function createOpenSSLKeyPair(): void
     {
-        $privateKeyPath
-            = Locator::getLocalConfigPath('oauth2_private.key', null, true);
-        $publicKeyPath
-            = Locator::getLocalConfigPath('oauth2_public.key', null, true);
+        $privateKeyPath = $this->pathResolver->getLocalConfigPath(
+            'oauth2_private.key',
+            null,
+            true
+        );
+        $publicKeyPath = $this->pathResolver->getLocalConfigPath(
+            'oauth2_public.key',
+            null,
+            true
+        );
 
         // Creates backups if the files exists:
         if (file_exists($privateKeyPath)) {
@@ -526,8 +508,12 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      */
     protected function restoreOpenSSLKeyPair(): void
     {
-        $paths[] = Locator::getLocalConfigPath('oauth2_private.key', null, true);
-        $paths[] = Locator::getLocalConfigPath('oauth2_public.key', null, true);
+        $paths = [
+            $this->pathResolver
+                ->getLocalConfigPath('oauth2_private.key', null, true),
+            $this->pathResolver
+                ->getLocalConfigPath('oauth2_public.key', null, true),
+        ];
 
         foreach ($paths as $path) {
             if (file_exists("$path.bak")) {

@@ -28,6 +28,7 @@
  */
 namespace VuFindTest\ILS\Driver;
 
+use Laminas\Http\Response;
 use VuFind\ILS\Driver\Folio;
 
 /**
@@ -43,7 +44,12 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 
-    protected $testConfig = [
+    /**
+     * Default test configuration
+     *
+     * @var array
+     */
+    protected $defaultDriverConfig = [
         'API' => [
             'base_url' => 'localhost',
             'tenant' => 'config_tenant',
@@ -52,33 +58,49 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ]
     ];
 
-    protected $testResponses = null;
+    /**
+     * Test data for simulated HTTP responses (reset by each test)
+     *
+     * @var array
+     */
+    protected $testResponses = [];
 
+    /**
+     * Log of requests made during test (reset by each test)
+     *
+     * @var array
+     */
     protected $testRequestLog = [];
 
+    /**
+     * Driver under test
+     *
+     * @var Folio
+     */
     protected $driver = null;
 
     /**
      * Replace makeRequest to inject test returns
      *
-     * @param string $method  GET/POST/PUT/DELETE/etc
-     * @param string $path    API path (with a leading /)
-     * @param array  $params  Parameters object to be sent as data
-     * @param array  $headers Additional headers
+     * @param string       $method  GET/POST/PUT/DELETE/etc
+     * @param string       $path    API path (with a leading /)
+     * @param string|array $params  Parameters object to be sent as data
+     * @param array        $headers Additional headers
      *
-     * @return \Laminas\Http\Response
+     * @return Response
      */
-    public function mockMakeRequest($method = "GET", $path = "/", $params = [], $headers = [])
-    {
+    public function mockMakeRequest(
+        string $method = "GET",
+        string $path = "/",
+        $params = [],
+        array $headers = []
+    ): Response {
         // Run preRequest
         $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
         [$httpHeaders, $params] = $this->driver->preRequest($httpHeaders, $params);
         // Log request
-        $this->testRequestLog[] = [
-            'method' => $method,
-            'path' => $path,
-            'params' => $params,
+        $this->testRequestLog[] = compact('method', 'path', 'params') + [
             'headers' => $httpHeaders->toArray()
         ];
         // Create response
@@ -95,8 +117,13 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * Overwrites $this->driver
      * Uses session cache
+     *
+     * @param string $test   Name of test fixture to load
+     * @param array  $config Driver configuration (null to use default)
+     *
+     * @return void
      */
-    protected function createConnector($test)
+    protected function createConnector(string $test, array $config = null): void
     {
         // Setup test responses
         $this->testResponses = $this->getJsonFixture("folio/responses/$test.json");
@@ -108,12 +135,12 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
         // Create a stub for the SomeClass class
-        $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
+        $this->driver = $this->getMockBuilder(Folio::class)
             ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
             ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
-        $this->driver->setConfig($this->testConfig);
+        $this->driver->setConfig($config ?? $this->defaultDriverConfig);
         $this->driver->expects($this->any())
             ->method('makeRequest')
             ->will($this->returnCallback([$this, 'mockMakeRequest']));
@@ -122,8 +149,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Request a token where one does not exist
+     *
+     * @return void
      */
-    public function testTokens()
+    public function testTokens(): void
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
         $profile = $this->driver->getMyProfile(['id' => 'whatever']);
@@ -132,7 +161,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
         // - Right tenant
         $this->assertEquals(
-            $this->testConfig['API']['tenant'],
+            $this->defaultDriverConfig['API']['tenant'],
             $this->testRequestLog[0]['headers']['X-Okapi-Tenant']
         );
         // Profile request
@@ -145,8 +174,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Check a valid token retrieved from session cache
+     *
+     * @return void
      */
-    public function testCheckValidToken()
+    public function testCheckValidToken(): void
     {
         $this->createConnector('check-valid-token');
         $profile = $this->driver->getMyTransactions(['id' => 'whatever']);
@@ -163,8 +194,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Check and renew an invalid token retrieved from session cache
+     *
+     * @return void
      */
-    public function testCheckInvalidToken()
+    public function testCheckInvalidToken(): void
     {
         $this->createConnector('check-invalid-token');
         $profile = $this->driver->getPickupLocations(['username' => 'whatever']);
@@ -178,6 +211,193 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'x-okapi-token-after-invalid', // from fixtures: check-invalid-token.json
             $this->testRequestLog[2]['headers']['X-Okapi-Token']
+        );
+    }
+
+    /**
+     * Confirm that cancel holds validates the current patron.
+     *
+     * @return void
+     */
+    public function testCancelHoldsPatronValidation(): void
+    {
+        $this->createConnector('cancel-holds-bad-patron');
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage('Invalid Request');
+        $this->driver->cancelHolds(
+            ['details' => ['request1'], 'patron' => ['id' => 'bar']]
+        );
+    }
+
+    /**
+     * Confirm that cancel holds processes various statuses appropriately.
+     *
+     * @return void
+     */
+    public function testCancelHoldsMixedStatuses(): void
+    {
+        $this->createConnector('cancel-holds-mixed-statuses');
+        $result = $this->driver->cancelHolds(
+            ['details' => ['request1', 'request2'], 'patron' => ['id' => 'foo']]
+        );
+        $expected = [
+            'count' => 1,
+            'items' => [
+                'item1' => ['success' => true, 'status' => 'hold_cancel_success'],
+                'item2' => ['success' => false, 'status' => 'hold_cancel_fail'],
+            ],
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/requests/request1',
+            $this->testRequestLog[2]['path']
+        );
+        $this->assertEquals(
+            '{"requesterId":"foo","itemId":"item1","status":"Closed - Cancelled","cancellationReasonId":"75187e8d-e25a-47a7-89ad-23ba612338de"}',
+            $this->testRequestLog[2]['params']
+        );
+        $this->assertEquals(
+            '/circulation/requests/request2',
+            $this->testRequestLog[4]['path']
+        );
+        $this->assertEquals(
+            '{"requesterId":"foo","itemId":"item2","status":"Closed - Cancelled","cancellationReasonId":"75187e8d-e25a-47a7-89ad-23ba612338de"}',
+            $this->testRequestLog[4]['params']
+        );
+    }
+
+    /**
+     * Test an unsuccessful patron login with default settings
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPatronLogin(): void
+    {
+        $this->createConnector('empty');
+        $this->assertNull($this->driver->patronLogin('foo', 'bar'));
+        $this->assertEquals(
+            '/users',
+            $this->testRequestLog[1]['path']
+        );
+        $this->assertEquals(
+            ['query' => 'username == "foo"'],
+            $this->testRequestLog[1]['params']
+        );
+    }
+
+    /**
+     * Test patron login with Okapi
+     *
+     * @return void
+     */
+    public function testSuccessfulPatronLoginWithOkapi(): void
+    {
+        $this->createConnector(
+            'successful-patron-login-with-okapi',
+            $this->defaultDriverConfig + ['User' => ['okapi_login' => true]]
+        );
+        $result = $this->driver->patronLogin('foo', 'bar');
+        $expected = [
+            'id' => 'fake-id',
+            'username' => 'foo',
+            'cat_username' => 'foo',
+            'cat_password' => 'bar',
+            'firstname' => 'first',
+            'lastname' => 'last',
+            'email' => 'fake@fake.com',
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/authn/login',
+            $this->testRequestLog[1]['path']
+        );
+        $this->assertEquals(
+            '{"tenant":"config_tenant","username":"foo","password":"bar"}',
+            $this->testRequestLog[1]['params']
+        );
+        $this->assertEquals(
+            '/users',
+            $this->testRequestLog[2]['path']
+        );
+        $this->assertEquals(
+            ['query' => 'username == foo'],
+            $this->testRequestLog[2]['params']
+        );
+    }
+
+    /**
+     * Test successful place hold
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHold(): void
+    {
+        $this->createConnector('successful-place-hold');
+        $details = [
+            'requiredBy' => '2022-01-01',
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/requests',
+            $this->testRequestLog[1]['path']
+        );
+        $request = json_decode($this->testRequestLog[1]['params'], true);
+        // Request date changes on every request, so let's not assert about it:
+        unset($request['requestDate']);
+        $this->assertEquals(
+            [
+                'itemId' => 'record1',
+                'requestType' => 'Page',
+                'requesterId' => 'foo',
+                'fulfilmentPreference' => 'Hold Shelf',
+                'requestExpirationDate' => '2022-01-01',
+                'pickupServicePointId' => 'desk1',
+            ],
+            $request
+        );
+    }
+
+    /**
+     * Test successful renewal
+     *
+     * @return void
+     */
+    public function testSuccessfulRenewMyItems(): void
+    {
+        $this->createConnector('successful-renew-my-items');
+        $details = [
+            'patron' => ['id' => 'foo'],
+            'details' => ['record1'],
+        ];
+        $result = $this->driver->renewMyItems($details);
+        $expected = [
+            'details' => [
+                'record1' => [
+                    'success' => true,
+                    'sysMessage' => 'success',
+                    'new_date' => '01-01-2022',
+                    'new_time' => '00:00',
+                    'item_id' => 'record1',
+                ]
+            ]
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/renew-by-id',
+            $this->testRequestLog[1]['path']
+        );
+        $this->assertEquals(
+            '{"itemId":"record1","userId":"foo"}',
+            $this->testRequestLog[1]['params']
         );
     }
 }

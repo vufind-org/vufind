@@ -56,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getRecordCommentsAsHTML' => GetRecordCommentsAsHTML::class,
         'getRecordCover' => GetRecordCover::class,
         'getRecordDetails' => GetRecordDetails::class,
+        'getRecordRating' => GetRecordRating::class,
         'getRecordTags' => GetRecordTags::class,
         'getRecordVersions' => GetRecordVersions::class,
         'getRequestGroupPickupLocations' => GetRequestGroupPickupLocations::class,
@@ -96,6 +97,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetRecordCommentsAsHTML::class => GetRecordCommentsAsHTMLFactory::class,
         GetRecordCover::class => GetRecordCoverFactory::class,
         GetRecordDetails::class => GetRecordDetailsFactory::class,
+        GetRecordRating::class => GetRecordRatingFactory::class,
         GetRecordTags::class => GetRecordTagsFactory::class,
         GetRecordVersions::class => GetRecordVersionsFactory::class,
         GetRequestGroupPickupLocations::class =>

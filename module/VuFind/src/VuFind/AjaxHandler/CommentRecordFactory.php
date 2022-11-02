@@ -76,7 +76,9 @@ class CommentRecordFactory
             $controllerPluginManager
                 ->get(\VuFind\Controller\Plugin\Captcha::class),
             $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
-            $capabilities->getCommentSetting() !== 'disabled'
+            $capabilities->getCommentSetting() !== 'disabled',
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Config\AccountCapabilities::class)
         );
     }
 }
