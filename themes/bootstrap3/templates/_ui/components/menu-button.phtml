@@ -1,13 +1,26 @@
 <?php
   $wrapperTag = $this->wrapperTag ?? 'div';
-  $wrapperClass = ($this->wrapperClass ? $this->wrapperClass . ' ' : '') . 'dropdown'; // Bootstrap class
+  $wrapperClass = 'dropdown'; // Bootstrap class
 
-  $toggleTag = $this->toggleTag ?? 'button';
+  if ($this->wrapperClass ?? false) {
+    $wrapperClass = $this->wrapperClass . ' dropdown'; // Bootstrap class
+  }
+
+  $toggleTag = 'button';
   $toggleAttrs = $this->toggleAttrs ?? [];
-
+  $toggleAttrs['type'] = 'button'; // Accessible default
   $toggleAttrs['class'] = 'dropdown-toggle'; // Bootstrap class
   $toggleAttrs['data-toggle'] = 'dropdown'; // Bootstrap data-attr
-  $toggleAttrs['href'] = $this->href ?? $toggleTag == 'button' ? null : '#';
+  $toggleAttrs['aria-expanded'] = 'false';
+  $toggleAttrs['aria-haspopup'] = 'true';
+
+  // An anchor tag with an href should only be used as
+  // a non-js fallback to open the menu on another page
+  if ($this->href ?? false) {
+    $toggleTag = 'a';
+    $toggleAttrs['href'] = $this->href;
+    $toggleAttrs['type'] = null;
+  }
 ?>
 
 <?php ob_start(); ?>
@@ -26,7 +39,7 @@
     $this->transEsc($this->toggleLabel) . $this->icon('dropdown-caret'),
     $toggleAttrs,
     ['escapeContent' => false]
-); ?>
+  ) ?>
 <?php $menuContents = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
 
