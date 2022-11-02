@@ -26,7 +26,7 @@
 <?php ob_start(); ?>
   <ul class="dropdown-menu">
     <?php foreach ($this->menuItems as $current): ?>
-      <li class="dropdown__item <?php if ($current['selected']): ?> active<?php endif ?>">
+      <li class="dropdown__item <?php if ($current['selected'] ?? false): ?> active<?php endif ?>">
         <a class="dropdown__link" href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
           <?=$this->transEsc($current['label']) ?>
         </a>
