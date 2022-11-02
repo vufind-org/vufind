@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SetRecordCollectionFactoryCommand.
+ * Unit tests for GetIdsCommand.
  *
  * PHP version 7
  *
@@ -22,61 +22,73 @@
  *
  * @category VuFind
  * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
-use VuFindSearch\Command\SetRecordCollectionFactoryCommand;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Command\GetIdsCommand;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\Query;
 
 /**
- * Unit tests for SetRecordCollectionFactoryCommand.
+ * Unit tests for GetIdsCommand.
  *
  * @category VuFind
  * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SetRecordCollectionFactoryCommandTest extends TestCase
+class GetIdsCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that a supported backed behaves as expected
      *
      * @return void
      */
-    public function testCommand(): void
+    public function testExecute(): void
     {
-        $factory = $this
-            ->getMockBuilder(RecordCollectionFactoryInterface::class)
-            ->getMock();
+        $query = new Query('foo');
+        $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
+        $command = new GetIdsCommand($backendId, $query, 0, 1, $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue($backendId));
-        $backend->expects($this->once())->method('setRecordCollectionFactory')
-            ->with($this->equalTo($factory));
-        $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
-        $this->assertEmpty($command->execute($backend)->getResult());  // void method
+        $backend->expects($this->once())->method('getIds')
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo(0),
+                $this->equalTo(1),
+                $this->equalTo($params)
+            )->will($this->returnValue('result'));
+        $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 
     /**
-     * Test getArguments method.
+     * Test getArguments method
      *
      * @return void
      */
     public function testgetArguments(): void
     {
-        $factory = $this
-            ->getMockBuilder(RecordCollectionFactoryInterface::class)
-            ->getMock();
-        $backendId = 'bar';
-        $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
-        $this->assertSame([$factory], $command->getArguments());
+        $query = new Query('foo');
+        $params =  new ParamBag(['foo' => 'bar']);
+        $command = new GetIdsCommand(
+            'bar',
+            $query,
+            0,
+            10,
+            $params
+        );
+        $expected = [$query, 0, 10, $params];
+        $this->assertEquals(
+            $expected,
+            $command->getArguments()
+        );
     }
 }
