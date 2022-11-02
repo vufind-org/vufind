@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\BrowZine;
+use VuFIndSearch\Command\SearchCommand;
 
 /**
  * BrowZine Search Results
@@ -71,13 +72,14 @@ class Results extends \VuFind\Search\Base\Results
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit
         );
-
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         $this->resultTotal = $collection->getTotal();
 
         // Construct record drivers for all the items in the response:

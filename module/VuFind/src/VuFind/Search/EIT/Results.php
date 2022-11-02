@@ -28,6 +28,8 @@
  */
 namespace VuFind\Search\EIT;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
  * EBSCO Search Parameters
  * Partially copied from WorldCat Search Parameters; partially copied from other
@@ -61,8 +63,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
+        $command = new SearchCommand(
+            $this->backendId, 
+            $query, 
+            $offset, 
+            $limit, 
+            $params
+        );
         $collection = $this->getSearchService()
-            ->search($this->backendId, $query, $offset, $limit, $params);
+            ->invoke($command)->getResult();
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();

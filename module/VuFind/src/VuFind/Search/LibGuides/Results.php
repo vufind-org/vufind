@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\LibGuides;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
  * LibGuides Search Parameters
  *
@@ -56,12 +58,14 @@ class Results extends \VuFind\Search\Base\Results
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit
         );
+        $collection = $this->getSearchService()
+            ->invoke($command)->getResult();
 
         $this->resultTotal = $collection->getTotal();
 

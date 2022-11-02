@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\WorldCat;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
  * WorldCat Search Parameters
  *
@@ -57,8 +59,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord();
         $params = $this->getParams()->getBackendParameters();
+        $command = new SearchCommand(
+            $this->backendId, 
+            $query, 
+            $offset, 
+            $limit, 
+            $params
+        );
         $collection = $this->getSearchService()
-            ->search($this->backendId, $query, $offset, $limit, $params);
+            ->invoke($command)->getResult();
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();

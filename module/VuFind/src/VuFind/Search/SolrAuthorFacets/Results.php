@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\SolrAuthorFacets;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
  * AuthorFacets Search Results
  *
@@ -49,9 +51,9 @@ class Results extends \VuFind\Search\Solr\Results
         $query = $this->getParams()->getQuery();
         $params = $this->getParams()->getBackendParameters();
         // Perform the search:
+        $command = new SearchCommand($this->backendId, $query, 0, 0, $params);
         $collection = $this->getSearchService()
-            ->search($this->backendId, $query, 0, 0, $params);
-
+            ->invoke($command)->getResult();
         $this->responseFacets = $collection->getFacets();
 
         // Get the facets from which we will build our results:

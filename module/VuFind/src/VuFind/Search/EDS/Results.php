@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\EDS;
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * EDS API Results
@@ -64,13 +65,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
             $params
         );
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         if (null != $collection) {
             $this->responseFacets = $collection->getFacets();
             $this->resultTotal = $collection->getTotal();

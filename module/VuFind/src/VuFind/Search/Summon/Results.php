@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Summon;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
  * Summon Search Parameters
  *
@@ -85,14 +87,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
             $params
         );
-
+        $collection = $this->getSearchService()
+            ->invoke($command)->getResult();
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
@@ -383,14 +386,15 @@ class Results extends \VuFind\Search\Base\Results
             }
         }
         $params = $params->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             0,
             0,
             $params
         );
-
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         $facets = $collection->getFacets();
         $ret = [];
         foreach ($facets as $data) {
