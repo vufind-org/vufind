@@ -735,13 +735,18 @@ EOS
     /**
      * Validate current page HTML if validation is enabled and a session exists
      *
+     * @param ?Element $page Page to check (optional; uses the page from session by
+     * default)
+     *
      * @return void
      *
      * @throws \RuntimeException
      */
-    protected function validateHtml(): void
+    protected function validateHtml(?Element $page = null): void
     {
-        if (!$this->session || !($nuAddress = getenv('HTML_VALIDATOR_ADDRESS'))) {
+        if ((!$this->session && !$page)
+            || !($nuAddress = getenv('HTML_VALIDATOR_ADDRESS'))
+        ) {
             return;
         }
         $http = new \VuFindHttp\HttpService();
@@ -755,10 +760,11 @@ EOS
                 'out' => 'json'
             ]
         );
+        $page = $page ?? $this->session->getPage();
         $client->setFileUpload(
             'test.html',
             'file',
-            "<!DOCTYPE html>\n" . $this->session->getPage()->getOuterHtml(),
+            "<!DOCTYPE html>\n" . $page->getOuterHtml(),
             'text/html'
         );
         $response = $client->send();
