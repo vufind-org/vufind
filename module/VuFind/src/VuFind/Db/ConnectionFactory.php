@@ -195,6 +195,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
             break;
         }
          */
+        $options['wrapperClass'] = \VuFind\Db\Connection::class;
 
         // Set up database connection:
         if (empty($this->container)) {
