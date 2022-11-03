@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\BrowZine;
+
 use VuFIndSearch\Command\SearchCommand;
 
 /**

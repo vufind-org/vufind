@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Primo;
+
 use VuFindSearch\Command\SearchCommand;
 
 /**

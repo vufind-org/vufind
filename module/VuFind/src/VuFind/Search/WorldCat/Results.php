@@ -60,10 +60,10 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord();
         $params = $this->getParams()->getBackendParameters();
         $command = new SearchCommand(
-            $this->backendId, 
-            $query, 
-            $offset, 
-            $limit, 
+            $this->backendId,
+            $query,
+            $offset,
+            $limit,
             $params
         );
         $collection = $this->getSearchService()
