@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\BrowZine;
 
-use VuFIndSearch\Command\SearchCommand;
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * BrowZine Search Results
