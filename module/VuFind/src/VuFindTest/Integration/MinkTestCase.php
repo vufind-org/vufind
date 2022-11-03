@@ -733,6 +733,96 @@ EOS
     }
 
     /**
+     * Validate current page HTML if validation is enabled and a session exists
+     *
+     * @return void
+     *
+     * @throws \RuntimeException
+     */
+    protected function validateHtml(): void
+    {
+        if (!$this->session || !($nuAddress = getenv('HTML_VALIDATOR_ADDRESS'))) {
+            return;
+        }
+        $http = new \VuFindHttp\HttpService();
+        $client = $http->createClient(
+            $nuAddress,
+            \Laminas\Http\Request::METHOD_POST
+        );
+        $client->setEncType(\Laminas\Http\Client::ENC_FORMDATA);
+        $client->setParameterPost(
+            [
+                'out' => 'json'
+            ]
+        );
+        $client->setFileUpload(
+            'test.html',
+            'file',
+            "<!DOCTYPE html>\n" . $this->session->getPage()->getOuterHtml(),
+            'text/html'
+        );
+        $response = $client->send();
+        if (!$response->isSuccess()) {
+            throw new \RuntimeException(
+                'Could not validate HTML: '
+                . $response->getStatusCode() . ', '
+                . $response->getBody()
+            );
+        }
+        $result = json_decode($response->getBody(), true);
+        if (!empty($result['messages'])) {
+            $errors = [];
+            $info = [];
+            foreach ($result['messages'] as $message) {
+                if ('info' === $message['type']) {
+                    $info[] = $this->htmlValidationMsgToStr($message);
+                } else {
+                    $errors[] = $this->htmlValidationMsgToStr($message);
+                }
+            }
+            if ($info) {
+                $this->logWarning(
+                    'HTML validation messages for '
+                    . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
+                    . implode(PHP_EOL . PHP_EOL, $info)
+                );
+            }
+            if ($errors) {
+                $message = 'HTML validation errors for '
+                    . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
+                    . implode(PHP_EOL . PHP_EOL, $errors);
+
+                if (getenv('HTML_VALIDATOR_THROW') !== '0') {
+                    throw new \RuntimeException($message);
+                } else {
+                    $this->logWarning($message);
+                }
+            }
+        }
+    }
+
+    /**
+     * Convert a NU HTML Validator message to a string
+     *
+     * @param array $message Validation message
+     *
+     * @return string
+     */
+    protected function htmlValidationMsgToStr(array $message): string
+    {
+        $result = '  [' . ($message['firstLine'] ?? $message['lastLine'] ?? 0) . ':'
+            . ($message['firstColumn'] ?? 0)
+            . '] ';
+        $stampLen = strlen($result);
+        $result .= $message['message'];
+        if (!empty($message['extract'])) {
+            $result .= PHP_EOL . str_pad('', $stampLen) . 'Extract: '
+                . $message['extract'];
+        }
+        return $result;
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -788,6 +878,10 @@ EOS
 
                 file_put_contents($imageDir . '/' . $filename . '.png', $imageData);
             }
+        }
+
+        if (!$this->hasFailed()) {
+            $this->validateHtml();
         }
 
         $this->stopMinkSession();
