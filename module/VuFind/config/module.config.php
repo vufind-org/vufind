@@ -544,7 +544,7 @@ $config = [
             ],
         ],
         'configuration' => [
-            'orm_default' => [
+            'orm_vufind' => [
                 'query_cache' => 'filesystem',
                 'result_cache' => 'filesystem',
                 'metadata_cache' => 'filesystem',
