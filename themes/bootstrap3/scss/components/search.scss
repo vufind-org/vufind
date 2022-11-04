@@ -422,13 +422,18 @@ body.rtl {
       font-size: 0.8em
     }
     .filter-value {
-      padding: 2px 8px;
+      display: inline-block;
       margin: 5px;
+      padding: 2px 8px;
       font-weight: 600;
       color: #fff;
-      background: $list-group-active-bg;
       white-space: nowrap;
-      display: inline-block;
+      text-decoration: none;
+      background: $list-group-active-bg;
+
+      &:focus {
+        box-shadow: 0 0 0 2px #000;
+      }
     }
     .checkbox {
       display: inline;
@@ -470,7 +475,8 @@ body.rtl {
   color: #555;
   text-decoration: none;
 }
-.active-filters .filters a.filter-value:hover {
+.active-filters .filters a.filter-value:hover,
+.active-filters .filters a.filter-value:focus {
   color: #fff;
   text-decoration: line-through;
   background-color: $state-danger-text;
