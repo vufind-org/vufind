@@ -139,7 +139,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
       VuFind.observerManager.createIntersectionObserver(
         'saveStatuses',
         checkSaveStatus,
-        Array.from(container.querySelectorAll(".result,.record"))
+        container.querySelectorAll(".result,.record")
       );
     }
   }

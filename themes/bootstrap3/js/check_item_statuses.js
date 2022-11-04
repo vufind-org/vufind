@@ -222,7 +222,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       VuFind.observerManager.createIntersectionObserver(
         'itemStatuses',
         checkItemStatus,
-        Array.from((container).querySelectorAll('.ajaxItem'))
+        (container).querySelectorAll('.ajaxItem')
       );
     }
   }
