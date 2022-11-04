@@ -136,10 +136,27 @@ MARC_PATH=`cd $MARC_PATH && pwd`
 MARC_FILE=`basename $1`
 
 #####################################################
+# Set up SolrJ symlinks for performance
+#####################################################
+if [ -z "$SOLRJ_DIR" ]
+then
+  SOLRJ_DIR="$VUFIND_HOME/solr/vufind/solrj"
+fi
+
+if [ ! -d "$SOLRJ_DIR" ]
+then
+  mkdir -p $SOLRJ_DIR
+  for file in $VUFIND_HOME/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/solr*.jar $VUFIND_HOME/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/http*.jar
+  do
+    ln -s $file $SOLRJ_DIR/`basename $file`
+  done
+fi
+
+#####################################################
 # Execute Importer
 #####################################################
 
-RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dlog4j.configuration=file://$LOG4J_CONFIG $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $VUFIND_HOME/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib -lib_local "$VUFIND_HOME/import/lib_local\;$VUFIND_HOME/solr/vendor/modules/analysis-extras/lib" $MARC_PATH/$MARC_FILE"
+RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dlog4j.configuration=file://$LOG4J_CONFIG $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $SOLRJ_DIR -lib_local "$VUFIND_HOME/import/lib_local\;$VUFIND_HOME/solr/vendor/modules/analysis-extras/lib" $MARC_PATH/$MARC_FILE"
 echo "Now Importing $1 ..."
 # solrmarc writes log messages to stderr, write RUN_CMD to the same place
 echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2
