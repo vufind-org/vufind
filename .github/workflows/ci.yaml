@@ -31,20 +31,20 @@ jobs:
           tools: composer:2.1.6
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall
 
       - name: Setup node
         if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
 
       - name: Cache NPM dependencies
         if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: npm-${{ hashFiles('package-lock.json') }}
@@ -59,21 +59,21 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache composer dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Cache php-cs-fixer data
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .php_cs_cache
           key: "php-${{ matrix.php-version }}-php-cs-fixer-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-php-cs-fixer-"
 
       - name: Cache phpstan data
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .phpstan_cache
           key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
