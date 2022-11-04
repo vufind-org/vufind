@@ -29,6 +29,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: intl, xsl
           tools: composer:2.1.6
+          ini-values: error_reporting=E_ALL
 
       - name: Checkout
         uses: actions/checkout@v3
