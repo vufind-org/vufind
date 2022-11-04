@@ -56,6 +56,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     protected $expectedConfigIniPath;
 
     /**
+     * Encryption algorithm to use
+     *
+     * @var string
+     */
+    protected $encryptionAlgorithm = 'aes';
+
+    /**
      * Prepare a mock object
      *
      * @param string $class Class to mock
@@ -145,7 +152,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'aes']);
+        $commandTester->execute(['newmethod' => $this->encryptionAlgorithm]);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
             "Please specify a key as the second parameter.\n",
@@ -164,13 +171,15 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             [
                 'Authentication' => [
                     'encrypt_ils_password' => true,
-                    'ils_encryption_algo' => 'aes',
+                    'ils_encryption_algo' => $this->encryptionAlgorithm,
                     'ils_encryption_key' => 'bar',
                 ]
             ]
         );
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'aes', 'newkey' => 'bar']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'bar']
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertEquals(
             "No changes requested -- no action needed.\n",
@@ -192,7 +201,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'aes', 'newkey' => 'foo']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
             "\tUpdating {$this->expectedConfigIniPath}...\n\tWrite failed!\n",
@@ -211,7 +222,11 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $writer->expects($this->exactly(3))->method('set')
             ->withConsecutive(
                 ['Authentication', 'encrypt_ils_password', true],
-                ['Authentication', 'ils_encryption_algo', 'aes'],
+                [
+                    'Authentication',
+                    'ils_encryption_algo',
+                    $this->encryptionAlgorithm
+                ],
                 ['Authentication', 'ils_encryption_key', 'foo']
             );
         $writer->expects($this->once())->method('save')
@@ -223,7 +238,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'aes', 'newkey' => 'foo']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertEquals(
             "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
@@ -261,7 +278,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function decode($hash)
     {
-        $cipher = new BlockCipher(new Openssl(['algorithm' => 'aes']));
+        $cipher = new BlockCipher(
+            new Openssl(['algorithm' => $this->encryptionAlgorithm])
+        );
         $cipher->setKey('foo');
         return $cipher->decrypt($hash);
     }
@@ -277,7 +296,11 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $writer->expects($this->exactly(3))->method('set')
             ->withConsecutive(
                 ['Authentication', 'encrypt_ils_password', true],
-                ['Authentication', 'ils_encryption_algo', 'aes'],
+                [
+                    'Authentication',
+                    'ils_encryption_algo',
+                    $this->encryptionAlgorithm
+                ],
                 ['Authentication', 'ils_encryption_key', 'foo']
             );
         $writer->expects($this->once())->method('save')
@@ -291,7 +314,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'aes', 'newkey' => 'foo']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertEquals(
             "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
