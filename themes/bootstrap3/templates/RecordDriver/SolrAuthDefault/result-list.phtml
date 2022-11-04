@@ -22,7 +22,7 @@
   <?php endif ?>
   <div class="media-body">
     <div class="resultItemLine1">
-      <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
+      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="title"><?=$this->escapeHtml($heading)?></a>
     </div>
 
     <div class="resultItemLine2">
