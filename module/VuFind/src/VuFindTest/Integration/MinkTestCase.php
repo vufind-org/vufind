@@ -745,7 +745,7 @@ EOS
     protected function validateHtml(?Element $page = null): void
     {
         if ((!$this->session && !$page)
-            || !($nuAddress = getenv('HTML_VALIDATOR_ADDRESS'))
+            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
         ) {
             return;
         }
@@ -798,7 +798,7 @@ EOS
                     . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
                     . implode(PHP_EOL . PHP_EOL, $errors);
 
-                if (getenv('HTML_VALIDATOR_THROW') !== '0') {
+                if (getenv('VUFIND_HTML_VALIDATOR_FAIL_TESTS') !== '0') {
                     throw new \RuntimeException($message);
                 } else {
                     $this->logWarning($message);
