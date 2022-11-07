@@ -133,6 +133,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $missing = $this->getDriver('missing', 'Missing');
         $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
+            ->disableOriginalConstructor()
             ->getMock();
         $factory->expects($this->once())->method('get')
             ->with($this->equalTo('Missing'))
@@ -227,6 +228,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $worldCatParams->set('fq', 'id:test4');
 
         $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
+            ->disableOriginalConstructor()
             ->getMock();
         $factory->expects($this->once())->method('get')
             ->with($this->equalTo('Missing'))
@@ -383,7 +385,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         FallbackLoader $fallbackLoader = null
     ) {
         if (null === $factory) {
-            $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
+            $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
+            ->disableOriginalConstructor()->getMock();
         }
         return new Loader($service, $factory, $recordCache, $fallbackLoader);
     }

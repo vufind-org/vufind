@@ -45,11 +45,11 @@ use VuFindSearch\Query\Query;
 class GetIdsCommandTest extends TestCase
 {
     /**
-     * Test that a supported backed behaves as expected
+     * Test GetIds with GetIdsInterface 
      *
      * @return void
      */
-    public function testExecute(): void
+    public function testGetIdsInterface(): void
     {
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
@@ -60,6 +60,31 @@ class GetIdsCommandTest extends TestCase
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue($backendId));
         $backend->expects($this->once())->method('getIds')
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo(0),
+                $this->equalTo(1),
+                $this->equalTo($params)
+            )->will($this->returnValue('result'));
+        $this->assertEquals('result', $command->execute($backend)->getResult());
+    }
+
+    /**
+     * Test GetIds without GetIdsInterface 
+     *
+     * @return void
+     */
+    public function testGetIdsNoInterface(): void
+    {
+        $query = new Query('foo');
+        $params = new ParamBag(['foo' => 'bar']);
+        $backendId = 'bar';
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
+            ->disableOriginalConstructor()->getMock();
+        $command = new GetIdsCommand($backendId, $query, 0, 1, $params);
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue($backendId));
+        $backend->expects($this->once())->method('search')
             ->with(
                 $this->equalTo($query),
                 $this->equalTo(0),

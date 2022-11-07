@@ -45,11 +45,11 @@ use VuFindSearch\Query\Query;
 class RandomCommandTest extends TestCase
 {
     /**
-     * Test that a supported backed behaves as expected
+     * Test Random with RandomInterface
      *
      * @return void
      */
-    public function testExecute(): void
+    public function testRandomInterface(): void
     {
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
@@ -69,11 +69,11 @@ class RandomCommandTest extends TestCase
     }
 
     /**
-     * Test that a supported backed behaves as expected
+     * Test Random (without RandomInterface)
      *
      * @return void
      */
-    public function testExecuteWithoutRandomInterface(): void
+    public function testRandomNoInterfaceWithNoResults(): void
     {
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
@@ -96,11 +96,11 @@ class RandomCommandTest extends TestCase
     }
 
     /**
-     * Test that a supported backed behaves as expected
+     * Test Random (without RandomInterface)
      *
      * @return void
      */
-    public function testWithoutRandomInterface(): void
+    public function testRandomNoInterfaceWithResultsLessThanLimit(): void
     {
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
@@ -132,6 +132,56 @@ class RandomCommandTest extends TestCase
 
             ]
             )->willReturnOnConsecutiveCalls($this->returnValue($rci), $this->returnValue($rci));
+        $this->assertEquals($rci, $command->execute($backend)->getResult());
+    }
+
+    /**
+     * Test Random (without RandomInterface)
+     *
+     * @return void
+     */
+    public function testRandomNoInterfaceWithResultsGreaterThanLimit(): void
+    {
+        $query = new Query('foo');
+        $params = new ParamBag(['foo' => 'bar']);
+        $backendId = 'bar';
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
+            ->disableOriginalConstructor()->getMock();
+        $command = new RandomCommand($backendId, $query, 2, $params);
+        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
+            ->getMock();
+        $rci->expects($this->once())->method('getTotal')
+            ->will($this->returnValue(2));
+        $backend->expects($this->exactly(3))->method('search')
+        ->withConsecutive(
+            [
+            $this->equalTo($query),
+            $this->equalTo(0),
+            $this->equalTo(0),
+            $this->equalTo($params)
+            ],
+            [
+                $this->equalTo($query),
+                $this->anything(),
+                $this->equalTo(1),
+                $this->equalTo($params)
+            ],
+            [
+                $this->equalTo($query),
+                $this->anything(),
+                $this->equalTo(1),
+                $this->equalTo($params)
+            ],
+        )
+            ->willReturnOnConsecutiveCalls(
+                $this->returnValue($rci),
+                $this->returnValue($rci),
+                $this->returnValue($rci)
+            );
+        $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
+            ->disableOriginalConstructor()->getMock();
+        $rci->expects($this->once())->method('first')->will($this->returnValue($record));
+        $rci->expects($this->once())->method('add')->with($this->equalTo($record));
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 

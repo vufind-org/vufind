@@ -44,7 +44,7 @@ use VuFindSearch\ParamBag;
 class RetrieveBatchCommandTest extends TestCase
 {
     /**
-     * Test that a supported backed behaves as expected
+     * Test RetrieveBatch with RetrieveBatchInterface
      *
      * @return void
      */
@@ -64,6 +64,37 @@ class RetrieveBatchCommandTest extends TestCase
                 $this->equalTo($params)
             )->will($this->returnValue('result'));
         $this->assertEquals('result', $command->execute($backend)->getResult());
+    }
+
+    /**
+     * Test RetrieveBatch without RetrieveBatchInterface
+     *
+     * @return void
+     */
+    public function testExecuteNotInstance(): void
+    {
+        $params = new ParamBag(['foo' => 'bar']);
+        $backendId = 'bar';
+        $ids = ["id1", "id2"];
+        $command = new RetrieveBatchCommand($backendId, $ids, $params);
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
+            ->disableOriginalConstructor()->getMock();
+        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
+            ->disableOriginalConstructor()->getMock();
+        $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
+        ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->exactly(2))->method('retrieve')
+            ->withConsecutive(
+                [ $this->equalTo('id1'),$this->equalTo($params)],
+                [$this->equalTo('id2'),$this->equalTo($params)]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $this->returnValue($rci),
+                $this->returnValue($rci)
+            );
+        $rci->expects($this->once())->method('first')->will($this->returnValue($record));
+        $rci->expects($this->once())->method('add')->with($this->equalTo($record));
+        $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 
     /**
