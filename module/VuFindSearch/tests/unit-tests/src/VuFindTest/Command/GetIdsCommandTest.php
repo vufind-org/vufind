@@ -45,7 +45,7 @@ use VuFindSearch\Query\Query;
 class GetIdsCommandTest extends TestCase
 {
     /**
-     * Test GetIds with GetIdsInterface 
+     * Test GetIds with GetIdsInterface
      *
      * @return void
      */
@@ -70,7 +70,7 @@ class GetIdsCommandTest extends TestCase
     }
 
     /**
-     * Test GetIds without GetIdsInterface 
+     * Test GetIds without GetIdsInterface
      *
      * @return void
      */
