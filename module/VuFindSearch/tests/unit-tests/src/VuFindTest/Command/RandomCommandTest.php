@@ -145,43 +145,27 @@ class RandomCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
+        $limit = 10;
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
             ->disableOriginalConstructor()->getMock();
-        $command = new RandomCommand($backendId, $query, 2, $params);
+        $command = new RandomCommand($backendId, $query, 10, $params);
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->getMock();
         $rci->expects($this->once())->method('getTotal')
-            ->will($this->returnValue(2));
-        $backend->expects($this->exactly(3))->method('search')
-        ->withConsecutive(
-            [
-            $this->equalTo($query),
-            $this->equalTo(0),
-            $this->equalTo(0),
-            $this->equalTo($params)
-            ],
-            [
-                $this->equalTo($query),
-                $this->anything(),
-                $this->equalTo(1),
-                $this->equalTo($params)
-            ],
-            [
-                $this->equalTo($query),
-                $this->anything(),
-                $this->equalTo(1),
-                $this->equalTo($params)
-            ],
-        )
-            ->willReturnOnConsecutiveCalls(
-                $this->returnValue($rci),
-                $this->returnValue($rci),
-                $this->returnValue($rci)
-            );
+            ->will($this->returnValue(20));
+        $inputs = [[$query, "0", "0", $params]];
+        $outputs = [$rci];
+        for ($i = 1; $i < $limit + 1; $i++) {
+            $inputs[] = [$query, $this->anything(), "1", $params];
+            $outputs[] = $rci;
+        }
+        $backend->expects($this->exactly(11))->method('search')
+            ->withConsecutive(...$inputs)
+            ->willReturnOnConsecutiveCalls(...$outputs);
         $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
             ->disableOriginalConstructor()->getMock();
-        $rci->expects($this->once())->method('first')->will($this->returnValue($record));
-        $rci->expects($this->once())->method('add')->with($this->equalTo($record));
+        $rci->expects($this->exactly(9))->method('first')->will($this->returnValue($record));
+        $rci->expects($this->exactly(9))->method('add')->with($this->equalTo($record));
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 
