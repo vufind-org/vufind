@@ -470,13 +470,22 @@ body.rtl {
   color: #555;
   text-decoration: none;
 }
+
+
 .search-filter-remove {
-  margin: 4px 1px 4px 4px;
-  font-weight: normal;
   color: #fff;
-}
-.active-filters .search-filter-remove:hover {
-  color: red;
+  font-weight: normal;
+  margin-bottom: 4px;
+  text-decoration: none;
+
+  &:focus,
+  &:hover {
+    color: #fff;
+
+    span[class^="icon-"] {
+      color: red;
+    }
+  }
 }
 .search-filter-dropdown {
   display: inline-block;
