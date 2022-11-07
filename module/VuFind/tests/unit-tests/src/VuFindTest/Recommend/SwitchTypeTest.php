@@ -104,9 +104,9 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
         $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $results->expects($this->any())->method('getParams')
+        $results->expects($this->once())->method('getParams')
             ->will($this->returnValue($parms));
-        $parms->expects($this->any())->method('getSearchHandler')
+        $parms->expects($this->once())->method('getSearchHandler')
             ->will($this->returnValue($searchHandler));
         $obj->process($results);
         $this->assertSame($expectedResult, $obj->getNewHandler());
@@ -127,9 +127,9 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
         $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $results->expects($this->any())->method('getParams')
+        $results->expects($this->once())->method('getParams')
             ->will($this->returnValue($parms));
-        $parms->expects($this->any())->method('getSearchHandler')
+        $parms->expects($this->once())->method('getSearchHandler')
             ->will($this->returnValue("bar"));
         $obj->process($results);
         $this->assertSame($results, $obj->getresults());

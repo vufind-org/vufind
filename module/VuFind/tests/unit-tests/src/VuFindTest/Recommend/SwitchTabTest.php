@@ -178,7 +178,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($obj->setConfig(""));
     }
 
-     /**
+    /**
      * Test the process method.
      *
      * @return void
