@@ -111,7 +111,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.filters .filters-title')->getText()
         );
         $this->assertEquals(
-            'Adult children of aging parents',
+            'Remove filter Adult children of aging parents',
             $this->findCss($page, '.filters .filter-value')->getText()
         );
     }
