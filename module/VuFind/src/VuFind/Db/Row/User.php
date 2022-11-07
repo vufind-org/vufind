@@ -703,10 +703,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * Destroy the user.
      *
      * @param bool $removeComments Whether to remove user's comments
+     * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
      */
-    public function delete($removeComments = true)
+    public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
@@ -722,6 +723,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         if ($removeComments) {
             $comments = $this->getDbTable('Comments');
             $comments->deleteByUser($this);
+        }
+        if ($removeRatings) {
+            $ratings = $this->getDbTable('Ratings');
+            $ratings->deleteByUser($this);
         }
 
         // Remove the user itself:

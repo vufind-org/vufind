@@ -1583,25 +1583,29 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getConfig($function, $params = [])
     {
         if ($function == 'Holds') {
+            $holdsConfig = $this->config['Holds'] ?? [];
             $extraHoldFields = empty($this->getPickUpLocations(null))
                 ? 'comments:requiredByDate'
                 : 'comments:pickUpLocation:requiredByDate';
-            return [
+            $defaults =  [
                 'HMACKeys' => 'item_id:holdtype:item_agency_id:id:bib_id',
                 'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => '0:2:0',
                 'consortium' => $this->consortium,
             ];
+            return $holdsConfig + $defaults;
         }
         if ($function == 'StorageRetrievalRequests') {
+            $config = $this->config['StorageRetrievalRequests'] ?? [];
             $extraFields = empty($this->getPickUpLocations(null))
                 ? 'comments:requiredByDate:item-issue'
                 : 'comments:pickUpLocation:requiredByDate:item-issue';
-            return [
+            $defaults =  [
                 'HMACKeys' => 'id:item_id:item_agency_id:id:bib_id',
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => '0:2:0',
             ];
+            return $config + $defaults;
         }
         return [];
     }

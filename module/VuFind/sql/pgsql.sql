@@ -63,6 +63,26 @@ CREATE INDEX resource_tags_list_id_idx ON resource_tags (list_id);
 -- --------------------------------------------------------
 
 --
+-- Table structure for table ratings
+--
+
+DROP TABLE IF EXISTS "ratings";
+
+CREATE TABLE ratings (
+id SERIAL,
+user_id int DEFAULT NULL,
+resource_id int DEFAULT NULL,
+rating int NOT NULL,
+created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (id)
+);
+CREATE INDEX ratings_user_id_idx ON ratings (user_id);
+CREATE INDEX ratings_resource_id_idx ON ratings (resource_id);
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table search. Than fixed created column default value. Old value is 0000-00-00.
 --
 
@@ -384,6 +404,14 @@ ADD CONSTRAINT resource_tags_ibfk_14 FOREIGN KEY (resource_id) REFERENCES resour
 ADD CONSTRAINT resource_tags_ibfk_15 FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE,
 ADD CONSTRAINT resource_tags_ibfk_16 FOREIGN KEY (list_id) REFERENCES user_list (id) ON DELETE SET NULL,
 ADD CONSTRAINT resource_tags_ibfk_17 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL;
+
+
+--
+-- Constraints for table ratings
+--
+ALTER TABLE ratings
+ADD CONSTRAINT ratings_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL,
+ADD CONSTRAINT ratings_ibfk_2 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE;
 
 
 --
