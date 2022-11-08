@@ -136,7 +136,9 @@ MARC_PATH=`cd $MARC_PATH && pwd`
 MARC_FILE=`basename $1`
 
 #####################################################
-# Set up SolrJ symlinks for performance
+# Set up SolrJ symlinks for performance (searching
+# all the Solr .jar files slows things down; this
+# helps by pointing to only the necessary ones)
 #####################################################
 if [ -z "$SOLRJ_DIR" ]
 then
