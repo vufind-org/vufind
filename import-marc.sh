@@ -140,7 +140,7 @@ MARC_FILE=`basename $1`
 #####################################################
 if [ -z "$SOLRJ_DIR" ]
 then
-  SOLRJ_DIR="$VUFIND_HOME/solr/vufind/solrj"
+  SOLRJ_DIR="$VUFIND_HOME/solr/vendor/.solrj"
 fi
 
 if [ ! -d "$SOLRJ_DIR" ]
