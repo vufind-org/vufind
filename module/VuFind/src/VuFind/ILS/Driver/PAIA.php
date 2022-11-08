@@ -929,7 +929,11 @@ class PAIA extends DAIA
      */
     public function patronLogin($username, $password)
     {
-        if ($username == '' || $password == '') {
+        // check also for grantType as patron's password is never required when
+        // grantType = client_credentials is configured
+        if ($username == ''
+            || ($password == '' && $this->grantType != 'client_credentials')
+        ) {
             throw new ILSException('Invalid Login, Please try again.');
         }
 
@@ -1798,12 +1802,11 @@ class PAIA extends DAIA
         $header_data = [];
 
         // prepare post data depending on configured grant type
+        $post_data = [];
         switch ($this->grantType) {
         case 'password':
-            $post_data = [
-                "username"   => $username,
-                "password"   => $password
-            ];
+            $post_data["username"] = $username;
+            $post_data["password"] = $password;
             break;
         case 'client_credentials':
             // client_credentials only works if we have client_credentials
@@ -1816,9 +1819,7 @@ class PAIA extends DAIA
                         $this->config['PAIA']['clientUsername'] . ':' .
                         $this->config['PAIA']['clientPassword']
                     );
-                $post_data = [
-                    "patron" => $username // actual patron identifier
-                ];
+                $post_data["patron"] = $username; // actual patron identifier
             } else {
                 throw new ILSException(
                     'Missing username and/or password for PAIA grant_type' .
@@ -1828,17 +1829,13 @@ class PAIA extends DAIA
             break;
         }
 
-        // perform full PAIA auth and get patron info
-        $post_data = [
-            "username"   => $username,
-            "password"   => $password,
-            "grant_type" => "password",
-            "scope"      => self::SCOPE_READ_PATRON . " " .
+        // finalize post data
+        $post_data["grant_type"] = $this->grantType;
+        $post_data["scope"] = self::SCOPE_READ_PATRON . " " .
                 self::SCOPE_READ_FEES . " " .
                 self::SCOPE_READ_ITEMS . " " .
                 self::SCOPE_WRITE_ITEMS . " " .
-                self::SCOPE_CHANGE_PASSWORD
-        ];
+                self::SCOPE_CHANGE_PASSWORD;
 
         // perform full PAIA auth and get patron info
         $result = $this->httpService->post(
