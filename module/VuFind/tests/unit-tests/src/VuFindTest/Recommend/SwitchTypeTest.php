@@ -132,23 +132,6 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
         $parms->expects($this->once())->method('getSearchHandler')
             ->will($this->returnValue("bar"));
         $obj->process($results);
-        $this->assertSame($results, $obj->getresults());
-    }
-
-    /**
-     * Test init method.
-     *
-     * @return void
-     */
-    public function testInit(): void
-    {
-        $obj = new SwitchType();
-        $params = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parameters = $this->getMockBuilder(\Laminas\Stdlib\Parameters::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->assertNull($obj->init($params, $parameters));
+        $this->assertSame($results, $obj->getResults());
     }
 }

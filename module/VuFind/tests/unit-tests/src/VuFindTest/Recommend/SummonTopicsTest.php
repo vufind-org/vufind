@@ -64,7 +64,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $obj->process($results);
         $results->expects($this->once())->method('getTopicRecommendations')
             ->will($this->returnValue(false));
-        $this->assertFalse($obj->getresults());
+        $this->assertFalse($obj->getResults());
     }
 
     /**

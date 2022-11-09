@@ -47,7 +47,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      */
     public function tabConfigProvider(): array
     {
-        return ['Test1' => [[["id" => "A01",
+        return ['First tab selected' => [[["id" => "A01",
                             "class" => "class01",
                             "label" => "label01",
                             "permission" => "permission01",
@@ -68,7 +68,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                             "selected" => true,
                             "url" => "http://newurl1"
                 ]],
-                'Test2' => [[["id" => "A01",
+                'No tab selected' => [[["id" => "A01",
                             "class" => "class01",
                             "label" => "label01",
                             "permission" => "permission01",
@@ -148,23 +148,6 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     {
         $obj = new SwitchTab();
         $this->assertSame($expectedResult, $obj->getInactiveTabs($tabEnv));
-    }
-
-    /**
-     * Test init method.
-     *
-     * @return void
-     */
-    public function testInit(): void
-    {
-        $obj = new SwitchTab();
-        $params = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parameters = $this->getMockBuilder(\Laminas\Stdlib\Parameters::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->assertNull($obj->init($params, $parameters));
     }
 
     /**

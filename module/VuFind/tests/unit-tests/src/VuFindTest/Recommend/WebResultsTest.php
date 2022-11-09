@@ -45,7 +45,7 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetResults(): void
+    public function testGetSearchClassId(): void
     {
         $class = new \ReflectionClass('VuFind\Recommend\WebResults');
         $method = $class->getMethod('getSearchClassId');

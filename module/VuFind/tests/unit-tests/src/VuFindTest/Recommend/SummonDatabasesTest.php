@@ -64,6 +64,6 @@ class SummonDatabasesTest extends \PHPUnit\Framework\TestCase
         $obj->process($results);
         $results->expects($this->once())->method('getDatabaseRecommendations')
             ->will($this->returnValue(false));
-        $this->assertFalse($obj->getresults());
+        $this->assertFalse($obj->getResults());
     }
 }
