@@ -132,7 +132,7 @@ class DoiLookup extends AbstractBase
         foreach ($this->resolvers as $resolver) {
             if ($this->pluginManager->has($resolver)) {
                 $next = $this->pluginManager->get($resolver)->getLinks($dois);
-                $next = $this->proxifyIconLinks($next);
+                $next = $this->processIconLinks($next);
                 foreach ($next as $doi => $data) {
                     foreach ($data as &$current) {
                         $current['newWindow'] = $this->openInNewWindow;
@@ -157,20 +157,16 @@ class DoiLookup extends AbstractBase
     }
 
     /**
-     * Proxify any DOI icon links
+     * Proxify external DOI icon links and render local icons
      *
      * @param array $dois DOIs
      *
      * @return array
      */
-    protected function proxifyIconLinks(array $dois): array
+    protected function processIconLinks(array $dois): array
     {
-        if (!$this->proxyIcons) {
+        if (!$this->viewRenderer) {
             return $dois;
-        }
-
-        if (null === $this->viewRenderer) {
-            throw new \Exception('View renderer not available');
         }
 
         $serverHelper = $this->viewRenderer->plugin('serverurl');
@@ -179,7 +175,7 @@ class DoiLookup extends AbstractBase
 
         foreach ($dois as &$doiLinks) {
             foreach ($doiLinks as &$doi) {
-                if (!empty($doi['icon'])) {
+                if ($this->proxyIcons && !empty($doi['icon'])) {
                     $doi['icon'] = $serverHelper(
                         $urlHelper(
                             'cover-show',
@@ -187,7 +183,8 @@ class DoiLookup extends AbstractBase
                             ['query' => ['proxy' => $doi['icon']]]
                         )
                     );
-                } elseif (!empty($doi['localIcon'])) {
+                }
+                if (!empty($doi['localIcon'])) {
                     $doi['localIcon'] = $iconHelper($doi['localIcon']);
                 }
             }
