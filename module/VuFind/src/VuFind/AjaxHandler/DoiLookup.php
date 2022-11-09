@@ -169,6 +169,10 @@ class DoiLookup extends AbstractBase
             return $dois;
         }
 
+        if (null === $this->viewRenderer) {
+            throw new \Exception('View renderer not available');
+        }
+
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
         $iconHelper = $this->viewRenderer->plugin('icon');
