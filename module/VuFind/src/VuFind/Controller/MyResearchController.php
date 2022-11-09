@@ -2006,6 +2006,8 @@ class MyResearchController extends AbstractBase
         if (!$this->formWasSubmitted('submit')) {
             return $this->redirect()->toRoute('home');
         }
+        // Set up authentication so that we can retrieve the correct password policy:
+        $this->setUpAuthenticationFromRequest();
         // Pull in from POST
         $request = $this->getRequest();
         $post = $request->getPost();
@@ -2015,12 +2017,10 @@ class MyResearchController extends AbstractBase
             : false;
         // View, password policy and Captcha
         $view = $this->createViewModel($post);
-        $view->passwordPolicy = $this->getAuthManager()
-            ->getPasswordPolicy();
+        $view->passwordPolicy = $this->getAuthManager()->getPasswordPolicy();
         $view->useCaptcha = $this->captcha()->active('changePassword');
         // Check Captcha
         if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
-            $this->setUpAuthenticationFromRequest();
             return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Missing or invalid hash
@@ -2218,7 +2218,8 @@ class MyResearchController extends AbstractBase
                 $csrf->trimTokenList(0);
             }
             $user->delete(
-                $config->Authentication->delete_comments_with_user ?? true
+                $config->Authentication->delete_comments_with_user ?? true,
+                $config->Authentication->delete_ratings_with_user ?? true
             );
             $view->accountDeleted = true;
             $view->redirectUrl = $this->getAuthManager()->logout(

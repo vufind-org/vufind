@@ -137,6 +137,7 @@ $config = [
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\AuthorityRecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\BrowZineController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
@@ -201,6 +202,8 @@ $config = [
             'author' => 'VuFind\Controller\AuthorController',
             'Authority' => 'VuFind\Controller\AuthorityController',
             'authority' => 'VuFind\Controller\AuthorityController',
+            'AuthorityRecord' => 'VuFind\Controller\AuthorityRecordController',
+            'authorityrecord' => 'VuFind\Controller\AuthorityRecordController',
             'Browse' => 'VuFind\Controller\BrowseController',
             'browse' => 'VuFind\Controller\BrowseController',
             'BrowZine' => 'VuFind\Controller\BrowZineController',
@@ -576,6 +579,7 @@ $config = [
             'external_session' => ['id', 'external_session_id_seq'],
             'feedback'         => ['id', 'feedback_id_seq'],
             'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
+            'ratings'          => ['id', 'ratings_id_seq'],
             'record'           => ['id', 'record_id_seq'],
             'resource'         => ['id', 'resource_id_seq'],
             'resource_tags'    => ['id', 'resource_tags_id_seq'],
@@ -663,19 +667,21 @@ $recordRoutes = [
     'eitrecord' => 'EITRecord',
     'missingrecord' => 'MissingRecord',
     'primorecord' => 'PrimoRecord',
-    'solrauthrecord' => 'Authority',
+    'solrauthrecord' => 'AuthorityRecord',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
     'search2record' => 'Search2Record',
     'search2collection' => 'Search2Collection',
     'search2collectionrecord' => 'Search2Record',
+    // For backward compatibility with pre-9.0 versions:
+    'legacy-solrauthrecord' => 'Authority',
 ];
 
 // Define non tab record actions
 $nonTabRecordActions = [
     'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
     'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
-    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink',
+    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating'
 ];
 
 // Define dynamic routes -- controller => [route name => action]
@@ -688,7 +694,7 @@ $dynamicRoutes = [
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
     'Alphabrowse/Home', 'Author/FacetList', 'Author/Home', 'Author/Search',
-    'Authority/FacetList', 'Authority/Home', 'Authority/Record', 'Authority/Search',
+    'Authority/FacetList', 'Authority/Home', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'BrowZine/Home', 'BrowZine/Search',
