@@ -125,20 +125,25 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
     protected function getHandlerResults($requested = ['bar'])
     {
         $plugins = [
-            'serverurl' => function ($path) { return "http://localhost/$path"; },
+            'serverurl' => function ($path) {
+                return "http://localhost/$path";
+            },
             'url' => function ($route, $options, $params) {
                 return "$route?" . http_build_query($params['query'] ?? []);
             },
-            'icon' => function ($icon) { return "($icon)"; },
+            'icon' => function ($icon) {
+                return "($icon)";
+            },
         ];
 
         $mockRenderer = $this->container->createMock(PhpRenderer::class);
         $mockRenderer->expects($this->any())
             ->method('plugin')
-            ->willReturnCallback(function ($plugin) use ($plugins) {
-                return $plugins[$plugin] ?? null;
-            }
-        );
+            ->willReturnCallback(
+                function ($plugin) use ($plugins) {
+                    return $plugins[$plugin] ?? null;
+                }
+            );
 
         $this->container->set('ViewRenderer', $mockRenderer);
 
