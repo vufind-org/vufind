@@ -68,12 +68,11 @@ class DoiLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $pluginManager = $container->get(\VuFind\DoiLinker\PluginManager::class);
+            ->get('config')->toArray();
         return new $requestedName(
-            $pluginManager,
-            $config->DOI->resolver ?? null,
-            $config->DOI->multi_resolver_mode ?? 'first'
+            $container->get(\VuFind\DoiLinker\PluginManager::class),
+            $config,
+            $container->get('ViewRenderer')
         );
     }
 }

@@ -123,14 +123,35 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
     }
 
     /**
+     * Data provider for testSingleLookup
+     *
+     * @return array
+     */
+    public function getTestSingleLookupData(): array
+    {
+        return [
+            [
+                ['DOI' => ['resolver' => 'foo']],
+                false
+            ],
+            [
+                ['DOI' => ['resolver' => 'foo', 'new_window' => true]],
+                true
+            ]
+        ];
+    }
+
+    /**
      * Test a single DOI lookup.
+     *
+     * @dataProvider getTestSingleLookupData
      *
      * @return void
      */
-    public function testSingleLookup()
+    public function testSingleLookup(array $config, bool $newWindow)
     {
         // Set up config manager:
-        $this->setupConfig(['DOI' => ['resolver' => 'foo']]);
+        $this->setupConfig($config);
 
         // Set up plugin manager:
         $this->setupPluginManager(
@@ -139,7 +160,17 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 
         // Test the handler:
         $this->assertEquals(
-            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            [
+                [
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => $newWindow
+                        ]
+                    ]
+                ]
+            ],
             $this->getHandlerResults()
         );
     }
@@ -164,7 +195,17 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 
         // Test the handler:
         $this->assertEquals(
-            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            [
+                [
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                        ]
+                    ]
+                ]
+            ],
             $this->getHandlerResults()
         );
     }
@@ -191,7 +232,17 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 
         // Test the handler:
         $this->assertEquals(
-            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            [
+                [
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                        ]
+                    ]
+                ]
+            ],
             $this->getHandlerResults()
         );
     }
@@ -225,8 +276,20 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->assertEquals(
             [
                 [
-                    'bar' => [['link' => 'http://baz', 'label' => 'baz']],
-                    'bar2' => [['link' => 'http://baz2', 'label' => 'baz2']],
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                        ]
+                    ],
+                    'bar2' => [
+                        [
+                            'link' => 'http://baz2',
+                            'label' => 'baz2',
+                            'newWindow' => false,
+                        ]
+                    ],
                 ]
             ],
             $this->getHandlerResults($request)
@@ -257,8 +320,16 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
             [
                 [
                     'bar' => [
-                        ['link' => 'http://baz', 'label' => 'baz'],
-                        ['link' => 'http://baz2', 'label' => 'baz2'],
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                        ],
+                        [
+                            'link' => 'http://baz2',
+                            'label' => 'baz2',
+                            'newWindow' => false,
+                        ],
                     ]
                 ]
             ],
