@@ -27,7 +27,7 @@ VuFind.register('doi', function Doi() {
           if ("undefined" !== typeof response.data[currentDoi]) {
             $(doiEl).empty();
             for (var i = 0; i < response.data[currentDoi].length; i++) {
-              var newLink = $('<a />');
+              var newLink = $('<a rel="noreferrer" />');
               newLink.attr('href', response.data[currentDoi][i].link);
               newLink.text(' ' + response.data[currentDoi][i].label);
               if (response.data[currentDoi][i].newWindow) {
