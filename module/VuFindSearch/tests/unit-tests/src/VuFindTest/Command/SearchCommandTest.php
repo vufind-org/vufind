@@ -74,7 +74,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test setter and getter of Search query. 
+     * Test setter and getter of Search query.
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test setter and getter of Search offset. 
+     * Test setter and getter of Search offset.
      *
      * @return void
      */
@@ -102,7 +102,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test setter and getter of Search limit. 
+     * Test setter and getter of Search limit.
      *
      * @return void
      */
@@ -115,7 +115,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test setter and getter of Search Parameters. 
+     * Test setter and getter of Search Parameters.
      *
      * @return void
      */
@@ -132,7 +132,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test setter and getter of command context. 
+     * Test setter and getter of command context.
      *
      * @return void
      */
@@ -146,7 +146,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test setter and getter of target backend identifier. 
+     * Test setter and getter of target backend identifier.
      *
      * @return void
      */
@@ -173,16 +173,16 @@ class SearchCommandTest extends TestCase
 
     /**
      * Get test SearchCommand Object
-     * 
+     *
      * @return SearchCommand
      */
     public function getCommand()
     {
         $command = new SearchCommand(
-            'bar', 
-            new Query('foo'), 
-            0, 
-            1, 
+            'bar',
+            new Query('foo'),
+            0,
+            1,
             new ParamBag(['foo' => 'bar'])
         );
         return $command;

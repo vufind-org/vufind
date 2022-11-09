@@ -308,15 +308,15 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      * Support method to test callbacks.
      *
      * @param array $args    Command arguments
-     * @param string $class  Command class 
+     * @param string $class  Command class
      * @param string $target Target identifier
-     * 
+     *
      * @return callable
      */
     protected function getCommandChecker(
         $args = [],
         $class = \VuFindSearch\Command\RetrieveCommand::class,
-        $target = 'Solr',
+        $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
             return get_class($command) === $class
