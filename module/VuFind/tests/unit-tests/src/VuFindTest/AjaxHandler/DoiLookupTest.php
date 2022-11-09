@@ -84,7 +84,14 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->will(
                 $this->returnValue(
                     [
-                        $doi => [['link' => 'http://' . $value, 'label' => $value]]
+                        $doi => [
+                            [
+                                'link' => 'http://' . $value,
+                                'label' => $value,
+                                'icon' => 'remote-icon',
+                                'localIcon' => 'local-icon',
+                            ]
+                        ]
                     ]
                 )
             );
@@ -117,10 +124,23 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     protected function getHandlerResults($requested = ['bar'])
     {
-        $this->container->set(
-            'ViewRenderer',
-            $this->container->createMock(PhpRenderer::class)
+        $plugins = [
+            'serverurl' => function ($path) { return "http://localhost/$path"; },
+            'url' => function ($route, $options, $params) {
+                return "$route?" . http_build_query($params['query'] ?? []);
+            },
+            'icon' => function ($icon) { return "($icon)"; },
+        ];
+
+        $mockRenderer = $this->container->createMock(PhpRenderer::class);
+        $mockRenderer->expects($this->any())
+            ->method('plugin')
+            ->willReturnCallback(function ($plugin) use ($plugins) {
+                return $plugins[$plugin] ?? null;
+            }
         );
+
+        $this->container->set('ViewRenderer', $mockRenderer);
 
         $factory = new DoiLookupFactory();
         $handler = $factory($this->container, DoiLookup::class);
@@ -138,12 +158,30 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         return [
             [
                 ['DOI' => ['resolver' => 'foo']],
-                false
+                false,
+                'remote-icon',
             ],
             [
                 ['DOI' => ['resolver' => 'foo', 'new_window' => true]],
-                true
-            ]
+                true,
+                'remote-icon',
+            ],
+            [
+                ['DOI' => ['resolver' => 'foo', 'proxy_icons' => true]],
+                false,
+                'http://localhost/cover-show?proxy=remote-icon',
+            ],
+            [
+                [
+                    'DOI' => [
+                        'resolver' => 'foo',
+                        'new_window' => true,
+                        'proxy_icons' => true
+                    ]
+                ],
+                true,
+                'http://localhost/cover-show?proxy=remote-icon',
+            ],
         ];
     }
 
@@ -154,8 +192,11 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testSingleLookup(array $config, bool $newWindow)
-    {
+    public function testSingleLookup(
+        array $config,
+        bool $newWindow,
+        string $remoteIcon
+    ): void {
         // Set up config manager:
         $this->setupConfig($config);
 
@@ -172,7 +213,9 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
                         [
                             'link' => 'http://baz',
                             'label' => 'baz',
-                            'newWindow' => $newWindow
+                            'newWindow' => $newWindow,
+                            'icon' => $remoteIcon,
+                            'localIcon' => '(local-icon)',
                         ]
                     ]
                 ]
@@ -208,6 +251,8 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
                             'link' => 'http://baz',
                             'label' => 'baz',
                             'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
                         ]
                     ]
                 ]
@@ -245,6 +290,8 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
                             'link' => 'http://baz',
                             'label' => 'baz',
                             'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
                         ]
                     ]
                 ]
@@ -287,6 +334,8 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
                             'link' => 'http://baz',
                             'label' => 'baz',
                             'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
                         ]
                     ],
                     'bar2' => [
@@ -294,6 +343,8 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
                             'link' => 'http://baz2',
                             'label' => 'baz2',
                             'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
                         ]
                     ],
                 ]
@@ -330,11 +381,15 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
                             'link' => 'http://baz',
                             'label' => 'baz',
                             'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
                         ],
                         [
                             'link' => 'http://baz2',
                             'label' => 'baz2',
                             'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
                         ],
                     ]
                 ]
