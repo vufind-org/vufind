@@ -88,34 +88,26 @@ class DoiLookup extends AbstractBase
     /**
      * Constructor
      *
-     * @param PluginManager       $pluginManager DOI Linker Plugin Manager
-     * @param array|string        $config        Main configuration (or DOI resolver
-     * configuration value in legacy constructor)
-     * @param ViewRenderer|string $viewRenderer  View renderer (or multi-mode setting
-     * in legacy constructor)
+     * @param PluginManager     $pluginManager DOI Linker Plugin Manager
+     * @param RendererInterface $viewRenderer  View renderer
+     * @param array             $config        Main configuration
      */
     public function __construct(
         PluginManager $pluginManager,
-        $config,
-        $viewRenderer
+        RendererInterface $viewRenderer,
+        array $config
     ) {
         $this->pluginManager = $pluginManager;
-        // BC support for old factories:
-        if (is_string($config)) {
-            $this->resolvers = array_map('trim', explode(',', $config));
-            $this->multiMode = trim(strtolower($viewRenderer));
-        } else {
-            $this->resolvers
-                = array_map('trim', explode(',', $config['DOI']['resolver'] ?? ''));
-            // Behavior to use when multiple resolvers to find results for the same
-            // DOI (may be 'first' -- use first match, or 'merge' -- use all
-            // results):
-            $this->multiMode
-                = trim(strtolower($config['DOI']['multi_resolver_mode'] ?? 'first'));
-            $this->proxyIcons = !empty($config['DOI']['proxy_icons']);
-            $this->openInNewWindow = !empty($config['DOI']['new_window']);
-            $this->viewRenderer = $viewRenderer;
-        }
+        $this->resolvers
+            = array_map('trim', explode(',', $config['DOI']['resolver'] ?? ''));
+        // Behavior to use when multiple resolvers to find results for the same
+        // DOI (may be 'first' -- use first match, or 'merge' -- use all
+        // results):
+        $this->multiMode
+            = trim(strtolower($config['DOI']['multi_resolver_mode'] ?? 'first'));
+        $this->proxyIcons = !empty($config['DOI']['proxy_icons']);
+        $this->openInNewWindow = !empty($config['DOI']['new_window']);
+        $this->viewRenderer = $viewRenderer;
     }
 
     /**
@@ -165,10 +157,6 @@ class DoiLookup extends AbstractBase
      */
     protected function processIconLinks(array $dois): array
     {
-        if (!$this->viewRenderer) {
-            return $dois;
-        }
-
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
         $iconHelper = $this->viewRenderer->plugin('icon');

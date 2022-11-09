@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\AjaxHandler\DoiLookup;
 use VuFind\AjaxHandler\DoiLookupFactory;
 use VuFind\DoiLinker\DoiLinkerInterface;
@@ -116,6 +117,11 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     protected function getHandlerResults($requested = ['bar'])
     {
+        $this->container->set(
+            'ViewRenderer',
+            $this->container->createMock(PhpRenderer::class)
+        );
+
         $factory = new DoiLookupFactory();
         $handler = $factory($this->container, DoiLookup::class);
         $params = $this->getParamsHelper(['doi' => $requested]);

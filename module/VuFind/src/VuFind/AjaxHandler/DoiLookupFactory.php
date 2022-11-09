@@ -71,8 +71,8 @@ class DoiLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
             ->get('config')->toArray();
         return new $requestedName(
             $container->get(\VuFind\DoiLinker\PluginManager::class),
-            $config,
-            $container->get('ViewRenderer')
+            $container->get('ViewRenderer'),
+            $config
         );
     }
 }
