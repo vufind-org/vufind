@@ -71,7 +71,7 @@ class RetrieveBatchCommandTest extends TestCase
      *
      * @return void
      */
-    public function testExecuteNotInstance(): void
+    public function testExecuteWithoutRetrieveBatchInterface(): void
     {
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
@@ -82,11 +82,11 @@ class RetrieveBatchCommandTest extends TestCase
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->disableOriginalConstructor()->getMock();
         $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
-        ->disableOriginalConstructor()->getMock();
+            ->disableOriginalConstructor()->getMock();
         $backend->expects($this->exactly(2))->method('retrieve')
             ->withConsecutive(
-                [ $this->equalTo('id1'),$this->equalTo($params)],
-                [$this->equalTo('id2'),$this->equalTo($params)]
+                [ $this->equalTo('id1'), $this->equalTo($params)],
+                [$this->equalTo('id2'), $this->equalTo($params)]
             )
             ->willReturnOnConsecutiveCalls(
                 $this->returnValue($rci),

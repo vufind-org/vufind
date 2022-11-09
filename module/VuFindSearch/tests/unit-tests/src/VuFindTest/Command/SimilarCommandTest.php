@@ -50,11 +50,9 @@ class SimilarCommandTest extends TestCase
      */
     public function testCommand(): void
     {
-        $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $params = new ParamBag(['foo' => 'bar']);
+        $backend = $this->getBackend();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue($backendId));
         $backend->expects($this->once())->method('similar')
@@ -62,23 +60,52 @@ class SimilarCommandTest extends TestCase
                 $this->equalTo("id"),
                 $this->equalTo($params)
             )->will($this->returnValue('result'));
-
-        $command = new SimilarCommand($backendId, "id", $params);
-
+        $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
+    }
 
-        $this->assertEquals('similar', $command->getContext());
-        $command->setContext('similar2');
-        $this->assertEquals('similar2', $command->getContext());
-
-        $this->assertEquals($backendId, $command->getTargetIdentifier());
-        $command->setTargetIdentifier($backendId . '2');
-        $this->assertEquals($backendId . '2', $command->getTargetIdentifier());
-
-        $this->assertEquals($params, $command->getSearchParameters());
+    /**
+     * Test setter and getter of Search Parameters.
+     *
+     * @return void
+     */
+    public function testSearchParameters()
+    {
+        $command = $this->getCommand();
+        $this->assertEquals(
+            new ParamBag(['foo' => 'bar']),
+            $command->getSearchParameters()
+        );
         $params2 = new ParamBag(['foo' => 'baz']);
         $command->setSearchParameters($params2);
         $this->assertEquals($params2, $command->getSearchParameters());
+    }
+
+    /**
+     * Test setter and getter of target backend identifier.
+     *
+     * @return void
+     */
+    public function testTargetBackendIdentifier()
+    {
+        $backendId = 'bar';
+        $command = $this->getCommand();
+        $this->assertEquals($backendId, $command->getTargetIdentifier());
+        $command->setTargetIdentifier($backendId . '2');
+        $this->assertEquals($backendId . '2', $command->getTargetIdentifier());
+    }
+
+    /**
+     * Test setter and getter of command context.
+     *
+     * @return void
+     */
+    public function testCommandContext()
+    {
+        $command = $this->getCommand();
+        $this->assertEquals('similar', $command->getContext());
+        $command->setContext('similar2');
+        $this->assertEquals('similar2', $command->getContext());
     }
 
     /**
@@ -88,7 +115,7 @@ class SimilarCommandTest extends TestCase
      */
     public function testTooEarlyResults(): void
     {
-        $command = new SimilarCommand('bar', 'id', new ParamBag(['foo' => 'bar']));
+        $command = $this->getCommand();
         $this->expectExceptionMessage('Command was not yet executed');
         $command->getResult();
     }
@@ -100,11 +127,36 @@ class SimilarCommandTest extends TestCase
      */
     public function testgetArguments(): void
     {
-        $command = new SimilarCommand('bar', 'id', new ParamBag(['foo' => 'bar']));
-
+        $command = $this->getCommand();
         $this->assertEquals(
             ['id', new ParamBag(['foo' => 'bar'])],
             $command->getArguments()
         );
+    }
+
+    /**
+     * Get test SimilarCommand Object
+     *
+     * @return SimilarCommand
+     */
+    public function getCommand()
+    {
+        $params = new ParamBag(['foo' => 'bar']);
+        $backendId = 'bar';
+
+        $command = new SimilarCommand($backendId, "id", $params);
+        return $command;
+    }
+
+    /**
+     * Get test backend Object
+     *
+     * @return Backend
+     */
+    public function getBackend()
+    {
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
+            ->disableOriginalConstructor()->getMock();
+        return $backend;
     }
 }

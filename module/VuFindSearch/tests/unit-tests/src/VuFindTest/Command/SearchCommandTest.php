@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2022.
  * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -69,34 +69,94 @@ class SearchCommandTest extends TestCase
                 $this->equalTo(1),
                 $this->equalTo($params)
             )->will($this->returnValue('result'));  // not a realistic value!
-        $command = new SearchCommand($backendId, $query, 0, 1, $params);
+        $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
+    }
 
+    /**
+     * Test setter and getter of Search query. 
+     *
+     * @return void
+     */
+    public function testSearchQuery()
+    {
+        $command = $this->getCommand();
+        $query = new Query('foo');
         $this->assertEquals($query, $command->getQuery());
         $query2 = new Query('fox');
         $command->setQuery($query2);
         $this->assertEquals($query2, $command->getQuery());
+    }
 
+    /**
+     * Test setter and getter of Search offset. 
+     *
+     * @return void
+     */
+    public function testSearchOffset()
+    {
+        $command = $this->getCommand();
         $this->assertEquals(0, $command->getOffset());
         $command->setOffset(20);
         $this->assertEquals(20, $command->getOffset());
+    }
 
+    /**
+     * Test setter and getter of Search limit. 
+     *
+     * @return void
+     */
+    public function testSearchLimit()
+    {
+        $command = $this->getCommand();
         $this->assertEquals(1, $command->getLimit());
         $command->setLimit(2);
         $this->assertEquals(2, $command->getLimit());
+    }
 
-        $this->assertEquals('search', $command->getContext());
-        $command->setContext('search2');
-        $this->assertEquals('search2', $command->getContext());
-
-        $this->assertEquals($backendId, $command->getTargetIdentifier());
-        $command->setTargetIdentifier($backendId . '2');
-        $this->assertEquals($backendId . '2', $command->getTargetIdentifier());
-
-        $this->assertEquals($params, $command->getSearchParameters());
+    /**
+     * Test setter and getter of Search Parameters. 
+     *
+     * @return void
+     */
+    public function testSearchParameters()
+    {
+        $command = $this->getCommand();
+        $this->assertEquals(
+            new ParamBag(['foo' => 'bar']),
+            $command->getSearchParameters()
+        );
         $params2 = new ParamBag(['foo' => 'baz']);
         $command->setSearchParameters($params2);
         $this->assertEquals($params2, $command->getSearchParameters());
+    }
+
+    /**
+     * Test setter and getter of command context. 
+     *
+     * @return void
+     */
+    public function testCommandContext()
+    {
+        $backendId = 'bar';
+        $command = $this->getCommand();
+        $this->assertEquals('search', $command->getContext());
+        $command->setContext('search2');
+        $this->assertEquals('search2', $command->getContext());
+    }
+
+    /**
+     * Test setter and getter of target backend identifier. 
+     *
+     * @return void
+     */
+    public function testTargetBackendIdentifier()
+    {
+        $backendId = 'bar';
+        $command = $this->getCommand();
+        $this->assertEquals($backendId, $command->getTargetIdentifier());
+        $command->setTargetIdentifier($backendId . '2');
+        $this->assertEquals($backendId . '2', $command->getTargetIdentifier());
     }
 
     /**
@@ -106,8 +166,25 @@ class SearchCommandTest extends TestCase
      */
     public function testTooEarlyResults(): void
     {
-        $command = new SearchCommand('bar', new Query(), 0, 20);
+        $command = $this->getCommand();
         $this->expectExceptionMessage('Command was not yet executed');
         $command->getResult();
+    }
+
+    /**
+     * Get test SearchCommand Object
+     * 
+     * @return SearchCommand
+     */
+    public function getCommand()
+    {
+        $command = new SearchCommand(
+            'bar', 
+            new Query('foo'), 
+            0, 
+            1, 
+            new ParamBag(['foo' => 'bar'])
+        );
+        return $command;
     }
 }

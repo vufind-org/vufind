@@ -59,7 +59,6 @@ class SolrTest extends \PHPUnit\Framework\TestCase
             ['recordCount' => 1]
         );
         $collection->add($record);
-        $expectedQuery = new \VuFindSearch\Query\Query('previous_id_str_mv:"oldId"');
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();

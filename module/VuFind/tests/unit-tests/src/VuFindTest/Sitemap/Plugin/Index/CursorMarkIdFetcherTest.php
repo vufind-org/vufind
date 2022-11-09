@@ -193,9 +193,9 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         $service->expects($this->exactly(4))->method('invoke')
             ->withConsecutive(
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
-                [$this->isInstanceOf(GetIdsCommand::class)],
+                [$this->callback($this->getIdsExpectation('*'))],
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
-                [$this->isInstanceOf(GetIdsCommand::class)],
+                [$this->callback($this->getIdsExpectation('nextCursor'))],
             )->willReturnOnConsecutiveCalls(
                 $this->getMockKeyCommand(),
                 $commandObj,

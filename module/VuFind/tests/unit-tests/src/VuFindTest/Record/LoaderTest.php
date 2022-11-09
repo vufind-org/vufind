@@ -66,13 +66,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0] === "test";
-        };
+        $arguments = ["test", new ParamBag()];
         $service->expects($this->once())->method('invoke')
-                ->with($this->callback($checkCommand))
+                ->with($this->callback($this->getCommandChecker($arguments)))
                 ->will($this->returnValue($commandObj));
         $loader = $this->getLoader($service);
         $loader->load('test');
@@ -93,14 +89,14 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveCommand::class
-                && $command->getTargetIdentifier() === "Summon"
-                && $command->getArguments()[0] === "test";
-        };
+        $class = \VuFindSearch\Command\RetrieveCommand::class;
+        $arguments = ["test", new ParamBag()];
         $service->expects($this->once())->method('invoke')
-                ->with($this->callback($checkCommand))
-                ->will($this->returnValue($commandObj));
+            ->with(
+                $this->callback(
+                    $this->getCommandChecker($arguments, $class, 'Summon')
+                )
+            )->will($this->returnValue($commandObj));
         $driver = $this->getDriver();
         $fallbackLoader = $this->getFallbackLoader([$driver]);
         $loader = $this->getLoader($service, null, null, $fallbackLoader);
@@ -122,15 +118,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0] === "test";
-        };
+        $arguments = ["test", new ParamBag()];
         $service->expects($this->once())->method('invoke')
-                ->with($this->callback($checkCommand))
-                ->will($this->returnValue($commandObj));
-
+            ->with($this->callback($this->getCommandChecker($arguments)))
+            ->will($this->returnValue($commandObj));
         $missing = $this->getDriver('missing', 'Missing');
         $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
             ->disableOriginalConstructor()
@@ -159,13 +150,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0] === "test";
-        };
+        $arguments = ["test", new ParamBag()];
         $service->expects($this->once())->method('invoke')
-            ->with($this->callback($checkCommand))
+            ->with($this->callback($this->getCommandChecker($arguments)))
             ->will($this->returnValue($commandObj));
         $loader = $this->getLoader($service);
         $this->assertEquals($driver, $loader->load('test'));
@@ -191,16 +178,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0] === "test"
-                && $command->getArguments()[1]->getArrayCopy() === ['fq'=> ['id:test']];
-        };
+        $arguments = ["test", $params];
         $service->expects($this->once())->method('invoke')
-                ->with($this->callback($checkCommand))
-                ->will($this->returnValue($commandObj));
-
+            ->with($this->callback($this->getCommandChecker($arguments)))
+            ->will($this->returnValue($commandObj));
         $loader = $this->getLoader($service);
         $this->assertEquals($driver, $loader->load('test', 'Solr', false, $params));
     }
@@ -243,31 +224,16 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
 
-        $checkCommand1 = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveBatchCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0] === ["test1", "test2"]
-                && $command->getArguments()[1]->getArrayCopy() === ['fq'=> ['id:test1']];
-        };
+        $class = \VuFindSearch\Command\RetrieveBatchCommand::class;
+        $arguments1 = [["test1", "test2"], $solrParams];
+        $arguments2 = [["test3"], new ParamBag()];
+        $arguments3 = [["test4"], $worldCatParams];
 
-        $checkCommand2 = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveBatchCommand::class
-                && $command->getTargetIdentifier() === "Summon"
-                && $command->getArguments()[0] === ["test3"]
-                && $command->getArguments()[1]->getArrayCopy() === [];
-        };
-
-        $checkCommand3 = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveBatchCommand::class
-                && $command->getTargetIdentifier() === "WorldCat"
-                && $command->getArguments()[0] === ["test4"]
-                && $command->getArguments()[1]->getArrayCopy() === ['fq'=> ['id:test4']];
-        };
         $service->expects($this->exactly(3))->method('invoke')
             ->withConsecutive(
-                [$this->callback($checkCommand1)],
-                [$this->callback($checkCommand2)],
-                [$this->callback($checkCommand3)]
+                [$this->callback($this->getCommandChecker($arguments1, $class))],
+                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
+                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))]
             )
             ->will($this->returnValue($commandObj));
 
@@ -312,24 +278,13 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
 
-        $checkCommand1  = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveBatchCommand::class
-                && ($command->getTargetIdentifier() === "Solr")
-                && $command->getArguments()[0] === ["test1", "test2"]
-                && ($command->getArguments()[1]->getArrayCopy() === ['fq'=> ['id:test1']]);
-        };
-
-        $checkCommand2 = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveBatchCommand::class
-                && ($command->getTargetIdentifier() === "Summon")
-                && $command->getArguments()[0] === ["test3"]
-                && ($command->getArguments()[1]->getArrayCopy() === []);
-        };
-
+        $arguments1 = [["test1", "test2"], $solrParams];
+        $arguments2 = [["test3"], new ParamBag()];
+        $class = \VuFindSearch\Command\RetrieveBatchCommand::class;
         $service->expects($this->exactly(2))->method('invoke')
             ->withConsecutive(
-                [$this->callback($checkCommand1)],
-                [$this->callback($checkCommand2)]
+                [$this->callback($this->getCommandChecker($arguments1, $class))],
+                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))]
             )
             ->will($this->returnValue($commandObj));
 
@@ -347,6 +302,27 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
                 ['Solr' => $solrParams]
             )
         );
+    }
+
+    /**
+     * Support method to test callbacks.
+     *
+     * @param array $args    Command arguments
+     * @param string $class  Command class 
+     * @param string $target Target identifier
+     * 
+     * @return callable
+     */
+    protected function getCommandChecker(
+        $args = [],
+        $class = \VuFindSearch\Command\RetrieveCommand::class,
+        $target = 'Solr',
+    ) {
+        return function ($command) use ($class, $args, $target) {
+            return get_class($command) === $class
+                && $command->getArguments() == $args
+                && $command->getTargetIdentifier() === $target;
+        };
     }
 
     /**

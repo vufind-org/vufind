@@ -181,13 +181,13 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
 
-        $checkCommand = function ($command) {
+        $checkCommand = function ($command) use ($expectedParams) {
             return get_class($command) === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === 'Solr'
                 && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 20
-                && get_class($command->getArguments()[3]) == \VuFindSearch\ParamBag::class;
+                && $command->getArguments()[3]->getArrayCopy() == $expectedParams;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -454,8 +454,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         // No need to validate the parameters, just return the requested results:
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
 

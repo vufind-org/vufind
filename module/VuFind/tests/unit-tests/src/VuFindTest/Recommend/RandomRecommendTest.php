@@ -204,8 +204,8 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
