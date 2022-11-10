@@ -159,7 +159,9 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                     'department' => $departments[$departmentId] ?? ''
                 ];
             }
-            $index[$id]['bib_id'][] = $record['BIB_ID'];
+            if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
+                $index[$id]['bib_id'][] = $record['BIB_ID'];
+            }
         }
 
         $updates = new UpdateDocument();
