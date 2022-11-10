@@ -33,7 +33,7 @@ VuFind.register('doi', function Doi() {
               if (response.data[currentDoi][i].newWindow) {
                 newLink.attr('target', '_blank');
               }
-              newLink.attr('rel', 'noopener noreferrer');
+              newLink.attr('rel', 'noreferrer');
               if (typeof response.data[currentDoi][i].icon !== 'undefined') {
                 var icon = $('<img />');
                 icon.attr('src', response.data[currentDoi][i].icon);
