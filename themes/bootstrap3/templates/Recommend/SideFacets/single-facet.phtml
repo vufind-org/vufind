@@ -31,11 +31,7 @@
 <?php if ($hasSubLinks): ?>
   <div class="<?=implode(' ', $classList) ?>">
 <?php else: ?>
-  <a href="<?=$toggleUrl ?>"
-     class="<?=implode(' ', $classList) ?>"
-     data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>"
-     data-count="<?=$this->facet['count'] ?>"
-     <?php if($this->facet['isApplied']): ?>title="<?=$this->transEscAttr('applied_filter') ?>:"<?php endif;?> data-lightbox-ignore>
+  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>" <?php if($this->facet['isApplied']): ?>title="<?=$this->transEscAttr('applied_filter') ?>:"<?php endif;?> data-lightbox-ignore>
 <?php endif; ?>
 
   <?php if ($hasSubLinks): ?>
