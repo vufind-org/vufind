@@ -1483,11 +1483,9 @@ class Folio extends AbstractAPI implements
             'reserves',
             '/coursereserves/reserves'
         ) as $item) {
-            try {
-                $bibId = $this->getBibId(null, null, $item->itemId);
-            } catch (\Exception $e) {
-                $bibId = null;
-            }
+            $idProperty = $this->getBibIdType() === 'hrid'
+                ? 'instanceHrid' : 'instanceId';
+            $bibId = $item->copiedItem->$idProperty ?? null;
             if ($bibId !== null) {
                 $courseData = $this->getCourseDetails(
                     $item->courseListingId ?? null
