@@ -27,12 +27,13 @@ VuFind.register('doi', function Doi() {
           if ("undefined" !== typeof response.data[currentDoi]) {
             $(doiEl).empty();
             for (var i = 0; i < response.data[currentDoi].length; i++) {
-              var newLink = $('<a rel="noopener noreferrer" />');
+              var newLink = $('<a />');
               newLink.attr('href', response.data[currentDoi][i].link);
               newLink.text(' ' + response.data[currentDoi][i].label);
               if (response.data[currentDoi][i].newWindow) {
                 newLink.attr('target', '_blank');
               }
+              newLink.attr('rel', 'noopener noreferrer');
               if (typeof response.data[currentDoi][i].icon !== 'undefined') {
                 var icon = $('<img />');
                 icon.attr('src', response.data[currentDoi][i].icon);
