@@ -46,8 +46,9 @@
 
   <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
     <span class="badge">
-      <?=$this->localizedNumber($this->facet['count']) ?>
-      <span class="sr-only"><?=$this->transEsc('results') ?></span>
+      <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
+      <span class="sr-only"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
+      <span aria-hidden="true"><?=$currentCount ?></span>
     </span>
   <?php endif; ?>
 
