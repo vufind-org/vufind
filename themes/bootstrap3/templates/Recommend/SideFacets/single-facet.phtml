@@ -45,8 +45,9 @@
   <?php endif; ?>
 
   <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
-    <span class="badge" aria-label="<?=$this->transEsc('results') ?>:">
+    <span class="badge">
       <?=$this->localizedNumber($this->facet['count']) ?>
+      <span class="sr-only"><?=$this->transEsc('results') ?></span>
     </span>
   <?php endif; ?>
 
