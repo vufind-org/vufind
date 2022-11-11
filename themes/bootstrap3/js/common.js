@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
+/*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -512,6 +512,10 @@ function setupIeSupport() {
   if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
     $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
   }
+}
+
+function unwrapJQuery(node) {
+  return node instanceof Node ? node : node[0];
 }
 
 function setupJumpMenus(_container) {

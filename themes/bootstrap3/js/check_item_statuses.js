@@ -1,4 +1,4 @@
-/*global StatusAjaxQueue, VuFind */
+/*global StatusAjaxQueue, VuFind, unwrapJQuery */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   function formatCallnumbers(callnumber, callnumber_handler) {
@@ -214,7 +214,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   }
 
   function init($container = document) {
-    const container = $container instanceof Node ? $container : $container[0];
+    const container = unwrapJQuery($container);
 
     if (VuFind.isPrinting()) {
       checkAllItemStatuses(container);
@@ -222,7 +222,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       VuFind.observerManager.createIntersectionObserver(
         'itemStatuses',
         checkItemStatus,
-        (container).querySelectorAll('.ajaxItem')
+        container.querySelectorAll('.ajaxItem')
       );
     }
   }

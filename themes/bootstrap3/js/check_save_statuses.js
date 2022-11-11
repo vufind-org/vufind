@@ -1,4 +1,4 @@
-/*global htmlEncode, userIsLoggedIn, StatusAjaxQueue, VuFind */
+/*global htmlEncode, userIsLoggedIn, StatusAjaxQueue, VuFind, unwrapJQuery */
 
 VuFind.register("saveStatuses", function ItemStatuses() {
   function displaySaveStatus(itemLists, el) {
@@ -131,7 +131,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   }
 
   function init($container = document) {
-    const container = $container instanceof Node ? $container : $container[0];
+    const container = unwrapJQuery($container);
 
     if (VuFind.isPrinting()) {
       checkAllSaveStatuses(container);
