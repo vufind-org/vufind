@@ -579,6 +579,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $list = explode(' ', $facets);
         $firstFacet = array_shift($list);
         $firstFacetCount = array_shift($list);
+        // Shift off the accessibility text
+        array_shift($list);
+        array_shift($list);
         $secondFacet = array_shift($list);
         $secondFacetCount = array_shift($list);
 
