@@ -1162,6 +1162,10 @@ class PAIA extends DAIA
                     if ($this->daiaCacheEnabled) {
                         $this->removeCachedData($holdDetails['doc_id']);
                     }
+
+                    if ($this->paiaCacheEnabled) {
+                        $this->removeCachedData($patron['cat_username']);
+                    }
                 }
             }
         }
