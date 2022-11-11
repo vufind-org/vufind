@@ -53,18 +53,18 @@ async function getLoadPaths(theme) {
     }
 
     // First identify mixins:
-    const mixinMatches = config.match(/['']mixins['']\s*=>\s*\[([^\]]+)\]/);
+    const mixinMatches = config.match(/['"]mixins['"]\s*=>\s*\[([^\]]+)\]/);
     if (mixinMatches !== null) {
       const mixinParts = mixinMatches[1].split(",");
       for (let i = 0; i < mixinParts.length; i++) {
-        const mixin = mixinParts[i].trim().replace(/['']/g, "");
+        const mixin = mixinParts[i].trim().replace(/['"]/g, "");
         loadPaths.add(`themes/${mixin}/scss/`);
         queue.push(mixin);
       }
     }
 
     // Now move up to parent theme:
-    const matches = config.match(/['']extends['']\s*=>\s*[''](\w+)['']/);
+    const matches = config.match(/['"]extends['"]\s*=>\s*['"](\w+)['"]/);
 
     // "extends" set to "false" or missing entirely? We"ve hit the end of the line:
     if (matches === null || matches[1] === "false") {
