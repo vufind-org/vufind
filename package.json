@@ -11,8 +11,8 @@
   },
   "scripts": {
     "lint": "eslint themes/**/*.js",
-    "sass-dev": "node scripts/sass.js development",
-    "sass": "node scripts/sass.js production",
+    "sass-dev": "node scripts/sass.js -m development",
+    "sass": "node scripts/sass.js -m production",
     "tsc": "tsc",
     "watch-lint": "chokidar 'themes/**/*.js' -c 'npm run lint'",
     "watch-sass": "chokidar 'themes/**/*.scss' -c 'npm run sass-dev'",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/node": "^18.11.7",
     "chokidar-cli": "^3.0.0",
+    "commander": "^9.4.1",
     "eslint": "^8.15.0",
     "jshint": "^2.13.4",
     "sass": "^1.55.0",

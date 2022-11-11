@@ -3,12 +3,31 @@
 // #TODO: exclude/ignore SCSS files
 
 const fs = require("node:fs/promises");
+const { readdirSync } = require("node:fs");
 const path = require("node:path");
 const { performance } = require("node:perf_hooks");
+const commander = require("commander");
 const sass = require("sass");
 
-// @type {string}
-const mode = process.argv[2];
+commander
+  .version("9.1", "-v, --version")
+  .usage("[OPTIONS]...")
+  .option(
+    "-m, --mode <mode>",
+    "Compilation mode (production/development).",
+    "development"
+  )
+  .option("-e, --exclude <blob...>", "Blog of files to exclude.", [])
+  .argument("[themes...]")
+  .action((_themes) => {
+    const themes =
+      _themes.length === 0 ? readdirSync(path.resolve("themes")) : _themes;
+
+    Promise.all(themes.map(compileTheme)).catch((error) => {
+      console.error(error);
+    });
+  })
+  .parse(process.argv);
 
 /**
  * [getLoadPaths description]
@@ -61,6 +80,20 @@ async function getLoadPaths(theme) {
 }
 
 /**
+ * [excludeFiles description]
+ * @param  {String} blob [description]
+ * @return {sass.FileImporter}
+ */
+function excludeFiles(blob) {
+  return {
+    findFileUrl(url) {
+      console.log(`excludeFiles ${url}`);
+      return null;
+    },
+  };
+}
+
+/**
  * [timestamp description]
  * @param  {string} theme [description]
  * @return {(string) => void}
@@ -71,7 +104,9 @@ function timestamp(theme) {
 
   return (task) => {
     console.log(
-      `${theme} ${task}: ${Math.floor(performance.now() - mark)}ms (${Math.floor(performance.now() - start)}ms)`
+      `${theme} ${task}: ${Math.floor(
+        performance.now() - mark
+      )}ms (${Math.floor(performance.now() - start)}ms)`
     );
 
     mark = performance.now();
@@ -85,15 +120,21 @@ function timestamp(theme) {
  */
 async function compileTheme(theme) {
   try {
-    const mark = timestamp(theme);
+    // @type {string}
+    const mode = commander.opts().mode;
 
+    // @type {Array<string>}
+    const exclude = commander.opts().exclude;
+
+    const mark = timestamp(theme);
     await fs.access(path.resolve(`themes/${theme}/scss/compiled.scss`));
     mark("read scss");
 
     let options = {
       loadPaths: await getLoadPaths(theme),
-      sourceMap: mode == "development",
+      importers: exclude.map(excludeFiles),
       outputStyle: mode == "production" ? "compressed" : "expanded",
+      sourceMap: mode == "development",
       logger: sass.Logger.silent,
     };
     mark("get paths");
@@ -109,11 +150,3 @@ async function compileTheme(theme) {
     }
   }
 }
-
-fs.readdir(path.resolve("themes"))
-  .then((themes) => {
-    Promise.all(themes.map(compileTheme));
-  })
-  .catch((error) => {
-    console.error(error);
-  });
