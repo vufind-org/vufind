@@ -6407,6 +6407,10 @@ ul.support {
   padding-left: 40px;
   text-indent: -30px;
 }
+ul.support li {
+  margin-bottom: 0.5em;
+  line-height: 1.5;
+}
 ul.support a {
   font-weight: bold;
 }
