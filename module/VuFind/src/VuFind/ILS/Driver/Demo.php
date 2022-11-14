@@ -8,7 +8,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2022.
+ * Copyright (C) Villanova University 2007, 2022.
  * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
