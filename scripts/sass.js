@@ -80,16 +80,18 @@ async function getLoadPaths(theme) {
 }
 
 /**
- * [excludeFiles description]
+ * [excludeBlobImporter description]
  * @param  {String} blob [description]
  * @return {sass.FileImporter}
  */
-function excludeFiles(blob) {
+function excludeBlobImporter(blob) {
   return {
-    findFileUrl(url) {
-      console.log(`excludeFiles ${url}`);
-      return null;
+    canonicalize(url) {
+      return new URL(url);
     },
+    load(url) {
+      return { contents: "" };
+    }
   };
 }
 
@@ -132,7 +134,7 @@ async function compileTheme(theme) {
 
     let options = {
       loadPaths: await getLoadPaths(theme),
-      importers: exclude.map(excludeFiles),
+      importers: exclude.map(excludeBlobImporter),
       outputStyle: mode == "production" ? "compressed" : "expanded",
       sourceMap: mode == "development",
       logger: sass.Logger.silent,
@@ -147,6 +149,8 @@ async function compileTheme(theme) {
   } catch (error) {
     if (error instanceof sass.Exception) {
       console.error(error);
+    } else {
+      throw error;
     }
   }
 }
