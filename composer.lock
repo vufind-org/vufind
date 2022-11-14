@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "08517f087b3843a953fff0fdc478e215",
+    "content-hash": "d705a9aa089626506bbeb6c016f2d8a6",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -5421,16 +5421,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.15.1",
+            "version": "v4.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "0ef6c55a3f47f89d7a374e6f835197a0b5fcf900"
+                "reference": "f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/0ef6c55a3f47f89d7a374e6f835197a0b5fcf900",
-                "reference": "0ef6c55a3f47f89d7a374e6f835197a0b5fcf900",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc",
+                "reference": "f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc",
                 "shasum": ""
             },
             "require": {
@@ -5471,9 +5471,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.1"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.2"
             },
-            "time": "2022-09-04T07:30:47+00:00"
+            "time": "2022-11-12T15:38:23+00:00"
         },
         {
             "name": "ocramius/proxy-manager",
@@ -8201,23 +8201,23 @@
         },
         {
             "name": "vufind-org/vufind-marc",
-            "version": "dev-dev",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufind-marc.git",
-                "reference": "d6866144f621e52887b73579145018daeab577a4"
+                "reference": "3e17c6dccce2f9ea1a306f9e22e8787ef25cd140"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufind-marc/zipball/d6866144f621e52887b73579145018daeab577a4",
-                "reference": "d6866144f621e52887b73579145018daeab577a4",
+                "url": "https://api.github.com/repos/vufind-org/vufind-marc/zipball/3e17c6dccce2f9ea1a306f9e22e8787ef25cd140",
+                "reference": "3e17c6dccce2f9ea1a306f9e22e8787ef25cd140",
                 "shasum": ""
             },
             "require": {
-                "opis/json-schema": "2.3.0",
-                "pcrov/jsonreader": "1.0.2",
+                "opis/json-schema": "^2.3.0",
+                "pcrov/jsonreader": "^1.0.2",
                 "php": ">=7.4.1",
-                "vufind-org/vufindcode": "1.2"
+                "vufind-org/vufindcode": "^1.2"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "3.8.0",
@@ -8230,13 +8230,13 @@
                 "sebastian/phpcpd": "6.0.3",
                 "squizlabs/php_codesniffer": "3.6.2"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "VuFind\\Marc\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0"
             ],
@@ -8254,9 +8254,9 @@
             "homepage": "https://vufind.org/",
             "support": {
                 "issues": "https://vufind.org/jira",
-                "source": "https://github.com/vufind-org/vufind-marc/tree/dev"
+                "source": "https://github.com/vufind-org/vufind-marc/tree/v1.0.0"
             },
-            "time": "2022-11-10T18:36:23+00:00"
+            "time": "2022-11-14T08:09:49+00:00"
         },
         {
             "name": "vufind-org/vufindcode",
@@ -12752,8 +12752,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ahand/mobileesp": 20,
-        "vufind-org/vufind-marc": 20
+        "ahand/mobileesp": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
