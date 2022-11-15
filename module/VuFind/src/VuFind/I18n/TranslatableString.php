@@ -50,10 +50,12 @@ class TranslatableString implements TranslatableStringInterface
      *
      * @var string
      */
-    protected $displayString;
+    protected $displayString = '';
 
     /**
      * Whether translation is allowed
+     *
+     * @var bool
      */
     protected $translatable;
 
