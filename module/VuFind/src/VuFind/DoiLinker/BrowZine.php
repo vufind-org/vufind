@@ -131,10 +131,10 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
                         'label' => $this->translate($config['linkText']),
                         'data' => $data,
                     ];
-                    if ($localIcons) {
-                        $result['localIcon'] = $config['localIcon'];
-                    } elseif (!empty($config['icon'])) {
+                    if (!$localIcons && !empty($config['icon'])) {
                         $result['icon'] = $config['icon'];
+                    } else {
+                        $result['localIcon'] = $config['localIcon'];
                     }
                     $response[$doi][] = $result;
                 }
