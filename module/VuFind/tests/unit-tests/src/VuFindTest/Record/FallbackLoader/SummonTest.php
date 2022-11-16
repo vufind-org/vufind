@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2021, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -64,13 +64,24 @@ class SummonTest extends \PHPUnit\Framework\TestCase
             ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
         );
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $search->expects($this->once())->method('retrieve')
-            ->with(
-                $this->equalTo('Summon'),
-                $this->equalTo('bar'),
-                $this->equalTo($expectedParams)
-            )->will($this->returnValue($collection));
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
+            ->will($this->returnValue($collection));
+        $checkCommand = function ($command) use ($expectedParams) {
+            return get_class($command) === \VuFindSearch\Command\RetrieveCommand::class
+                && $command->getTargetIdentifier() === "Summon"
+                && $command->getArguments()[0] === 'bar'
+                && $command->getArguments()[1] == $expectedParams;
+        };
+        $search->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
+
         $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
             ->disableOriginalConstructor()->getMock();
         $resource->expects($this->once())->method('updateRecordId')

@@ -28,6 +28,7 @@
 namespace VuFind\Record\FallbackLoader;
 
 use VuFind\Db\Table\Resource;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Service;
 
 /**
@@ -90,6 +91,7 @@ class Solr extends AbstractFallbackLoader
         $query = new \VuFindSearch\Query\Query(
             $this->legacyIdField . ':"' . addcslashes($id, '"') . '"'
         );
-        return $this->searchService->search('Solr', $query);
+        $command = new SearchCommand('Solr', $query);
+        return $this->searchService->invoke($command)->getResult();
     }
 }
