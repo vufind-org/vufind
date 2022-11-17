@@ -303,7 +303,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
-        $this->assertEquals('level1a/level2a', $filter->getText());
+        $this->assertEquals('Remove filter level1a/level2a', $filter->getText());
         $this->findCss($page, '#j1_2 .applied');
     }
 
@@ -368,7 +368,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
-        $this->assertEquals('level1a/level2a', $filter->getText());
+        $this->assertEquals('Remove filter level1a/level2a', $filter->getText());
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
             'Showing 1 - 7 results of 7 for search \'building:"hierarchy.mrc"\'',
@@ -424,7 +424,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertFilterIsStillThere($page)
     {
         $filter = $this->findCss($page, $this->activeFilterSelector);
-        $this->assertEquals('weird_ids.mrc', $filter->getText());
+        $this->assertEquals('Remove filter weird_ids.mrc', $filter->getText());
     }
 
     /**
@@ -543,7 +543,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNoResetFiltersButton($page);
 
         // Now manually clear the filter:
-        $this->clickCss($page, '.search-filter-remove');
+        $this->clickCss($page, '.filter-value');
 
         // Confirm that no filters are displayed:
         $this->assertNoFilters($page);

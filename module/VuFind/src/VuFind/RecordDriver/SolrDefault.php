@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,8 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
@@ -291,9 +293,9 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
         );
         // Disable highlighting for efficiency; not needed here:
         $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
+        $command = new SearchCommand($this->sourceIdentifier, $query, 0, 0, $params);
         return $this->searchService
-            ->search($this->sourceIdentifier, $query, 0, 0, $params)
-            ->getTotal();
+            ->invoke($command)->getResult()->getTotal();
     }
 
     /**
