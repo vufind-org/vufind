@@ -17,7 +17,7 @@
   font-size: 14px;
 }
 
-.record__biblio-value a,
+.record__biblio-value a:not(.icon-link),
 .related__title {
   display: inline-block;
 }
