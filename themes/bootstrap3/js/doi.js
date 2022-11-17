@@ -38,9 +38,9 @@ VuFind.register('doi', function Doi() {
                 var icon = $('<img />');
                 icon.attr('src', response.data[currentDoi][i].icon);
                 icon.attr('class', 'doi-icon');
-                $(doiEl).append(icon);
+                newLink.prepend(icon);
               } else if (typeof response.data[currentDoi][i].localIcon !== 'undefined') {
-                $(doiEl).append(response.data[currentDoi][i].localIcon);
+                newLink.prepend(response.data[currentDoi][i].localIcon);
               }
               $(doiEl).append(newLink);
               $(doiEl).append("<br />");
