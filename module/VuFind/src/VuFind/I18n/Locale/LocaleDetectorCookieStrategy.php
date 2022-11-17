@@ -48,7 +48,8 @@ class LocaleDetectorCookieStrategy extends CookieStrategy
      *
      * @return void
      */
-    public function found(LocaleEvent $event) {
+    public function found(LocaleEvent $event)
+    {
         // Setting a cookie is handled separately, so we don't need to do anything
         // here (see LocaleDetectorFactory).
     }
