@@ -36,7 +36,6 @@ use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use SlmLocale\LocaleEvent;
-use SlmLocale\Strategy\CookieStrategy;
 use SlmLocale\Strategy\QueryStrategy;
 use VuFind\Cookie\CookieManager;
 
@@ -87,7 +86,10 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $detector->getEventManager()->attach(
             LocaleEvent::EVENT_FOUND,
             function (EventInterface $event) use ($cookies) {
-                $cookies->set('language', $event->getParam('locale'));
+                $language = $event->getParam('locale');
+                if ($language !== $cookies->get('language')) {
+                    $cookies->set('language', $language);
+                }
             }
         );
 
@@ -109,7 +111,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $queryStrategy->setOptions(['query_key' => 'lng']);
         yield $queryStrategy;
 
-        $cookieStrategy = new CookieStrategy();
+        $cookieStrategy = new LocaleDetectorCookieStrategy();
         $cookieStrategy->setCookieName('language');
         yield $cookieStrategy;
 
