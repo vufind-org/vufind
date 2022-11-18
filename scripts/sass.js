@@ -17,7 +17,6 @@ commander
     "Compilation mode (production/development).",
     "development"
   )
-  .option("-e, --exclude <blob...>", "Blog of files to exclude.", [])
   .argument("[themes...]")
   .action((_themes) => {
     const themes =
@@ -80,22 +79,6 @@ async function getLoadPaths(theme) {
 }
 
 /**
- * [excludeBlobImporter description]
- * @param  {String} blob [description]
- * @return {sass.FileImporter}
- */
-function excludeBlobImporter(blob) {
-  return {
-    canonicalize(url) {
-      return new URL(url);
-    },
-    load(url) {
-      return { contents: "" };
-    }
-  };
-}
-
-/**
  * [timestamp description]
  * @param  {string} theme [description]
  * @return {(string) => void}
@@ -125,16 +108,12 @@ async function compileTheme(theme) {
     // @type {string}
     const mode = commander.opts().mode;
 
-    // @type {Array<string>}
-    const exclude = commander.opts().exclude;
-
     const mark = timestamp(theme);
     await fs.access(path.resolve(`themes/${theme}/scss/compiled.scss`));
     mark("read scss");
 
     let options = {
       loadPaths: await getLoadPaths(theme),
-      importers: exclude.map(excludeBlobImporter),
       outputStyle: mode == "production" ? "compressed" : "expanded",
       sourceMap: mode == "development",
       logger: sass.Logger.silent,
