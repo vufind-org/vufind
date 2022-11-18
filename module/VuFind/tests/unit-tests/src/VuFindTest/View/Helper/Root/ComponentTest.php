@@ -68,9 +68,9 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals('_ui/components/menu', $helper('menu');
-        $this->assertEquals('_ui/components/menu/sub/sub', $helper('menu/sub/sub');
-        $this->assertEquals('_ui/atoms/menu', $helper('@atoms/menu');
-        $this->assertEquals('_ui/atoms/menu/login', $helper('@atoms/menu/login');
+        $this->assertEquals('_ui/components/menu', $helper('menu'));
+        $this->assertEquals('_ui/components/menu/sub/sub', $helper('menu/sub/sub'));
+        $this->assertEquals('_ui/atoms/menu', $helper('@atoms/menu'));
+        $this->assertEquals('_ui/atoms/menu/login', $helper('@atoms/menu/login'));
     }
 }
