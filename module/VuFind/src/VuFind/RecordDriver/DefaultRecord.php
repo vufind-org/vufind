@@ -283,6 +283,28 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Return all valid ISBNs found in the record.
+     *
+     * @return array
+     */
+    public function getCleanISBNs(): array
+    {
+        $isbns = $this->getISBNs();
+        $cleanIsbns = [];
+        foreach ($isbns as $isbn) {
+            // Strip off any unwanted notes:
+            if ($pos = strpos($isbn, ' ')) {
+                $isbn = substr($isbn, 0, $pos);
+            }
+            $isbnObj = new ISBN($isbn);
+            if ($isbnObj->isValid()) {
+                $cleanIsbns[] = $isbn;
+            }
+        }
+        return $cleanIsbns;
+    }
+
+    /**
      * Get just the base portion of the first listed ISSN (or false if no ISSNs).
      *
      * @return mixed
@@ -1225,6 +1247,9 @@ class DefaultRecord extends AbstractBase
         ];
         if ($isbn = $this->getCleanISBN()) {
             $arr['isbn'] = $isbn;
+        }
+        if ($isbns = $this->getCleanISBNs()) {
+            $arr['isbns'] = $isbns;
         }
         if ($issn = $this->getCleanISSN()) {
             $arr['issn'] = $issn;

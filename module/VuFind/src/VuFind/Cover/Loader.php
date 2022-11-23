@@ -102,6 +102,13 @@ class Loader extends \VuFind\ImageLoader
     protected $isbn = null;
 
     /**
+     * User ISBNs parameter
+     *
+     * @var array[ISBN]
+     */
+    protected $isbns = null;
+
+    /**
      * User ISSN parameter
      *
      * @var string
@@ -253,6 +260,7 @@ class Loader extends \VuFind\ImageLoader
     {
         return [
             'isbn' => null,
+            'isbns' => null,
             'size' => 'small',
             'type' => null,
             'title' => null,
@@ -302,6 +310,12 @@ class Loader extends \VuFind\ImageLoader
     {
         $settings = array_merge($this->getDefaultSettings(), $settings);
         $this->isbn = new ISBN($settings['isbn'] ?? '');
+        $this->isbns = array_map(
+            function ($isbn) {
+                return new ISBN($isbn);
+            },
+            $settings['isbns'] ?? []
+        );
         $this->ismn = new ISMN($settings['ismn'] ?? '');
         if (!empty($settings['issn'])) {
             $rawissn = preg_replace('/[^0-9X]/', '', strtoupper($settings['issn']));
@@ -328,7 +342,7 @@ class Loader extends \VuFind\ImageLoader
      * (author of book, for dynamic covers), 'callnumber' (unique ID, for dynamic
      * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number),
      * 'nbn' (national bibliography number), 'ismn' (ISMN), 'uuid' (Universally
-     *  unique identifier).
+     *  unique identifier), 'isbns' (array of ISBNs).
      *
      * @return void
      */
@@ -400,6 +414,7 @@ class Loader extends \VuFind\ImageLoader
         // We should check whether we have cached images for the 13- or 10-digit
         // ISBNs. If no file exists, we'll favor the 10-digit number if
         // available for the sake of brevity.
+
         if (isset($ids['isbn'])) {
             $file = $this->getCachePath($this->size, $ids['isbn']->get13());
             if (!is_readable($file) && $ids['isbn']->get10()) {
@@ -437,6 +452,9 @@ class Loader extends \VuFind\ImageLoader
         $ids = [];
         if ($this->isbn && $this->isbn->isValid()) {
             $ids['isbn'] = $this->isbn;
+        }
+        if (!empty($this->isbns)) {
+            $ids['isbns'] = $this->isbns;
         }
         if ($this->issn && strlen($this->issn) == 8) {
             $ids['issn'] = $this->issn;

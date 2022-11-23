@@ -137,7 +137,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
           'recordid' => 'testbug2',
           'source' => '',
           'isbn' => '8820737493',
-          'oclc' => '30585539'];
+          'oclc' => '30585539',
+          'isbns' => ['8820737493', '9788072815562'],
+        ];
         $this->assertEquals($thumbnail, $this->getDriver()->getThumbnail());
     }
 
