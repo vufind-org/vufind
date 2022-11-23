@@ -282,6 +282,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $this->suggestions = [];
         foreach ($spelling as $current) {
+            $current = $current['suggestion'];
             if (!isset($this->suggestions[$current['originalQuery']])) {
                 $this->suggestions[$current['originalQuery']] = [
                     'suggestions' => []
