@@ -393,44 +393,67 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testUnquotedNormalization
+     *
+     * @return array
+     */
+    public function getTestUnquotedNormalization(): array
+    {
+        return [
+            // Unquoted ones that need changes:
+            ['this - that', 'this that'],
+            ['this -- that', 'this that'],
+            ['- this that', 'this that'],
+            ['this that -', 'this that'],
+            ['-- this -- that --', 'this that'],
+            ['this -that', 'this -that'],
+            ['this + that', 'this that'],
+            ['+ this ++ that +', 'this that'],
+            ['this +that', 'this +that'],
+            ['this / that', 'this "/" that'],
+            ['this/that', 'this/that'],
+            ['/this', 'this'],
+            ['/this that', 'this that'],
+            ['this/', 'this'],
+            ['this that/', 'this that'],
+            ['/this that/', 'this that'],
+            ['(this that', 'this that'],
+            ['((this) that', 'this that'],
+            ['this that)', 'this that'],
+            ['this (that))', 'this that'],
+            ['((( this that', 'this that'],
+
+            // Quoted ones that must not be affected:
+            ['"this - that"', '"this - that"'],
+            ['"- this that"', '"- this that"'],
+            ['"this that -"', '"this that -"'],
+            ['"this + that"', '"this + that"'],
+            ['"+ this ++ that +"', '"+ this ++ that +"'],
+            ['"this / that"', '"this / that"'],
+            ['"(this that"', '"(this that"'],
+            ['"(this (that"', '"(this (that"'],
+            ['"this) that"', '"this) that"'],
+            ['"((( this that"', '"((( this that"'],
+            ['"((("', '"((("'],
+        ];
+    }
+
+    /**
      * Test normalization of unquoted special characters
+     *
+     * @param string $input    Input string
+     * @param string $expected Expected result
+     *
+     * @dataProvider getTestUnquotedNormalization
      *
      * @return void
      */
-    public function testUnquotedNormalization()
+    public function testUnquotedNormalization(string $input, string $expected)
     {
         $lh = new LuceneSyntaxHelper(false, false);
-        $tests = [
-            'this - that' => 'this that',
-            'this -- that' => 'this that',
-            '- this that' => 'this that',
-            'this that -' => 'this that',
-            '-- this -- that --' => 'this that',
-            'this -that' => 'this -that',
-            'this + that' => 'this that',
-            '+ this ++ that +' => 'this that',
-            'this +that' => 'this +that',
-            'this / that' => 'this "/" that',
-            'this/that' => 'this/that',
-            '/this' => 'this',
-            '/this that' => 'this that',
-            'this/' => 'this',
-            'this that/' => 'this that',
-            '/this that/' => 'this that',
-
-            // Quoted ones must not be affected
-            '"this - that"' => '"this - that"',
-            '"- this that"' => '"- this that"',
-            '"this that -"' => '"this that -"',
-            '"this + that"' => '"this + that"',
-            '"+ this ++ that +"' => '"+ this ++ that +"',
-            '"this / that"' => '"this / that"',
-        ];
-        foreach ($tests as $input => $expected) {
-            $this->assertEquals(
-                $expected,
-                $lh->normalizeSearchString($input)
-            );
-        }
+        $this->assertEquals(
+            $expected,
+            $lh->normalizeSearchString($input)
+        );
     }
 }

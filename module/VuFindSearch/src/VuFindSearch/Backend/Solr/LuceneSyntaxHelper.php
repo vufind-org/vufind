@@ -404,18 +404,17 @@ class LuceneSyntaxHelper
     /**
      * Normalize parentheses in a query.
      *
+     * Removes all non-quoted parentheses if they're not balanced.
+     *
      * @param string $input String to normalize
      *
      * @return string
      */
     protected function normalizeParens($input)
     {
-        // Ensure all parens match
-        //   Better: Remove all parens if they are not balanced
-        //     -- dmaus, 2012-11-11
-        $start = preg_match_all('/\(/', $input, $tmp);
-        $end = preg_match_all('/\)/', $input, $tmp);
-        return ($start != $end) ? str_replace(['(', ')'], '', $input) : $input;
+        $start = $this->countNonQuoted('(', $input);
+        $end = $this->countNonQuoted(')', $input);
+        return $start !== $end ? $this->removeNonQuoted(['(', ')'], $input) : $input;
     }
 
     /**
@@ -665,5 +664,64 @@ class LuceneSyntaxHelper
             // Simpler case -- case insensitive (probably numeric) range:
             return $open . trim($start) . ' TO ' . trim($end) . $close;
         }
+    }
+
+    /**
+     * Count occurrences of a character in non-quoted parts of the string
+     *
+     * @param string $needle   Character to look for
+     * @param string $haystack String to process
+     *
+     * @return int
+     */
+    protected function countNonQuoted(string $needle, string $haystack): int
+    {
+        $count = 0;
+        $inQuotes = false;
+        $lastCh = '';
+        $lastLastCh = '';
+        foreach (str_split($haystack) as $ch) {
+            // Check for escaped character (i.e. preceding character is backslash
+            // that's not escaped):
+            if ('\\' !== $lastCh || '\\' === $lastLastCh) {
+                if ('"' === $ch) {
+                    $inQuotes = !$inQuotes;
+                }
+                if (!$inQuotes && $ch === $needle) {
+                    ++$count;
+                }
+            }
+            $lastLastCh = $lastCh;
+            $lastCh = $ch;
+        }
+        return $count;
+    }
+
+    /**
+     * Remove occurrences of given characters in non-quoted parts of the string
+     *
+     * @param array  $needles  Characters to remove
+     * @param string $haystack String to process
+     *
+     * @return string
+     */
+    protected function removeNonQuoted(array $needles, string $haystack): string
+    {
+        $result = '';
+        $inQuotes = false;
+        $lastCh = '';
+        $lastLastCh = '';
+        foreach (str_split($haystack) as $ch) {
+            // Check for non-escaped quote:
+            if ('"' === $ch && ('\\' !== $lastCh || '\\' === $lastLastCh)) {
+                $inQuotes = !$inQuotes;
+            }
+            if (!$inQuotes && !in_array($ch, $needles)) {
+                $result .= $ch;
+            }
+            $lastLastCh = $lastCh;
+            $lastCh = $ch;
+        }
+        return $result;
     }
 }
