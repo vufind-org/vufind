@@ -136,7 +136,6 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
           'title' => 'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
           'recordid' => 'testbug2',
           'source' => '',
-          'isbn' => '8820737493',
           'oclc' => '30585539',
           'isbns' => ['8820737493', '9788072815562'],
         ];

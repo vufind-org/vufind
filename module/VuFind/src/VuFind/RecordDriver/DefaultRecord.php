@@ -1245,10 +1245,8 @@ class DefaultRecord extends AbstractBase
             'recordid'   => $this->getUniqueID(),
             'source'   => $this->getSourceIdentifier(),
         ];
-        if ($isbn = $this->getCleanISBN()) {
-            $arr['isbn'] = $isbn;
-        }
-        if ($isbns = $this->getCleanISBNs()) {
+        $isbns = $this->getCleanISBNs();
+        if (!empty($isbns)) {
             $arr['isbns'] = $isbns;
         }
         if ($issn = $this->getCleanISSN()) {
