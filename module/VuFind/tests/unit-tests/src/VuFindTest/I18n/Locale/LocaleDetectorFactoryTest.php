@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\I18n\Locale;
 
-use SlmLocale\Strategy\CookieStrategy;
 use SlmLocale\Strategy\HttpAcceptLanguageStrategy;
 use SlmLocale\Strategy\QueryStrategy;
+use VuFind\I18n\Locale\LocaleDetectorCookieStrategy;
 use VuFind\I18n\Locale\LocaleDetectorFactory;
 use VuFind\I18n\Locale\LocaleDetectorParamStrategy;
 use VuFind\I18n\Locale\LocaleSettings;
@@ -73,7 +73,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             [
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
-                CookieStrategy::class,
+                LocaleDetectorCookieStrategy::class,
                 HttpAcceptLanguageStrategy::class
             ],
             $this->getStrategyClasses()
@@ -96,7 +96,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             [
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
-                CookieStrategy::class,
+                LocaleDetectorCookieStrategy::class,
                 HttpAcceptLanguageStrategy::class
             ],
             $this->getStrategyClasses($mockSettings)
@@ -120,7 +120,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             [
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
-                CookieStrategy::class,
+                LocaleDetectorCookieStrategy::class,
             ],
             $this->getStrategyClasses($mockSettings)
         );

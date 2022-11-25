@@ -14,14 +14,14 @@
         <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
         <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
           <?=$this->record($driver)->getTitleHtml()?>
-          <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
-          <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">
-            <?php $summDate = $driver->getPublicationDates(); ?>
-            <?php if (!empty($summDate)): ?>
-              <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
-            <?php endif; ?>
-          </span>
         </a>
+        <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
+        <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">
+          <?php $summDate = $driver->getPublicationDates(); ?>
+          <?php if (!empty($summDate)): ?>
+            <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
+          <?php endif; ?>
+        </span>
         <?php if (!empty($summAuthors)): ?>
           <span class="small text-right">
             <?=$this->transEsc('By')?>

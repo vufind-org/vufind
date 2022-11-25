@@ -543,6 +543,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     $item['issn'][] = (string)$issn;
                 }
             }
+            foreach ($addata->doi as $doi) {
+                $item['doi_str_mv'][] = (string)$doi;
+            }
 
             // Remove dash-less ISSNs if there are corresponding dashed ones
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
