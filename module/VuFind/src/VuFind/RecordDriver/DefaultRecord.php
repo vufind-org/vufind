@@ -285,10 +285,16 @@ class DefaultRecord extends AbstractBase
     /**
      * Return all valid ISBNs found in the record.
      *
+     * @param array $flags Flags to prefer ISBN-10 or ISBN-13. If 'only10' is true,
+     * only ISBN-10s will be returned. If 'normalize13' is true, the ISBN is always
+     * converted to ISBN-13. If both are false (default), then each ISBN is returned
+     * as found in record.
+     *
      * @return array
      */
-    public function getCleanISBNs(): array
-    {
+    public function getCleanISBNs(
+        array $flags = ['only10' =>  false, 'normalize13' => false]
+    ): array {
         $isbns = $this->getISBNs();
         $cleanIsbns = [];
         foreach ($isbns as $isbn) {
@@ -298,7 +304,13 @@ class DefaultRecord extends AbstractBase
             }
             $isbnObj = new ISBN($isbn);
             if ($isbnObj->isValid()) {
-                $cleanIsbns[] = $isbn;
+                if ($flags['only10'] && ($isbn10 = $isbnObj->get10())) {
+                    $cleanIsbns[] = $isbn10;
+                } elseif ($flags['normalize13'] && ($isbn13 = $isbnObj->get13())) {
+                    $cleanIsbns[] = $isbn13;
+                } else {
+                    $cleanIsbns[] = $isbn;
+                }
             }
         }
         return $cleanIsbns;
