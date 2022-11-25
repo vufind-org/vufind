@@ -422,6 +422,9 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
             ['this that)', 'this that'],
             ['this (that))', 'this that'],
             ['((( this that', 'this that'],
+            ['\\((( this that', '\\( this that'],
+            ['\\\\\\((( this that', '\\\\\\( this that'],
+            ['\\"((( this that\\"', '\\" this that\\"'],
 
             // Quoted ones that must not be affected:
             ['"this - that"', '"this - that"'],
@@ -435,6 +438,8 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
             ['"this) that"', '"this) that"'],
             ['"((( this that"', '"((( this that"'],
             ['"((("', '"((("'],
+            ['"\\((("', '"\\((("'],
+            ['"\\\\((("', '"\\\\((("'],
         ];
     }
 
