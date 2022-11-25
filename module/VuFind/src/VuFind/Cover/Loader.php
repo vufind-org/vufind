@@ -305,7 +305,8 @@ class Loader extends \VuFind\ImageLoader
             function ($isbn) {
                 return new ISBN($isbn);
             },
-            $settings['isbns'] ?? []
+            $settings['isbns']
+                ?? (empty($settings['isbn']) ? [] : [$settings['isbn']])
         );
         $this->ismn = new ISMN($settings['ismn'] ?? '');
         if (!empty($settings['issn'])) {
