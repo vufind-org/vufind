@@ -29,39 +29,42 @@
             </li>
           <?php endif; ?>
           <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-            <li class="logoutOptions<?php if($account->dropdownEnabled()): ?> with-dropdown<?php endif ?><?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
-              <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>">
-                <span id="account-icon"><?=$this->icon('my-account') ?></span>
-                <?=$this->transEsc("Your Account")?>
-              </a>
-            </li>
-            <?php if ($account->dropdownEnabled()): ?>
-              <li id="login-dropdown" class="dropdown<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
-                <a href="#" data-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
-                <div class="dropdown-menu">
-                  <?=$this->render('myresearch/menu'); ?>
-                </div>
+            <?php if ($account->isLoggedIn()): ?>
+              <li class="logoutOptions<?php if ($account->dropdownEnabled()): ?> with-dropdown<?php endif ?>">
+                <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>">
+                  <span id="account-icon"><?=$this->icon('my-account') ?></span>
+                  <?=$this->transEsc("Your Account")?>
+                </a>
+              </li>
+              <?php if ($account->dropdownEnabled()): ?>
+                <li id="login-dropdown" class="dropdown">
+                  <a href="#" data-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
+                  <div class="dropdown-menu">
+                    <?=$this->render('myresearch/menu'); ?>
+                  </div>
+                </li>
+              <?php endif; ?>
+              <li class="logoutOptions">
+                <a href="<?=$this->url('myresearch-logout')?>" class="logout">
+                  <?=$this->icon('sign-out') ?>
+                  <?=$this->transEsc("Log Out")?>
+                </a>
+              </li>
+            <?php else: ?>
+              <li id="loginOptions">
+                <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                  <a href="<?=$this->url('myresearch-userlogin')?>">
+                    <?=$this->icon('sign-in') ?>
+                    <?=$this->transEsc("Institutional Login")?>
+                  </a>
+                <?php else: ?>
+                  <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox>
+                    <?=$this->icon('sign-in') ?>
+                    <?=$this->transEsc("Login")?>
+                  </a>
+                <?php endif; ?>
               </li>
             <?php endif; ?>
-            <li class="logoutOptions<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
-              <a href="<?=$this->url('myresearch-logout')?>" class="logout">
-                <?=$this->icon('sign-out') ?>
-                <?=$this->transEsc("Log Out")?>
-              </a>
-            </li>
-            <li id="loginOptions"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
-              <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-                <a href="<?=$this->url('myresearch-userlogin')?>">
-                  <?=$this->icon('sign-in') ?>
-                  <?=$this->transEsc("Institutional Login")?>
-                </a>
-              <?php else: ?>
-                <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox>
-                  <?=$this->icon('sign-in') ?>
-                  <?=$this->transEsc("Login")?>
-                </a>
-              <?php endif; ?>
-            </li>
           <?php endif; ?>
 
           <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
