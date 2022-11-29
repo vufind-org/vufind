@@ -29,6 +29,7 @@ namespace VuFind\Http;
 
 use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Exception\HttpDownloadException;
 use VuFindHttp\HttpService;
 
 /**
@@ -140,14 +141,37 @@ class CachingDownloader
 
         // Add new item to cache if not exists
         if (!$cache->hasItem($cacheItemKey)) {
-            $response = $this->httpService->get($url, $params);
+            try {
+                $response = $this->httpService->get($url, $params);
+            } catch (\Exception $e) {
+                throw new HttpDownloadException(
+                    'HttpService download failed (error)',
+                    $url,
+                    null,
+                    null,
+                    null,
+                    $e
+                );
+            }
             if (!$response->isOk()) {
-                throw new \Exception('Could not download URL: ' . $url);
+                throw new HttpDownloadException(
+                    'HttpService download failed (not ok)',
+                    $url,
+                    $response->getStatusCode(),
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
             }
             if ($validateCallback !== null
                 && ($validateCallback($response) === false)
             ) {
-                throw new \Exception('Invalid response body from URL: ' . $url);
+                throw new HttpDownloadException(
+                    'Invalid response body',
+                    $url,
+                    $response->getStatusCode(),
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
             }
             $cache->addItem($cacheItemKey, $response);
         }
