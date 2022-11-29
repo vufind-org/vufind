@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
+    <?=$this->googleTagManager(true)?>
 
     <?php
       // Format the page title using the translation system:
@@ -144,6 +145,7 @@ JS;
       </div>
     </div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
+    <?=$this->googleTagManager(false)?>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
     <?=$this->matomo()?>
