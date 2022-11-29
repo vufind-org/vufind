@@ -193,7 +193,6 @@ class CachingDownloader
     public function downloadJson($url, $params=[])
     {
         $validateJson = function ($response) {
-            // Use PhpSerialize instead of json_decode for better performance
             $serializer = \Laminas\Serializer\Serializer::factory(
                 \Laminas\Serializer\Adapter\Json::class
             );
