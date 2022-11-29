@@ -1,0 +1,84 @@
+<?php $this->headTitle($this->translate('Critical Issue: Replace blowfish encryption')) ?>
+
+<h2>Critical Issue: Replace blowfish encryption</h2>
+
+<div class="alert alert-danger">
+	<p>The <a href="https://en.wikipedia.org/wiki/Blowfish_(cipher)">Blowfish encryption algorithm</a> is vulnerable to certain attacks, particularly in contexts like HTTPS. <a href="https://wiki.openssl.org/index.php/OpenSSL_3.0#Providers">The latest version of OpenSSL will no longer support blowfish</a>, which can break your VuFind installation. You can <a href="https://openlibraryfoundation.atlassian.net/browse/VUFIND-1563">read more about this issue on the VuFind JIRA ticket</a>.</p>
+</div>
+
+<p>You can use VuFind's CLI tool <kbd>switch_db_hash</kbd> to convert all passwords from blowfish to another encryption method. Below, you can find a pre-filled example command that will convert your encryption to AES-256 (the new default VuFind encryption method) with a random 32 character string. You can use <kbd>openssl_get_cipher_methods()</kbd> to see available options on your system.</p>
+
+<pre id="example-cmd">php public/index.php util switch_db_hash blowfish:<?=$this->oldkey ?> aes-256:<?=$this->exampleKey ?></pre>
+
+<?=$this->copyToClipboardButton('#example-cmd') ?>
+
+<hr />
+
+<?php if ($this->blowfishIsWorking): ?>
+	<div class="alert alert-success">Blowfish is enabled on your system</div>
+<?php else: ?>
+	<div class="panel panel-danger">
+	  	<div class="panel-heading">
+	    	<h2 class="panel-title">Blowfish is not enabled on your system</h2>
+		</div>
+
+		<div class="panel-body">
+			<p>Your system's version of OpenSSL may not configured to provide the Blowfish algorithm. You may need to <a href="https://wiki.openssl.org/index.php/OpenSSL_3.0#Providers">follow these steps to enable the legacy provider in OpenSSL</a>.
+
+			<ol>
+				<li>
+					<p>Identify the location of your OpenSSL configuration</p>
+
+					<pre id="find-openssl">php -i | grep "Openssl default config"</pre>
+					<?=$this->copyToClipboardButton('find-openss') ?>
+				</li>
+
+				<li>
+					<p>Edit the resulting file (most likely /usr/lib/ssl/openssl.cnf) and find the Providers configuration. Under Ubuntu, you need to find a [providers_sect] section, and add the line:</p>
+
+					<pre>legacy = legacy_sect</pre>
+				</li>
+
+				<li>
+					<p>Note the name of the default section and make sure to uncomment <kbd>activate = 1</kbd> in that section</p>
+
+					<pre>
+[provider_sect]
+default = default_sect
+legacy = legacy_sect
+
+[default_sect]
+activate = 1</pre>
+				</li>
+
+				<li>
+					<p>Add a new section somewhere below:</p>
+
+					<pre>
+[legacy_sect]
+activate = 1</pre>
+				</li>
+			</ol>
+
+			<hr/>
+
+			<p>Here is a complete example of the changes you will need to make to your OpenSSL configuration file.</p>
+
+			<pre>
+# /usr/lib/ssl/openssl.cnf or /etc/ssl/openssl.cnf
+
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+default = default_sect
+legacy = legacy_sect
+
+[default_sect]
+activate = 1
+
+[legacy_sect]
+activate = 1</pre>
+		</div>
+	</div>
+<?php endif; ?>

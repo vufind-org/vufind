@@ -32,6 +32,8 @@ namespace VuFind\Controller;
 use ArrayObject;
 use Composer\Semver\Comparator;
 use Exception;
+use Laminas\Crypt\BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -835,6 +837,11 @@ class UpgradeController extends AbstractBase
             return $this->redirect()->toRoute('install-fixcache');
         }
 
+        $forward = $this->criticalCheckForBlowfishEncryption();
+        if ($forward !== null) {
+            return $this->forwardTo('Upgrade', $forward);
+        }
+
         // First find out which version we are upgrading:
         if (!isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
@@ -848,6 +855,9 @@ class UpgradeController extends AbstractBase
         ) {
             return $this->forwardTo('Upgrade', 'EstablishVersions');
         }
+
+        // Check for critical upgrades
+        // #todo PUT IT HERE
 
         // Now make sure we have a configuration file ready:
         if (!isset($this->cookie->configOkay) || !$this->cookie->configOkay) {
@@ -937,5 +947,52 @@ class UpgradeController extends AbstractBase
                 'message: ' . $e->getMessage()
             );
         }
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function criticalCheckForBlowfishEncryption()
+    {
+        $config = $this->getConfig();
+
+        if (
+            isset($config->Authentication->ils_encryption_algo) &&
+            $config->Authentication->ils_encryption_algo == "blowfish"
+        ) {
+            return 'CriticalFixBlowfish';
+        }
+
+        return null;
+    }
+
+    /**
+     * #todo
+     * @return [type] [description]
+     */
+    public function criticalFixBlowfishAction()
+    {
+        // Test that blowfish is still working
+        $blowfishIsWorking = true;
+        try {
+            $newcipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+            $newcipher->setKey('akeyforatest');
+            $newcipher->encrypt('youfoundtheeasteregg!');
+        } catch (Exception) {
+            $blowfishIsWorking = false;
+        }
+
+        // Get key for example command
+        $config = $this->getConfig();
+        $oldkey = $config->Authentication->ils_encryption_key;
+
+        // Make example hash for AES-256
+        $alpha = 'abcdefghijklmnopqrstuvwxyz';
+        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.!@#$%^&*', 4);
+        $exampleKey = substr(str_shuffle($chars), 0, 32);
+
+        return $this->createViewModel(
+            compact('oldkey', 'exampleKey', 'blowfishIsWorking')
+        );
     }
 }

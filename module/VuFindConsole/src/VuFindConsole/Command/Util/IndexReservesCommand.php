@@ -27,7 +27,6 @@
  */
 namespace VuFindConsole\Command\Util;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -159,7 +158,9 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                     'department' => $departments[$departmentId] ?? ''
                 ];
             }
-            $index[$id]['bib_id'][] = $record['BIB_ID'];
+            if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
+                $index[$id]['bib_id'][] = $record['BIB_ID'];
+            }
         }
 
         $updates = new UpdateDocument();
