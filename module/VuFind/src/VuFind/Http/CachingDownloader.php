@@ -121,19 +121,16 @@ class CachingDownloader
     /**
      * Download a resource using the cache in the background.
      *
-     * @param string    $url              URL
-     * @param array     $params           Request parameters
-     *                                    (e.g. additional headers)
-     * @param ?callable $validateCallback Callback for validation
-     *                                    before storing to cache
-     * @param ?callable $decodeCallback   Callback for decoding
+     * @param string    $url            URL
+     * @param array     $params         Request parameters
+     *                                  (e.g. additional headers)
+     * @param ?callable $decodeCallback Callback for decoding
      *
      * @return mixed
      */
     public function download(
         $url,
         $params=[],
-        callable $validateCallback=null,
         callable $decodeCallback=null
     ) {
         $cache = $this->getCache();
@@ -162,28 +159,20 @@ class CachingDownloader
                     $response->getBody()
                 );
             }
-            if ($validateCallback !== null
-                && ($validateCallback($response) === false)
-            ) {
-                throw new HttpDownloadException(
-                    'Invalid response body',
-                    $url,
-                    $response->getStatusCode(),
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
+
+            if ($decodeCallback !== null) {
+                $cache->addItem($cacheItemKey, $decodeCallback($response, $url));
+            } else {
+                $cache->addItem($cacheItemKey, $response->getBody());
             }
-            $cache->addItem($cacheItemKey, $response);
         }
 
-        $response = $cache->getItem($cacheItemKey);
-        return ($decodeCallback === null) ?
-            $response->getBody() : $decodeCallback($response);
+        return $cache->getItem($cacheItemKey);
     }
 
     /**
      * Download a resource using the cache in the background,
-     * including validation / decoding for JSON.
+     * including decoding for JSON.
      *
      * @param string $url    URL
      * @param array  $params Request parameters (e.g. additional headers)
@@ -192,14 +181,21 @@ class CachingDownloader
      */
     public function downloadJson($url, $params=[])
     {
-        $validateJson = function ($response) {
-            return json_decode($response->getBody()) !== null;
+        $decodeJson = function (\Laminas\Http\Response $response, $url) {
+            $decodedJson = json_decode($response->getBody());
+            if ($decodedJson === null) {
+                throw new HttpDownloadException(
+                    'Invalid response body',
+                    $url,
+                    $response->getStatusCode(),
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            } else {
+                return $decodedJson;
+            }
         };
 
-        $decodeJson = function ($response) {
-            return json_decode($response->getBody());
-        };
-
-        return $this->download($url, $params, $validateJson, $decodeJson);
+        return $this->download($url, $params, $decodeJson);
     }
 }
