@@ -978,7 +978,7 @@ class UpgradeController extends AbstractBase
             $newcipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
             $newcipher->setKey('akeyforatest');
             $newcipher->encrypt('youfoundtheeasteregg!');
-        } catch (Exception) {
+        } catch (Exception $e) {
             $blowfishIsWorking = false;
         }
 
