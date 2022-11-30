@@ -261,7 +261,21 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
 
         // Perform encryption:
         $algo = $configAuth->ils_encryption_algo ?? 'aes-256';
-        $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+
+        // Check if OpenSSL error is caused by blowfish support
+        try {
+            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+        } catch (Exception\InvalidArgumentException $e) {
+            if ($algo == 'blowfish') {
+                throw new Exception\InvalidArgumentException(
+                    'The blowfish encryption algorithm ' .
+                    'is not supported by your version of OpenSSL. ' .
+                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
+                );
+            } else {
+                throw $e;
+            }
+        }
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
