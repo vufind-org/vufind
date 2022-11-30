@@ -31,7 +31,6 @@ use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\HttpDownloadException;
 
-
 /**
  * Caching downloader.
  *
@@ -76,7 +75,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Constructor
      *
-     * @param string      $cacheManager Base directory for cache
+     * @param string $cacheManager Base directory for cache
      */
     public function __construct(CacheManager $cacheManager)
     {

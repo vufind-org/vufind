@@ -27,7 +27,9 @@
  */
 namespace VuFindTest\Http;
 
+use Laminas\Http\Response;
 use VuFind\Http\CachingDownloader;
+use VuFindHttp\HttpService;
 
 /**
  * CachingDownloader Test Class
@@ -40,14 +42,46 @@ use VuFind\Http\CachingDownloader;
  */
 class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 {
-    public function testDownload() {
+    public function testDownload()
+    {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $downloader = new CachingDownloader($cacheManager);
+
+        $testUrl = 'https://dummyjson.com/products/1';
+        $testBody = '{"id":1,"title":"iPhone 9","description":"An apple mobile which is nothing like apple","price":549,"discountPercentage":12.96,"rating":4.69,"stock":94,"brand":"Apple","category":"smartphones","thumbnail":"https://dummyjson.com/image/i/products/1/thumbnail.jpg","images":["https://dummyjson.com/image/i/products/1/1.jpg","https://dummyjson.com/image/i/products/1/2.jpg","https://dummyjson.com/image/i/products/1/3.jpg","https://dummyjson.com/image/i/products/1/4.jpg","https://dummyjson.com/image/i/products/1/thumbnail.jpg"]}';
+
+        // httpService
+        $service = $this->getMockBuilder(HttpService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $response = $this->getMockBuilder(Response::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $response->expects($this->once())->method('isOk')->willReturn(true);
+        $response->expects($this->once())->method('getBody')->willReturn($testBody);
+
+        $service->expects($this->once())->method('get')->with($testUrl)->willReturn($response);
+
+        // cacheManager
+        $storage = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $storage->expects($this->once())->method('hasItem')->willReturn(false);
+        $storage->expects($this->once())->method('addItem');
+        $storage->expects($this->once())->method('getItem')->willReturn($testBody);
+
+        $cacheManagerMock = $container->createMock(\VuFind\Cache\Manager::class);
+        $cacheManagerMock->expects($this->once())->method('addDownloaderCache')->with('downloader')->willReturn('downloader-downloader');
+        $cacheManagerMock->expects($this->once())->method('getCache')->with('downloader-downloader')->willReturn($storage);
+
+        // downloader
+        $downloader = new CachingDownloader($cacheManagerMock);
+        $downloader->setHttpService($service);
 
         $body = $downloader->download(
-            'https://dummyjson.com/products/1'
+            $testUrl
         );
-        $this->assertEquals($body, '{"id":1,"title":"iPhone 9","description":"An apple mobile which is nothing like apple","price":549,"discountPercentage":12.96,"rating":4.69,"stock":94,"brand":"Apple","category":"smartphones","thumbnail":"https://dummyjson.com/image/i/products/1/thumbnail.jpg","images":["https://dummyjson.com/image/i/products/1/1.jpg","https://dummyjson.com/image/i/products/1/2.jpg","https://dummyjson.com/image/i/products/1/3.jpg","https://dummyjson.com/image/i/products/1/4.jpg","https://dummyjson.com/image/i/products/1/thumbnail.jpg"]}');
+        $this->assertEquals($body, $testBody);
     }
 }
