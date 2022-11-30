@@ -948,6 +948,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Check for deprecated and insecure use of blowfish encryption
      * @return string|null
      */
     protected function criticalCheckForBlowfishEncryption()
@@ -965,8 +966,9 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * #todo
-     * @return [type] [description]
+     * Lead users through the steps required to replace blowfish quickly and easily
+     *
+     * @return mixed
      */
     public function criticalFixBlowfishAction()
     {
