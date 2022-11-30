@@ -837,11 +837,6 @@ class UpgradeController extends AbstractBase
             return $this->redirect()->toRoute('install-fixcache');
         }
 
-        $forward = $this->criticalCheckForBlowfishEncryption();
-        if ($forward !== null) {
-            return $this->forwardTo('Upgrade', $forward);
-        }
-
         // First find out which version we are upgrading:
         if (!isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
@@ -857,7 +852,10 @@ class UpgradeController extends AbstractBase
         }
 
         // Check for critical upgrades
-        // #todo PUT IT HERE
+        $forward = $this->criticalCheckForBlowfishEncryption();
+        if ($forward !== null) {
+            return $this->forwardTo('Upgrade', $forward);
+        }
 
         // Now make sure we have a configuration file ready:
         if (!isset($this->cookie->configOkay) || !$this->cookie->configOkay) {
