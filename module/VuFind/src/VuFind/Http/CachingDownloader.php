@@ -193,18 +193,13 @@ class CachingDownloader
     public function downloadJson($url, $params=[])
     {
         $validateJson = function ($response) {
-            $serializer = \Laminas\Serializer\Serializer::factory(
-                \Laminas\Serializer\Adapter\Json::class
-            );
-
-            try {
-                $serializer->unserialize($response->getBody());
-                return true;
-            } catch (\Laminas\Serializer\Exception\ExceptionInterface $e) {
-                return false;
-            }
+            return json_decode($response->getBody()) !== null;
         };
 
-        return $this->download($url, $params, $validateJson);
+        $decodeJson = function ($response) {
+            return json_decode($response->getBody());
+        };
+
+        return $this->download($url, $params, $validateJson, $decodeJson);
     }
 }
