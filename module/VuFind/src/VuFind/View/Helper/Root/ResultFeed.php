@@ -118,6 +118,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 
         // Create the parent feed
         $feed = new Feed();
+        $feed->setType('rss');
         if (null !== $this->overrideTitle) {
             $feed->setTitle($this->translate($this->overrideTitle));
         } else {
