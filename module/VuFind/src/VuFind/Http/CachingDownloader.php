@@ -30,7 +30,7 @@ namespace VuFind\Http;
 use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\HttpDownloadException;
-use VuFindHttp\HttpService;
+
 
 /**
  * Caching downloader.
@@ -41,8 +41,10 @@ use VuFindHttp\HttpService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CachingDownloader
+class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * CacheManager to update caches if necessary.
      *
@@ -72,21 +74,12 @@ class CachingDownloader
     protected $cacheId;
 
     /**
-     * HTTP service
-     *
-     * @var HttpService
-     */
-    protected $httpService;
-
-    /**
      * Constructor
      *
-     * @param HttpService $httpService  HTTP service
      * @param string      $cacheManager Base directory for cache
      */
-    public function __construct(HttpService $httpService, CacheManager $cacheManager)
+    public function __construct(CacheManager $cacheManager)
     {
-        $this->httpService = $httpService;
         $this->cacheManager = $cacheManager;
         $this->setUpCache('downloader');
     }

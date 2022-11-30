@@ -65,7 +65,6 @@ class CachingDownloaderFactory implements FactoryInterface
         }
 
         return new $requestedName(
-            $container->get(\VuFindHttp\HttpService::class),
             $container->get(\VuFind\Cache\Manager::class),
         );
     }
