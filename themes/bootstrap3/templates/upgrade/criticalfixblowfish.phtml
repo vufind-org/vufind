@@ -27,20 +27,20 @@
 
 			<ol>
 				<li>
-					<p>Identify the location of your OpenSSL configuration</p>
+					<p><b>Identify the location of your OpenSSL configuration</b></p>
 
 					<pre id="find-openssl">php -i | grep "Openssl default config"</pre>
 					<?=$this->copyToClipboardButton('find-openss') ?>
 				</li>
 
 				<li>
-					<p>Edit the resulting file (most likely /usr/lib/ssl/openssl.cnf) and find the Providers configuration. Under Ubuntu, you need to find a [providers_sect] section, and add the line:</p>
+					<p><b>Edit the OpenSSL config</b> (most likely /usr/lib/ssl/openssl.cnf) and find the Providers configuration. Under Ubuntu, you need to find a [providers_sect] section, and add the line:</p>
 
 					<pre>legacy = legacy_sect</pre>
 				</li>
 
 				<li>
-					<p>Note the name of the default section and make sure to uncomment <kbd>activate = 1</kbd> in that section</p>
+					<p><b>Find the section for the default provider</b> and make sure to uncomment <kbd>activate = 1</kbd> in that section</p>
 
 					<pre>
 [provider_sect]
@@ -52,12 +52,14 @@ activate = 1</pre>
 				</li>
 
 				<li>
-					<p>Add a new section somewhere below:</p>
+					<p><b>Add a new section</b> somewhere below:</p>
 
 					<pre>
 [legacy_sect]
 activate = 1</pre>
 				</li>
+
+				<li><b>Restart Apache</b></li>
 			</ol>
 
 			<hr/>
