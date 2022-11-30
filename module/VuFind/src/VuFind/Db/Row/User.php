@@ -63,7 +63,6 @@ use Laminas\Db\Sql\Select;
  * @property string  $last_login
  * @property ?string $auth_method
  * @property string  $last_language
- * @property ?string $cypher_method
  */
 class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
@@ -234,17 +233,6 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         $configAuth = $this->config->Authentication;
-
-        // Set undefined cypher method
-        // TODO: This will cause problems if a user hasn't logged in and the cypher has been changed
-        if ($this->cypher_method == -1) {
-            $this->cypher_method = $configAuth->ils_encryption_algo ?? null;
-            $this->save();
-        }
-
-        if ($this->cypher_method != $configAuth->ils_encryption_algo) {
-            // TODO convert (with SwitchDBHashCommand?)
-        }
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
