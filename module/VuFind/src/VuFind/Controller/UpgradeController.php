@@ -949,15 +949,15 @@ class UpgradeController extends AbstractBase
 
     /**
      * Check for deprecated and insecure use of blowfish encryption
+     *
      * @return string|null
      */
     protected function criticalCheckForBlowfishEncryption()
     {
         $config = $this->getConfig();
 
-        if (
-            isset($config->Authentication->ils_encryption_algo) &&
-            $config->Authentication->ils_encryption_algo == "blowfish"
+        if (isset($config->Authentication->ils_encryption_algo)
+            && $config->Authentication->ils_encryption_algo == "blowfish"
         ) {
             return 'CriticalFixBlowfish';
         }
