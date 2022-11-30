@@ -253,9 +253,9 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         // Check if OpenSSL error is caused by blowfish support
         try {
             $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
-        } catch (Exception\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             if ($algo == 'blowfish') {
-                throw new Exception\InvalidArgumentException(
+                throw new \VuFind\Exception\PasswordSecurity(
                     'The blowfish encryption algorithm ' .
                     'is not supported by your version of OpenSSL. ' .
                     'Please visit /Upgrade/CriticalFixBlowfish for further details.'
