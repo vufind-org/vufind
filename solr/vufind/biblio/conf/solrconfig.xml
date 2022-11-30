@@ -42,6 +42,7 @@
        If replication is in use, this should match the replication configuration. -->
   <dataDir>${solr.solr.home:./solr}/biblio</dataDir>
 
+  <lib dir="../../../import/lib" regex="marc4j.*\.jar" />
   <lib dir="../../vendor/modules/analysis-extras/lib" regex=".*\.jar" />
   <lib dir="../jars" regex=".*\.jar" />
 
