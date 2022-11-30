@@ -668,7 +668,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
         }
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
+        if (!$this->getAuth()->getSessionInitiator('')
             && $this->getAuth()->needsCsrfCheck($request)
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
