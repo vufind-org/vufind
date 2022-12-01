@@ -34,7 +34,7 @@
                   <?=$item['Data']?> </a>
                 <?php else:?>
                   <p>
-                    <b><?=$this->transEsc($item['Label'])?>:</b>
+                    <b><?=$this->transEscEDSLabel($item['Label'])?>:</b>
                     <?=$this->driver->linkUrls($item['Data'])?>
                   </p>
                 <?php endif;?>

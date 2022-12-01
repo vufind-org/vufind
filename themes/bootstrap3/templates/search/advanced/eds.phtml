@@ -43,7 +43,7 @@
             <div class="checkbox">
               <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
                 <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked" data-checked-by-default="true"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|' . $field . ':' . $value)?>">
-                <?=$this->transEsc($facet['Label'])?>
+                <?=$this->transEscEDSLabel($facet['Label'])?>
               </label>
             </div>
             <?php break;
