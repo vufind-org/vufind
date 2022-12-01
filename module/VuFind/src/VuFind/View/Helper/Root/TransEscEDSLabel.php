@@ -43,10 +43,7 @@ class TransEscEDSLabel extends AbstractHelper
     /**
      * Translate and escape a string
      *
-     * @param string $str     String to escape and translate
-     * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found (null
-     * for no default).
+     * @param string $str String to escape and translate
      *
      * @return string
      */
