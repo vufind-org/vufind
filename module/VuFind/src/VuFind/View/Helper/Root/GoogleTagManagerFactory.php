@@ -68,7 +68,7 @@ class GoogleTagManagerFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $propertyId = $config->GoogleTagManager->propertyId ?? false;
-        return new $requestedName($propertyId);
+        $gtmContainerId = $config->GoogleTagManager->gtmContainerId ?? false;
+        return new $requestedName($gtmContainerId);
     }
 }

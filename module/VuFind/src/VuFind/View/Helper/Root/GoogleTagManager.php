@@ -39,20 +39,20 @@ namespace VuFind\View\Helper\Root;
 class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Property ID (false if disabled)
+     * GTM Container ID (false if disabled)
      *
      * @var string|bool
      */
-    protected $propertyId;
+    protected $gtmContainerId;
 
     /**
      * Constructor
      *
-     * @param string|bool $propertyId Property ID (false if disabled)
+     * @param string|bool $gtmContainerId Container ID (false if disabled)
      */
-    public function __construct($propertyId)
+    public function __construct($gtmContainerId)
     {
-        $this->propertyId = $propertyId;
+        $this->gtmContainerId = $gtmContainerId;
     }
 
     /**
@@ -64,7 +64,7 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($isHeadCode = false)
     {
-        if (!$this->propertyId) {
+        if (!$this->gtmContainerId) {
             return '';
         }
 
@@ -75,7 +75,7 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
                     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     'https://www.googletagmanager.com/gtm.js?id='+i+dl;var n=d.querySelector('[nonce]');
                     n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
-                    })(window,document,'script','dataLayer','{$this->propertyId}');                
+                    })(window,document,'script','dataLayer','{$this->gtmContainerId}');                
                     END;
             $inlineScript = $this->getView()->plugin('inlinescript');
             $js = $inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
@@ -84,7 +84,7 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
         else {
             return <<<END
                 <!-- Google Tag Manager (noscript) -->
-                <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$this->propertyId}"
+                <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$this->gtmContainerId}"
                 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <!-- End Google Tag Manager (noscript) -->
                 END;
