@@ -84,6 +84,13 @@ class SolrPrefix implements AutocompleteInterface
     protected $limit = 10;
 
     /**
+     * Filters to apply to Solr search
+     *
+     * @var array
+     */
+    protected $filters = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
@@ -118,6 +125,9 @@ class SolrPrefix implements AutocompleteInterface
             $params->addFacet($this->facetField);
             $params->setLimit(0);
             $params->setFacetLimit($this->limit);
+            foreach ($this->filters as $current) {
+                $params->addFilter($current);
+            }
             $options = $params->getOptions();
             $options->disableHighlighting();
             $options->spellcheckEnabled(false);
@@ -161,6 +171,18 @@ class SolrPrefix implements AutocompleteInterface
     {
         [$this->autocompleteField, $this->facetField] = explode(':', $params, 2);
         $this->initSearchObject();
+    }
+
+    /**
+     * Add filters (in addition to the configured ones)
+     *
+     * @param array $filters Filters to add
+     *
+     * @return void
+     */
+    public function addFilters($filters)
+    {
+        $this->filters += $filters;
     }
 
     /**

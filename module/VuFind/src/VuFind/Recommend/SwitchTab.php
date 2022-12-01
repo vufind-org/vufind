@@ -114,7 +114,7 @@ class SwitchTab implements RecommendInterface
      *
      * @param array $tabEnv tabConfig
      *
-     * @return string
+     * @return array|null
      */
     public function getActiveTab($tabEnv)
     {

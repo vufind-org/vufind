@@ -1,4 +1,4 @@
-/*global Hunt, VuFind */
+/*global VuFind */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   function formatCallnumbers(callnumber, callnumber_handler) {
@@ -215,17 +215,19 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
   function init(_container) {
-    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
-      checkItemStatuses(_container);
-    } else {
-      var container = typeof _container === 'undefined'
-        ? document.body
-        : _container;
-      new Hunt(
-        $(container).find('.ajaxItem').toArray(),
-        { enter: checkItemStatus }
-      );
+    var container = typeof _container === 'undefined'
+      ? document.body
+      : _container;
+
+    if (VuFind.isPrinting()) {
+      checkItemStatuses(container);
+      return;
     }
+    VuFind.observerManager.createIntersectionObserver(
+      'itemStatuses',
+      checkItemStatus,
+      $(container).find('.ajaxItem').toArray()
+    );
   }
 
   return { init: init, check: checkItemStatuses, checkRecord: checkItemStatus };

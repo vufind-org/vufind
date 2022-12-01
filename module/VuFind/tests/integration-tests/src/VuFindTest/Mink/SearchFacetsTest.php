@@ -76,7 +76,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Facet to Fiction (after making sure we picked the right link):
         $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
-        $this->assertEquals('Fiction 7', $facetList->getText());
+        $this->assertEquals('Fiction 7 results 7', $facetList->getText());
         $facetList->click();
 
         // Check that when the page reloads, we have fewer results and a filter:
@@ -112,14 +112,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($limit * 2, count($items));
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
         $this->assertEquals(
-            'Weird IDs 9 ' . $excludeControl
-            . 'Fiction 7 ' . $excludeControl
-            . 'The Study Of P|pes 1 ' . $excludeControl
-            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 ' . $excludeControl
-            . 'The Study of "Important" Things 1 ' . $excludeControl
-            . 'The Study of %\'s? 1 ' . $excludeControl
-            . 'The Study of +\'s? 1 ' . $excludeControl
-            . 'The Study of @Twitter #test 1 ' . $excludeControl
+            'Weird IDs 9 results 9 ' . $excludeControl
+            . 'Fiction 7 results 7 ' . $excludeControl
+            . 'The Study Of P|pes 1 results 1 ' . $excludeControl
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 ' . $excludeControl
+            . 'The Study of "Important" Things 1 results 1 ' . $excludeControl
+            . 'The Study of %\'s? 1 results 1 ' . $excludeControl
+            . 'The Study of +\'s? 1 results 1 ' . $excludeControl
+            . 'The Study of @Twitter #test 1 results 1 ' . $excludeControl
             . 'more…',
             $this->findCss($page, '#modal #facet-list-count')->getText()
         );
@@ -133,10 +133,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
         $this->assertEquals($limit, count($items)); // reset number of items
         $this->assertEquals(
-            'Fiction 7 ' . $excludeControl
-            . 'The Study Of P|pes 1 ' . $excludeControl
-            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 ' . $excludeControl
-            . 'The Study of "Important" Things 1 ' . $excludeControl
+            'Fiction 7 results 7 ' . $excludeControl
+            . 'The Study Of P|pes 1 results 1 ' . $excludeControl
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 ' . $excludeControl
+            . 'The Study of "Important" Things 1 results 1 ' . $excludeControl
             . 'more…',
             $this->findCss($page, '#modal #facet-list-index')->getText()
         );
@@ -149,7 +149,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items)); // maintain number of items
         // When exclusion is active, the result count is outside of the link tag:
-        $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9';
+        $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9 results 9';
         $weirdIDs = $this->findAndAssertLink(
             $page->findById('modal'),
             $expectedLinkText
@@ -303,7 +303,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
-        $this->assertEquals('level1a/level2a', $filter->getText());
+        $this->assertEquals('Remove Filter level1a/level2a', $filter->getText());
         $this->findCss($page, '#j1_2 .applied');
     }
 
@@ -368,7 +368,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
-        $this->assertEquals('level1a/level2a', $filter->getText());
+        $this->assertEquals('Remove Filter level1a/level2a', $filter->getText());
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
             'Showing 1 - 7 results of 7 for search \'building:"hierarchy.mrc"\'',
@@ -424,7 +424,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertFilterIsStillThere($page)
     {
         $filter = $this->findCss($page, $this->activeFilterSelector);
-        $this->assertEquals('weird_ids.mrc', $filter->getText());
+        $this->assertEquals('Remove Filter weird_ids.mrc', $filter->getText());
     }
 
     /**
@@ -543,7 +543,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNoResetFiltersButton($page);
 
         // Now manually clear the filter:
-        $this->clickCss($page, '.search-filter-remove');
+        $this->clickCss($page, '.filter-value');
 
         // Confirm that no filters are displayed:
         $this->assertNoFilters($page);
@@ -579,6 +579,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $list = explode(' ', $facets);
         $firstFacet = array_shift($list);
         $firstFacetCount = array_shift($list);
+        // Shift off the accessibility text
+        array_shift($list);
+        array_shift($list);
         $secondFacet = array_shift($list);
         $secondFacetCount = array_shift($list);
 

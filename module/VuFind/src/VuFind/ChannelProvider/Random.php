@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2016, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,6 +31,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
+use VuFindSearch\Command\RandomCommand;
 
 /**
  * "Random items" channel provider.
@@ -161,12 +162,13 @@ class Random extends AbstractChannelProvider
         ];
         $query = $params->getQuery();
         $paramBag = $params->getBackendParameters();
-        $random = $this->searchService->random(
+        $command = new RandomCommand(
             $params->getSearchClassId(),
             $query,
             $this->channelSize,
             $paramBag
-        )->getRecords();
+        );
+        $random = $this->searchService->invoke($command)->getResult()->getRecords();
         $retVal['contents'] = $this->summarizeRecordDrivers($random);
         return $retVal;
     }

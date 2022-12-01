@@ -46,10 +46,7 @@ return [
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'truncate.js', 'priority' => 330],
         ['file' => 'trigger_print.js', 'priority' => 340],
-    ],
-    'less' => [
-        'active' => false,
-        'compiled.less'
+        ['file' => 'observer_manager.js', 'priority' => 350],
     ],
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
@@ -108,6 +105,9 @@ return [
              */
             'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
+            'browzine-issue' => 'Alias:format-serial',
+            'browzine-pdf' => 'FontAwesome:file-pdf-o',
+            'browzine-retraction' => 'FontAwesome:exclamation',
             'cart' => 'FontAwesome:suitcase',
             'cart-add' => 'FontAwesome:plus',
             'cart-empty' => 'FontAwesome:times',
