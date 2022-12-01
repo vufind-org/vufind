@@ -50,21 +50,21 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     /**
      * HTTP status associated with this exception.
      *
-     * @var string
+     * @var ?int
      */
     protected $statusCode;
 
     /**
      * HTTP response headers associated with this exception.
      *
-     * @var Headers
+     * @var ?Headers
      */
     protected $responseHeaders;
 
     /**
      * HTTP response body associated with this exception.
      *
-     * @var string
+     * @var ?string
      */
     protected $responseBody;
 
@@ -96,7 +96,7 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     /**
      * Get HTTP status associated with this exception.
      *
-     * @return int
+     * @return ?int
      */
     public function getHttpStatus(): ?int
     {
@@ -106,7 +106,7 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     /**
      * Get HTTP response body.
      *
-     * @return string
+     * @return ?string
      */
     public function getResponseBody(): ?string
     {
@@ -116,7 +116,7 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     /**
      * Get HTTP response headers.
      *
-     * @return Headers
+     * @return ?Headers
      */
     public function getResponseHeaders(): ?Headers
     {
