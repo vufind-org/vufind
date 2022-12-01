@@ -154,6 +154,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
 
+        // Start establishing library catalog profile
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Library Catalog Profile', $element->getText());
+        $element->click();
+
         // Test invalid patron login
         $this->submitCatalogLoginForm($page, 'bad', 'incorrect');
         $this->assertEquals(
@@ -586,6 +592,13 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Start establishing library catalog profile
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Library Catalog Profile', $element->getText());
+        $element->click();
+
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Open the "place hold" dialog and check for error message:
