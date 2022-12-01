@@ -48,6 +48,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 
         $testUrl = 'https://dummyjson.com/products/1';
         $testBody = '{"id":1,"title":"iPhone 9","description":"An apple mobile which is nothing like apple","price":549,"discountPercentage":12.96,"rating":4.69,"stock":94,"brand":"Apple","category":"smartphones","thumbnail":"https://dummyjson.com/image/i/products/1/thumbnail.jpg","images":["https://dummyjson.com/image/i/products/1/1.jpg","https://dummyjson.com/image/i/products/1/2.jpg","https://dummyjson.com/image/i/products/1/3.jpg","https://dummyjson.com/image/i/products/1/4.jpg","https://dummyjson.com/image/i/products/1/thumbnail.jpg"]}';
+        $testCacheKey = md5($testUrl);
 
         // httpService
         $service = $this->getMockBuilder(HttpService::class)
@@ -67,9 +68,9 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $storage->expects($this->once())->method('hasItem')->willReturn(false);
-        $storage->expects($this->once())->method('addItem');
-        $storage->expects($this->once())->method('getItem')->willReturn($testBody);
+        $storage->expects($this->once())->method('hasItem')->with($testCacheKey)->willReturn(false);
+        $storage->expects($this->once())->method('addItem')->with($testCacheKey, $testBody);
+        $storage->expects($this->once())->method('getItem')->with($testCacheKey)->willReturn($testBody);
 
         $cacheManagerMock = $container->createMock(\VuFind\Cache\Manager::class);
         $cacheManagerMock->expects($this->once())->method('addDownloaderCache')->with('downloader')->willReturn('downloader-downloader');
