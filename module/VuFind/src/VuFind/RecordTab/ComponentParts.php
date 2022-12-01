@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2019, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * Component parts display tab
@@ -120,7 +122,7 @@ class ComponentParts extends AbstractBase
                 'sort' => 'hierarchy_sequence ASC,title ASC',
             ]
         );
-        return $this->searchService->search(
+        $command = new SearchCommand(
             $record->getSourceIdentifier(),
             $query,
             0,
@@ -129,5 +131,6 @@ class ComponentParts extends AbstractBase
             $this->maxResults + 1,
             $params
         );
+        return $this->searchService->invoke($command)->getResult();
     }
 }

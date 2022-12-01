@@ -42,6 +42,31 @@ var VuFind = (function VuFind() {
     }
   };
 
+  /**
+   * Evaluate a callback
+   */
+  var evalCallback = function evalCallback(callback, event, data) {
+    if ('function' === typeof window[callback]) {
+      return window[callback](event, data);
+    }
+    var parts = callback.split('.');
+    if (typeof window[parts[0]] === 'object') {
+      var obj = window[parts[0]];
+      for (var i = 1; i < parts.length; i++) {
+        if (typeof obj[parts[i]] === 'undefined') {
+          obj = false;
+          break;
+        }
+        obj = obj[parts[i]];
+      }
+      if ('function' === typeof obj) {
+        return obj(event, data);
+      }
+    }
+    console.error('Callback function ' + callback + ' not found.');
+    return null;
+  };
+
   var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
     $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
       var $form = $(this);
@@ -56,6 +81,31 @@ var VuFind = (function VuFind() {
     });
   };
 
+  var initClickHandlers = function initClickHandlers() {
+    window.addEventListener(
+      'click',
+      function handleClick(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-click-callback')) {
+          return evalCallback(elem.dataset.clickCallback, event, {});
+        }
+        if (elem.hasAttribute('data-click-set-checked')) {
+          document.getElementById(elem.dataset.clickSetChecked).checked = true;
+          event.preventDefault();
+        }
+      }
+    );
+    window.addEventListener(
+      'change',
+      function handleChange(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-submit-on-change')) {
+          elem.form.requestSubmit();
+        }
+      }
+    );
+  };
+
   var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
@@ -65,6 +115,7 @@ var VuFind = (function VuFind() {
     _initialized = true;
 
     initDisableSubmitOnClick();
+    initClickHandlers();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -203,6 +254,7 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    evalCallback: evalCallback,
     getCspNonce: getCspNonce,
     icon: icon,
     isPrinting: isPrinting,

@@ -102,7 +102,7 @@ md %BASEPATH%\processed
 :processedfound
 
 rem Process all the files in the target directory:
-for %%a in (%BASEPATH%\*.xml %BASEPATH%\*.mrc) do (
+for %%a in (%BASEPATH%\*.xml %BASEPATH%\*.mrc %BASEPATH%\*.marc) do (
   call :run_command %%a %BASEPATH%\log\%%~nxa.log
   if not errorlevel 1 (
     if "%MOVE_DATA%"=="1" (
