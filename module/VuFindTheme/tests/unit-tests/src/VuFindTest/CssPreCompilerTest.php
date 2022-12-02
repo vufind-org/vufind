@@ -27,7 +27,6 @@
  */
 namespace VuFindTest;
 
-use VuFindTheme\LessCompiler;
 use VuFindTheme\ScssCompiler;
 
 /**
@@ -63,7 +62,6 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     public static function extClassProvider()
     {
         return [
-            ['less', LessCompiler::class],
             ['scss', ScssCompiler::class]
         ];
     }
@@ -217,7 +215,6 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     {
         $temp = sys_get_temp_dir();
         // Delete directory structure
-        self::delTree("$temp/vufind_less_comp_test/");
         self::delTree("$temp/vufind_scss_comp_test/");
     }
 }

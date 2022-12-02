@@ -16,6 +16,14 @@
       <div class="comment-text">
         <?=$this->escapeHtml($comment->comment)?>
       </div>
+      <?php if ($this->driver->isRatingAllowed()): ?>
+        <div class="comment-rating">
+          <?php $ratingData = $this->driver->getRatingData($comment->user_id); ?>
+          <?php if ($ratingData['count']): ?>
+            <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData]);?>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>

@@ -10,6 +10,9 @@
 ?>
 <?php if ($offlineMode == "ils-offline"): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
+<?php elseif (!$this->auth()->getManager()->allowsUserIlsLogin()): ?>
+  <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+  <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>
 <?php else: ?>
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <?=$this->flashmessages()?>

@@ -4,6 +4,7 @@
  *
  * PHP version 7
  *
+ * Copyright (C) Villanova University 2022.
  * Copyright (C) EBSCO Industries 2013
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,10 +23,13 @@
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\EDS;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * EDS API Results
@@ -64,13 +68,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
             $params
         );
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         if (null != $collection) {
             $this->responseFacets = $collection->getFacets();
             $this->resultTotal = $collection->getTotal();

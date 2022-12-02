@@ -113,7 +113,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     'categories' => ['essential', 'matomo'],
                     'consentId' => 'foo123',
                     'consentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
-                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z')
+                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+                    'revision' => 0,
                 ]
             )
         ];
@@ -122,10 +123,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             $config,
             $cookies
         );
-        $helper = $this->getCookieConsent(
-            $config,
-            $cookies
-        );
+        $helper = $this->getCookieConsent($config, $cookies);
 
         $helper->getView()->expects($this->once())
             ->method('render')
@@ -135,6 +133,39 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
         $this->assertEquals('rendered_template', $helper->render());
+    }
+
+    /**
+     * Test helper with non-matching consent revision
+     *
+     * @return void
+     */
+    public function testHelperWithBadConsentRevision(): void
+    {
+        $config = [
+            'Cookies' => [
+                'session_name' => 'vufindsession',
+                'consent' => true,
+                'consentCategories' => 'essential,matomo',
+            ]
+        ];
+
+        $cookies = [
+            'cc_cookie' => json_encode(
+                [
+                    'categories' => ['essential', 'matomo'],
+                    'consentId' => 'foo123',
+                    'consentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+                    'revision' => -1,
+                ]
+            )
+        ];
+
+        $helper = $this->getCookieConsent($config, $cookies);
+        $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
+        $this->assertFalse($helper->isCategoryAccepted('essential'));
+        $this->assertFalse($helper->isServiceAllowed('matomo'));
     }
 
     /**
