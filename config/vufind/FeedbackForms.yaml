@@ -150,7 +150,7 @@ forms:
   # Main Feedback form
 
   FeedbackSite:
-    title: Send us your feedback
+    title: feedback_title
     enabled: true
     useCaptcha: true
     reportReferrer: false
@@ -163,7 +163,7 @@ forms:
     primaryHandler: email
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
-    response: Thank you for your feedback.
+    response: feedback_response
     senderEmailRequired: false
     senderNameRequired: false
 
@@ -186,7 +186,7 @@ forms:
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
-    response: Thank you for your feedback.
+    response: feedback_response
     primaryHandler: email
 
     recipient:
@@ -246,7 +246,7 @@ forms:
 
       - name: boolean
         type: radio
-        label: Need Help
+        label: feedback_help_label
         required: true
         options:
           - Yes

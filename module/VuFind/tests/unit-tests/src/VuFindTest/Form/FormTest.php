@@ -72,7 +72,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.',
+            'feedback_response',
             $form->getSubmitResponse()
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
@@ -182,11 +182,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->getRecipient()
         );
 
-        $this->assertEquals('Send us your feedback', $form->getTitle());
+        $this->assertEquals('feedback_title', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.',
+            'feedback_response',
             $form->getSubmitResponse()
         );
         $expectedFields = [

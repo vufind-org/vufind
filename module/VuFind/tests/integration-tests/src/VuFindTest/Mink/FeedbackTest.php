@@ -109,7 +109,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setupPage();
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
-            'Thank you for your feedback.',
+            'feedback_response',
             $this->findCss($page, '#modal .alert-success')->getText()
         );
     }
@@ -138,7 +138,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             ->setValue('demo');
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->assertEquals(
-            'Thank you for your feedback.',
+            'feedback_response',
             $this->findCss($page, '#modal .alert-success')->getText()
         );
     }
@@ -178,7 +178,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
-            'Thank you for your feedback.',
+            'feedback_response',
             $this->findCss($page, '#modal .alert-success')->getText()
         );
     }
