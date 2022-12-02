@@ -824,6 +824,20 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Organize and run critical, blocking checks
+     *
+     * @return string|null
+     */
+    protected function performCriticalChecks()
+    {
+        // Prevent the use of the deprecated blowfish cipher algo
+        $forward = $this->criticalCheckForBlowfishEncryption();
+        if ($forward !== null) {
+            return $this->forwardTo('Upgrade', $forward);
+        }
+    }
+
+    /**
      * Display summary of installation status
      *
      * @return mixed
@@ -852,10 +866,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Check for critical upgrades
-        $forward = $this->criticalCheckForBlowfishEncryption();
-        if ($forward !== null) {
-            return $this->forwardTo('Upgrade', $forward);
-        }
+        $criticalFixForward = $this->performCriticalChecks();
 
         // Now make sure we have a configuration file ready:
         if (!isset($this->cookie->configOkay) || !$this->cookie->configOkay) {
@@ -982,17 +993,13 @@ class UpgradeController extends AbstractBase
             $blowfishIsWorking = false;
         }
 
-        // Get key for example command
-        $config = $this->getConfig();
-        $oldkey = $config->Authentication->ils_encryption_key;
-
         // Make example hash for AES-256
         $alpha = 'abcdefghijklmnopqrstuvwxyz';
-        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.!@#$%^&*', 4);
+        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#$%^&*', 4);
         $exampleKey = substr(str_shuffle($chars), 0, 32);
 
         return $this->createViewModel(
-            compact('oldkey', 'exampleKey', 'blowfishIsWorking')
+            compact('exampleKey', 'blowfishIsWorking')
         );
     }
 }

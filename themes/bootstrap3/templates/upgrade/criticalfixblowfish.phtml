@@ -27,7 +27,7 @@
 					<p><b>Identify the location of your OpenSSL configuration</b></p>
 
 					<pre id="find-openssl">php -i | grep "Openssl default config"</pre>
-					<?=$this->copyToClipboardButton('find-openss') ?>
+					<?=$this->copyToClipboardButton('find-openssl') ?>
 				</li>
 
 				<li>
@@ -58,7 +58,7 @@ activate = 1</pre>
 
 				<li><b>Restart Apache</b></li>
 
-				<li>Refresh this page or <a href="#conversion">move onto the conversion step below</a>.</li>
+				<li>Refresh this page or <a href="#conversion">move on to the conversion step below</a>.</li>
 			</ol>
 
 			<hr/>
@@ -86,8 +86,8 @@ activate = 1</pre>
 
 <h3 id="conversion">2. Convert existing data to a new encryption method</h3>
 
-<p>You can use VuFind's CLI tool <kbd>switch_db_hash</kbd> to convert all passwords from blowfish to another encryption method. Below, you can find a pre-filled example command that will convert your encryption to AES-256 (the new default VuFind encryption method) with a random 32 character string. You can use <kbd>openssl_get_cipher_methods()</kbd> to see all encryption methods available on your system.</p>
+<p>You can use VuFind's CLI tool <kbd>switch_db_hash</kbd> to convert all passwords from blowfish to another encryption method. Below, you can find a pre-filled example command that will convert your encryption to AES (the new default VuFind encryption method) with a random 32 character string. You can use <kbd>openssl_get_cipher_methods()</kbd> to see all encryption methods available on your system.</p>
 
-<pre id="example-cmd">php public/index.php util switch_db_hash blowfish:<?=$this->oldkey ?> aes-256:<?=$this->exampleKey ?></pre>
+<pre id="example-cmd">php public/index.php util switch_db_hash aes:<?=$this->exampleKey ?></pre>
 
 <?=$this->copyToClipboardButton('#example-cmd') ?>
