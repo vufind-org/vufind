@@ -208,6 +208,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getSortOptions()
     {
+        $this->setOptionsFromApi();
         return $this->sortOptions;
     }
 

@@ -1191,7 +1191,7 @@ class Params
     protected function getCheckboxFacetValues()
     {
         $list = [];
-        foreach ($this->checkboxFacets as $facets) {
+        foreach ($this->getRawCheckboxFacets() as $facets) {
             foreach ($facets as $current) {
                 [$field, $value] = $this->parseFilter($current['filter']);
                 if (!isset($list[$field])) {
@@ -1219,7 +1219,7 @@ class Params
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
-        foreach ($this->checkboxFacets as $facets) {
+        foreach ($this->getRawCheckboxFacets() as $facets) {
             foreach ($facets as $facet) {
                 // If the current filter is not on the include list, skip it (but
                 // accept everything if the include list is null).
@@ -1237,6 +1237,16 @@ class Params
             }
         }
         return $result;
+    }
+
+    /**
+     * Return checkbox facets without any processing
+     *
+     * @return array
+     */
+    protected function getRawCheckboxFacets(): array
+    {
+        return $this->checkboxFacets;
     }
 
     /**

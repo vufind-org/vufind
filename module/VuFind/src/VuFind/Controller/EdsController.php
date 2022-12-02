@@ -113,12 +113,7 @@ class EdsController extends AbstractSearch
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();
-        $availableLimiters = $options->getAdvancedLimiters();
-        if (!$availableLimiters) {
-            throw new \Exception('Gah');
-        }
-
-        return $availableLimiters;
+        return $options->getAdvancedLimiters();
     }
 
     /**

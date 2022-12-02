@@ -485,7 +485,7 @@ class EDS extends DefaultRecord
 
     /**
      * Performs a regex and replaces any url's with links containing themselves
-     * as the text
+     * as the text. Also replaces link elements with anchors.
      *
      * @param string $string String to process
      *
@@ -493,6 +493,14 @@ class EDS extends DefaultRecord
      */
     public function linkUrls($string)
     {
+        $isLink = preg_match(
+            '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
+            $string,
+            $matches
+        );
+        if ($isLink) {
+            $string = $matches[1];
+        }
         $linkedString = preg_replace_callback(
             "/\b(https?):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)\b/i",
             function ($matches) {
