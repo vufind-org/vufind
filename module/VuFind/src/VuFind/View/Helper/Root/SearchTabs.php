@@ -34,6 +34,7 @@ use Laminas\View\Helper\Url;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager;
 use VuFind\Search\SearchTabsHelper;
+use VuFind\Search\UrlQueryHelper;
 
 /**
  * "Search tabs" view helper
@@ -439,7 +440,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             }
         }
         return $hiddenFilters
-            ? ('?' . htmlspecialchars(http_build_query($urlParams)))
+            ? ('?' . UrlQueryHelper::buildQueryString($urlParams))
             : '';
     }
 }
