@@ -1061,6 +1061,12 @@ class Params
      */
     public function getFilterList($excludeCheckboxFilters = false)
     {
+        // If we don't have any filters, return right away to avoid further
+        // processing:
+        if (!$this->filterList) {
+            return [];
+        }
+
         // Get a list of checkbox filters to skip if necessary:
         $skipList = $excludeCheckboxFilters
             ? $this->getCheckboxFacetValues() : [];

@@ -431,7 +431,15 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         foreach ($filters as $filter) {
             $params->addHiddenFilter($filter);
         }
-        $urlParams = $results->getUrlQuery()->getParams(false);
-        return $urlParams !== '?' ? $urlParams : '';
+        $urlParams = [];
+        $hiddenFilters = $params->getHiddenFilters();
+        foreach ($hiddenFilters as $field => $values) {
+            foreach ($values as $current) {
+                $urlParams['hiddenFilters'][] = $field . ':"' . $current . '"';
+            }
+        }
+        return $hiddenFilters
+            ? ('?' . htmlspecialchars(http_build_query($urlParams)))
+            : '';
     }
 }
