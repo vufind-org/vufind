@@ -213,6 +213,17 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
+     * Get default limit setting.
+     *
+     * @return int
+     */
+    public function getDefaultLimit()
+    {
+        $this->setOptionsFromApi();
+        return $this->defaultLimit;
+    }
+
+    /**
      * Obtain the set searchmode
      *
      * @return string the search mode
