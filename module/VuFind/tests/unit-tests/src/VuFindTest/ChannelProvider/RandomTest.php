@@ -131,28 +131,28 @@ class RandomTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($commandObj));
         $expectedResult = [
                 'title' => 'random_recommendation_title',
-                'providerId' => 'Test_ProviderID',
+                'providerId' => 'foo_ProviderID',
                 'contents' => [[
-                    'title' => 'Test_Title',
-                    'source' => 'Test_Identifier',
-                    'thumbnail' => 'Test_Thumbnail',
-                    'routeDetails' => 'Test_Route',
-                    'id' => 'Test_Id',
+                    'title' => 'foo_Title',
+                    'source' => 'foo_Identifier',
+                    'thumbnail' => 'foo_Thumbnail',
+                    'routeDetails' => 'foo_Route',
+                    'id' => 'foo_Id',
                 ]]
         ];
-        $random->setProviderId('Test_ProviderID');
+        $random->setProviderId('foo_ProviderID');
         $coverRouter = $this->getMockBuilder(\VuFind\Cover\Router::class)
             ->disableOriginalConstructor()
             ->getMock();
         $coverRouter->expects($this->once())->method('getUrl')
             ->with($this->equalTo($recordDriver), $this->equalTo('medium'))
-            ->willReturn('Test_Thumbnail');
+            ->willReturn('foo_Thumbnail');
         $recordRouter = $this->getMockBuilder(\VuFind\Record\Router::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
             ->with($this->equalTo($recordDriver))
-            ->willReturn('Test_Route');
+            ->willReturn('foo_Route');
         $random->setCoverRouter($coverRouter);
         $random->setRecordRouter($recordRouter);
         return [$random, $expectedResult, $params];
@@ -167,10 +167,10 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     {
         $driver = new TestHarness();
         $data = [
-            'Title' => 'Test_Title',
-            'SourceIdentifier' => 'Test_Identifier',
-            'Thumbnail' => 'Test_Thumbnail',
-            'UniqueID' => 'Test_Id'
+            'Title' => 'foo_Title',
+            'SourceIdentifier' => 'foo_Identifier',
+            'Thumbnail' => 'foo_Thumbnail',
+            'UniqueID' => 'foo_Id'
         ];
         $driver->setRawData($data);
         return $driver;

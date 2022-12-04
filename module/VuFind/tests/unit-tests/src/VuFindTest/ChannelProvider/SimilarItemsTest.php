@@ -90,18 +90,18 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $obj = $this->getSimilarItems(['maxRecordsToExamine' => 0]);
         $similar = $obj['SimilarItems'];
         $expectedResult = [[
-            'title' => 'Similar Items: Test_Breadcrumb',
-            'providerId' => 'Test_ProviderId',
+            'title' => 'Similar Items: foo_Breadcrumb',
+            'providerId' => 'foo_ProviderId',
             'links' => [],
-            'token' => 'Test_Id'
+            'token' => 'foo_Id'
         ]];
-        $similar->setProviderId('Test_ProviderId');
+        $similar->setProviderId('foo_ProviderId');
         $this->assertSame($expectedResult, $similar->getFromSearch($results));
     }
 
     /**
-     * Test deriving channel information from a search results object when
-     * maxRecordsToExamine is lessthan channels.
+     * Test deriving channel information from a search results object with
+     * a specific single channel to load.
      *
      * @return void
      */
@@ -113,13 +113,12 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->will($this->returnValue([$recordDriver]));
-
         $parameters = $this->supportMethod(['maxRecordsToExamine' => 0], true);
         $similar = $parameters[0];
-
-        $similar->setProviderId('Test_ProviderId');
-
-        $this->assertSame([$parameters[1]], $similar->getFromSearch($results, 'channel_token'));
+        $this->assertSame(
+            [$parameters[1]],
+            $similar->getFromSearch($results, 'channel_token')
+        );
     }
 
     /**
@@ -134,7 +133,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $url = $obj['url'];
         $router = $obj['router'];
         $similar = $obj['SimilarItems'];
-        $similar->setProviderId('Test_ProviderId');
+        $similar->setProviderId('foo_ProviderId');
 
         $params = new ParamBag(['rows' => 20]);
         $retrieveParams = new ParamBag();
@@ -149,9 +148,9 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
 
         $router->expects($this->once())->method('getTabRouteDetails')
             ->with($this->equalTo($recordDriver))
-            ->willReturn('Test_Route');
+            ->willReturn('foo_Route');
 
-        $arguments = ['Test_Id', $params];
+        $arguments = ['foo_Id', $params];
         $retrieve =  ['channel_token', $retrieveParams];
 
         if ($flag) {
@@ -184,8 +183,8 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         }
 
         $expectedResult = [
-            'title' => 'Similar Items: Test_Breadcrumb',
-            'providerId' => 'Test_ProviderId',
+            'title' => 'Similar Items: foo_Breadcrumb',
+            'providerId' => 'foo_ProviderId',
             'links' => [
                 [
                     'label' => 'View Record',
@@ -195,15 +194,15 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
                 [
                     'label' => 'channel_expand',
                     'icon' => 'fa-search-plus',
-                    'url' => 'channels-record?id=Test_Id&source=Solr'
+                    'url' => 'channels-record?id=foo_Id&source=Solr'
                 ]
             ],
             'contents' => [[
-                'title' => 'Test_Title',
+                'title' => 'foo_Title',
                 'source' => 'Solr',
                 'thumbnail' => false,
-                'routeDetails' => 'Test_Route',
-                'id' => 'Test_Id']
+                'routeDetails' => 'foo_Route',
+                'id' => 'foo_Id']
             ],
 
         ];
@@ -281,10 +280,10 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
     {
         $driver = new TestHarness();
         $data = [
-            'Title' => 'Test_Title',
-            'Thumbnail' => 'Test_Thumbnail',
-            'UniqueID' => 'Test_Id',
-            'Breadcrumb' => 'Test_Breadcrumb',
+            'Title' => 'foo_Title',
+            'Thumbnail' => 'foo_Thumbnail',
+            'UniqueID' => 'foo_Id',
+            'Breadcrumb' => 'foo_Breadcrumb',
             'SourceIdentifier' => 'Solr',
         ];
         $driver->setRawData($data);
