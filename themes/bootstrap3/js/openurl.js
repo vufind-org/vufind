@@ -64,7 +64,7 @@ VuFind.register('openurl', function OpenUrl() {
       VuFind.observerManager.createIntersectionObserver(
         'openUrlEmbed',
         embedOpenUrlLinks,
-        container.findAll('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray()
+        container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray()
       );
     }
   }
