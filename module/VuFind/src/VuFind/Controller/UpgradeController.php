@@ -831,10 +831,7 @@ class UpgradeController extends AbstractBase
     protected function performCriticalChecks()
     {
         // Prevent the use of the deprecated blowfish cipher algo
-        $forward = $this->criticalCheckForBlowfishEncryption();
-        if ($forward !== null) {
-            return $this->forwardTo('Upgrade', $forward);
-        }
+        return $this->criticalCheckForBlowfishEncryption() ?? null;
     }
 
     /**
@@ -866,7 +863,10 @@ class UpgradeController extends AbstractBase
         }
 
         // Check for critical upgrades
-        $criticalFixForward = $this->performCriticalChecks();
+        $criticalFixForward = $this->performCriticalChecks() ?? null;
+        if ($criticalFixForward !== null) {
+            return $this->forwardTo('Upgrade', $criticalFixForward);
+        }
 
         // Now make sure we have a configuration file ready:
         if (!isset($this->cookie->configOkay) || !$this->cookie->configOkay) {
