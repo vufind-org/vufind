@@ -49,10 +49,23 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromRecord(): void
     {
-        $mocks = $this->getAlphaBrowse();
-        $alpha = $mocks['alpha'];
+        extract($this->getAlphaBrowse());
+        $recordDriver = $this->getDriver(['solrField' => 'foo']);
+        [$alpha, $expetedResult] = $this->configureTestTargetAndExpectations();
+        $this->assertSame($expetedResult, $alpha->getFromRecord($recordDriver));
+    }
+
+    /**
+     * Test deriving channel information from a record driver object when we
+     * have a token that do not match record driver.
+     *
+     * @return void
+     */
+    public function testGetFromRecordWhenChannelTokenIsSet(): void
+    {
+        extract($this->getAlphaBrowse());
         $recordDriver = $this->getDriver();
-        $this->assertSame([], $alpha->getFromRecord($recordDriver));
+        $this->assertSame([], $alpha->getFromRecord($recordDriver, 'foo_Token'));
     }
 
     /**
@@ -65,13 +78,12 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $data = ['solrField' => 'foo'];
-        $recordDriver = $this->getDriver($data);
+
+        $recordDriver = $this->getDriver(['solrField' => 'foo']);
         $results->expects($this->once())->method('getResults')
-            ->will($this->returnValue([$recordDriver]));
-        $parameters = $this->supportMethod();
-        $alpha = $parameters[0];
-        $this->assertSame([$parameters[1]], $alpha->getFromSearch($results));
+            ->willReturn([$recordDriver]);
+        [$alpha, $expetedResult] = $this->configureTestTargetAndExpectations();
+        $this->assertSame($expetedResult, $alpha->getFromSearch($results));
     }
 
     /**
@@ -82,15 +94,14 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromSearchWhenMaxRecordsIsLessthanChannels(): void
     {
-        $mocks = $this->getAlphaBrowse(['maxRecordsToExamine' => 0]);
-        $alpha = $mocks['alpha'];
+        extract($this->getAlphaBrowse(['maxRecordsToExamine' => 0]));
         $alpha->setProviderId('foo_ProviderId');
         $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver = $this->getDriver(['solrField' => 'foo']);
         $results->expects($this->once())->method('getResults')
-            ->will($this->returnValue([$recordDriver]));
+            ->willReturn([$recordDriver]);
         $expectedResult = [[
                 'title' => 'nearby_items',
                 'providerId' => 'foo_ProviderId',
@@ -113,13 +124,13 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
-            ->will($this->returnValue([$recordDriver]));
-
-        $parameters = $this->supportMethod(['maxRecordsToExamine' => 0], true);
-        $alpha = $parameters[0];
-
+            ->willReturn([$recordDriver]);
+        [$alpha, $expectedResult] = $this->configureTestTargetAndExpectations(
+            ['maxRecordsToExamine' => 0],
+            true
+        );
         $this->assertSame(
-            [$parameters[1]],
+            $expectedResult,
             $alpha->getFromSearch($results, 'channel_token')
         );
     }
@@ -127,15 +138,17 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to mock objects.
      *
+     * @param array $options Set options for theprovider
+     * @param bool $fetchFromSearchService  flag indicating test case to fetch from
+     * search service when the search results do not include object we are looking for
+     *
      * @return array
      */
-    public function supportMethod($options = ['maxRecordsToExamine' => 1], $flag = false)
-    {
-        $obj = $this->getAlphaBrowse($options);
-        $search = $obj['search'];
-        $url = $obj['url'];
-        $router = $obj['router'];
-        $alpha = $obj['alpha'];
+    public function configureTestTargetAndExpectations(
+        $options = ['maxRecordsToExamine' => 1],
+        $fetchFromSearchService = false
+    ) {
+        extract($this->getAlphaBrowse($options));
         $alpha->setProviderId('foo_ProviderId');
         $driver = $this->getDriver(['solrField' => 'foo']);
 
@@ -154,8 +167,6 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                         ]
                     ];
 
-        $records = [$driver];
-
         $params = new ParamBag(['extras' => 'title:author:isbn:id']);
         $alphabeticArgs = ['lcc', 'foo', 0, 20, $params, -10];
         $retrieveBatchArgs = [['foo_id'], new ParamBag()];
@@ -167,15 +178,15 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         )
             ->disableOriginalConstructor()
             ->getMock();
-        if ($flag) {
+        if ($fetchFromSearchService) {
             $collection->expects($this->once())->method('first')
-                ->willReturn($this->returnValue($driver));
+                ->willReturn($driver);
 
             $commandObj->expects($this->exactly(3))->method('getResult')
                 ->willReturnOnConsecutiveCalls(
-                    $this->returnValue($collection),
-                    $this->returnValue($details),
-                    $this->returnValue($records)
+                    $collection,
+                    $details,
+                    [$driver]
                 );
 
             $search->expects($this->exactly(3))->method('invoke')
@@ -191,16 +202,16 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                     )]
                 )
                 ->willReturnOnConsecutiveCalls(
-                    $this->returnValue($commandObj),
-                    $this->returnValue($commandObj),
-                    $this->returnValue($commandObj)
+                    $commandObj,
+                    $commandObj,
+                    $commandObj
                 );
         } else {
             $commandObj->expects($this->exactly(2))->method('getResult')
-                    ->willReturnOnConsecutiveCalls(
-                        $this->returnValue($details),
-                        $this->returnValue($records)
-                    );
+                ->willReturnOnConsecutiveCalls(
+                    $details,
+                    [$driver]
+                );
             $search->expects($this->exactly(2))->method('invoke')
                 ->withConsecutive(
                     [$this->callback($this->getCommandChecker($alphabeticArgs))],
@@ -209,8 +220,8 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                     )]
                 )
                 ->willReturnOnConsecutiveCalls(
-                    $this->returnValue($commandObj),
-                    $this->returnValue($commandObj)
+                    $commandObj,
+                    $commandObj
                 );
         }
 
@@ -224,7 +235,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($driver))
-            ->will($this->returnValue($routeDetails));
+            ->willReturn($routeDetails);
         $url->expects($this->exactly(3))->method('fromRoute')
             ->withConsecutive(
                 [$this->equalTo($routeDetails['route']),
@@ -233,38 +244,37 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 [$this->equalTo('alphabrowse-home')]
             )
             ->willReturnOnConsecutiveCalls(
-                $this->returnValue('url_test'),
-                $this->returnValue('channels-record'),
-                $this->returnValue('alphabrowse-home')
+                'url_test',
+                'channels-record',
+                'alphabrowse-home'
             );
-        $expectedResult = [
-                'title' => 'nearby_items',
-                'providerId' => 'foo_ProviderId',
-                'links' => [
-                    [
-                        'label' => 'View Record',
-                        'icon' => 'fa-file-text-o',
-                        'url' => 'url_test'
-                    ],
-                    [
-                        'label' => 'channel_expand',
-                        'icon' => 'fa-search-plus',
-                        'url' => 'channels-record?id=foo_Id&source=foo_Identifier'
-                    ],
-                    [
-                        'label' => 'channel_browse',
-                        'icon' => 'fa-list',
-                        'url' => 'alphabrowse-home?source=lcc&from=foo'
-                    ]
+        $expectedResult = [[
+            'title' => 'nearby_items',
+            'providerId' => 'foo_ProviderId',
+            'links' => [
+                [
+                    'label' => 'View Record',
+                    'icon' => 'fa-file-text-o',
+                    'url' => 'url_test'
                 ],
-                'contents' => [[
-                    'title' => 'foo_title',
-                    'source' => 'Solr',
-                    'thumbnail' => false,
-                    'id' => 'foo_id']
+                [
+                    'label' => 'channel_expand',
+                    'icon' => 'fa-search-plus',
+                    'url' => 'channels-record?id=foo_Id&source=foo_Identifier'
                 ],
-
-            ];
+                [
+                    'label' => 'channel_browse',
+                    'icon' => 'fa-list',
+                    'url' => 'alphabrowse-home?source=lcc&from=foo'
+                ]
+            ],
+            'contents' => [[
+                'title' => 'foo_title',
+                'source' => 'Solr',
+                'thumbnail' => false,
+                'id' => 'foo_id']
+            ],
+        ]];
         return [$alpha, $expectedResult];
     }
 
@@ -313,7 +323,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $options options for the provider
      *
-     * @return AlphaBrowse
+     * @return array
      */
     protected function getAlphaBrowse($options = [])
     {
@@ -328,10 +338,6 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $alpha = new AlphaBrowse($search, $url, $router, $options);
 
-        return ['search' => $search,
-                'url' => $url,
-                'router' => $router,
-                'alpha' => $alpha
-            ];
+        return compact('search', 'url', 'router', 'alpha');
     }
 }

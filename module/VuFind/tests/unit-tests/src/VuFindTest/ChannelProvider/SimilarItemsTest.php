@@ -49,10 +49,22 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromRecord(): void
     {
-        $parameters = $this->supportMethod();
-        $similar = $parameters[0];
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations();
         $recordDriver = $this->getDriver();
-        $this->assertSame([$parameters[1]], $similar->getFromRecord($recordDriver));
+        $this->assertSame($expectedResult, $similar->getFromRecord($recordDriver));
+    }
+
+    /**
+     * Test deriving channel information from a record driver object when we
+     * have a token that do not match record driver.
+     *
+     * @return void
+     */
+    public function testGetFromRecordWhenChannelTokenIsSet(): void
+    {
+        extract($this->getSimilarItems());
+        $recordDriver = $this->getDriver();
+        $this->assertSame([], $similar->getFromRecord($recordDriver, 'foo_Token'));
     }
 
     /**
@@ -67,10 +79,9 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
-            ->will($this->returnValue([$recordDriver]));
-        $parameters = $this->supportMethod();
-        $similar = $parameters[0];
-        $this->assertSame([$parameters[1]], $similar->getFromSearch($results));
+            ->willReturn([$recordDriver]);
+        [$similar, $expectedResult]= $this->configureTestTargetAndExpectations();
+        $this->assertSame($expectedResult, $similar->getFromSearch($results));
     }
 
     /**
@@ -86,9 +97,8 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
-            ->will($this->returnValue([$recordDriver]));
-        $obj = $this->getSimilarItems(['maxRecordsToExamine' => 0]);
-        $similar = $obj['SimilarItems'];
+            ->willReturn([$recordDriver]);
+        extract($this->getSimilarItems(['maxRecordsToExamine' => 0]));
         $expectedResult = [[
             'title' => 'Similar Items: foo_Breadcrumb',
             'providerId' => 'foo_ProviderId',
@@ -112,11 +122,13 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
-            ->will($this->returnValue([$recordDriver]));
-        $parameters = $this->supportMethod(['maxRecordsToExamine' => 0], true);
-        $similar = $parameters[0];
+            ->willReturn([$recordDriver]);
+        [$similar, $expectedResult]  = $this->configureTestTargetAndExpectations(
+            ['maxRecordsToExamine' => 0],
+            true
+        );
         $this->assertSame(
-            [$parameters[1]],
+            $expectedResult,
             $similar->getFromSearch($results, 'channel_token')
         );
     }
@@ -124,17 +136,18 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to mock objects.
      *
+     * @param array $options Set options for theprovider
+     * @param bool $fetchFromSearchService  flag indicating test case to fetch from
+     * search service when the search results do not include object we are looking for
+     *
      * @return array
      */
-    public function supportMethod($options = ['maxRecordsToExamine' => 1], $flag = false)
-    {
-        $obj = $this->getSimilarItems($options);
-        $search = $obj['search'];
-        $url = $obj['url'];
-        $router = $obj['router'];
-        $similar = $obj['SimilarItems'];
+    public function configureTestTargetAndExpectations(
+        $options = ['maxRecordsToExamine' => 1],
+        $fetchFromSearchService = false
+    ) {
+        extract($this->getSimilarItems($options));
         $similar->setProviderId('foo_ProviderId');
-
         $params = new ParamBag(['rows' => 20]);
         $retrieveParams = new ParamBag();
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
@@ -143,9 +156,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $collection = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-
         $recordDriver = $this->getDriver();
-
         $router->expects($this->once())->method('getTabRouteDetails')
             ->with($this->equalTo($recordDriver))
             ->willReturn('foo_Route');
@@ -153,15 +164,15 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $arguments = ['foo_Id', $params];
         $retrieve =  ['channel_token', $retrieveParams];
 
-        if ($flag) {
+        if ($fetchFromSearchService) {
             $class = \VuFindSearch\Command\RetrieveCommand::class;
             $collection->expects($this->once())->method('first')
-                ->willReturn($this->returnValue($recordDriver));
+                ->willReturn($recordDriver);
 
             $commandObj->expects($this->exactly(2))->method('getResult')
                 ->willReturnOnConsecutiveCalls(
-                    $this->returnValue($collection),
-                    $this->returnValue([$recordDriver])
+                    $collection,
+                    [$recordDriver]
                 );
 
             $search->expects($this->exactly(2))->method('invoke')
@@ -170,19 +181,19 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
                     [$this->callback($this->getCommandChecker($arguments))]
                 )
                 ->willReturnOnConsecutiveCalls(
-                    $this->returnValue($commandObj),
-                    $this->returnValue($commandObj)
+                    $commandObj,
+                    $commandObj
                 );
         } else {
             $commandObj->expects($this->once())->method('getResult')
-                ->will($this->returnValue([$recordDriver]));
+                ->willReturn([$recordDriver]);
 
             $search->expects($this->once())->method('invoke')
                 ->with($this->callback($this->getCommandChecker($arguments)))
-                ->will($this->returnValue($commandObj));
+                ->willReturn($commandObj);
         }
 
-        $expectedResult = [
+        $expectedResult = [[
             'title' => 'Similar Items: foo_Breadcrumb',
             'providerId' => 'foo_ProviderId',
             'links' => [
@@ -205,11 +216,11 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
                 'id' => 'foo_Id']
             ],
 
-        ];
+        ]];
         $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($recordDriver))
-            ->will($this->returnValue($routeDetails));
+            ->willReturn($routeDetails);
         $url->expects($this->exactly(2))->method('fromRoute')
             ->withConsecutive(
                 [$this->equalTo($routeDetails['route']),
@@ -217,20 +228,20 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
                 [$this->equalTo('channels-record')]
             )
             ->willReturnOnConsecutiveCalls(
-                $this->returnValue('url_test'),
-                $this->returnValue('channels-record')
+                'url_test',
+                'channels-record'
             );
         return [$similar, $expectedResult];
     }
 
     /**
-     * Get SimilarItems object
+     * Get SimilarItems mock object
      *
      * @param array $options options for the provider
      *
-     * @return SimilarItems
+     * @return array
      */
-    protected function getSimilarItems($options = null)
+    protected function getSimilarItems($options = [])
     {
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
@@ -243,11 +254,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $similar = new SimilarItems($search, $url, $router, $options);
 
-        return ['search' => $search,
-                'url' => $url,
-                'router' => $router,
-                'SimilarItems' => $similar
-            ];
+        return compact('search', 'url', 'router', 'similar');
     }
 
     /**

@@ -56,7 +56,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
             ->willReturn('Solr');
-        $this->assertSame([$parameters[1]], $random->getFromRecord($recordDriver));
+        $this->assertSame($parameters[1], $random->getFromRecord($recordDriver));
     }
 
     /**
@@ -75,7 +75,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
             ->willReturn($parameters[2]);
 
         $random = $parameters[0];
-        $this->assertSame([$parameters[1]], $random->getFromSearch($results));
+        $this->assertSame($parameters[1], $random->getFromSearch($results));
     }
 
     /**
@@ -115,10 +115,10 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->disableOriginalConstructor()->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($rci));
+            ->willReturn($rci);
         $recordDriver = $this->getDriver();
         $rci->expects($this->once())->method('getRecords')
-            ->will($this->returnValue([$recordDriver]));
+            ->willReturn([$recordDriver]);
         $checkCommand = function ($command) use ($paramBag, $query) {
             return get_class($command) == \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() == "Solr"
@@ -128,18 +128,18 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         };
         $search->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
-        $expectedResult = [
-                'title' => 'random_recommendation_title',
-                'providerId' => 'foo_ProviderID',
-                'contents' => [[
-                    'title' => 'foo_Title',
-                    'source' => 'foo_Identifier',
-                    'thumbnail' => 'foo_Thumbnail',
-                    'routeDetails' => 'foo_Route',
-                    'id' => 'foo_Id',
-                ]]
-        ];
+            ->willReturn($commandObj);
+        $expectedResult = [[
+            'title' => 'random_recommendation_title',
+            'providerId' => 'foo_ProviderID',
+            'contents' => [[
+                'title' => 'foo_Title',
+                'source' => 'foo_Identifier',
+                'thumbnail' => 'foo_Thumbnail',
+                'routeDetails' => 'foo_Route',
+                'id' => 'foo_Id',
+            ]]
+        ]];
         $random->setProviderId('foo_ProviderID');
         $coverRouter = $this->getMockBuilder(\VuFind\Cover\Router::class)
             ->disableOriginalConstructor()
