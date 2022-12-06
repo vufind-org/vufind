@@ -49,7 +49,6 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromRecord(): void
     {
-        extract($this->getAlphaBrowse());
         $recordDriver = $this->getDriver(['solrField' => 'foo']);
         [$alpha, $expetedResult] = $this->configureTestTargetAndExpectations();
         $this->assertSame($expetedResult, $alpha->getFromRecord($recordDriver));
@@ -63,7 +62,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromRecordWhenChannelTokenIsSet(): void
     {
-        extract($this->getAlphaBrowse());
+        $alpha = $this->getAlphaBrowse()['alpha'];
         $recordDriver = $this->getDriver();
         $this->assertSame([], $alpha->getFromRecord($recordDriver, 'foo_Token'));
     }
@@ -94,7 +93,8 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromSearchWhenMaxRecordsIsLessthanChannels(): void
     {
-        extract($this->getAlphaBrowse(['maxRecordsToExamine' => 0]));
+        $objects = $this->getAlphaBrowse(['maxRecordsToExamine' => 0]);
+        $alpha = $objects['alpha'];
         $alpha->setProviderId('foo_ProviderId');
         $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
             ->disableOriginalConstructor()
@@ -148,7 +148,11 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $options = ['maxRecordsToExamine' => 1],
         $fetchFromSearchService = false
     ) {
-        extract($this->getAlphaBrowse($options));
+        $objects = $this->getAlphaBrowse($options);
+        $alpha = $objects['alpha'];
+        $search = $objects['search'];
+        $url = $objects['url'];
+        $router = $objects['router'];
         $alpha->setProviderId('foo_ProviderId');
         $driver = $this->getDriver(['solrField' => 'foo']);
 

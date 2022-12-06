@@ -62,7 +62,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromRecordWhenChannelTokenIsSet(): void
     {
-        extract($this->getSimilarItems());
+        $similar = $this->getSimilarItems()['similar'];
         $recordDriver = $this->getDriver();
         $this->assertSame([], $similar->getFromRecord($recordDriver, 'foo_Token'));
     }
@@ -98,7 +98,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
-        extract($this->getSimilarItems(['maxRecordsToExamine' => 0]));
+        $similar = $this->getSimilarItems(['maxRecordsToExamine' => 0])['similar'];
         $expectedResult = [[
             'title' => 'Similar Items: foo_Breadcrumb',
             'providerId' => 'foo_ProviderId',
@@ -146,7 +146,11 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $options = ['maxRecordsToExamine' => 1],
         $fetchFromSearchService = false
     ) {
-        extract($this->getSimilarItems($options));
+        $mockObjects = $this->getSimilarItems($options);
+        $similar = $mockObjects['similar'];
+        $search = $mockObjects['search'];
+        $url = $mockObjects['url'];
+        $router = $mockObjects['router'];
         $similar->setProviderId('foo_ProviderId');
         $params = new ParamBag(['rows' => 20]);
         $retrieveParams = new ParamBag();
