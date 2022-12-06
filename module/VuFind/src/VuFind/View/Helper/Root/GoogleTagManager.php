@@ -60,19 +60,20 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getHeadCode() {
+    public function getHeadCode() 
+    {
         if (!$this->gtmContainerId) {
             return '';
         }
 
         $js = <<<END
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;var n=d.querySelector('[nonce]');
-                n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','{$this->gtmContainerId}');                
-                END;
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;var n=d.querySelector('[nonce]');
+            n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','{$this->gtmContainerId}');                
+            END;
         $inlineScript = $this->getView()->plugin('inlinescript');
         $js = $inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
         return $js;
@@ -83,7 +84,8 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getBodyCode() {
+    public function getBodyCode() 
+    {
         if (!$this->gtmContainerId) {
             return '';
         }
