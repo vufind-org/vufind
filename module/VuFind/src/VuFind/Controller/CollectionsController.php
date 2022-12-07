@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
 
 /**
@@ -343,7 +344,13 @@ class CollectionsController extends AbstractBase implements
         $title = addcslashes($title, '"');
         $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
         $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
-        $result = $searchService->search('Solr', $query, 0, $this->getBrowseLimit());
+        $command = new SearchCommand(
+            'Solr',
+            $query,
+            0,
+            $this->getBrowseLimit()
+        );
+        $result = $searchService->invoke($command)->getResult();
         return $result->getRecords();
     }
 }

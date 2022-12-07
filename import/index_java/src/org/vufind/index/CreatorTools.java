@@ -47,6 +47,7 @@ public class CreatorTools
 
     private ConcurrentHashMap<String, String> relatorSynonymLookup = RelatorContainer.instance().getSynonymLookup();
     private Set<String> knownRelators = RelatorContainer.instance().getKnownRelators();
+    private Set<String> relatorPrefixesToStrip = RelatorContainer.instance().getRelatorPrefixesToStrip();
     private Set<Pattern> punctuationRegEx = PunctuationContainer.instance().getPunctuationRegEx();
     private Set<String> punctuationPairs = PunctuationContainer.instance().getPunctuationPairs();
     private Set<String> untrimmedAbbreviations = PunctuationContainer.instance().getUntrimmedAbbreviations();
@@ -592,8 +593,14 @@ public class CreatorTools
      */
     protected String normalizeRelatorString(String string)
     {
+        string = string.trim();
+        for (String prefix : relatorPrefixesToStrip) {
+            if (string.startsWith(prefix)) {
+                string = string.substring(prefix.length());
+                break;
+            }
+        }
         return string
-            .trim()
             .toLowerCase()
             .replaceAll("\\p{Punct}+", "");    //POSIX character class Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * MARC serialization message callback interface.
+ * Locale Detector Strategy for language cookie
  *
  * PHP version 7
  *
@@ -20,30 +20,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  MARC
+ * @package  I18n\Locale
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org Main Site
  */
-namespace VuFind\Marc\Serialization;
+namespace VuFind\I18n\Locale;
+
+use SlmLocale\LocaleEvent;
+use SlmLocale\Strategy\CookieStrategy;
 
 /**
- * MARC serialization message callback interface.
+ * Locale Detector Strategy for language cookie
  *
  * @category VuFind
- * @package  MARC
+ * @package  I18n\Locale
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org Main Site
  */
-interface MessageCallbackInterface
+class LocaleDetectorCookieStrategy extends CookieStrategy
 {
     /**
-     * Set message callback
+     * Event handler for the 'found' event
      *
-     * @param callable $callback Message callback
+     * @param LocaleEvent $event Event
      *
      * @return void
      */
-    public function setMessageCallback(?callable $callback): void;
+    public function found(LocaleEvent $event)
+    {
+        // Setting a cookie is handled separately, so we don't need to do anything
+        // here (see LocaleDetectorFactory).
+    }
 }

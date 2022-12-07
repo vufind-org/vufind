@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2009.
+ * Copyright (C) Villanova University 2009, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
 namespace VuFind\Related;
+
+use VuFindSearch\Command\SimilarCommand;
 
 /**
  * Related Records: Solr-based similarity
@@ -72,10 +74,11 @@ class Similar implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $this->results = $this->searchService->similar(
+        $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
             $driver->getUniqueId()
         );
+        $this->results = $this->searchService->invoke($command)->getResult();
     }
 
     /**

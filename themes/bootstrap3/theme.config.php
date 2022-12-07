@@ -106,6 +106,9 @@ return [
              */
             'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
+            'browzine-issue' => 'Alias:format-serial',
+            'browzine-pdf' => 'FontAwesome:file-pdf-o',
+            'browzine-retraction' => 'FontAwesome:exclamation',
             'cart' => 'FontAwesome:suitcase',
             'cart-add' => 'FontAwesome:plus',
             'cart-empty' => 'FontAwesome:times',
