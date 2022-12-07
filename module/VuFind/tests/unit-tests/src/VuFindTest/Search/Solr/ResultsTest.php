@@ -171,16 +171,27 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         array $expectedParams
     ): SearchService {
         $collection = new RecordCollection($response);
-        $searchService = $this->createMock(SearchService::class);
-        $searchService->expects($this->once())
-            ->method('search')
-            ->with(
-                $this->equalTo('Solr'),
-                $this->equalTo(new \VuFindSearch\Query\Query()),
-                $this->equalTo(0),
-                $this->equalTo(20),
-                $this->equalTo(new \VuFindSearch\ParamBag($expectedParams))
-            )->will($this->returnValue($collection));
+        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
+        ->disableOriginalConstructor()
+        ->getMock();
+
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
+            ->will($this->returnValue($collection));
+
+        $checkCommand = function ($command) use ($expectedParams) {
+            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === 'Solr'
+                && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
+                && $command->getArguments()[1] === 0
+                && $command->getArguments()[2] === 20
+                && $command->getArguments()[3]->getArrayCopy() == $expectedParams;
+        };
+        $searchService->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         return $searchService;
     }
 
@@ -435,11 +446,25 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         Params $params
     ): Results {
         $collection = new RecordCollection($response);
-        $searchService = $this->createMock(SearchService::class);
+        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         // No need to validate the parameters, just return the requested results:
-        $searchService->expects($this->once())
-            ->method('search')
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
+
+        $checkCommand = function ($command) {
+            return get_class($command) === \VuFindSearch\Command\SearchCommand::class;
+        };
+        $searchService->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         return $this->getResults($params, $searchService);
     }
 

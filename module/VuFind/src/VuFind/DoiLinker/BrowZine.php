@@ -59,15 +59,27 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
     protected $config;
 
     /**
+     * Configured DOI services
+     *
+     * @var array
+     */
+    protected $doiServices;
+
+    /**
      * Constructor
      *
      * @param Service $searchService Search service
      * @param array   $config        Configuration settings
+     * @param array   $doiServices   Configured DOI services
      */
-    public function __construct(Service $searchService, array $config = [])
-    {
+    public function __construct(
+        Service $searchService,
+        array $config = [],
+        array $doiServices = []
+    ) {
         $this->searchService = $searchService;
         $this->config = $config;
+        $this->doiServices = $doiServices;
     }
 
     /**
@@ -106,29 +118,62 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
      */
     public function getLinks(array $doiArray)
     {
-        $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
         $response = [];
+        $localIcons = !empty($this->config['local_icons']);
         foreach ($doiArray as $doi) {
             $command = new LookupDoiCommand('BrowZine', $doi);
             $result = $this->searchService->invoke($command)->getResult();
             $data = $result['data'] ?? null;
-            if ($this->arrayKeyAvailable('browzineWebLink', $data)) {
-                $response[$doi][] = [
-                    'link' => $data['browzineWebLink'],
-                    'label' => $this->translate('View Complete Issue'),
-                    'icon' => $baseIconUrl . 'browzine-open-book-icon.svg',
-                    'data' => $data,
-                ];
-            }
-            if ($this->arrayKeyAvailable('fullTextFile', $data)) {
-                $response[$doi][] = [
-                    'link' => $data['fullTextFile'],
-                    'label' => $this->translate('PDF Full Text'),
-                    'icon' => $baseIconUrl . 'browzine-pdf-download-icon.svg',
-                    'data' => $data,
-                ];
+            foreach ($this->getDoiServices() as $key => $config) {
+                if ($this->arrayKeyAvailable($key, $data)) {
+                    $result = [
+                        'link' => $data[$key],
+                        'label' => $this->translate($config['linkText']),
+                        'data' => $data,
+                    ];
+                    if (!$localIcons && !empty($config['icon'])) {
+                        $result['icon'] = $config['icon'];
+                    } else {
+                        $result['localIcon'] = $config['localIcon'];
+                    }
+                    $response[$doi][] = $result;
+                }
             }
         }
         return $response;
+    }
+
+    /**
+     * Get an array of DOI services and their configuration
+     *
+     * @return array
+     */
+    protected function getDoiServices(): array
+    {
+        if (empty($this->doiServices)) {
+            $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
+            return [
+                'browzineWebLink' => [
+                    'linkText' => 'View Complete Issue',
+                    'localIcon' => 'browzine-issue',
+                    'icon' => $baseIconUrl . 'browzine-open-book-icon.svg',
+                ],
+                'fullTextFile' => [
+                    'linkText' => 'PDF Full Text',
+                    'localIcon' => 'browzine-pdf',
+                    'icon' => $baseIconUrl . 'browzine-pdf-download-icon.svg',
+                ],
+            ];
+        }
+        $result = [];
+        foreach ($this->doiServices as $key => $config) {
+            $parts = explode('|', $config);
+            $result[$key] = [
+                'linkText' => $parts[0],
+                'localIcon' => $parts[1],
+                'icon' => $parts[2] ?? null,
+            ];
+        }
+        return $result;
     }
 }

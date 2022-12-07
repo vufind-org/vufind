@@ -54,6 +54,8 @@ class TranslatableString implements TranslatableStringInterface
 
     /**
      * Whether translation is allowed
+     *
+     * @var bool
      */
     protected $translatable;
 
