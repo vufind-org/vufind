@@ -69,6 +69,15 @@ label { cursor: pointer; }
 .nav > li > a {
   @extend .icon--link;
   text-decoration: none;
+
+  &:hover,
+  &:focus {
+    /* borrowed from a11y accessibility */
+    color: $dropdown-bg;
+    text-decoration: none;
+    background-color: #333;
+    outline: dotted 1px #000;
+  }
 }
 .nav .dropdown-toggle {
   padding-right: 8px;
