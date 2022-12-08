@@ -202,7 +202,7 @@
               <?php if (isset($this->cancelResults['items'])): ?>
                 <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
                   <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
-                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
+                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php if ($cancelResult['sysMessage'] ?? false) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
                   <?php endif; ?>
                 <?php endforeach; ?>
               <?php endif; ?>
