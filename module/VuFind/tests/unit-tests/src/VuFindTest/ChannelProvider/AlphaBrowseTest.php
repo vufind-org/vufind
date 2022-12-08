@@ -50,13 +50,13 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     public function testGetFromRecord(): void
     {
         $recordDriver = $this->getDriver(['solrField' => 'foo']);
-        [$alpha, $expetedResult] = $this->configureTestTargetAndExpectations();
-        $this->assertSame($expetedResult, $alpha->getFromRecord($recordDriver));
+        [$alpha, $expectedResult] = $this->configureTestTargetAndExpectations();
+        $this->assertSame($expectedResult, $alpha->getFromRecord($recordDriver));
     }
 
     /**
      * Test deriving channel information from a record driver object when we
-     * have a token that do not match record driver.
+     * have a token that does not match record driver.
      *
      * @return void
      */
@@ -81,8 +81,8 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getDriver(['solrField' => 'foo']);
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
-        [$alpha, $expetedResult] = $this->configureTestTargetAndExpectations();
-        $this->assertSame($expetedResult, $alpha->getFromSearch($results));
+        [$alpha, $expectedResult] = $this->configureTestTargetAndExpectations();
+        $this->assertSame($expectedResult, $alpha->getFromSearch($results));
     }
 
     /**
