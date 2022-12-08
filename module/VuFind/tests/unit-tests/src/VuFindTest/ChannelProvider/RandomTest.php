@@ -128,10 +128,10 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a configured cover router mock. 
+     * Get a configured cover router mock.
      *
      * @param mixed $recordDriver expected input record driver for getUrl method.
-     * 
+     *
      * @return MockObject
      */
     protected function getConfiguredCoverRouterMock($recordDriver)
@@ -146,11 +146,11 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a configured record router mock. 
+     * Get a configured record router mock.
      *
-     * @param mixed $recordDriver expected input record driver for 
+     * @param mixed $recordDriver expected input record driver for
      * getTabRouteDetails method.
-     * 
+     *
      * @return MockObject
      */
     protected function getConfiguredRecordRouterMock($recordDriver)
@@ -186,13 +186,13 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a configured parameters object mock. 
+     * Get a configured parameters object mock.
      *
      * @param \VuFindSearch\Query\Query $query Search query object to be
      * returned by getQuery method.
      * @param \VuFindSearch\ParamBag $paramBag Request parameters to be returned by
-     * getBackendParameters method. 
-     * 
+     * getBackendParameters method.
+     *
      * @return MockObject
      */
     protected function getConfiguredParamsMock($query, $paramBag)
@@ -202,7 +202,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getQuery', 'getSearchClassId'])
             ->addMethods(['getBackendParameters'])
             ->getMock();
-            $params->expects($this->once())->method('getQuery')
+        $params->expects($this->once())->method('getQuery')
             ->willReturn($query);
         $params->expects($this->once())->method('getBackendParameters')
             ->willReturn($paramBag);
