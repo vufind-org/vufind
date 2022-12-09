@@ -127,7 +127,7 @@
     <?php endif; ?>
     <?php foreach ($hiddenFilters as $key => $filter): ?>
       <?php foreach ($filter as $value): ?>
-        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr('"' . $value . '"')?>" />
       <?php endforeach; ?>
     <?php endforeach; ?>
     <?php

@@ -1097,6 +1097,24 @@ class Params
     }
 
     /**
+     * Get the filter list as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @return array
+     */
+    public function getFiltersAsQueryParams(): array
+    {
+        $result = [];
+        foreach ($this->getRawFilters() as $field => $values) {
+            foreach ($values as $current) {
+                $result[] = $field . ':"' . $current . '"';
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get a display text for a facet field.
      *
      * @param string $field Facet field
@@ -1584,6 +1602,24 @@ class Params
     public function getHiddenFilters()
     {
         return $this->hiddenFilters;
+    }
+
+    /**
+     * Get the hidden filter list as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @return array
+     */
+    public function getHiddenFiltersAsQueryParams(): array
+    {
+        $result = [];
+        foreach ($this->getHiddenFilters() as $field => $values) {
+            foreach ($values as $current) {
+                $result[] = $field . ':"' . $current . '"';
+            }
+        }
+        return $result;
     }
 
     /**

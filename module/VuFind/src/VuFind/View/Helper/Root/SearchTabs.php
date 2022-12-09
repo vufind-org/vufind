@@ -264,7 +264,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 foreach ($filter as $value) {
                     $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '='
                         . urlencode("$key:$value");
-                }
+        }
             }
             $this->cachedHiddenFilterParams[$searchClassId]
                 = implode('&amp;', $hiddenFilterParams);
@@ -422,25 +422,28 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      *
      * @param Results $results Search results
      * @param array   $filters Filters
+     * @param string  $prepend String to prepend to the hidden filters if they're not
+     * empty
      *
      * @return string Query parameters
      */
-    protected function buildUrlHiddenFilters(Results $results, $filters)
-    {
+    protected function buildUrlHiddenFilters(
+        Results $results,
+        array $filters,
+        string $prepend = '?'
+    ): string {
         // Set up results object for URL building:
         $params = $results->getParams();
         foreach ($filters as $filter) {
             $params->addHiddenFilter($filter);
         }
-        $urlParams = [];
-        $hiddenFilters = $params->getHiddenFilters();
-        foreach ($hiddenFilters as $field => $values) {
-            foreach ($values as $current) {
-                $urlParams['hiddenFilters'][] = $field . ':"' . $current . '"';
-            }
+        if ($hiddenFilters = $params->getHiddenFiltersAsQueryParams()) {
+            return $prepend . UrlQueryHelper::buildQueryString(
+                [
+                    'hiddenFilters' => $hiddenFilters
+                ]
+            );
         }
-        return $hiddenFilters
-            ? ('?' . UrlQueryHelper::buildQueryString($urlParams))
-            : '';
+        return '';
     }
 }
