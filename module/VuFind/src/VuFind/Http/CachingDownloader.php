@@ -80,7 +80,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     public function __construct(CacheManager $cacheManager)
     {
         $this->cacheManager = $cacheManager;
-        $this->setUpCache('downloader');
+        $this->setUpCache('default');
     }
 
     /**
