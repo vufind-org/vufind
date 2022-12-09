@@ -73,8 +73,8 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $storage->expects($this->once())->method('getItem')->with($testCacheKey)->willReturn($testBody);
 
         $cacheManagerMock = $container->createMock(\VuFind\Cache\Manager::class);
-        $cacheManagerMock->expects($this->once())->method('addDownloaderCache')->with('downloader')->willReturn('downloader-downloader');
-        $cacheManagerMock->expects($this->once())->method('getCache')->with('downloader-downloader')->willReturn($storage);
+        $cacheManagerMock->expects($this->once())->method('addDownloaderCache')->with('default')->willReturn('downloader-default');
+        $cacheManagerMock->expects($this->once())->method('getCache')->with('downloader-default')->willReturn($storage);
 
         // downloader
         $downloader = new CachingDownloader($cacheManagerMock);

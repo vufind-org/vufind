@@ -88,7 +88,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return StorageInterface
      */
-    protected function getCache()
+    protected function getDownloaderCache()
     {
         if ($this->cache == null) {
             $cacheName = $this->cacheManager->addDownloaderCache($this->cacheId);
@@ -125,7 +125,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
         $params=[],
         callable $decodeCallback=null
     ) {
-        $cache = $this->getCache();
+        $cache = $this->getDownloaderCache();
         $cacheItemKey = md5($url . http_build_query($params));
 
         // Add new item to cache if not exists
