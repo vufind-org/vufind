@@ -264,7 +264,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 foreach ($filter as $value) {
                     $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '='
                         . urlencode("$key:$value");
-        }
+                }
             }
             $this->cachedHiddenFilterParams[$searchClassId]
                 = implode('&amp;', $hiddenFilterParams);
