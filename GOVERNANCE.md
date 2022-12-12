@@ -206,6 +206,12 @@ the copyrights within the project outputs. The PMC also votes to fill
 key roles related to VuFind®'s membership in the Open Library Foundation,
 including a Treasurer to manage the project's finances (see below).
 
+In order to participate in voting, members of the PMC must agree to comply
+with the project's [Conflict of Interest Policy](https://vufind.org/docs/COI_Policy.pdf)
+and must send a signed acknowledgment form to the Community Manager to be
+filed with the Open Library Foundation. Non-voting guests may participate
+in PMC meetings at the invitation of the PMC.
+
 Members of the PMC do not have significant authority over other members
 of the community, although it is the PMC that votes on new committers
 and responds to code of conduct violations. It also helps to make
