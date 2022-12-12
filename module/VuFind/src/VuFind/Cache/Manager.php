@@ -217,15 +217,17 @@ class Manager
      * Create a downloader-specific file cache.
      *
      * @param string $downloaderName Name of the downloader.
+     * @param array  $opts           Cache options.
      *
      * @return string
      */
-    public function addDownloaderCache($downloaderName)
+    public function addDownloaderCache($downloaderName, $opts=[])
     {
         $cacheName = 'downloader-' . $downloaderName;
         $this->createFileCache(
             $cacheName,
-            $this->getCacheDir()
+            $this->getCacheDir(),
+            $opts
         );
         return $cacheName;
     }
@@ -266,14 +268,15 @@ class Manager
     /**
      * Add a file cache to the manager and ensure that necessary directory exists.
      *
-     * @param string $cacheName Name of new cache to create
-     * @param string $dirName   Directory to use for storage
+     * @param string $cacheName    Name of new cache to create
+     * @param string $dirName      Directory to use for storage
+     * @param array  $overrideOpts Options to override default values.
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName)
+    protected function createFileCache($cacheName, $dirName, $overrideOpts=[])
     {
-        $opts = $this->defaults;    // copy defaults -- we'll modify them below
+        $opts = array_merge($this->defaults, $overrideOpts);
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
                 // convert umask from string

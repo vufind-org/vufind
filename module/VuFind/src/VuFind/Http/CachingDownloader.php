@@ -52,13 +52,6 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     protected $cacheManager;
 
     /**
-     * Stored client options for cache key generation.
-     *
-     * @var array
-     */
-    protected $cacheOptions = [];
-
-    /**
      * Cache to use for downloads
      *
      * @var StorageInterface
@@ -71,6 +64,13 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      * @var string
      */
     protected $cacheId;
+
+    /**
+     * Stored client options for cache key generation.
+     *
+     * @var array
+     */
+    protected $cacheOptions = [];
 
     /**
      * Constructor
@@ -100,14 +100,16 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Set up a different cache.
      *
-     * @param string $cacheId Cache ID
+     * @param string $cacheId      Cache ID
+     * @param array  $cacheOptions Cache Options
      *
      * @return void
      */
-    public function setUpCache($cacheId)
+    public function setUpCache(string $cacheId, array $cacheOptions=[])
     {
-        $this->cacheId = $cacheId;
         $this->cache = null;
+        $this->cacheId = $cacheId;
+        $this->cacheOptions = $cacheOptions;
     }
 
     /**
