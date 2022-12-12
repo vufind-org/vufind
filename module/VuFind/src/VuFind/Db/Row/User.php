@@ -246,7 +246,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'aes-256';
+        $algo = $configAuth->ils_encryption_algo ?? 'aes';
 
         // Check if OpenSSL error is caused by blowfish support
         try {
