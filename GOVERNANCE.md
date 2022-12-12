@@ -2,6 +2,8 @@
 
 Adopted March 8, 2021.
 
+Last updated December 12, 2022.
+
 Developed and drafted by the VuFind® Community Planning Group
 (alphabetically: Oliver Goldschmidt, Leila Gonzales, Christopher
 Hallberg, Demian Katz, André Lahmann, Craig Murdoch, Mohan Pradhan,
@@ -551,6 +553,11 @@ permit. Contributors are also encouraged to send a message about their
 contribution to the [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list if they do not receive a review in a timely fashion.
+
+## Changes
+
+December 12, 2022: Added ® symbol to VuFind® references; added paragraph
+on Conflict of Interest policy and non-voting PMC guests.
 
 ## Acknowledgements
 
