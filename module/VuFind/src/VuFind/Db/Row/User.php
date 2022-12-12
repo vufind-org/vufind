@@ -236,9 +236,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
-            if (!isset($configAuth->ils_encryption_key)
-                || empty($configAuth->ils_encryption_key)
-            ) {
+            if (empty($configAuth->ils_encryption_key)) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'ILS password encryption on, but no key set.'
                 );
