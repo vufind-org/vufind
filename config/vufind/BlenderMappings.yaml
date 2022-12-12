@@ -27,6 +27,7 @@
 # Ignore        true to ignore all values for a filter, or an array of values to
 #               ignore. Otherwise any filter value that does not have a field and
 #               value mapping causes the backend to be disabled for the search.
+# CountIgnored  Count ignored mappings to facet results. Default: true.
 # DefaultValue  Filter value used for the backend unless a filter is active.
 #               For example the pcAvailability filter by default limits results to
 #               those that have full text available, so a DefaultValue can be used to
