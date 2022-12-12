@@ -1,8 +1,8 @@
-# VuFind Governance Document
+# VuFind® Governance Document
 
 Adopted March 8, 2021.
 
-Developed and drafted by the VuFind Community Planning Group
+Developed and drafted by the VuFind® Community Planning Group
 (alphabetically: Oliver Goldschmidt, Leila Gonzales, Christopher
 Hallberg, Demian Katz, André Lahmann, Craig Murdoch, Mohan Pradhan,
 Leander Seige, Hajo Seng); see [**Acknowledgements**](#acknowledgements) below for additional
@@ -10,7 +10,7 @@ attributions.
 
 ## Overview
 
-The VuFind open source discovery tool is developed as a meritocratic,
+The VuFind® open source discovery tool is developed as a meritocratic,
 consensus-based community project. The project's mission is to ensure
 the long-term technical and financial sustainability of the software,
 its documentation, and its development processes. Anyone with an
@@ -21,33 +21,33 @@ opportunity to serve on the Project Management Committee, the group
 responsible for coordinating and managing the project's most critical
 processes.
 
-VuFind is supported by the Open Library Foundation, an unbiased,
+VuFind® is supported by the Open Library Foundation, an unbiased,
 independent not-for-profit organization whose mission is to ensure the
 availability, accessibility and sustainability of open source and open
 access projects for and by libraries.
 
 This document describes how community participation takes place and how
 to set about earning merit within the project. It also clarifies the
-relationship between VuFind and the OLF.
+relationship between VuFind® and the OLF.
 
 ## Roles And Responsibilities
 
 ### Users
 
-Users are community members who have a need for VuFind. They are the
+Users are community members who have a need for VuFind®. They are the
 most important members of the community and without them the project
 would have no purpose. Anyone can be a user; there are no special
 requirements.
 
-VuFind asks its users to participate in the project and community as
+VuFind® asks its users to participate in the project and community as
 much as possible. User contributions enable the project team to ensure
 that they are satisfying the needs of those users. Common user
 contributions include (but are not limited to):
 
 * evangelising about the project (e.g. a link on a website and word-of-mouth awareness raising)
 * informing developers of strengths and weaknesses from a new user perspective
-* encouraging integration between VuFind and other systems (e.g.
-    starting conversations between the VuFind community and
+* encouraging integration between VuFind® and other systems (e.g.
+    starting conversations between the VuFind® community and
     complementary projects; reporting new APIs that could add useful
     features to the software)
 * providing moral support (a 'thank you' goes a long way)
@@ -61,17 +61,17 @@ becoming contributors, as described below.
 ### Organizational Users
 
 Organizational users are commercial or non-profit entities which rely
-upon VuFind for some or all of their day-to-day operations.
+upon VuFind® for some or all of their day-to-day operations.
 Organizational users might:
 
-* sell VuFind-related services (hosting, support, development)
-* offer online tools powered by VuFind (searchable databases,
+* sell VuFind®-related services (hosting, support, development)
+* offer online tools powered by VuFind® (searchable databases,
     catalogs, etc.)
-* use VuFind for internal business processes (e.g. enabling search of
+* use VuFind® for internal business processes (e.g. enabling search of
     an intranet)
 
 As long as they comply with the legal terms of the software's license,
-organizational users have no specific obligations to the VuFind
+organizational users have no specific obligations to the VuFind®
 community. However, it is in their best interest to support the
 sustainability of the software to ensure that it continues to meet their
 needs. As such, organizational users are strongly encouraged to
@@ -99,20 +99,20 @@ themselves doing one or more of the following:
 * assisting with project infrastructure
 * writing and editing documentation
 * developing and running training programs
-* offering useful services (hosting, procurement, etc.) to the 
+* offering useful services (hosting, procurement, etc.) to the
     community
 * translating text for internationalization
 
 Contributors engage with the project through the [issue
 tracker](https://vufind.org/jira), the project's [GitHub
-organization](https://github.com/vufind-org), and the [VuFind
+organization](https://github.com/vufind-org), and the [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list, or by writing or editing
 [documentation](https://vufind.org/wiki/) and other
 project-related content. They submit changes to the project itself via
 [pull requests](https://vufind.org/wiki/development:making_pull_requests),
 which will be considered for inclusion in the project by existing
-committers (see next section). The [VuFind
+committers (see next section). The [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list is the most appropriate place to ask for help when making
 that first contribution.
@@ -168,7 +168,7 @@ committee (PMC; see below). Committer voting is one of the few
 activities that takes place through private PMC communication. This is
 to allow PMC members to freely express their opinions about a nominee
 without causing embarrassment. Once the vote has been held, the
-aggregated voting results are published on the [VuFind
+aggregated voting results are published on the [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list. The nominee is entitled to request an explanation of any
 'no' votes against them, regardless of the outcome of the vote. This
@@ -193,17 +193,17 @@ long-term health, may be nominated to become a member of the PMC. This
 role does not change their status as a committer, but it adds some
 additional responsibilities as described below.
 
-### VuFind Project Management Committee
+### VuFind® Project Management Committee
 
-The VuFind Project Management Committee (PMC) consists of those
-individuals identified on the [VuFind
+The VuFind® Project Management Committee (PMC) consists of those
+individuals identified on the [VuFind®
 website](https://vufind.org/wiki/community:roles_and_responsibilities#project_management_committee). The PMC has additional
 responsibilities over and above those of a committer. These
 responsibilities ensure the smooth running of the project. PMC members
 are expected to review code contributions, participate in strategic
 planning, approve changes to the governance model/document, and manage
 the copyrights within the project outputs. The PMC also votes to fill
-key roles related to VuFind's membership in the Open Library Foundation,
+key roles related to VuFind®'s membership in the Open Library Foundation,
 including a Treasurer to manage the project's finances (see below).
 
 Members of the PMC do not have significant authority over other members
@@ -263,11 +263,11 @@ regards to the Open Library Foundation (see below).
 #### Open Library Foundation Roles
 
 In addition to the roles described above, which are used internally by
-the VuFind community, the Open Library Foundation requires all member
+the VuFind® community, the Open Library Foundation requires all member
 communities to designate individuals for three OLF-specific roles:
 
 * **Primary Manager** - This is the primary point of contact within
-     the VuFind Project for OLF communications and collaboration. This
+     the VuFind® Project for OLF communications and collaboration. This
      person executes contracts/agreements with the OLF on behalf of the
      project.
 
@@ -281,11 +281,11 @@ communities to designate individuals for three OLF-specific roles:
 * **Secretary** - this person manages the minutes of the project
      including any resolutions required to document business with the
      OLF. This person also manages and maintains all contracts brokered
-     and executed through the VuFind SMLLC on behalf of the project,
+     and executed through the VuFind® SMLLC on behalf of the project,
      and supports the activities of the Primary Manager and the
      Treasurer.
 
-For simplicity, VuFind's PMC Community Manager will always serve as the
+For simplicity, VuFind®'s PMC Community Manager will always serve as the
 OLF Primary Manager.
 
 The OLF Secretary and Treasurer will be nominated and confirmed by the
@@ -295,14 +295,14 @@ The Treasurer is not required to be a member of the PMC, but the
 Secretary should be a member of PMC.
 
 The individual serving as the OLF Secretary may also be called upon to
-serve as an interim VuFind PMC Community Manager if the current
+serve as an interim VuFind® PMC Community Manager if the current
 Community Manager is temporarily unavailable, or until such time as
 voting is completed to replace a retiring Community Manager.
 
 ### Other Project Roles
 
 While this document details some of the largest and most critical roles
-and responsibilities within the VuFind project, there are many smaller
+and responsibilities within the VuFind® project, there are many smaller
 jobs that support the project's success, ranging from newsletter editing
 to release management. Because these roles may grow and evolve over
 time, it is impractical to try to capture all of them in this document;
@@ -349,10 +349,10 @@ for meaningful engagement with the work of the project.
 Decisions about the future of the project are made through discussion
 with all members of the community, from the newest user to the most
 experienced PMC member. All non-sensitive project management discussion
-takes place on the [VuFind
+takes place on the [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list. Occasionally, sensitive discussion occurs in private, as
-discussed above under [**VuFind Project Management Committee**](#vufind-project-management-committee).
+discussed above under [**VuFind® Project Management Committee**](#vufind-project-management-committee).
 
 In order to ensure that the project is not bogged down by endless
 discussion and continual voting, the project operates a policy of lazy
@@ -374,7 +374,7 @@ should create a ticket in the [issue
 tracker](https://vufind.org/jira) or submit a [pull
 request](https://github.com/vufind-org/vufind/pulls). For complex
 or potentially controversial submissions, sending an email to the
-[VuFind
+[VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list is also strongly encouraged, to ensure that the submissions
 receive an appropriate amount of attention. This will prompt a review
@@ -405,7 +405,7 @@ In cases where lazy consensus cannot be reached, discussion should take
 place within the comments of the issue ticket or pull request
 representing the proposal, in order to keep the conversation associated
 with the submission. If a real-time discussion is desirable, a request
-can be sent to the [VuFind
+can be sent to the [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 list to have the item added to the agenda for the next scheduled
 [Community Call](https://vufind.org/wiki/community_call). If 72
@@ -432,7 +432,7 @@ Technical votes are required when consensus cannot be reached around a
 proposal or submission. The question being voted on should be phrased
 clearly and unambiguously, such as "Should we merge pull request X?" or
 "Should we make architectural change / technical decision Y?" Voting
-should be announced through an email to [VuFind
+should be announced through an email to [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech).
 Feedback is welcomed from the entire community, but only committers have
 binding votes. Votes are made through public comment on the issue or PR
@@ -459,7 +459,7 @@ transparency that voting outcomes are shared with the larger community.
 Votes involving interpersonal conflict resolution \-- for example, code
 of conduct violations \-- will not be shared to protect the privacy of
 the parties involved. All other decisions should be shared to the
-[VuFind
+[VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list by the PMC Community Manager or Secretary. Additionally,
 all decisions impacting project direction or policy should be summarized
@@ -467,7 +467,7 @@ in the next published monthly newsletter.
 
 ### Reviewing and Merging Pull Requests
 
-Much of VuFind's activity is accomplished through GitHub pull requests.
+Much of VuFind®'s activity is accomplished through GitHub pull requests.
 This section provides best practices to ensure a smooth-running process
 resulting in high-quality, stable code.
 
@@ -496,7 +496,7 @@ errors (such as code style problems) prior to merging.
 
 #### Targeting Pull Requests
 
-VuFind uses a system of [Git
+VuFind® uses a system of [Git
 branches](https://vufind.org/wiki/development:git-branches) to
 manage releases. When creating a pull request, it should be targeted
 against the appropriate branch.
@@ -542,7 +542,7 @@ Committers and members of the PMC are strongly encouraged to follow the
 project's GitHub organization so that they will receive notifications of
 new pull requests and can contribute reviews as their time and expertise
 permit. Contributors are also encouraged to send a message about their
-contribution to the [VuFind
+contribution to the [VuFind®
 Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list if they do not receive a review in a timely fashion.
 
