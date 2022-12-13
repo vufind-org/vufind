@@ -37,7 +37,7 @@ use VuFindHttp\HttpService;
  *
  * @category VuFind
  * @package  Tests
- * @author   @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
