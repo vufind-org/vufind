@@ -70,9 +70,7 @@ class RecordDataFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $helper = new $requestedName(
-            $container->get(\VuFind\Config\YamlReader::class)
-        );
+        $helper = new $requestedName();
         $helper->setDefaults(
             'collection-info',
             [$this, 'getDefaultCollectionInfoSpecs']

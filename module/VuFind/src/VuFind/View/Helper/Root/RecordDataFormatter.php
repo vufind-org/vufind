@@ -108,9 +108,9 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Return rendered text (or null if nothing to render).
      *
-     * @param string       $field   Field being rendered (i.e. default label)
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options
+     * @param string $field   Field being rendered (i.e. default label)
+     * @param mixed  $data    Data to render
+     * @param array  $options Rendering options
      *
      * @return array
      */
@@ -152,7 +152,7 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Create formatted key/value data based on a record driver and field spec.
      *
-     * @param array        $spec   Formatting specification
+     * @param array $spec Formatting specification
      *
      * @return array
      */
@@ -217,7 +217,7 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Extract data (usually from the record driver).
      *
-     * @param array        $options Incoming options
+     * @param array $options Incoming options
      *
      * @return mixed
      */
@@ -293,8 +293,8 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Render using the record view helper.
      *
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
      *
      * @return string
      */
@@ -313,8 +313,8 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Render a record driver template.
      *
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
      *
      * @return string
      */
@@ -355,8 +355,8 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Simple rendering method.
      *
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
      *
      * @return string
      *
