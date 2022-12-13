@@ -255,8 +255,8 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Render multiple lines for a single set of data.
      *
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array options Rendering options.
      *
      * @return array
      */
