@@ -152,7 +152,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             new \VuFind\Config\PluginManager($container)
         );
         $this->addPathResolverToContainer($container);
-        $formatter = $factory($container, RecordDataFormatter::class);
+        $formatter = $factory($container, RecordDataFormatter::class)($this->getDriver());
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers($container);
@@ -334,8 +334,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'a' => 'a',
             'b' => 'b',
         ];
-        $driver = $this->getDriver();
-        $results = $formatter->getData($driver, $spec);
+        $results = $formatter->getData($spec);
 
         // Check for expected array keys
         $this->assertEquals(array_keys($expected), $this->getLabels($results));

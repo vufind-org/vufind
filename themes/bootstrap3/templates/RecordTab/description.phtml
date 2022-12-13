@@ -2,8 +2,8 @@
     // Set page title.
     $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb());
 
-    $formatter = $this->recordDataFormatter();
-    $mainFields = $formatter->getData($driver, $formatter->getDefaults('description'));
+    $formatter = $this->recordDataFormatter($this->driver);
+    $mainFields = $formatter->getData($formatter->getDefaults('description'));
 ?>
 <table class="table table-striped">
   <caption class="sr-only"><?=$this->transEsc('Description')?></caption>
