@@ -237,16 +237,17 @@ class ThemeInfo
      *
      * @return array|string merged theme info, favoring child themes (merged)
      */
-    protected function mergeWithoutOverride($merged, $current)
+    public function mergeWithoutOverride($merged, $current)
     {
         if (empty($merged)) {
             return $current;
         }
 
-        // Early escape for string values
-        if (!is_array($merged) || !is_array($current)) {
+        // Early escape for string, number, etc. values
+        if (!is_array($merged) && !is_array($current)) {
             return $merged;
         }
+
 
         if ($this->isStringKeyedArray($merged)) {
             foreach ($current as $key => $val) {
@@ -258,7 +259,10 @@ class ThemeInfo
                     $merged[$key] = $this->mergeWithoutOverride($merged[$key], $val);
                 } elseif (is_array($val)) {
                     // capture unique or missing array items
-                    $merged[$key] = array_merge($val, $merged[$key]);
+                    $merged[$key] = array_merge($val, (array)$merged[$key]);
+                } elseif (is_array($merged[$key])) {
+                    // string -> array
+                    $merged[$key] = array_merge((array)$val, $merged[$key]);
                 }
             }
 

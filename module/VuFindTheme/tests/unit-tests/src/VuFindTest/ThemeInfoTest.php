@@ -301,6 +301,58 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Stress-test our merging algorithm
+     *
+     * @return void
+     */
+    public function testMergeWithoutOverrideEdgeCases()
+    {
+        $ti = $this->getThemeInfo();
+
+        // string
+        $merged = $ti->mergeWithoutOverride('original', 'override');
+        $this->assertEquals('original', $merged);
+
+        // array
+        $merged = $ti->mergeWithoutOverride(['original'], ['override']);
+        $this->assertEquals(['override', 'original'], $merged);
+
+        // string-keyed arrays
+        $merged = $ti->mergeWithoutOverride(
+            ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
+            ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
+        );
+        $this->assertEquals(
+            ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+            $merged
+        );
+
+        // string-keyed arrays: missing
+        $merged = $ti->mergeWithoutOverride(
+            ['shared' => [1], 'parent' => 'only'],
+            ['shared' => [1], 'child' => 'only'],
+        );
+        $this->assertEquals(
+            ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+            $merged
+        );
+
+        // string-keyed string -> array
+        $merged = $ti->mergeWithoutOverride(
+            ['mixed' => ['array']],
+            ['mixed' => 'string'],
+        );
+        $this->assertEquals(['mixed' => ['string', 'array']], $merged);
+
+        // string-keyed array -> string
+        $merged = $ti->mergeWithoutOverride(
+            ['mixed' => 'string'],
+            ['mixed' => ['array']],
+        );
+        $this->assertEquals(['mixed' => ['array', 'string']], $merged);
+    }
+
+    /**
      * Test that caching works correctly.
      *
      * @return void
