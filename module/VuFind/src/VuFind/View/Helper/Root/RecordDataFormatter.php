@@ -156,7 +156,7 @@ class RecordDataFormatter extends AbstractHelper
      * If omitted, then invoke this class with the desired driver.
      * The second or first argument is an array containing formatting specifications.
      *
-     * @param array $args Record driver object and or Formatting specifications.
+     * @param array $args Record driver object and or formatting specifications.
      *
      * @return array
      */
