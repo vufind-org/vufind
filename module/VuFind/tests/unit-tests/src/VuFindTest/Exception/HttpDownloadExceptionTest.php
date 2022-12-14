@@ -61,11 +61,11 @@ class HttpDownloadExceptionTest extends \PHPUnit\Framework\TestCase
             $previous
         );
 
-        $this->assertEquals($message, $exception->getMessage();
+        $this->assertEquals($message, $exception->getMessage());
         $this->assertEquals($url, $exception->getUrl());
         $this->assertEquals($statusCode, $exception->getHttpStatus());
-        $this->assertEquals($responseHeaders, $exception->getResponseHeaders();
-        $this->assertEquals($responseBody, $exception->getResponseBody();
-        $this->assertEquals($previous, $exception->getPrevious();
+        $this->assertEquals($responseHeaders, $exception->getResponseHeaders());
+        $this->assertEquals($responseBody, $exception->getResponseBody());
+        $this->assertEquals($previous, $exception->getPrevious());
     }
 }
