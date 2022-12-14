@@ -39,15 +39,18 @@
 
     <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
     <?php /* Display Main Details */ ?>
-    <?=
-      $this->record($this->driver)->renderTemplate(
-          'core-fields.phtml',
-          [
-          'driver' => $this->driver,
-          'defaults' => 'collection-info',
-        ]
-      );
+    <?php
+      $formatter = $this->recordDataFormatter();
+      $coreFields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
     ?>
+    <?php if (!empty($coreFields)): ?>
+      <table class="table table-striped">
+        <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
+        <?php foreach ($coreFields as $current): ?>
+          <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endif; ?>
     <?php /* End Main Details */ ?>
   </div>
 </div>
