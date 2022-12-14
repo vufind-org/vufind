@@ -362,7 +362,7 @@ class UrlQueryHelper
      */
     public function getParams($escape = true)
     {
-        return '?' . self::buildQueryString($this->urlParams, $escape);
+        return '?' . static::buildQueryString($this->urlParams, $escape);
     }
 
     /**
