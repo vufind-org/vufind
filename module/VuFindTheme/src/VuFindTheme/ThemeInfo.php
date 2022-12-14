@@ -248,7 +248,6 @@ class ThemeInfo
             return $merged;
         }
 
-
         if ($this->isStringKeyedArray($merged)) {
             foreach ($current as $key => $val) {
                 if (!array_key_exists($key, $merged)) {
