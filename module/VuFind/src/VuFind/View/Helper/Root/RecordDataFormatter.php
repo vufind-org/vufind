@@ -29,7 +29,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use RuntimeException;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
