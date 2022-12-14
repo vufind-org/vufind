@@ -1,17 +1,15 @@
 <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
 <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
 
-<?php /* Display Main Details */ ?>
 <?php
   $formatter = $this->recordDataFormatter();
-  $coreFields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
+  $fields = $formatter->getData($driver, $formatter->getDefaults('collection-record'));
 ?>
-<?php if (!empty($coreFields)): ?>
+<?php if (!empty($fields)): ?>
   <table class="table table-striped">
     <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
-    <?php foreach ($coreFields as $current): ?>
+    <?php foreach ($fields as $current): ?>
       <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
     <?php endforeach; ?>
   </table>
 <?php endif; ?>
-<?php /* End Main Details */ ?>
