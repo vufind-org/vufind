@@ -60,12 +60,15 @@ header .navbar {
   }
   .navbar-nav > li > a,
   .navbar-nav > li .dropdown-toggle  {
+    position: relative;
     padding: 12px 6px;
 
     &:hover,
     &:focus {
-      outline: dotted 1px #000;
+      z-index: 1000;
       text-decoration: none;
+      color: #000;
+      outline: dotted 1px #000;
       background-color: #eeeeee;
     }
   }
