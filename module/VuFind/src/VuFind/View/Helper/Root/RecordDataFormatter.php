@@ -29,6 +29,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+use RuntimeException;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
@@ -65,7 +66,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @return RecordDataFormatter
      */
-    public function __invoke(RecordDriver $driver): RecordDataFormatter
+    public function __invoke(RecordDriver $driver = null): RecordDataFormatter
     {
         $this->driver = $driver;
         return $this;
@@ -151,16 +152,29 @@ class RecordDataFormatter extends AbstractHelper
 
     /**
      * Create formatted key/value data based on a record driver and field spec.
+     * The first argument can be a descendant of RecordDriver/AbstractBase.
+     * If omitted, then invoke this class with the desired driver.
+     * The second or first argument is an array containing formatting specifications.
      *
-     * @param array $spec Formatting specification
+     * @param array $args Record driver object and or Formatting specifications.
      *
      * @return array
      */
-    public function getData(array $spec)
+    public function getData(...$args)
     {
+        if (empty($args[0])) {
+            return [];
+        }
+        if (is_a($args[0], 'VuFind\\RecordDriver\\AbstractBase')) {
+            $this->driver = $args[0];
+            array_shift($args);
+        }
+        if (!is_array($args[0])) {
+            throw new \Exception('Argument 0 must be an array');
+        }
         // Apply the spec:
         $result = [];
-        foreach ($spec as $field => $current) {
+        foreach ($args[0] as $field => $current) {
             // Extract the relevant data from the driver and try to render it.
             $data = $this->extractData($current);
             $value = $this->render($field, $data, $current);
