@@ -1171,6 +1171,12 @@ class Folio extends AbstractAPI implements
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
                 ? date_create($hold->requestExpirationDate) : null;
+            
+            //set lastPickup Date if provided, format to j M Y
+            $lastPickup = isset($hold->holdShelfExpirationDate) 
+                ? date_format(date_create($hold->holdShelfExpirationDate), "j M Y")
+                : null;
+
             $holds[] = [
                 'type' => $hold->requestType,
                 'create' => date_format($requestDate, "j M Y"),
@@ -1181,6 +1187,10 @@ class Folio extends AbstractAPI implements
                 'reqnum' => $hold->id,
                 // Title moved from item to instance in Lotus release:
                 'title' => $hold->instance->title ?? $hold->item->title ?? '',
+                'available' => in_array($hold->status, $this->config['Holds']['available']),
+                'in_transit' => in_array($hold->status, $this->config['Holds']['in_transit']),
+                'last_pickup_date' => $lastPickup,
+                'position' => $hold->position,
             ];
         }
         return $holds;
