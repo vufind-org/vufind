@@ -37,9 +37,9 @@ namespace VuFind\Content\Covers;
  * @link     https://vufind.org/wiki/development:plugins:content_provider_components
  */
 class Orb extends \VuFind\Content\AbstractCover
-    implements \VuFindHttp\HttpServiceAwareInterface
+    implements \VuFind\Http\CachingDownloaderAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
      * Base URL for Orb API
@@ -78,21 +78,6 @@ class Orb extends \VuFind\Content\AbstractCover
     }
 
     /**
-     * Get an HTTP client
-     *
-     * @param string $url URL for client to use
-     *
-     * @return \Laminas\Http\Client
-     */
-    protected function getHttpClient($url = null)
-    {
-        if (null === $this->httpService) {
-            throw new \Exception('HTTP service missing.');
-        }
-        return $this->httpService->createClient($url);
-    }
-
-    /**
      * Get image URL for a particular API key and set of IDs (or false if invalid).
      *
      * @param string $key  API key
@@ -113,7 +98,7 @@ class Orb extends \VuFind\Content\AbstractCover
 
         $url = 'https://' . $this->apiUser . ':' . $this->apiKey . '@' .
                $this->url . '/products?eans=' . $ean . '&sort=ean_asc';
-        $result = $this->getHttpClient($url)->send();
+        $result = $this->cachingDownloader->download($url);
         $imageVersion = $size == 'small' ? 'thumbnail' : 'original';
         if ($result->isSuccess()) {
             $data = $result->getBody();
