@@ -64,6 +64,13 @@ class Options extends \VuFind\Search\Base\Options
     protected $displayRecordVersions = true;
 
     /**
+     * Solr field to be used as a tie-breaker.
+     *
+     * @var string
+     */
+    protected $sortTieBreaker = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -81,6 +88,9 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
+        }
+        if (isset($searchSettings->General->tie_breaker_sort)) {
+            $this->sortTieBreaker = $searchSettings->General->tie_breaker_sort;
         }
         if (isset($searchSettings->General->empty_search_relevance_override)) {
             $this->emptySearchRelevanceOverride
@@ -288,6 +298,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getEmptySearchRelevanceOverride()
     {
         return $this->emptySearchRelevanceOverride;
+    }
+
+    /**
+     * Get the field to be used as a sort tie-breaker..
+     *
+     * @return string Sort field or null if not set
+     */
+    public function getSortTieBreaker()
+    {
+        return $this->sortTieBreaker;
     }
 
     /**

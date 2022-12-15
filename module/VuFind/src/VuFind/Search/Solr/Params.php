@@ -489,6 +489,9 @@ class Params extends \VuFind\Search\Base\Params
                 );
             }
         }
+        if (!(in_array("id asc", $normalized) || in_array("id desc", $normalized))) {
+            $normalized[] = "id asc";
+        }
         return implode(',', $normalized);
     }
 

@@ -65,4 +65,14 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals('Solr', $this->getOptions()->getSearchClassId());
     }
+
+    /**
+     * Test that correct tie-breaker field is used.
+     *
+     * @return void
+     */
+    public function testGetSortTieBreaker()
+    {
+        $this->assertEquals('id', $this->getOptions()->getSortTieBreaker());
+    }
 }
