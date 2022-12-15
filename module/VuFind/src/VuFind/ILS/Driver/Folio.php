@@ -1187,8 +1187,14 @@ class Folio extends AbstractAPI implements
                 'reqnum' => $hold->id,
                 // Title moved from item to instance in Lotus release:
                 'title' => $hold->instance->title ?? $hold->item->title ?? '',
-                'available' => in_array($hold->status, $this->config['Holds']['available']),
-                'in_transit' => in_array($hold->status, $this->config['Holds']['in_transit']),
+                'available' => in_array(
+                    $hold->status, 
+                    $this->config['Holds']['available']
+                    ),
+                'in_transit' => in_array(
+                    $hold->status, 
+                    $this->config['Holds']['in_transit']
+                    ),
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position,
             ];
