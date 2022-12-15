@@ -151,11 +151,11 @@ class RecordDataFormatter extends AbstractHelper
 
     /**
      * Create formatted key/value data based on a record driver and field spec.
-     * The first argument can be a descendant of RecordDriver/AbstractBase.
+     * The first argument can be a descendant of RecordDriver.
      * If omitted, then invoke this class with the desired driver.
      * The second or first argument is an array containing formatting specifications.
      *
-     * @param array ...$args Record driver object and or formatting specifications.
+     * @param array ...$args Record driver object and/or formatting specifications.
      *
      * @return array
      */
@@ -164,9 +164,12 @@ class RecordDataFormatter extends AbstractHelper
         if (empty($args[0])) {
             return [];
         }
-        if (is_a($args[0], 'VuFind\\RecordDriver\\AbstractBase')) {
+        if ($args[0] instanceof RecordDriver) {
             $this->driver = $args[0];
             array_shift($args);
+        }
+        if (null === $this->driver) {
+            throw new \Exception('No driver set in RecordDataFormatter');
         }
         if (!is_array($args[0])) {
             throw new \Exception('Argument 0 must be an array');
