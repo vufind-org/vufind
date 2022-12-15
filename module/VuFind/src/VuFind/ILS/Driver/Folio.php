@@ -1190,11 +1190,11 @@ class Folio extends AbstractAPI implements
                 'available' => in_array(
                     $hold->status, 
                     $this->config['Holds']['available']
-                    ),
+                ),
                 'in_transit' => in_array(
                     $hold->status, 
                     $this->config['Holds']['in_transit']
-                    ),
+                ),
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position,
             ];
