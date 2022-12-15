@@ -376,12 +376,8 @@ class RecordCollection
         }
 
         foreach ($settings['Mappings'] as $backendId => $mappings) {
-            if (($collections[$backendId] ?? false) &&
-                ($ignore = $mappings['Ignore'] ?? '') &&
-                ($mappings['CountIgnored'] ?? true))
-            {
-                foreach (is_array($ignore) ? $ignore : array_keys($result) as $ignoredValue)
-                {
+            if (($collections[$backendId] ?? false) && ($ignore = $mappings['Ignore'] ?? false)) {
+                foreach (is_array($ignore) ? $ignore : array_keys($result) as $ignoredValue) {
                     $result[$ignoredValue] = ($result[$ignoredValue] ?? 0) + $collections[$backendId]->getTotal();
                 }
             }
