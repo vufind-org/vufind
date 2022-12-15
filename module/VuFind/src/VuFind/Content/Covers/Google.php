@@ -37,9 +37,9 @@ namespace VuFind\Content\Covers;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Google extends \VuFind\Content\AbstractCover
-    implements \VuFindHttp\HttpServiceAwareInterface
+    implements \VuFind\Http\CachingDownloaderAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
      * Constructor
@@ -47,21 +47,6 @@ class Google extends \VuFind\Content\AbstractCover
     public function __construct()
     {
         $this->supportsIsbn = true;
-    }
-
-    /**
-     * Get an HTTP client
-     *
-     * @param string $url URL for client to use
-     *
-     * @return \Laminas\Http\Client
-     */
-    protected function getHttpClient($url = null)
-    {
-        if (null === $this->httpService) {
-            throw new \Exception('HTTP service missing.');
-        }
-        return $this->httpService->createClient($url);
     }
 
     /**
@@ -86,7 +71,7 @@ class Google extends \VuFind\Content\AbstractCover
         // Construct the request URL and make the HTTP request:
         $url = 'https://books.google.com/books?jscmd=viewapi&' .
                'bibkeys=ISBN:' . $ids['isbn']->get13() . '&callback=addTheCover';
-        $result = $this->getHttpClient($url)->send();
+        $result = $this->cachingDownloader->download($url);
 
         // If the request was successful and we can extract a valid response...
         if ($result->isSuccess()
