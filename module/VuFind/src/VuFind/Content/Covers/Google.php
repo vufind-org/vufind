@@ -27,6 +27,8 @@
  */
 namespace VuFind\Content\Covers;
 
+use VuFind\Exception\HttpDownloadException;
+
 /**
  * Google cover content loader.
  *
@@ -71,23 +73,44 @@ class Google extends \VuFind\Content\AbstractCover
         // Construct the request URL and make the HTTP request:
         $url = 'https://books.google.com/books?jscmd=viewapi&' .
                'bibkeys=ISBN:' . $ids['isbn']->get13() . '&callback=addTheCover';
-        $result = $this->cachingDownloader->download($url);
 
-        // If the request was successful and we can extract a valid response...
-        if ($result->isSuccess()
-            && preg_match('/^[^{]*({.*})[^}]*$/', $result->getBody(), $matches)
-        ) {
-            // convert \x26 or \u0026 to &
+        $decodeCallback = function (\Laminas\Http\Response $response, $url) {
+            if (!preg_match(
+                '/^[^{]*({.*})[^}]*$/',
+                $response->getBody(),
+                $matches
+            )
+            ) {
+                throw new HttpDownloadException(
+                    'Invalid response body (raw)',
+                    $url,
+                    $response->getStatusCode(),
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
             $json = json_decode(
                 str_replace(['\\x26', '\\u0026'], '&', $matches[1]),
                 true
             );
 
-            // find the first thumbnail URL and process it:
-            foreach ((array)$json as $current) {
-                if (isset($current['thumbnail_url'])) {
-                    return $current['thumbnail_url'];
-                }
+            if ($json === null) {
+                throw new HttpDownloadException(
+                    'Invalid response body (json)',
+                    $url,
+                    $response->getStatusCode(),
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+        };
+
+        $json = $this->cachingDownloader->download($url, [], $decodeCallback);
+        // find the first thumbnail URL and process it:
+        foreach ((array)$json as $current) {
+            if (isset($current['thumbnail_url'])) {
+                return $current['thumbnail_url'];
             }
         }
         return false;
