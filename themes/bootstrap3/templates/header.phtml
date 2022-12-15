@@ -68,33 +68,38 @@
           <?php endif; ?>
 
           <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-            <li class="theme dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?><?=$this->icon('dropdown-caret') ?></a>
-              <ul class="dropdown-menu">
-                <?php foreach ($this->layout()->themeOptions as $current): ?>
-                  <li<?=$current['selected'] ? ' class="active"' : ''?>>
-                    <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['ui' => $current['name']])) ?>" rel="nofollow">
-                      <?=$this->transEsc($current['desc']) ?>
-                    </a>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
-            </li>
+              <?=$this->component('menu-button', [
+                  'toggleLabel' => 'Theme',
+                  'wrapperTag' => 'li',
+                  'menuItems' => array_map(
+                      function ($item) {
+                          $item['label'] = $item['desc'];
+                          $item['url'] = $this->url()->addQueryParameters(['ui' => $item['name']]);
+
+                          return $item;
+                      },
+                      $this->layout()->themeOptions
+                  )
+              ]) ?>
           <?php endif; ?>
 
           <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-            <li class="language dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?><?=$this->icon('dropdown-caret') ?></a>
-              <ul class="dropdown-menu">
-                <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-                  <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
-                    <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode])) ?>" rel="nofollow">
-                      <?=$this->displayLanguageOption($langName) ?>
-                    </a>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
-            </li>
+              <?=$this->component('menu-button', [
+                  'toggleLabel' => 'Language',
+                  'wrapperClass' => 'language',
+                  'wrapperTag' => 'li',
+                  'menuItems' => array_map(
+                      function ($langCode, $langName) {
+                          return [
+                            'label' => $this->displayLanguageOption($langName),
+                            'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
+                            'selected' => $this->layout()->userLang == $langCode,
+                          ];
+                      },
+                      array_keys($this->layout()->allLangs),
+                      array_values($this->layout()->allLangs),
+                  ),
+              ]) ?>
           <?php endif; ?>
         </ul>
       </nav>
