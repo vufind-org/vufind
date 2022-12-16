@@ -60,13 +60,13 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getHeadCode() 
+    public function getHeadCode()
     {
         if (!$this->gtmContainerId) {
             return '';
         }
 
-        // phpcs:disable -- line length should be kept for this vendor snippet 
+        // phpcs:disable -- line length should be kept for this vendor snippet
         $js = <<<END
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -86,13 +86,13 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getBodyCode() 
+    public function getBodyCode()
     {
         if (!$this->gtmContainerId) {
             return '';
         }
 
-        // phpcs:disable -- line length should be kept for this vendor snippet 
+        // phpcs:disable -- line length should be kept for this vendor snippet
         $js = <<<END
             <!-- Google Tag Manager (noscript) -->
             <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$this->gtmContainerId}"
@@ -102,5 +102,4 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
         // phpcs:enable
         return $js;
     }
-
 }
