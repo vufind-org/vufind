@@ -43,7 +43,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test getHeadCode() 
+     * Test getHeadCode()
      *
      * @return void
      */
@@ -55,7 +55,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBodyCode() 
+     * Test getBodyCode()
      *
      * @return void
      */
