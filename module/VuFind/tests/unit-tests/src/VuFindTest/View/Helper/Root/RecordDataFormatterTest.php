@@ -106,6 +106,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver($overrides = [])
     {
+        var_dump('once');
         // "Mock out" tag functionality to avoid database access:
         $methods = [
             'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
@@ -152,7 +153,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             new \VuFind\Config\PluginManager($container)
         );
         $this->addPathResolverToContainer($container);
-        $formatter = $factory($container, RecordDataFormatter::class)($this->getDriver());
+        $formatter = $factory($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers($container);
@@ -208,12 +209,34 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test citation generation
+     * Data Provider for testFormatting().
+     *
+     * @return array
+     */
+    public function getFormattingData(): array
+    {
+        return [
+            [
+                'getInvokedSpecs'
+            ],
+            [
+                'getOldSpecs'
+            ]
+        ];
+    }
+
+    /**
+     * Test formatting.
+     *
+     * @dataProvider getFormattingData
+     *
+     * @param string $function Function to test the formatting with.
      *
      * @return void
      */
-    public function testFormatting()
+    public function testFormatting($function): void
     {
+        $driver = $this->getDriver();
         $formatter = $this->getFormatter();
         $spec = $formatter->getDefaults('core');
         $spec['Building'] = [
@@ -334,8 +357,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'a' => 'a',
             'b' => 'b',
         ];
-        $results = $formatter->getData($spec);
 
+        // Check that the function is callable in this test.
+        $this->assertTrue(is_callable([$this, $function]));
+        $results = $this->$function($driver, $spec);
         // Check for expected array keys
         $this->assertEquals(array_keys($expected), $this->getLabels($results));
 
@@ -352,7 +377,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 )
             );
         }
-
         // Check for exact markup in representative example:
         $this->assertEquals(
             '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
@@ -364,5 +388,31 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ['foo' => 1],
             $this->findResult('Building', $results)['context']
         );
+    }
+
+    /**
+     * Invokes a RecordDataFormatter with a driver and returns getData results.
+     *
+     * @param SolrDefault $driver Driver to invoke with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getInvokedSpecs($driver, $spec): array
+    {
+        $formatter = ($this->getFormatter())($driver);
+        return $formatter->getData($spec);
+    }
+
+    /**
+     * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
+     *
+     * @param SolrDefault $driver Driver to call with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getOldSpecs($driver, $spec): array
+    {
+        $formatter = $this->getFormatter();
+        return $formatter->getData($driver, $spec);
     }
 }

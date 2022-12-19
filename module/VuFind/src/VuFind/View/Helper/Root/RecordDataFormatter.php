@@ -57,7 +57,7 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @var RecordDriver
      */
-    protected $driver;
+    protected $driver = null;
 
     /**
      * Store a record driver object and return this object so that the appropriate
