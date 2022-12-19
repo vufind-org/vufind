@@ -80,7 +80,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Render the GTM Head element code
      *
-     * @param string     $gtmContainerId     GTM Container ID (false for disabled)
+     * @param string $gtmContainerId GTM Container ID (false for disabled)
      *
      * @return string
      */
@@ -94,7 +94,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Render the GTM Body element code
      *
-     * @param string     $gtmContainerId     GTM Container ID (false for disabled)
+     * @param string $gtmContainerId GTM Container ID (false for disabled)
      *
      * @return string
      */
