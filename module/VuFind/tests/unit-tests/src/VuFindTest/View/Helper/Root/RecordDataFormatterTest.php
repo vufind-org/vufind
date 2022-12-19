@@ -233,7 +233,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFormatting($function): void
+    public function testFormatting(string $function): void
     {
         $driver = $this->getDriver();
         $formatter = $this->getFormatter();
