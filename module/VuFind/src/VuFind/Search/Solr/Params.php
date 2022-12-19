@@ -490,7 +490,7 @@ class Params extends \VuFind\Search\Base\Params
             }
         }
         $tieBreaker = $this->getOptions()->getSortTieBreaker();
-        var_dump($tieBreaker);
+       
         if (!(in_array($tieBreaker . " asc", $normalized) ||
             in_array($tieBreaker . " desc", $normalized))) {
             $normalized[] = sprintf(
