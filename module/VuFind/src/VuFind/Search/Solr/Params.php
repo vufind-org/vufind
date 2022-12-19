@@ -493,7 +493,7 @@ class Params extends \VuFind\Search\Base\Params
 
         if (!(in_array($tieBreaker . " asc", $normalized)
             || in_array($tieBreaker . " desc", $normalized))
-            ) {
+        ) {
             $normalized[] = sprintf(
                 '%s %s',
                 $tieBreaker,
