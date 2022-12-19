@@ -939,7 +939,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ParamBag::class, $solrParams);
         $this->assertInstanceOf(ParamBag::class, $primoParams);
         $this->assertInstanceOf(ParamBag::class, $edsParams);
-        
+
         //$this->assertEquals(['publishDateSort desc'], $solrParams->get('sort'));
         $this->assertEquals(['scdate'], $primoParams->get('sort'));
         $this->assertEquals(['date'], $edsParams->get('sort'));
