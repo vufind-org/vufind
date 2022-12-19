@@ -42,6 +42,7 @@ use VuFindTheme\ThemeInfo;
 class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Path to theme fixtures
@@ -303,53 +304,81 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     /**
      * Stress-test our merging algorithm
      *
+     * @dataProvider mergeEdgeCasesProvider
+     *
      * @return void
      */
-    public function testMergeWithoutOverrideEdgeCases()
+    public function testMergeWithoutOverrideEdgeCases($test, $expected)
     {
         $ti = $this->getThemeInfo();
 
-        // string
-        $merged = $ti->mergeWithoutOverride('original', 'override');
-        $this->assertEquals('original', $merged);
+        $merged = $this->callMethod($ti, 'mergeWithoutOverride', $test);
 
-        // array
-        $merged = $ti->mergeWithoutOverride(['original'], ['override']);
-        $this->assertEquals(['override', 'original'], $merged);
+        $this->assertEquals($expected, $merged);
+    }
 
-        // string-keyed arrays
-        $merged = $ti->mergeWithoutOverride(
-            ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
-            ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
-        );
-        $this->assertEquals(
-            ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
-            $merged
-        );
+    /**
+     * Test cases for mergeWithoutOverride
+     *
+     * @return array
+     */
+    public static function mergeEdgeCasesProvider(): array
+    {
+        return [
+            // string
+            [
+                [
+                    'original',
+                    'override',
+                ],
+                'original',
+            ],
 
-        // string-keyed arrays: missing
-        $merged = $ti->mergeWithoutOverride(
-            ['shared' => [1], 'parent' => 'only'],
-            ['shared' => [1], 'child' => 'only'],
-        );
-        $this->assertEquals(
-            ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
-            $merged
-        );
+            // array
+            [
+                [
+                    ['original'],
+                    ['override'],
+                ],
+                ['override', 'original'],
+            ],
 
-        // string-keyed string -> array
-        $merged = $ti->mergeWithoutOverride(
-            ['mixed' => ['array']],
-            ['mixed' => 'string'],
-        );
-        $this->assertEquals(['mixed' => ['string', 'array']], $merged);
+            // string-keyed arrays
+            [
+                [
+                    ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
+                    ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
+                ],
+                ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+            ],
 
-        // string-keyed array -> string
-        $merged = $ti->mergeWithoutOverride(
-            ['mixed' => 'string'],
-            ['mixed' => ['array']],
-        );
-        $this->assertEquals(['mixed' => ['array', 'string']], $merged);
+            // string-keyed arrays: missing
+            [
+                [
+                    ['shared' => [1], 'parent' => 'only'],
+                    ['shared' => [1], 'child' => 'only'],
+                ],
+                ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+            ],
+
+            // string-keyed string -> array
+            [
+                [
+                    ['mixed' => ['array']],
+                    ['mixed' => 'string'],
+                ],
+                ['mixed' => ['string', 'array']],
+            ],
+
+            // string-keyed array -> string
+            [
+                [
+                    ['mixed' => 'string'],
+                    ['mixed' => ['array']],
+                ],
+                ['mixed' => ['array', 'string']],
+            ],
+        ];
     }
 
     /**

@@ -237,7 +237,7 @@ class ThemeInfo
      *
      * @return array|string merged theme info, favoring child themes (merged)
      */
-    public function mergeWithoutOverride($merged, $current)
+    protected function mergeWithoutOverride($merged, $current)
     {
         if (empty($merged)) {
             return $current;
