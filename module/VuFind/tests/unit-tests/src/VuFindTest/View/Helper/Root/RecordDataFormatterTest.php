@@ -106,7 +106,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver($overrides = [])
     {
-        var_dump('once');
         // "Mock out" tag functionality to avoid database access:
         $methods = [
             'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
@@ -394,10 +393,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      * Invokes a RecordDataFormatter with a driver and returns getData results.
      *
      * @param SolrDefault $driver Driver to invoke with.
+     * @param array       $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecs($driver, $spec): array
+    protected function getInvokedSpecs($driver, array $spec): array
     {
         $formatter = ($this->getFormatter())($driver);
         return $formatter->getData($spec);
@@ -407,10 +407,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
      *
      * @param SolrDefault $driver Driver to call with.
+     * @param array       $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecs($driver, $spec): array
+    protected function getOldSpecs($driver, array $spec): array
     {
         $formatter = $this->getFormatter();
         return $formatter->getData($driver, $spec);
