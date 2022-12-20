@@ -1167,19 +1167,32 @@ class Folio extends AbstractAPI implements
             '/request-storage/requests',
             $query
         ) as $hold) {
-            $requestDate = date_create($hold->requestDate);
+            $requestDate = $this->dateConverter->convertToDisplayDate(
+                "Y-m-d H:i",
+                $hold->requestDate
+            );
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
-                ? date_create($hold->requestExpirationDate) : null;
+                ? $this->dateConverter->convertToDisplayDate(
+                    "Y-m-d H:i",
+                    $hold->requestExpirationDate
+                    )
+                : null;
             //set lastPickup Date if provided, format to j M Y
             $lastPickup = isset($hold->holdShelfExpirationDate)
-                ? date_format(date_create($hold->holdShelfExpirationDate), "j M Y")
+                ? $this->dateConverter->convertToDisplayDate(
+                    "Y-m-d H:i",
+                    $hold->holdShelfExpirationDate
+                    )
                 : null;
+            // setting some default availability / inTransit messages,
+            // in case they are not defined in Folio.ini
+            $availabilityArray = ['Open - Awaiting pickup'];
+            $inTransitArray = ['Open - In transit', 'Open - Awaiting delivery'];
             $holds[] = [
                 'type' => $hold->requestType,
-                'create' => date_format($requestDate, "j M Y"),
-                'expire' => isset($expireDate)
-                    ? date_format($expireDate, "j M Y") : "",
+                'create' => $requestDate,
+                'expire' => $expireDate ?? "",
                 'id' => $this->getBibId(null, null, $hold->itemId),
                 'item_id' => $hold->itemId,
                 'reqnum' => $hold->id,
@@ -1187,11 +1200,11 @@ class Folio extends AbstractAPI implements
                 'title' => $hold->instance->title ?? $hold->item->title ?? '',
                 'available' => in_array(
                     $hold->status,
-                    $this->config['Holds']['available']
+                    $this->config['Holds']['available'] ?? $availabilityArray
                 ),
                 'in_transit' => in_array(
                     $hold->status,
-                    $this->config['Holds']['in_transit']
+                    $this->config['Holds']['in_transit'] ?? $inTransitArray
                 ),
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position,
