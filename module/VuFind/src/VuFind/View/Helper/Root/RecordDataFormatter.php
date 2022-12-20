@@ -167,6 +167,9 @@ class RecordDataFormatter extends AbstractHelper
             $this->driver = $args[0];
             array_shift($args);
         }
+        if (empty($args[0])) {
+            return [];
+        }
         if (null === $this->driver) {
             throw new \Exception('No driver set in RecordDataFormatter');
         }
