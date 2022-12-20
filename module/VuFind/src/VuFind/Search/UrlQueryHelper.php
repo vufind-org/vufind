@@ -362,7 +362,7 @@ class UrlQueryHelper
      */
     public function getParams($escape = true)
     {
-        return '?' . self::buildQueryString($this->urlParams, $escape);
+        return '?' . static::buildQueryString($this->urlParams, $escape);
     }
 
     /**
@@ -584,14 +584,14 @@ class UrlQueryHelper
                     if (!$this->filtered($paramName, $paramValue2, $filter)) {
                         $retVal .= '<input type="hidden" name="' .
                             htmlspecialchars($paramName) . '[]" value="' .
-                            htmlspecialchars('"' . $paramValue2 . '"') . '" />';
+                            htmlspecialchars($paramValue2) . '" />';
                     }
                 }
             } else {
                 if (!$this->filtered($paramName, $paramValue, $filter)) {
                     $retVal .= '<input type="hidden" name="' .
                         htmlspecialchars($paramName) . '" value="' .
-                        htmlspecialchars('"' . $paramValue . '"') . '" />';
+                        htmlspecialchars($paramValue) . '" />';
                 }
             }
         }

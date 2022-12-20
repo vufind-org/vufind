@@ -76,8 +76,8 @@
 
     <?php /* Display Main Details */ ?>
     <?php
-      $formatter = $this->recordDataFormatter();
-      $coreFields = $formatter->getData($driver, $formatter->getDefaults('core'));
+      $formatter = $this->recordDataFormatter($driver);
+      $coreFields = $formatter->getData($formatter->getDefaults('core'));
     ?>
     <?php if (!empty($coreFields)): ?>
       <table class="table table-striped">

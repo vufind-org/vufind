@@ -247,8 +247,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
     ) {
         if (!isset($this->cachedHiddenFilterParams[$searchClassId])) {
             $view = $this->getView();
-            $searchTabs = $view->plugin('searchTabs');
-            $hiddenFilters = $searchTabs->getHiddenFilters(
+            $hiddenFilters = $this->getHiddenFilters(
                 $searchClassId,
                 $ignoreHiddenFilterMemory
             );
@@ -256,21 +255,29 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 $hiddenFilters = $view->plugin('searchMemory')
                     ->getLastHiddenFilters($searchClassId);
                 if (empty($hiddenFilters)) {
-                    $hiddenFilters = $searchTabs->getHiddenFilters($searchClassId);
+                    $hiddenFilters = $this->getHiddenFilters($searchClassId);
                 }
             }
-            $hiddenFilterParams = [];
-            foreach ($hiddenFilters as $key => $filter) {
+
+            $results = $this->results->get($searchClassId);
+            $params = $results->getParams();
+            foreach ($hiddenFilters as $field => $filter) {
                 foreach ($filter as $value) {
-                    $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '='
-                        . urlencode("$key:\"$value\"");
+                    $params->addHiddenFilterForField($field, $value);
                 }
             }
-            $this->cachedHiddenFilterParams[$searchClassId]
-                = implode('&amp;', $hiddenFilterParams);
+            if ($hiddenFilters = $params->getHiddenFiltersAsQueryParams()) {
+                $this->cachedHiddenFilterParams[$searchClassId] = $prepend
+                    . UrlQueryHelper::buildQueryString(
+                        [
+                            'hiddenFilters' => $hiddenFilters
+                        ]
+                    );
+            } else {
+                $this->cachedHiddenFilterParams[$searchClassId] = '';
+            }
         }
-        return $this->cachedHiddenFilterParams[$searchClassId]
-            ? $prepend . $this->cachedHiddenFilterParams[$searchClassId] : '';
+        return $this->cachedHiddenFilterParams[$searchClassId];
     }
 
     /**

@@ -1105,13 +1105,7 @@ class Params
      */
     public function getFiltersAsQueryParams(): array
     {
-        $result = [];
-        foreach ($this->getRawFilters() as $field => $values) {
-            foreach ($values as $current) {
-                $result[] = $field . ':"' . $current . '"';
-            }
-        }
-        return $result;
+        return $this->formatFilterArrayAsQueryParams($this->getRawFilters());
     }
 
     /**
@@ -1265,6 +1259,26 @@ class Params
     protected function getRawCheckboxFacets(): array
     {
         return $this->checkboxFacets;
+    }
+
+    /**
+     * Format a raw filter array as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @param array $filterArray Filter array
+     *
+     * @return array
+     */
+    protected function formatFilterArrayAsQueryParams(array $filterArray): array
+    {
+        $result = [];
+        foreach ($filterArray as $field => $values) {
+            foreach ($values as $current) {
+                $result[] = "$field:\"$current\"";
+            }
+        }
+        return $result;
     }
 
     /**
@@ -1613,13 +1627,7 @@ class Params
      */
     public function getHiddenFiltersAsQueryParams(): array
     {
-        $result = [];
-        foreach ($this->getHiddenFilters() as $field => $values) {
-            foreach ($values as $current) {
-                $result[] = $field . ':"' . $current . '"';
-            }
-        }
-        return $result;
+        return $this->formatFilterArrayAsQueryParams($this->getHiddenFilters());
     }
 
     /**
@@ -1660,6 +1668,20 @@ class Params
                 $this->hiddenFilters[$field][] = $value;
             }
         }
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * @param string $field Field
+     * @param string $value Filter value
+     *
+     * @return void
+     */
+    public function addHiddenFilterForField(string $field, string $value): void
+    {
+        $this->addHiddenFilter("$field:\"$value\"");
     }
 
     /**
