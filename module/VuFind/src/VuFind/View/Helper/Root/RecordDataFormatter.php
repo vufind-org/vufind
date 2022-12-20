@@ -163,9 +163,6 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function getData(...$args)
     {
-        if (empty($args[0])) {
-            return [];
-        }
         if ($args[0] instanceof RecordDriver) {
             $this->driver = $args[0];
             array_shift($args);

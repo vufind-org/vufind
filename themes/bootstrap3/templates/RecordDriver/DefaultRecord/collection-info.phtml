@@ -40,8 +40,8 @@
     <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
     <?php /* Display Main Details */ ?>
     <?php
-      $formatter = $this->recordDataFormatter();
-      $fields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
+      $formatter = $this->recordDataFormatter($driver);
+      $fields = $formatter->getData($formatter->getDefaults('collection-info'));
     ?>
     <?php if (!empty($fields)): ?>
       <table id="collectionInfo" class="table table-striped">
