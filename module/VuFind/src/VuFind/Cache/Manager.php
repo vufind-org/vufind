@@ -168,10 +168,10 @@ class Manager
      */
     public function getCacheDir($allowCliOverride = true)
     {
-        if ($this->defaults && isset($this->defaults['cache_dir'])) {
-            // cache_dir setting in config.ini is deprecated
+        if (isset($this->defaults['cache_dir'])) {
+            // cache_dir setting in config.ini is obsolete
             throw new \Exception(
-                'Deprecated cache_dir setting found in config.ini - please use '
+                'Obsolete cache_dir setting found in config.ini - please use '
                 . 'Apache environment variable VUFIND_CACHE_DIR in '
                 . 'httpd-vufind.conf instead.'
             );
