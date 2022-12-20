@@ -102,7 +102,7 @@ class Manager
         // Laminas\Config\Config can be created mutable or cloned and merged, useful
         // for future cache-specific overrides.
         $cacheConfig = $config->Cache ?? false;
-        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : false;
+        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : [];
 
         // Get base cache directory.
         $cacheBase = $this->getCacheDir();
