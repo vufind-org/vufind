@@ -77,7 +77,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Buchhandel::class => BuchhandelFactory::class,
         ContentCafe::class => ContentCafeFactory::class,
         Deprecated::class => InvokableFactory::class,
-        Google::class => InvokableFactory::class,
+        Google::class => GoogleFactory::class,
         LibraryThing::class => InvokableFactory::class,
         LocalFile::class => InvokableFactory::class,
         ObalkyKnih::class => ObalkyKnihContentFactory::class,
