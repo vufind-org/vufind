@@ -1193,7 +1193,7 @@ class Folio extends AbstractAPI implements
                 'type' => $hold->requestType,
                 'create' => $requestDate,
                 'expire' => $expireDate ?? "",
-                'id' => $this->getBibId(null, null, $hold->itemId),
+                'id' => $this->getBibId($hold->instanceId, $hold->holdingsRecordId, $hold->itemId),
                 'item_id' => $hold->itemId,
                 'reqnum' => $hold->id,
                 // Title moved from item to instance in Lotus release:
