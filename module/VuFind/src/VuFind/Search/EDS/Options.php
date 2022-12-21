@@ -703,7 +703,7 @@ class Options extends \VuFind\Search\Base\Options
         // default view
         $this->defaultView = $this->defaultView
             ?? $settings['ResultListView']
-            ?? 'list';
+            ?? 'list|brief';
     }
 
     /**
