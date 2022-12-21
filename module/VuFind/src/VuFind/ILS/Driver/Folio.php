@@ -1176,14 +1176,14 @@ class Folio extends AbstractAPI implements
                 ? $this->dateConverter->convertToDisplayDate(
                     "Y-m-d H:i",
                     $hold->requestExpirationDate
-                    )
+                )
                 : null;
             //set lastPickup Date if provided, format to j M Y
             $lastPickup = isset($hold->holdShelfExpirationDate)
                 ? $this->dateConverter->convertToDisplayDate(
                     "Y-m-d H:i",
                     $hold->holdShelfExpirationDate
-                    )
+                )
                 : null;
             // setting some default availability / inTransit messages,
             // in case they are not defined in Folio.ini
@@ -1193,7 +1193,11 @@ class Folio extends AbstractAPI implements
                 'type' => $hold->requestType,
                 'create' => $requestDate,
                 'expire' => $expireDate ?? "",
-                'id' => $this->getBibId($hold->instanceId, $hold->holdingsRecordId, $hold->itemId),
+                'id' => $this->getBibId(
+                    $hold->instanceId,
+                    $hold->holdingsRecordId,
+                    $hold->itemId
+                ),
                 'item_id' => $hold->itemId,
                 'reqnum' => $hold->id,
                 // Title moved from item to instance in Lotus release:

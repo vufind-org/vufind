@@ -406,7 +406,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-
     public function testNoItemsGetMyHolds(): void
     {
         $this->createConnector('get-my-holds-none');
@@ -423,15 +422,14 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-
-     public function testAvailbleItemGetMyHolds(): void
-     {
-         $this->createConnector('get-my-holds-available');
-         $patron = [
-             'id' => 'foo'
-         ];
-         $result = $this->driver->getMyHolds($patron);
-         $expected[0] = [
+    public function testAvailbleItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-available');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
             'type' => 'Page',
             'create' => '12-20-2022',
             'expire' => '',
@@ -444,7 +442,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'last_pickup_date' => '12-29-2022',
             'position' => 1
         ];
-         $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -452,15 +450,14 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-
-     public function testInTransitItemGetMyHolds(): void
-     {
-         $this->createConnector('get-my-holds-in_transit');
-         $patron = [
-             'id' => 'foo'
-         ];
-         $result = $this->driver->getMyHolds($patron);
-         $expected[0] = [
+    public function testInTransitItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-in_transit');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
             'type' => 'Page',
             'create' => '11-07-2022',
             'expire' => '',
@@ -473,7 +470,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'last_pickup_date' => null,
             'position' => 1
         ];
-         $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -481,15 +478,14 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-
-     public function testSingleItemGetMyHolds(): void
-     {
-         $this->createConnector('get-my-holds-single');
-         $patron = [
-             'id' => 'foo'
-         ];
-         $result = $this->driver->getMyHolds($patron);
-         $expected[0] = [
+    public function testSingleItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-single');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
             'type' => 'Hold',
             'create' => '12-20-2022',
             'expire' => '12-28-2022',
@@ -502,6 +498,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'last_pickup_date' => null,
             'position' => 3
         ];
-         $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $result);
     }
 }
