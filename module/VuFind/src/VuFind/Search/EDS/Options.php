@@ -224,20 +224,6 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Given a basic handler name, return the corresponding label (or false
-     * if none found):
-     *
-     * @param string $handler Handler name to look up.
-     *
-     * @return string
-     */
-    public function getLabelForBasicHandler($handler)
-    {
-        $handlers = $this->getBasicHandlers();
-        return $handlers[$handler] ?? false;
-    }
-
-    /**
      * Get an array of sort options.
      *
      * @return array
