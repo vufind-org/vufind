@@ -187,23 +187,48 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get an array of search mode options
+     * Basic 'getter' for advanced search handlers.
      *
      * @return array
      */
-    public function getModeOptions()
+    public function getAdvancedHandlers()
     {
-        return $this->getApiProperty('modeOptions');
+        return $this->getApiProperty('advancedHandlers');
     }
 
     /**
-     * Get the default search mode
+     * Basic 'getter' for basic search handlers.
+     *
+     * @return array
+     */
+    public function getBasicHandlers()
+    {
+        return $this->getApiProperty('basicHandlers');
+    }
+
+    /**
+     * Get default search handler.
      *
      * @return string
      */
-    public function getDefaultMode()
+    public function getDefaultHandler()
     {
-        return $this->getApiProperty('defaultMode');
+        $this->setOptionsFromApi();
+        return parent::getDefaultHandler();
+    }
+
+    /**
+     * Given a basic handler name, return the corresponding label (or false
+     * if none found):
+     *
+     * @param string $handler Handler name to look up.
+     *
+     * @return string
+     */
+    public function getLabelForBasicHandler($handler)
+    {
+        $handlers = $this->getBasicHandlers();
+        return $handlers[$handler] ?? false;
     }
 
     /**
@@ -266,6 +291,26 @@ class Options extends \VuFind\Search\Base\Options
     public function getView()
     {
         return $this->getApiProperty('defaultView');
+    }
+
+    /**
+     * Get an array of search mode options
+     *
+     * @return array
+     */
+    public function getModeOptions()
+    {
+        return $this->getApiProperty('modeOptions');
+    }
+
+    /**
+     * Get the default search mode
+     *
+     * @return string
+     */
+    public function getDefaultMode()
+    {
+        return $this->getApiProperty('defaultMode');
     }
 
     /**
