@@ -93,6 +93,23 @@ class Folio extends AbstractAPI implements
     protected $dateConverter;
 
     /**
+     * Default availability messages, in case they are not defined in Folio.ini
+     *
+     * @var string[]
+     */
+    protected $defaultAvailabilityStatuses = ['Open - Awaiting pickup'];
+
+    /**
+     * Default in_transit messages, in case they are not defined in Folio.ini
+     *
+     * @var string[]
+     */
+    protected $defaultInTransitStatuses = [
+        'Open - In transit',
+        'Open - Awaiting delivery'
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -1185,10 +1202,7 @@ class Folio extends AbstractAPI implements
                     $hold->holdShelfExpirationDate
                 )
                 : null;
-            // setting some default availability / inTransit messages,
-            // in case they are not defined in Folio.ini
-            $availabilityArray = ['Open - Awaiting pickup'];
-            $inTransitArray = ['Open - In transit', 'Open - Awaiting delivery'];
+
             $holds[] = [
                 'type' => $hold->requestType,
                 'create' => $requestDate,
@@ -1204,11 +1218,13 @@ class Folio extends AbstractAPI implements
                 'title' => $hold->instance->title ?? $hold->item->title ?? '',
                 'available' => in_array(
                     $hold->status,
-                    $this->config['Holds']['available'] ?? $availabilityArray
+                    $this->config['Holds']['available']
+                    ?? $this->defaultAvailabilityStatuses
                 ),
                 'in_transit' => in_array(
                     $hold->status,
-                    $this->config['Holds']['in_transit'] ?? $inTransitArray
+                    $this->config['Holds']['in_transit']
+                    ?? $this->defaultInTransitStatuses
                 ),
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position,
