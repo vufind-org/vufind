@@ -76,12 +76,13 @@
 
     <?php /* Display Main Details */ ?>
     <?= $this->record($this->driver)->renderTemplate(
-             'core-fields.phtml',
-             [
-        'driver' => $this->driver,
-        'defaults' => 'core'
-      ]
-         ); ?>
+          'core-fields.phtml',
+          [
+            'driver' => $this->driver,
+            'defaults' => 'core'
+          ]
+        );
+    ?>
     <?php /* End Main Details */ ?>
   </div>
 </div>
