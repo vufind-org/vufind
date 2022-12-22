@@ -39,15 +39,16 @@
 
     <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
     <?php /* Display Main Details */ ?>
-    <?= $this->record($this->driver)->renderTemplate(
+    <?=
+      $this->record($this->driver)->renderTemplate(
           'core-fields.phtml',
           [
             'driver' => $this->driver,
             'defaults' => 'core',
             'tableId' => 'collectionInfo'
           ]
-        );
-      ?>
+      );
+    ?>
     <?php /* End Main Details */ ?>
   </div>
 </div>
