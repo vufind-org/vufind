@@ -1178,7 +1178,7 @@ class Folio extends AbstractAPI implements
                     $hold->requestExpirationDate
                 )
                 : null;
-            //set lastPickup Date if provided, format to j M Y
+            // Set lastPickup Date if provided, format to j M Y
             $lastPickup = isset($hold->holdShelfExpirationDate)
                 ? $this->dateConverter->convertToDisplayDate(
                     "Y-m-d H:i",
