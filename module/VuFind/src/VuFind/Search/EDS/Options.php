@@ -147,6 +147,13 @@ class Options extends \VuFind\Search\Base\Options
     protected $commonExpanders = [];
 
     /**
+     * Search configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $searchConfig;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
@@ -158,7 +165,7 @@ class Options extends \VuFind\Search\Base\Options
         $apiInfo = null
     ) {
         $this->searchIni = $this->facetsIni = 'EDS';
-        $searchSettings = $configLoader->get($this->searchIni);
+        $this->searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
         // 2015-06-30 RF - Changed to unlimited
         //$this->resultLimit = 100;
@@ -166,7 +173,6 @@ class Options extends \VuFind\Search\Base\Options
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
             'list|detailed' => 'Detailed View'
         ];
-        $this->setOptionsFromConfig($searchSettings);
         // If we get the API info as a callback, defer until its actually needed to
         // avoid calling the API:
         if (is_callable($apiInfo)) {
@@ -366,6 +372,8 @@ class Options extends \VuFind\Search\Base\Options
         // returned in the INFO method)
         $this->populateViewSettings();
         $this->populateSearchCriteria();
+        // Apply overrides from configuration:
+        $this->setOptionsFromConfig($this->searchSettings);
     }
 
     /**
