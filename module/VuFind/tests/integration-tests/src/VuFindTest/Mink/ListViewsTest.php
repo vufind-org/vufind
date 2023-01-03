@@ -114,7 +114,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->closeLightbox($page);
+        $this->waitForPageLoad($page);
         // Check saved items status
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
