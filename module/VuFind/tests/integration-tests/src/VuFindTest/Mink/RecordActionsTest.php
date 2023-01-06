@@ -81,7 +81,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             ['username' => $username, 'email' => $username . '@vufind.org']
         );
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->clickCss($page, '#accountForm .btn.btn-primary');
     }
 
     /**
@@ -545,6 +545,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.modal.in [name="username"]');
         // Make account
         $this->makeAccount($page, 'username2');
+        $this->waitForPageLoad($page);
+        $this->closeLightbox($page);
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.logoutOptions a.logout');
         // Click rating link:

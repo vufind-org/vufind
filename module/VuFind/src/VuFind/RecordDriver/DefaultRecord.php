@@ -66,8 +66,7 @@ class DefaultRecord extends AbstractBase
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
-        $this->highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
+        $this->highlight = $searchSettings->General->highlighting ?? false;
 
         parent::__construct($mainConfig, $recordConfig);
     }
