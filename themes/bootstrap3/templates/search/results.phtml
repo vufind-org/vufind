@@ -57,7 +57,7 @@
   <?php endif; ?>
   <?=$this->flashmessages()?>
   <div class="search-header hidden-print">
-    <div class="search-stats" data-record-total="<?=$recordTotal?>">
+    <div class="search-stats" data-record-total="<?=$this->escapeHtmlAttr($recordTotal)?>">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
