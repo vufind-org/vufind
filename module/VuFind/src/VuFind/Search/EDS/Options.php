@@ -173,7 +173,7 @@ class Options extends \VuFind\Search\Base\Options
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
             'list|detailed' => 'Detailed View'
         ];
-        // If we get the API info as a callback, defer until its actually needed to
+        // If we get the API info as a callback, defer until it's actually needed to
         // avoid calling the API:
         if (is_callable($apiInfo)) {
             $this->apiInfo = null;
