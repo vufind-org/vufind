@@ -547,7 +547,7 @@ public class FormatCalculator
 
     protected String getSubfieldOrDefault(DataField field, char subfieldCode, String defaultValue) {
         Subfield subfield = field.getSubfield(subfieldCode);
-        String data = subfield.getData();
+        String data = subfield != null ? subfield.getData() : null;
         return data == null ? defaultValue : data;
     }
 
