@@ -548,7 +548,7 @@ public class FormatCalculator
     protected String getSubfieldOrDefault(DataField field, char subfieldCode, String defaultValue) {
         Subfield subfield = field.getSubfield(subfieldCode);
         String data = subfield != null ? subfield.getData() : null;
-        return (data == null || data == "") ? defaultValue : data;
+        return (data == null || data.isEmpty()) ? defaultValue : data;
     }
 
     protected boolean isOnlineAccordingTo338(Record record) {
