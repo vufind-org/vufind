@@ -70,7 +70,7 @@ class GoogleFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 
         $google = new $requestedName();
         $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
-        $google->setCachingdownloader($cachingDownloader);
+        $google->setCachingDownloader($cachingDownloader);
         return $google;
     }
 }

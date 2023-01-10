@@ -78,7 +78,7 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         }
         $orb = new $requestedName($url, $config->Orb->user, $config->Orb->key);
         $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
-        $orb->setCachingdownloader($cachingDownloader);
+        $orb->setCachingDownloader($cachingDownloader);
         return $orb;
     }
 }
