@@ -18,19 +18,19 @@
         </label>
       </div>
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <button type="submit" class="toolbar-btn btn-type-save" name="saveCart" value="1" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
+        <button type="submit" class="toolbar-btn btn-type-save" name="saveCart" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
           <?=$this->transEsc('Save')?>
         </button>
       <?php endif; ?>
-      <button type="submit" class="toolbar-btn btn-type-email" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
+      <button type="submit" class="toolbar-btn btn-type-email" name="email" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
         <?=$this->transEsc('Email')?>
       </button>
       <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-        <button type="submit" class="toolbar-btn btn-type-export" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
+        <button type="submit" class="toolbar-btn btn-type-export" name="export" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
           <?=$this->transEsc('Export')?>
         </button>
       <?php endif; ?>
-      <button type="submit" class="toolbar-btn btn-type-print dropdown-toggle" name="print" title="<?=$this->transEscAttr('print_selected')?>" value="1">
+      <button type="submit" class="toolbar-btn btn-type-print" name="print" title="<?=$this->transEscAttr('print_selected')?>" value="1">
         <?=$this->transEsc('Print')?>
       </button>
       <div class="btn-group" id="cartDelete">
