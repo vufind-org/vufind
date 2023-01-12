@@ -468,7 +468,7 @@ class Backend extends AbstractBackend
         array &$backendRecords,
         int $offset,
         int $blockSize
-    ): RecordInterface {
+    ): ?RecordInterface {
         if (!$backendRecords) {
             $collection = $backendDetails['backend']->search(
                 $backendDetails['query'],
