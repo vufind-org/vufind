@@ -267,8 +267,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 }
             }
             if ($hiddenFilters = $params->getHiddenFiltersAsQueryParams()) {
-                $this->cachedHiddenFilterParams[$searchClassId] = $prepend
-                    . UrlQueryHelper::buildQueryString(
+                $this->cachedHiddenFilterParams[$searchClassId]
+                    = UrlQueryHelper::buildQueryString(
                         [
                             'hiddenFilters' => $hiddenFilters
                         ]
@@ -277,7 +277,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 $this->cachedHiddenFilterParams[$searchClassId] = '';
             }
         }
-        return $this->cachedHiddenFilterParams[$searchClassId];
+        return $prepend . $this->cachedHiddenFilterParams[$searchClassId];
     }
 
     /**
