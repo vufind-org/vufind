@@ -186,6 +186,12 @@ trait ConcatTrait
                 $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+
+            if (null === $details) {
+                $details = $this->themeInfo
+                    ->findInPackage($item->attributes['src']);
+            }
+
             // Deal with special case: $path was not found in any theme.
             if (null === $details) {
                 $errorMsg = "Could not find file '$path' in theme files";
@@ -306,6 +312,12 @@ trait ConcatTrait
                 . $this->getResourceFilePath($item),
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+            if (null === $details) {
+                $details = $this->themeInfo->findInPackage($item->attributes['src']);
+            }
+            if (null === $details) {
+                continue;
+            }
             $details['path'] = realpath($details['path']);
             $data[] = $this->getMinifiedData($details, $concatPath);
         }

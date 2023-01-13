@@ -340,6 +340,67 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getMergedConfig() for internal mixins
+     *
+     * @return void
+     */
+    public function testGetMergedConfigGetMixinFromVendorPackage()
+    {
+        $ti = $this->getThemeInfo();
+        $config = $ti->getMergedConfig(
+            'module/VuFindTheme/tests/fixtures/vendor/example/res/theme/mixin.config.php'
+        );
+        $this->assertEquals('package.js', $config['js'][0]);
+    }
+
+    /**
+     * Test findInPackage() for internal files
+     *
+     * @return void
+     */
+    public function testFindInPackageForJsFile()
+    {
+        $ti = $this->getThemeInfo();
+        $relPath = 'module/VuFindTheme/tests/fixtures/vendor/example/res/theme/js/package.js';
+        $file = '/usr/local/vufind/module/VuFindTheme/tests/fixtures/vendor/example/res/theme/js/package.js';
+        $result = $ti->findInPackage(
+            $relPath
+        );
+        $this->assertEquals('js', $result['type']);
+        $this->assertFalse(empty($result['path']));
+    }
+
+    /**
+     * Test isAlreadyWebAccessible() for file in themes folder
+     *
+     * @return void
+     */
+    public function testIsAlreadyWebAccessibleThemeFileTrue()
+    {
+        $ti = $this->getThemeInfo();
+        $file = 'themes/bootstrap3/js/vendor/bootstrap.min.js';
+        $result = $ti->isAlreadyWebAccessible(
+            $file
+        );
+        $this->assertEquals(true, $result);
+    }
+
+    /**
+     * Test isAlreadyWebAccessible() for file in vendor folder
+     *
+     * @return void
+     */
+    public function testIsAlreadyWebAccessibleComposerPackageFileFalse()
+    {
+        $ti = $this->getThemeInfo();
+        $file = 'vendor/ahand/mobileesp/JavaScript/mdetect.js';
+        $result = $ti->isAlreadyWebAccessible(
+            $file
+        );
+        $this->assertEquals(false, $result);
+    }
+
+    /**
      * Test that caching works correctly.
      *
      * @return void

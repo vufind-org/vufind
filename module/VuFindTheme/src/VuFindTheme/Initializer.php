@@ -32,6 +32,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
 use Psr\Container\ContainerInterface;
+use VuFindTheme\View\Helper\HeadScript;
 
 /**
  * VuFind Theme Initializer
@@ -384,6 +385,8 @@ class Initializer
         $resolver = $this->serviceManager->get(TemplatePathStack::class);
         $resolver->addPaths($templatePathStack);
 
+        $this->loadConfiguredJavascriptFilesFromMixin();
+
         // Add theme specific language files for translation
         $this->updateTranslator($themes);
     }
@@ -434,6 +437,43 @@ class Initializer
                     'Problem loading cache: ' . get_class($e) . ' exception: '
                     . $e->getMessage()
                 );
+            }
+        }
+    }
+
+    /**
+     * Load configured javascript files from mixin.config.php if existing
+     *
+     * @return void
+     */
+    public function loadConfiguredJavascriptFilesFromMixin(): void
+    {
+        $config = $this->serviceManager->get('config');
+        $templatePathStack = $config['view_manager']['template_path_stack'] ?? false;
+        if ($templatePathStack) {
+            /* @var HeadScript $headScript */
+            $headScript = $this->serviceManager->get('ViewHelperManager')
+                    ->get(HeadScript::class);
+
+            foreach ($templatePathStack as $templatePath) {
+                $merged = $this->tools->getMergedConfig(
+                    $templatePath . '/../mixin.config.php'
+                );
+                foreach ($merged as $type => $files) {
+                    switch ($type) {
+                    case 'js':
+                        foreach ($files as $file) {
+                            $file = realpath(
+                                dirname($templatePath) . "/$type/$file"
+                            );
+                            if (!$this->tools->isAlreadyWebAccessible($file)) {
+                                $headScript->appendInternalResource(
+                                    $file
+                                );
+                            }
+                        }
+                    }
+                }
             }
         }
     }
