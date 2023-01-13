@@ -380,13 +380,16 @@ class AbstractSearch extends AbstractBase
             if ($jump = $this->processJumpTo($results)) {
                 return $jump;
             }
+            
+            // do not remember in case of print view
+            if( !$this->params()->fromQuery('print') ) { 
+                // Remember the current URL as the last search.
+                $this->rememberSearch($results);
 
-            // Remember the current URL as the last search.
-            $this->rememberSearch($results);
-
-            // Add to search history:
-            if ($this->saveToHistory) {
-                $this->saveSearchToHistory($results);
+                // Add to search history:
+                if ($this->saveToHistory) {
+                    $this->saveSearchToHistory($results);
+                }
             }
 
             // Set up results scroller:
