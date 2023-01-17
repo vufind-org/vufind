@@ -65,7 +65,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         $user = $this->getUser();
 
         $form = $this->serviceLocator->get($this->formClass);
-        $params = [];
+        $params = $this->params()->fromQuery();
         if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
             $params['referrer'] = $refererHeader->getFieldValue();
         }
