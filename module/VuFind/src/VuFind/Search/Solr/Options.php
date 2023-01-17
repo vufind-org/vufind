@@ -301,7 +301,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get the field to be used as a sort tie-breaker..
+     * Get the field to be used as a sort tie-breaker.
      *
      * @return string Sort field or null if not set
      */
