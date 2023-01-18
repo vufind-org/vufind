@@ -400,4 +400,104 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             $this->testRequestLog[1]['params']
         );
     }
+
+    /**
+     * Test successful call to holds, no items
+     *
+     * @return void
+     */
+    public function testNoItemsGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-none');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected = [];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, one available item
+     *
+     * @return void
+     */
+    public function testAvailbleItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-available');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Page',
+            'create' => '12-20-2022',
+            'expire' => '',
+            'id' => '3311d5df-731f-4e2c-8000-00960a9d8bf7',
+            'item_id' => 'fc0064b4-e2e4-4be0-8251-7ca93282c9b4',
+            'reqnum' => 'c5a8af9d-9877-453c-bbcb-f63cb5ccb3b4',
+            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+            'available' => true,
+            'in_transit' => false,
+            'last_pickup_date' => '12-29-2022',
+            'position' => 1
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, one in_transit item
+     *
+     * @return void
+     */
+    public function testInTransitItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-in_transit');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Page',
+            'create' => '11-07-2022',
+            'expire' => '',
+            'id' => 'c112b154-720c-486c-890d-81e1c288c097',
+            'item_id' => '795759ad-0b33-41dd-a658-947405261360',
+            'reqnum' => '074c0f3d-e8a0-47b5-b598-74a45c29d3d7',
+            'title' => 'Basic economics : a common sense guide to the economy ',
+            'available' => false,
+            'in_transit' => true,
+            'last_pickup_date' => null,
+            'position' => 1
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, item in queue, position x
+     *
+     * @return void
+     */
+    public function testSingleItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-single');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Hold',
+            'create' => '12-20-2022',
+            'expire' => '12-28-2022',
+            'id' => 'c7a7df0d-36a2-486c-85f5-008191e6b32d',
+            'item_id' => '26532648-67a3-4459-a97f-9b54b4c5ebd9',
+            'reqnum' => 'bb07eb2c-bf3a-449f-8e8b-a114ce410c7f',
+            'title' => 'Organic farming : everything you need to know ',
+            'available' => false,
+            'in_transit' => false,
+            'last_pickup_date' => null,
+            'position' => 3
+        ];
+        $this->assertEquals($expected, $result);
+    }
 }

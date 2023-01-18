@@ -1,0 +1,8 @@
+[
+  { "comment": "Initial request for token" },
+  {
+    "comment": "User with 1 hold, item is currently in_transit",
+    "status": 200,
+    "body": "{\"requests\":[{\"id\":\"074c0f3d-e8a0-47b5-b598-74a45c29d3d7\",\"requestLevel\":\"Item\",\"requestType\":\"Page\",\"requestDate\":\"2022-11-07T09:23:46.508+00:00\",\"requesterId\":\"162c474e-ca1f-4310-b233-7ad3a2ad8c34\",\"instanceId\":\"c112b154-720c-486c-890d-81e1c288c097\",\"holdingsRecordId\":\"4a086d33-0b5a-4be1-a96b-5aa656ab6ba9\",\"itemId\":\"795759ad-0b33-41dd-a658-947405261360\",\"status\":\"Open - In transit\",\"position\":1,\"instance\":{\"title\":\"Basic economics : a common sense guide to the economy \",\"identifiers\":[{\"value\":\"0465060730 :\",\"identifierTypeId\":\"8261054f-be78-422d-bd51-4ed9f33c3422\"}]},\"item\":{\"barcode\":\"8026657307\"},\"requester\":{\"firstName\":\"John\",\"lastName\":\"Testuser\",\"barcode\":\"995324292\"},\"fulfilmentPreference\":\"Hold Shelf\",\"pickupServicePointId\":\"b61315ba-a759-42de-9303-0d51cbd4edbb\",\"metadata\":{\"createdDate\":\"2022-11-07T09:23:48.197+00:00\",\"createdByUserId\":\"d37c7201-e679-47df-8b73-5ea01eeba0cf\",\"updatedDate\":\"2022-12-20T06:02:03.248+00:00\",\"updatedByUserId\":\"d916e883-f8f1-4188-bc1d-f0dce1511b50\"}}],\"totalRecords\":1}"
+  }
+]
