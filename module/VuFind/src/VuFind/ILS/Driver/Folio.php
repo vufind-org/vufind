@@ -1227,7 +1227,7 @@ class Folio extends AbstractAPI implements
                     ?? $this->defaultInTransitStatuses
                 ),
                 'last_pickup_date' => $lastPickup,
-                'position' => $hold->position,
+                'position' => $hold->position ?? null,
             ];
         }
         return $holds;
